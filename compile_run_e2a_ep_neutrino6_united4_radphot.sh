@@ -1,0 +1,1 @@
+g++ run_e2a_ep_neutrino6_united4_radphot.cc -o run_e2a_ep_neutrino6_united4_radphot.exe `root-config --cflags --libs`

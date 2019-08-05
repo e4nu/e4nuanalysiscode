@@ -1,4 +1,4 @@
-#include "e2a_ep_neutrino6_united4_radphot.C"
+#include "e2a_ep_neutrino6_united4_radphot.h"
 
 #include <iostream>
 

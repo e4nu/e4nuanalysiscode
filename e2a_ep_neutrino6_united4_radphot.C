@@ -1,5 +1,7 @@
 #define e2a_ep_neutrino6_united4_radphot_cxx
 #include "e2a_ep_neutrino6_united4_radphot.h"
+#include "Constants.h"
+#include "Fiducial.h"
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
@@ -18,34 +20,19 @@
 #include <TGraph.h>
 
 using namespace std;
+using namespace Fiducial;
 
  double e_mass=0.000510998;
 int fTorusCurrent;
 bool SCpdcut=true;
-Float_t fgPar_4Gev_2250_Theta[6][4],fgPar_4Gev_2250_Efid_t0_p[6][2];// 4GeV e- fiducial cut parameters
-Float_t fgPar_4Gev_2250_Efid_t1_p[6][6],fgPar_4Gev_2250_Efid_b_p[6][2][6],fgPar_4Gev_2250_Efid_a_p[6][2][6];
-double fgPar_Efid_Theta_S5_extra[8][4],fgPar_Efid_Theta_S4_extra[2][4],fgPar_Efid_Theta_S3_extra[4][4],fgPar_Efid_Theta_S5[8][8],fgPar_Efid_Theta_S4[2][8], fgPar_Efid_Theta_S3[4][8];
-double fgPar_Pfid_ScpdS2[2][6],fgPar_Pfid_ScpdS3[8][6], fgPar_Pfid_ScpdS4[4][6],fgPar_Pfid_ScpdS5[8][6], fgPar_Pfid_ScpdS2_extra[2][4],fgPar_Pfid_ScpdS3_extra[8][4], fgPar_Pfid_ScpdS4_extra[4][4],fgPar_Pfid_ScpdS5_extra[8][4], fgPar_4Gev_2250_Pfidft1l[6][6],fgPar_4Gev_2250_Pfidft1r[6][6], fgPar_4Gev_2250_Pfidft2l[6][6], fgPar_4Gev_2250_Pfidft2r[6][6],fgPar_4Gev_2250_Pfidbt1l[6][6],fgPar_4Gev_2250_Pfidbt1r[6][6],fgPar_4Gev_2250_Pfidbt2l[6][6], fgPar_4Gev_2250_Pfidbt2r[6][6], fgPar_4Gev_2250_Pfidbl[6][6], fgPar_4Gev_2250_Pfidbr[6][6];  // 4GeV proton fiducial cut parameters
-double   fgPar_1gev_1500_Pfid[6][5][6],fgPar_1gev_750_Pfid[6][5][6];   // 1.1 GeV proton fiducial cut parameters
- double fgPar_1gev_1500_Pfid_ScpdS2[2][6],fgPar_1gev_1500_Pfid_ScpdS3[8][6],fgPar_1gev_1500_Pfid_ScpdS4[4][6],fgPar_1gev_1500_Pfid_ScpdS5[8][6];
- double fgPar_1gev_750_Pfid_ScpdS2[2][6],fgPar_1gev_750_Pfid_ScpdS3[8][6],fgPar_1gev_750_Pfid_ScpdS4[4][6],fgPar_1gev_750_Pfid_ScpdS5[8][6];
-double   fgPar_1gev_1500_Piplfid[6][5][6],fgPar_1gev_750_Piplfid[6][5][6];
- double fgPar_1gev_1500_Piplfid_ScpdS2[2][6],fgPar_1gev_1500_Piplfid_ScpdS3[8][6],fgPar_1gev_1500_Piplfid_ScpdS4[4][6],fgPar_1gev_1500_Piplfid_ScpdS5[8][6];
- double fgPar_1gev_750_Piplfid_ScpdS2[2][6],fgPar_1gev_750_Piplfid_ScpdS3[8][6],fgPar_1gev_750_Piplfid_ScpdS4[4][6],fgPar_1gev_750_Piplfid_ScpdS5[8][6];
- double fgPar_1gev_1500_Efid[6][5][6],fgPar_1gev_1500_Efid_Theta_S3[4][8],fgPar_1gev_1500_Efid_Theta_S4[2][8],fgPar_1gev_1500_Efid_Theta_S5[8][8];  // 1.1 GeV e- fiducial cut parameters
- double fgPar_1gev_750_Efid[6][5][6],fgPar_1gev_750_Efid_Theta_S3[4][8],fgPar_1gev_750_Efid_Theta_S4[2][8],fgPar_1gev_750_Efid_Theta_S5[8][8];
-
- double fgPar_1gev_1500_Pimfid[6][5][6],fgPar_1gev_1500_Pimfid_Theta_S3[4][8],fgPar_1gev_1500_Pimfid_Theta_S4[2][8],fgPar_1gev_1500_Pimfid_Theta_S5[8][8];
-double fgPar_1gev_750_Pimfid[6][5][6],fgPar_1gev_750_Pimfid_Theta_S3[4][8],fgPar_1gev_750_Pimfid_Theta_S4[2][8],fgPar_1gev_750_Pimfid_Theta_S5[8][8],fgPar_1gev_750_Pimfid_Theta_S3_extra[4][4],fgPar_1gev_750_Pimfid_Theta_S4_extra[2][4],fgPar_1gev_750_Pimfid_Theta_S5_extra[8][4],fgPar_1gev_1500_Pimfid_Theta_S3_extra[4][4],fgPar_1gev_1500_Pimfid_Theta_S4_extra[2][4],fgPar_1gev_1500_Pimfid_Theta_S5_extra[8][4];
-
 
 std::string fbeam_E,target_name;
-map<std::string,double>en_beam;
-map<std::string,double>en_beam_Ecal;
-map<std::string,double>en_beam_Eqe;
+std::map<std::string,double> en_beam;
+std::map<std::string,double> en_beam_Ecal;
+std::map<std::string,double> en_beam_Eqe;
 
 
-void SetFiducialCutParameters();
+void SetFiducialCutParameters(); // Load Fidicual Parameters for 1.1 and 4.4 GeV from file
 //void SetMomCorrParameters();
 
 
@@ -82,17 +69,17 @@ TF1 *up_lim1_ec, *up_lim2_ec,*up_lim3_ec,*up_lim4_ec, *up_lim5_ec,*up_lim6_ec,*l
 TF1 *leftside_lim1_ec, *leftside_lim2_ec,*leftside_lim3_ec, *leftside_lim4_ec,*leftside_lim5_ec, *leftside_lim6_ec,*rightside_lim1_ec, *rightside_lim2_ec,*rightside_lim3_ec, *rightside_lim4_ec,*rightside_lim5_ec, *rightside_lim6_ec;
 
 
-map<std::string,double>vert_min;
-map<std::string,double>vert_max;
-map<std::string,double>vertdiff_min;
-map<std::string,double>vertdiff_max;
-map<std::string,double>bind_en;
-map<std::string,double>target_mass;
-map<std::string,double>residual_target_mass;
-map<std::pair<std::string, int>, double> EC_time_offset;
-map<std::string,double>EC_photon_beta;
-map<std::string,double>LEC_photon_beta;
-map<std::string, double> Ecal_offset;
+std::map<std::string,double>vert_min;
+std::map<std::string,double>vert_max;
+std::map<std::string,double>vertdiff_min;
+std::map<std::string,double>vertdiff_max;
+std::map<std::string,double>bind_en;
+std::map<std::string,double>target_mass;
+std::map<std::string,double>residual_target_mass;
+std::map<std::pair<std::string, int>, double> EC_time_offset;
+std::map<std::string,double>EC_photon_beta;
+std::map<std::string,double>LEC_photon_beta;
+std::map<std::string, double> Ecal_offset;
 
 
 
@@ -1258,7 +1245,6 @@ h1_E_rec_43210pi->Sumw2();
 
 
  //SetMomCorrParameters(); SetFiducialCutParameters();
- int n_evnt=1;
 
  Long64_t nbytes = 0, nb = 0;
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -1267,11 +1253,11 @@ h1_E_rec_43210pi->Sumw2();
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
 
-        if( jentry%200000 == 0 )
-      {
-	gDirectory->Write("hist_Files", TObject::kOverwrite);
-		cout<<jentry<<endl;
-      }
+    if( jentry%200000 == 0 )
+    {
+	         gDirectory->Write("hist_Files", TObject::kOverwrite);
+		       cout<<jentry<<endl;
+    }
 
 
 
@@ -1299,11 +1285,11 @@ h1_E_rec_43210pi->Sumw2();
     else fTorusCurrent=2250;
 
 
-    if(n_evnt==1){
+    if(jentry == 0){ //was n_evt == 1 before but jentry = n_evnt - 1
           //SetMomCorrParameters(); Functions is missing F.H. 08/01/19
           SetFiducialCutParameters();
     }
-    n_evnt++;
+
 
     int n_elec = 0;
     const int ind_em=0;
@@ -3799,7 +3785,7 @@ TH1F *h_Erec_subtruct_piplpimi_noprot_frac_feed4pi = (TH1F*)  h_Erec_subtruct_pi
      delete[] Ecal_uplim;
      delete pipl_deltat_sig;delete pipl_deltat_mean;delete pimi_deltat_sig;delete pimi_deltat_mean;delete fsum_pimi;delete fsub_pimi;delete fsum_pipl;delete fsub_pipl;delete prot_deltat_sig;delete prot_deltat_mean;delete fsum_prot;delete fsub_prot;delete el_Epratio_sig;delete el_Epratio_mean;delete fsum_e;delete fsub_e;
 delete up_lim1_ec;delete up_lim2_ec;delete up_lim3_ec;delete up_lim4_ec;delete up_lim5_ec;delete up_lim6_ec;delete low_lim1_ec;delete low_lim2_ec;delete low_lim3_ec;delete low_lim4_ec;delete low_lim5_ec;delete low_lim6_ec;
- delete  rightside_lim1_ec;delete rightside_lim2_ec;delete rightside_lim3_ec;delete rightside_lim4_ec,rightside_lim5_ec;delete rightside_lim6_ec;delete leftside_lim1_ec;delete leftside_lim2_ec,leftside_lim3_ec;delete leftside_lim4_ec;delete leftside_lim5_ec;delete leftside_lim6_ec;
+ delete  rightside_lim1_ec;delete rightside_lim2_ec;delete rightside_lim3_ec;delete rightside_lim4_ec; delete rightside_lim5_ec;delete rightside_lim6_ec;delete leftside_lim1_ec;delete leftside_lim2_ec; delete leftside_lim3_ec;delete leftside_lim4_ec;delete leftside_lim5_ec;delete leftside_lim6_ec;
 
 }
 
@@ -3853,7 +3839,7 @@ Bool_t CutUVW(TVector3 ecxyz)
   TVector3 ecuvw = FindUVW(ecxyz);
   Float_t phi=ecxyz.Phi()*180/TMath::Pi(); if(phi<-30) phi+=360;
   Int_t sector = (phi+30)/60; if(sector<0)sector=0; if(sector>5) sector=5;
-  return (ecuvw.X()>par_EcUVW[sector][0] && ecuvw.Y()<par_EcUVW[sector][1] && ecuvw.Z()<par_EcUVW[sector][2]);
+  return (ecuvw.X()>Constants::par_EcUVW[sector][0] && ecuvw.Y()<Constants::par_EcUVW[sector][1] && ecuvw.Z()<Constants::par_EcUVW[sector][2]);
 }
 
 
@@ -4605,7 +4591,7 @@ Bool_t EFiducialCut(TVector3 momentum)
     for (Int_t i=0; i<6; i++){
       par[i] = 0;
       for (Int_t d=8; d>=0; d--){
-	par[i] = par[i]*mom + fgPar_2GeV_2250_Efid[sector][i][d];
+	par[i] = par[i]*mom + Constants::fgPar_2GeV_2250_Efid[sector][i][d];
       }                          // calculate the parameters using pol8
     }
     if (phi < 0) {
@@ -4625,7 +4611,7 @@ Bool_t EFiducialCut(TVector3 momentum)
 	  for (Int_t i=0; i<4; i++){
 	    badpar3[i] = 0;
 	    for (Int_t d=7; d>=0; d--){
-	      badpar3[i] = badpar3[i]*mom + fgPar_2GeV_2250_EfidTheta_S3[i][d];
+	      badpar3[i] = badpar3[i]*mom + Constants::fgPar_2GeV_2250_EfidTheta_S3[i][d];
 	    }                           // calculate the parameters using pol7
 	  }
 	  for(Int_t ipar=0;ipar<2;ipar++)
@@ -4636,7 +4622,7 @@ Bool_t EFiducialCut(TVector3 momentum)
 	  for (Int_t i=0; i<2; i++){
 	    badpar4[i] = 0;
 	    for (Int_t d=7; d>=0; d--){
-	      badpar4[i] = badpar4[i]*mom + fgPar_2GeV_2250_EfidTheta_S4[i][d];
+	      badpar4[i] = badpar4[i]*mom + Constants::fgPar_2GeV_2250_EfidTheta_S4[i][d];
 	    }                           // calculate the parameters using pol7
 	  }
 	  status = !(theta>badpar4[0] && theta<badpar4[1]);
@@ -4646,7 +4632,7 @@ Bool_t EFiducialCut(TVector3 momentum)
 	  for (Int_t i=0; i<8; i++){
 	    badpar5[i] = 0;
 	    for (Int_t d=7; d>=0; d--){
-	      badpar5[i] = badpar5[i]*mom + fgPar_2GeV_2250_EfidTheta_S5[i][d];
+	      badpar5[i] = badpar5[i]*mom + Constants::fgPar_2GeV_2250_EfidTheta_S5[i][d];
 	    }                           // calculate the parameters using pol7
 	  }
 	  if (mom<1.25) badpar5[0] = 23.4;
@@ -5058,8 +5044,8 @@ if ( fTorusCurrent < 1510 && fTorusCurrent > 1490){
     for (Int_t i=0; i<4; i++){
       par_for[i] = 0; par_bak[i] = 0;
       for (Int_t d=6; d>=0; d--){
-	par_for[i] = par_for[i]*mom_for + fgPar_2GeV_2250_Pfid_For[sector][i][d];
-	par_bak[i] = par_bak[i]*mom_bak + fgPar_2GeV_2250_Pfid_Bak[sector][i][d];
+	par_for[i] = par_for[i]*mom_for + Constants::fgPar_2GeV_2250_Pfid_For[sector][i][d];
+	par_bak[i] = par_bak[i]*mom_bak + Constants::fgPar_2GeV_2250_Pfid_Bak[sector][i][d];
       }
     }
     if (phi < 0) {
@@ -5085,7 +5071,7 @@ if ( fTorusCurrent < 1510 && fTorusCurrent > 1490){
 	for (Int_t i=0; i<2; i++){
 	  badpar2[i] = 0;
 	  for (Int_t d=5; d>=0; d--){
-	    badpar2[i] = badpar2[i]*mom_scpd + fgPar_2GeV_2250_Pfid_ScpdS2[i][d];
+	    badpar2[i] = badpar2[i]*mom_scpd + Constants::fgPar_2GeV_2250_Pfid_ScpdS2[i][d];
 	  }                // calculate the parameters using pol5
 	}
 	status = status && !(theta>badpar2[0]&&theta<badpar2[1]);
@@ -5095,7 +5081,7 @@ if ( fTorusCurrent < 1510 && fTorusCurrent > 1490){
 	for (Int_t i=0; i<8; i++){
 	  badpar3[i] = 0;
 	  for (Int_t d=5; d>=0; d--){
-	    badpar3[i] = badpar3[i]*mom_scpd + fgPar_2GeV_2250_Pfid_ScpdS3[i][d];
+	    badpar3[i] = badpar3[i]*mom_scpd + Constants::fgPar_2GeV_2250_Pfid_ScpdS3[i][d];
 	  }                // calculate the parameters using pol5
 	}
 	for (Int_t ipar=0;ipar<4;ipar++){
@@ -5107,7 +5093,7 @@ if ( fTorusCurrent < 1510 && fTorusCurrent > 1490){
 	for (Int_t i=0; i<4; i++){
 	  badpar4[i] = 0;
 	  for (Int_t d=5; d>=0; d--){
-	    badpar4[i] = badpar4[i]*mom_scpd + fgPar_2GeV_2250_Pfid_ScpdS4[i][d];
+	    badpar4[i] = badpar4[i]*mom_scpd + Constants::fgPar_2GeV_2250_Pfid_ScpdS4[i][d];
 	  }                // calculate the parameters using pol5
 	}
 	for (Int_t ipar=0;ipar<2;ipar++){
@@ -5119,7 +5105,7 @@ if ( fTorusCurrent < 1510 && fTorusCurrent > 1490){
 	for (Int_t i=0; i<8; i++){
 	  badpar5[i] = 0;
 	  for (Int_t d=5; d>=0; d--){
-	    badpar5[i] = badpar5[i]*mom_scpd + fgPar_2GeV_2250_Pfid_ScpdS5[i][d];
+	    badpar5[i] = badpar5[i]*mom_scpd + Constants::fgPar_2GeV_2250_Pfid_ScpdS5[i][d];
 	  }                // calculate the parameters using pol5
 	}
 	for (Int_t ipar=0;ipar<4;ipar++){
@@ -5591,8 +5577,8 @@ if (fTorusCurrent < 1510 && fTorusCurrent > 1490){
     for (Int_t i=0; i<4; i++){
       par_for[i] = 0; par_bak[i] = 0;
       for (Int_t d=6; d>=0; d--){
-	par_for[i] = par_for[i]*mom_for + fgPar_2GeV_2250_Pfid_For[sector][i][d];
-	par_bak[i] = par_bak[i]*mom_bak + fgPar_2GeV_2250_Pfid_Bak[sector][i][d];
+	par_for[i] = par_for[i]*mom_for + Constants::fgPar_2GeV_2250_Pfid_For[sector][i][d];
+	par_bak[i] = par_bak[i]*mom_bak + Constants::fgPar_2GeV_2250_Pfid_Bak[sector][i][d];
       }
     }
     if (phi < 0) {
@@ -5626,7 +5612,7 @@ if (fTorusCurrent < 1510 && fTorusCurrent > 1490){
 		for (Int_t i=0; i<2; i++){
 	  badpar2[i] = 0;
 	  for (Int_t d=5; d>=0; d--){
-	    badpar2[i] = badpar2[i]*mom_scpd + fgPar_2GeV_2250_Pfid_ScpdS2[i][d];
+	    badpar2[i] = badpar2[i]*mom_scpd + Constants::fgPar_2GeV_2250_Pfid_ScpdS2[i][d];
 	  }                // calculate the parameters using pol5
 	}
 	status = status && !(theta>badpar2[0]&&theta<badpar2[1]);
@@ -5636,7 +5622,7 @@ if (fTorusCurrent < 1510 && fTorusCurrent > 1490){
 	for (Int_t i=0; i<8; i++){
 	  badpar3[i] = 0;
 	  for (Int_t d=5; d>=0; d--){
-	    badpar3[i] = badpar3[i]*mom_scpd + fgPar_2GeV_2250_Pfid_ScpdS3[i][d];
+	    badpar3[i] = badpar3[i]*mom_scpd + Constants::fgPar_2GeV_2250_Pfid_ScpdS3[i][d];
 	  }                // calculate the parameters using pol5
 	}
 	for (Int_t ipar=0;ipar<4;ipar++){
@@ -5648,7 +5634,7 @@ if (fTorusCurrent < 1510 && fTorusCurrent > 1490){
 	for (Int_t i=0; i<4; i++){
 	  badpar4[i] = 0;
 	  for (Int_t d=5; d>=0; d--){
-	    badpar4[i] = badpar4[i]*mom_scpd + fgPar_2GeV_2250_Pfid_ScpdS4[i][d];
+	    badpar4[i] = badpar4[i]*mom_scpd + Constants::fgPar_2GeV_2250_Pfid_ScpdS4[i][d];
 	  }                // calculate the parameters using pol5
 	}
 	for (Int_t ipar=0;ipar<2;ipar++){
@@ -5660,7 +5646,7 @@ if (fTorusCurrent < 1510 && fTorusCurrent > 1490){
 	for (Int_t i=0; i<8; i++){
 	  badpar5[i] = 0;
 	  for (Int_t d=5; d>=0; d--){
-	    badpar5[i] = badpar5[i]*mom_scpd + fgPar_2GeV_2250_Pfid_ScpdS5[i][d];
+	    badpar5[i] = badpar5[i]*mom_scpd + Constants::fgPar_2GeV_2250_Pfid_ScpdS5[i][d];
 	  }                // calculate the parameters using pol5
 	}
 	for (Int_t ipar=0;ipar<4;ipar++){
@@ -6196,7 +6182,7 @@ double phi = mom.Phi();
     for (Int_t i=0; i<6; i++){
       par[i] = 0;
       for (Int_t d=8; d>=0; d--){
-	par[i] = par[i]*mom + fgPar_2GeV_2250_Efid[sector][i][d];
+	par[i] = par[i]*mom + Constants::fgPar_2GeV_2250_Efid[sector][i][d];
       }                          // calculate the parameters using pol8
     }
     if (phi < 0) {
@@ -6224,7 +6210,7 @@ double phi = mom.Phi();
 	  for (Int_t i=0; i<4; i++){
 	    badpar3[i] = 0;
 	    for (Int_t d=7; d>=0; d--){
-	      badpar3[i] = badpar3[i]*mom + fgPar_2GeV_2250_EfidTheta_S3[i][d];
+	      badpar3[i] = badpar3[i]*mom + Constants::fgPar_2GeV_2250_EfidTheta_S3[i][d];
 	    }                           // calculate the parameters using pol7
 	  }
 	  for(Int_t ipar=0;ipar<2;ipar++)
@@ -6235,7 +6221,7 @@ double phi = mom.Phi();
 	  for (Int_t i=0; i<2; i++){
 	    badpar4[i] = 0;
 	    for (Int_t d=7; d>=0; d--){
-	      badpar4[i] = badpar4[i]*mom + fgPar_2GeV_2250_EfidTheta_S4[i][d];
+	      badpar4[i] = badpar4[i]*mom + Constants::fgPar_2GeV_2250_EfidTheta_S4[i][d];
 	    }                           // calculate the parameters using pol7
 	  }
 	  status = !(theta>badpar4[0] && theta<badpar4[1]);
@@ -6245,7 +6231,7 @@ double phi = mom.Phi();
 	  for (Int_t i=0; i<8; i++){
 	    badpar5[i] = 0;
 	    for (Int_t d=7; d>=0; d--){
-	      badpar5[i] = badpar5[i]*mom + fgPar_2GeV_2250_EfidTheta_S5[i][d];
+	      badpar5[i] = badpar5[i]*mom + Constants::fgPar_2GeV_2250_EfidTheta_S5[i][d];
 	    }                           // calculate the parameters using pol7
 	  }
 	  if (mom<1.25) badpar5[0] = 23.4;

@@ -16,10 +16,11 @@ int main(int argc, char **argv)
   }
 
 
-std::string target = argv[1];
-std::string beam_en = argv[2];
+  std::string target  = argv[1];
+  std::string beam_en = argv[2];
 
- e2a_ep_neutrino6_united4_radphot  t(target,beam_en);
+  e2a_ep_neutrino6_united4_radphot  t(target,beam_en);
+
   t.Loop();
 
   return 0;

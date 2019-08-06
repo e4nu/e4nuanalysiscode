@@ -1,4 +1,6 @@
-#define e2a_ep_neutrino6_united4_radphot_cxx
+
+#define E2A_EP_C
+
 #include "e2a_ep_neutrino6_united4_radphot.h"
 #include "Constants.h"
 #include "Fiducial.h"
@@ -10,7 +12,7 @@
 #include <TH1D.h>
 #include <TFile.h>
 #include <TMath.h>
-
+#include <exception>
 #include <iostream>
 #include <fstream>
 #include <TLorentzVector.h>
@@ -26,13 +28,13 @@ using namespace Fiducial;
 int fTorusCurrent;
 bool SCpdcut=true;
 
-std::string fbeam_E,target_name;
+std::string target_name;
 std::map<std::string,double> en_beam;
 std::map<std::string,double> en_beam_Ecal;
 std::map<std::string,double> en_beam_Eqe;
 
 
-void SetFiducialCutParameters(); // Load Fidicual Parameters for 1.1 and 4.4 GeV from file
+void SetFiducialCutParameters(std::string beam_en); // Load Fidicual Parameters for 1.1 and 4.4 GeV from file
 //void SetMomCorrParameters();
 
 
@@ -42,27 +44,27 @@ TF1 *vz_corr_func;
 double vz_corr(double phi,double theta);
 TVector3 FindUVW(TVector3 xyz);
 Bool_t CutUVW(TVector3 ecxyz);
-Bool_t EFiducialCut(TVector3 momentum);
-Bool_t PFiducialCut(TVector3 momentum);
+Bool_t EFiducialCut(std::string beam_en, TVector3 momentum);
+Bool_t PFiducialCut(std::string beam_en, TVector3 momentum);
 Float_t ProtonMomCorrection_He3_4Cell(std::string atarget, TLorentzVector V4Pr, Float_t vertex_p);
-Bool_t PiplFiducialCut(TVector3 momentum,Float_t *philow,Float_t *phiup);
-Bool_t PimiFiducialCut(TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup);
+Bool_t PiplFiducialCut(std::string beam_en, TVector3 momentum,Float_t *philow,Float_t *phiup);
+Bool_t PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup);
 bool Phot_fid(TVector3 V3_phot);
-bool Pi_phot_fid_united(TVector3 V3_pi_phot, int q_pi_phot);
-Bool_t GetEPhiLimits(Float_t momentum, Float_t theta, Int_t sector,
+bool Pi_phot_fid_united(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot);
+Bool_t GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t sector,
 		     Float_t *EPhiMin, Float_t *EPhiMax);
-void prot_rot_func_3p(TVector3 V3q, TVector3 V3prot[3],TVector3  V3prot_uncorr[3],TLorentzVector V4el,double Ecal_3pto2p[][2],double  pmiss_perp_3pto2p[][2],double  P3pto2p[][2],double N_p1[3],double Ecal_3pto1p[3],double  pmiss_perp_3pto1p[3], double *N_p3det);
-void  prot_rot_func_2p(TVector3 V3q, TVector3  V3prot[2],TVector3  V3prot_uncorr[2],TLorentzVector V4el,double Ecal_2pto1p[2],double  pmiss_perp_2pto1p[2],double  P2pto1p[2], double *Nboth);
-void prot1_pi1_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi, int q_pi,bool radstat, double *N_pi_p,double *N_nopi_p);
-void prot1_pi2_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi[2], int q_pi[2],bool radstat[2], double *P_1p0pi,double P_1p1pi[2]);
-void prot1_pi3_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi[3], int q_pi[3],bool radstat[3],double *P_tot);
-void prot2_pi1_rot_func(TVector3 V3q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_1pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_2p1pi_to2p0pi[2],double p_miss_perp_2p1pi_to2p0pi[2],double P_2p1pito2p0pi[2],double P_2p1pito1p1pi[2],double P_2p1pito1p0pi[2],double *P_tot);
-void prot2_pi2_rot_func(TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_2pi[2], int q_pi[2],bool radstat[2],TLorentzVector V4_el, double Ecal_2p2pi[2],double p_miss_perp_2p2pi[2],double P_tot_2p[2]);
-void prot3_pi1_rot_func(TVector3 V3_q,TVector3 V3_3prot_corr[3],TVector3 V3_3prot_uncorr[3],TVector3 V3_pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_3p1pi[3],double p_miss_perp_3p1pi[3],double P_tot_3p[3]);
-void pi1_rot_func(TVector3 V3_pi, int q_pi,bool radstat,TVector3 V3_q,double *P_pi);
-void pi2_rot_func(TVector3 V3_pi[2], int q_pi[2],bool radstat[2], TVector3 V3_q,double *P_0pi,double P_1pi[2]);
-void pi3_rot_func(TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,double *P_0pi,double P_1pi[3],double P_320[3],double P_3210[][2]);
-void pi4_rot_func(TVector3 V3_pi[4], int q_pi[4],bool radstat[4], TVector3 V3_q,double *P_0pi,double *P_410,double *P_420,double *P_4210,double *P_430,double *P_4310,double *P_4320,double *P_43210);
+void prot3_rot_func(std::string beam_en, TVector3 V3q, TVector3 V3prot[3],TVector3  V3prot_uncorr[3],TLorentzVector V4el,double Ecal_3pto2p[][2],double  pmiss_perp_3pto2p[][2],double  P3pto2p[][2],double N_p1[3],double Ecal_3pto1p[3],double  pmiss_perp_3pto1p[3], double *N_p3det);
+void prot2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot[2],TVector3  V3prot_uncorr[2],TLorentzVector V4el,double Ecal_2pto1p[2],double  pmiss_perp_2pto1p[2],double  P2pto1p[2], double *Nboth);
+void prot1_pi1_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi, int q_pi,bool radstat, double *N_pi_p,double *N_nopi_p);
+void prot1_pi2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi[2], int q_pi[2],bool radstat[2], double *P_1p0pi,double P_1p1pi[2]);
+void prot1_pi3_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi[3], int q_pi[3],bool radstat[3],double *P_tot);
+void prot2_pi1_rot_func(std::string beam_en, TVector3 V3q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_1pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_2p1pi_to2p0pi[2],double p_miss_perp_2p1pi_to2p0pi[2],double P_2p1pito2p0pi[2],double P_2p1pito1p1pi[2],double P_2p1pito1p0pi[2],double *P_tot);
+void prot2_pi2_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_2pi[2], int q_pi[2],bool radstat[2],TLorentzVector V4_el, double Ecal_2p2pi[2],double p_miss_perp_2p2pi[2],double P_tot_2p[2]);
+void prot3_pi1_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_3prot_corr[3],TVector3 V3_3prot_uncorr[3],TVector3 V3_pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_3p1pi[3],double p_miss_perp_3p1pi[3],double P_tot_3p[3]);
+void pi1_rot_func(std::string beam_en, TVector3 V3_pi, int q_pi,bool radstat,TVector3 V3_q,double *P_pi);
+void pi2_rot_func(std::string beam_en, TVector3 V3_pi[2], int q_pi[2],bool radstat[2], TVector3 V3_q,double *P_0pi,double P_1pi[2]);
+void pi3_rot_func(std::string beam_en, TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,double *P_0pi,double P_1pi[3],double P_320[3],double P_3210[][2]);
+void pi4_rot_func(std::string beam_en, TVector3 V3_pi[4], int q_pi[4],bool radstat[4], TVector3 V3_q,double *P_0pi,double *P_410,double *P_420,double *P_4210,double *P_430,double *P_4310,double *P_4320,double *P_43210);
 
 TF1 *pipl_deltat_sig,*pipl_deltat_mean,*pimi_deltat_sig,*pimi_deltat_mean, *fsum_pimi,*fsub_pimi, *fsum_pipl,*fsub_pipl, *prot_deltat_sig, *prot_deltat_mean,*fsum_prot,*fsub_prot,*el_Epratio_sig,*el_Epratio_mean,*fsum_e,*fsub_e;
 TF1 *up_lim1_ec, *up_lim2_ec,*up_lim3_ec,*up_lim4_ec, *up_lim5_ec,*up_lim6_ec,*low_lim1_ec,*low_lim2_ec,*low_lim3_ec, *low_lim4_ec,*low_lim5_ec,*low_lim6_ec;
@@ -142,23 +144,21 @@ Double_t FSub_pipl(Double_t *x,Double_t *par){
 void e2a_ep_neutrino6_united4_radphot::Loop()
 {
 
+  target_name = ftarget;   //std string for target name
+  cout << fbeam_en << endl;
+  en_beam["1161"]=1.161;
+  en_beam["2261"]=2.261;
+  en_beam["4461"]=4.461;
 
+  en_beam_Ecal["1161"]=1.161;
+  en_beam_Ecal["2261"]=2.261;
+  en_beam_Ecal["4461"]=4.461;
 
- target_name=ftarget;
-fbeam_E=fbeam_en;
-en_beam["1161"]=1.161;
-en_beam["2261"]=2.261;
-en_beam["4461"]=4.461;
+  en_beam_Eqe["1161"]=1.161;
+  en_beam_Eqe["2261"]=2.261;
+  en_beam_Eqe["4461"]=4.461;
 
-en_beam_Ecal["1161"]=1.161;
-en_beam_Ecal["2261"]=2.261;
-en_beam_Ecal["4461"]=4.461;
-
-en_beam_Eqe["1161"]=1.161;
-en_beam_Eqe["2261"]=2.261;
-en_beam_Eqe["4461"]=4.461;
-
-if (fChain == 0) return;
+  if (fChain == 0) return;
 
   Long64_t nentries = fChain->GetEntriesFast();
   nentries =8000000;
@@ -438,14 +438,24 @@ EC_photon_beta["3He"]=0.92;
   TLorentzVector V4_beam(0,0,en_beam[fbeam_en],en_beam[fbeam_en]);
   TLorentzVector V4_target(0,0,0,target_mass[ftarget]);
 
-  TFile *file_in1=new TFile(Form("protdeltat_mom_%s.root",fbeam_en.c_str()));
-  TFile *file_in=new TFile(Form("el_Epratio_mom_%s.root",fbeam_en.c_str()));
-  TFile *file_in2=new TFile(Form("pimideltat_mom_%s.root",fbeam_en.c_str()));
-  TFile *file_in3= new TFile(Form("vz_%s_%s.root",ftarget.c_str(),fbeam_en.c_str()));;
-  TFile *file_in4=new TFile(Form("pipldeltat_mom_%s.root",fbeam_en.c_str()));
-  TFile *file_in5 = new TFile("vz_56Fe_2261_badruns.root");//vertex correction for 56Fe runs with exploded liquid target cell
-  TFile *file_in6 = new TFile("vz_3He_2261_2ndrungroup.root");//vertx correction for 3He 2nd group runs
-  TFile *file_in7 = new TFile("vz_4He_2261_2ndrungroup.root");//vertex correction for 4He 2nd group runs
+  TFile *file_in1=new TFile(Form("FiducialsCorrections/protdeltat_mom_%s.root",fbeam_en.c_str()));
+  TFile *file_in=new TFile(Form("FiducialsCorrections/el_Epratio_mom_%s.root",fbeam_en.c_str()));
+  TFile *file_in2=new TFile(Form("FiducialsCorrections/pimideltat_mom_%s.root",fbeam_en.c_str()));
+  TFile *file_in3= new TFile(Form("FiducialsCorrections/vz_%s_%s.root",ftarget.c_str(),fbeam_en.c_str()));;
+  TFile *file_in4=new TFile(Form("FiducialsCorrections/pipldeltat_mom_%s.root",fbeam_en.c_str()));
+
+
+  TFile *file_in5;
+  TFile *file_in6;
+  TFile *file_in7;
+  std::cout << "fbeam_en " << fbeam_en.c_str() << std::endl;
+  if (en_beam[fbeam_en] < 2.300 && en_beam[fbeam_en] > 2.100 ) {
+    file_in5 = new TFile("FiducialsCorrections/vz_56Fe_2261_badruns.root");//vertex correction for 56Fe runs with exploded liquid target cell
+    file_in6 = new TFile("FiducialsCorrections/vz_3He_2261_2ndrungroup.root");//vertx correction for 3He 2nd group runs
+    file_in7 = new TFile("FiducialsCorrections/vz_4He_2261_2ndrungroup.root");//vertex correction for 4He 2nd group runs
+  }
+
+
   TFile *file_out = new TFile(Form("e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");
   // TFile *file_out = new TFile("e2a_ep_neutrino6_united4_radphot.root", "Recreate");//to submit jobs
   // TFile *file_out = new TFile(Form("/volatile/clas/clase2/Mariana/Skim_Mariana/Files_forTaofeng/e2a_ep_%s_%s_eNp.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");
@@ -1242,10 +1252,6 @@ h1_E_rec_43210pi->Sumw2();
 
 
 
-
-
- //SetMomCorrParameters(); SetFiducialCutParameters();
-
  Long64_t nbytes = 0, nb = 0;
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
     //for (Long64_t jentry=0; jentry<200000;jentry++) {
@@ -1287,7 +1293,7 @@ h1_E_rec_43210pi->Sumw2();
 
     if(jentry == 0){ //was n_evt == 1 before but jentry = n_evnt - 1
           //SetMomCorrParameters(); Functions is missing F.H. 08/01/19
-          SetFiducialCutParameters();
+          SetFiducialCutParameters(fbeam_en);
     }
 
 
@@ -1356,7 +1362,7 @@ h1_E_rec_43210pi->Sumw2();
 
 
     h2_e_ec_xy->Fill(ec_x,ec_y);
-    if(!EFiducialCut(el_mom1) )continue;//theta, phi cuts
+    if(!EFiducialCut(fbeam_en, el_mom1) )continue;//theta, phi cuts
     if( !CutUVW(e_ec_xyz1))continue; //u>60, v<360, w<400
     h2_e_ec_xy_fidcut->Fill(ec_x,ec_y);
 
@@ -1563,7 +1569,7 @@ if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2. && ec[ind_em] > 0.5 && sc[ind_em
 	    }
 	    h2_prot_theta_p[sc_sect[sc[ind_p]-1]-1]->Fill(p[i],TMath::ACos(cz[ind_p])*TMath::RadToDeg());
 
-	    if(PFiducialCut(V4_uncorrprot.Vect())){ //proton fiducial cuts
+	    if(PFiducialCut(fbeam_en, V4_uncorrprot.Vect())){ //proton fiducial cuts
 
 	      h2_prot_theta_p_cut[sc_sect[sc[ind_p]-1]-1]->Fill(p[i],TMath::ACos(cz[ind_p])*TMath::RadToDeg());
 	      for(int k=1;k<=6;k++){
@@ -1624,7 +1630,7 @@ if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2. && ec[ind_em] > 0.5 && sc[ind_em
 	      h2_pimi_theta_p[sc_sect[sc[i]-1]-1]->Fill(p[i],TMath::ACos(cz[i])*TMath::RadToDeg());
 
 
-	      if(PimiFiducialCut(V3_pimi, &pimi_phimin, &pimi_phimax)){
+	      if(PimiFiducialCut(fbeam_en, V3_pimi, &pimi_phimin, &pimi_phimax)){
 
 		h2_pimi_theta_p_cut[sc_sect[sc[i]-1]-1]->Fill(p[i],TMath::ACos(cz[i])*TMath::RadToDeg());
 		h1_pimi_prot_vertdiff->Fill(el_vert_corr-pimi_vert_corr);
@@ -1690,7 +1696,7 @@ for(int k=1;k<=6;k++){
 	    h2_pipl_theta_phi_beffid->Fill(pipl_phi_mod,pipl_theta);
 	    h2_pipl_theta_p[sc_sect[sc[i]-1]-1]->Fill(p[i],TMath::ACos(cz[i])*TMath::RadToDeg());
 
-	      if (PiplFiducialCut(V3_pipl, &cphil, &cphir)){
+	      if (PiplFiducialCut(fbeam_en, V3_pipl, &cphil, &cphir)){
 
 		h2_pipl_theta_p_cut[sc_sect[sc[i]-1]-1]->Fill(p[i],TMath::ACos(cz[i])*TMath::RadToDeg());
 		h1_pipl_prot_vertdiff->Fill(el_vert_corr-pipl_vert_corr);
@@ -1990,7 +1996,7 @@ for(int k=1;k<=6;k++){
      N_prot_both=0;
      double P_N_2p[2]={0};
    V3_q=(V4_beam-V4_el).Vect();
-   prot_rot_func_2p(V3_q, V3_2prot_corr,V3_2prot_uncorr, V4_el,E_tot_2p,p_perp_tot_2p,P_N_2p ,&N_prot_both);
+   prot2_rot_func(fbeam_en, V3_q, V3_2prot_corr,V3_2prot_uncorr, V4_el,E_tot_2p,p_perp_tot_2p,P_N_2p ,&N_prot_both);
 
 
 
@@ -2045,7 +2051,7 @@ for(int k=1;k<=6;k++){
  //---------------------------------- 2p 1pi ->2p 0pi   ----------------------------------------------
 
    double P_2p1pito2p0pi[2]={0}, P_2p1pito1p1pi[2]={0},P_2p1pito1p0pi[2]={0},Ptot=0;
-   prot2_pi1_rot_func(V3_q,V3_2prot_corr,V3_2prot_uncorr,V3_1pi, q[ind_pi_phot[0]],ec_radstat_n[0],V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
+   prot2_pi1_rot_func(fbeam_en, V3_q,V3_2prot_corr,V3_2prot_uncorr,V3_1pi, q[ind_pi_phot[0]],ec_radstat_n[0],V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
 
  for(int z=0;z<N_2prot;z++){
 
@@ -2147,7 +2153,7 @@ int q_pi2[2];
    ecstat_pi2[0]=ec_radstat_n[0];
    ecstat_pi2[1]=ec_radstat_n[1];
 
-   prot2_pi2_rot_func(V3_q,V3_2prot_corr,V3_2prot_uncorr,V3_2pi,q_pi2,ecstat_pi2 ,V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
+   prot2_pi2_rot_func(fbeam_en, V3_q,V3_2prot_corr,V3_2prot_uncorr,V3_2pi,q_pi2,ecstat_pi2 ,V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
 
 //---------------------------------- 2p 2pi ->1p 0pi   ----------------------------------------------
 
@@ -2217,7 +2223,7 @@ for(int z=0;z<N_2prot;z++){
 	   TVector3 V3_prot_el_3pto2p[N_3p][N_2p];
 	   TVector3 V3_2p_rot[N_2p], V3_prot_el[N_3p][N_2p];
  	   bool prot_stat[N_3p]={false};
-	   // prot_rot_func_3p( V3_q, V3_prot_corr,V3_prot,V4_el,E_cal_3pto2p,p_miss_perp_3pto2p, P_3pto2p,N_p1, E_cal_3pto1p,p_miss_perp_3pto1p,&N_p_three);
+	   // prot3_rot_func( V3_q, V3_prot_corr,V3_prot,V4_el,E_cal_3pto2p,p_miss_perp_3pto2p, P_3pto2p,N_p1, E_cal_3pto1p,p_miss_perp_3pto1p,&N_p_three);
 
 	   for(int i=0;i<N_3p;i++)
 	     {
@@ -2263,7 +2269,7 @@ for(int z=0;z<N_2prot;z++){
 	     V3_q=(V4_beam-V4_el).Vect();
 
 
-	     prot_rot_func_3p( V3_q, V3_prot_corr,V3_prot,V4_el,E_cal_3pto2p,p_miss_perp_3pto2p, P_3pto2p,N_p1, E_cal_3pto1p,p_miss_perp_3pto1p,&N_p_three);
+	     prot3_rot_func(fbeam_en, V3_q, V3_prot_corr,V3_prot,V4_el,E_cal_3pto2p,p_miss_perp_3pto2p, P_3pto2p,N_p1, E_cal_3pto1p,p_miss_perp_3pto1p,&N_p_three);
 
 	     if(ec_num_n==0 && num_pi_phot==0 && N_p_three!=0){
  //-----------------------------------------  3p to 2p->1p  -----------------------------------------------------------------------
@@ -2350,7 +2356,7 @@ for(int z=0;z<N_2prot;z++){
 
    V3_pi_phot.SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);
 
-   prot3_pi1_rot_func( V3_q,V3_prot_corr,V3_prot, V3_pi_phot,q[ind_pi_phot[0]],ec_radstat_n[0], V4_el,  Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
+   prot3_pi1_rot_func(fbeam_en,  V3_q,V3_prot_corr,V3_prot, V3_pi_phot,q[ind_pi_phot[0]],ec_radstat_n[0], V4_el,  Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
 
 	       for(int j=0;j<N_3p;j++)    {
 
@@ -2465,7 +2471,7 @@ for(int z=0;z<N_2prot;z++){
 		 }
 
 
-		 for(int ind_p=0;ind_p<N_p4;ind_p++) prot4_stat[ind_p]=PFiducialCut(V3_p4_rot[ind_p]);
+		 for(int ind_p=0;ind_p<N_p4;ind_p++) prot4_stat[ind_p]=PFiducialCut(fbeam_en, V3_p4_rot[ind_p]);
 
 		 if( prot4_stat[0]  && !prot4_stat[1]   && !prot4_stat[2] && !prot4_stat[3])  N_p4_p1[0]=N_p4_p1[0]+1;//Detecting 1p out of 4p
 		 if(!prot4_stat[0]  &&   prot4_stat[1]  && !prot4_stat[2] && !prot4_stat[3])  N_p4_p1[1]=N_p4_p1[1]+1;
@@ -2520,7 +2526,7 @@ for(int z=0;z<N_2prot;z++){
 		   V3_prot[0]=V3_prot4_corr[1]; V3_prot[1]=V3_prot4_corr[2]; V3_prot[2]=V3_prot4_corr[3];
 		 }
 
-		 prot_rot_func_3p( V3_q, V3_prot, V3_prot_uncorr,V4_el,E_cal_4pto3p,p_miss_perp_4pto3p, P_4pto3p,N_p1,E_cal_43pto1p,p_miss_perp_43pto1p,&N_p_three);
+		 prot3_rot_func(fbeam_en,  V3_q, V3_prot, V3_prot_uncorr,V4_el,E_cal_4pto3p,p_miss_perp_4pto3p, P_4pto3p,N_p1,E_cal_43pto1p,p_miss_perp_43pto1p,&N_p_three);
 
 		 V3_el_prot[0][0]=V4_el.Vect()+V3_prot_uncorr[0];
 		 V3_el_prot[0][1]=V4_el.Vect()+V3_prot_uncorr[1];
@@ -2621,7 +2627,7 @@ for(int z=0;z<N_2prot;z++){
 		     V3p2_uncorr[0]=V3_prot4[ind1];
 		     V3p2_uncorr[1]=V3_prot4[ind2];
 
-		     prot_rot_func_2p(V3_q, V3p2,V3p2_uncorr, V4_el,E_cal_4pto2p,p_miss_perp_4pto2p,  P_4pto2p, &N_two);
+		     prot2_rot_func(fbeam_en, V3_q, V3p2,V3p2_uncorr, V4_el,E_cal_4pto2p,p_miss_perp_4pto2p,  P_4pto2p, &N_two);
 
 		     if( N_two!=0  && N_p_four!=0){
 
@@ -2722,7 +2728,7 @@ for(int z=0;z<N_2prot;z++){
 	if (ec_num_n==0 && num_pi_phot==0){
 
 	   h1_E_rec_0pi->Fill(E_rec_new,1/Mott_cross_sec);
-	   h1_E_rec_0pi_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],1/Mott_cross_sec);
+	   h1_E_rec_0pi_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],1/Mott_cross_sec);
 
 	 }
 
@@ -2731,10 +2737,10 @@ for(int z=0;z<N_2prot;z++){
 	 if (ec_num_n==0 && num_pi_phot==1) {
 
 	   V3_pi.SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);
-	   pi1_rot_func(V3_pi,q[ind_pi_phot[0]],ec_radstat_n[0],V3_q, &P_undet);
+	   pi1_rot_func(fbeam_en, V3_pi,q[ind_pi_phot[0]],ec_radstat_n[0],V3_q, &P_undet);
 
 	   h1_E_rec_1pi_weight->Fill(E_rec_new,P_undet*1/Mott_cross_sec);
-	   h1_E_rec_1pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],P_undet*1/Mott_cross_sec);
+	   h1_E_rec_1pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_undet*1/Mott_cross_sec);
 
 	  if(!ec_radstat_n[0])  h1_E_rec_1pi->Fill(E_rec_new,1/Mott_cross_sec);
 	   if(ec_num_n==1) h2_phot_e_angle_Erec->Fill(E_rec_new,V3_pi.Angle(V4_el.Vect())*TMath::RadToDeg());
@@ -2755,15 +2761,15 @@ if (ec_num_n==0 && num_pi_phot==2) {
   pi2_radstat[0]=ec_radstat_n[0];
   pi2_radstat[1]=ec_radstat_n[1];
 
-  pi2_rot_func(V3_2pi, pi2_q,pi2_radstat, V3_q,&P_0pi,P_1pi);
+  pi2_rot_func(fbeam_en, V3_2pi, pi2_q,pi2_radstat, V3_q,&P_0pi,P_1pi);
  //----------------------------- e- ,2pi->0pi (-) -----------------------------------------
  h1_E_rec_2pi_weight->Fill(E_rec_new,(-P_0pi)*1/Mott_cross_sec);
- h1_E_rec_2pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],(-P_0pi)*1/Mott_cross_sec);
+ h1_E_rec_2pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi)*1/Mott_cross_sec);
 h1_E_rec_20pi->Fill(E_rec_new,(P_0pi)*1/Mott_cross_sec);
 //----------------------------- e- ,2pi->1pi->0pi (+)  -----------------------------------------
  for(int k=0;k<N_2pi;k++){
  h1_E_rec_2pi_weight->Fill(E_rec_new,P_1pi[k]*1/Mott_cross_sec);
- h1_E_rec_2pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],P_1pi[k]*1/Mott_cross_sec);
+ h1_E_rec_2pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1pi[k]*1/Mott_cross_sec);
 h1_E_rec_21pi->Fill(E_rec_new,(P_1pi[k])*1/Mott_cross_sec);
  }
 }
@@ -2783,30 +2789,30 @@ if (ec_num_n==0 && num_pi_phot==3) {
     q_pi3[h]=q[ind_pi_phot[h]];
     radstat_pi3[h]=ec_radstat_n[h];
   }
-  pi3_rot_func(V3_3pi, q_pi3,radstat_pi3,V3_q,&P_0pion, P_1pion, P_320pi,P_3210pi);
+  pi3_rot_func(fbeam_en, V3_3pi, q_pi3,radstat_pi3,V3_q,&P_0pion, P_1pion, P_320pi,P_3210pi);
 
 
  //---------------------------3pi->0pi----------------------------------------------
     h1_E_rec_3pi_weight->Fill(E_rec_new,(-P_0pion)*1/Mott_cross_sec);
-    h1_E_rec_3pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],(-P_0pion)*1/Mott_cross_sec);
+    h1_E_rec_3pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pion)*1/Mott_cross_sec);
 h1_E_rec_30pi->Fill(E_rec_new,(P_0pion)*1/Mott_cross_sec);
 
  //---------------------------3pi->1pi->0pi----------------------------------------------
     for(int h=0;h<N_3pi;h++){
 
   h1_E_rec_3pi_weight->Fill(E_rec_new,P_1pion[h]*1/Mott_cross_sec);
-    h1_E_rec_3pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],P_1pion[h]*1/Mott_cross_sec);
+    h1_E_rec_3pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1pion[h]*1/Mott_cross_sec);
 h1_E_rec_310pi->Fill(E_rec_new,(P_1pion[h])*1/Mott_cross_sec);
 
  //---------------------------3pi->2pi->0pi----------------------------------------------
     h1_E_rec_3pi_weight->Fill(E_rec_new,P_320pi[h]*1/Mott_cross_sec);
-    h1_E_rec_3pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],P_320pi[h]*1/Mott_cross_sec);
+    h1_E_rec_3pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_320pi[h]*1/Mott_cross_sec);
     h1_E_rec_320pi->Fill(E_rec_new,(P_320pi[h])*1/Mott_cross_sec);
 
 //---------------------------3pi->2pi->1pi->0pi----------------------------------------------
     for(int g=0;g<N_2pi;g++){
     h1_E_rec_3pi_weight->Fill(E_rec_new,(-P_3210pi[h][g])*1/Mott_cross_sec);
-    h1_E_rec_3pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],(-P_3210pi[h][g])*1/Mott_cross_sec);
+    h1_E_rec_3pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_3210pi[h][g])*1/Mott_cross_sec);
     h1_E_rec_3210pi->Fill(E_rec_new,(P_3210pi[h][g])*1/Mott_cross_sec);
     }
 
@@ -2832,7 +2838,7 @@ TVector3 V3_4pi[N_4pi];
     radstat_pi4[h]=ec_radstat_n[h];
   }
 
-  pi4_rot_func(V3_4pi, q_pi4,radstat_pi4,V3_q,&P_0pion,&P_410pi,&P_420pi,&P_4210pi,&P_430pi,&P_4310pi,&P_4320pi,&P_43210pi);
+  pi4_rot_func(fbeam_en, V3_4pi, q_pi4,radstat_pi4,V3_q,&P_0pion,&P_410pi,&P_420pi,&P_4210pi,&P_430pi,&P_4310pi,&P_4320pi,&P_43210pi);
 
 
 
@@ -2840,7 +2846,7 @@ TVector3 V3_4pi[N_4pi];
  //---------------------------4pi->0pi----------------------------------------------
 
     h1_E_rec_4pi_weight->Fill(E_rec_new,(-P_0pion+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*1/Mott_cross_sec);
-    h1_E_rec_4pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],(-P_0pion+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*1/Mott_cross_sec);
+    h1_E_rec_4pi_weight_frac_feed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pion+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*1/Mott_cross_sec);
 h1_E_rec_40pi->Fill(E_rec_new,(P_0pion)*1/Mott_cross_sec);
 
 //---------------------------4pi->1pi->0pi----------------------------------------------
@@ -2925,7 +2931,7 @@ h1_E_rec_43210pi->Fill(E_rec_new,(P_43210pi)*1/Mott_cross_sec);
       radstat_pi2[1]=ec_radstat_n[1];
 
       double P_1p0pi=0,P_1p1pi[N_2pi]={0};
-      prot1_pi2_rot_func(V3_q,V3_prot_uncorr,V3_2pi,q_pi2,radstat_pi2,&P_1p0pi,P_1p1pi);
+      prot1_pi2_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_2pi,q_pi2,radstat_pi2,&P_1p0pi,P_1p1pi);
 
  //---------------------------------- 1p 2pi->1p1pi   ----------------------------------------------
 
@@ -2935,8 +2941,8 @@ h1_E_rec_43210pi->Fill(E_rec_new,(P_43210pi)*1/Mott_cross_sec);
        Erec_1p2pi->Fill(E_rec_new,P_1p1pi[z]*1/Mott_cross_sec);
        h2_Erec_pperp_1p2pi_1p1pi->Fill(p_perp_tot,E_rec_new,P_1p1pi[z]*1/Mott_cross_sec);
        Etot_bkgd09_1p2pi_1p1pi->Fill(E_tot,P_1p1pi[z]*1/Mott_cross_sec);
-       Etot_1p2pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_E])/en_beam_Ecal[fbeam_E],P_1p1pi[z]*1/Mott_cross_sec);
-       Erec_1p2pi_fracfeed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],P_1p1pi[z]*1/Mott_cross_sec);
+       Etot_1p2pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p1pi[z]*1/Mott_cross_sec);
+       Erec_1p2pi_fracfeed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1p1pi[z]*1/Mott_cross_sec);
        h2_pperp_W->Fill(W_var,p_perp_tot,P_1p1pi[z]*1/Mott_cross_sec);
        h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),P_1p1pi[z]*1/Mott_cross_sec);
        h2_Ecal_Eqe->Fill(E_rec_new,E_tot,P_1p1pi[z]*1/Mott_cross_sec);
@@ -2962,8 +2968,8 @@ h1_E_rec_43210pi->Fill(E_rec_new,(P_43210pi)*1/Mott_cross_sec);
       Erec_1p2pi_1p0pi->Fill(E_rec_new,P_1p0pi*1/Mott_cross_sec);
       h2_Erec_pperp_1p2pi_1p0pi->Fill(p_perp_tot,E_rec_new,P_1p0pi*1/Mott_cross_sec);
       Etot_bkgd09_1p2pi_1p0pi->Fill(E_tot,P_1p0pi*1/Mott_cross_sec);
-      Etot_1p2pi_1p0pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_E])/en_beam_Ecal[fbeam_E],P_1p0pi*1/Mott_cross_sec);
-      Erec_1p2pi_1p0pi_fracfeed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],P_1p0pi*1/Mott_cross_sec);
+      Etot_1p2pi_1p0pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p0pi*1/Mott_cross_sec);
+      Erec_1p2pi_1p0pi_fracfeed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1p0pi*1/Mott_cross_sec);
       h2_pperp_W->Fill(W_var,p_perp_tot,-P_1p0pi*1/Mott_cross_sec);
       h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),-P_1p0pi*1/Mott_cross_sec);
       h2_Ecal_Eqe->Fill(E_rec_new,E_tot,-P_1p0pi*1/Mott_cross_sec);
@@ -3013,13 +3019,13 @@ h1_E_rec_43210pi->Fill(E_rec_new,(P_43210pi)*1/Mott_cross_sec);
 
    double P_1p3pi=0;
 
-   prot1_pi3_rot_func(V3_q,V3_prot_uncorr,V3_3pi,q_pi3,radstat_pi3,&P_1p3pi);
+   prot1_pi3_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_3pi,q_pi3,radstat_pi3,&P_1p3pi);
    Etot_1p3pi->Fill(E_tot,P_1p3pi*1/Mott_cross_sec);
    Erec_1p3pi->Fill(E_rec_new,P_1p3pi*1/Mott_cross_sec);
    h2_Erec_pperp_1p3pi->Fill(p_perp_tot,E_rec_new,P_1p3pi*1/Mott_cross_sec);
    Etot_bkgd09_1p3pi->Fill(E_tot,P_1p3pi*1/Mott_cross_sec);
-   Etot_1p3pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_E])/en_beam_Ecal[fbeam_E],P_1p3pi*1/Mott_cross_sec);
-   Erec_1p3pi_fracfeed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],P_1p3pi*1/Mott_cross_sec);
+   Etot_1p3pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p3pi*1/Mott_cross_sec);
+   Erec_1p3pi_fracfeed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1p3pi*1/Mott_cross_sec);
    h2_pperp_W->Fill(W_var,p_perp_tot,P_1p3pi*1/Mott_cross_sec);
    h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),P_1p3pi*1/Mott_cross_sec);
    h2_Ecal_Eqe->Fill(E_rec_new,E_tot,P_1p3pi*1/Mott_cross_sec);
@@ -3049,7 +3055,7 @@ h1_E_rec_43210pi->Fill(E_rec_new,(P_43210pi)*1/Mott_cross_sec);
 
  if (ec_num_n==0 && num_pi_phot==1) {
    V3_pi_phot.SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);	N_piphot_det=N_piphot_undet=0;
-   prot1_pi1_rot_func(V3_q,V3_prot_uncorr,V3_pi_phot, q[ind_pi_phot[0]],ec_radstat_n[0], &N_piphot_det,&N_piphot_undet);
+   prot1_pi1_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_pi_phot, q[ind_pi_phot[0]],ec_radstat_n[0], &N_piphot_det,&N_piphot_undet);
  }
 
 	 Erec_1prot->Fill(E_rec_new,1/Mott_cross_sec);
@@ -3078,8 +3084,8 @@ h1_E_rec_43210pi->Fill(E_rec_new,(P_43210pi)*1/Mott_cross_sec);
 		   h1_Etot_bkgd_pipl_pimi_fact_pipl[i]->Fill(E_tot,(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
 		   h1_E_tot_undetfactor09->Fill(E_tot,(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
 		   h2_Erec_pperp_1p1pi->Fill(p_perp_tot,E_rec_new,(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-		   h1_E_rec_undetfactor_fracfeed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-		   h1_E_tot_undetfactor_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_E])/en_beam_Ecal[fbeam_E],(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
+		   h1_E_rec_undetfactor_fracfeed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
+		   h1_E_tot_undetfactor_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
 		   h2_pperp_W->Fill(W_var,p_perp_tot,-(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
 		   h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),-(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
 		   h2_Ecal_Eqe->Fill(E_rec_new,E_tot,-(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
@@ -3113,8 +3119,8 @@ h1_E_rec_43210pi->Fill(E_rec_new,(P_43210pi)*1/Mott_cross_sec);
 	     h1_E_rec_cut2_new->Fill(E_rec_new,1/Mott_cross_sec);
 	     h1_E_tot_cut2->Fill(E_tot,1/Mott_cross_sec);
 	     h1_E_tot_cut2_09->Fill(E_tot,1/Mott_cross_sec);
-	     h1_E_tot_cut2_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_E])/en_beam_Ecal[fbeam_E],1/Mott_cross_sec);
-	     h1_E_rec_cut2_new_fracfeed->Fill((E_rec_new-en_beam_Eqe[fbeam_E])/en_beam_Eqe[fbeam_E],1/Mott_cross_sec);
+	     h1_E_tot_cut2_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],1/Mott_cross_sec);
+	     h1_E_rec_cut2_new_fracfeed->Fill((E_rec_new-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],1/Mott_cross_sec);
 	     h2_pperp_W->Fill(W_var,p_perp_tot,1/Mott_cross_sec);
 	     h1_theta0->Fill((V4_beam.Vect()).Angle(V4_prot_el_tot.Vect()) *TMath::RadToDeg(),1/Mott_cross_sec);
 	     h2_Ecal_Eqe->Fill(E_rec_new,E_tot,1/Mott_cross_sec);
@@ -3850,18 +3856,18 @@ Bool_t CutUVW(TVector3 ecxyz)
 
 
 
-void SetFiducialCutParameters(){
+void SetFiducialCutParameters(std::string beam_en){
 // reads from a file the parameters of the fiducial cut functions
 // Please refer to <A HREF="http://einstein.unh.edu/protopop/FiducialCuts/fc4E2.html">Fiducial Cuts</A> -- D.Protopopescu(UNH)
+  std::string fbeam_en = beam_en;
 
 
-
- if(en_beam[fbeam_E]>4. && en_beam[fbeam_E]<5.){    //
+ if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.){    //
    // reads FC parameters for 4.4GeV , e- and p fiducial cut parameters at 4GeV
    //
 
-  std::ifstream param_file2(Form("./PFID_%s_%d.dat",fbeam_E.c_str(),fTorusCurrent));//reading the proton fiducial cut parameters at 4GeV
-  std::ifstream param_file(Form("./FCP_%s_%d.dat",fbeam_E.c_str(),fTorusCurrent));
+  std::ifstream param_file2(Form("/FiducialsCorrections/PFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));//reading the proton fiducial cut parameters at 4GeV
+  std::ifstream param_file(Form("/FiducialsCorrections/FCP_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
 
 
    //	std::ifstream param_file("./FCP_4461_2250.dat");
@@ -3898,7 +3904,7 @@ void SetFiducialCutParameters(){
 	   break;
 	 }
      } // Done reading in Fiducial Region Parameters
-
+  throw "4.4GeV reading";
 // ---
  for(int i = 0 ; i < 4 ; i++){
    for(int j = 0 ; j < 8 ; j++){
@@ -4002,12 +4008,12 @@ for(int i = 0 ; i < 8 ; i++){
 
 
 
- else if(en_beam[fbeam_E]>1. && en_beam[fbeam_E]<2.){
+ else if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.){
 
-  std::ifstream param_file2(Form("./PFID_%s_%d.dat",fbeam_E.c_str(),fTorusCurrent));//reading the proton fiducial cut parameters at 4GeV
-  std::ifstream param_file(Form("./FCP_%s_%d.dat",fbeam_E.c_str(),fTorusCurrent));
-  std::ifstream param_file3(Form("./PIPFID_%s_%d.dat",fbeam_E.c_str(),fTorusCurrent));
-  std::ifstream param_file4(Form("./PIMFID_%s_%d.dat",fbeam_E.c_str(),fTorusCurrent));
+  std::ifstream param_file2(Form("./PFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));//reading the proton fiducial cut parameters at 4GeV
+  std::ifstream param_file(Form("./FCP_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
+  std::ifstream param_file3(Form("./PIPFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
+  std::ifstream param_file4(Form("./PIMFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
   //
    // reads FC parameters for 1.1GeV , e- fiducial cut parameters at 1GeV
    //
@@ -4348,7 +4354,7 @@ for(int i = 0 ; i < 8 ; i++){
 
 
  }
-else printf("There are no fiducial cut parameters to be read at %3.1f GeV!\n", en_beam[fbeam_E]);
+else printf("There are no fiducial cut parameters to be read at %3.1f GeV!\n", en_beam[fbeam_en]);
  //	param_file2.close();
 
 
@@ -4357,7 +4363,7 @@ else printf("There are no fiducial cut parameters to be read at %3.1f GeV!\n", e
 
 
 
-Bool_t GetEPhiLimits(Float_t momentum, Float_t theta, Int_t sector,Float_t *EPhiMin, Float_t *EPhiMax){
+Bool_t GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t sector,Float_t *EPhiMin, Float_t *EPhiMax){
 //Begin_Html
 /*</pre>
  Information for electron fiducial cut,
@@ -4376,9 +4382,10 @@ Bool_t GetEPhiLimits(Float_t momentum, Float_t theta, Int_t sector,Float_t *EPhi
 <pre>
 */
 //End_Html
+  std::string fbeam_en = beam_en;
   if (sector < 0 || sector > 5) return kFALSE;    // bad input
 
-  if(en_beam[fbeam_E]>4. && en_beam[fbeam_E]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){// 4.4GeV fiducial cuts by protopop@jlab.org
+  if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){// 4.4GeV fiducial cuts by protopop@jlab.org
     if ((theta < 15.) || (momentum < 0.9)) return kFALSE;         // out of range
     Float_t t0, t1, b[2], a[2];
 
@@ -4429,14 +4436,14 @@ Bool_t GetEPhiLimits(Float_t momentum, Float_t theta, Int_t sector,Float_t *EPhi
 
 
 
-Bool_t EFiducialCut(TVector3 momentum)
+Bool_t EFiducialCut(std::string beam_en, TVector3 momentum)
 {
 
 // Electron fiducial cut, return kTRUE if pass or kFALSE if not
   Bool_t status = kTRUE;
+  std::string fbeam_en = beam_en;
 
-
- if(en_beam[fbeam_E]>1. &&  en_beam[fbeam_E]<2. && fTorusCurrent>740 && fTorusCurrent<1510) {
+ if(en_beam[fbeam_en]>1. &&  en_beam[fbeam_en]<2. && fTorusCurrent>740 && fTorusCurrent<1510) {
 
   Float_t phiMin, phiMax;
   Float_t mom = momentum.Mag();
@@ -4578,7 +4585,7 @@ Bool_t EFiducialCut(TVector3 momentum)
 
 
 
-  if ( en_beam[fbeam_E]>2. &&  en_beam[fbeam_E]<3. && fTorusCurrent>2240 && fTorusCurrent<2260){
+  if ( en_beam[fbeam_en]>2. &&  en_beam[fbeam_en]<3. && fTorusCurrent>2240 && fTorusCurrent<2260){
     Float_t phi=momentum.Phi()*180./TMath::Pi();
     if(phi<-30.) phi+=360.;
     Int_t sector = (Int_t)((phi+30.)/60.);
@@ -4645,7 +4652,7 @@ Bool_t EFiducialCut(TVector3 momentum)
   }
 
 
-  if ( en_beam[fbeam_E]>4. &&  en_beam[fbeam_E]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){
+  if ( en_beam[fbeam_en]>4. &&  en_beam[fbeam_en]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){
 
 
 //Begin_Html
@@ -4672,7 +4679,7 @@ Bool_t EFiducialCut(TVector3 momentum)
   if(sector > 5) sector = 5; // to match array index
   // all the work is now done in GetEPhiLimits
 
-  status = GetEPhiLimits(mom, theta, sector, &phiMin, &phiMax);
+  status = GetEPhiLimits(fbeam_en,mom, theta, sector, &phiMin, &phiMax);
 
   if (status) {
     status = status && (phi > phiMin) && (phi < phiMax);
@@ -4833,15 +4840,15 @@ Float_t ProtonMomCorrection_He3_4Cell(std::string atarget, TLorentzVector V4Pr, 
 
 
 
-Bool_t PFiducialCut(TVector3 momentum){
+Bool_t PFiducialCut(std::string beam_en, TVector3 momentum){
   //Positive Hadron Fiducial Cut
   //Please refer to <A HREF="http://www.jlab.org/Hall-B/secure/e2/bzh/pfiducialcut.html">Electron Fiducial Cuts</A> -- Bin Zhang (MIT).
 
    Bool_t status = kTRUE;
+   std::string fbeam_en = beam_en;
 
 
-
-  if(en_beam[fbeam_E]>1. && en_beam[fbeam_E]<2.){
+  if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.){
 
 	Float_t theta = momentum.Theta()*180/M_PI;
 	Float_t phi   = momentum.Phi()  *180/M_PI;
@@ -5025,7 +5032,7 @@ if ( fTorusCurrent < 1510 && fTorusCurrent > 1490){
 
 
 
-  if (en_beam[fbeam_E]>2. && en_beam[fbeam_E]<3. && fTorusCurrent>2240 && fTorusCurrent<2260){
+  if (en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3. && fTorusCurrent>2240 && fTorusCurrent<2260){
     Float_t phi=momentum.Phi()*180/TMath::Pi(); if(phi<-30) phi+=360;
     Int_t sector = (phi+30)/60; if(sector<0)sector=0; if(sector>5) sector=5;
     phi -= sector*60;
@@ -5117,7 +5124,7 @@ if ( fTorusCurrent < 1510 && fTorusCurrent > 1490){
 
 
 
-  if (en_beam[fbeam_E]>4. && en_beam[fbeam_E]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){//4 GeV Fiducial Cut Rustam Niyazov
+  if (en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){//4 GeV Fiducial Cut Rustam Niyazov
 
     Float_t phi=momentum.Phi()*180/TMath::Pi(); if(phi<-30) phi+=360;
     Int_t sector = Int_t ((phi+30)/60); if(sector<0)sector=0; if(sector>5) sector=5;
@@ -5368,13 +5375,13 @@ bool SCpdcut = true;
 
 
 
-Bool_t PiplFiducialCut(TVector3 momentum, Float_t *philow, Float_t *phiup){
+Bool_t PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t *philow, Float_t *phiup){
   //Positive Hadron Fiducial Cut
   //Please refer to <A HREF="http://www.jlab.org/Hall-B/secure/e2/bzh/pfiducialcut.html">Electron Fiducial Cuts</A> -- Bin Zhang (MIT).
-
+  std::string fbeam_en = beam_en;
   Bool_t status = kTRUE;
 
- if(en_beam[fbeam_E]>1. && en_beam[fbeam_E]<2.){
+ if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.){
 
 	Float_t theta = momentum.Theta()*180/M_PI;
 	Float_t phi   = momentum.Phi()  *180/M_PI;
@@ -5556,7 +5563,7 @@ if (fTorusCurrent < 1510 && fTorusCurrent > 1490){
 
 
 
-  if (en_beam[fbeam_E]>2. && en_beam[fbeam_E]<3. && fTorusCurrent>2240 && fTorusCurrent<2260){
+  if (en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3. && fTorusCurrent>2240 && fTorusCurrent<2260){
 
     Float_t phi=momentum.Phi()*180/TMath::Pi(); if(phi<-30) phi+=360;
     Int_t sector = (phi+30)/60; if(sector<0)sector=0; if(sector>5) sector=5;
@@ -5658,7 +5665,7 @@ if (fTorusCurrent < 1510 && fTorusCurrent > 1490){
   }
 
 
-  if (en_beam[fbeam_E]>4. && en_beam[fbeam_E]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){//4 GeV Fiducial Cut Rustam Niyazov
+  if (en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){//4 GeV Fiducial Cut Rustam Niyazov
 
    Float_t phi=momentum.Phi()*180/TMath::Pi(); if(phi<-30) phi+=360;
     Int_t sector = Int_t ((phi+30)/60); if(sector<0)sector=0; if(sector>5) sector=5;
@@ -5917,16 +5924,17 @@ bool SCpdcut = true;
 
 
 //using two GeV pimi fiducial cuts for both 2 and 4 GeV analysis
-Bool_t PimiFiducialCut(TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup)
-{
+
+Bool_t PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup){
   // Electron fiducial cut, return kTRUE if pass or kFALSE if not
+  std::string fbeam_en = beam_en;
   Bool_t status = kTRUE;
 
- if(en_beam[fbeam_E]>1. &&  en_beam[fbeam_E]<2.) {
+  if(en_beam[fbeam_en]>1. &&  en_beam[fbeam_en]<2.) {
 
 
-   TVector3 mom = momentum;
-double phi = mom.Phi();
+  TVector3 mom = momentum;
+  double phi = mom.Phi();
   if (phi < -M_PI/6.) phi+= 2.*M_PI;
   int sector = (phi+M_PI/6.)/(M_PI/3.);
   sector = sector%6;
@@ -6166,7 +6174,7 @@ double phi = mom.Phi();
  }
 
 
-   if ( en_beam[fbeam_E]>2. &&  en_beam[fbeam_E]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){
+   if ( en_beam[fbeam_en]>2. &&  en_beam[fbeam_en]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){
 
  Float_t phi=momentum.Phi()*180./TMath::Pi();
     if(phi<-30.) phi+=360.;
@@ -6278,14 +6286,15 @@ bool Phot_fid(TVector3 V3_phot){
 
 
 
-bool Pi_phot_fid_united(TVector3 V3_pi_phot, int q_pi_phot){
+bool Pi_phot_fid_united(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot){
 
   bool status=false;
+  std::string fbeam_en = beam_en;
   Float_t pi_cphil=0,pi_cphir=0,pi_phimin=0,pi_phimax=0;
 
   if(q_pi_phot==0) status=Phot_fid(V3_pi_phot);
-  if(q_pi_phot>0) status=PiplFiducialCut(V3_pi_phot, &pi_cphil, &pi_cphir);
-  if(q_pi_phot<0) status=PimiFiducialCut(V3_pi_phot, &pi_phimin, &pi_phimax);
+  if(q_pi_phot>0) status=PiplFiducialCut(fbeam_en, V3_pi_phot, &pi_cphil, &pi_cphir);
+  if(q_pi_phot<0) status=PimiFiducialCut(fbeam_en, V3_pi_phot, &pi_phimin, &pi_phimax);
   return status;
 
 
@@ -6296,9 +6305,9 @@ bool Pi_phot_fid_united(TVector3 V3_pi_phot, int q_pi_phot){
 
 
 
-void  prot_rot_func_3p(TVector3 V3q, TVector3  V3prot[3],TVector3  V3prot_uncorr[3],TLorentzVector V4el,double Ecal_3pto2p[][2],double  pmiss_perp_3pto2p[][2],double  P3pto2p[][2],double N_p1[3],double Ecal_3pto1p[3],double  pmiss_perp_3pto1p[3], double *N_p3det){
+void  prot3_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot[3],TVector3  V3prot_uncorr[3],TLorentzVector V4el,double Ecal_3pto2p[][2],double  pmiss_perp_3pto2p[][2],double  P3pto2p[][2],double N_p1[3],double Ecal_3pto1p[3],double  pmiss_perp_3pto1p[3], double *N_p3det){
 
-
+  std::string fbeam_en = beam_en;
 double m_prot=0.9382720813;
   const int N_3p=3, N_2p=2;
   double N_p2[N_3p]={0},N_p1det[3][N_3p]={0};
@@ -6320,7 +6329,7 @@ double m_prot=0.9382720813;
        }
 
 
-       for(int ind_p=0;ind_p<N_3p;ind_p++) prot_stat[ind_p]=PFiducialCut(V3_3p_rot[ind_p]);
+       for(int ind_p=0;ind_p<N_3p;ind_p++) prot_stat[ind_p]=PFiducialCut(fbeam_en, V3_3p_rot[ind_p]);
 
        if( prot_stat[0]  && !prot_stat[1]  && !prot_stat[2])  N_p1[0]=N_p1[0]+1;
        if(!prot_stat[0] &&   prot_stat[1]  && !prot_stat[2])  N_p1[1]=N_p1[1]+1;
@@ -6357,9 +6366,9 @@ double m_prot=0.9382720813;
 	       V3_2p_rot[ind1].Rotate(rot_angle,V3q);
 	       V3_2p_rot[ind2].Rotate(rot_angle,V3q);
 
-	       if(PFiducialCut(V3_2p_rot[ind1])  && !PFiducialCut(V3_2p_rot[ind2])) N_p1det[count][0]=N_p1det[count][0]+1;
-	       if(!PFiducialCut(V3_2p_rot[ind1]) && PFiducialCut(V3_2p_rot[ind2]))  N_p1det[count][1]=N_p1det[count][1]+1;
-	       if(PFiducialCut(V3_2p_rot[ind1])  && PFiducialCut(V3_2p_rot[ind2]))  N_p1det[count][2]=N_p1det[count][2]+1;
+	       if(PFiducialCut(fbeam_en, V3_2p_rot[ind1])  && !PFiducialCut(fbeam_en, V3_2p_rot[ind2])) N_p1det[count][0]=N_p1det[count][0]+1;
+	       if(!PFiducialCut(fbeam_en, V3_2p_rot[ind1]) && PFiducialCut(fbeam_en, V3_2p_rot[ind2]))  N_p1det[count][1]=N_p1det[count][1]+1;
+	       if(PFiducialCut(fbeam_en, V3_2p_rot[ind1])  && PFiducialCut(fbeam_en, V3_2p_rot[ind2]))  N_p1det[count][2]=N_p1det[count][2]+1;
 	     }
 
 
@@ -6391,9 +6400,9 @@ double m_prot=0.9382720813;
 
 
 
-void  prot_rot_func_2p(TVector3 V3q, TVector3  V3prot[2],TVector3  V3prot_uncorr[2],TLorentzVector V4el,double Ecal_2pto1p[2],double  pmiss_perp_2pto1p[2],double  P2pto1p[2], double *Nboth){
+void  prot2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot[2],TVector3  V3prot_uncorr[2],TLorentzVector V4el,double Ecal_2pto1p[2],double  pmiss_perp_2pto1p[2],double  P2pto1p[2], double *Nboth){
 
-
+  std::string fbeam_en = beam_en;
   const int N2=2;
   double rot_angle, N_p2to1[N2]={0},m_prot=0.9382720813;
   TVector3 V3_2prot[N2], V3_prot_el_2pto1p[N2];
@@ -6412,9 +6421,9 @@ void  prot_rot_func_2p(TVector3 V3q, TVector3  V3prot[2],TVector3  V3prot_uncorr
     V3_2prot[1].Rotate(rot_angle,V3q);
 
 
-    if(PFiducialCut(V3_2prot[0])  && !PFiducialCut(V3_2prot[1])) N_p2to1[0]=N_p2to1[0]+1;
-    if(!PFiducialCut(V3_2prot[0]) && PFiducialCut(V3_2prot[1]))  N_p2to1[1]=N_p2to1[1]+1;
-    if(PFiducialCut(V3_2prot[0])  && PFiducialCut(V3_2prot[1]))  N_2=N_2+1;
+    if(PFiducialCut(fbeam_en, V3_2prot[0])  && !PFiducialCut(fbeam_en, V3_2prot[1])) N_p2to1[0]=N_p2to1[0]+1;
+    if(!PFiducialCut(fbeam_en, V3_2prot[0]) && PFiducialCut(fbeam_en, V3_2prot[1]))  N_p2to1[1]=N_p2to1[1]+1;
+    if(PFiducialCut(fbeam_en, V3_2prot[0])  && PFiducialCut(fbeam_en, V3_2prot[1]))  N_2=N_2+1;
   }
 
    //-----------------------------------------  2p to 1p  -----------------------------------------------------------------------
@@ -6444,9 +6453,9 @@ void  prot_rot_func_2p(TVector3 V3q, TVector3  V3prot[2],TVector3  V3prot_uncorr
 
 
 
-void prot1_pi1_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi, int q_pi,bool radstat, double *N_pi_p,double *N_nopi_p){
+void prot1_pi1_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi, int q_pi,bool radstat, double *N_pi_p,double *N_nopi_p){
 
-
+  std::string fbeam_en = beam_en;
   double rotation_ang;
   TVector3 V3_pi_rot, V3_p_rot;
   Float_t pi_cphil=0,pi_cphir=0,pi_phimin=0,pi_phimax=0;
@@ -6464,11 +6473,11 @@ void prot1_pi1_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi, int q_pi,b
        if(!radstat){
        V3_pi_rot=V3pi;
        V3_pi_rot.Rotate(rotation_ang,V3q);
-       pi_stat=Pi_phot_fid_united(V3_pi_rot,q_pi);
+       pi_stat=Pi_phot_fid_united(fbeam_en, V3_pi_rot,q_pi);
 }
 
-       if(PFiducialCut(V3_p_rot)  && pi_stat) Npi_p=Npi_p+1;
-       if(PFiducialCut(V3_p_rot)  && !pi_stat) Nnopi_p=Nnopi_p+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && pi_stat) Npi_p=Npi_p+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && !pi_stat) Nnopi_p=Nnopi_p+1;
 
      }
      *N_pi_p=Npi_p;
@@ -6480,8 +6489,9 @@ void prot1_pi1_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi, int q_pi,b
 
 
 
-void prot1_pi2_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi[2], int q_pi[2],bool radstat[2], double *P_1p0pi,double P_1p1pi[2]){
+void prot1_pi2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi[2], int q_pi[2],bool radstat[2], double *P_1p0pi,double P_1p1pi[2]){
 
+  std::string fbeam_en = beam_en;
   const int N_pi=2;
   double rotation_ang;
   TVector3 V3_rot_pi[2], V3_p_rot;
@@ -6501,14 +6511,14 @@ void prot1_pi2_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi[2], int q_p
 	 if(!radstat[i]){
 	 V3_rot_pi[i]=V3pi[i];
 	 V3_rot_pi[i].Rotate(rotation_ang,V3q);
-	 status_pi[i]=Pi_phot_fid_united(V3_rot_pi[i],q_pi[i]);
+	 status_pi[i]=Pi_phot_fid_united(fbeam_en, V3_rot_pi[i],q_pi[i]);
 	 }
        }
 
-       if(PFiducialCut(V3_p_rot)  && status_pi[0]  && !status_pi[1] ) N_1p1pi[0]=N_1p1pi[0]+1;
-       if(PFiducialCut(V3_p_rot)  && !status_pi[0]  && status_pi[1] ) N_1p1pi[1]=N_1p1pi[1]+1;
-       if(PFiducialCut(V3_p_rot)  && status_pi[0]  && status_pi[1] ) N_all=N_all+1;
-       if(PFiducialCut(V3_p_rot)  && !status_pi[0]  && !status_pi[1]) Nnopi=Nnopi+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && status_pi[0]  && !status_pi[1] ) N_1p1pi[0]=N_1p1pi[0]+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && !status_pi[0]  && status_pi[1] ) N_1p1pi[1]=N_1p1pi[1]+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && status_pi[0]  && status_pi[1] ) N_all=N_all+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && !status_pi[0]  && !status_pi[1]) Nnopi=Nnopi+1;
 
      }
 
@@ -6522,7 +6532,7 @@ void prot1_pi2_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi[2], int q_p
 
        for(int h=0;h<N_pi;h++){
 
-	 prot1_pi1_rot_func(V3q,V3prot,V3pi[h],q_pi[h],radstat[h],&N_pi_p,&N_nopi_p);
+	 prot1_pi1_rot_func(fbeam_en, V3q,V3prot,V3pi[h],q_pi[h],radstat[h],&N_pi_p,&N_nopi_p);
 	 if(N_pi_p!=0) P_1p1pi[h]=(N_1p1pi[h]/N_all)*(N_nopi_p/N_pi_p);
 	 else  P_1p1pi[h]=0;
        }
@@ -6538,8 +6548,9 @@ void prot1_pi2_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi[2], int q_p
 
 
 
-void prot1_pi3_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi[3], int q_pi[3],bool radstat[3],double *P_tot){
+void prot1_pi3_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi[3], int q_pi[3],bool radstat[3],double *P_tot){
 
+  std::string fbeam_en = beam_en;
   *P_tot=0;
   const int N_pi=3;
   double rotation_ang;
@@ -6559,18 +6570,18 @@ void prot1_pi3_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi[3], int q_p
 	 if(!radstat[i]){
 	 V3_rot_pi[i]=V3pi[i];
 	 V3_rot_pi[i].Rotate(rotation_ang,V3q);
-	 status_pi[i]=Pi_phot_fid_united(V3_rot_pi[i],q_pi[i]);
+	 status_pi[i]=Pi_phot_fid_united(fbeam_en, V3_rot_pi[i],q_pi[i]);
 	 }
        }
 
-       if(PFiducialCut(V3_p_rot)  && status_pi[0]  && !status_pi[1] && !status_pi[2]) N_1p1pi[0]=N_1p1pi[0]+1;
-       if(PFiducialCut(V3_p_rot)  && !status_pi[0]  && status_pi[1] && !status_pi[2]) N_1p1pi[1]=N_1p1pi[1]+1;
-       if(PFiducialCut(V3_p_rot)  && !status_pi[0]  && !status_pi[1] && status_pi[2]) N_1p1pi[2]=N_1p1pi[2]+1;
-       if(PFiducialCut(V3_p_rot)  && status_pi[0]  && status_pi[1] && !status_pi[2]) N_1p2pi[0]=N_1p2pi[0]+1;
-       if(PFiducialCut(V3_p_rot)  && status_pi[0]  && !status_pi[1] && status_pi[2]) N_1p2pi[1]=N_1p2pi[1]+1;
-       if(PFiducialCut(V3_p_rot)  && !status_pi[0]  && status_pi[1] && status_pi[2]) N_1p2pi[2]=N_1p2pi[2]+1;
-       if(PFiducialCut(V3_p_rot)  && status_pi[0]  && status_pi[1] && status_pi[2])  N_all=N_all+1;
-       if(PFiducialCut(V3_p_rot)  && !status_pi[0]  && !status_pi[1] && !status_pi[2])Nnopi=Nnopi+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && status_pi[0]  && !status_pi[1] && !status_pi[2]) N_1p1pi[0]=N_1p1pi[0]+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && !status_pi[0]  && status_pi[1] && !status_pi[2]) N_1p1pi[1]=N_1p1pi[1]+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && !status_pi[0]  && !status_pi[1] && status_pi[2]) N_1p1pi[2]=N_1p1pi[2]+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && status_pi[0]  && status_pi[1] && !status_pi[2]) N_1p2pi[0]=N_1p2pi[0]+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && status_pi[0]  && !status_pi[1] && status_pi[2]) N_1p2pi[1]=N_1p2pi[1]+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && !status_pi[0]  && status_pi[1] && status_pi[2]) N_1p2pi[2]=N_1p2pi[2]+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && status_pi[0]  && status_pi[1] && status_pi[2])  N_all=N_all+1;
+       if(PFiducialCut(fbeam_en, V3_p_rot)  && !status_pi[0]  && !status_pi[1] && !status_pi[2])Nnopi=Nnopi+1;
      }
 
      if(N_all!=0){
@@ -6589,7 +6600,7 @@ void prot1_pi3_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi[3], int q_p
 
      for(int h=0;h<N_pi;h++){
 
-       prot1_pi1_rot_func(V3q,V3prot,V3pi[h],q_pi[h],radstat[h],&N_pi_p,&N_nopi_p);
+       prot1_pi1_rot_func(fbeam_en, V3q,V3prot,V3pi[h],q_pi[h],radstat[h],&N_pi_p,&N_nopi_p);
 	 if(N_pi_p!=0) P_1p1pi=P_1p1pi+(N_1p1pi[h]/N_all)*(N_nopi_p/N_pi_p);
 
   //----------------------1p3pi->1p2pi->1p0pi
@@ -6611,7 +6622,7 @@ void prot1_pi3_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi[3], int q_p
 	   rad_stat[0]=  radstat[1]; rad_stat[1]=radstat[2];
 	 }
  //----------------------1p3pi->1p2pi->1p1pi->1p0pi
-	 prot1_pi2_rot_func(V3q,V3prot,V3_pion, q_pion,rad_stat,&P_1p0pion,P_1p1pion);
+	 prot1_pi2_rot_func(fbeam_en, V3q,V3prot,V3_pion, q_pion,rad_stat,&P_1p0pion,P_1p1pion);
 	 P_1p2pi=P_1p2pi+(N_1p2pi[h]/N_all)*(P_1p0pion-P_1p1pion[0]-P_1p1pion[1]);
 
      }//for loop ends
@@ -6628,9 +6639,9 @@ void prot1_pi3_rot_func(TVector3 V3q, TVector3  V3prot,TVector3 V3pi[3], int q_p
 
 
 
-void prot2_pi1_rot_func(TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_1pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_2p1pi_to2p0pi[2],double p_miss_perp_2p1pi_to2p0pi[2],double P_2p1pito2p0pi[2],double P_2p1pito1p1pi[2],double P_2p1pito1p0pi[2],double *P_tot){
+void prot2_pi1_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_1pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_2p1pi_to2p0pi[2],double p_miss_perp_2p1pi_to2p0pi[2],double P_2p1pito2p0pi[2],double P_2p1pito1p1pi[2],double P_2p1pito1p0pi[2],double *P_tot){
 
-
+  std::string fbeam_en = beam_en;
   const int N_2prot=2;
   TVector3 V3_2p_rotated[N_2prot],V3_1pirot;
   bool pi1_stat=true;
@@ -6653,21 +6664,21 @@ void prot2_pi1_rot_func(TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2pro
      if(!radstat){
        V3_1pirot=V3_1pi;
        V3_1pirot.Rotate(rot_angle,V3_q);
-       pi1_stat=Pi_phot_fid_united(V3_1pirot, q_pi);
+       pi1_stat=Pi_phot_fid_united(fbeam_en, V3_1pirot, q_pi);
      }
 
-     if(PFiducialCut(V3_2p_rotated[0]) && PFiducialCut(V3_2p_rotated[1]) && !pi1_stat) N_2p_0pi=N_2p_0pi+1;
-     if(PFiducialCut(V3_2p_rotated[0]) && !PFiducialCut(V3_2p_rotated[1]) && pi1_stat) N_1p_1pi[0]=N_1p_1pi[0]+1;
-     if(!PFiducialCut(V3_2p_rotated[0]) && PFiducialCut(V3_2p_rotated[1]) && pi1_stat) N_1p_1pi[1]=N_1p_1pi[1]+1;
-     if(PFiducialCut(V3_2p_rotated[0]) && !PFiducialCut(V3_2p_rotated[1]) && !pi1_stat) N_1p_0pi[0]=N_1p_0pi[0]+1;
-     if(!PFiducialCut(V3_2p_rotated[0]) && PFiducialCut(V3_2p_rotated[1]) && !pi1_stat) N_1p_0pi[1]=N_1p_0pi[1]+1;
-     if(PFiducialCut(V3_2p_rotated[0]) && PFiducialCut(V3_2p_rotated[1]) && pi1_stat) N_all=N_all+1;
+     if(PFiducialCut(fbeam_en, V3_2p_rotated[0]) && PFiducialCut(fbeam_en, V3_2p_rotated[1]) && !pi1_stat) N_2p_0pi=N_2p_0pi+1;
+     if(PFiducialCut(fbeam_en, V3_2p_rotated[0]) && !PFiducialCut(fbeam_en, V3_2p_rotated[1]) && pi1_stat) N_1p_1pi[0]=N_1p_1pi[0]+1;
+     if(!PFiducialCut(fbeam_en, V3_2p_rotated[0]) && PFiducialCut(fbeam_en, V3_2p_rotated[1]) && pi1_stat) N_1p_1pi[1]=N_1p_1pi[1]+1;
+     if(PFiducialCut(fbeam_en, V3_2p_rotated[0]) && !PFiducialCut(fbeam_en, V3_2p_rotated[1]) && !pi1_stat) N_1p_0pi[0]=N_1p_0pi[0]+1;
+     if(!PFiducialCut(fbeam_en, V3_2p_rotated[0]) && PFiducialCut(fbeam_en, V3_2p_rotated[1]) && !pi1_stat) N_1p_0pi[1]=N_1p_0pi[1]+1;
+     if(PFiducialCut(fbeam_en, V3_2p_rotated[0]) && PFiducialCut(fbeam_en, V3_2p_rotated[1]) && pi1_stat) N_all=N_all+1;
    }
 
  //---------------------------------- 2p 1pi ->2p 0pi   ----------------------------------------------
   if(N_all!=0){
 
-  prot_rot_func_2p(V3_q, V3_2prot_corr,V3_2prot_uncorr, V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,P_2pto1p ,&N_2p_det);
+  prot2_rot_func(fbeam_en, V3_q, V3_2prot_corr,V3_2prot_uncorr, V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,P_2pto1p ,&N_2p_det);
 
     for(int z=0;z<N_2prot;z++){
 
@@ -6675,7 +6686,7 @@ void prot2_pi1_rot_func(TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2pro
 
       //---------------------------------- 2p 1pi ->1p 1pi   ----------------------------------------------
 
-	prot1_pi1_rot_func(V3_q,V3_2prot_uncorr[z],V3_1pi, q_pi,radstat, &N_pidet,&N_piundet);
+	prot1_pi1_rot_func(fbeam_en, V3_q,V3_2prot_uncorr[z],V3_1pi, q_pi,radstat, &N_pidet,&N_piundet);
       if(N_pidet!=0) P_2p1pito1p1pi[z]=(N_1p_1pi[z]/N_all)*(N_piundet/N_pidet);
       else P_2p1pito1p1pi[z]=0;
 
@@ -6697,9 +6708,9 @@ if(N_all==0){
 }
 
 
-void prot2_pi2_rot_func(TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_2pi[2], int q_pi[2],bool radstat[2],TLorentzVector V4_el, double Ecal_2p2pi[2],double p_miss_perp_2p2pi[2],double P_tot_2p[2]){
+void prot2_pi2_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_2pi[2], int q_pi[2],bool radstat[2],TLorentzVector V4_el, double Ecal_2p2pi[2],double p_miss_perp_2p2pi[2],double P_tot_2p[2]){
 
-
+  std::string fbeam_en = beam_en;
   const int N_2prot=2,N_2pi=2;
   TVector3 V3_2p_rotated[N_2prot],V3_2pirot[N_2pi];
   bool pi2_stat[N_2pi]={true};
@@ -6724,28 +6735,28 @@ void prot2_pi2_rot_func(TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2pro
        if(!radstat[k]){
 	 V3_2pirot[k]=V3_2pi[k];
 	 V3_2pirot[k].Rotate(rot_angle,V3_q);
-	 pi2_stat[k]=Pi_phot_fid_united(V3_2pirot[k], q_pi[k]);
+	 pi2_stat[k]=Pi_phot_fid_united(fbeam_en, V3_2pirot[k], q_pi[k]);
        }
      }
 
-     if(PFiducialCut(V3_2p_rotated[0]) && PFiducialCut(V3_2p_rotated[1]) && pi2_stat[0]  && !pi2_stat[1])  N_2p_1pi[0]=N_2p_1pi[0]+1;
-     if(PFiducialCut(V3_2p_rotated[0]) && PFiducialCut(V3_2p_rotated[1]) && !pi2_stat[0]  && pi2_stat[1])  N_2p_1pi[1]=N_2p_1pi[1]+1;
-     if(PFiducialCut(V3_2p_rotated[0]) && PFiducialCut(V3_2p_rotated[1]) && !pi2_stat[0]  && !pi2_stat[1]) N_2p_0pi=N_2p_0pi+1;
-     if(PFiducialCut(V3_2p_rotated[0]) && !PFiducialCut(V3_2p_rotated[1]) && pi2_stat[0]  && pi2_stat[1])  N_1p_2pi[0]=N_1p_2pi[0]+1;
-     if(!PFiducialCut(V3_2p_rotated[0]) && PFiducialCut(V3_2p_rotated[1]) && pi2_stat[0]  && pi2_stat[1])  N_1p_2pi[1]=N_1p_2pi[1]+1;
-     if(PFiducialCut(V3_2p_rotated[0]) && !PFiducialCut(V3_2p_rotated[1]) && pi2_stat[0]  && !pi2_stat[1])  N_1p_1pi[0][0]=N_1p_1pi[0][0]+1;
-     if(PFiducialCut(V3_2p_rotated[0]) && !PFiducialCut(V3_2p_rotated[1]) && !pi2_stat[0]  && pi2_stat[1])  N_1p_1pi[0][1]=N_1p_1pi[0][1]+1;
-     if(!PFiducialCut(V3_2p_rotated[0]) && PFiducialCut(V3_2p_rotated[1]) && pi2_stat[0]  && !pi2_stat[1])  N_1p_1pi[1][0]=N_1p_1pi[1][0]+1;
-     if(!PFiducialCut(V3_2p_rotated[0]) && PFiducialCut(V3_2p_rotated[1]) && !pi2_stat[0]  && pi2_stat[1])  N_1p_1pi[1][1]=N_1p_1pi[1][1]+1;
-     if(PFiducialCut(V3_2p_rotated[0]) && !PFiducialCut(V3_2p_rotated[1]) && !pi2_stat[0]  && !pi2_stat[1])  N_1p_0pi[0]=N_1p_0pi[0]+1;
-     if(!PFiducialCut(V3_2p_rotated[0]) && PFiducialCut(V3_2p_rotated[1]) && !pi2_stat[0]  && !pi2_stat[1])  N_1p_0pi[1]=N_1p_0pi[1]+1;
-     if(PFiducialCut(V3_2p_rotated[0]) && PFiducialCut(V3_2p_rotated[1]) && pi2_stat[0]  && pi2_stat[1])  N_all=N_all+1;
+     if(PFiducialCut(fbeam_en, V3_2p_rotated[0]) && PFiducialCut(fbeam_en, V3_2p_rotated[1]) && pi2_stat[0]  && !pi2_stat[1])  N_2p_1pi[0]=N_2p_1pi[0]+1;
+     if(PFiducialCut(fbeam_en, V3_2p_rotated[0]) && PFiducialCut(fbeam_en, V3_2p_rotated[1]) && !pi2_stat[0]  && pi2_stat[1])  N_2p_1pi[1]=N_2p_1pi[1]+1;
+     if(PFiducialCut(fbeam_en, V3_2p_rotated[0]) && PFiducialCut(fbeam_en, V3_2p_rotated[1]) && !pi2_stat[0]  && !pi2_stat[1]) N_2p_0pi=N_2p_0pi+1;
+     if(PFiducialCut(fbeam_en, V3_2p_rotated[0]) && !PFiducialCut(fbeam_en, V3_2p_rotated[1]) && pi2_stat[0]  && pi2_stat[1])  N_1p_2pi[0]=N_1p_2pi[0]+1;
+     if(!PFiducialCut(fbeam_en, V3_2p_rotated[0]) && PFiducialCut(fbeam_en, V3_2p_rotated[1]) && pi2_stat[0]  && pi2_stat[1])  N_1p_2pi[1]=N_1p_2pi[1]+1;
+     if(PFiducialCut(fbeam_en, V3_2p_rotated[0]) && !PFiducialCut(fbeam_en, V3_2p_rotated[1]) && pi2_stat[0]  && !pi2_stat[1])  N_1p_1pi[0][0]=N_1p_1pi[0][0]+1;
+     if(PFiducialCut(fbeam_en, V3_2p_rotated[0]) && !PFiducialCut(fbeam_en, V3_2p_rotated[1]) && !pi2_stat[0]  && pi2_stat[1])  N_1p_1pi[0][1]=N_1p_1pi[0][1]+1;
+     if(!PFiducialCut(fbeam_en, V3_2p_rotated[0]) && PFiducialCut(fbeam_en, V3_2p_rotated[1]) && pi2_stat[0]  && !pi2_stat[1])  N_1p_1pi[1][0]=N_1p_1pi[1][0]+1;
+     if(!PFiducialCut(fbeam_en, V3_2p_rotated[0]) && PFiducialCut(fbeam_en, V3_2p_rotated[1]) && !pi2_stat[0]  && pi2_stat[1])  N_1p_1pi[1][1]=N_1p_1pi[1][1]+1;
+     if(PFiducialCut(fbeam_en, V3_2p_rotated[0]) && !PFiducialCut(fbeam_en, V3_2p_rotated[1]) && !pi2_stat[0]  && !pi2_stat[1])  N_1p_0pi[0]=N_1p_0pi[0]+1;
+     if(!PFiducialCut(fbeam_en, V3_2p_rotated[0]) && PFiducialCut(fbeam_en, V3_2p_rotated[1]) && !pi2_stat[0]  && !pi2_stat[1])  N_1p_0pi[1]=N_1p_0pi[1]+1;
+     if(PFiducialCut(fbeam_en, V3_2p_rotated[0]) && PFiducialCut(fbeam_en, V3_2p_rotated[1]) && pi2_stat[0]  && pi2_stat[1])  N_all=N_all+1;
    }
 
 
   if(N_all!=0){
 
- prot_rot_func_2p(V3_q, V3_2prot_corr,V3_2prot_uncorr, V4_el,Ecal_2p2pi,p_miss_perp_2p2pi,P_2pto1p ,&N_2p_det);
+ prot2_rot_func(fbeam_en, V3_q, V3_2prot_corr,V3_2prot_uncorr, V4_el,Ecal_2p2pi,p_miss_perp_2p2pi,P_2pto1p ,&N_2p_det);
 
  for(int z=0;z<N_2prot;z++){
  //---------------------------------- 2p 2pi ->1p 0pi   ----------------------------------------------
@@ -6756,7 +6767,7 @@ void prot2_pi2_rot_func(TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2pro
 
 for(int k=0;k<N_2pi;k++){
   N_pidet=N_piundet=0;
-  prot1_pi1_rot_func(V3_q,V3_2prot_uncorr[z],V3_2pi[k], q_pi[k],radstat[k],&N_pidet,&N_piundet);
+  prot1_pi1_rot_func(fbeam_en, V3_q,V3_2prot_uncorr[z],V3_2pi[k], q_pi[k],radstat[k],&N_pidet,&N_piundet);
    if(N_pidet!=0) P_2p2pito1p1pi[z]=P_2p2pito1p1pi[z]+(N_1p_1pi[z][k]/N_all)*(N_piundet/N_pidet);
  }
 
@@ -6767,13 +6778,13 @@ for(int k=0;k<N_2pi;k++){
       //---------------------------------- 2p 2pi ->1p 2pi   ----------------------------------------------
 
  P_1p0pi=P_1p1pi[0]=P_1p1pi[1]=0;
- prot1_pi2_rot_func(V3_q,V3_2prot_uncorr[z],V3_2pi,q_pi,radstat,&P_1p0pi,P_1p1pi);
+ prot1_pi2_rot_func(fbeam_en, V3_q,V3_2prot_uncorr[z],V3_2pi,q_pi,radstat,&P_1p0pi,P_1p1pi);
  P_2p2pito1p2pi[z]=(N_1p_2pi[z]/N_all)*(P_1p0pi-P_1p1pi[0]-P_1p1pi[1]);
 
  //---------------------------------- 2p 2pi ->2p 1pi   ----------------------------------------------
 
  P_2p1pito2p0pi[0]=P_2p1pito2p0pi[1]=0; P_2p1pito1p1pi[0]=P_2p1pito1p1pi[1]=0; P_2p1pito1p0pi[0]=P_2p1pito1p0pi[1]=0;Ptot=0;
- prot2_pi1_rot_func(V3_q,V3_2prot_corr,V3_2prot_uncorr,V3_2pi[z], q_pi[z],radstat[z],V4_el,Ecal_2p2pi,p_miss_perp_2p2pi,P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
+ prot2_pi1_rot_func(fbeam_en, V3_q,V3_2prot_corr,V3_2prot_uncorr,V3_2pi[z], q_pi[z],radstat[z],V4_el,Ecal_2p2pi,p_miss_perp_2p2pi,P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
 
   // P_2p2pito2p1pi[z]=(N_2p_1pi[0]/N_all)*(-P_2p1pito2p0pi[z]- P_2p1pito1p1pi[z]+P_2p1pito1p0pi[z])+(N_2p_1pi[1]/N_all)*(-P_2p1pito2p0pi[z]- P_2p1pito1p1pi[z]+P_2p1pito1p0pi[z]);
  //P_tot_2p[z]=-P_2p2pito1p0pi[z]+P_2p2pito1p1pi[z]+P_2p1pito2p0pi[z]+P_2p2pito1p2pi[z]+P_2p2pito2p1pi[z];
@@ -6799,9 +6810,9 @@ if(N_all==0){
 
 
 
-void prot3_pi1_rot_func(TVector3 V3_q,TVector3 V3_3prot_corr[3],TVector3 V3_3prot_uncorr[3],TVector3 V3_pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_3p1pi[3],double p_miss_perp_3p1pi[3],double P_tot_3p[3]){
+void prot3_pi1_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_3prot_corr[3],TVector3 V3_3prot_uncorr[3],TVector3 V3_pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_3p1pi[3],double p_miss_perp_3p1pi[3],double P_tot_3p[3]){
 
-
+  std::string fbeam_en = beam_en;
   const int N_3prot=3;
   TVector3 V3_3p_rotated[N_3prot],V3_pirot;
   bool pi_stat=true;
@@ -6829,30 +6840,30 @@ void prot3_pi1_rot_func(TVector3 V3_q,TVector3 V3_3prot_corr[3],TVector3 V3_3pro
 
      if(!radstat){ V3_pirot=V3_pi;
      V3_pirot.Rotate(rot_angle,V3_q);
-     pi_stat=Pi_phot_fid_united(V3_pirot, q_pi);
+     pi_stat=Pi_phot_fid_united(fbeam_en, V3_pirot, q_pi);
      }
 
-     if(PFiducialCut(V3_3p_rotated[0]) && !PFiducialCut(V3_3p_rotated[1]) && !PFiducialCut(V3_3p_rotated[2])  && !pi_stat)  N_1p0pi[0]=N_1p0pi[0]+1;
-     if(!PFiducialCut(V3_3p_rotated[0]) && PFiducialCut(V3_3p_rotated[1]) && !PFiducialCut(V3_3p_rotated[2])  && !pi_stat)  N_1p0pi[1]=N_1p0pi[1]+1;
-     if(!PFiducialCut(V3_3p_rotated[0]) && !PFiducialCut(V3_3p_rotated[1]) && PFiducialCut(V3_3p_rotated[2])  && !pi_stat)  N_1p0pi[2]=N_1p0pi[2]+1;
-     if(PFiducialCut(V3_3p_rotated[0]) && !PFiducialCut(V3_3p_rotated[1]) && !PFiducialCut(V3_3p_rotated[2])  && pi_stat)  N_1p1pi[0]=N_1p1pi[0]+1;
-     if(!PFiducialCut(V3_3p_rotated[0]) && PFiducialCut(V3_3p_rotated[1]) && !PFiducialCut(V3_3p_rotated[2])  && pi_stat)  N_1p1pi[1]=N_1p1pi[1]+1;
-     if(!PFiducialCut(V3_3p_rotated[0]) && !PFiducialCut(V3_3p_rotated[1]) && PFiducialCut(V3_3p_rotated[2])  && pi_stat)  N_1p1pi[2]=N_1p1pi[2]+1;
-     if(PFiducialCut(V3_3p_rotated[0]) && PFiducialCut(V3_3p_rotated[1]) && !PFiducialCut(V3_3p_rotated[2])  && !pi_stat)  N_2p0pi[0]=N_2p0pi[0]+1;
-     if(PFiducialCut(V3_3p_rotated[0]) && !PFiducialCut(V3_3p_rotated[1]) && PFiducialCut(V3_3p_rotated[2])  && !pi_stat)  N_2p0pi[1]=N_2p0pi[1]+1;
-     if(!PFiducialCut(V3_3p_rotated[0]) && PFiducialCut(V3_3p_rotated[1]) && PFiducialCut(V3_3p_rotated[2])  && !pi_stat)  N_2p0pi[2]=N_2p0pi[2]+1;
-     if(PFiducialCut(V3_3p_rotated[0]) && PFiducialCut(V3_3p_rotated[1]) && !PFiducialCut(V3_3p_rotated[2])  && pi_stat)  N_2p1pi[0]=N_2p1pi[0]+1;
-     if(PFiducialCut(V3_3p_rotated[0]) && !PFiducialCut(V3_3p_rotated[1]) && PFiducialCut(V3_3p_rotated[2])  && pi_stat)  N_2p1pi[1]=N_2p1pi[1]+1;
-     if(!PFiducialCut(V3_3p_rotated[0]) && PFiducialCut(V3_3p_rotated[1]) && PFiducialCut(V3_3p_rotated[2])  && pi_stat)  N_2p1pi[2]=N_2p1pi[2]+1;
-     if(PFiducialCut(V3_3p_rotated[0]) && PFiducialCut(V3_3p_rotated[1]) && PFiducialCut(V3_3p_rotated[2])  && !pi_stat)  N_3p0pi=N_3p0pi+1;
-     if(PFiducialCut(V3_3p_rotated[0]) && PFiducialCut(V3_3p_rotated[1]) && PFiducialCut(V3_3p_rotated[2])  && pi_stat)  N_all=N_all+1;
+     if(PFiducialCut(fbeam_en, V3_3p_rotated[0]) && !PFiducialCut(fbeam_en, V3_3p_rotated[1]) && !PFiducialCut(fbeam_en, V3_3p_rotated[2])  && !pi_stat)  N_1p0pi[0]=N_1p0pi[0]+1;
+     if(!PFiducialCut(fbeam_en, V3_3p_rotated[0]) && PFiducialCut(fbeam_en, V3_3p_rotated[1]) && !PFiducialCut(fbeam_en, V3_3p_rotated[2])  && !pi_stat)  N_1p0pi[1]=N_1p0pi[1]+1;
+     if(!PFiducialCut(fbeam_en, V3_3p_rotated[0]) && !PFiducialCut(fbeam_en, V3_3p_rotated[1]) && PFiducialCut(fbeam_en, V3_3p_rotated[2])  && !pi_stat)  N_1p0pi[2]=N_1p0pi[2]+1;
+     if(PFiducialCut(fbeam_en, V3_3p_rotated[0]) && !PFiducialCut(fbeam_en, V3_3p_rotated[1]) && !PFiducialCut(fbeam_en, V3_3p_rotated[2])  && pi_stat)  N_1p1pi[0]=N_1p1pi[0]+1;
+     if(!PFiducialCut(fbeam_en, V3_3p_rotated[0]) && PFiducialCut(fbeam_en, V3_3p_rotated[1]) && !PFiducialCut(fbeam_en, V3_3p_rotated[2])  && pi_stat)  N_1p1pi[1]=N_1p1pi[1]+1;
+     if(!PFiducialCut(fbeam_en, V3_3p_rotated[0]) && !PFiducialCut(fbeam_en, V3_3p_rotated[1]) && PFiducialCut(fbeam_en, V3_3p_rotated[2])  && pi_stat)  N_1p1pi[2]=N_1p1pi[2]+1;
+     if(PFiducialCut(fbeam_en, V3_3p_rotated[0]) && PFiducialCut(fbeam_en, V3_3p_rotated[1]) && !PFiducialCut(fbeam_en, V3_3p_rotated[2])  && !pi_stat)  N_2p0pi[0]=N_2p0pi[0]+1;
+     if(PFiducialCut(fbeam_en, V3_3p_rotated[0]) && !PFiducialCut(fbeam_en, V3_3p_rotated[1]) && PFiducialCut(fbeam_en, V3_3p_rotated[2])  && !pi_stat)  N_2p0pi[1]=N_2p0pi[1]+1;
+     if(!PFiducialCut(fbeam_en, V3_3p_rotated[0]) && PFiducialCut(fbeam_en, V3_3p_rotated[1]) && PFiducialCut(fbeam_en, V3_3p_rotated[2])  && !pi_stat)  N_2p0pi[2]=N_2p0pi[2]+1;
+     if(PFiducialCut(fbeam_en, V3_3p_rotated[0]) && PFiducialCut(fbeam_en, V3_3p_rotated[1]) && !PFiducialCut(fbeam_en, V3_3p_rotated[2])  && pi_stat)  N_2p1pi[0]=N_2p1pi[0]+1;
+     if(PFiducialCut(fbeam_en, V3_3p_rotated[0]) && !PFiducialCut(fbeam_en, V3_3p_rotated[1]) && PFiducialCut(fbeam_en, V3_3p_rotated[2])  && pi_stat)  N_2p1pi[1]=N_2p1pi[1]+1;
+     if(!PFiducialCut(fbeam_en, V3_3p_rotated[0]) && PFiducialCut(fbeam_en, V3_3p_rotated[1]) && PFiducialCut(fbeam_en, V3_3p_rotated[2])  && pi_stat)  N_2p1pi[2]=N_2p1pi[2]+1;
+     if(PFiducialCut(fbeam_en, V3_3p_rotated[0]) && PFiducialCut(fbeam_en, V3_3p_rotated[1]) && PFiducialCut(fbeam_en, V3_3p_rotated[2])  && !pi_stat)  N_3p0pi=N_3p0pi+1;
+     if(PFiducialCut(fbeam_en, V3_3p_rotated[0]) && PFiducialCut(fbeam_en, V3_3p_rotated[1]) && PFiducialCut(fbeam_en, V3_3p_rotated[2])  && pi_stat)  N_all=N_all+1;
    }
 
 
   if(N_all!=0){
 
 //----------------------------------3p 1pi ->3p 0pi->1p0pi   ----------------------------------------------
-          prot_rot_func_3p( V3_q, V3_3prot_uncorr,V3_3prot_corr,V4_el,E_cal_3pto2p,p_miss_perp_3pto2p, P_3pto2p,N_p1, Ecal_3p1pi,p_miss_perp_3p1pi,&N_p_three);
+          prot3_rot_func(fbeam_en, V3_q, V3_3prot_uncorr,V3_3prot_corr,V4_el,E_cal_3pto2p,p_miss_perp_3pto2p, P_3pto2p,N_p1, Ecal_3p1pi,p_miss_perp_3p1pi,&N_p_three);
 
  if(N_p_three!=0){
 	       P_3p1pito3p0pi[0]= (N_3p0pi/N_all)*(N_p1[0]/N_p_three);
@@ -6869,7 +6880,7 @@ void prot3_pi1_rot_func(TVector3 V3_q,TVector3 V3_3prot_corr[3],TVector3 V3_3pro
  //---------------------------------- 3p 1pi ->1p 1pi   ----------------------------------------------
 
    N_pidet=N_piundet=0;
-   prot1_pi1_rot_func(V3_q,V3_3prot_uncorr[z],V3_pi, q_pi,radstat, &N_pidet,&N_piundet);
+   prot1_pi1_rot_func(fbeam_en, V3_q,V3_3prot_uncorr[z],V3_pi, q_pi,radstat, &N_pidet,&N_piundet);
    if(N_pidet!=0) P_3p1pito1p1pi[z]=(N_1p1pi[z]/N_all)*(N_piundet/N_pidet);
 
  //---------------------------------- 3p 1pi ->2p 0pi   ----------------------------------------------
@@ -6881,7 +6892,7 @@ void prot3_pi1_rot_func(TVector3 V3_q,TVector3 V3_3prot_corr[3],TVector3 V3_3pro
 			  V3_2p_uncorr[0]=V3_3prot_uncorr[z];V3_2p_uncorr[1]=V3_3prot_uncorr[i];
 
 			  P_2pto1p[0]=0;P_2pto1p[1]=0;N_2p_det=0;
-			  prot_rot_func_2p(V3_q, V3_2p_corr,V3_2p_uncorr, V4_el,Ecal_2p,p_miss_perp_2p,P_2pto1p ,&N_2p_det);
+			  prot2_rot_func(fbeam_en, V3_q, V3_2p_corr,V3_2p_uncorr, V4_el,Ecal_2p,p_miss_perp_2p,P_2pto1p ,&N_2p_det);
 			  if(N_2p_det!=0){
 			    P_3p1pito2p0pi[z]=P_3p1pito2p0pi[z]+(N_2p0pi[count]/N_all)*P_2pto1p[0];
 			    P_3p1pito2p0pi[i]=P_3p1pito2p0pi[i]+(N_2p0pi[count]/N_all)*P_2pto1p[1];
@@ -6898,7 +6909,7 @@ void prot3_pi1_rot_func(TVector3 V3_q,TVector3 V3_3prot_corr[3],TVector3 V3_3pro
  //---------------------------------- 3p 1pi ->2p 1pi   ----------------------------------------------
  P_2p1pito2p0pi[0]=P_2p1pito2p0pi[1]=0; P_2p1pito1p1pi[0]=P_2p1pito1p1pi[1]=0; P_2p1pito1p0pi[0]=P_2p1pito1p0pi[1]=0;Ptot=0;
 
- prot2_pi1_rot_func(V3_q,V3_2p_corr,V3_2p_uncorr,V3_pi, q_pi,radstat,V4_el,Ecal_2p1pi,p_miss_perp_2p1pi,P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
+ prot2_pi1_rot_func(fbeam_en, V3_q,V3_2p_corr,V3_2p_uncorr,V3_pi, q_pi,radstat,V4_el,Ecal_2p1pi,p_miss_perp_2p1pi,P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
 
  // P_3p1pito2p1pi[z]=(N_2p1pi[count]/N_all)*(-P_2p1pito2p0pi[z]- P_2p1pito1p1pi[z]+P_2p1pito1p0pi[z]);
  // P_3p1pito2p1pi[i]=(N_2p1pi[count]/N_all)*(-P_2p1pito2p0pi[i]- P_2p1pito1p1pi[i]+P_2p1pito1p0pi[i]);
@@ -6934,8 +6945,9 @@ if(N_all==0){
 
 
 
-void pi1_rot_func(TVector3 V3_pi, int q_pi,bool radstat,TVector3 V3_q,double *P_pi){
+void pi1_rot_func(std::string beam_en, TVector3 V3_pi, int q_pi,bool radstat,TVector3 V3_q,double *P_pi){
 
+  std::string fbeam_en = beam_en;
   double N_pion=0;
   double rot_angle;
   TVector3 V3_rot_pi;
@@ -6947,7 +6959,7 @@ void pi1_rot_func(TVector3 V3_pi, int q_pi,bool radstat,TVector3 V3_q,double *P_
     V3_rot_pi=V3_pi;
     rot_angle=gRandom->Uniform(0,2*TMath::Pi());
     V3_rot_pi.Rotate(rot_angle,V3_q);
-    if(Pi_phot_fid_united(V3_rot_pi,q_pi)) N_pion=N_pion+1;
+    if(Pi_phot_fid_united(fbeam_en, V3_rot_pi,q_pi)) N_pion=N_pion+1;
   }
     }
     else {
@@ -6963,8 +6975,9 @@ void pi1_rot_func(TVector3 V3_pi, int q_pi,bool radstat,TVector3 V3_q,double *P_
 
 
 
-void pi2_rot_func(TVector3 V3_pi[2], int q_pi[2],bool radstat[2], TVector3 V3_q,double *P_0pi,double P_1pi[2]){
+void pi2_rot_func(std::string beam_en, TVector3 V3_pi[2], int q_pi[2],bool radstat[2], TVector3 V3_q,double *P_0pi,double P_1pi[2]){
 
+  std::string fbeam_en = beam_en;
   const int N_pi=2;
   TVector3 V3_rot_pi[N_pi];
  double rot_angle;
@@ -6980,7 +6993,7 @@ void pi2_rot_func(TVector3 V3_pi[2], int q_pi[2],bool radstat[2], TVector3 V3_q,
 	 if(!radstat[i]){
 	   V3_rot_pi[i]=V3_pi[i];
 	   V3_rot_pi[i].Rotate(rot_angle,V3_q);
-	   status_pi[i]=Pi_phot_fid_united(V3_rot_pi[i],q_pi[i]);
+	   status_pi[i]=Pi_phot_fid_united(fbeam_en, V3_rot_pi[i],q_pi[i]);
 	 }
        }
        if( status_pi[0] && !status_pi[1]) N_1pi[0]=N_1pi[0]+1;
@@ -6991,8 +7004,8 @@ void pi2_rot_func(TVector3 V3_pi[2], int q_pi[2],bool radstat[2], TVector3 V3_q,
     }
     else {N_bothpi=N_tot;}
 
-    pi1_rot_func(V3_pi[0],  q_pi[0],radstat[0], V3_q,P_pi1);
-    pi1_rot_func(V3_pi[1],  q_pi[1],radstat[1], V3_q,P_pi1+1);
+    pi1_rot_func(fbeam_en, V3_pi[0],  q_pi[0],radstat[0], V3_q,P_pi1);
+    pi1_rot_func(fbeam_en, V3_pi[1],  q_pi[1],radstat[1], V3_q,P_pi1+1);
 
       if(N_bothpi!=0){
 	*P_0pi=N_nopi/N_bothpi;
@@ -7010,8 +7023,9 @@ void pi2_rot_func(TVector3 V3_pi[2], int q_pi[2],bool radstat[2], TVector3 V3_q,
 
 
 
-void pi3_rot_func(TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,double *P_0pi,double P_1pi[3],double P_320[3],double P_3210[][2]){
+void pi3_rot_func(std::string beam_en, TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,double *P_0pi,double P_1pi[3],double P_320[3],double P_3210[][2]){
 
+ std::string fbeam_en = beam_en;
  const int N_pi=3;
   TVector3 V3_rot_pi[N_pi];
  double rot_angle;
@@ -7030,7 +7044,7 @@ void pi3_rot_func(TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,
 	 if(!radstat[i]){
 	 V3_rot_pi[i]=V3_pi[i];
 	 V3_rot_pi[i].Rotate(rot_angle,V3_q);
-	 status_pi[i]=Pi_phot_fid_united(V3_rot_pi[i],q_pi[i]);
+	 status_pi[i]=Pi_phot_fid_united(fbeam_en, V3_rot_pi[i],q_pi[i]);
 	 }
        }
 
@@ -7058,7 +7072,7 @@ void pi3_rot_func(TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,
     *P_0pi=N_nopi/N_allpi;
  //---------------------------3pi->1pi->0pi----------------------------------------------
     for(int h=0;h<N_pi;h++){
-      pi1_rot_func(V3_pi[h],q_pi[h],radstat[h],V3_q,&P_pi);
+      pi1_rot_func(fbeam_en, V3_pi[h],q_pi[h],radstat[h],V3_q,&P_pi);
       P_1pi[h]=P_pi*(N_1pi[h]/N_allpi);
     //---------------------------3pi->2pi->0pi----------------------------------------------
 
@@ -7077,7 +7091,7 @@ void pi3_rot_func(TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,
 	q_pion[0]=q_pi[1];q_pion[1]=q_pi[2];
 	rad_stat[0]=radstat[1];rad_stat[1]=radstat[2];
       }
-      pi2_rot_func(V3_pion,q_pion,rad_stat,V3_q,&P_0pion, P_1pion);
+      pi2_rot_func(fbeam_en, V3_pion,q_pion,rad_stat,V3_q,&P_0pion, P_1pion);
       P_320[h]=P_0pion*(N_2pi[h]/N_allpi);
 
 //---------------------------3pi->2pi->1pi->0pi----------------------------------------------
@@ -7108,8 +7122,9 @@ void pi3_rot_func(TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,
 
 
 
-void pi4_rot_func(TVector3 V3_pi[4], int q_pi[4],bool radstat[4], TVector3 V3_q,double *P_0pi,double *P_410,double *P_420,double *P_4210,double *P_430,double *P_4310,double *P_4320,double *P_43210){
+void pi4_rot_func(std::string beam_en, TVector3 V3_pi[4], int q_pi[4],bool radstat[4], TVector3 V3_q,double *P_0pi,double *P_410,double *P_420,double *P_4210,double *P_430,double *P_4310,double *P_4320,double *P_43210){
 
+ std::string fbeam_en = beam_en;
  const int N_pi=4;
   TVector3 V3_rot_pi[N_pi];
  double rot_angle;
@@ -7127,7 +7142,7 @@ if(!radstat[0] || !radstat[1]  || !radstat[2]|| !radstat[3]){
 	 if(!radstat[i]){
 	   V3_rot_pi[i]=V3_pi[i];
 	   V3_rot_pi[i].Rotate(rot_angle,V3_q);
-	   status_pi[i]=Pi_phot_fid_united(V3_rot_pi[i],q_pi[i]);
+	   status_pi[i]=Pi_phot_fid_united(fbeam_en, V3_rot_pi[i],q_pi[i]);
 	 }
        }
 
@@ -7166,7 +7181,7 @@ if(!radstat[0] || !radstat[1]  || !radstat[2]|| !radstat[3]){
     *P_0pi=N_nopi/N_allpi;
  //---------------------------4pi->1pi->0pi----------------------------------------------
     for(int h=0;h<N_pi;h++){
-      pi1_rot_func(V3_pi[h],q_pi[h],radstat[h],V3_q,&P_pi);
+      pi1_rot_func(fbeam_en, V3_pi[h],q_pi[h],radstat[h],V3_q,&P_pi);
       *P_410=*P_410+P_pi*(N_1pi[h]/N_allpi);
 
     //---------------------------4pi->3pi->0pi----------------------------------------------
@@ -7191,7 +7206,7 @@ if(!radstat[0] || !radstat[1]  || !radstat[2]|| !radstat[3]){
 	rad_stat[0]=radstat[1];rad_stat[1]=radstat[2];rad_stat[2]=radstat[3];
       }
 
-      pi3_rot_func(V3_pion,q_pion,rad_stat,V3_q,&P_0pion, P_1pion,P_320_pion,P_3210_pion);
+      pi3_rot_func(fbeam_en, V3_pion,q_pion,rad_stat,V3_q,&P_0pion, P_1pion,P_320_pion,P_3210_pion);
       *P_430=*P_430+P_0pion*(N_3pi[h]/N_allpi);
 
 //---------------------------4pi->3pi->1pi->0pi----------------------------------------------
@@ -7250,7 +7265,7 @@ if(!radstat[0] || !radstat[1]  || !radstat[2]|| !radstat[3]){
 	 radstat_2pi[0]=radstat[2];  radstat_2pi[1]=radstat[3];
       }
 
- pi2_rot_func(V3_2pi,q_2pi,radstat_2pi,V3_q,&P_0pi, P_1pi);
+ pi2_rot_func(fbeam_en, V3_2pi,q_2pi,radstat_2pi,V3_q,&P_0pi, P_1pi);
 
  *P_420=*P_420+P_0pi*(N_2pi[h]/N_allpi);
 

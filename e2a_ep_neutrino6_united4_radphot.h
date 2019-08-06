@@ -1,11 +1,5 @@
-//////////////////////////////////////////////////////////
-// This class has been automatically generated on
-// Fri Apr 12 15:09:51 2019 by ROOT version 5.34/36
-// from TChain ch/e2a_ep_neutrino6_united4_radphot
-//////////////////////////////////////////////////////////
-
-#ifndef e2a_ep_neutrino6_united4_radphot_h
-#define e2a_ep_neutrino6_united4_radphot_h
+#ifndef E2A_EP_H
+#define E2A_EP_H
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -20,7 +14,7 @@ public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
 
-  std::string ftarget;    // The target name  // ------------------------------->>>>>>>>>>>>>Mariana
+   std::string ftarget;    // The target name  // ------------------------------->>>>>>>>>>>>>Mariana
    std::string fbeam_en;   // The beam energy  // ------------------------------->>>>>>>>>>>>>Mariana
 
    // Declaration of leaf types
@@ -249,8 +243,8 @@ public :
 };
 
 #endif
+#ifdef E2A_EP_C
 
-#ifdef e2a_ep_neutrino6_united4_radphot_cxx
 e2a_ep_neutrino6_united4_radphot::e2a_ep_neutrino6_united4_radphot(std::string a_target,std::string a_beam_en,TTree *tree) : fChain(0)
 {
 // if parameter tree is not specified (or zero), connect the file
@@ -460,4 +454,5 @@ Int_t e2a_ep_neutrino6_united4_radphot::Cut(Long64_t entry)
 // returns -1 otherwise.
    return 1;
 }
-#endif // #ifdef e2a_ep_neutrino6_united4_radphot_cxx
+
+#endif // #ifdef e2a_ep_neutrino6_united4_radphot_h

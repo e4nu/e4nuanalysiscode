@@ -2502,7 +2502,7 @@ for(int z=0;z<N_2prot;z++){
 
 
 	       for(int g=0;g<Ncomb_4to3;g++){   //estimating the undetected 4p contribution to  3p
-
+//SHouldnt that be g == 0,1,2,3 F.H. 08/05/19
 		 if(g=0) {
 		   V3_prot_uncorr[0]=V3_prot4[0]; V3_prot_uncorr[1]=V3_prot4[1]; V3_prot_uncorr[2]=V3_prot4[2];
 		   V3_prot[0]=V3_prot4_corr[0]; V3_prot[1]=V3_prot4_corr[1]; V3_prot[2]=V3_prot4_corr[2];
@@ -3902,37 +3902,37 @@ void SetFiducialCutParameters(){
 // ---
  for(int i = 0 ; i < 4 ; i++){
    for(int j = 0 ; j < 8 ; j++){
-     param_file >> fgPar_Efid_Theta_S3[i][j];
+     param_file >> fgPar_4Gev_2250_Efid_Theta_S3[i][j];
    }
  }
  // ---
  for(int i = 0 ; i < 2 ; i++){
    for(int j = 0 ; j < 8 ; j++){
-     param_file >> fgPar_Efid_Theta_S4[i][j];
+     param_file >> fgPar_4Gev_2250_Efid_Theta_S4[i][j];
    }
  }
  // ---
  for(int i = 0 ; i < 8 ; i++){
    for(int j = 0 ; j < 8 ; j++){
-     param_file >> fgPar_Efid_Theta_S5[i][j];
+     param_file >> fgPar_4Gev_2250_Efid_Theta_S5[i][j];
    }
  }
  // ---
  for(int i = 0 ; i < 4 ; i++){
    for(int j = 0 ; j < 4 ; j++){
-     param_file >> fgPar_Efid_Theta_S3_extra[i][j];
+     param_file >> fgPar_4Gev_2250_Efid_Theta_S3_extra[i][j];
    }
  }
  // ---
  for(int i = 0 ; i < 2 ; i++){
    for(int j = 0 ; j < 4 ; j++){
-     param_file >> fgPar_Efid_Theta_S4_extra[i][j];
+     param_file >> fgPar_4Gev_2250_Efid_Theta_S4_extra[i][j];
    }
  }
  // ---
  for(int i = 0 ; i < 8 ; i++){
    for(int j = 0 ; j < 4 ; j++){
-     param_file >> fgPar_Efid_Theta_S5_extra[i][j];
+     param_file >> fgPar_4Gev_2250_Efid_Theta_S5_extra[i][j];
    }
  }
 	param_file.close();
@@ -3956,42 +3956,42 @@ void SetFiducialCutParameters(){
 
 for(int i = 0 ; i < 2 ; i++){//reading the proton bad TOF cuts at 4GeV
   for(int j = 0 ; j < 6 ; j++){
-    param_file2 >> fgPar_Pfid_ScpdS2[i][j];
+    param_file2 >> fgPar_4Gev_2250_Pfid_ScpdS2[i][j];
   }
  }
 for(int i = 0 ; i < 8 ; i++){
   for(int j = 0 ; j < 6 ; j++){
-    param_file2 >> fgPar_Pfid_ScpdS3[i][j];
+    param_file2 >> fgPar_4Gev_2250_Pfid_ScpdS3[i][j];
   }
  }
 for(int i = 0 ; i < 4 ; i++){
   for(int j = 0 ; j < 6 ; j++){
-    param_file2 >> fgPar_Pfid_ScpdS4[i][j];
+    param_file2 >> fgPar_4Gev_2250_Pfid_ScpdS4[i][j];
   }
  }
 for(int i = 0 ; i < 8 ; i++){
   for(int j = 0 ; j < 6 ; j++){
-    param_file2 >> fgPar_Pfid_ScpdS5[i][j];
+    param_file2 >> fgPar_4Gev_2250_Pfid_ScpdS5[i][j];
   }
  }
 for(int i = 0 ; i < 2 ; i++){
   for(int j = 0 ; j < 4 ; j++){
-    param_file2 >> fgPar_Pfid_ScpdS2_extra[i][j];
+    param_file2 >> fgPar_4Gev_2250_Pfid_ScpdS2_extra[i][j];
   }
  }
 for(int i = 0 ; i < 8 ; i++){
   for(int j = 0 ; j < 4 ; j++){
-    param_file2 >> fgPar_Pfid_ScpdS3_extra[i][j];
+    param_file2 >> fgPar_4Gev_2250_Pfid_ScpdS3_extra[i][j];
   }
  }
 for(int i = 0 ; i < 4 ; i++){
   for(int j = 0 ; j < 4 ; j++){
-    param_file2 >> fgPar_Pfid_ScpdS4_extra[i][j];
+    param_file2 >> fgPar_4Gev_2250_Pfid_ScpdS4_extra[i][j];
   }
  }
 for(int i = 0 ; i < 8 ; i++){
   for(int j = 0 ; j < 4 ; j++){
-    param_file2 >> fgPar_Pfid_ScpdS5_extra[i][j];
+    param_file2 >> fgPar_4Gev_2250_Pfid_ScpdS5_extra[i][j];
   }
  }
 
@@ -4692,7 +4692,7 @@ Bool_t EFiducialCut(TVector3 momentum)
 	    for (int i=0; i<4; i++){
 	      badpar3[i] = 0;
 	      // calculate the parameters using pol7
-	      for (int d=7; d>=0; d--){badpar3[i] = badpar3[i]*mom + fgPar_Efid_Theta_S3[i][d];}
+	      for (int d=7; d>=0; d--){badpar3[i] = badpar3[i]*mom + fgPar_4Gev_2250_Efid_Theta_S3[i][d];}
 	    }
 	    for(int ipar=0;ipar<2;ipar++)
 	      status = status && !(theta>badpar3[2*ipar] && theta<badpar3[2*ipar+1]);
@@ -4703,7 +4703,7 @@ Bool_t EFiducialCut(TVector3 momentum)
 	    for (int i=0; i<2; i++){
 	      badpar4[i] = 0;
 	      // calculate the parameters using pol7
-	      for (int d=7; d>=0; d--){badpar4[i] = badpar4[i]*mom + fgPar_Efid_Theta_S4[i][d];}
+	      for (int d=7; d>=0; d--){badpar4[i] = badpar4[i]*mom + fgPar_4Gev_2250_Efid_Theta_S4[i][d];}
 	    }
 	    status = !(theta>badpar4[0] && theta<badpar4[1]);
 	  }
@@ -4713,7 +4713,7 @@ Bool_t EFiducialCut(TVector3 momentum)
 	    for (Int_t i=0; i<8; i++){
 	      badpar5[i] = 0;
 	      // calculate the parameters using pol7
-	      for (Int_t d=7; d>=0; d--){badpar5[i] = badpar5[i]*mom + fgPar_Efid_Theta_S5[i][d];}
+	      for (Int_t d=7; d>=0; d--){badpar5[i] = badpar5[i]*mom + fgPar_4Gev_2250_Efid_Theta_S5[i][d];}
 	    }
 	    if (mom<1.25) badpar5[0] = 23.4;
 	    if (mom<1.27) badpar5[1] = 24.0; // some dummy constants. see fiducial cuts webpage.
@@ -4735,7 +4735,7 @@ Bool_t EFiducialCut(TVector3 momentum)
 	  for (int i=0; i<4; i++){
 	    badpar3[i] = 0;
 	    // calculate the parameters using 1/p
-	    badpar3[i] = fgPar_Efid_Theta_S3_extra[i][0] + fgPar_Efid_Theta_S3_extra[i][1]/mom + fgPar_Efid_Theta_S3_extra[i][2]/(mom*mom) + fgPar_Efid_Theta_S3_extra[i][3]/(mom*mom*mom);
+	    badpar3[i] = fgPar_4Gev_2250_Efid_Theta_S3_extra[i][0] + fgPar_4Gev_2250_Efid_Theta_S3_extra[i][1]/mom + fgPar_4Gev_2250_Efid_Theta_S3_extra[i][2]/(mom*mom) + fgPar_4Gev_2250_Efid_Theta_S3_extra[i][3]/(mom*mom*mom);
 	  }
 	  for(int ipar=0;ipar<2;ipar++)
 	    status = status && !(theta>badpar3[2*ipar] && theta<badpar3[2*ipar+1]);
@@ -4746,7 +4746,7 @@ Bool_t EFiducialCut(TVector3 momentum)
 	  for (int i=0; i<2; i++){
 	    badpar4[i] = 0;
 	    // calculate the parameters using 1/p
-	    badpar4[i] = fgPar_Efid_Theta_S4_extra[i][0] + fgPar_Efid_Theta_S4_extra[i][1]/mom + fgPar_Efid_Theta_S4_extra[i][2]/(mom*mom) + fgPar_Efid_Theta_S4_extra[i][3]/(mom*mom*mom);
+	    badpar4[i] = fgPar_4Gev_2250_Efid_Theta_S4_extra[i][0] + fgPar_4Gev_2250_Efid_Theta_S4_extra[i][1]/mom + fgPar_4Gev_2250_Efid_Theta_S4_extra[i][2]/(mom*mom) + fgPar_4Gev_2250_Efid_Theta_S4_extra[i][3]/(mom*mom*mom);
 	  }
 	  status = !(theta>badpar4[0] && theta<badpar4[1]);
 	}
@@ -4756,7 +4756,7 @@ Bool_t EFiducialCut(TVector3 momentum)
 	  for (Int_t i=0; i<8; i++){
 	    badpar5[i] = 0;
 	    // calculate the parameters using 1/p
-	    badpar5[i] = fgPar_Efid_Theta_S5_extra[i][0] + fgPar_Efid_Theta_S5_extra[i][1]/mom + fgPar_Efid_Theta_S5_extra[i][2]/(mom*mom) + fgPar_Efid_Theta_S5_extra[i][3]/(mom*mom*mom);
+	    badpar5[i] = fgPar_4Gev_2250_Efid_Theta_S5_extra[i][0] + fgPar_4Gev_2250_Efid_Theta_S5_extra[i][1]/mom + fgPar_4Gev_2250_Efid_Theta_S5_extra[i][2]/(mom*mom) + fgPar_4Gev_2250_Efid_Theta_S5_extra[i][3]/(mom*mom*mom);
 	  }
 	  if (mom<1.25) badpar5[0] = 23.4;
 	  if (mom<1.27) badpar5[1] = 24.0; // some dummy constants. see fiducial cuts webpage.
@@ -5265,7 +5265,7 @@ bool SCpdcut = true;
           for (Int_t i=0; i<2; i++){
             badpar2[i] = 0;
             for (Int_t d=5; d>=0; d--){
-              badpar2[i] = badpar2[i]*mom_scpd + fgPar_Pfid_ScpdS2[i][d];
+              badpar2[i] = badpar2[i]*mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS2[i][d];
             }                // calculate the parameters using pol5
           }
           status = status && !(theta>badpar2[0]&&theta<badpar2[1]);
@@ -5275,7 +5275,7 @@ bool SCpdcut = true;
           for (Int_t i=0; i<8; i++){
             badpar3[i] = 0;
             for (Int_t d=5; d>=0; d--){
-              badpar3[i] = badpar3[i]*mom_scpd + fgPar_Pfid_ScpdS3[i][d];
+              badpar3[i] = badpar3[i]*mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS3[i][d];
             }                // calculate the parameters using pol5
           }
           for (Int_t ipar=0;ipar<4;ipar++){
@@ -5287,7 +5287,7 @@ bool SCpdcut = true;
           for (Int_t i=0; i<4; i++){
             badpar4[i] = 0;
             for (Int_t d=5; d>=0; d--){
-              badpar4[i] = badpar4[i]*mom_scpd + fgPar_Pfid_ScpdS4[i][d];
+              badpar4[i] = badpar4[i]*mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS4[i][d];
             }                // calculate the parameters using pol5
           }
           for (Int_t ipar=0;ipar<2;ipar++){
@@ -5299,7 +5299,7 @@ bool SCpdcut = true;
           for (Int_t i=0; i<8; i++){
             badpar5[i] = 0;
             for (Int_t d=5; d>=0; d--){
-              badpar5[i] = badpar5[i]*mom_scpd + fgPar_Pfid_ScpdS5[i][d];
+              badpar5[i] = badpar5[i]*mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS5[i][d];
             }                // calculate the parameters using pol5
           }
           for (Int_t ipar=0;ipar<4;ipar++){
@@ -5316,7 +5316,7 @@ bool SCpdcut = true;
           for (int i=0; i<2; i++){
             badpar2[i] = 0;
             // calculate the parameters using 1/p
-            badpar2[i] = fgPar_Pfid_ScpdS2_extra[i][0] + fgPar_Pfid_ScpdS2_extra[i][1]/mom_scpd + fgPar_Pfid_ScpdS2_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_Pfid_ScpdS2_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
+            badpar2[i] = fgPar_4Gev_2250_Pfid_ScpdS2_extra[i][0] + fgPar_4Gev_2250_Pfid_ScpdS2_extra[i][1]/mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS2_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_4Gev_2250_Pfid_ScpdS2_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
           }
           for(int ipar=0;ipar<1;ipar++)
 	    status = status && !(theta>badpar2[2*ipar] && theta<badpar2[2*ipar+1]);
@@ -5327,7 +5327,7 @@ bool SCpdcut = true;
           for (int i=0; i<8; i++){
             badpar3[i] = 0;
             // calculate the parameters using 1/p
-            badpar3[i] = fgPar_Pfid_ScpdS3_extra[i][0] + fgPar_Pfid_ScpdS3_extra[i][1]/mom_scpd + fgPar_Pfid_ScpdS3_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_Pfid_ScpdS3_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
+            badpar3[i] = fgPar_4Gev_2250_Pfid_ScpdS3_extra[i][0] + fgPar_4Gev_2250_Pfid_ScpdS3_extra[i][1]/mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS3_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_4Gev_2250_Pfid_ScpdS3_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
           }
           for(int ipar=0;ipar<4;ipar++)
             status = status && !(theta>badpar3[2*ipar] && theta<badpar3[2*ipar+1]);
@@ -5338,7 +5338,7 @@ bool SCpdcut = true;
           for (int i=0; i<4; i++){
             badpar4[i] = 0;
             // calculate the parameters using 1/p
-            badpar4[i] = fgPar_Pfid_ScpdS4_extra[i][0] + fgPar_Pfid_ScpdS4_extra[i][1]/mom_scpd + fgPar_Pfid_ScpdS4_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_Pfid_ScpdS4_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
+            badpar4[i] = fgPar_4Gev_2250_Pfid_ScpdS4_extra[i][0] + fgPar_4Gev_2250_Pfid_ScpdS4_extra[i][1]/mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS4_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_4Gev_2250_Pfid_ScpdS4_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
           }
           for(int ipar=0;ipar<2;ipar++)
 	  status = status && !(theta>badpar4[2*ipar] && theta<badpar4[2*ipar+1]);
@@ -5349,7 +5349,7 @@ bool SCpdcut = true;
           for (Int_t i=0; i<8; i++){
             badpar5[i] = 0;
             // calculate the parameters using 1/p
-            badpar5[i] = fgPar_Pfid_ScpdS5_extra[i][0] + fgPar_Pfid_ScpdS5_extra[i][1]/mom_scpd + fgPar_Pfid_ScpdS5_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_Pfid_ScpdS5_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
+            badpar5[i] = fgPar_4Gev_2250_Pfid_ScpdS5_extra[i][0] + fgPar_4Gev_2250_Pfid_ScpdS5_extra[i][1]/mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS5_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_4Gev_2250_Pfid_ScpdS5_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
           }
           for(Int_t ipar=0;ipar<4;ipar++)
             status = status && !(theta>badpar5[2*ipar] && theta<badpar5[2*ipar+1]);
@@ -5810,7 +5810,7 @@ bool SCpdcut = true;
           for (Int_t i=0; i<2; i++){
             badpar2[i] = 0;
             for (Int_t d=5; d>=0; d--){
-              badpar2[i] = badpar2[i]*mom_scpd + fgPar_Pfid_ScpdS2[i][d];
+              badpar2[i] = badpar2[i]*mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS2[i][d];
             }                // calculate the parameters using pol5
           }
           status = status && !(theta>badpar2[0]&&theta<badpar2[1]);
@@ -5820,7 +5820,7 @@ bool SCpdcut = true;
           for (Int_t i=0; i<8; i++){
             badpar3[i] = 0;
             for (Int_t d=5; d>=0; d--){
-              badpar3[i] = badpar3[i]*mom_scpd + fgPar_Pfid_ScpdS3[i][d];
+              badpar3[i] = badpar3[i]*mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS3[i][d];
             }                // calculate the parameters using pol5
           }
           for (Int_t ipar=0;ipar<4;ipar++){
@@ -5832,7 +5832,7 @@ bool SCpdcut = true;
           for (Int_t i=0; i<4; i++){
             badpar4[i] = 0;
             for (Int_t d=5; d>=0; d--){
-              badpar4[i] = badpar4[i]*mom_scpd + fgPar_Pfid_ScpdS4[i][d];
+              badpar4[i] = badpar4[i]*mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS4[i][d];
             }                // calculate the parameters using pol5
           }
           for (Int_t ipar=0;ipar<2;ipar++){
@@ -5844,7 +5844,7 @@ bool SCpdcut = true;
           for (Int_t i=0; i<8; i++){
             badpar5[i] = 0;
             for (Int_t d=5; d>=0; d--){
-              badpar5[i] = badpar5[i]*mom_scpd + fgPar_Pfid_ScpdS5[i][d];
+              badpar5[i] = badpar5[i]*mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS5[i][d];
             }                // calculate the parameters using pol5
           }
           for (Int_t ipar=0;ipar<4;ipar++){
@@ -5861,7 +5861,7 @@ bool SCpdcut = true;
           for (int i=0; i<2; i++){
             badpar2[i] = 0;
             // calculate the parameters using 1/p
-            badpar2[i] = fgPar_Pfid_ScpdS2_extra[i][0] + fgPar_Pfid_ScpdS2_extra[i][1]/mom_scpd + fgPar_Pfid_ScpdS2_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_Pfid_ScpdS2_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
+            badpar2[i] = fgPar_4Gev_2250_Pfid_ScpdS2_extra[i][0] + fgPar_4Gev_2250_Pfid_ScpdS2_extra[i][1]/mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS2_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_4Gev_2250_Pfid_ScpdS2_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
           }
           for(int ipar=0;ipar<1;ipar++)
             status = status && !(theta>badpar2[2*ipar] && theta<badpar2[2*ipar+1]);
@@ -5871,7 +5871,7 @@ bool SCpdcut = true;
           for (int i=0; i<8; i++){
             badpar3[i] = 0;
             // calculate the parameters using 1/p
-            badpar3[i] = fgPar_Pfid_ScpdS3_extra[i][0] + fgPar_Pfid_ScpdS3_extra[i][1]/mom_scpd + fgPar_Pfid_ScpdS3_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_Pfid_ScpdS3_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
+            badpar3[i] = fgPar_4Gev_2250_Pfid_ScpdS3_extra[i][0] + fgPar_4Gev_2250_Pfid_ScpdS3_extra[i][1]/mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS3_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_4Gev_2250_Pfid_ScpdS3_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
           }
           for(int ipar=0;ipar<4;ipar++)
             status = status && !(theta>badpar3[2*ipar] && theta<badpar3[2*ipar+1]);
@@ -5882,7 +5882,7 @@ bool SCpdcut = true;
           for (int i=0; i<4; i++){
             badpar4[i] = 0;
             // calculate the parameters using 1/p
-            badpar4[i] = fgPar_Pfid_ScpdS4_extra[i][0] + fgPar_Pfid_ScpdS4_extra[i][1]/mom_scpd + fgPar_Pfid_ScpdS4_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_Pfid_ScpdS4_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
+            badpar4[i] = fgPar_4Gev_2250_Pfid_ScpdS4_extra[i][0] + fgPar_4Gev_2250_Pfid_ScpdS4_extra[i][1]/mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS4_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_4Gev_2250_Pfid_ScpdS4_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
           }
           for(int ipar=0;ipar<2;ipar++)
 	  status = status && !(theta>badpar4[2*ipar] && theta<badpar4[2*ipar+1]);
@@ -5893,7 +5893,7 @@ bool SCpdcut = true;
           for (Int_t i=0; i<8; i++){
             badpar5[i] = 0;
             // calculate the parameters using 1/p
-            badpar5[i] = fgPar_Pfid_ScpdS5_extra[i][0] + fgPar_Pfid_ScpdS5_extra[i][1]/mom_scpd + fgPar_Pfid_ScpdS5_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_Pfid_ScpdS5_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
+            badpar5[i] = fgPar_4Gev_2250_Pfid_ScpdS5_extra[i][0] + fgPar_4Gev_2250_Pfid_ScpdS5_extra[i][1]/mom_scpd + fgPar_4Gev_2250_Pfid_ScpdS5_extra[i][2]/(mom_scpd*mom_scpd) + fgPar_4Gev_2250_Pfid_ScpdS5_extra[i][3]/(mom_scpd*mom_scpd*mom_scpd);
           }
           for(Int_t ipar=0;ipar<4;ipar++)
             status = status && !(theta>badpar5[2*ipar] && theta<badpar5[2*ipar+1]);

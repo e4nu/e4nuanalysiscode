@@ -6,7 +6,7 @@ ROOTGLIBS   := $(shell root-config --glibs)
 INCLUDES    := -I../include
 
 CXX       := g++
-CXXFLAGS  += -std=c++11 -Wall -fPIC $(ROOTCFLAGS)
+CXXFLAGS  += -std=c++11 -Wall -Wshadow -Warray-bounds -fPIC $(ROOTCFLAGS)
 LD        := g++
 LDFLAGS   := $(ROOTLDFLAGS)
 
@@ -22,4 +22,4 @@ clean:
 	@rm -rf *.o run_e2a_ep *~
 
 %.o: %.C
-	$(CXX) -c $< -O2 $(ROOTCFLAGS) $(INCLUDES)
+	$(CXX) -c $< -O2 $(CXXFLAGS) $(INCLUDES)

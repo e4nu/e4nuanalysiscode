@@ -34,7 +34,7 @@ public :
    Int_t           hlsc;
    Int_t           intt;
    Int_t           helicity_cor;
-   Int_t           gpart;
+   Int_t           gpart;  //Number of Particles in Event
    Int_t           id[40];   //[gpart]
    Int_t           stat[40];   //[gpart]
    Int_t           dc[40];   //[gpart]

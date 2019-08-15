@@ -3,7 +3,6 @@
 
 #include "e2a_ep_neutrino6_united4_radphot.h"
 #include "Constants.h"
-#include "Fiducial.h"
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
@@ -22,7 +21,6 @@
 #include <TGraph.h>
 
 using namespace std;
-using namespace Fiducial;
 using namespace Constants;
 
 void SetFiducialCutParameters(std::string beam_en); // Load Fidicual Parameters for 1.1 and 4.4 GeV from file
@@ -32,15 +30,15 @@ void SetFiducialCutParameters(std::string beam_en); // Load Fidicual Parameters 
 double vz_corr(TF1 *vz_corr_func, double phi,double theta);
 TVector3 FindUVW(TVector3 xyz);
 Bool_t CutUVW(TVector3 ecxyz);
-Bool_t EFiducialCut(std::string beam_en, TVector3 momentum);
-Bool_t PFiducialCut(std::string beam_en, TVector3 momentum);
+//Bool_t EFiducialCut(std::string beam_en, TVector3 momentum);
+//Bool_t PFiducialCut(std::string beam_en, TVector3 momentum);
 Float_t ProtonMomCorrection_He3_4Cell(std::string atarget, TLorentzVector V4Pr, Float_t vertex_p);
-Bool_t PiplFiducialCut(std::string beam_en, TVector3 momentum,Float_t *philow,Float_t *phiup);
-Bool_t PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup);
-bool Phot_fid(TVector3 V3_phot);
-bool Pi_phot_fid_united(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot);
-Bool_t GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t sector, Float_t *EPhiMin, Float_t *EPhiMax);
-void prot3_rot_func(std::string beam_en, TVector3 V3q, TVector3 V3prot[3],TVector3  V3prot_uncorr[3],TLorentzVector V4el,double Ecal_3pto2p[][2],double  pmiss_perp_3pto2p[][2],double  P3pto2p[][2],double N_p1[3],double Ecal_3pto1p[3],double  pmiss_perp_3pto1p[3], double *N_p3det);
+//Bool_t PiplFiducialCut(std::string beam_en, TVector3 momentum,Float_t *philow,Float_t *phiup);
+//Bool_t PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup);
+//bool Phot_fid(TVector3 V3_phot);
+//bool Pi_phot_fid_united(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot);
+//Bool_t GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t sector, Float_t *EPhiMin, Float_t *EPhiMax);
+/*void prot3_rot_func(std::string beam_en, TVector3 V3q, TVector3 V3prot[3],TVector3  V3prot_uncorr[3],TLorentzVector V4el,double Ecal_3pto2p[][2],double  pmiss_perp_3pto2p[][2],double  P3pto2p[][2],double N_p1[3],double Ecal_3pto1p[3],double  pmiss_perp_3pto1p[3], double *N_p3det);
 void prot2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot[2],TVector3  V3prot_uncorr[2],TLorentzVector V4el,double Ecal_2pto1p[2],double  pmiss_perp_2pto1p[2],double  P2pto1p[2], double *Nboth);
 void prot1_pi1_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi, int q_pi,bool radstat, double *N_pi_p,double *N_nopi_p);
 void prot1_pi2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi[2], int q_pi[2],bool radstat[2], double *P_1p0pi,double P_1p1pi[2]);
@@ -52,10 +50,7 @@ void pi1_rot_func(std::string beam_en, TVector3 V3_pi, int q_pi,bool radstat,TVe
 void pi2_rot_func(std::string beam_en, TVector3 V3_pi[2], int q_pi[2],bool radstat[2], TVector3 V3_q,double *P_0pi,double P_1pi[2]);
 void pi3_rot_func(std::string beam_en, TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,double *P_0pi,double P_1pi[3],double P_320[3],double P_3210[][2]);
 void pi4_rot_func(std::string beam_en, TVector3 V3_pi[4], int q_pi[4],bool radstat[4], TVector3 V3_q,double *P_0pi,double *P_410,double *P_420,double *P_4210,double *P_430,double *P_4310,double *P_4320,double *P_43210);
-
-TF1 *pipl_deltat_sig,*pipl_deltat_mean,*pimi_deltat_sig,*pimi_deltat_mean, *prot_deltat_sig, *prot_deltat_mean,*el_Epratio_sig,*el_Epratio_mean;
-TF1 *up_lim1_ec, *up_lim2_ec,*up_lim3_ec,*up_lim4_ec, *up_lim5_ec,*up_lim6_ec,*low_lim1_ec,*low_lim2_ec,*low_lim3_ec, *low_lim4_ec,*low_lim5_ec,*low_lim6_ec;
-TF1 *leftside_lim1_ec, *leftside_lim2_ec,*leftside_lim3_ec, *leftside_lim4_ec,*leftside_lim5_ec, *leftside_lim6_ec,*rightside_lim1_ec, *rightside_lim2_ec,*rightside_lim3_ec, *rightside_lim4_ec,*rightside_lim5_ec, *rightside_lim6_ec;
+*/
 
 
 std::map<std::string,double>vert_min;
@@ -511,56 +506,56 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 
 
   //Defining EC limits
-  up_lim1_ec=new TF1("up_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  up_lim2_ec=new TF1("up_lim2_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  up_lim3_ec=new TF1("up_lim3_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  up_lim4_ec=new TF1("up_lim4_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  up_lim5_ec=new TF1("up_lim5_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  up_lim6_ec=new TF1("up_lim6_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  low_lim1_ec=new TF1("low_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  low_lim2_ec=new TF1("low_lim2_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  low_lim3_ec=new TF1("low_lim3_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  low_lim4_ec=new TF1("low_lim4_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  low_lim5_ec=new TF1("low_lim5_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  low_lim6_ec=new TF1("low_lim6_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  rightside_lim1_ec=new TF1("rightside_lim1_ec","[0]*(x+[1])+[2]",0,360);
-  leftside_lim1_ec=new TF1("leftside_lim1_ec","[0]*(x+[1])+[2]",0,360);
-  rightside_lim2_ec=new TF1("rightside_lim2_ec","[0]*(x+[1])+[2]",0,360);
-  leftside_lim2_ec=new TF1("leftside_lim2_ec","[0]*(x+[1])+[2]",0,360);
-  rightside_lim3_ec=new TF1("rightside_lim3_ec","[0]*(x+[1])+[2]",0,360);
-  leftside_lim3_ec=new TF1("leftside_lim3_ec","[0]*(x+[1])+[2]",0,360);
-  rightside_lim4_ec=new TF1("rightside_lim4_ec","[0]*(x+[1])+[2]",0,360);
-  leftside_lim4_ec=new TF1("leftside_lim4_ec","[0]*(x+[1])+[2]",0,360);
-  rightside_lim5_ec=new TF1("rightside_lim5_ec","[0]*(x+[1])+[2]",0,360);
-  leftside_lim5_ec=new TF1("leftside_lim5_ec","[0]*(x+[1])+[2]",0,360);
-  rightside_lim6_ec=new TF1("rightside_lim6_ec","[0]*(x+[1])+[2]",0,360);
-  leftside_lim6_ec=new TF1("leftside_lim6_ec","[0]*(x+[1])+[2]",0,360);
+  fiducialcut->up_lim1_ec =new TF1("up_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
+  fiducialcut->up_lim2_ec =new TF1("up_lim2_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
+  fiducialcut->up_lim3_ec =new TF1("up_lim3_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
+  fiducialcut->up_lim4_ec =new TF1("up_lim4_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
+  fiducialcut->up_lim5_ec =new TF1("up_lim5_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
+  fiducialcut->up_lim6_ec =new TF1("up_lim6_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
+  fiducialcut->low_lim1_ec=new TF1("low_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
+  fiducialcut->low_lim2_ec=new TF1("low_lim2_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
+  fiducialcut->low_lim3_ec=new TF1("low_lim3_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
+  fiducialcut->low_lim4_ec=new TF1("low_lim4_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
+  fiducialcut->low_lim5_ec=new TF1("low_lim5_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
+  fiducialcut->low_lim6_ec=new TF1("low_lim6_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
+  fiducialcut->rightside_lim1_ec=new TF1("rightside_lim1_ec","[0]*(x+[1])+[2]",0,360);
+  fiducialcut->leftside_lim1_ec=new TF1("leftside_lim1_ec","[0]*(x+[1])+[2]",0,360);
+  fiducialcut->rightside_lim2_ec=new TF1("rightside_lim2_ec","[0]*(x+[1])+[2]",0,360);
+  fiducialcut->leftside_lim2_ec=new TF1("leftside_lim2_ec","[0]*(x+[1])+[2]",0,360);
+  fiducialcut->rightside_lim3_ec=new TF1("rightside_lim3_ec","[0]*(x+[1])+[2]",0,360);
+  fiducialcut->leftside_lim3_ec=new TF1("leftside_lim3_ec","[0]*(x+[1])+[2]",0,360);
+  fiducialcut->rightside_lim4_ec=new TF1("rightside_lim4_ec","[0]*(x+[1])+[2]",0,360);
+  fiducialcut->leftside_lim4_ec=new TF1("leftside_lim4_ec","[0]*(x+[1])+[2]",0,360);
+  fiducialcut->rightside_lim5_ec=new TF1("rightside_lim5_ec","[0]*(x+[1])+[2]",0,360);
+  fiducialcut->leftside_lim5_ec=new TF1("leftside_lim5_ec","[0]*(x+[1])+[2]",0,360);
+  fiducialcut->rightside_lim6_ec=new TF1("rightside_lim6_ec","[0]*(x+[1])+[2]",0,360);
+  fiducialcut->leftside_lim6_ec=new TF1("leftside_lim6_ec","[0]*(x+[1])+[2]",0,360);
 
 
-  up_lim1_ec->SetParameters(0.995,30,-0.0001);
-  up_lim2_ec->SetParameters(0.995,90,-0.0001);
-  up_lim3_ec->SetParameters(0.995,150,-0.0001);
-  up_lim4_ec->SetParameters(0.995,210,-0.0001);
-  up_lim5_ec->SetParameters(0.995,270,-0.0001);
-  up_lim6_ec->SetParameters(0.995,330,-0.0001);
-  low_lim1_ec->SetParameters(0.7,30,-0.00005);
-  low_lim2_ec->SetParameters(0.7,90,-0.00005);
-  low_lim3_ec->SetParameters(0.7,150,-0.00005);
-  low_lim4_ec->SetParameters(0.7,210,-0.00005);
-  low_lim5_ec->SetParameters(0.7,270,-0.00005);
-  low_lim6_ec->SetParameters(0.7,330,-0.00005);
-  leftside_lim1_ec->SetParameters(0.11,0,0.03);
-  rightside_lim1_ec->SetParameters(-0.11,-60,0.03);
-  leftside_lim2_ec->SetParameters(0.11,-60,0.03);
-  rightside_lim2_ec->SetParameters(-0.11,-120,0.03);
-  leftside_lim3_ec->SetParameters(0.11,-120,0.03);
-  rightside_lim3_ec->SetParameters(-0.11,-180,0.03);
-  leftside_lim4_ec->SetParameters(0.11,-180,0.03);
-  rightside_lim4_ec->SetParameters(-0.11,-240,0.03);
-  leftside_lim5_ec->SetParameters(0.11,-240,0.03);
-  rightside_lim5_ec->SetParameters(-0.11,-300,0.03);
-  leftside_lim6_ec->SetParameters(0.11,-300,0.03);
-  rightside_lim6_ec->SetParameters(-0.11,-360,0.03);
+  fiducialcut->up_lim1_ec->SetParameters(0.995,30,-0.0001);
+  fiducialcut->up_lim2_ec->SetParameters(0.995,90,-0.0001);
+  fiducialcut->up_lim3_ec->SetParameters(0.995,150,-0.0001);
+  fiducialcut->up_lim4_ec->SetParameters(0.995,210,-0.0001);
+  fiducialcut->up_lim5_ec->SetParameters(0.995,270,-0.0001);
+  fiducialcut->up_lim6_ec->SetParameters(0.995,330,-0.0001);
+  fiducialcut->low_lim1_ec->SetParameters(0.7,30,-0.00005);
+  fiducialcut->low_lim2_ec->SetParameters(0.7,90,-0.00005);
+  fiducialcut->low_lim3_ec->SetParameters(0.7,150,-0.00005);
+  fiducialcut->low_lim4_ec->SetParameters(0.7,210,-0.00005);
+  fiducialcut->low_lim5_ec->SetParameters(0.7,270,-0.00005);
+  fiducialcut->low_lim6_ec->SetParameters(0.7,330,-0.00005);
+  fiducialcut->leftside_lim1_ec->SetParameters(0.11,0,0.03);
+  fiducialcut->rightside_lim1_ec->SetParameters(-0.11,-60,0.03);
+  fiducialcut->leftside_lim2_ec->SetParameters(0.11,-60,0.03);
+  fiducialcut->rightside_lim2_ec->SetParameters(-0.11,-120,0.03);
+  fiducialcut->leftside_lim3_ec->SetParameters(0.11,-120,0.03);
+  fiducialcut->rightside_lim3_ec->SetParameters(-0.11,-180,0.03);
+  fiducialcut->leftside_lim4_ec->SetParameters(0.11,-180,0.03);
+  fiducialcut->rightside_lim4_ec->SetParameters(-0.11,-240,0.03);
+  fiducialcut->leftside_lim5_ec->SetParameters(0.11,-240,0.03);
+  fiducialcut->rightside_lim5_ec->SetParameters(-0.11,-300,0.03);
+  fiducialcut->leftside_lim6_ec->SetParameters(0.11,-300,0.03);
+  fiducialcut->rightside_lim6_ec->SetParameters(-0.11,-360,0.03);
 
   //Definition and initialization of Histograms
   TH1F *h1_el_vertuncorr=new TH1F("h1_el_vertuncorr","",200,-10,10);
@@ -1216,6 +1211,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 
     if(jentry == 0){ //was n_evt == 1 before but jentry = n_evnt - 1
           //SetMomCorrParameters(); Functions is missing F.H. 08/01/19
+          fiducialcut->SetConstants(fTorusCurrent, target_name, en_beam, en_beam_Ecal, en_beam_Eqe);
           SetFiducialCutParameters(fbeam_en);
     }
 
@@ -3608,8 +3604,8 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
   delete[] Ecal_lowlim;
   delete[] Ecal_uplim;
   delete pipl_deltat_sig;delete pipl_deltat_mean;delete pimi_deltat_sig;delete pimi_deltat_mean;delete fsum_pimi;delete fsub_pimi;delete fsum_pipl;delete fsub_pipl;delete prot_deltat_sig;delete prot_deltat_mean;delete fsum_prot;delete fsub_prot;delete el_Epratio_sig;delete el_Epratio_mean;delete fsum_e;delete fsub_e;
-  delete up_lim1_ec;delete up_lim2_ec;delete up_lim3_ec;delete up_lim4_ec;delete up_lim5_ec;delete up_lim6_ec;delete low_lim1_ec;delete low_lim2_ec;delete low_lim3_ec;delete low_lim4_ec;delete low_lim5_ec;delete low_lim6_ec;
-  delete  rightside_lim1_ec;delete rightside_lim2_ec;delete rightside_lim3_ec;delete rightside_lim4_ec; delete rightside_lim5_ec;delete rightside_lim6_ec;delete leftside_lim1_ec;delete leftside_lim2_ec; delete leftside_lim3_ec;delete leftside_lim4_ec;delete leftside_lim5_ec;delete leftside_lim6_ec;
+//  delete up_lim1_ec;delete up_lim2_ec;delete up_lim3_ec;delete up_lim4_ec;delete up_lim5_ec;delete up_lim6_ec;delete low_lim1_ec;delete low_lim2_ec;delete low_lim3_ec;delete low_lim4_ec;delete low_lim5_ec;delete low_lim6_ec;
+//  delete  rightside_lim1_ec;delete rightside_lim2_ec;delete rightside_lim3_ec;delete rightside_lim4_ec; delete rightside_lim5_ec;delete rightside_lim6_ec;delete leftside_lim1_ec;delete leftside_lim2_ec; delete leftside_lim3_ec;delete leftside_lim4_ec;delete leftside_lim5_ec;delete leftside_lim6_ec;
 
 }
 
@@ -3658,12 +3654,12 @@ Bool_t CutUVW(TVector3 ecxyz)
   TVector3 ecuvw = FindUVW(ecxyz);
   Float_t phi=ecxyz.Phi()*180/TMath::Pi(); if(phi<-30) phi+=360;
   Int_t sector = (phi+30)/60; if(sector<0)sector=0; if(sector>5) sector=5;
-  return (ecuvw.X()>Constants::par_EcUVW[sector][0] && ecuvw.Y()<Constants::par_EcUVW[sector][1] && ecuvw.Z()<Constants::par_EcUVW[sector][2]);
+  return (ecuvw.X()>par_EcUVW[sector][0] && ecuvw.Y()<par_EcUVW[sector][1] && ecuvw.Z()<par_EcUVW[sector][2]);
 }
 
 
 
-void SetFiducialCutParameters(std::string beam_en){
+/*void SetFiducialCutParameters(std::string beam_en){
 // reads from a file the parameters of the fiducial cut functions
 // Please refer to <A HREF="http://einstein.unh.edu/protopop/FiducialCuts/fc4E2.html">Fiducial Cuts</A> -- D.Protopopescu(UNH)
   std::string fbeam_en = beam_en;
@@ -4161,12 +4157,13 @@ for(int i = 0 ; i < 8 ; i++){
 
 
  }
-else printf("There are no fiducial cut parameters to be read at %3.1f GeV!\n", en_beam[fbeam_en]);
+ else printf("There are no fiducial cut parameters to be read at %3.1f GeV!\n", en_beam[fbeam_en]);
  //	param_file2.close();
 
 
 
 }
+*/
 
 Float_t ProtonMomCorrection_He3_4Cell(std::string atarget, TLorentzVector V4Pr, Float_t vertex_p ){
 
@@ -4215,7 +4212,7 @@ Float_t ProtonMomCorrection_He3_4Cell(std::string atarget, TLorentzVector V4Pr, 
   return -1.;
 }
 
-Bool_t GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t sector,Float_t *EPhiMin, Float_t *EPhiMax){
+//Bool_t GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t sector,Float_t *EPhiMin, Float_t *EPhiMax){
 //Begin_Html
 /*</pre>
  Information for electron fiducial cut,
@@ -4234,6 +4231,7 @@ Bool_t GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t
 <pre>
 */
 //End_Html
+/*
   std::string fbeam_en = beam_en;
   if (sector < 0 || sector > 5) return kFALSE;    // bad input
 
@@ -4278,8 +4276,9 @@ Bool_t GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t
   }
   return kTRUE;
 }
+*/
 
-Bool_t EFiducialCut(std::string beam_en, TVector3 momentum)
+/*Bool_t EFiducialCut(std::string beam_en, TVector3 momentum)
 {
 
 // Electron fiducial cut, return kTRUE if pass or kFALSE if not
@@ -4499,7 +4498,7 @@ Bool_t EFiducialCut(std::string beam_en, TVector3 momentum)
 
   if ( en_beam[fbeam_en]>4. &&  en_beam[fbeam_en]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){
 
-
+*/
 //Begin_Html
 /*</pre>
   Electron fiducial cut, return kTRUE if the electron is in the fiducial volume
@@ -4513,7 +4512,7 @@ Bool_t EFiducialCut(std::string beam_en, TVector3 momentum)
 <pre>
 */
 //End_Html
-
+/*
   Float_t phiMin, phiMax;
   Float_t mom = momentum.Mag();
   Float_t phi = momentum.Phi()*180./TMath::Pi();
@@ -4630,8 +4629,8 @@ Bool_t EFiducialCut(std::string beam_en, TVector3 momentum)
 }
 
 
-
-
+*/
+/*
 Bool_t PFiducialCut(std::string beam_en, TVector3 momentum){
   //Positive Hadron Fiducial Cut
   //Please refer to <A HREF="http://www.jlab.org/Hall-B/secure/e2/bzh/pfiducialcut.html">Electron Fiducial Cuts</A> -- Bin Zhang (MIT).
@@ -5053,7 +5052,7 @@ if ( fTorusCurrent < 1510 && fTorusCurrent > 1490){
 
 
 
-bool SCpdcut = true;
+    bool SCpdcut = true;
     if(status && SCpdcut){ // cut bad scintillator paddles
       if(p < 1.0){
         Int_t tsector = sector + 1;
@@ -5163,9 +5162,9 @@ bool SCpdcut = true;
 }
 
 
+*/
 
-
-
+/*
 
 Bool_t PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t *philow, Float_t *phiup){
   //Positive Hadron Fiducial Cut
@@ -5598,7 +5597,7 @@ if (fTorusCurrent < 1510 && fTorusCurrent > 1490){
 
 
 
-bool SCpdcut = true;
+    bool SCpdcut = true;
     if(status && SCpdcut){ // cut bad scintillator paddles
       if(p < 1.0){
         Int_t tsector = sector + 1;
@@ -5709,14 +5708,11 @@ bool SCpdcut = true;
 }
 
 
-
-
-
-
+*/
 
 
 //using two GeV pimi fiducial cuts for both 2 and 4 GeV analysis
-
+/*
 Bool_t PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup){
   // Electron fiducial cut, return kTRUE if pass or kFALSE if not
   std::string fbeam_en = beam_en;
@@ -6049,8 +6045,8 @@ bool SCpdcut = true;
 
 
 
-
-
+*/
+/*
 bool Phot_fid(TVector3 V3_phot){
 
   bool status=true;
@@ -6076,8 +6072,8 @@ bool Phot_fid(TVector3 V3_phot){
      return status;
 }
 
-
-
+*/
+/*
 bool Pi_phot_fid_united(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot){
 
   bool status=false;
@@ -6094,13 +6090,13 @@ bool Pi_phot_fid_united(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot)
 
 
 
+*/
 
 
-
-void  prot3_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot[3],TVector3  V3prot_uncorr[3],TLorentzVector V4el,double Ecal_3pto2p[][2],double  pmiss_perp_3pto2p[][2],double  P3pto2p[][2],double N_p1[3],double Ecal_3pto1p[3],double  pmiss_perp_3pto1p[3], double *N_p3det){
+void  e2a_ep_neutrino6_united4_radphot::prot3_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot[3],TVector3  V3prot_uncorr[3],TLorentzVector V4el,double Ecal_3pto2p[][2],double  pmiss_perp_3pto2p[][2],double  P3pto2p[][2],double N_p1[3],double Ecal_3pto1p[3],double  pmiss_perp_3pto1p[3], double *N_p3det){
 
   std::string fbeam_en = beam_en;
-double m_prot=0.9382720813;
+  double m_prot=0.9382720813;
   const int N_3p=3, N_2p=2;
   double N_p2[N_3p]={0},N_p1det[3][N_3p]={0};
   TVector3 V3_3p_rot[N_3p],V3_2p_rot[N_3p],V3_prot_el_3pto2p[N_2p],V3_prot_el_3pto1p[N_3p];
@@ -6192,7 +6188,7 @@ double m_prot=0.9382720813;
 
 
 
-void  prot2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot[2],TVector3  V3prot_uncorr[2],TLorentzVector V4el,double Ecal_2pto1p[2],double  pmiss_perp_2pto1p[2],double  P2pto1p[2], double *Nboth){
+void  e2a_ep_neutrino6_united4_radphot::prot2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot[2],TVector3  V3prot_uncorr[2],TLorentzVector V4el,double Ecal_2pto1p[2],double  pmiss_perp_2pto1p[2],double  P2pto1p[2], double *Nboth){
 
   std::string fbeam_en = beam_en;
   const int N2=2;
@@ -6245,7 +6241,7 @@ void  prot2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot[2],TVec
 
 
 
-void prot1_pi1_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi, int q_pi,bool radstat, double *N_pi_p,double *N_nopi_p){
+void e2a_ep_neutrino6_united4_radphot::prot1_pi1_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi, int q_pi,bool radstat, double *N_pi_p,double *N_nopi_p){
 
   std::string fbeam_en = beam_en;
   double rotation_ang;
@@ -6281,7 +6277,7 @@ void prot1_pi1_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVec
 
 
 
-void prot1_pi2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi[2], int q_pi[2],bool radstat[2], double *P_1p0pi,double P_1p1pi[2]){
+void e2a_ep_neutrino6_united4_radphot::prot1_pi2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi[2], int q_pi[2],bool radstat[2], double *P_1p0pi,double P_1p1pi[2]){
 
   std::string fbeam_en = beam_en;
   const int N_pi=2;
@@ -6340,7 +6336,7 @@ void prot1_pi2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVec
 
 
 
-void prot1_pi3_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi[3], int q_pi[3],bool radstat[3],double *P_tot){
+void e2a_ep_neutrino6_united4_radphot::prot1_pi3_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi[3], int q_pi[3],bool radstat[3],double *P_tot){
 
   std::string fbeam_en = beam_en;
   *P_tot=0;
@@ -6431,7 +6427,7 @@ void prot1_pi3_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVec
 
 
 
-void prot2_pi1_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_1pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_2p1pi_to2p0pi[2],double p_miss_perp_2p1pi_to2p0pi[2],double P_2p1pito2p0pi[2],double P_2p1pito1p1pi[2],double P_2p1pito1p0pi[2],double *P_tot){
+void e2a_ep_neutrino6_united4_radphot::prot2_pi1_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_1pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_2p1pi_to2p0pi[2],double p_miss_perp_2p1pi_to2p0pi[2],double P_2p1pito2p0pi[2],double P_2p1pito1p1pi[2],double P_2p1pito1p0pi[2],double *P_tot){
 
   std::string fbeam_en = beam_en;
   const int N_2prot=2;
@@ -6500,7 +6496,7 @@ if(N_all==0){
 }
 
 
-void prot2_pi2_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_2pi[2], int q_pi[2],bool radstat[2],TLorentzVector V4_el, double Ecal_2p2pi[2],double p_miss_perp_2p2pi[2],double P_tot_2p[2]){
+void e2a_ep_neutrino6_united4_radphot::prot2_pi2_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_2pi[2], int q_pi[2],bool radstat[2],TLorentzVector V4_el, double Ecal_2p2pi[2],double p_miss_perp_2p2pi[2],double P_tot_2p[2]){
 
   std::string fbeam_en = beam_en;
   const int N_2prot=2,N_2pi=2;
@@ -6602,7 +6598,7 @@ if(N_all==0){
 
 
 
-void prot3_pi1_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_3prot_corr[3],TVector3 V3_3prot_uncorr[3],TVector3 V3_pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_3p1pi[3],double p_miss_perp_3p1pi[3],double P_tot_3p[3]){
+void e2a_ep_neutrino6_united4_radphot::prot3_pi1_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_3prot_corr[3],TVector3 V3_3prot_uncorr[3],TVector3 V3_pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_3p1pi[3],double p_miss_perp_3p1pi[3],double P_tot_3p[3]){
 
   std::string fbeam_en = beam_en;
   const int N_3prot=3;
@@ -6737,7 +6733,7 @@ if(N_all==0){
 
 
 
-void pi1_rot_func(std::string beam_en, TVector3 V3_pi, int q_pi,bool radstat,TVector3 V3_q,double *P_pi){
+void e2a_ep_neutrino6_united4_radphot::pi1_rot_func(std::string beam_en, TVector3 V3_pi, int q_pi,bool radstat,TVector3 V3_q,double *P_pi){
 
   std::string fbeam_en = beam_en;
   double N_pion=0;
@@ -6767,7 +6763,7 @@ void pi1_rot_func(std::string beam_en, TVector3 V3_pi, int q_pi,bool radstat,TVe
 
 
 
-void pi2_rot_func(std::string beam_en, TVector3 V3_pi[2], int q_pi[2],bool radstat[2], TVector3 V3_q,double *P_0pi,double P_1pi[2]){
+void e2a_ep_neutrino6_united4_radphot::pi2_rot_func(std::string beam_en, TVector3 V3_pi[2], int q_pi[2],bool radstat[2], TVector3 V3_q,double *P_0pi,double P_1pi[2]){
 
   std::string fbeam_en = beam_en;
   const int N_pi=2;
@@ -6815,7 +6811,7 @@ void pi2_rot_func(std::string beam_en, TVector3 V3_pi[2], int q_pi[2],bool radst
 
 
 
-void pi3_rot_func(std::string beam_en, TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,double *P_0pi,double P_1pi[3],double P_320[3],double P_3210[][2]){
+void e2a_ep_neutrino6_united4_radphot::pi3_rot_func(std::string beam_en, TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,double *P_0pi,double P_1pi[3],double P_320[3],double P_3210[][2]){
 
  std::string fbeam_en = beam_en;
  const int N_pi=3;
@@ -6914,7 +6910,7 @@ void pi3_rot_func(std::string beam_en, TVector3 V3_pi[3], int q_pi[3],bool radst
 
 
 
-void pi4_rot_func(std::string beam_en, TVector3 V3_pi[4], int q_pi[4],bool radstat[4], TVector3 V3_q,double *P_0pi,double *P_410,double *P_420,double *P_4210,double *P_430,double *P_4310,double *P_4320,double *P_43210){
+void e2a_ep_neutrino6_united4_radphot::pi4_rot_func(std::string beam_en, TVector3 V3_pi[4], int q_pi[4],bool radstat[4], TVector3 V3_q,double *P_0pi,double *P_410,double *P_420,double *P_4210,double *P_430,double *P_4310,double *P_4320,double *P_43210){
 
  std::string fbeam_en = beam_en;
  const int N_pi=4;

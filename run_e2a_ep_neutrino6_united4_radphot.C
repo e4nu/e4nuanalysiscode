@@ -1,3 +1,5 @@
+#ifndef rune2aep
+#define rune2aep
 #include "e2a_ep_neutrino6_united4_radphot.h"
 
 #include <iostream>
@@ -25,3 +27,4 @@ int main(int argc, char **argv)
 
   return 0;
 }
+#endif

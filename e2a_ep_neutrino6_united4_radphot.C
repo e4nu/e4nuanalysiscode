@@ -28,8 +28,8 @@ using namespace Constants;
 void SetFiducialCutParameters(std::string beam_en); // Load Fidicual Parameters for 1.1 and 4.4 GeV from file
 //void SetMomCorrParameters();
 
-TF1 *vz_corr_func;
-double vz_corr(double phi,double theta);
+
+double vz_corr(TF1 *vz_corr_func, double phi,double theta);
 TVector3 FindUVW(TVector3 xyz);
 Bool_t CutUVW(TVector3 ecxyz);
 Bool_t EFiducialCut(std::string beam_en, TVector3 momentum);
@@ -180,6 +180,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
   double pipl_maxmom, pimi_maxmom,pimi_delt_cutrange,pipl_delt_cutrange;
   int N_pperp,N_Ecal;
   double *pperp_cut,*Ecal_lowlim,*Ecal_uplim;
+  TF1 *vz_corr_func;
 
 
   if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) //1.1 GeV  Configuration parameters and cuts
@@ -1243,7 +1244,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
     double el_phi_mod = TMath::ATan2(cy[ind_em],cx[ind_em])*TMath::RadToDeg()+30; //Add extra 30 degree rotation in phi
     if(el_phi_mod<0)  el_phi_mod  = el_phi_mod+360; //Add 360 so that electron phi is between 0 and 360 degree
     int el_ec_sector = ec_sect[ec[ind_em] - 1];
-    double el_vert_corr = el_vert+vz_corr(el_phi_mod,el_theta);
+    double el_vert_corr = el_vert+vz_corr(vz_corr_func,el_phi_mod,el_theta);
 
     //Variables for electron cuts
     double ece = TMath::Max( ec_ei[ec[ind_em] - 1] + ec_eo[ec[ind_em] - 1],   etot[ec[ind_em] - 1]);
@@ -1548,7 +1549,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 	          if(delta < fsum_prot->Eval(p[ind_p]) && delta > fsub_prot->Eval(p[ind_p]) && p[ind_p] >= prot_accept_mom_lim){
 
               TLorentzVector V4_uncorrprot(p[ind_p]*cx[ind_p],p[ind_p]*cy[ind_p],p[ind_p]*cz[ind_p],TMath::Sqrt(p[ind_p]*p[ind_p]+ m_prot*m_prot ) );
-              p_vert_corr = vz[ind_p]+vz_corr(prot_phi_mod,prot_theta);
+              p_vert_corr = vz[ind_p]+vz_corr(vz_corr_func,prot_phi_mod,prot_theta);
 
 	            h2_prot_px_py_p->Fill(cx[ind_p],cy[ind_p]);
 	            for(int k=1;k<=6;k++){ // k is sector number
@@ -1610,7 +1611,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 	                pimi_phi_mod = pimi_phi + 30;  //Add extra 30 degree rotation in phi
 	                if (pimi_phi_mod<0)  pimi_phi_mod = pimi_phi_mod + 360;  //Pi minus is between 0 and 360 degree
 	                pimi_theta = TMath::ACos(cz[i])*TMath::RadToDeg();
-	                pimi_vert_corr = pimi_vert+vz_corr(pimi_phi_mod,pimi_theta);
+	                pimi_vert_corr = pimi_vert+vz_corr(vz_corr_func, pimi_phi_mod,pimi_theta);
 
                   //Some if conditions for histograms
                   if(abs(p[i]-1.) < 0.02 && sc_sect[sc[i]-1]==1 && abs(en_beam[fbeam_en]-4.)<1)   h2_pimi_theta_phi_p->Fill(pimi_phi_mod,pimi_theta); //4.4 GeV, why is scsect ==1 here F.H. 12/08/19
@@ -1687,7 +1688,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
             	    pipl_phi_mod = pipl_phi + 30; //Add 30 degrees
 	                if (pipl_phi_mod < 0)  pipl_phi_mod = pipl_phi_mod + 360;  //Pi plus is between 0 and 360 degree
 	                pipl_theta = TMath::ACos(cz[i])*TMath::RadToDeg();
-	                pipl_vert_corr = pipl_vert + vz_corr(pipl_phi_mod,pipl_theta);
+	                pipl_vert_corr = pipl_vert + vz_corr(vz_corr_func,pipl_phi_mod,pipl_theta);
 
                   //Some if conditions for histograms
 	                if(abs(p[i]-1) < 0.02 && sc_sect[sc[i]-1]==5 && abs(en_beam[fbeam_en]-4)<1)   h2_pipl_theta_phi_p->Fill(pipl_phi_mod,pipl_theta); //4.4 GeV
@@ -1834,7 +1835,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
         double p_phi_mod1=p_phi1+30;
         if (p_phi_mod1<0)p_phi_mod1=p_phi_mod1+360;
         double p_theta1=TMath::ACos(cz[ind_prot1])*TMath::RadToDeg();
-        double prot_vert_corr1=prot_vert1+vz_corr(p_phi_mod1,p_theta1);
+        double prot_vert_corr1=prot_vert1+vz_corr(vz_corr_func,p_phi_mod1,p_theta1);
         double prot_mom_corr1;
         if(ProtonMomCorrection_He3_4Cell(ftarget,V4_prot_uncorr1,prot_vert_corr1) != -1)
         {
@@ -1851,7 +1852,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
         double p_phi_mod2=p_phi2+30;
         if (p_phi_mod2<0)p_phi_mod2=p_phi_mod2+360;
         double p_theta2=TMath::ACos(cz[ind_prot2])*TMath::RadToDeg();
-        double prot_vert_corr2=prot_vert2+vz_corr(p_phi_mod2,p_theta2);
+        double prot_vert_corr2=prot_vert2+vz_corr(vz_corr_func,p_phi_mod2,p_theta2);
         double prot_mom_corr2;
         if(ProtonMomCorrection_He3_4Cell(ftarget,V4_prot_uncorr2,prot_vert_corr2) != -1)
         {
@@ -2134,7 +2135,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 	        prot_phi[i]=TMath::ATan2(cy[index_p[i]],cx[index_p[i]])*TMath::RadToDeg()+30;
 	        if(prot_phi[i]<0)prot_phi[i]=prot_phi[i]+360;
 	        prot_theta[i]=TMath::ACos(cz[index_p[i]])*TMath::RadToDeg();
-	        prot_vz_corr[i]=prot_vz[i]+vz_corr(prot_phi[i],prot_theta[i]);
+	        prot_vz_corr[i]=prot_vz[i]+vz_corr(vz_corr_func,prot_phi[i],prot_theta[i]);
 
 	        if(ProtonMomCorrection_He3_4Cell(ftarget,V4_p_uncorr[i],prot_vz_corr[i]) != -1){
 		            prot_p_corr[i]=ProtonMomCorrection_He3_4Cell(ftarget,V4_p_uncorr[i],prot_vz_corr[i]);
@@ -2318,7 +2319,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 	         prot4_phi[i]=TMath::ATan2(cy[index_p[i]],cx[index_p[i]])*TMath::RadToDeg()+30;
 	         if(prot4_phi[i]<0)prot4_phi[i]=prot4_phi[i]+360;
 	         prot4_theta[i]=TMath::ACos(cz[index_p[i]])*TMath::RadToDeg();
-	         prot4_vz_corr[i]=prot4_vz[i]+vz_corr(prot4_phi[i],prot4_theta[i]);
+	         prot4_vz_corr[i]=prot4_vz[i]+vz_corr(vz_corr_func,prot4_phi[i],prot4_theta[i]);
 
 	         if(ProtonMomCorrection_He3_4Cell(ftarget,V4_p4_uncorr[i],prot4_vz_corr[i]) != -1)
            {
@@ -2749,7 +2750,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
        double p_phi_mod=p_phi+30;
        if (p_phi_mod<0)p_phi_mod=p_phi_mod+360;
        double	p_theta=TMath::ACos(cz[ind_p])*TMath::RadToDeg();
-       double prot_vert_corr=prot_vert+vz_corr(p_phi_mod,p_theta);
+       double prot_vert_corr=prot_vert+vz_corr(vz_corr_func,p_phi_mod,p_theta);
        double prot_mom_corr;
 
        h1_el_prot_vertdiff->Fill(el_vert_corr-prot_vert_corr);
@@ -3616,8 +3617,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 
 
 
-
-double vz_corr(double phi,double theta)            //correction function for vertex , takes the arguments in Deg.
+double vz_corr(TF1 *vz_corr_func, double phi,double theta)            //correction function for vertex , takes the arguments in Deg.
 {
   //  return (0.2)*cos((phi+47.9)*TMath::DegToRad())/tan(theta*TMath::DegToRad());
    // vertex correction function obtained for the empty runs 18393 and 18394, works fine for 3He runs at 2.261[GeV] beam energy

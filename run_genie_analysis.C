@@ -1,6 +1,6 @@
-#ifndef rune2aep
-#define rune2aep
-#include "e2a_ep_neutrino6_united4_radphot.h"
+#ifndef rungenieanalysis
+#define rungenieanalysis
+#include "genie_analysis.h"
 
 #include <iostream>
 
@@ -13,7 +13,7 @@ int main(int argc, char **argv)
   if( argc < 3 ){
     cout<<"Please specify the target (3He, 56Fe, C12, 4He) and the beam energy (2261 or 4461)"<<endl;
     cout<<"================= Usage ==============="<<endl;
-    cout<<"./run_e2a_ep_neutrino6_united4_radphot.cc target beam_energy"<<endl;
+    cout<<"./genie_analysis target beam_energy"<<endl;
     exit(1);
   }
 
@@ -21,8 +21,8 @@ int main(int argc, char **argv)
   std::string target  = argv[1];
   std::string beam_en = argv[2];
 
-  e2a_ep_neutrino6_united4_radphot  t(target,beam_en);
-//  genie_analysis  t(target,beam_en);
+
+  genie_analysis  t(target,beam_en);
   t.Loop();
 
   return 0;

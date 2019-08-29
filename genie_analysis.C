@@ -34,24 +34,13 @@ Bool_t CutUVW(TVector3 ecxyz);
 Float_t ProtonMomCorrection_He3_4Cell(std::string atarget, TLorentzVector V4Pr, Float_t vertex_p);
 
 
-
-std::map<std::string,double>vert_min;
-std::map<std::string,double>vert_max;
-std::map<std::string,double>vertdiff_min;
-std::map<std::string,double>vertdiff_max;
 std::map<std::string,double>bind_en;
 std::map<std::string,double>target_mass;
 std::map<std::string,double>residual_target_mass;
-std::map<std::pair<std::string, int>, double> EC_time_offset;
-std::map<std::string,double>EC_photon_beta;
-std::map<std::string,double>LEC_photon_beta;
-std::map<std::string, double> Ecal_offset;
-
+std::map<std::string, double> Ecal_offset; //that might not be necessary for simulation data
 
 
  const int N_tot=10;
-
-
 
 
 void genie_analysis::Loop()
@@ -77,32 +66,17 @@ void genie_analysis::Loop()
 
   double reso_p = 0.01; // smearing for the proton
   double reso_e = 0.005; // smearing for the electrons
+  double reso_pipl = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
+  double reso_pimi = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
 
 
   double N_prot1 = 0, N_prot2 = 0,N_prot_both = 0;
-  double eps;
-  Float_t pimi_phimin = 0, pimi_phimax = 0;
-  Float_t pipl_phimin = 0, pipl_phimax = 0;
   const int n_slice=3,nsect=6;
-  double beta,delta;
   const double pperp_min[n_slice]={0.,0.2,0.4};
   const double pperp_max[n_slice]={0.2,0.4,10.};
   TVector3 V3_rotprot1,V3_rotprot2,V3_rotprot3,V3_rot_pi,V3_rotprot;
   TVector3 V3_phot_angles;
-  double sum_val,sub_val;
-  double epratio_sig_cutrange=3.;
-  double prot_delt_cutrange=3.;
-  int 	el_segment, el_cc_sector;
-  double delt_uplim,delt_lowlim;
-  double prot_accept_mom_lim;
-  double prot_mom_lim;
-  double min_good_mom;
-  double max_mom;
-  Double_t el_sccc_timediff;
-  Double_t sc_cc_delt_cut_sect[nsect]={-2,-5,-8,-8,-2,2};
-  Double_t el_cc_nphe;
-  Double_t elmom_corr_fact[nsect];
-  double pipl_maxmom, pimi_maxmom,pimi_delt_cutrange,pipl_delt_cutrange;
+
   int N_pperp,N_Ecal;
   double *pperp_cut,*Ecal_lowlim,*Ecal_uplim;
   TF1 *vz_corr_func;
@@ -112,15 +86,6 @@ void genie_analysis::Loop()
   if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) //1.1 GeV  Configuration parameters and cuts
   {
       E_acc_file="1_161";
-      eps=0.02;
-      prot_accept_mom_lim=0.3;
-      prot_mom_lim=0.95;
-      min_good_mom=0.4;
-      max_mom=1.1;
-      pipl_maxmom=0.65;
-      pimi_maxmom=0.6;
-      pimi_delt_cutrange=3.;
-      pipl_delt_cutrange=3.;
       N_pperp=2;
       N_Ecal=6;
       pperp_cut=new double[N_pperp];
@@ -136,59 +101,12 @@ void genie_analysis::Loop()
       Ecal_uplim[5]=1.35;
       for (int i=0;i<N_Ecal;i++)	cout<<Ecal_lowlim[i]<<"  to  "<<Ecal_uplim[i]<<endl;
 
-      vert_min["3He"]=-3.05;
-      vert_min["C12"]=4.95;
-      vert_min["CH2"]=4.85;
-      vert_max["3He"]=-0.18;
-      vert_max["C12"]=5.76;
-      vert_max["CH2"]=5.62;
-
-      vertdiff_min["3He"]=-1.;
-      vertdiff_min["C12"]=-1.;
-      vertdiff_min["CH2"]=-1.;
-
-      vertdiff_max["3He"]=1.;
-      vertdiff_max["C12"]=1.;
-      vertdiff_max["CH2"]=1.;
-
-      EC_photon_beta["3He"]=0.89;
-      EC_photon_beta["C12"]=0.89;
-      EC_photon_beta["CH2"]=0.91;
-
-      LEC_photon_beta["3He"]=0.97;
-      LEC_photon_beta["C12"]=0.97;
-      LEC_photon_beta["CH2"]=0.97;
-
-      EC_time_offset[std::make_pair("3He",1)]=-0.73;  EC_time_offset[std::make_pair("3He",2)]=-0.81; EC_time_offset[std::make_pair("3He",3)]=-0.91;
-      EC_time_offset[std::make_pair("3He",4)]=-0.94;  EC_time_offset[std::make_pair("3He",5)]=-0.92; EC_time_offset[std::make_pair("3He",6)]=-0.81;
-
-      EC_time_offset[std::make_pair("C12",1)]=-0.71;  EC_time_offset[std::make_pair("C12",2)]=-0.77; EC_time_offset[std::make_pair("C12",3)]=-0.87;
-      EC_time_offset[std::make_pair("C12",4)]=-0.91;  EC_time_offset[std::make_pair("C12",5)]=-0.89; EC_time_offset[std::make_pair("C12",6)]=-0.79;
-
-      EC_time_offset[std::make_pair("CH2",1)]=-0.70;  EC_time_offset[std::make_pair("CH2",2)]=-0.80; EC_time_offset[std::make_pair("CH2",3)]=-0.91;
-      EC_time_offset[std::make_pair("CH2",4)]=-0.92;  EC_time_offset[std::make_pair("CH2",5)]=-0.91; EC_time_offset[std::make_pair("CH2",6)]=-0.80;
-
-      elmom_corr_fact[0]=1.007;
-      elmom_corr_fact[1]=0.988;
-      elmom_corr_fact[2]=1.008;
-      elmom_corr_fact[3]=1.011;
-      elmom_corr_fact[4]=1.014;
-      elmom_corr_fact[5]=1.013;//a constant to multiply e- momentum with to correct the location of n peak in MM(3He(e,e'pp)n)
   }
 
 
   if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.) //2.2 GeV  Configuration parameters and cuts
   {
       E_acc_file="2_261";
-      eps=0.02;//GeV
-      prot_accept_mom_lim=0.3;
-      prot_mom_lim=2.15;
-      min_good_mom=0.55;
-      max_mom=2.1;
-      pipl_maxmom=1.4;
-      pimi_maxmom=1.3;
-      pimi_delt_cutrange=3.;
-      pipl_delt_cutrange=3.;
       N_pperp=2;
       N_Ecal=6;
       pperp_cut=new double[N_pperp];
@@ -204,68 +122,11 @@ void genie_analysis::Loop()
       Ecal_uplim[5]=2.;
       for (int i=0;i<N_Ecal;i++)	cout<<Ecal_lowlim[i]<<"  to  "<<Ecal_uplim[i]<<endl;
 
-      vert_min["3He"]=-3.29;
-      vert_min["4He"]=-2.53;
-      vert_min["C12"]=4.8;
-      vert_min["56Fe"]=4.6;
-      vert_max["3He"]=-0.23;
-      vert_max["4He"]=1.73;
-      vert_max["C12"]=5.5;
-      vert_max["56Fe"]=5.3;
-
-      vertdiff_min["3He"]=-1.;
-      vertdiff_min["4He"]=-1.;
-      vertdiff_min["C12"]=-1.;
-      vertdiff_min["56Fe"]=-1.;
-
-      vertdiff_max["3He"]=1.;
-      vertdiff_max["4He"]=1.;
-      vertdiff_max["C12"]=1.;
-      vertdiff_max["56Fe"]=1.;
-
-      EC_photon_beta["3He"]=0.93;
-      EC_photon_beta["4He"]=0.92;
-      EC_photon_beta["C12"]=0.92;
-      EC_photon_beta["56Fe"]=0.90;
-
-      LEC_photon_beta["3He"]=0.96;
-      LEC_photon_beta["4He"]=0.94;
-      LEC_photon_beta["C12"]=0.94;
-      LEC_photon_beta["56Fe"]=0.95;
-
-      EC_time_offset[std::make_pair("3He",1)]=-1.37;  EC_time_offset[std::make_pair("3He",2)]=-1.42; EC_time_offset[std::make_pair("3He",3)]=-1.55;
-      EC_time_offset[std::make_pair("3He",4)]=-1.53;  EC_time_offset[std::make_pair("3He",5)]=-1.49; EC_time_offset[std::make_pair("3He",6)]=-1.44;
-
-      EC_time_offset[std::make_pair("4He",1)]=0.72;  EC_time_offset[std::make_pair("4He",2)]=0.27; EC_time_offset[std::make_pair("4He",3)]=0.16;
-      EC_time_offset[std::make_pair("4He",4)]=0.21;  EC_time_offset[std::make_pair("4He",5)]=0.22; EC_time_offset[std::make_pair("4He",6)]=0.21;
-
-      EC_time_offset[std::make_pair("C12",1)]=0.50;  EC_time_offset[std::make_pair("C12",2)]=0.39; EC_time_offset[std::make_pair("C12",3)]=0.29;
-      EC_time_offset[std::make_pair("C12",4)]=0.29;  EC_time_offset[std::make_pair("C12",5)]=0.32; EC_time_offset[std::make_pair("C12",6)]=0.33;
-
-      EC_time_offset[std::make_pair("56Fe",1)]=0.75;  EC_time_offset[std::make_pair("56Fe",2)]=0.49; EC_time_offset[std::make_pair("56Fe",3)]=0.37;
-      EC_time_offset[std::make_pair("56Fe",4)]=0.39;  EC_time_offset[std::make_pair("56Fe",5)]=0.43; EC_time_offset[std::make_pair("56Fe",6)]=0.44;
-
-      elmom_corr_fact[0]=1.001;
-      elmom_corr_fact[1]=0.991;
-      elmom_corr_fact[2]=1.005;
-      elmom_corr_fact[3]=1.004;
-      elmom_corr_fact[4]=1.006;
-      elmom_corr_fact[5]=1.005;//a constant to multiply e- momentum with to correct the location of n peak in MM(3He(e,e'pp)n)
   }
 
   if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5)  //4.4 GeV  Configuration parameters and cuts
   {
       E_acc_file="4_461";
-      eps=0.02;//GeV
-      prot_accept_mom_lim=0.3;
-      prot_mom_lim=2.7;
-      min_good_mom=1.1;
-      if(ftarget=="3He") min_good_mom=1.3;//the EC threshold was different for He3
-      max_mom=3.7;
-      pipl_maxmom=1.9;
-      pipl_delt_cutrange=3.;
-      pimi_maxmom=1.6;
-      pimi_delt_cutrange=3.;
       N_pperp=2;
       N_Ecal=6;
       pperp_cut=new double[N_pperp];
@@ -281,54 +142,7 @@ void genie_analysis::Loop()
       Ecal_uplim[5]=4.;
       for (int i=0;i<N_Ecal;i++)	cout<<Ecal_lowlim[i]<<"  to  "<<Ecal_uplim[i]<<endl;;
 
-      vert_min["3He"]=-3.27;
-      vert_min["4He"]=-2.51;
-      vert_min["C12"]=4.7;
-      vert_min["56Fe"]=4.6;
-      vert_max["3He"]=0.07;
-      vert_max["4He"]=1.71;
-      vert_max["C12"]=5.3;
-      vert_max["56Fe"]=5.4;
-
-      vertdiff_min["3He"]=-1.;
-      vertdiff_min["4He"]=-1;
-      vertdiff_min["C12"]=-1;
-      vertdiff_min["56Fe"]=-1;
-
-      vertdiff_max["3He"]=1.;
-      vertdiff_max["4He"]=1.;
-      vertdiff_max["C12"]=1;
-      vertdiff_max["56Fe"]=1;
-
-      EC_photon_beta["3He"]=0.92;
-      EC_photon_beta["4He"]=0.91;
-      EC_photon_beta["C12"]=0.92;
-      EC_photon_beta["56Fe"]=0.91;
-
-      LEC_photon_beta["3He"]=0.97;
-      LEC_photon_beta["4He"]=0.97;
-      LEC_photon_beta["C12"]=0.95;
-      LEC_photon_beta["56Fe"]=0.96;
-
-      EC_time_offset[std::make_pair("3He",1)]=-0.15;  EC_time_offset[std::make_pair("3He",2)]=-0.26; EC_time_offset[std::make_pair("3He",3)]=-0.41;
-      EC_time_offset[std::make_pair("3He",4)]=-0.29;  EC_time_offset[std::make_pair("3He",5)]=-0.25; EC_time_offset[std::make_pair("3He",6)]=-0.23;
-
-      EC_time_offset[std::make_pair("4He",1)]=-0.01;  EC_time_offset[std::make_pair("4He",2)]=-0.11; EC_time_offset[std::make_pair("4He",3)]=-0.23;
-      EC_time_offset[std::make_pair("4He",4)]=-0.26;  EC_time_offset[std::make_pair("4He",5)]=-0.21; EC_time_offset[std::make_pair("4He",6)]=-0.09;
-
-      EC_time_offset[std::make_pair("C12",1)]=-0.01;  EC_time_offset[std::make_pair("C12",2)]=-0.11; EC_time_offset[std::make_pair("C12",3)]=-0.23;
-      EC_time_offset[std::make_pair("C12",4)]=-0.27;  EC_time_offset[std::make_pair("C12",5)]=-0.21; EC_time_offset[std::make_pair("C12",6)]=-0.08;
-
-      EC_time_offset[std::make_pair("56Fe",1)]=-0.49;  EC_time_offset[std::make_pair("56Fe",2)]=-0.14; EC_time_offset[std::make_pair("56Fe",3)]=-0.32;
-      EC_time_offset[std::make_pair("56Fe",4)]=-0.25;  EC_time_offset[std::make_pair("56Fe",5)]=-0.17; EC_time_offset[std::make_pair("56Fe",6)]=-0.35;
-
-      elmom_corr_fact[0]=1.001;
-      elmom_corr_fact[1]=0.991;
-      elmom_corr_fact[2]=1.005;
-      elmom_corr_fact[3]=1.004;
-      elmom_corr_fact[4]=1.006;
-      elmom_corr_fact[5]=1.005;//a constant to multiply e- momentum with to correct the location of n peak in MM(3He(e,e'pp)n)
-    }
+  }
   //Further constants for binding energies and target masses
   Ecal_offset["3He"]=0.004;
   Ecal_offset["4He"]=0.005;
@@ -354,11 +168,47 @@ void genie_analysis::Loop()
   residual_target_mass["CH2"] = 25*m_prot+30*m_neut-Mn_bind_en;
 
   //Definition of Histograms
-  TH1F *h1_el_cc_deltat[nsect], *h1_el_cc_deltat_cut[nsect],*h1_Erec_p_bkgd_slice[n_slice],*h1_Etot_p_bkgd_slice[n_slice],*h1_Etot_Npi0[n_slice],*h1_Erec_Npi0_new[n_slice],* h1_Erec_bkgd_pipl_pimi_new_fact[n_slice], *h1_Etot_bkgd_pipl_pimi_fact[n_slice], *h1_Etot_bkgd_pipl_pimi_fact_pipl[n_slice], *h1_Etot_bkgd_pipl_pimi_fact_pimi[n_slice],*h1_Etot_Npi1[n_slice],*h1_Erec_Npi1[n_slice],*h1_Etot_bkgd_1p2pi[n_slice],*h1_Erec_bkgd_1p2pi[n_slice],*h1_Etot_p_bkgd_slice_2p1pi_to1p1pi[n_slice],*h1_Etot_p_bkgd_slice_2p2pi[n_slice],*h1_Etot_p_bkgd_slice_2p1pi_to2p0pi[n_slice],*h1_Erec_p_bkgd_slice_2p1pi_to1p1pi[n_slice],*h1_Erec_p_bkgd_slice_2p1pi_to2p0pi[n_slice],*h1_Erec_p_bkgd_slice_2p2pi[n_slice],*h1_Erec_p_bkgd_slice_2p1pi_to1p0pi[n_slice],*h1_Etot_p_bkgd_slice_2p1pi_to1p0pi[n_slice],*h1_Etot_bkgd_1p2pi_1p0pi[n_slice],*h1_Erec_bkgd_1p2pi_1p0pi[n_slice],*h1_Etot_bkgd_1p3pi[n_slice],*h1_Erec_bkgd_1p3pi[n_slice],*h1_e_mom_corrfuct[nsect];
-  TH1F *h1_Etot_piplpimi_subtruct_fact[n_slice],*h1_Erec_piplpimi_subtruct_new_fact[n_slice],*h1_Etot_p_bkgd_slice_sub[n_slice],*h1_Erec_p_bkgd_slice_sub[n_slice],*h1_Etot_3pto1p_slice[n_slice],*h1_Erec_3pto1p_slice[n_slice],*h1_Etot_3pto2p_slice[n_slice],*h1_Erec_3pto2p_slice[n_slice],*h1_Etot_3p1pi_slice[n_slice],*h1_Erec_3p1pi_slice[n_slice],*h1_Etot_4pto3p_slice[n_slice],*h1_Erec_4pto3p_slice[n_slice],*h1_Etot_4pto1p_slice[n_slice],*h1_Erec_4pto1p_slice[n_slice],*h1_Etot_4pto2p_slice[n_slice],*h1_Erec_4pto2p_slice[n_slice],*h1_Etot_43pto1p_slice[n_slice],*h1_Erec_43pto1p_slice[n_slice],*h1_Etot_p_bkgd_slice_sub1p2pi[n_slice], *h1_Erec_p_bkgd_slice_sub1p2pi[n_slice],*h1_Etot_p_bkgd_slice_sub2p1pi_1p[n_slice],*h1_Etot_p_bkgd_slice_sub3p1pi_0p[n_slice],*h1_Erec_p_bkgd_slice_sub2p1pi_1p[n_slice],*h1_Erec_p_bkgd_slice_sub3p1pi_0pi[n_slice],*h1_Etot_p_bkgd_slice_sub2p1pi_2p[n_slice],*h1_Erec_p_bkgd_slice_sub2p1pi_2p[n_slice],*h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi[n_slice],*h1_Erec_p_bkgd_slice_sub2p1pi_1p0pi[n_slice],*h1_Etot_p_bkgd_slice_sub1p2pi_0pi[n_slice],*h1_Erec_p_bkgd_slice_sub1p2pi_0pi[n_slice],*h1_Etot_p_bkgd_slice_sub1p3pi_0pi[n_slice],*h1_Etot_p_bkgd_slice_sub3p1pi_0pi[n_slice],*h1_Erec_p_bkgd_slice_sub1p3pi_0pi[n_slice],*h1_Etot_p_bkgd_slice_sub2p2pi_0pi[n_slice],*h1_Erec_p_bkgd_slice_sub2p2pi_0pi[n_slice];
-  TH1F *h1_Etot_p_bkgd_slice_sub32[n_slice],*h1_Erec_p_bkgd_slice_sub32[n_slice],*h1_Etot_p_bkgd_slice_sub31[n_slice],*h1_Erec_p_bkgd_slice_sub31[n_slice],*h1_Etot_p_bkgd_slice_sub43[n_slice],*h1_Erec_p_bkgd_slice_sub43[n_slice],*h1_Etot_p_bkgd_slice_sub41[n_slice],*h1_Erec_p_bkgd_slice_sub41[n_slice],*h1_Erec_p_bkgd_slice_sub42[n_slice],*h1_Etot_p_bkgd_slice_sub42[n_slice],*h1_Etot_p_bkgd_slice_sub431[n_slice],*h1_Erec_p_bkgd_slice_sub431[n_slice];
-  TH1F *h1_el_ec_sc_timediff_sect_corr[nsect], *h1_el_ec_sc_timediff_sect[nsect],*h1_beta_ec_corr_sect[nsect],*h1_el_SCpdfidcut[6],*h1_el_SCpd[6];
-  TH2F *h2_el_theta_phi_p_beffidcut[6],*h2_el_theta_phi_p_fidcut[6],*h2_el_ec_sc_timediff_ecu[6],*h2_el_ec_sc_timediff_ecv[6],*h2_el_ec_sc_timediff_ecw[6], *h2_el_ec_sc_timediff_SCpd[6],*h2_prot_theta_phi_p_beffidcut[6],*h2_prot_theta_phi_p_fidcut[6],*h2_el_theta_phi_p_beffidcut2[6],*h2_el_theta_phi_p_fidcut2[6],*h2_N_pi_phot[20],*h2_pimi_theta_phi_p_beffidcut[6],*h2_pimi_theta_phi_p_fidcut[6],*h2_pipl_theta_phi_p_beffidcut[6],*h2_pipl_theta_phi_p_fidcut[6],*h2_prot_theta_p[6],*h2_prot_theta_p_cut[6],*h2_pimi_theta_p[6],*h2_pimi_theta_p_cut[6],*h2_pipl_theta_p[6],*h2_pipl_theta_p_cut[6];
+  TH1F *h1_Etot_p_bkgd_slice[n_slice], *h1_Erec_p_bkgd_slice[n_slice];
+  TH1F *h1_Etot_Npi0[n_slice],*h1_Erec_Npi0[n_slice];
+  TH1F *h1_Etot_Npi1[n_slice],*h1_Erec_Npi1[n_slice];
+
+  TH1F *h1_Erec_bkgd_pipl_pimi_new_fact[n_slice], *h1_Etot_bkgd_pipl_pimi_fact[n_slice];
+  TH1F *h1_Etot_bkgd_pipl_pimi_fact_pipl[n_slice], *h1_Etot_bkgd_pipl_pimi_fact_pimi[n_slice];
+
+  TH1F *h1_Etot_bkgd_1p2pi[n_slice],      *h1_Erec_bkgd_1p2pi[n_slice];
+  TH1F *h1_Etot_bkgd_1p2pi_1p0pi[n_slice],*h1_Erec_bkgd_1p2pi_1p0pi[n_slice];
+  TH1F *h1_Etot_bkgd_1p3pi[n_slice],      *h1_Erec_bkgd_1p3pi[n_slice];
+
+  TH1F *h1_Etot_p_bkgd_slice_2p2pi[n_slice],        *h1_Erec_p_bkgd_slice_2p2pi[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_2p1pi_to1p1pi[n_slice],*h1_Erec_p_bkgd_slice_2p1pi_to1p1pi[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_2p1pi_to2p0pi[n_slice],*h1_Erec_p_bkgd_slice_2p1pi_to2p0pi[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_2p1pi_to1p0pi[n_slice],*h1_Erec_p_bkgd_slice_2p1pi_to1p0pi[n_slice];
+
+  TH1F *h1_Etot_piplpimi_subtruct_fact[n_slice],*h1_Erec_piplpimi_subtruct_fact[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub[n_slice],*h1_Erec_p_bkgd_slice_sub[n_slice];
+  TH1F *h1_Etot_3pto1p_slice[n_slice],*h1_Erec_3pto1p_slice[n_slice];
+  TH1F *h1_Etot_3pto2p_slice[n_slice],*h1_Erec_3pto2p_slice[n_slice];
+  TH1F *h1_Etot_3p1pi_slice[n_slice], *h1_Erec_3p1pi_slice[n_slice];
+  TH1F *h1_Etot_4pto3p_slice[n_slice],*h1_Erec_4pto3p_slice[n_slice];
+  TH1F *h1_Etot_4pto1p_slice[n_slice],*h1_Erec_4pto1p_slice[n_slice];
+  TH1F *h1_Etot_4pto2p_slice[n_slice],*h1_Erec_4pto2p_slice[n_slice];
+  TH1F *h1_Etot_43pto1p_slice[n_slice],*h1_Erec_43pto1p_slice[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub1p2pi[n_slice],*h1_Erec_p_bkgd_slice_sub1p2pi[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub2p1pi_1p[n_slice],*h1_Erec_p_bkgd_slice_sub2p1pi_1p[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub2p1pi_2p[n_slice],*h1_Erec_p_bkgd_slice_sub2p1pi_2p[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi[n_slice],*h1_Erec_p_bkgd_slice_sub2p1pi_1p0pi[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub1p2pi_0pi[n_slice],*h1_Erec_p_bkgd_slice_sub1p2pi_0pi[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub1p3pi_0pi[n_slice],*h1_Erec_p_bkgd_slice_sub1p3pi_0pi[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub2p2pi_0pi[n_slice],*h1_Erec_p_bkgd_slice_sub2p2pi_0pi[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub3p1pi_0pi[n_slice],*h1_Erec_p_bkgd_slice_sub3p1pi_0pi[n_slice];
+
+  TH1F *h1_Etot_p_bkgd_slice_sub32[n_slice],*h1_Erec_p_bkgd_slice_sub32[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub31[n_slice],*h1_Erec_p_bkgd_slice_sub31[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub43[n_slice],*h1_Erec_p_bkgd_slice_sub43[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub41[n_slice],*h1_Erec_p_bkgd_slice_sub41[n_slice];
+  TH1F *h1_Erec_p_bkgd_slice_sub42[n_slice],*h1_Etot_p_bkgd_slice_sub42[n_slice];
+  TH1F *h1_Etot_p_bkgd_slice_sub431[n_slice],*h1_Erec_p_bkgd_slice_sub431[n_slice];
+  TH2F *h2_N_pi_phot[20];
 
 
   gRandom = new TRandom3();
@@ -471,18 +321,8 @@ void genie_analysis::Loop()
 
   //Definition and initialization of Histograms
   TH1F *h1_el_Mott_crosssec = new TH1F("h1_el_Mott_crosssec","",200,0.,0.01);
-  TH1F *h1_el_Etot = new TH1F("h1_el_Etot","",600,0,4);
-  TH1F *h1_el_Ein = new TH1F("h1_el_Ein","",800,0,1.5);
-  TH1F *h1_el_Etot_cut = new TH1F("h1_el_Etot_cut","",600,0,4);
-  TH1F *h1_el_Ein_cut = new TH1F("h1_el_Ein_cut","",800,0,1.5);
-  TH1F *h1_el_cc_nphe = new TH1F("h1_el_cc_nphe","",300,0,30);
-  TH1F *h1_el_cc_nphe_cut = new TH1F("h1_el_cc_nphe_cut","",300,0,30);
-  TH1F *h1_el_cc_nphe_cut2 = new TH1F("h1_el_cc_nphe_cut2","",300,0,30);
-  TH1F *h1_el_cc_chi2 = new TH1F("h1_el_cc_chi2","",200,0,0.7);
   TH1F *h1_Wvar = new TH1F("h1_Wvar","",400,0,3);
   TH1F *h1_Wvar_weight = new TH1F("h1_Wvar_weight","",400,0,3);
-  TH1F *h1_Wepp = new TH1F("h1_Wepp","",400,0,3);
-  TH1F *h1_Wepp_uncorr = new TH1F("h1_Wepp_uncorr","",400,0,3);
   TH1F *h1_xbjk = new TH1F("h1_xbjk","",400,0,3);
   TH1F *h1_xbjk_weight = new TH1F("h1_xbjk_weight","",400,0,3);
   TH1F *h1_Q2 = new TH1F("h1_Q2","",400,0,6);
@@ -492,25 +332,14 @@ void genie_analysis::Loop()
   TH1F *h1_Nphot=new TH1F("h1_Nphot","",10,0,5);
   TH1F *h1_Npiphot=new TH1F("h1_Npiphot","",10,0,5);
   TH1F *h1_Npiphot_norad=new TH1F("h1_Npiphot_norad","",10,0,5);
-  TH1F *h1_photon_E=new TH1F("h1_photon_E","",200,0,4.5);
-  TH1F *h1_photon_EC_E=new TH1F("h1_photon_EC_E","",200,0,4.5);
-  TH1F *h1_phot_e_angle= new TH1F("h1_phot_e_angle","",300,0,180);
-  TH1F *h1_time_ec=new TH1F("h1_time_ec","",200,-20,20);
   TH1F *h1_Npi=new TH1F("h1_Npi","",10,0,5);
   TH1F *h1_Npipl=new TH1F("h1_Npipl","",10,0,5);
   TH1F *h1_Npimi=new TH1F("h1_Npimi","",10,0,5);
   TH1F *h1_el_mom = new TH1F("h1_el_mom","",100,1.2,6);
   TH1F *h1_el_mom_corr = new TH1F("h1_el_mom_corr","",100,1.2,6);
   TH1F *h1_el_mom_ratio = new TH1F("h1_el_mom_ratio","",50,0.97,1.01);
-  TH1F *h1_el_prot_vertdiff_all= new TH1F("h1_el_prot_vertdiff_all","",300,-10,10);
-  TH1F *h1_prot_vertdiff= new TH1F("h1_prot_vertdiff","",300,-10,10);
-  TH1F *h1_pipl_prot_vertdiff= new TH1F("h1_pipl_prot_vertdiff","",300,-10,10);
-  TH1F *h1_pimi_prot_vertdiff= new TH1F("h1_pimi_prot_vertdiff","",300,-10,10);
   TH1F *h1_prot_mom = new TH1F("h1_prot_mom","",300,0,3);
   TH1F *h1_prot_mom_ratio = new TH1F("h1_prot_mom_ratio","",50,0.97,1.2);
-  TH1F *h1_neg_m=new TH1F("h1_neg_m","",300,0,2);
-  TH1F *h1_pos_m=new TH1F("h1_pos_m","",300,0,2);
-
 
   //Binning for fractional feed down energy histograms
   int N_qe;
@@ -578,13 +407,6 @@ void genie_analysis::Loop()
   TH1F *h1_E_rec_undetfactor_fracfeed = new TH1F("h1_E_rec_undetfactor_fracfeed","",N_qe,x_qe);
   TH1F *h1_E_tot_undetfactor_fracfeed = new TH1F("h1_E_tot_undetfactor_fracfeed","",N_qe,x_qe);
 
-  TH1F *h1_beta_ec = new TH1F("h1_beta_ec","",300,0,2);
-  TH1F *h1_beta_ec_corr = new TH1F("h1_beta_ec_corr","",300,0,2);
-  TH1F *h1_beta_ec_corr_cut = new TH1F("h1_beta_ec_corr_cut","",300,0,2);
-  TH1F *h1_el_ec_sc_timediff = new TH1F("h1_el_ec_sc_timediff","",600,-30,30);
-  TH1F *h1_el_ec_sc_timediff_corr = new TH1F("h1_el_ec_sc_timediff_corr","",600,-30,30);
-  TH1F *h1_el_ec_sc_timediff_allSCpd = new TH1F("h1_el_ec_sc_timediff_allSCpd","",600,-30,30);
-  TH1F *h1_el_ec_sc_timediff_corr_allSCpd = new TH1F("h1_el_ec_sc_timediff_corr_allSCpd","",600,-30,30);
   TH1F *h1_theta0=new TH1F("h1_theta0","",300,0,180);
   TH2F *h2_Ecal_Eqe=new TH2F("h2_Ecal_Eqe","",600,0,5,600,0,5);
   TH2F *h2_EqeEcalratio_Eqe=new TH2F("h2_EqeEcalratio_Eqe","",600,0,5,300,0,2);
@@ -592,31 +414,7 @@ void genie_analysis::Loop()
   TH2F *h2_N_prot_pi=new TH2F("h2_N_prot_pi","",10,0,5,10,0,5);
   TH2F *h2_N_prot_pi_phot=new TH2F("h2_N_prot_pi_phot","",10,0,5,10,0,5);
   TH2F *h2_N_prot_pi_phot_nonrad=new TH2F("h2_N_prot_pi_phot_nonrad","",10,0,5,10,0,5);
-  TH2F *h2_el_E_p_ratio_cut = new TH2F("h2_el_E_p_ratio_cut","",200,0,4.5,200,0,0.5);
-  TH2F *h2_el_E_p_ratio = new TH2F("h2_el_E_p_ratio","",200,0,4.5,200,0,0.5);
-  TH2F *h2_el_E_p_ratio_withoutCC = new TH2F("h2_el_E_p_ratio_withoutCC","",200,0,4.5,200,0,0.5);
-  TH2F *h2_el_E_p_ratio_withCC = new TH2F("h2_el_E_p_ratio_withCC","",200,0,4.5,200,0,0.5);
-  TH2D *h2_el_Ein_Eout=new TH2D("h2_el_Ein_Eout","",400,0,2,400,0,1.5);
-  TH2D *h2_el_Einout_Etot=new TH2D("h2_el_Einout_Etot","",400,0,4,400,0,4);
-  TH2F *h2_el_ec_xy = new TH2F("h2_el_ec_xy","",100,-600,600,100,-600,600);
-  TH2F *h2_el_ec_xy_fidcut = new TH2F("h2_el_ec_xy_fidcut","",100,-600,600,100,-600,600);
-  TH2F *h2_el_phi_vert = new TH2F("h2_el_phi_vert","",500,-6,7,120,0,380);
-  TH2F *h2_el_phi_vert_uncorr = new TH2F("h2_el_phi_vert_uncorr","",500,-6,7,120,0,380);
   TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,0,180);
-  TH2F *h2_neutral_costheta_phi_EC_all = new TH2F("h2_neutral_costheta_phi_EC_all","",200,0,360,200,0,1.1);
-  TH2F *h2_neutral_theta_phi_EC_all = new TH2F("h2_neutral_theta_phi_EC_all","",200,0,360,200,0,180);
-  TH2F *h2_neutral_theta_phi_EC_all_fidcut = new TH2F("h2_neutral_theta_phi_EC_all_fidcut","",200,0,360,200,0,180);
-  TH2F *h2_pimi_theta_phi = new TH2F("h2_pimi_theta_phi","",200,0,360,200,0,180);
-  TH2F *h2_pipl_theta_phi = new TH2F("h2_pipl_theta_phi","",200,0,360,200,0,180);
-  TH2F *h2_pimi_theta_phi_beffid = new TH2F("h2_pimi_theta_phi_beffid","",200,0,360,200,0,180);
-  TH2F *h2_pipl_theta_phi_beffid = new TH2F("h2_pipl_theta_phi_beffid","",200,0,360,200,0,180);
-  TH2F *h2_prot_theta_phi = new TH2F("h2_prot_theta_phi","",200,0,360,200,0,180);
-  TH2F *h2_prot_px_py_p = new TH2F("h2_prot_px_py_p","",100,-1,1,100,-1,1);
-  TH2F *h2_prot_px_py_p_fidcut = new TH2F("h2_prot_px_py_p_fidcut","",100,-1,1,100,-1,1);
-  TH2F *h2_pipl_theta_phi_p = new TH2F("h2_pipl_theta_phi_p","",200,0,360,200,0,180);
-  TH2F *h2_pipl_theta_phi_fidcut = new TH2F("h2_pipl_theta_phi_fidcut","",200,0,360,200,0,180);
-  TH2F *h2_pimi_theta_phi_p = new TH2F("h2_pimi_theta_phi_p","",200,0,360,200,0,180);
-  TH2F *h2_pimi_theta_phi_fidcut = new TH2F("h2_pimi_theta_phi_fidcut","",200,0,360,200,0,180);
   TH2F *h2_el_mom_diff = new TH2F("h2_el_mom_diff","",500,0.,1.,500,-0.1,0.1);
   TH2F *h2_Q2_nu = new TH2F("h2_Q2_nu","",200,0,3.5,200,0,5);
   TH2F *h2_Q2_nu_weight = new TH2F("h2_Q2_nu_weight","",200,0,3.5,200,0,5);
@@ -646,27 +444,7 @@ void genie_analysis::Loop()
   TH2F *h2_Erec_pperp_3p1pi = new TH2F("h2_Erec_pperp_3p1pi","",400,0,1,400,0,6.);
   TH2F *h2_pperp_W=new TH2F("h2_pperp_W","",200,0,3,200,0,2);
 
-  TH2F *h2_pipl_delt_p= new TH2F("h2_pipl_delt_p","",300,0.,2.5,300,-15,15);
-  TH2F *h2_pimi_delt_p= new TH2F("h2_pimi_delt_p","",300,0.,2.5,300,-15,15);
-  TH2F *h2_pos_delt_p= new TH2F("h2_pos_delt_p","",300,0.,2.5,300,-15,15);
-  TH2F *h2_neg_delt_p= new TH2F("h2_neg_delt_p","",300,0.,2.5,300,-15,15);
-  TH2F *h2_pipl_beta_p = new TH2F("h2_pipl_beta_p","",200,0,4,200,0,1.2);
-  TH2F *h2_pimi_beta_p = new TH2F("h2_pimi_beta_p","",200,0,4,200,0,1.2);
-  TH2F *h2_neg_beta_p = new TH2F("h2_neg_beta_p","",200,0,4,200,0,1.2);
-  TH2F *h2_pos_beta_p = new TH2F("h2_pos_beta_p","",200,0,4,200,0,1.2);
-  TH2F *h2_prot_beta_p = new TH2F("h2_prot_beta_p","",200,0,4,200,0,1.2);
-  TH2F *h2_neg_E_p = new TH2F("h2_neg_E_p","",200,0,3,200,0,200);
-  TH2F *h2_pos_E_p = new TH2F("h2_pos_E_p","",200,0,3,200,0,200);
-  TH2F *h2_pimi_E_p = new TH2F("h2_pimi_E_p","",200,0,3,200,0,200);
-  TH2F *h2_pipl_E_p = new TH2F("h2_pipl_E_p","",200,0,3,200,0,200);
-  TH2F *h2_prot_E_p = new TH2F("h2_prot_E_p","",200,0,3,200,0,200);
-  TH2F *h2_prot_Deltat_p= new TH2F("h2_prot_Deltat_p","",300,0.,2.7,300,-15,15);
-  TH2F *h2_phot_e_angle_vsphotE= new TH2F("h2_phot_e_angle_vsphotE","",300,0,3,300,0,180);
   TH2F *h2_phot_e_angle_Erec= new TH2F("h2_phot_e_angle_Erec","",400,0,4.7,300,0,180);
-  TH2F *h2_Wepp_ephi= new TH2F("h2_Wepp_ephi","",720,0,360,200,0.85,1.05);
-  TH2F *h2_Wepp_ephi_corr= new TH2F("h2_Wepp_ephi_corr","",720,0,360,200,0.85,1.05);
-  TH2F *h2_Wepp_ephi_uncorrprot= new TH2F("h2_Wepp_ephi_uncorrprot","",720,0,360,200,0.85,1.05);
-  TH2F *h2_Wepp_ephi_corr_uncorrprot= new TH2F("h2_Wepp_ephi_corr_uncorrprot","",720,0,360,200,0.85,1.05);
 
   //Binning for energy reconstruction histograms
   int n_bins;
@@ -735,7 +513,7 @@ void genie_analysis::Loop()
   TH1F *h1_E_tot_1prot  = new TH1F("h1_E_tot_1prot","",n_bins,x_values);
   TH1F *h1_E_rec_cutpi1_piplpimi = new TH1F("h1_E_rec_cutpi1_piplpimi","",n_bins,x_values);
   TH1F *h1_E_tot_cutpi1_piplpimi = new TH1F("h1_E_tot_cutpi1_piplpimi","",n_bins,x_values);
-  TH1F *h1_Etot = new TH1F("h1_Etot","",n_bins,x_values);
+  TH1F *h1_E_tot = new TH1F("h1_E_tot","",n_bins,x_values);
   TH1F *h1_E_rec_cut2_new = new TH1F("h1_E_rec_cut2_new","",n_bins,x_values);
   TH1F *h1_E_tot_cut2 = new TH1F("h1_E_tot_cut2","",n_bins,x_values);
   TH1F *h1_E_rec_cut005_newcut3 = new TH1F("h1_E_rec_cut005_newcut3","",n_bins,x_values);
@@ -760,40 +538,8 @@ void genie_analysis::Loop()
   TH1F *h1_E_tot_2p1pi_1p0pi  = new TH1F("h1_E_tot_2p1pi_1p0pi","",n_bins,x_values);
   TH1F *h1_E_rec_2p1pi_1p0pi  = new TH1F("h1_E_rec_2p1pi_1p0pi","",n_bins,x_values);
 
-  //Defintions of Histogram for each sector
-  for(int h=0;h<nsect;h++) {
-   h1_el_SCpdfidcut[h] = new TH1F(Form("h1_el_SCpdfidcut_%d",h+1),"",31,-0.5,30.5);
-   h1_el_SCpd[h] = new TH1F(Form("h1_el_SCpd_%d",h+1),"",31,-0.5,30.5);
-   h1_el_cc_deltat[h] = new TH1F(Form("h1_el_cc_deltat_%d",h+1),"",500,-100,100);
-   h1_el_cc_deltat_cut[h] = new TH1F(Form("h1_el_cc_deltat_cut_%d",h+1),"",500,-100,100);
-   h1_el_ec_sc_timediff_sect[h] = new TH1F(Form("h1_el_ec_sc_timediff_sect_%d",h+1),"",600,-30,30);
-   h1_el_ec_sc_timediff_sect_corr[h] = new TH1F(Form("h1_el_ec_sc_timediff_sect_corr_%d",h+1),"",600,-30,30);
-   h2_el_ec_sc_timediff_ecu[h] = new TH2F(Form("h2_el_ec_sc_timediff_ecu_%d",h+1),"",800,0,400,600,-30,30);
-   h2_el_ec_sc_timediff_ecv[h] = new TH2F(Form("h2_el_ec_sc_timediff_ecv_%d",h+1),"",800,0,400,600,-30,30);
-   h2_el_ec_sc_timediff_ecw[h] = new TH2F(Form("h2_el_ec_sc_timediff_ecw_%d",h+1),"",800,0,400,600,-30,30);
-   h2_el_ec_sc_timediff_SCpd[h] = new TH2F(Form("h2_el_ec_sc_timediff_SCpd_%d",h+1),"",75,0,25,600,-30,30);
-   h1_beta_ec_corr_sect[h] = new TH1F(Form("h1_beta_ec_corr_sect_%d",h+1),"",300,0,1.3);
-   h1_e_mom_corrfuct[h] = new TH1F(Form("h1_e_mom_corrfuct_%d",h+1),"",400,0.7,1.3);
-   h2_el_theta_phi_p_beffidcut[h] = new TH2F(Form("h2_el_theta_phi_p_beffidcut_%d",h+1),"",200,h*60,(h+1)*60,200,0,70);
-   h2_el_theta_phi_p_fidcut[h] = new TH2F(Form("h2_el_theta_phi_p_fidcut_%d",h+1),"",200,h*60,(h+1)*60,200,0,70);
-   h2_el_theta_phi_p_beffidcut2[h] = new TH2F(Form("h2_el_theta_phi_p_beffidcut2_%d",h+1),"",200,h*60,(h+1)*60,200,0,70);
-   h2_el_theta_phi_p_fidcut2[h] = new TH2F(Form("h2_el_theta_phi_p_fidcut2_%d",h+1),"",200,h*60,(h+1)*60,200,0,70);
-   h2_prot_theta_phi_p_beffidcut[h] = new TH2F(Form("h2_prot_theta_phi_p_beffidcut_%d",h+1),"",200,h*60,(h+1)*60,200,0,180);
-   h2_prot_theta_phi_p_fidcut[h] = new TH2F(Form("h2_prot_theta_phi_p_fidcut_%d",h+1),"",200,h*60,(h+1)*60,200,0,180);
-   h2_pipl_theta_phi_p_beffidcut[h] = new TH2F(Form("h2_pipl_theta_phi_p_beffidcut_%d",h+1),"",200,h*60,(h+1)*60,200,0,180);
-   h2_pipl_theta_phi_p_fidcut[h] = new TH2F(Form("h2_pipl_theta_phi_p_fidcut_%d",h+1),"",200,h*60,(h+1)*60,200,0,180);
-   h2_pimi_theta_phi_p_beffidcut[h] = new TH2F(Form("h2_pimi_theta_phi_p_beffidcut_%d",h+1),"",200,h*60,(h+1)*60,200,0,180);
-   h2_pimi_theta_phi_p_fidcut[h] = new TH2F(Form("h2_pimi_theta_phi_p_fidcut_%d",h+1),"",200,h*60,(h+1)*60,200,0,180);
-   h2_prot_theta_p[h] = new TH2F(Form("h2_prot_theta_p_%d",h+1),"",400,0,4,240,0,120);
-   h2_prot_theta_p_cut[h] = new TH2F(Form("h2_prot_theta_p_cut_%d",h+1),"",400,0,4,240,0,120);
-   h2_pimi_theta_p[h] = new TH2F(Form("h2_pimi_theta_p_%d",h+1),"",800,0,4,480,0,120);
-   h2_pimi_theta_p_cut[h] = new TH2F(Form("h2_pimi_theta_p_cut_%d",h+1),"",400,0,4,240,0,120);
-   h2_pipl_theta_p[h] = new TH2F(Form("h2_pipl_theta_p_%d",h+1),"",800,0,4,480,0,120);
-   h2_pipl_theta_p_cut[h] = new TH2F(Form("h2_pipl_theta_p_cut_%d",h+1),"",400,0,4,240,0,120);
-  }
-
-
-  for(int h=0;h<n_slice;h++){
+  //Defintions of Histogram for each slice
+  for(int h = 0; h < n_slice; h++){
    h1_Erec_p_bkgd_slice[h]= new TH1F(Form("h1_Erec_p_bkgd_slice_%d",h+1),"",n_bins,x_values);
    h1_Etot_p_bkgd_slice[h]= new TH1F(Form("h1_Etot_p_bkgd_slice_%d",h+1),"",n_bins,x_values);
    h1_Erec_3pto1p_slice[h]= new TH1F(Form("h1_Erec_3pto1p_slice_%d",h+1),"",n_bins,x_values);
@@ -811,7 +557,7 @@ void genie_analysis::Loop()
    h1_Erec_4pto1p_slice[h]= new TH1F(Form("h1_Erec_4pto1p_slice_%d",h+1),"",n_bins,x_values);
    h1_Etot_4pto1p_slice[h]= new TH1F(Form("h1_Etot_4pto1p_slice_%d",h+1),"",n_bins,x_values);
    h1_Etot_Npi0[h] = new TH1F(Form("h1_Etot_Npi0_%d",h+1),"",n_bins,x_values);
-   h1_Erec_Npi0_new[h] = new TH1F(Form("h1_Erec_Npi0_new_%d",h+1),"",n_bins,x_values);
+   h1_Erec_Npi0[h] = new TH1F(Form("h1_Erec_Npi0_%d",h+1),"",n_bins,x_values);
    h1_Etot_bkgd_pipl_pimi_fact[h]= new TH1F(Form("h1_Etot_bkgd_pipl_pimi_fact_%d",h+1),"",n_bins,x_values);
    h1_Etot_bkgd_pipl_pimi_fact_pipl[h]= new TH1F(Form("h1_Etot_bkgd_pipl_pimi_fact_pipl_%d",h+1),"",n_bins,x_values);
    h1_Etot_bkgd_pipl_pimi_fact_pimi[h]= new TH1F(Form("h1_Etot_bkgd_pipl_pimi_fact_pimi_%d",h+1),"",n_bins,x_values);
@@ -843,22 +589,7 @@ void genie_analysis::Loop()
   TH1F *h1_Etot_piplpimi_subtruct_fact_Ecalcut[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut[2][6];
   TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio3p[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[2][6], *h1_Etot_p_bkgd_slice_Ecalcut41[2][6], *h1_Etot_p_bkgd_slice_Ecalcut421[2][6], *h1_Etot_p_bkgd_slice_Ecalcut431[2][6], *h1_Etot_p_bkgd_slice_Ecalcut4321[2][6], *h1_Etot_p_bkgd_slice_Ecalcut31[2][6],*h1_Etot_p_bkgd_slice_Ecalcut321[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut41[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut42[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut431[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut_1p3pi_1p0pi[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut43[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut31[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut32[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_2p0pi[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_p1pi[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p0pi[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p0pi[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p1pi[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p1pi[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut_2p2pi_1p0pi[2][6],*h1_Etot_p_bkgd_slice_Ecalcut_2p1pito2p0pi[2][6],*h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p1pi[2][6],*h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p0pi[2][6],*h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi[2][6],*h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi[2][6],*h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[2][6],*h1_Etot_p_bkgd_slice_Ecalcut_2p2pi[2][6];
   TH1F *h1_E_tot_undetfactor09  = new TH1F("h1_E_tot_undetfactor09","",1,0,6);
-  TH1F *h1_E_tot_cut2_09 = new TH1F("h1_E_tot_cut2_09","",1,0,6);
-  TH1F *h1_E_tot_p_bkgd09  = new TH1F("h1_E_tot_p_bkgd09","",1,0,6);
-  TH1F *h1_Etot_p321_bkgd09  = new TH1F("h1_Etot_p321_bkgd09","",1,0,6);
-  TH1F *h1_Etot_p31_bkgd09  = new TH1F("h1_Etot_p31_bkgd09","",1,0,6);
-  TH1F *h1_Etot_p4321_bkgd09  = new TH1F("h1_Etot_p4321_bkgd09","",1,0,6);
-  TH1F *h1_Etot_p431_bkgd09  = new TH1F("h1_Etot_p431_bkgd09","",1,0,6);
-  TH1F *h1_Etot_p421_bkgd09  = new TH1F("h1_Etot_p421_bkgd09","",1,0,6);
-  TH1F *h1_Etot_p41_bkgd09  = new TH1F("h1_Etot_p41_bkgd09","",1,0,6);
-  TH1F *h1_Etot_bkgd09_2p1pi_2p0pi  = new TH1F("h1_Etot_bkgd09_2p1pi_2p0pi","",1,0,6);
-  TH1F *h1_Etot_bkgd09_2p1pi_1p1pi  = new TH1F("h1_Etot_bkgd09_2p1pi_1p1pi","",1,0,6);
-  TH1F *h1_Etot_bkgd09_2p1pi_1p0pi  = new TH1F("h1_Etot_bkgd09_2p1pi_1p0pi","",1,0,6);
-  TH1F *h1_Etot_bkgd09_1p2pi_1p0pi  = new TH1F("h1_Etot_bkgd09_1p2pi_1p0pi","",1,0,6);
-  TH1F *h1_Etot_bkgd09_1p2pi_1p1pi  = new TH1F("h1_Etot_bkgd09_1p2pi_1p1pi","",1,0,6);
-  TH1F *h1_Etot_bkgd09_1p3pi  = new TH1F("h1_Etot_bkgd09_1p3pi","",1,0,6);
-  TH1F *h1_Etot_bkgd09_2p2pi  = new TH1F("h1_Etot_bkgd09_2p2pi","",1,0,6);
-  TH1F *h1_Etot_bkgd09_3p1pi  = new TH1F("h1_Etot_bkgd09_3p1pi","",1,0,6);
+
 
 
   for (int i=0;i<N_pperp;i++){
@@ -885,23 +616,8 @@ void genie_analysis::Loop()
   }
 
   //initialization of correct error arrays for the histograms
-  h1_E_tot_cut2_09->Sumw2();
   h1_E_tot_undetfactor09->Sumw2();
-  h1_E_tot_p_bkgd09->Sumw2();
-  h1_Etot_p321_bkgd09->Sumw2();
-  h1_Etot_p31_bkgd09->Sumw2();
-  h1_Etot_p4321_bkgd09->Sumw2();
-  h1_Etot_p431_bkgd09->Sumw2();
-  h1_Etot_p421_bkgd09->Sumw2();
-  h1_Etot_p41_bkgd09->Sumw2();
-  h1_Etot_bkgd09_2p1pi_2p0pi->Sumw2();
-  h1_Etot_bkgd09_2p1pi_1p1pi->Sumw2();
-  h1_Etot_bkgd09_2p1pi_1p0pi->Sumw2();
-  h1_Etot_bkgd09_1p2pi_1p0pi->Sumw2();
-  h1_Etot_bkgd09_1p2pi_1p1pi->Sumw2();
-  h1_Etot_bkgd09_1p3pi->Sumw2();
-  h1_Etot_bkgd09_2p2pi->Sumw2();
-  h1_Etot_bkgd09_3p1pi->Sumw2();
+
 
   for (int i=0;i<N_pperp;i++){
     for(int j=0;j<N_Ecal;j++){
@@ -947,7 +663,7 @@ void genie_analysis::Loop()
    h1_Erec_4pto1p_slice[h]->Sumw2();
    h1_Etot_4pto1p_slice[h]->Sumw2();
    h1_Etot_Npi0[h]->Sumw2();
-   h1_Erec_Npi0_new[h]->Sumw2();
+   h1_Erec_Npi0[h]->Sumw2();
    h1_Etot_bkgd_pipl_pimi_fact[h]->Sumw2();
    h1_Etot_bkgd_pipl_pimi_fact_pipl[h]->Sumw2();
    h1_Etot_bkgd_pipl_pimi_fact_pimi[h]->Sumw2();
@@ -1050,7 +766,7 @@ void genie_analysis::Loop()
   h1_E_tot_1prot->Sumw2();
   h1_E_rec_cutpi1_piplpimi->Sumw2();
   h1_E_tot_cutpi1_piplpimi->Sumw2();
-  h1_Etot->Sumw2();
+  h1_E_tot->Sumw2();
   h1_E_rec_cut2_new->Sumw2();
   h1_E_tot_cut2->Sumw2();
   h1_E_rec_cut005_newcut3->Sumw2();
@@ -1091,18 +807,6 @@ void genie_analysis::Loop()
       vz_corr_func->SetParameters(pars); //setting appropriate parameters of the vertex correction function for the runs with the same target and beam energy, but different vertex correction
     }
 
-    if(runnb==18258 || runnb==18259)   {   //setting appropriate e- vertex cut range for the runs with the same target and beam energy, but different vertex correction
-      vert_max["56Fe"] = 6.;
-      vert_min["56Fe"] = 5.2;//runs with exploaded cell
-    }
-    if(runnb>18382 && runnb<18438){
-      vert_max["3He"] = 0.01;
-      vert_min["3He"] = -3.31; //runs with thin exit window
-    }
-    if(runnb>18220 && runnb<18253){
-      vert_max["4He"] = 0.77;
-      vert_min["4He"] = -2.27;  //runs with 5cm liquid target cell
-    }
 
     if((runnb>18283 && runnb<18289) || (runnb>18300 && runnb<18304) || (runnb>18317 && runnb<18329))        fTorusCurrent=750;    //setting appropriate torrus magnet current
     else if ((runnb>18293 && runnb<18301) || (runnb>18305 && runnb<18317) || (runnb>18328 && runnb<18336))  fTorusCurrent=1500;
@@ -1369,7 +1073,6 @@ void genie_analysis::Loop()
 
               h1_E_tot_p_bkgd->Fill(E_tot_2p[f],P_N_2p[f]*1/Mott_cross_sec);
               h1_E_rec_p_bkgd->Fill(E_rec,P_N_2p[f]*1/Mott_cross_sec);
-              h1_E_tot_p_bkgd09->Fill(E_tot_2p[f],P_N_2p[f]*1/Mott_cross_sec);
               h2_Erec_pperp_2p->Fill(p_perp_tot_2p[f],E_rec,P_N_2p[f]*1/Mott_cross_sec);
               h1_E_tot_p_bkgd_fracfeed->Fill((E_tot_2p[f]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_N_2p[f]*1/Mott_cross_sec);
               h1_E_rec_p_bkgd_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_N_2p[f]*1/Mott_cross_sec);
@@ -1427,7 +1130,6 @@ void genie_analysis::Loop()
               h1_E_tot_2p1pi_2p0pi->Fill(Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*1/Mott_cross_sec);
               h1_E_rec_2p1pi_2p0pi->Fill(E_rec,P_2p1pito2p0pi[z]*1/Mott_cross_sec);
               h2_Erec_pperp_2p1pi_2p0pi->Fill(p_miss_perp_2p1pi_to2p0pi[z],E_rec,P_2p1pito2p0pi[z]*1/Mott_cross_sec);
-              h1_Etot_bkgd09_2p1pi_2p0pi->Fill(Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*1/Mott_cross_sec);
               h1_E_tot_2p1pi_2p0pi_fracfeed->Fill((Ecal_2p1pi_to2p0pi[z]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_2p1pito2p0pi[z]*1/Mott_cross_sec);
               h1_E_rec_2p1pi_2p0pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_2p1pito2p0pi[z]*1/Mott_cross_sec);
               h2_pperp_W->Fill(W_var,p_miss_perp_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*1/Mott_cross_sec);
@@ -1454,7 +1156,6 @@ void genie_analysis::Loop()
               h1_E_tot_2p1pi_1p1pi->Fill(E_tot_2p[z],P_2p1pito1p1pi[z]*1/Mott_cross_sec);
               h1_E_rec_2p1pi_1p1pi->Fill(E_rec,P_2p1pito1p1pi[z]*1/Mott_cross_sec);
               h2_Erec_pperp_2p1pi_1p1pi->Fill(p_perp_tot_2p[z],E_rec,P_2p1pito1p1pi[z]*1/Mott_cross_sec);
-              h1_Etot_bkgd09_2p1pi_1p1pi->Fill(E_tot_2p[z],P_2p1pito1p1pi[z]*1/Mott_cross_sec);
               h1_E_tot_2p1pi_1p1pi_fracfeed->Fill((E_tot_2p[z]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_2p1pito1p1pi[z]*1/Mott_cross_sec);
               h1_E_rec_2p1pi_1p1pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_2p1pito1p1pi[z]*1/Mott_cross_sec);
               h2_pperp_W->Fill(W_var,p_perp_tot_2p[z],P_2p1pito1p1pi[z]*1/Mott_cross_sec);
@@ -1481,7 +1182,6 @@ void genie_analysis::Loop()
               h1_E_tot_2p1pi_1p0pi->Fill(E_tot_2p[z], P_2p1pito1p0pi[z]*1/Mott_cross_sec);
               h1_E_rec_2p1pi_1p0pi->Fill(E_rec,P_2p1pito1p0pi[z]*1/Mott_cross_sec);
               h2_Erec_pperp_2p1pi_1p0pi->Fill(p_perp_tot_2p[z],E_rec,P_2p1pito1p0pi[z]*1/Mott_cross_sec);
-              h1_Etot_bkgd09_2p1pi_1p0pi->Fill(E_tot_2p[z],P_2p1pito1p0pi[z]*1/Mott_cross_sec);
               h1_E_tot_2p1pi_1p0pi_fracfeed->Fill((E_tot_2p[z]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_2p1pito1p0pi[z]*1/Mott_cross_sec);
               h1_E_rec_2p1pi_1p0pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_2p1pito1p0pi[z]*1/Mott_cross_sec);
               h2_pperp_W->Fill(W_var,p_perp_tot_2p[z],-P_2p1pito1p0pi[z]*1/Mott_cross_sec);
@@ -1533,7 +1233,6 @@ void genie_analysis::Loop()
               h1_E_tot_2p2pi->Fill(E_tot_2p[z], Ptot_2p[z]*1/Mott_cross_sec);
               h1_E_rec_2p2pi->Fill(E_rec,Ptot_2p[z]*1/Mott_cross_sec);
               h2_Erec_pperp_2p2pi->Fill(p_perp_tot_2p[z],E_rec,Ptot_2p[z]*1/Mott_cross_sec);
-              h1_Etot_bkgd09_2p2pi->Fill(E_tot_2p[z],Ptot_2p[z]*1/Mott_cross_sec);
               h1_E_tot_2p2pi_fracfeed->Fill((E_tot_2p[z]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],Ptot_2p[z]*1/Mott_cross_sec);
               h1_E_rec_2p2pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],Ptot_2p[z]*1/Mott_cross_sec);
               h2_pperp_W->Fill(W_var,p_perp_tot_2p[z],Ptot_2p[z]*1/Mott_cross_sec);
@@ -1638,7 +1337,6 @@ void genie_analysis::Loop()
 
                   h1_E_tot_3pto2p->Fill(E_cal_3pto2p[count][j], P_3pto2p[count][j]*1/Mott_cross_sec);
 		              h1_E_rec_3pto2p->Fill(E_rec, P_3pto2p[count][j]*1/Mott_cross_sec);
-		              h1_Etot_p321_bkgd09->Fill(E_cal_3pto2p[count][j],P_3pto2p[count][j]*1/Mott_cross_sec);
 		              h2_Erec_pperp_321p->Fill(p_miss_perp_3pto2p[count][j],E_rec,P_3pto2p[count][j]*1/Mott_cross_sec);
 		              h1_E_tot_3pto2p_fracfeed->Fill((E_cal_3pto2p[count][j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_3pto2p[count][j]*1/Mott_cross_sec);
 		              h1_E_rec_3pto2p_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en], P_3pto2p[count][j]*1/Mott_cross_sec);
@@ -1672,7 +1370,6 @@ void genie_analysis::Loop()
 		             P_3pto1p[j]= N_p1[j]/N_p_three;
 		             h1_E_tot_3pto1p->Fill(E_cal[j], P_3pto1p[j]*1/Mott_cross_sec);
 		             h1_E_rec_3pto1p->Fill(E_rec,P_3pto1p[j]*1/Mott_cross_sec);
-		             h1_Etot_p31_bkgd09->Fill(E_cal[j],P_3pto1p[j]*1/Mott_cross_sec);
 		             h2_Erec_pperp_31p->Fill(p_miss_perp[j],E_rec,P_3pto1p[j]*1/Mott_cross_sec);
 		             h1_E_tot_3pto1p_fracfeed->Fill((E_cal[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_3pto1p[j]*1/Mott_cross_sec);
 		             h1_E_rec_3pto1p_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_3pto1p[j]*1/Mott_cross_sec);
@@ -1717,7 +1414,6 @@ void genie_analysis::Loop()
 
                  h1_E_tot_3p1pi->Fill(E_cal[j], P_tot_3p[j]*1/Mott_cross_sec);
 		             h1_E_rec_3p1pi->Fill(E_rec,P_tot_3p[j]*1/Mott_cross_sec);
-		             h1_Etot_bkgd09_3p1pi->Fill(E_cal[j],P_tot_3p[j]*1/Mott_cross_sec);
 		             h2_Erec_pperp_3p1pi->Fill(p_miss_perp[j],E_rec,P_tot_3p[j]*1/Mott_cross_sec);
 		             h1_E_tot_3p1pi_fracfeed->Fill((E_cal[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_tot_3p[j]*1/Mott_cross_sec);
 		             h1_E_rec_3p1pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_tot_3p[j]*1/Mott_cross_sec);
@@ -1875,7 +1571,6 @@ void genie_analysis::Loop()
 
 		                      h1_E_tot_4pto3p->Fill(E_cal_4pto3p[count][j], P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*1/Mott_cross_sec);
 		                      h1_E_rec_4pto3p->Fill(E_rec, P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*1/Mott_cross_sec);
-		                      h1_Etot_p4321_bkgd09->Fill(E_cal_4pto3p[count][j],P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*1/Mott_cross_sec);
 		                      h2_Erec_pperp_4321p->Fill(p_miss_perp_4pto3p[count][j],E_rec,P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*1/Mott_cross_sec);
 		                      h1_E_tot_4pto3p_fracfeed->Fill((E_cal_4pto3p[count][j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*1/Mott_cross_sec);
 		                      h1_E_rec_4pto3p_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en], P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*1/Mott_cross_sec);
@@ -1908,7 +1603,6 @@ void genie_analysis::Loop()
 		                     P_43pto1p[j]= N_p1[j]/N_p_three*(N_p4_p3[g]/N_p_four);
 		                     h1_E_tot_43pto1p->Fill(E_cal_43pto1p[j], P_43pto1p[j]*1/Mott_cross_sec);
 		                     h1_E_rec_43pto1p->Fill(E_rec,P_43pto1p[j]*1/Mott_cross_sec);
-		                     h1_Etot_p431_bkgd09->Fill(E_cal_43pto1p[j],P_43pto1p[j]*1/Mott_cross_sec);
 		                     h2_Erec_pperp_431p->Fill(p_miss_perp_43pto1p[j],E_rec,P_43pto1p[j]*1/Mott_cross_sec);
 		                     h1_E_tot_43pto1p_fracfeed->Fill((E_cal_43pto1p[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_43pto1p[j]*1/Mott_cross_sec);
 		                     h1_E_rec_43pto1p_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_43pto1p[j]*1/Mott_cross_sec);
@@ -1961,7 +1655,6 @@ void genie_analysis::Loop()
 
 	                               h1_E_tot_4pto2p->Fill(E_cal_4pto2p[j], P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*1/Mott_cross_sec);
 	                               h1_E_rec_4pto2p->Fill(E_rec, P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*1/Mott_cross_sec);
-	                               h1_Etot_p421_bkgd09->Fill(E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*1/Mott_cross_sec);
 	                               h2_Erec_pperp_421p->Fill( p_miss_perp_4pto2p[j],E_rec,P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*1/Mott_cross_sec);
 	                               h1_E_tot_4pto2p_fracfeed->Fill((E_cal_4pto2p[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*1/Mott_cross_sec);
 	                               h1_E_rec_4pto2p_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en], P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*1/Mott_cross_sec);
@@ -1999,7 +1692,6 @@ void genie_analysis::Loop()
 		                  P_4pto1p[j]= N_p4_p1[j]/N_p_four;
 		                  h1_E_tot_4pto1p->Fill(E_cal_p4[j], P_4pto1p[j]*1/Mott_cross_sec);
 		                  h1_E_rec_4pto1p->Fill(E_rec,P_4pto1p[j]*1/Mott_cross_sec);
-		                  h1_Etot_p41_bkgd09->Fill(E_cal_p4[j],P_4pto1p[j]*1/Mott_cross_sec);
 		                  h2_Erec_pperp_41p->Fill(p_miss_perp_p4[j],E_rec, P_4pto1p[j]*1/Mott_cross_sec);
 		                  h1_E_tot_4pto1p_fracfeed->Fill((E_cal_p4[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_4pto1p[j]*1/Mott_cross_sec);
 		                  h1_E_rec_4pto1p_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_4pto1p[j]*1/Mott_cross_sec);
@@ -2249,7 +1941,6 @@ void genie_analysis::Loop()
            h1_E_tot_1p2pi->Fill(E_tot,P_1p1pi[z]*1/Mott_cross_sec);
            h1_E_rec_1p2pi->Fill(E_rec,P_1p1pi[z]*1/Mott_cross_sec);
            h2_Erec_pperp_1p2pi_1p1pi->Fill(p_perp_tot,E_rec,P_1p1pi[z]*1/Mott_cross_sec);
-           h1_Etot_bkgd09_1p2pi_1p1pi->Fill(E_tot,P_1p1pi[z]*1/Mott_cross_sec);
            h1_E_tot_1p2pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p1pi[z]*1/Mott_cross_sec);
            h1_E_rec_1p2pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1p1pi[z]*1/Mott_cross_sec);
            h2_pperp_W->Fill(W_var,p_perp_tot,P_1p1pi[z]*1/Mott_cross_sec);
@@ -2278,7 +1969,6 @@ void genie_analysis::Loop()
          h1_E_tot_1p2pi_1p0pi->Fill(E_tot,P_1p0pi*1/Mott_cross_sec);
          h1_E_rec_1p2pi_1p0pi->Fill(E_rec,P_1p0pi*1/Mott_cross_sec);
          h2_Erec_pperp_1p2pi_1p0pi->Fill(p_perp_tot,E_rec,P_1p0pi*1/Mott_cross_sec);
-         h1_Etot_bkgd09_1p2pi_1p0pi->Fill(E_tot,P_1p0pi*1/Mott_cross_sec);
          h1_E_tot_1p2pi_1p0pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p0pi*1/Mott_cross_sec);
          h1_E_rec_1p2pi_1p0pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1p0pi*1/Mott_cross_sec);
          h2_pperp_W->Fill(W_var,p_perp_tot,-P_1p0pi*1/Mott_cross_sec);
@@ -2334,7 +2024,6 @@ void genie_analysis::Loop()
          h1_E_tot_1p3pi->Fill(E_tot,P_1p3pi*1/Mott_cross_sec);
          h1_E_rec_1p3pi->Fill(E_rec,P_1p3pi*1/Mott_cross_sec);
          h2_Erec_pperp_1p3pi->Fill(p_perp_tot,E_rec,P_1p3pi*1/Mott_cross_sec);
-         h1_Etot_bkgd09_1p3pi->Fill(E_tot,P_1p3pi*1/Mott_cross_sec);
          h1_E_tot_1p3pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p3pi*1/Mott_cross_sec);
          h1_E_rec_1p3pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1p3pi*1/Mott_cross_sec);
          h2_pperp_W->Fill(W_var,p_perp_tot,P_1p3pi*1/Mott_cross_sec);
@@ -2412,7 +2101,6 @@ void genie_analysis::Loop()
           h2_Erec_pperp_newcut2->Fill(p_perp_tot,E_rec,1/Mott_cross_sec);
 	        h1_E_rec_cut2_new->Fill(E_rec,1/Mott_cross_sec);
 	        h1_E_tot_cut2->Fill(E_tot,1/Mott_cross_sec);
-	        h1_E_tot_cut2_09->Fill(E_tot,1/Mott_cross_sec);
 	        h1_E_tot_cut2_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],1/Mott_cross_sec);
 	        h1_E_rec_cut2_new_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],1/Mott_cross_sec);
 	        h2_pperp_W->Fill(W_var,p_perp_tot,1/Mott_cross_sec);
@@ -2425,7 +2113,7 @@ void genie_analysis::Loop()
           {
             if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
               h1_Etot_Npi0[i]->Fill(E_tot,1/Mott_cross_sec);
-              h1_Erec_Npi0_new[i]->Fill(E_rec,1/Mott_cross_sec);
+              h1_Erec_Npi0[i]->Fill(E_rec,1/Mott_cross_sec);
             }
           }
           for (int i = 0; i < N_pperp; i++){
@@ -2441,7 +2129,7 @@ void genie_analysis::Loop()
 	        }
        }//num pi=0
 
-       h1_Etot->Fill(E_tot,1/Mott_cross_sec);
+       h1_E_tot->Fill(E_tot,1/Mott_cross_sec);
        h1_E_rec_1prot->Fill(E_rec,1/Mott_cross_sec);
        h1_E_tot_1prot->Fill(E_tot,1/Mott_cross_sec);
        h2_Erec_pperp->Fill(p_perp_tot,E_rec,1/Mott_cross_sec);
@@ -2459,14 +2147,14 @@ void genie_analysis::Loop()
 
 	   h1_Etot_piplpimi_subtruct_fact[i] = (TH1F*)  h1_Etot_Npi0[i]->Clone(Form("h1_Etot_piplpimi_subtruct_fact_%d",i+1));
 	   h1_Etot_piplpimi_subtruct_fact[i]->Add(h1_Etot_bkgd_pipl_pimi_fact[i],-1);
-	   h1_Erec_piplpimi_subtruct_new_fact[i]=(TH1F*)  h1_Erec_Npi0_new[i]->Clone(Form("h1_Erec_piplpimi_subtruct_new_fact_%d",i+1));
-	   h1_Erec_piplpimi_subtruct_new_fact[i]->Add(h1_Erec_bkgd_pipl_pimi_new_fact[i],-1);
+	   h1_Erec_piplpimi_subtruct_fact[i]=(TH1F*)  h1_Erec_Npi0[i]->Clone(Form("h1_Erec_piplpimi_subtruct_fact_%d",i+1));
+	   h1_Erec_piplpimi_subtruct_fact[i]->Add(h1_Erec_bkgd_pipl_pimi_new_fact[i],-1);
 
  //------------------------------------subtracting 2p contribution from 1p events  --------------------------------------
 
 	   h1_Etot_p_bkgd_slice_sub[i]=(TH1F*) h1_Etot_piplpimi_subtruct_fact[i]->Clone(Form("h1_Etot_p_bkgd_slice_sub_%d",i+1));
 	   h1_Etot_p_bkgd_slice_sub[i]->Add(h1_Etot_p_bkgd_slice[i],-1);
-	   h1_Erec_p_bkgd_slice_sub[i]=(TH1F*) h1_Erec_piplpimi_subtruct_new_fact[i]->Clone(Form("h1_Erec_p_bkgd_slice_sub_%d",i+1));
+	   h1_Erec_p_bkgd_slice_sub[i]=(TH1F*) h1_Erec_piplpimi_subtruct_fact[i]->Clone(Form("h1_Erec_p_bkgd_slice_sub_%d",i+1));
 	   h1_Erec_p_bkgd_slice_sub[i]->Add(h1_Erec_p_bkgd_slice[i],-1);
 
  //------------------------------------undetected 3 to 2 proton subtraction --------------------------------------
@@ -2664,9 +2352,6 @@ void genie_analysis::Loop()
   TH1F *h_Etot_subtruct_piplpimi_factor=(TH1F*)  h1_E_tot_cut2->Clone("h_Etot_subtruct_piplpimi_factor");
   h_Etot_subtruct_piplpimi_factor->Add(h1_E_tot_undetfactor,-1);
 
-  TH1F *h_Etot_subtruct_piplpimi_factor09=(TH1F*)  h1_E_tot_cut2_09->Clone("h_Etot_subtruct_piplpimi_factor09");
-  h_Etot_subtruct_piplpimi_factor09->Add(h1_E_tot_undetfactor09,-1);
-
   TH2F *h2_Erec_pperp_1p1pisub=(TH2F*) h2_Erec_pperp_newcut2->Clone("h2_Erec_pperp_1p1pisub");
   h2_Erec_pperp_1p1pisub->Add(h2_Erec_pperp_1p1pi,-1);
 
@@ -2682,9 +2367,6 @@ void genie_analysis::Loop()
 
   TH1F *h_Etot_subtruct_piplpimi_prot=(TH1F*)  h_Etot_subtruct_piplpimi_factor->Clone("h_Etot_subtruct_piplpimi_prot");
   h_Etot_subtruct_piplpimi_prot->Add(h1_E_tot_p_bkgd,-1);
-
-  TH1F *h_Etot_subtruct_piplpimi_prot09=(TH1F*)  h_Etot_subtruct_piplpimi_factor09->Clone("h_Etot_subtruct_piplpimi_prot09");
-  h_Etot_subtruct_piplpimi_prot09->Add(h1_E_tot_p_bkgd09,-1);
 
   TH2F *h2_Erec_pperp_2psub=(TH2F*) h2_Erec_pperp_1p1pisub->Clone("h2_Erec_pperp_2psub");
   h2_Erec_pperp_2psub->Add(h2_Erec_pperp_2p,-1);
@@ -2702,9 +2384,6 @@ void genie_analysis::Loop()
   TH1F *h_Etot_subtruct_piplpimi_32prot=(TH1F*)  h_Etot_subtruct_piplpimi_prot->Clone("h_Etot_subtruct_piplpimi_32prot");
   h_Etot_subtruct_piplpimi_32prot->Add(h1_E_tot_3pto2p);
 
-  TH1F *h_Etot_subtruct_piplpimi_32prot09=(TH1F*)  h_Etot_subtruct_piplpimi_prot09->Clone("h_Etot_subtruct_piplpimi_32prot09");
-  h_Etot_subtruct_piplpimi_32prot09->Add(h1_Etot_p321_bkgd09);
-
   TH2F *h2_Erec_pperp_32psub=(TH2F*) h2_Erec_pperp_2psub->Clone("h2_Erec_pperp_32psub");
   h2_Erec_pperp_32psub->Add(h2_Erec_pperp_321p);
 
@@ -2720,9 +2399,6 @@ void genie_analysis::Loop()
 
   TH1F *h_Etot_subtruct_piplpimi_31prot=(TH1F*)  h_Etot_subtruct_piplpimi_32prot->Clone("h_Etot_subtruct_piplpimi_31prot");
   h_Etot_subtruct_piplpimi_31prot->Add(h1_E_tot_3pto1p,-1);
-
-  TH1F *h_Etot_subtruct_piplpimi_31prot09=(TH1F*)  h_Etot_subtruct_piplpimi_32prot09->Clone("h_Etot_subtruct_piplpimi_31prot09");
-  h_Etot_subtruct_piplpimi_31prot09->Add(h1_Etot_p31_bkgd09,-1);
 
   TH2F *h2_Erec_pperp_31psub=(TH2F*) h2_Erec_pperp_32psub->Clone("h2_Erec_pperp_31psub");
   h2_Erec_pperp_31psub->Add(h2_Erec_pperp_31p,-1);
@@ -2740,9 +2416,6 @@ void genie_analysis::Loop()
   TH1F *h_Etot_subtruct_piplpimi_43prot=(TH1F*)  h_Etot_subtruct_piplpimi_31prot->Clone("h_Etot_subtruct_piplpimi_43prot");
   h_Etot_subtruct_piplpimi_43prot->Add(h1_E_tot_4pto3p,-1);
 
-  TH1F *h_Etot_subtruct_piplpimi_43prot09=(TH1F*)  h_Etot_subtruct_piplpimi_31prot09->Clone("h_Etot_subtruct_piplpimi_43prot09");
-  h_Etot_subtruct_piplpimi_43prot09->Add(h1_Etot_p4321_bkgd09,-1);
-
   TH2F *h2_Erec_pperp_43psub=(TH2F*) h2_Erec_pperp_31psub->Clone("h2_Erec_pperp_43psub");
   h2_Erec_pperp_43psub->Add(h2_Erec_pperp_4321p,-1);
 
@@ -2759,9 +2432,6 @@ void genie_analysis::Loop()
   TH1F *h_Etot_subtruct_piplpimi_431prot=(TH1F*)  h_Etot_subtruct_piplpimi_43prot->Clone("h_Etot_subtruct_piplpimi_431prot");
   h_Etot_subtruct_piplpimi_431prot->Add(h1_E_tot_43pto1p);
 
-  TH1F *h_Etot_subtruct_piplpimi_431prot09=(TH1F*)  h_Etot_subtruct_piplpimi_43prot09->Clone("h_Etot_subtruct_piplpimi_431prot09");
-  h_Etot_subtruct_piplpimi_431prot09->Add(h1_Etot_p431_bkgd09);
-
   TH2F *h2_Erec_pperp_431psub=(TH2F*) h2_Erec_pperp_43psub->Clone("h2_Erec_pperp_431psub");
   h2_Erec_pperp_431psub->Add(h2_Erec_pperp_431p);
 
@@ -2777,9 +2447,6 @@ void genie_analysis::Loop()
 
   TH1F *h_Etot_subtruct_piplpimi_42prot=(TH1F*) h_Etot_subtruct_piplpimi_431prot->Clone("h_Etot_subtruct_piplpimi_42prot");
   h_Etot_subtruct_piplpimi_42prot->Add(h1_E_tot_4pto2p);
-
-  TH1F *h_Etot_subtruct_piplpimi_42prot09=(TH1F*)  h_Etot_subtruct_piplpimi_431prot09->Clone("h_Etot_subtruct_piplpimi_42prot09");
-  h_Etot_subtruct_piplpimi_42prot09->Add(h1_Etot_p421_bkgd09);
 
   TH2F *h2_Erec_pperp_42psub=(TH2F*) h2_Erec_pperp_431psub->Clone("h2_Erec_pperp_42psub");
   h2_Erec_pperp_42psub->Add(h2_Erec_pperp_421p);
@@ -2798,9 +2465,6 @@ void genie_analysis::Loop()
   TH1F *h_Etot_subtruct_piplpimi_41prot=(TH1F*)  h_Etot_subtruct_piplpimi_42prot->Clone("h_Etot_subtruct_piplpimi_41prot");
   h_Etot_subtruct_piplpimi_41prot->Add(h1_E_tot_4pto1p,-1);
 
-  TH1F *h_Etot_subtruct_piplpimi_41prot09=(TH1F*)  h_Etot_subtruct_piplpimi_42prot09->Clone("h_Etot_subtruct_piplpimi_41prot09");
-  h_Etot_subtruct_piplpimi_41prot09->Add(h1_Etot_p41_bkgd09,-1);
-
   TH2F *h2_Erec_pperp_41psub=(TH2F*) h2_Erec_pperp_42psub->Clone("h2_Erec_pperp_41psub");
   h2_Erec_pperp_41psub->Add(h2_Erec_pperp_41p,-1);
 
@@ -2817,9 +2481,6 @@ void genie_analysis::Loop()
 
   TH1F *h_Etot_subtruct_piplpimi_1p2pi=(TH1F*)  h_Etot_subtruct_piplpimi_41prot->Clone("h_Etot_subtruct_piplpimi_1p2pi");
   h_Etot_subtruct_piplpimi_1p2pi->Add(h1_E_tot_1p2pi);
-
-  TH1F *h_Etot_subtruct_piplpimi09_1p2pi_1p1pi=(TH1F*)  h_Etot_subtruct_piplpimi_41prot09->Clone("h_Etot_subtruct_piplpimi09_1p2pi_1p1pi");
-  h_Etot_subtruct_piplpimi09_1p2pi_1p1pi->Add(h1_Etot_bkgd09_1p2pi_1p1pi);
 
   TH2F *h2_Erec_pperp_sub_1p2pi_1p1pi=(TH2F*) h2_Erec_pperp_41psub->Clone("h2_Erec_pperp_sub_1p2pi_1p1pi");
   h2_Erec_pperp_sub_1p2pi_1p1pi->Add(h2_Erec_pperp_1p2pi_1p1pi);
@@ -2838,9 +2499,6 @@ void genie_analysis::Loop()
   TH1F *h_Etot_subtruct_piplpimi_1p2pi_1p0pi=(TH1F*) h_Etot_subtruct_piplpimi_1p2pi->Clone("h_Etot_subtruct_piplpimi_1p2pi_1p0pi");
   h_Etot_subtruct_piplpimi_1p2pi_1p0pi->Add(h1_E_tot_1p2pi_1p0pi,-1);
 
-  TH1F *h_Etot_subtruct_piplpimi09_1p2pi_1p0pi=(TH1F*)  h_Etot_subtruct_piplpimi09_1p2pi_1p1pi->Clone("h_Etot_subtruct_piplpimi09_1p2pi_1p0pi");
-  h_Etot_subtruct_piplpimi09_1p2pi_1p0pi->Add(h1_Etot_bkgd09_1p2pi_1p0pi,-1);
-
   TH2F *h2_Erec_pperp_sub_1p2pi_1p0pi=(TH2F*) h2_Erec_pperp_sub_1p2pi_1p1pi->Clone("h2_Erec_pperp_sub_1p2pi_1p0pi");
   h2_Erec_pperp_sub_1p2pi_1p0pi->Add(h2_Erec_pperp_1p2pi_1p0pi,-1);
 
@@ -2857,9 +2515,6 @@ void genie_analysis::Loop()
 
   TH1F *h_Etot_subtruct_piplpimi_1p3pi=(TH1F*) h_Etot_subtruct_piplpimi_1p2pi_1p0pi->Clone("h_Etot_subtruct_piplpimi_1p3pi");
   h_Etot_subtruct_piplpimi_1p3pi->Add(h1_E_tot_1p3pi);
-
-  TH1F *h_Etot_subtruct_piplpimi09_1p3pi=(TH1F*)  h_Etot_subtruct_piplpimi09_1p2pi_1p0pi->Clone("h_Etot_subtruct_piplpimi09_1p3pi");
-  h_Etot_subtruct_piplpimi09_1p3pi->Add(h1_Etot_bkgd09_1p3pi);
 
   TH2F *h2_Erec_pperp_sub_1p3pi=(TH2F*) h2_Erec_pperp_sub_1p2pi_1p0pi->Clone("h2_Erec_pperp_sub_1p3pi");
   h2_Erec_pperp_sub_1p3pi->Add(h2_Erec_pperp_1p3pi);
@@ -2879,9 +2534,6 @@ void genie_analysis::Loop()
   TH1F *h_Etot_subtruct_piplpimi_2p2pi=(TH1F*) h_Etot_subtruct_piplpimi_1p3pi->Clone("h_Etot_subtruct_piplpimi_2p2pi");
   h_Etot_subtruct_piplpimi_2p2pi->Add(h1_E_tot_2p2pi);
 
-  TH1F *h_Etot_subtruct_piplpimi09_2p2pi=(TH1F*)  h_Etot_subtruct_piplpimi09_1p3pi->Clone("h_Etot_subtruct_piplpimi09_2p2pi");
-  h_Etot_subtruct_piplpimi09_2p2pi->Add(h1_Etot_bkgd09_2p2pi);
-
   TH2F *h2_Erec_pperp_sub_2p2pi=(TH2F*) h2_Erec_pperp_sub_1p3pi->Clone("h2_Erec_pperp_sub_2p2pi");
   h2_Erec_pperp_sub_2p2pi->Add(h2_Erec_pperp_2p2pi);
 
@@ -2900,9 +2552,6 @@ void genie_analysis::Loop()
   TH1F *h_Etot_subtruct_piplpimi_3p1pi=(TH1F*) h_Etot_subtruct_piplpimi_2p2pi->Clone("h_Etot_subtruct_piplpimi_3p1pi");
   h_Etot_subtruct_piplpimi_3p1pi->Add(h1_E_tot_3p1pi);
 
-  TH1F *h_Etot_subtruct_piplpimi09_3p1pi=(TH1F*)  h_Etot_subtruct_piplpimi09_2p2pi->Clone("h_Etot_subtruct_piplpimi09_3p1pi");
-  h_Etot_subtruct_piplpimi09_3p1pi->Add(h1_Etot_bkgd09_3p1pi);
-
   TH2F *h2_Erec_pperp_sub_3p1pi=(TH2F*) h2_Erec_pperp_sub_2p2pi->Clone("h2_Erec_pperp_sub_3p1pi");
   h2_Erec_pperp_sub_3p1pi->Add(h2_Erec_pperp_3p1pi);
 
@@ -2919,9 +2568,6 @@ void genie_analysis::Loop()
 
   TH1F *h_Etot_subtruct_piplpimi_2p1pi_2p0pi=(TH1F*) h_Etot_subtruct_piplpimi_3p1pi->Clone("h_Etot_subtruct_piplpimi_2p1pi_2p0pi");
   h_Etot_subtruct_piplpimi_2p1pi_2p0pi->Add(h1_E_tot_2p1pi_2p0pi);
-
-  TH1F *h_Etot_subtruct_piplpimi09_2p1pi_2p0pi=(TH1F*)  h_Etot_subtruct_piplpimi09_3p1pi->Clone("h_Etot_subtruct_piplpimi09_2p1pi_2p0pi");
-  h_Etot_subtruct_piplpimi09_2p1pi_2p0pi->Add(h1_Etot_bkgd09_2p1pi_2p0pi);
 
   TH2F *h2_Erec_pperp_sub_2p1pi_2p0pi=(TH2F*) h2_Erec_pperp_sub_3p1pi->Clone("h2_Erec_pperp_sub_2p1pi_2p0pi");
   h2_Erec_pperp_sub_2p1pi_2p0pi->Add(h2_Erec_pperp_2p1pi_2p0pi);
@@ -2940,9 +2586,6 @@ void genie_analysis::Loop()
   TH1F *h_Etot_subtruct_piplpimi_2p1pi_1p1pi=(TH1F*) h_Etot_subtruct_piplpimi_2p1pi_2p0pi->Clone("h_Etot_subtruct_piplpimi_2p1pi_1p1pi");
   h_Etot_subtruct_piplpimi_2p1pi_1p1pi->Add(h1_E_tot_2p1pi_1p1pi);
 
-  TH1F *h_Etot_subtruct_piplpimi09_2p1pi_1p1pi=(TH1F*)  h_Etot_subtruct_piplpimi09_2p1pi_2p0pi->Clone("h_Etot_subtruct_piplpimi09_2p1pi_1p1pi");
-  h_Etot_subtruct_piplpimi09_2p1pi_1p1pi->Add(h1_Etot_bkgd09_2p1pi_1p1pi);
-
   TH2F *h2_Erec_pperp_sub_2p1pi_1p1pi=(TH2F*) h2_Erec_pperp_sub_2p1pi_2p0pi->Clone("h2_Erec_pperp_sub_2p1pi_1p1pi");
   h2_Erec_pperp_sub_2p1pi_1p1pi->Add(h2_Erec_pperp_2p1pi_1p1pi);
 
@@ -2959,9 +2602,6 @@ void genie_analysis::Loop()
 
   TH1F *h_Etot_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*) h_Etot_subtruct_piplpimi_2p1pi_1p1pi->Clone("h_Etot_subtruct_piplpimi_2p1pi_1p0pi");
   h_Etot_subtruct_piplpimi_2p1pi_1p0pi->Add(h1_E_tot_2p1pi_1p0pi,-1);
-
-  TH1F *h_Etot_subtruct_piplpimi09_2p1pi_1p0pi=(TH1F*)  h_Etot_subtruct_piplpimi09_2p1pi_1p1pi->Clone("h_Etot_subtruct_piplpimi09_2p1pi_1p0pi");
-  h_Etot_subtruct_piplpimi09_2p1pi_1p0pi->Add(h1_Etot_bkgd09_2p1pi_1p0pi,-1);
 
   TH2F *h2_Erec_pperp_sub_2p1pi_1p0pi=(TH2F*) h2_Erec_pperp_sub_2p1pi_1p1pi->Clone("h2_Erec_pperp_sub_2p1pi_1p0pi");
   h2_Erec_pperp_sub_2p1pi_1p0pi->Add(h2_Erec_pperp_2p1pi_1p0pi,-1);
@@ -3009,7 +2649,7 @@ void genie_analysis::Loop()
   for (int i=0;i<N_pperp;i++){
     for(int j=0;j<N_Ecal;j++){
       h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio[i][j]=   (TH1F *)  h1_Etot_p_bkgd_slice_sub_Ecalcut[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio[i][j]->Divide(h_Etot_subtruct_piplpimi_prot09);
+      h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio[i][j]->Divide(h_Etot_subtruct_piplpimi_prot);
       cout<<200+i*200<<"   "<<j+1<<"   "<<h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio[i][j]->GetBinContent(1)<<"  Error  "<<h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio[i][j]->GetBinError(1)<<endl;
     }
   }
@@ -3019,7 +2659,7 @@ void genie_analysis::Loop()
   for (int i=0;i<N_pperp;i++){
     for(int j=0;j<N_Ecal;j++){
       h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio3p[i][j]=   (TH1F *)   h1_Etot_p_bkgd_slice_sub_Ecalcut31[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio3p_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio3p[i][j]->Divide(h_Etot_subtruct_piplpimi_31prot09);
+      h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio3p[i][j]->Divide(h_Etot_subtruct_piplpimi_31prot);
       cout<<200+i*200<<"   "<<j+1<<"   "<<h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio3p[i][j]->GetBinContent(1)<<"  Error  "<<h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio3p[i][j]->GetBinError(1)<<endl;
     }
   }
@@ -3028,7 +2668,7 @@ void genie_analysis::Loop()
   for (int i=0;i<N_pperp;i++){
     for(int j=0;j<N_Ecal;j++){
       h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]=   (TH1F *)   h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]->Divide(h_Etot_subtruct_piplpimi09_2p1pi_1p0pi);
+      h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]->Divide(h_Etot_subtruct_piplpimi_2p1pi_1p0pi);
       cout<<200+i*200<<"   "<<j+1<<"   "<<h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]->GetBinContent(1)<<"  Error  "<<h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]->GetBinError(1)<<endl;
 
 

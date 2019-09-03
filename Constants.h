@@ -13,7 +13,7 @@ namespace Constants {
 
 
 	//All units are in GeV
-	const double m_pimi = 0.139570, m_pipl = 0.139570, Mpi = 0.139570;
+	const double m_pimi = 0.139570, m_pipl = 0.139570, m_pion = 0.139570;
   const double m_prot = 0.9382720813, m_neut = 0.939565;
 	const double H3_bind_en = 0.008481, He4_bind_en = 0.0283, C12_bind_en = 0.09215, B_bind_en = 0.0762;
 	const double He3_bind_en = 0.0077, D2_bind_en = 0.00222, Fe_bind_en = 0.49226, Mn_bind_en = 0.4820764;

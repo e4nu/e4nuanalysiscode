@@ -1116,7 +1116,6 @@ void genie_analysis::Loop()
 
  //---------------------------------- 2p 1pi   ----------------------------------------------
           const int N_2prot=2;
-          TVector3 V3_2p_rotated[N_2prot],V3_1pirot;
           bool pi1_stat=false;
           double N_2p_0pi = 0, N_all = 0, N_1p_1pi[N_2prot] = {0}, N_1p_0pi[N_2prot] = {0};
           double Ecal_2p1pi_to2p0pi[N_2prot]={0};
@@ -1167,7 +1166,7 @@ void genie_analysis::Loop()
               pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
             }
             else if (piminus_stat) {    //acceptance for pi minus. using electron acceptance map
-              pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance);
+              pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
             }
             else { std::cout << "WARNING: 2proton and 1 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
@@ -1269,47 +1268,86 @@ void genie_analysis::Loop()
 //---------------------------------- 2p 2pi   ----------------------------------------------
           const int N_2pi=2;
           int q_pi2[2];
-          TVector3 V3_2pi[N_2pi];
-          double Ecal_2p2pi[N_2prot],p_miss_perp_2p2pi[N_2prot],Ptot_2p[2]={0};
+          double Ecal_2p2pi[N_2prot];
+          double p_miss_perp_2p2pi[N_2prot];
+          double Ptot_2p[2]={0};
           bool ecstat_pi2[N_2pi]={false};
 
-          if ( num_pi_phot == 2) {
+          //          if (num_pi_phot==2) { //no photons for now F.H. 29.8.19
+          if (num_pi == 2) {
 
-            V3_2pi[0].SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);
-            V3_2pi[1].SetXYZ(p[ind_pi_phot[1]]*cx[ind_pi_phot[1]],p[ind_pi_phot[1]]*cy[ind_pi_phot[1]],p[ind_pi_phot[1]]*cz[ind_pi_phot[1]]);
-            q_pi2[0] = q[ind_pi_phot[0]];
-            q_pi2[1] = q[ind_pi_phot[1]];
-            ecstat_pi2[0] = ec_radstat_n[0];
-            ecstat_pi2[1] = ec_radstat_n[1];
+            TVector3 V3_2pi_corr[N_2pi];
+            double pion_acc_ratio[N_2pi] = {0};
+            for (int i = 0; i < num_pi; i++) {
 
-            prot2_pi2_rot_func(fbeam_en, V3_q,V3_2prot_corr,V3_2prot_uncorr,V3_2pi,q_pi2,ecstat_pi2 ,V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
+              ecstat_pi2[i] = ec_radstat_n[i];
+              if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
+                q_pi2[i] = 1;
+              }
+              else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
+                q_pi2[i] = -1;
+              }
+              else {  std::cout << "WARNING: 2p 2pion event: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+
+              SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
+              SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
+
+
+              V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
+
+              // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus
+              if ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[i],  q_pi2[i])  )
+              {
+                continue;
+              }
+
+              double pion_theta = V3_2pi_corr[i].Theta()*TMath::RadToDeg();
+              //Phi has to be checked F.H. 24.8.19
+              double phi_pion = V3_2pi_corr[i].Phi() + TMath::Pi();
+              double pion_mom_corr = V3_2pi_corr[i].Mag();
+
+              if (q_pi2[i] == 1) { //acceptance for pi plus
+                pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
+              }
+              else if (q_pi2[i] == -1) {    //acceptance for pi minus. using electron acceptance map
+                pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
+              }
+              else { std::cout << "WARNING: 2proton and 2 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
+
+            }
+
+            prot2_pi2_rot_func(fbeam_en, V3_q,V3_2prot_corr,V3_2prot_uncorr,V3_2pi_corr,q_pi2,ecstat_pi2 ,V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
+
+            double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1];
+            double histoweight = weight_pions * weight_protons * e_acc_ratio * wght/Mott_cross_sec; //Is this correct in the following loop? F.H. 09/01/19
+
 
             for(int z = 0; z < N_2prot; z++){ //looping over two protons
 
 //---------------------------------- 2p 2pi ->1p 0pi   ----------------------------------------------
 
-              h1_E_tot_2p2pi->Fill(E_tot_2p[z], Ptot_2p[z]*1/Mott_cross_sec);
-              h1_E_rec_2p2pi->Fill(E_rec,Ptot_2p[z]*1/Mott_cross_sec);
-              h2_Erec_pperp_2p2pi->Fill(p_perp_tot_2p[z],E_rec,Ptot_2p[z]*1/Mott_cross_sec);
-              h1_E_tot_2p2pi_fracfeed->Fill((E_tot_2p[z]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],Ptot_2p[z]*1/Mott_cross_sec);
-              h1_E_rec_2p2pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],Ptot_2p[z]*1/Mott_cross_sec);
-              h2_pperp_W->Fill(W_var,p_perp_tot_2p[z],Ptot_2p[z]*1/Mott_cross_sec);
-              h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_2prot_uncorr[z])*TMath::RadToDeg(),Ptot_2p[z]*1/Mott_cross_sec);
-              h2_Ecal_Eqe->Fill(E_rec,E_tot_2p[z],Ptot_2p[z]*1/Mott_cross_sec);
-              h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot_2p[z],Ptot_2p[z]*1/Mott_cross_sec);
-              h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot_2p[z],Ptot_2p[z]*1/Mott_cross_sec);
+              h1_E_tot_2p2pi->Fill(E_tot_2p[z], Ptot_2p[z]*histoweight);
+              h1_E_rec_2p2pi->Fill(E_rec,Ptot_2p[z]*histoweight);
+              h2_Erec_pperp_2p2pi->Fill(p_perp_tot_2p[z],E_rec,Ptot_2p[z]*histoweight);
+              h1_E_tot_2p2pi_fracfeed->Fill((E_tot_2p[z]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],Ptot_2p[z]*histoweight);
+              h1_E_rec_2p2pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],Ptot_2p[z]*histoweight);
+              h2_pperp_W->Fill(W_var,p_perp_tot_2p[z],Ptot_2p[z]*histoweight);
+              h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_2prot_uncorr[z])*TMath::RadToDeg(),Ptot_2p[z]*histoweight);
+              h2_Ecal_Eqe->Fill(E_rec,E_tot_2p[z],Ptot_2p[z]*histoweight);
+              h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot_2p[z],Ptot_2p[z]*histoweight);
+              h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot_2p[z],Ptot_2p[z]*histoweight);
 
               for(int i = 0; i < n_slice; i++)
               {
                 if (p_perp_tot_2p[z]<pperp_max[i] && p_perp_tot_2p[z]>pperp_min[i]){
-	                 h1_Etot_p_bkgd_slice_2p2pi[i]->Fill(E_tot_2p[z],Ptot_2p[z]*1/Mott_cross_sec);
-	                 h1_Erec_p_bkgd_slice_2p2pi[i]->Fill(E_rec,Ptot_2p[z]*1/Mott_cross_sec);
+	                 h1_Etot_p_bkgd_slice_2p2pi[i]->Fill(E_tot_2p[z],Ptot_2p[z]*histoweight);
+	                 h1_Erec_p_bkgd_slice_2p2pi[i]->Fill(E_rec,Ptot_2p[z]*histoweight);
                 }
               }
               for (int i = 0;i < N_pperp; i++){
                 for(int j = 0; j < N_Ecal; j++){
                   if(E_tot_2p[z]>Ecal_lowlim[j] && E_tot_2p[z]<Ecal_uplim[j] && p_perp_tot_2p[z]>pperp_cut[i]) {
-                      h1_Etot_p_bkgd_slice_Ecalcut_2p2pi[i][j]->Fill(E_tot_2p[z],Ptot_2p[z]*1/Mott_cross_sec);
+                      h1_Etot_p_bkgd_slice_Ecalcut_2p2pi[i][j]->Fill(E_tot_2p[z],Ptot_2p[z]*histoweight);
                   }
                 }
               }
@@ -1340,7 +1378,6 @@ void genie_analysis::Loop()
 	      double E_cal_3pto2p[3][N_2p]={0};
         double p_miss_perp_3pto2p[3][N_2p]={0};
         double P_3pto2p[3][N_2p]={0};
-	      TVector3 V3_prot_el_3pto2p[N_3p][N_2p];
 	      TVector3 V3_2p_rot[N_2p], V3_prot_el[N_3p][N_2p];
  	      bool prot_stat[N_3p]={false};
 

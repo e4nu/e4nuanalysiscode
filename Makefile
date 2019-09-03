@@ -6,7 +6,7 @@ ROOTGLIBS   := $(shell root-config --glibs)
 INCLUDES    := -I../include
 
 CXX       := g++
-CXXFLAGS  += -std=c++11 -Wall -Wshadow -Warray-bounds -fPIC $(ROOTCFLAGS)
+CXXFLAGS  += -std=c++11 -Wall -Wshadow -Warray-bounds -Wmissing-field-initializers -fPIC $(ROOTCFLAGS)
 LD        := g++
 LDFLAGS   := $(ROOTLDFLAGS)
 

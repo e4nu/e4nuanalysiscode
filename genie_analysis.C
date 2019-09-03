@@ -1295,12 +1295,6 @@ void genie_analysis::Loop()
 
               V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-              // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus
-              if ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[i],  q_pi2[i])  )
-              {
-                continue;
-              }
-
               double pion_theta = V3_2pi_corr[i].Theta()*TMath::RadToDeg();
               //Phi has to be checked F.H. 24.8.19
               double phi_pion = V3_2pi_corr[i].Phi() + TMath::Pi();
@@ -1314,6 +1308,13 @@ void genie_analysis::Loop()
               }
               else { std::cout << "WARNING: 2proton and 2 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
+            }
+
+            // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+            //If any fiducial is not fullfilled continue to next event
+            if ( ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[0],  q_pi2[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[1],  q_pi2[1]) )  )
+            {
+              continue;
             }
 
             prot2_pi2_rot_func(fbeam_en, V3_q,V3_2prot_corr,V3_2prot_uncorr,V3_2pi_corr,q_pi2,ecstat_pi2 ,V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);

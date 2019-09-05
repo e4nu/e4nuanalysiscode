@@ -631,178 +631,9 @@ void genie_analysis::Loop()
     }
   }
 
-  //initialization of correct error arrays for the histograms
-  for (int i=0;i<N_pperp;i++){
-    for(int j=0;j<N_Ecal;j++){
+  TH1D::SetDefaultSumw2();
+	TH2D::SetDefaultSumw2();
 
-      h1_Etot_Npi0_Ecalcut[i][j]->Sumw2();
-      h1_Etot_bkgd_pipl_pimi_fact_Ecalcut[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut41[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut421[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut431[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut4321[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut31[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut321[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut_2p1pito2p0pi[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p1pi[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p0pi[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut_2p2pi[i][j]->Sumw2();
-      h1_Etot_p_bkgd_slice_Ecalcut_3p1pi[i][j]->Sumw2();
-    }
-  }
-
-
-
-
-  for(int h=0;h<n_slice;h++){
-   h1_Erec_p_bkgd_slice[h]->Sumw2();
-   h1_Etot_p_bkgd_slice[h]->Sumw2();
-   h1_Erec_3pto1p_slice[h]->Sumw2();
-   h1_Etot_3pto1p_slice[h]->Sumw2();
-   h1_Erec_3pto2p_slice[h]->Sumw2();
-   h1_Etot_3pto2p_slice[h]->Sumw2();
-   h1_Erec_3p1pi_slice[h]->Sumw2();
-   h1_Etot_3p1pi_slice[h]->Sumw2();
-   h1_Etot_43pto1p_slice[h]->Sumw2();
-   h1_Erec_43pto1p_slice[h]->Sumw2();
-   h1_Erec_4pto3p_slice[h]->Sumw2();
-   h1_Etot_4pto3p_slice[h]->Sumw2();
-   h1_Erec_4pto2p_slice[h]->Sumw2();
-   h1_Etot_4pto2p_slice[h]->Sumw2();
-   h1_Erec_4pto1p_slice[h]->Sumw2();
-   h1_Etot_4pto1p_slice[h]->Sumw2();
-   h1_Etot_Npi0[h]->Sumw2();
-   h1_Erec_Npi0[h]->Sumw2();
-   h1_Etot_bkgd_pipl_pimi_fact[h]->Sumw2();
-   h1_Etot_bkgd_pipl_pimi_fact_pipl[h]->Sumw2();
-   h1_Etot_bkgd_pipl_pimi_fact_pimi[h]->Sumw2();
-   h1_Erec_bkgd_pipl_pimi_new_fact[h]->Sumw2();
-   h1_Etot_Npi1[h]->Sumw2();
-   h1_Erec_Npi1[h]->Sumw2();
-   h1_Etot_bkgd_1p2pi[h]->Sumw2();
-   h1_Erec_bkgd_1p2pi[h]->Sumw2();
-   h1_Etot_p_bkgd_slice_2p1pi_to1p1pi[h]->Sumw2();
-   h1_Etot_p_bkgd_slice_2p1pi_to2p0pi[h]->Sumw2();
-   h1_Erec_p_bkgd_slice_2p1pi_to1p1pi[h]->Sumw2();
-   h1_Erec_p_bkgd_slice_2p1pi_to2p0pi[h]->Sumw2();
-   h1_Erec_p_bkgd_slice_2p2pi[h]->Sumw2();
-   h1_Erec_p_bkgd_slice_2p1pi_to1p0pi[h]->Sumw2();
-   h1_Etot_p_bkgd_slice_2p1pi_to1p0pi[h]->Sumw2();
-   h1_Etot_p_bkgd_slice_2p2pi[h]->Sumw2();
-   h1_Etot_bkgd_1p2pi_1p0pi[h]->Sumw2();
-   h1_Erec_bkgd_1p2pi_1p0pi[h]->Sumw2();
-   h1_Erec_bkgd_1p3pi[h]->Sumw2();
-   h1_Etot_bkgd_1p3pi[h]->Sumw2();
-  }
-
-  h1_E_rec_1pi_weight_frac_feed->Sumw2();
-  h1_E_rec_2pi_weight_frac_feed->Sumw2();
-  h1_E_rec_3pi_weight_frac_feed->Sumw2();
-  h1_E_rec_4pi_weight_frac_feed->Sumw2();
-  h1_E_rec_0pi_frac_feed->Sumw2();
-  h1_E_tot_cut2_fracfeed ->Sumw2();
-  h1_E_rec_cut2_new_fracfeed ->Sumw2();
-  h1_E_tot_p_bkgd_fracfeed ->Sumw2();
-  h1_E_rec_p_bkgd_fracfeed ->Sumw2();
-  h1_E_tot_2p1pi_2p0pi_fracfeed ->Sumw2();
-  h1_E_rec_2p1pi_2p0pi_fracfeed ->Sumw2();
-  h1_E_tot_2p1pi_1p1pi_fracfeed ->Sumw2();
-  h1_E_rec_2p1pi_1p1pi_fracfeed ->Sumw2();
-  h1_E_tot_2p1pi_1p0pi_fracfeed ->Sumw2();
-  h1_E_rec_2p1pi_1p0pi_fracfeed ->Sumw2();
-  h1_E_tot_1p3pi_fracfeed ->Sumw2();
-  h1_E_rec_1p3pi_fracfeed ->Sumw2();
-  h1_E_tot_2p2pi_fracfeed ->Sumw2();
-  h1_E_rec_2p2pi_fracfeed ->Sumw2();
-  h1_E_tot_3p1pi_fracfeed ->Sumw2();
-  h1_E_rec_3p1pi_fracfeed ->Sumw2();
-  h1_E_tot_3pto2p_fracfeed->Sumw2();
-  h1_E_rec_3pto2p_fracfeed->Sumw2();
-  h1_E_tot_3pto1p_fracfeed->Sumw2();
-  h1_E_rec_3pto1p_fracfeed->Sumw2();
-  h1_E_tot_4pto3p_fracfeed->Sumw2();
-  h1_E_rec_4pto3p_fracfeed->Sumw2();
-  h1_E_tot_43pto1p_fracfeed->Sumw2();
-  h1_E_rec_43pto1p_fracfeed->Sumw2();
-  h1_E_tot_4pto2p_fracfeed->Sumw2();
-  h1_E_rec_4pto2p_fracfeed->Sumw2();
-  h1_E_tot_4pto1p_fracfeed->Sumw2();
-  h1_E_rec_4pto1p_fracfeed->Sumw2();
-  h1_E_tot_1p2pi_fracfeed->Sumw2();
-  h1_E_rec_1p2pi_fracfeed->Sumw2();
-  h1_E_tot_1p2pi_1p0pi_fracfeed->Sumw2();
-  h1_E_rec_1p2pi_1p0pi_fracfeed->Sumw2();
-  h1_E_rec_undetfactor_fracfeed->Sumw2();
-  h1_E_tot_undetfactor_fracfeed->Sumw2();
-  h1_E_rec_2p_det->Sumw2();
-  h1_E_tot_2p_det->Sumw2();
-  h1_E_tot_p_bkgd->Sumw2();
-  h1_E_rec_p_bkgd->Sumw2();
-  h1_E_tot_3pto1p->Sumw2();
-  h1_E_rec_3pto1p->Sumw2();
-  h1_E_tot_43pto1p->Sumw2();
-  h1_E_rec_43pto1p->Sumw2();
-  h1_E_tot_3pto2p->Sumw2();
-  h1_E_rec_3pto2p->Sumw2();
-  h1_E_tot_4pto1p->Sumw2();
-  h1_E_rec_4pto1p->Sumw2();
-  h1_E_tot_4pto3p->Sumw2();
-  h1_E_rec_4pto3p->Sumw2();
-  h1_E_tot_4pto2p->Sumw2();
-  h1_E_rec_4pto2p->Sumw2();
-  h1_E_rec->Sumw2();
-  h1_E_rec_0pi->Sumw2();
-  h1_E_rec_1pi->Sumw2();
-  h1_E_rec_4pi_weight->Sumw2();
-  h1_E_rec_40pi->Sumw2();
-  h1_E_rec_410pi->Sumw2();
-  h1_E_rec_420pi->Sumw2();
-  h1_E_rec_4210pi->Sumw2();
-  h1_E_rec_430pi->Sumw2();
-  h1_E_rec_4310pi->Sumw2();
-  h1_E_rec_4320pi->Sumw2();
-  h1_E_rec_43210pi->Sumw2();
-  h1_E_rec_1pi_weight->Sumw2();
-  h1_E_rec_2pi_weight->Sumw2();
-  h1_E_rec_3pi_weight->Sumw2();
-  h1_E_rec_20pi->Sumw2();
-  h1_E_rec_21pi->Sumw2();
-  h1_E_rec_30pi->Sumw2();
-  h1_E_rec_310pi->Sumw2();
-  h1_E_rec_320pi->Sumw2();
-  h1_E_rec_3210pi->Sumw2();
-  h1_E_rec_1prot->Sumw2();
-  h1_E_tot_1prot->Sumw2();
-  h1_E_rec_cutpi1_piplpimi->Sumw2();
-  h1_E_tot_cutpi1_piplpimi->Sumw2();
-  h1_E_tot->Sumw2();
-  h1_E_rec_cut2_new->Sumw2();
-  h1_E_tot_cut2->Sumw2();
-  h1_E_rec_cut005_newcut3->Sumw2();
-  h1_E_rec_undetfactor->Sumw2();
-  h1_E_tot_undetfactor->Sumw2();
-  h1_E_tot_undetfactor_pipl->Sumw2();
-  h1_E_tot_undetfactor_pimi->Sumw2();
-  h1_E_tot_1p2pi->Sumw2();
-  h1_E_rec_1p2pi->Sumw2();
-  h1_E_tot_1p3pi->Sumw2();
-  h1_E_rec_1p3pi->Sumw2();
-  h1_E_tot_2p2pi->Sumw2();
-  h1_E_rec_2p2pi->Sumw2();
-  h1_E_tot_3p1pi->Sumw2();
-  h1_E_rec_3p1pi->Sumw2();
-  h1_E_tot_1p2pi_1p0pi->Sumw2();
-  h1_E_rec_1p2pi_1p0pi->Sumw2();
-  h1_E_tot_2p1pi_2p0pi->Sumw2();
-  h1_E_rec_2p1pi_2p0pi->Sumw2();
-  h1_E_tot_2p1pi_1p1pi->Sumw2();
-  h1_E_rec_2p1pi_1p1pi->Sumw2();
-  h1_E_tot_2p1pi_1p0pi->Sumw2();
-  h1_E_rec_2p1pi_1p0pi->Sumw2();
 
 /** Beginning of Event Loop **/
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -820,7 +651,7 @@ void genie_analysis::Loop()
       vz_corr_func->SetParameters(pars); //setting appropriate parameters of the vertex correction function for the runs with the same target and beam energy, but different vertex correction
     }
 
-
+//1500 is not used anymore
     if((runnb>18283 && runnb<18289) || (runnb>18300 && runnb<18304) || (runnb>18317 && runnb<18329))        fTorusCurrent=750;    //setting appropriate torrus magnet current
     else if ((runnb>18293 && runnb<18301) || (runnb>18305 && runnb<18317) || (runnb>18328 && runnb<18336))  fTorusCurrent=1500;
     else fTorusCurrent=2250;
@@ -940,9 +771,9 @@ void genie_analysis::Loop()
 
           num_p = num_p + 1;
           index_p[num_p - 1] = i;
-  			  ProtonID.push_back(i);
+          ProtonID.push_back(i);
 
-  		 }
+       }
 
        if (pdgf[i] == -211 && pf[i] > 0.15)  {
 
@@ -953,7 +784,7 @@ void genie_analysis::Loop()
           index_pimi[num_pimi - 1] = i;
           index_pi[num_pi - 1] = i;
           ind_pi_phot[num_pi_phot - 1] = i;
- 				  PiMinusID.push_back(i);
+          PiMinusID.push_back(i);
 
        }
 
@@ -1010,25 +841,23 @@ void genie_analysis::Loop()
     h2_N_prot_pi_phot_nonrad->Fill(num_pi_phot_nonrad,num_p);
     h2_N_pi_phot[num_p]->Fill(ec_num_n,num_pi);
 
-    int ind_prot1,ind_prot2,ind_phot;
+    int ind_phot;
     int ind_p;      //temp proton index
     //Events with exactly 2 protons
 	  if(num_p == 2)
     {
 
-          ind_prot1 = index_p[0];
-          ind_prot2 = index_p[1];
           double SmearedPp;
           double SmearedEp;
         //LorentzVectors for protons without momentum correction
-          TLorentzVector V4_prot_uncorr1(pxf[ind_prot1],pyf[ind_prot1],pzf[ind_prot1],TMath::Sqrt(m_prot*m_prot+pf[ind_prot1]*pf[ind_prot1]));
-          TLorentzVector V4_prot_uncorr2(pxf[ind_prot2],pyf[ind_prot2],pzf[ind_prot2],TMath::Sqrt(m_prot*m_prot+pf[ind_prot2]*pf[ind_prot2]));
+          TLorentzVector V4_prot_uncorr1(pxf[index_p[0]],pyf[index_p[0]],pzf[index_p[0]],TMath::Sqrt(m_prot*m_prot+pf[index_p[0]]*pf[index_p[0]]));
+          TLorentzVector V4_prot_uncorr2(pxf[index_p[1]],pyf[index_p[1]],pzf[index_p[1]],TMath::Sqrt(m_prot*m_prot+pf[index_p[1]]*pf[index_p[1]]));
         //Kinematic for first proton, smearing
-    	   	SmearedPp = gRandom->Gaus(pf[ind_prot1],reso_p*pf[ind_prot1]);
+    	   	SmearedPp = gRandom->Gaus(pf[index_p[0]],reso_p*pf[index_p[0]]);
       		SmearedEp = sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
 
           TVector3 V3_prot_corr1;
-      		V3_prot_corr1.SetXYZ(SmearedPp/pf[ind_prot1] * pxf[ind_prot1],SmearedPp/pf[ind_prot1] * pyf[ind_prot1],SmearedPp/pf[ind_prot1] * pzf[ind_prot1]);
+      		V3_prot_corr1.SetXYZ(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]]);
 
     	   	if (!PFiducialCut(fbeam_en, V3_prot_corr1) ) { continue; } // Proton theta & phi fiducial cuts
 
@@ -1040,11 +869,11 @@ void genie_analysis::Loop()
           double p_acc_ratio1 = acceptance_c(prot_mom_corr1, cos(p_theta1), phi_prot1, 2212,file_acceptance_p);
 
      //Kinematic for second proton
-          SmearedPp = gRandom->Gaus(pf[ind_prot2],reso_p*pf[ind_prot2]);
+          SmearedPp = gRandom->Gaus(pf[index_p[1]],reso_p*pf[index_p[1]]);
           SmearedEp = sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
 
           TVector3 V3_prot_corr2;
-          V3_prot_corr2.SetXYZ(SmearedPp/pf[ind_prot2] * pxf[ind_prot2],SmearedPp/pf[ind_prot2] * pyf[ind_prot2],SmearedPp/pf[ind_prot2] * pzf[ind_prot2]);
+          V3_prot_corr2.SetXYZ(SmearedPp/pf[index_p[1]] * pxf[index_p[1]],SmearedPp/pf[index_p[1]] * pyf[index_p[1]],SmearedPp/pf[index_p[1]] * pzf[index_p[1]]);
 
           if (!PFiducialCut(fbeam_en, V3_prot_corr2) ) { continue; } // Proton theta & phi fiducial cuts
 
@@ -1126,15 +955,12 @@ void genie_analysis::Loop()
 
 //          if (num_pi_phot==1) { //no photons for now F.H. 29.8.19
           if (num_pi == 1) {
-            bool piplus_stat = false;
-            bool piminus_stat = false;
+
             int charge = 0;
             if (num_pimi == 1 && num_pipl == 0) {
-              piminus_stat = true;
               charge = -1;
             }
             else if (num_pipl == 1 && num_pimi == 0) {
-              piplus_stat = true;
               charge = 1;
             }
             else {
@@ -1150,22 +976,21 @@ void genie_analysis::Loop()
             V3_1pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
 
             // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus
-            if ( ( piplus_stat &&   (!Pi_phot_fid_united(fbeam_en, V3_1pi_corr,  1)) ) &&
-                 ( piminus_stat &&  (!Pi_phot_fid_united(fbeam_en, V3_1pi_corr, -1)) )  )
+            if ( !Pi_phot_fid_united(fbeam_en, V3_1pi_corr, charge) )
             {
               continue;
             }
 
-            double pion_theta = V3_prot_corr2.Theta()*TMath::RadToDeg();
+            double pion_theta = V3_1pi_corr.Theta()*TMath::RadToDeg();
             //Phi has to be checked F.H. 24.8.19
             double phi_pion = V3_1pi_corr.Phi() + TMath::Pi();
             double pion_mom_corr = V3_1pi_corr.Mag();
 
             double pion_acc_ratio = 0;
-            if (piplus_stat) { //acceptance for pi plus
+            if (charge == 1) { //acceptance for pi plus
               pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
             }
-            else if (piminus_stat) {    //acceptance for pi minus. using electron acceptance map
+            else if (charge == -1) {    //acceptance for pi minus. using electron acceptance map
               pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
             }
             else { std::cout << "WARNING: 2proton and 1 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
@@ -1292,7 +1117,6 @@ void genie_analysis::Loop()
               SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
               SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
 
-
               V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
               double pion_theta = V3_2pi_corr[i].Theta()*TMath::RadToDeg();
@@ -1360,11 +1184,14 @@ void genie_analysis::Loop()
   //Events with exactly 3 protons
 	  if(num_p == 3){
 
-	      const int N_3p=3;
+        double SmearedPp;
+        double SmearedEp;
+
+	      const int N_3p = 3;
 	      TLorentzVector V4_p_uncorr[N_3p], V4_p_corr[N_3p],V4_prot_el[N_3p];
-	      float prot_vz[N_3p];
-	      double prot_phi[N_3p],prot_theta[N_3p],prot_vz_corr[N_3p],prot_p_corr[N_3p];
-	      TVector3 V3_prot[N_3p],V3_prot_corr[N_3p],V3_3p_rot[N_3p];
+
+	      double prot_phi[N_3p],prot_theta[N_3p],prot_p_corr[N_3p];
+	      TVector3 V3_prot_uncorr[N_3p],V3_prot_corr[N_3p],V3_3p_rot[N_3p];
 	      double E_cal[N_3p],p_miss_perp[N_3p],P_3pto1p[N_3p];
 	      double N_p1[N_3p]={0};
         double N_p_three=0;
@@ -1374,78 +1201,81 @@ void genie_analysis::Loop()
         double N_p_two=0;
         double E_cal_3pto1p[3]={0};
         double p_miss_perp_3pto1p[3]={0};
-	      int N_comb=3;
-	      const int N_2p=2;
+	      int N_comb = 3;
+	      const int N_2p = 2;
 	      double E_cal_3pto2p[3][N_2p]={0};
         double p_miss_perp_3pto2p[3][N_2p]={0};
         double P_3pto2p[3][N_2p]={0};
 	      TVector3 V3_2p_rot[N_2p], V3_prot_el[N_3p][N_2p];
  	      bool prot_stat[N_3p]={false};
+        double p_acc_ratio[N_3p] = {0};
 
 	      for(int i = 0; i < N_3p; i++)
 	      {
-	        V4_p_uncorr[i].SetPxPyPzE(p[index_p[i]]*cx[index_p[i]],p[index_p[i]]*cy[index_p[i]],p[index_p[i]]*cz[index_p[i]],TMath::Sqrt(m_prot*m_prot+p[index_p[i]]*p[index_p[i]]));
-	        prot_vz[i]=vz[index_p[i]];
-	        prot_phi[i]=TMath::ATan2(cy[index_p[i]],cx[index_p[i]])*TMath::RadToDeg()+30;
-	        if(prot_phi[i]<0)prot_phi[i]=prot_phi[i]+360;
-	        prot_theta[i]=TMath::ACos(cz[index_p[i]])*TMath::RadToDeg();
-	        prot_vz_corr[i]=prot_vz[i]+vz_corr(vz_corr_func,prot_phi[i],prot_theta[i]);
+          N_p1[i]=0;
 
-	        if(ProtonMomCorrection_He3_4Cell(ftarget,V4_p_uncorr[i],prot_vz_corr[i]) != -1){
-		            prot_p_corr[i]=ProtonMomCorrection_He3_4Cell(ftarget,V4_p_uncorr[i],prot_vz_corr[i]);
-          }
-	        else
-		      {
-            prot_p_corr[i]=p[index_p[i]];
-          }
+          V4_p_uncorr[i].SetPxPyPzE(pxf[index_p[i]],pyf[index_p[i]],pzf[index_p[i]],TMath::Sqrt(m_prot*m_prot+pf[index_p[i]]*pf[index_p[i]]));
+          V3_prot_uncorr[i].SetXYZ(pxf[index_p[i]],pyf[index_p[i]],pzf[index_p[i]]);
 
-	        V4_p_corr[i].SetPxPyPzE(prot_p_corr[i]*cx[index_p[i]],prot_p_corr[i]*cy[index_p[i]],prot_p_corr[i]*cz[index_p[i]],TMath::Sqrt(m_prot*m_prot+prot_p_corr[i]*prot_p_corr[i]));
-	        V3_prot[i].SetXYZ(p[index_p[i]]*cx[index_p[i]],p[index_p[i]]*cy[index_p[i]],p[index_p[i]]*cz[index_p[i]]);
-	        V3_prot_corr[i].SetXYZ(prot_p_corr[i]*cx[index_p[i]],prot_p_corr[i]*cy[index_p[i]],prot_p_corr[i]*cz[index_p[i]]);
+         //Smearing of Proton
+          SmearedPp = gRandom->Gaus(pf[index_p[i]],reso_p*pf[index_p[i]]);
+          SmearedEp = TMath::Sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
 
-	        V4_prot_el[i]=V4_p_corr[i]+V4_el;
-	        E_cal[i]=V4_el.E()+ V4_p_corr[i].E()-m_prot+bind_en[ftarget];
-	        p_miss_perp[i]=TMath::Sqrt(V4_prot_el[i].Px()*V4_prot_el[i].Px()+V4_prot_el[i].Py()*V4_prot_el[i].Py());
+          V3_prot_corr[i].SetXYZ(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]]);
+          V4_p_corr[i].SetPxPyPzE(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]],SmearedEp);
+
+          double p_theta = V3_prot_corr[i].Theta()*TMath::RadToDeg();
+          double prot_mom_corr = V3_prot_corr[i].Mag();
+          //Phi has to be checked F.H. 24.8.19
+          double phi_prot = V3_prot_corr[i].Phi() + TMath::Pi();
+        //Proton acceptance weight
+          p_acc_ratio[i] = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
+
+	        V4_prot_el[i] = V4_p_corr[i] + V4_el;
+	        E_cal[i] = V4_el.E()+ V4_p_corr[i].E() - m_prot + bind_en[ftarget];
+	        p_miss_perp[i] = TMath::Sqrt(V4_prot_el[i].Px()*V4_prot_el[i].Px() + V4_prot_el[i].Py()*V4_prot_el[i].Py());
 	      }
-        V3_prot_el[0][0]=V4_el.Vect()+V3_prot[0];
-        V3_prot_el[0][1]=V4_el.Vect()+V3_prot[1];
-        V3_prot_el[1][0]=V4_el.Vect()+V3_prot[0];
-        V3_prot_el[1][1]=V4_el.Vect()+V3_prot[2];
-        V3_prot_el[2][0]=V4_el.Vect()+V3_prot[1];
-        V3_prot_el[2][1]=V4_el.Vect()+V3_prot[2];
+
+        //If one of the smeared protons doesn't get through fiducials, skip event
+        if ( (!PFiducialCut(fbeam_en, V3_prot_corr[0]) ) || (!PFiducialCut(fbeam_en, V3_prot_corr[1]) ) || (!PFiducialCut(fbeam_en, V3_prot_corr[2]) ) ) { continue; }
 
 
+        V3_prot_el[0][0]=V4_el.Vect()+V3_prot_uncorr[0];
+        V3_prot_el[0][1]=V4_el.Vect()+V3_prot_uncorr[1];
+        V3_prot_el[1][0]=V4_el.Vect()+V3_prot_uncorr[0];
+        V3_prot_el[1][1]=V4_el.Vect()+V3_prot_uncorr[2];
+        V3_prot_el[2][0]=V4_el.Vect()+V3_prot_uncorr[1];
+        V3_prot_el[2][1]=V4_el.Vect()+V3_prot_uncorr[2];
 
 
+        prot3_rot_func(fbeam_en, V3_q, V3_prot_corr,V3_prot_uncorr,V4_el,E_cal_3pto2p,p_miss_perp_3pto2p, P_3pto2p,N_p1, E_cal_3pto1p,p_miss_perp_3pto1p,&N_p_three);
 
-	         for(int i = 0; i < N_3p; i++){
-	            N_p1[i]=0;
-	         }
-	         V3_q=(V4_beam-V4_el).Vect();
+        //acceptance weight for all three protons
+        double weight_protons =  p_acc_ratio[0] * p_acc_ratio[1] * p_acc_ratio[2];
 
-           prot3_rot_func(fbeam_en, V3_q, V3_prot_corr,V3_prot,V4_el,E_cal_3pto2p,p_miss_perp_3pto2p, P_3pto2p,N_p1, E_cal_3pto1p,p_miss_perp_3pto1p,&N_p_three);
-
-	         if(num_pi_phot==0 && N_p_three!=0){
-	           for(int count = 0; count < N_comb;count++)    { //Loop over number of combinations
+//	      if(num_pi_phot==0 && N_p_three!=0){
+	      if(num_pi == 0 && N_p_three != 0){    //no photons for now F.H. 29.8.19
+           double histoweight = weight_protons * e_acc_ratio * wght/Mott_cross_sec; //Weight for 3protons, 1 electron, GENIE weight and Mott cross section
+	         for(int count = 0; count < N_comb; count++)    { //Loop over number of combinations
                for(int j = 0; j < N_2p; j++)    { //loop over two protons
 
  //-----------------------------------------  3p to 2p->1p  -----------------------------------------------------------------------
 
-                  h1_E_tot_3pto2p->Fill(E_cal_3pto2p[count][j], P_3pto2p[count][j]*1/Mott_cross_sec);
-		              h1_E_rec_3pto2p->Fill(E_rec, P_3pto2p[count][j]*1/Mott_cross_sec);
-		              h2_Erec_pperp_321p->Fill(p_miss_perp_3pto2p[count][j],E_rec,P_3pto2p[count][j]*1/Mott_cross_sec);
-		              h1_E_tot_3pto2p_fracfeed->Fill((E_cal_3pto2p[count][j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_3pto2p[count][j]*1/Mott_cross_sec);
-		              h1_E_rec_3pto2p_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en], P_3pto2p[count][j]*1/Mott_cross_sec);
-		              h2_pperp_W->Fill(W_var,p_miss_perp_3pto2p[count][j],P_3pto2p[count][j]*1/Mott_cross_sec);
-		              h1_theta0->Fill((V4_beam.Vect()).Angle(V3_prot_el[count][j])*TMath::RadToDeg(),P_3pto2p[count][j]*1/Mott_cross_sec);
-	                h2_Ecal_Eqe->Fill(E_rec,E_cal_3pto2p[count][j],P_3pto2p[count][j]*1/Mott_cross_sec);
-	                h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_3pto2p[count][j],P_3pto2p[count][j]*1/Mott_cross_sec);
-	                h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_3pto2p[count][j],P_3pto2p[count][j]*1/Mott_cross_sec);
+                  h1_E_tot_3pto2p->Fill(E_cal_3pto2p[count][j], P_3pto2p[count][j]*histoweight);
+		              h1_E_rec_3pto2p->Fill(E_rec, P_3pto2p[count][j]*histoweight);
+		              h2_Erec_pperp_321p->Fill(p_miss_perp_3pto2p[count][j],E_rec,P_3pto2p[count][j]*histoweight);
+		              h1_E_tot_3pto2p_fracfeed->Fill((E_cal_3pto2p[count][j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_3pto2p[count][j]*histoweight);
+		              h1_E_rec_3pto2p_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en], P_3pto2p[count][j]*histoweight);
+		              h2_pperp_W->Fill(W_var,p_miss_perp_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
+		              h1_theta0->Fill((V4_beam.Vect()).Angle(V3_prot_el[count][j])*TMath::RadToDeg(),P_3pto2p[count][j]*histoweight);
+	                h2_Ecal_Eqe->Fill(E_rec,E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
+	                h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
+	                h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 
 		              for (int n = 0; n < N_pperp;n++){
 		                  for(int z = 0; z < N_Ecal; z++){
 		                      if(E_cal_3pto2p[count][j]>Ecal_lowlim[z] && E_cal_3pto2p[count][j]<Ecal_uplim[z] && p_miss_perp_3pto2p[count][j]>pperp_cut[n]) {
-                              h1_Etot_p_bkgd_slice_Ecalcut321[n][z]->Fill(E_cal_3pto2p[count][j], P_3pto2p[count][j]*1/Mott_cross_sec);
+                              h1_Etot_p_bkgd_slice_Ecalcut321[n][z]->Fill(E_cal_3pto2p[count][j], P_3pto2p[count][j]*histoweight);
                           }
 		                  }
 		              }
@@ -1453,32 +1283,32 @@ void genie_analysis::Loop()
 		              for(int i = 0; i < n_slice; i++)
 		              {
 		                  if (p_miss_perp_3pto2p[count][j]<pperp_max[i] && p_miss_perp_3pto2p[count][j]>pperp_min[i]){
-	                         h1_Etot_3pto2p_slice[i]->Fill(E_cal_3pto2p[count][j], P_3pto2p[count][j]*1/Mott_cross_sec);
-			                     h1_Erec_3pto2p_slice[i]->Fill(E_rec, P_3pto2p[count][j]*1/Mott_cross_sec);
+	                         h1_Etot_3pto2p_slice[i]->Fill(E_cal_3pto2p[count][j], P_3pto2p[count][j]*histoweight);
+			                     h1_Erec_3pto2p_slice[i]->Fill(E_rec, P_3pto2p[count][j]*histoweight);
 		                  }
 		              }
-		            } //end loop over protons
-	           } //end loop over combination N_comb
+               } //end loop over protons
+	         } //end loop over combination N_comb
 
  //-----------------------------------------  3p to 1p  -----------------------------------------------------------------------
-	           for(int j = 0; j < N_3p; j++)    {
+	         for(int j = 0; j < N_3p; j++)    {
 
 		             P_3pto1p[j]= N_p1[j]/N_p_three;
-		             h1_E_tot_3pto1p->Fill(E_cal[j], P_3pto1p[j]*1/Mott_cross_sec);
-		             h1_E_rec_3pto1p->Fill(E_rec,P_3pto1p[j]*1/Mott_cross_sec);
-		             h2_Erec_pperp_31p->Fill(p_miss_perp[j],E_rec,P_3pto1p[j]*1/Mott_cross_sec);
-		             h1_E_tot_3pto1p_fracfeed->Fill((E_cal[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_3pto1p[j]*1/Mott_cross_sec);
-		             h1_E_rec_3pto1p_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_3pto1p[j]*1/Mott_cross_sec);
-		             h2_pperp_W->Fill(W_var,p_miss_perp[j],-P_3pto1p[j]*1/Mott_cross_sec);
-		             h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot[j])*TMath::RadToDeg(),-P_3pto1p[j]*1/Mott_cross_sec);
-		             h2_Ecal_Eqe->Fill(E_rec,E_cal[j],-P_3pto1p[j]*1/Mott_cross_sec);
-		             h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal[j],-P_3pto1p[j]*1/Mott_cross_sec);
-		             h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal[j],-P_3pto1p[j]*1/Mott_cross_sec);
+		             h1_E_tot_3pto1p->Fill(E_cal[j], P_3pto1p[j]*histoweight);
+		             h1_E_rec_3pto1p->Fill(E_rec,P_3pto1p[j]*histoweight);
+		             h2_Erec_pperp_31p->Fill(p_miss_perp[j],E_rec,P_3pto1p[j]*histoweight);
+		             h1_E_tot_3pto1p_fracfeed->Fill((E_cal[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_3pto1p[j]*histoweight);
+		             h1_E_rec_3pto1p_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_3pto1p[j]*histoweight);
+		             h2_pperp_W->Fill(W_var,p_miss_perp[j],-P_3pto1p[j]*histoweight);
+		             h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr[j])*TMath::RadToDeg(),-P_3pto1p[j]*histoweight);
+		             h2_Ecal_Eqe->Fill(E_rec,E_cal[j],-P_3pto1p[j]*histoweight);
+		             h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal[j],-P_3pto1p[j]*histoweight);
+		             h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal[j],-P_3pto1p[j]*histoweight);
 
 		             for (int n = 0; n < N_pperp; n++){
 		                 for(int z = 0; z < N_Ecal; z++){
 		                     if(E_cal[j] > Ecal_lowlim[z] && E_cal[j] < Ecal_uplim[z] && p_miss_perp[j]>pperp_cut[n]) {
-                             h1_Etot_p_bkgd_slice_Ecalcut31[n][z]->Fill(E_cal[j], P_3pto1p[j]*1/Mott_cross_sec);
+                             h1_Etot_p_bkgd_slice_Ecalcut31[n][z]->Fill(E_cal[j], P_3pto1p[j]*histoweight);
                          }
 		                 }
 		             }
@@ -1486,55 +1316,91 @@ void genie_analysis::Loop()
 		             for(int i = 0; i < n_slice; i++)
 		             {
 		                 if (p_miss_perp[j]<pperp_max[i] && p_miss_perp[j]>pperp_min[i]){
-		                     h1_Etot_3pto1p_slice[i]->Fill(E_cal[j],P_3pto1p[j]*1/Mott_cross_sec);
-		                     h1_Erec_3pto1p_slice[i]->Fill(E_rec,P_3pto1p[j]*1/Mott_cross_sec);
+		                     h1_Etot_3pto1p_slice[i]->Fill(E_cal[j],P_3pto1p[j]*histoweight);
+		                     h1_Erec_3pto1p_slice[i]->Fill(E_rec,P_3pto1p[j]*histoweight);
 		                 }
 		             }
-	           } //end loop over N_3p
-	         }//end if num_pi_phot==0 && N_p_three!=0, no pions
+	         } //end loop over N_3p
+	      }//end if num_pi_phot==0 && N_p_three!=0, no pions
 
 //----------------------------------3p 1pi ----------------------------------------------------------
 
-           if (num_pi_phot==1) { //number of pions or photons = 1
+//        if (num_pi_phot==1) { //no photons for now F.H. 29.8.19
+        if (num_pi == 1) { //number of pions  = 1
 
              double P_tot_3p[N_3p]={0};
              double Ecal_3p1pi[N_3p]={0};
              double p_miss_perp_3p1pi[N_3p]={0};
-             TVector3 V3_pi_phot;
-             V3_q=(V4_beam-V4_el).Vect();
-             V3_pi_phot.SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);
+             double charge = 0;
+             TVector3 V3_pi_corr;
 
-             prot3_pi1_rot_func(fbeam_en,  V3_q,V3_prot_corr,V3_prot, V3_pi_phot,q[ind_pi_phot[0]],ec_radstat_n[0], V4_el,  Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
+             if ( index_pipl[0] == index_pi[0] ) { //pion is a piplus
+               charge = 1;
+             }
+             else if ( index_pimi[0] == index_pi[0] ) { //pion is a piminus
+               charge = -1;
+             }
+             else {  std::cout << "WARNING: 3p 1pion event: No charge for one pion could be assigned. Pion number " << index_pi[0] << std::endl; continue; }
+
+             SmearedPp = gRandom->Gaus(pf[index_pi[0]],reso_pi*pf[index_pi[0]]);
+             SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
+
+             V3_pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
+
+             // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus
+             if ( !Pi_phot_fid_united(fbeam_en, V3_pi_corr, charge) )
+             {
+               continue;
+             }
+
+             double pion_theta = V3_pi_corr.Theta()*TMath::RadToDeg();
+             //Phi has to be checked F.H. 24.8.19
+             double phi_pion = V3_pi_corr.Phi() + TMath::Pi();
+             double pion_mom_corr = V3_pi_corr.Mag();
+
+             double pion_acc_ratio = 0;
+             if (charge == 1) { //acceptance for pi plus
+               pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
+             }
+             else if (charge == -1) {    //acceptance for pi minus. using electron acceptance map
+               pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
+             }
+             else { std::cout << "WARNING: 3proton and 1 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
+
+
+             prot3_pi1_rot_func(fbeam_en,  V3_q,V3_prot_corr,V3_prot_uncorr, V3_pi_corr,q[ind_pi_phot[0]],ec_radstat_n[0], V4_el,  Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
+
+             double histoweight = pion_acc_ratio * weight_protons * e_acc_ratio * wght/Mott_cross_sec; //Weight for 3protons, 1 pion, 1 electron, GENIE weight and Mott cross section
 
 	           for(int j = 0; j < N_3p; j++)    { //loop over 3 protons
 
-                 h1_E_tot_3p1pi->Fill(E_cal[j], P_tot_3p[j]*1/Mott_cross_sec);
-		             h1_E_rec_3p1pi->Fill(E_rec,P_tot_3p[j]*1/Mott_cross_sec);
-		             h2_Erec_pperp_3p1pi->Fill(p_miss_perp[j],E_rec,P_tot_3p[j]*1/Mott_cross_sec);
-		             h1_E_tot_3p1pi_fracfeed->Fill((E_cal[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_tot_3p[j]*1/Mott_cross_sec);
-		             h1_E_rec_3p1pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_tot_3p[j]*1/Mott_cross_sec);
-		             h2_pperp_W->Fill(W_var,p_miss_perp[j],P_tot_3p[j]*1/Mott_cross_sec);
-		             h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot[j])*TMath::RadToDeg(),P_tot_3p[j]*1/Mott_cross_sec);
-		             h2_Ecal_Eqe->Fill(E_rec,E_cal[j],P_tot_3p[j]*1/Mott_cross_sec);
-		             h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal[j],P_tot_3p[j]*1/Mott_cross_sec);
-		             h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal[j],P_tot_3p[j]*1/Mott_cross_sec);
+                 h1_E_tot_3p1pi->Fill(E_cal[j], P_tot_3p[j]*histoweight);
+		             h1_E_rec_3p1pi->Fill(E_rec,P_tot_3p[j]*histoweight);
+		             h2_Erec_pperp_3p1pi->Fill(p_miss_perp[j],E_rec,P_tot_3p[j]*histoweight);
+		             h1_E_tot_3p1pi_fracfeed->Fill((E_cal[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en], P_tot_3p[j]*histoweight);
+		             h1_E_rec_3p1pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_tot_3p[j]*histoweight);
+		             h2_pperp_W->Fill(W_var,p_miss_perp[j],P_tot_3p[j]*histoweight);
+		             h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr[j])*TMath::RadToDeg(),P_tot_3p[j]*histoweight);
+		             h2_Ecal_Eqe->Fill(E_rec,E_cal[j],P_tot_3p[j]*histoweight);
+		             h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal[j],P_tot_3p[j]*histoweight);
+		             h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal[j],P_tot_3p[j]*histoweight);
 
 		             for (int n = 0; n < N_pperp; n++){
 		                 for(int z = 0; z < N_Ecal; z++){
 		                     if(E_cal[j]>Ecal_lowlim[z] && E_cal[j]<Ecal_uplim[z] && p_miss_perp[j]>pperp_cut[n]) {
-                             h1_Etot_p_bkgd_slice_Ecalcut_3p1pi[n][z]->Fill(E_cal[j],P_tot_3p[j]*1/Mott_cross_sec);
+                             h1_Etot_p_bkgd_slice_Ecalcut_3p1pi[n][z]->Fill(E_cal[j],P_tot_3p[j]*histoweight);
                          }
 		                 }
 		             }
 		             for(int i = 0; i < n_slice; i++)
 		             {
 		                 if (p_miss_perp[j]<pperp_max[i] && p_miss_perp[j]>pperp_min[i]){
-                         h1_Etot_3p1pi_slice[i]->Fill(E_cal[j],P_tot_3p[j]*1/Mott_cross_sec);
-		                     h1_Erec_3p1pi_slice[i]->Fill(E_rec,P_tot_3p[j]*1/Mott_cross_sec);
+                         h1_Etot_3p1pi_slice[i]->Fill(E_cal[j],P_tot_3p[j]*histoweight);
+		                     h1_Erec_3p1pi_slice[i]->Fill(E_rec,P_tot_3p[j]*histoweight);
 		                 }
 		             }
              } //end loop over N_3p
-           }// 1 pi requirement ends
+        }// 1 pi requirement ends
 
 	  }//end if num_p == 3  3proton requiremnet
 
@@ -1626,7 +1492,7 @@ void genie_analysis::Loop()
 	            double E_cal_4pto3p[3][N_2p]={0};
               double p_miss_perp_4pto3p[3][N_2p]={0};
               double P_4pto3p[3][N_2p]={0};
-	            TVector3 V3_prot[N_3p],V3_prot_uncorr[N_3p],V3_prot_el_4pto3p[N_3p][N_2p],V3_el_prot[N_comb][N_2p];
+	            TVector3 V3_prot_corr[N_3p],V3_prot_uncorr[N_3p],V3_prot_el_4pto3p[N_3p][N_2p],V3_el_prot[N_comb][N_2p];
 	            double N_p_three=0,N_p1[N_3p]={0};
               double E_cal_43pto1p[N_3p];
               double p_miss_perp_43pto1p[N_3p];
@@ -1635,22 +1501,22 @@ void genie_analysis::Loop()
 	            for(int g = 0; g < Ncomb_4to3; g++){   //estimating the undetected 4p contribution to  3p
 		             if(g==0) {
 		                 V3_prot_uncorr[0]=V3_prot4[0]; V3_prot_uncorr[1]=V3_prot4[1]; V3_prot_uncorr[2]=V3_prot4[2];
-		                 V3_prot[0]=V3_prot4_corr[0]; V3_prot[1]=V3_prot4_corr[1]; V3_prot[2]=V3_prot4_corr[2];
+		                 V3_prot_corr[0]=V3_prot4_corr[0]; V3_prot_corr[1]=V3_prot4_corr[1]; V3_prot_corr[2]=V3_prot4_corr[2];
 		             }
 		             if(g==1){
 		                 V3_prot_uncorr[0]=V3_prot4[0]; V3_prot_uncorr[1]=V3_prot4[1]; V3_prot_uncorr[2]=V3_prot4[3];
-		                 V3_prot[0]=V3_prot4_corr[0]; V3_prot[1]=V3_prot4_corr[1]; V3_prot[2]=V3_prot4_corr[3];
+		                 V3_prot_corr[0]=V3_prot4_corr[0]; V3_prot_corr[1]=V3_prot4_corr[1]; V3_prot_corr[2]=V3_prot4_corr[3];
 		             }
 		             if(g==2){
 		                 V3_prot_uncorr[0]=V3_prot4[0]; V3_prot_uncorr[1]=V3_prot4[2]; V3_prot_uncorr[2]=V3_prot4[3];
-		                 V3_prot[0]=V3_prot4_corr[0]; V3_prot[1]=V3_prot4_corr[2]; V3_prot[2]=V3_prot4_corr[3];
+		                 V3_prot_corr[0]=V3_prot4_corr[0]; V3_prot_corr[1]=V3_prot4_corr[2]; V3_prot_corr[2]=V3_prot4_corr[3];
 		             }
 		             if(g==3){
 		                 V3_prot_uncorr[0]=V3_prot4[1]; V3_prot_uncorr[1]=V3_prot4[2]; V3_prot_uncorr[2]=V3_prot4[3];
-		                 V3_prot[0]=V3_prot4_corr[1]; V3_prot[1]=V3_prot4_corr[2]; V3_prot[2]=V3_prot4_corr[3];
+		                 V3_prot_corr[0]=V3_prot4_corr[1]; V3_prot_corr[1]=V3_prot4_corr[2]; V3_prot_corr[2]=V3_prot4_corr[3];
 		             }
 
-		             prot3_rot_func(fbeam_en,  V3_q, V3_prot, V3_prot_uncorr,V4_el,E_cal_4pto3p,p_miss_perp_4pto3p, P_4pto3p,N_p1,E_cal_43pto1p,p_miss_perp_43pto1p,&N_p_three);
+		             prot3_rot_func(fbeam_en,  V3_q, V3_prot_corr, V3_prot_uncorr,V4_el,E_cal_4pto3p,p_miss_perp_4pto3p, P_4pto3p,N_p1,E_cal_43pto1p,p_miss_perp_43pto1p,&N_p_three);
 
 		             V3_el_prot[0][0]=V4_el.Vect()+V3_prot_uncorr[0];
 		             V3_el_prot[0][1]=V4_el.Vect()+V3_prot_uncorr[1];

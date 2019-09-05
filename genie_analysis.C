@@ -28,7 +28,6 @@ void SetFiducialCutParameters(std::string beam_en); // Load Fidicual Parameters 
 //void SetMomCorrParameters();
 
 
-double vz_corr(TF1 *vz_corr_func, double phi,double theta);
 TVector3 FindUVW(TVector3 xyz);
 Bool_t CutUVW(TVector3 ecxyz);
 Float_t ProtonMomCorrection_He3_4Cell(std::string atarget, TLorentzVector V4Pr, Float_t vertex_p);
@@ -79,7 +78,6 @@ void genie_analysis::Loop()
 
   int N_pperp,N_Ecal;
   double *pperp_cut,*Ecal_lowlim,*Ecal_uplim;
-  TF1 *vz_corr_func;
 
   TString E_acc_file;
 
@@ -223,18 +221,14 @@ void genie_analysis::Loop()
   TFile* file_acceptance_pip = TFile::Open("maps/"+WhichMap+"/"+WhichMap+"_12C_E_"+E_acc_file+"_pip.root");
 
   //Definition of other input files with calibration data
-
-  TFile *file_in3= new TFile(Form("FiducialsCorrections/vz_%s_%s.root",ftarget.c_str(),fbeam_en.c_str()));;
-
-
-  TFile *file_in5;
-  TFile *file_in6;
-  TFile *file_in7;
+  TFile *file_in1;
+  TFile *file_in2;
+  TFile *file_in3;
 
   if (en_beam[fbeam_en] < 2.300 && en_beam[fbeam_en] > 2.100 ) {
-    file_in5 = new TFile("FiducialsCorrections/vz_56Fe_2261_badruns.root");//vertex correction for 56Fe runs with exploded liquid target cell
-    file_in6 = new TFile("FiducialsCorrections/vz_3He_2261_2ndrungroup.root");//vertx correction for 3He 2nd group runs
-    file_in7 = new TFile("FiducialsCorrections/vz_4He_2261_2ndrungroup.root");//vertex correction for 4He 2nd group runs
+    file_in1 = new TFile("FiducialsCorrections/vz_56Fe_2261_badruns.root");//vertex correction for 56Fe runs with exploded liquid target cell
+    file_in2 = new TFile("FiducialsCorrections/vz_3He_2261_2ndrungroup.root");//vertx correction for 3He 2nd group runs
+    file_in3 = new TFile("FiducialsCorrections/vz_4He_2261_2ndrungroup.root");//vertex correction for 4He 2nd group runs
   }
 
   //Output file definition
@@ -243,19 +237,19 @@ void genie_analysis::Loop()
   double pars[3];
   if (en_beam[fbeam_en] < 2.300 && en_beam[fbeam_en] > 2.100 ) {
     if(ftarget=="56Fe"){
-      pars[0]=((TF1 *)file_in5->Get("f_vz"))->GetParameter(0);
-      pars[1]=((TF1 *)file_in5->Get("f_vz"))->GetParameter(1);
-      pars[2]=((TF1 *)file_in5->Get("f_vz"))->GetParameter(2);
+      pars[0]=((TF1 *)file_in1->Get("f_vz"))->GetParameter(0);
+      pars[1]=((TF1 *)file_in1->Get("f_vz"))->GetParameter(1);
+      pars[2]=((TF1 *)file_in1->Get("f_vz"))->GetParameter(2);
     }
     if(ftarget=="3He"){
-      pars[0]=((TF1 *)file_in6->Get("f_vz"))->GetParameter(0);
-      pars[1]=((TF1 *)file_in6->Get("f_vz"))->GetParameter(1);
-      pars[2]=((TF1 *)file_in6->Get("f_vz"))->GetParameter(2);
+      pars[0]=((TF1 *)file_in2->Get("f_vz"))->GetParameter(0);
+      pars[1]=((TF1 *)file_in2->Get("f_vz"))->GetParameter(1);
+      pars[2]=((TF1 *)file_in2->Get("f_vz"))->GetParameter(2);
     }
     if(ftarget=="4He"){
-     pars[0]=((TF1 *)file_in7->Get("f_vz"))->GetParameter(0);
-     pars[1]=((TF1 *)file_in7->Get("f_vz"))->GetParameter(1);
-     pars[2]=((TF1 *)file_in7->Get("f_vz"))->GetParameter(2);
+     pars[0]=((TF1 *)file_in3->Get("f_vz"))->GetParameter(0);
+     pars[1]=((TF1 *)file_in3->Get("f_vz"))->GetParameter(1);
+     pars[2]=((TF1 *)file_in3->Get("f_vz"))->GetParameter(2);
    }
   }
   else {
@@ -263,10 +257,6 @@ void genie_analysis::Loop()
     pars[1] = 0;
     pars[2] = 0;
   }
-
- //Reading of input functions for calibrations
-  vz_corr_func = (TF1 *)file_in3->Get("f_vz");
-
 
   //Defining EC limits
   fiducialcut->up_lim1_ec =new TF1("up_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
@@ -647,10 +637,6 @@ void genie_analysis::Loop()
 		       cout<<jentry<<endl;
     }
 
-    if (runnb==18258 || runnb==18259 || (runnb>18382 && runnb<18438) || (runnb>18220 && runnb<18253)) {
-      vz_corr_func->SetParameters(pars); //setting appropriate parameters of the vertex correction function for the runs with the same target and beam energy, but different vertex correction
-    }
-
 //1500 is not used anymore
     if((runnb>18283 && runnb<18289) || (runnb>18300 && runnb<18304) || (runnb>18317 && runnb<18329))        fTorusCurrent=750;    //setting appropriate torrus magnet current
     else if ((runnb>18293 && runnb<18301) || (runnb>18305 && runnb<18317) || (runnb>18328 && runnb<18336))  fTorusCurrent=1500;
@@ -849,7 +835,7 @@ void genie_analysis::Loop()
 
           double SmearedPp;
           double SmearedEp;
-        //LorentzVectors for protons without momentum correction
+        //LorentzVectors for protons without momentum smearing
           TLorentzVector V4_prot_uncorr1(pxf[index_p[0]],pyf[index_p[0]],pzf[index_p[0]],TMath::Sqrt(m_prot*m_prot+pf[index_p[0]]*pf[index_p[0]]));
           TLorentzVector V4_prot_uncorr2(pxf[index_p[1]],pyf[index_p[1]],pzf[index_p[1]],TMath::Sqrt(m_prot*m_prot+pf[index_p[1]]*pf[index_p[1]]));
         //Kinematic for first proton, smearing
@@ -1213,7 +1199,7 @@ void genie_analysis::Loop()
           N_p1[i] = 0;
 
           V4_p_uncorr[i].SetPxPyPzE(pxf[index_p[i]],pyf[index_p[i]],pzf[index_p[i]],TMath::Sqrt(m_prot*m_prot+pf[index_p[i]]*pf[index_p[i]]));
-          V3_prot_uncorr[i].SetXYZ(pxf[index_p[i]],pyf[index_p[i]],pzf[index_p[i]]);
+          V3_prot_uncorr[i] = V4_p_uncorr[i].Vect();
 
          //Smearing of Proton
           SmearedPp = gRandom->Gaus(pf[index_p[i]],reso_p*pf[index_p[i]]);
@@ -1427,7 +1413,7 @@ void genie_analysis::Loop()
 	      {
 
           V4_p4_uncorr[i].SetPxPyPzE(pxf[index_p[i]],pyf[index_p[i]],pzf[index_p[i]],TMath::Sqrt(m_prot*m_prot+pf[index_p[i]]*pf[index_p[i]]));
-          V3_prot4_uncorr[i].SetXYZ(pxf[index_p[i]],pyf[index_p[i]],pzf[index_p[i]]);
+          V3_prot4_uncorr[i] = V4_p4_uncorr[i].Vect();
 
          //Smearing of Proton
           SmearedPp = gRandom->Gaus(pf[index_p[i]],reso_p*pf[index_p[i]]);
@@ -1707,7 +1693,7 @@ void genie_analysis::Loop()
 
 //	      if(num_pi_phot == 1){
      if(num_pi == 1){    //no photons for now F.H. 29.8.19
-       
+
         TVector3 V3_pi;
         double P_undet=0;
 
@@ -1857,39 +1843,46 @@ void genie_analysis::Loop()
 
        ind_p = index_p[0];
 
-       TLorentzVector V4_prot_uncorr(p[ind_p]*cx[ind_p],p[ind_p]*cy[ind_p],p[ind_p]*cz[ind_p],TMath::Sqrt(m_prot*m_prot+p[ind_p]*p[ind_p]));
-      //Proton kinematics
-       float prot_vert=vz[ind_p];
-       double p_phi=TMath::ATan2(cy[ind_p],cx[ind_p])*TMath::RadToDeg();
-       double p_phi_mod=p_phi+30;
-       if (p_phi_mod<0)p_phi_mod=p_phi_mod+360;
-       double	p_theta=TMath::ACos(cz[ind_p])*TMath::RadToDeg();
-       double prot_vert_corr=prot_vert+vz_corr(vz_corr_func,p_phi_mod,p_theta);
-       double prot_mom_corr;
+       double SmearedPp;
+       double SmearedEp;
 
 
+     //Vector for proton without momentum smearing
+       TLorentzVector V4_prot_uncorr(pxf[index_p[0]],pyf[index_p[0]],pzf[index_p[0]],TMath::Sqrt(m_prot*m_prot+pf[index_p[0]]*pf[index_p[0]]));
+       TVector3 V3_prot_uncorr = V4_prot_uncorr.Vect();
 
-       if(ProtonMomCorrection_He3_4Cell(ftarget,V4_prot_uncorr,prot_vert_corr) != -1)
-       {
-	        prot_mom_corr = ProtonMomCorrection_He3_4Cell(ftarget,V4_prot_uncorr,prot_vert_corr);
-       }
-       else
-	     {
-          prot_mom_corr=p[ind_p];
-       }
+     //Smearing of Proton
+       SmearedPp = gRandom->Gaus(pf[index_p[0]],reso_p*pf[index_p[0]]);
+       SmearedEp = sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
+
+      //Vector for proton with momentum smearing
+       TVector3 V3_prot_corr;
+       TLorentzVector V4_prot_corr;
+       V3_prot_corr.SetXYZ(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]]);
+       V4_prot_corr.SetPxPyPzE(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]],SmearedEp);
+
+       if (!PFiducialCut(fbeam_en, V3_prot_corr) ) { continue; } // Proton theta & phi fiducial cuts
+
+       //Proton kinematic variables
+       double p_theta = V3_prot_corr.Theta()*TMath::RadToDeg();
+       double prot_mom_corr = V3_prot_corr.Mag();
+       //Phi has to be checked F.H. 24.8.19
+       double phi_prot = V3_prot_corr.Phi() + TMath::Pi();
+     //Proton weight
+       double p_acc_ratio = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
+
 
        h1_prot_mom->Fill(prot_mom_corr);
-       h1_prot_mom_ratio->Fill(prot_mom_corr/p[ind_p]);
+       h1_prot_mom_ratio->Fill(prot_mom_corr/pf[index_p[0]]);
 
-       TLorentzVector V4_prot_corr(prot_mom_corr*cx[ind_p],prot_mom_corr*cy[ind_p],prot_mom_corr*cz[ind_p],TMath::Sqrt(m_prot*m_prot+prot_mom_corr*prot_mom_corr));
-       TVector3 V3_prot_uncorr = V4_prot_uncorr.Vect();
        TLorentzVector V4_prot_el_tot = V4_prot_corr + V4_el;
-       double p_perp_tot=TMath::Sqrt(V4_prot_el_tot.Px()*V4_prot_el_tot.Px()+V4_prot_el_tot.Py()*V4_prot_el_tot.Py());
-       double p_z_tot=V4_prot_el_tot.Pz();
-       double p_tot=V4_prot_el_tot.Rho();
-       double E_tot=V4_el.E()+V4_prot_corr.E()-m_prot+bind_en[ftarget];
 
-       //Vertex cut was removed here since it is already in the event selection loop F.H 08/13/19
+       double p_perp_tot = TMath::Sqrt(V4_prot_el_tot.Px()*V4_prot_el_tot.Px() + V4_prot_el_tot.Py()*V4_prot_el_tot.Py());
+       double p_z_tot = V4_prot_el_tot.Pz();
+       double p_tot = V4_prot_el_tot.Rho();
+       double E_tot = V4_el.E() + V4_prot_corr.E() -m_prot + bind_en[ftarget];
+
+
 
  //---------------------------------- 1p 2pi   ----------------------------------------------
        if (num_pi_phot==2) {
@@ -2647,17 +2640,6 @@ void genie_analysis::Loop()
 
 //End Loop function
 
-
-
-double vz_corr(TF1 *vz_corr_func, double phi,double theta)            //correction function for vertex , takes the arguments in Deg.
-{
-  //  return (0.2)*cos((phi+47.9)*TMath::DegToRad())/tan(theta*TMath::DegToRad());
-   // vertex correction function obtained for the empty runs 18393 and 18394, works fine for 3He runs at 2.261[GeV] beam energy
-
-  return (-(vz_corr_func->GetParameter(1)))*cos((phi-(vz_corr_func->GetParameter(2)))*TMath::DegToRad())/tan(theta*TMath::DegToRad());
-  //vertex correction function for 4He runs at 2.261[GeV] beam energy obtained for the empty run18283
-
-}
 
 TVector3 FindUVW(TVector3 xyz)
 {

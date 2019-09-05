@@ -70,7 +70,7 @@ void genie_analysis::Loop()
   double reso_pi = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
 
   double N_prot1 = 0, N_prot2 = 0,N_prot_both = 0;
-  const int n_slice=3,nsect=6;
+  const int n_slice=3;
   const double pperp_min[n_slice]={0.,0.2,0.4};
   const double pperp_max[n_slice]={0.2,0.4,10.};
   TVector3 V3_rotprot1,V3_rotprot2,V3_rotprot3,V3_rot_pi,V3_rotprot;
@@ -220,43 +220,9 @@ void genie_analysis::Loop()
   TFile* file_acceptance_p = TFile::Open("maps/"+WhichMap+"/"+WhichMap+"_12C_E_"+E_acc_file+"_p.root");
   TFile* file_acceptance_pip = TFile::Open("maps/"+WhichMap+"/"+WhichMap+"_12C_E_"+E_acc_file+"_pip.root");
 
-  //Definition of other input files with calibration data
-  TFile *file_in1;
-  TFile *file_in2;
-  TFile *file_in3;
-
-  if (en_beam[fbeam_en] < 2.300 && en_beam[fbeam_en] > 2.100 ) {
-    file_in1 = new TFile("FiducialsCorrections/vz_56Fe_2261_badruns.root");//vertex correction for 56Fe runs with exploded liquid target cell
-    file_in2 = new TFile("FiducialsCorrections/vz_3He_2261_2ndrungroup.root");//vertx correction for 3He 2nd group runs
-    file_in3 = new TFile("FiducialsCorrections/vz_4He_2261_2ndrungroup.root");//vertex correction for 4He 2nd group runs
-  }
 
   //Output file definition
   TFile *file_out = new TFile(Form("e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");
-
-  double pars[3];
-  if (en_beam[fbeam_en] < 2.300 && en_beam[fbeam_en] > 2.100 ) {
-    if(ftarget=="56Fe"){
-      pars[0]=((TF1 *)file_in1->Get("f_vz"))->GetParameter(0);
-      pars[1]=((TF1 *)file_in1->Get("f_vz"))->GetParameter(1);
-      pars[2]=((TF1 *)file_in1->Get("f_vz"))->GetParameter(2);
-    }
-    if(ftarget=="3He"){
-      pars[0]=((TF1 *)file_in2->Get("f_vz"))->GetParameter(0);
-      pars[1]=((TF1 *)file_in2->Get("f_vz"))->GetParameter(1);
-      pars[2]=((TF1 *)file_in2->Get("f_vz"))->GetParameter(2);
-    }
-    if(ftarget=="4He"){
-     pars[0]=((TF1 *)file_in3->Get("f_vz"))->GetParameter(0);
-     pars[1]=((TF1 *)file_in3->Get("f_vz"))->GetParameter(1);
-     pars[2]=((TF1 *)file_in3->Get("f_vz"))->GetParameter(2);
-   }
-  }
-  else {
-    pars[0] = 0;
-    pars[1] = 0;
-    pars[2] = 0;
-  }
 
   //Defining EC limits
   fiducialcut->up_lim1_ec =new TF1("up_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
@@ -930,14 +896,11 @@ void genie_analysis::Loop()
 
 
  //---------------------------------- 2p 1pi   ----------------------------------------------
+ //Const int can be placed somewhere up after if for 2 protons F.H. 05.09.19
           const int N_2prot=2;
-          bool pi1_stat=false;
-          double N_2p_0pi = 0, N_all = 0, N_1p_1pi[N_2prot] = {0}, N_1p_0pi[N_2prot] = {0};
+//Variable might can be placed in a more local context F.H. 05.09.19
           double Ecal_2p1pi_to2p0pi[N_2prot]={0};
           double p_miss_perp_2p1pi_to2p0pi[N_2prot]={0};
-          double P_2p1pi_to2p0pi[N_2prot]={0},N_2p_det=0;
-          double N_pidet = 0, N_piundet = 0;
-          float pi_phimin, pi_phimax;
 
 //          if (num_pi_phot==1) { //no photons for now F.H. 29.8.19
           if (num_pi == 1) {

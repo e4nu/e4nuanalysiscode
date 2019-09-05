@@ -28,11 +28,6 @@ void SetFiducialCutParameters(std::string beam_en); // Load Fidicual Parameters 
 //void SetMomCorrParameters();
 
 
-TVector3 FindUVW(TVector3 xyz);
-Bool_t CutUVW(TVector3 ecxyz);
-Float_t ProtonMomCorrection_He3_4Cell(std::string atarget, TLorentzVector V4Pr, Float_t vertex_p);
-
-
 std::map<std::string,double>bind_en;
 std::map<std::string,double>target_mass;
 std::map<std::string,double>residual_target_mass;
@@ -2603,88 +2598,6 @@ void genie_analysis::Loop()
 
 //End Loop function
 
-
-TVector3 FindUVW(TVector3 xyz)
-{
-  // get the U V W distance to EC edge for the purpose of geometry cut
-  // ported from Stepan's function ec_xyz_duvw. the input is lab coordinates
-  // of the EC hit.
-  Float_t x = xyz.X(); Float_t y = xyz.Y(); Float_t z = xyz.Z();
-  Float_t xi,yi,zi,u,v,w;
-  Float_t ec_the = 0.4363323;
-  Float_t ylow = -182.974; Float_t yhi = 189.956;
-  Float_t tgrho=1.95325; Float_t sinrho=0.8901256; Float_t cosrho=0.455715;
-  Float_t phi=xyz.Phi()*180./TMath::Pi(); if(phi<-30) phi+=360;
-  Int_t ec_sect = (phi+30)/60.; if(ec_sect<0)ec_sect=0; if(ec_sect>5)ec_sect=5;
-  Float_t ec_phi = ec_sect*TMath::Pi()/3.;
-  xi = -x*sin(ec_phi) + y*cos(ec_phi);
-  yi = x*cos(ec_the)*cos(ec_phi) + y*cos(ec_the)*sin(ec_phi) - z*sin(ec_the);
-  zi = x*sin(ec_the)*cos(ec_phi) + y*sin(ec_the)*sin(ec_phi) + z*cos(ec_the);
-  zi -= 510.32;
-  u = (yi-ylow)/sinrho;
-  v = (yhi-ylow)/tgrho - xi + (yhi-yi)/tgrho;
-  w = ((yhi-ylow)/tgrho + xi + (yhi-yi)/tgrho)/2./cosrho;
-  TVector3 uvw(u,v,w);
-  return uvw;
-}
-
-Bool_t CutUVW(TVector3 ecxyz)
-{
-  // Cut the edges of EC according to UVW distance threshold defined by par_EcUVW array.
-  // If it passes the cut, return true, if not return false
-  TVector3 ecuvw = FindUVW(ecxyz);
-  Float_t phi=ecxyz.Phi()*180/TMath::Pi(); if(phi<-30) phi+=360;
-  Int_t sector = (phi+30)/60; if(sector<0)sector=0; if(sector>5) sector=5;
-  return (ecuvw.X()>par_EcUVW[sector][0] && ecuvw.Y()<par_EcUVW[sector][1] && ecuvw.Z()<par_EcUVW[sector][2]);
-}
-
-
-Float_t ProtonMomCorrection_He3_4Cell(std::string atarget, TLorentzVector V4Pr, Float_t vertex_p ){
-
-  // Low energy proton momentum correction function
-  // to be used with He3 target (4th target cell) (RUN # 18338-18438)
-  // Input: Proton momentum 4 vector, and Z coord of proton vertex.
-  // Returns the corrected MAGNITUDE of the proton momentum,
-
-  Float_t  up_parm[6]   = {2.001,  -14.94,  47.2,   -77.59,  65.73,  -22.85};
-  Float_t  down_parm[6] = {1.4165, -13.004, 48.897, -92.443, 86.984, -32.424};
-
-  Float_t  proton_p     = V4Pr.Vect().Mag();
-  Float_t  thetta_p     = V4Pr.Vect().Theta()*57.3;
-  Float_t  polinom_up   = (((((up_parm[5]*proton_p+up_parm[4])*proton_p+up_parm[3])
-			  *proton_p+up_parm[2])*proton_p+up_parm[1])*proton_p+up_parm[0]);
-
-  Float_t polinom_down = (((((down_parm[5]*proton_p+down_parm[4])*proton_p+down_parm[3])
-			  *proton_p+down_parm[2])*proton_p+down_parm[1])*proton_p+down_parm[0]);
-
-
-  if(polinom_up<0.  ) polinom_up   = 0;
-  if(polinom_down<0.) polinom_down = 0;
-
-  Float_t  p_corr_up   = proton_p + proton_p*polinom_up;
-  Float_t  p_corr_down = proton_p + proton_p*polinom_down;
-
-  p_corr_down=p_corr_down*4./3-proton_p/3;//artificial cut to match with Bins distribution
-  p_corr_up=p_corr_down;//artificial cut to match with Bins distribution
-
-  if((thetta_p>=70.)) return p_corr_up;
-
-  if((thetta_p < 30.)||(vertex_p>=(1/20.*thetta_p-5/2))||
-     (thetta_p<=(-200*proton_p+86))){
-    return p_corr_down;
-  }
-
-
-
-  if((thetta_p<=70.)&&(thetta_p>=30)&&
-     (thetta_p>(20*vertex_p+50))){
-    return p_corr_up;
-  }else if(proton_p<0.57){
-    return p_corr_down;
-  } else { return p_corr_up;}
-
-  return -1.;
-}
 
 void  genie_analysis::prot3_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot[3],TVector3  V3prot_uncorr[3],TLorentzVector V4el,double Ecal_3pto2p[][2],double  pmiss_perp_3pto2p[][2],double  P3pto2p[][2],double N_p1[3],double Ecal_3pto1p[3],double  pmiss_perp_3pto1p[3], double *N_p3det){
 

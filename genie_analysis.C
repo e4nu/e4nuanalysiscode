@@ -1137,10 +1137,6 @@ void genie_analysis::Loop()
 	      double E_cal[N_3p],p_miss_perp[N_3p],P_3pto1p[N_3p];
 	      double N_p1[N_3p]={0};
         double N_p_three=0;
-	      double N_p12[N_3p]={0};
-        double N_p13[N_3p]={0};
-        double N_p23[N_3p]={0};
-        double N_p_two=0;
         double E_cal_3pto1p[3]={0};
         double p_miss_perp_3pto1p[3]={0};
 	      int N_comb = 3;
@@ -1149,7 +1145,6 @@ void genie_analysis::Loop()
         double p_miss_perp_3pto2p[3][N_2p]={0};
         double P_3pto2p[3][N_2p]={0};
 	      TVector3 V3_2p_rot[N_2p], V3_prot_el[N_3p][N_2p];
- 	      bool prot_stat[N_3p]={false};
         double p_acc_ratio[N_3p] = {0};
 
 	      for(int i = 0; i < N_3p; i++)
@@ -1652,48 +1647,113 @@ void genie_analysis::Loop()
 //	      if(num_pi_phot == 1){
      if(num_pi == 1){    //no photons for now F.H. 29.8.19
 
-        TVector3 V3_pi;
+        TVector3 V3_pi_corr;
         double P_undet=0;
+        int charge = 0;
+        double pion_acc_ratio = 0;
 
-	      V3_pi.SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);
-	      pi1_rot_func(fbeam_en, V3_pi,q[ind_pi_phot[0]],ec_radstat_n[0],V3_q, &P_undet);
+        if ( index_pipl[0] == index_pi[0] ) { //pion is a piplus
+          charge = 1;
+        }
+        else if ( index_pimi[0] == index_pi[0] ) { //pion is a piminus
+          charge = -1;
+        }
+        else {  std::cout << "WARNING: 1pion events: No charge for one pion could be assigned.  "  << std::endl; continue; }
 
-	      h1_E_rec_1pi_weight->Fill(E_rec,P_undet*1/Mott_cross_sec);
-	      h1_E_rec_1pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_undet*1/Mott_cross_sec);
+        double SmearedPp = gRandom->Gaus(pf[index_pi[0]],reso_pi*pf[index_pi[0]]);
+        double SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
 
-	      if(!ec_radstat_n[0])  h1_E_rec_1pi->Fill(E_rec,1/Mott_cross_sec);
-	      if(ec_num_n==1)       h2_phot_e_angle_Erec->Fill(E_rec,V3_pi.Angle(V4_el.Vect())*TMath::RadToDeg());
+        V3_pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
+
+        double pion_theta = V3_pi_corr.Theta()*TMath::RadToDeg();
+        //Phi has to be checked F.H. 24.8.19
+        double phi_pion = V3_pi_corr.Phi() + TMath::Pi();
+        double pion_mom_corr = V3_pi_corr.Mag();
+
+        if (charge == 1) { //acceptance for pi plus
+          pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
+        }
+        else if (charge == -1) {    //acceptance for pi minus. using electron acceptance map
+          pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
+        }
+        else { std::cout << "WARNING: 1 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
+
+
+	      pi1_rot_func(fbeam_en, V3_pi_corr, charge, ec_radstat_n[0], V3_q, &P_undet);
+
+        double histoweight = pion_acc_ratio * WeightIncl;
+
+        h1_E_rec_1pi_weight->Fill(E_rec,P_undet*histoweight);
+	      h1_E_rec_1pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_undet*histoweight);
+
+	      if(!ec_radstat_n[0])  h1_E_rec_1pi->Fill(E_rec,histoweight);
+	      if(ec_num_n==1)       h2_phot_e_angle_Erec->Fill(E_rec,V3_pi_corr.Angle(V4_el.Vect())*TMath::RadToDeg());
 	   }
 //----------------------------- e- ,2pi  -----------------------------------------
 
 //	      if(num_pi_phot == 2){
      if(num_pi == 2){    //no photons for now F.H. 29.8.19
 
-	      const int N_2pi=2;
-	      TVector3 V3_2pi[N_2pi];
+	      const int N_2pi = 2;
+	      TVector3 V3_2pi_corr[N_2pi];
 	      int q_pi2[N_2pi];
-        bool radstat_pi2[N_2pi]={false};
-	      double P_1pi[N_2pi]={0};
-        double P_0pi=0;
+        bool radstat_pi2[N_2pi] = {false};
+	      double P_1pi[N_2pi] = {0};
+        double P_0pi = 0;
+        double pion_acc_ratio[N_2pi] = {0};
 
-        V3_2pi[0].SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);
-        V3_2pi[1].SetXYZ(p[ind_pi_phot[1]]*cx[ind_pi_phot[1]],p[ind_pi_phot[1]]*cy[ind_pi_phot[1]],p[ind_pi_phot[1]]*cz[ind_pi_phot[1]]);
-        q_pi2[0]=q[ind_pi_phot[0]];
-        q_pi2[1]=q[ind_pi_phot[1]];
-        radstat_pi2[0]=ec_radstat_n[0];
-        radstat_pi2[1]=ec_radstat_n[1];
+        for (int i = 0; i < num_pi; i++) {
 
-        pi2_rot_func(fbeam_en, V3_2pi, q_pi2,radstat_pi2, V3_q,&P_0pi,P_1pi);
+            radstat_pi2[i] = ec_radstat_n[i];
+            if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
+                q_pi2[i] = 1;
+            }
+            else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
+                q_pi2[i] = -1;
+            }
+            else {  std::cout << "WARNING: 2pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+
+            double SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
+            double SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
+
+            V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
+
+            double pion_theta = V3_2pi_corr[i].Theta()*TMath::RadToDeg();
+           //Phi has to be checked F.H. 24.8.19
+            double phi_pion = V3_2pi_corr[i].Phi() + TMath::Pi();
+            double pion_mom_corr = V3_2pi_corr[i].Mag();
+
+            if (q_pi2[i] == 1) { //acceptance for pi plus
+                pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
+            }
+            else if (q_pi2[i] == -1) {    //acceptance for pi minus. using electron acceptance map
+                pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
+            }
+            else { std::cout << "WARNING: 2 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
+
+        }
+
+      // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+      //If any fiducial is not fullfilled continue to next event
+        if ( ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[0],  q_pi2[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[1],  q_pi2[1]) )  )
+        {
+            continue;
+        }
+
+        pi2_rot_func(fbeam_en, V3_2pi_corr, q_pi2,radstat_pi2, V3_q,&P_0pi,P_1pi);
+
+        double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1];
+        double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec; //Is this correct in the following loop? F.H. 09/01/19
 
 //----------------------------- e- ,2pi->0pi (-) -----------------------------------------
-        h1_E_rec_2pi_weight->Fill(E_rec,(-P_0pi)*1/Mott_cross_sec);
-        h1_E_rec_2pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi)*1/Mott_cross_sec);
-        h1_E_rec_20pi->Fill(E_rec,(P_0pi)*1/Mott_cross_sec);
+        h1_E_rec_2pi_weight->Fill(E_rec,(-P_0pi)*histoweight);
+        h1_E_rec_2pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi)*histoweight);
+        h1_E_rec_20pi->Fill(E_rec,(P_0pi)*histoweight);
 //----------------------------- e- ,2pi->1pi->0pi (+)  -----------------------------------------
         for(int k = 0; k < N_2pi; k++){ //loop over two pions
-          h1_E_rec_2pi_weight->Fill(E_rec,P_1pi[k]*1/Mott_cross_sec);
-          h1_E_rec_2pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1pi[k]*1/Mott_cross_sec);
-          h1_E_rec_21pi->Fill(E_rec,(P_1pi[k])*1/Mott_cross_sec);
+          h1_E_rec_2pi_weight->Fill(E_rec,P_1pi[k]*histoweight);
+          h1_E_rec_2pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1pi[k]*histoweight);
+          h1_E_rec_21pi->Fill(E_rec,(P_1pi[k])*histoweight);
         }
      } //end if for two pion events
 
@@ -1704,43 +1764,78 @@ void genie_analysis::Loop()
 
         const int N_3pi=3;
         const int N_2pi=2;
-        TVector3 V3_3pi[N_3pi];
+        TVector3 V3_3pi_corr[N_3pi];
         int q_pi3[N_3pi]={0};
         bool radstat_pi3[N_3pi]={false};
-        double P_0pi=0;
+        double P_0pi = 0;
         double P_1pi[N_3pi]={0};
         double P_320pi[N_3pi]={0};
         double P_3210pi[N_3pi][N_2pi]={0};
+        double pion_acc_ratio[N_3pi] = {0};
 
-        for (int h = 0; h < N_3pi; h++){ //loop over three pions
+        for (int i = 0; i < num_pi; i++) {
 
-          V3_3pi[h].SetXYZ(p[ind_pi_phot[h]]*cx[ind_pi_phot[h]],p[ind_pi_phot[h]]*cy[ind_pi_phot[h]],p[ind_pi_phot[h]]*cz[ind_pi_phot[h]]);
-          q_pi3[h]=q[ind_pi_phot[h]];
-          radstat_pi3[h]=ec_radstat_n[h];
+            radstat_pi3[i] = ec_radstat_n[i];
+            if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
+                q_pi3[i] = 1;
+            }
+            else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
+                q_pi3[i] = -1;
+            }
+            else {  std::cout << "WARNING: 3pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+
+            double SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
+            double SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
+
+            V3_3pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
+
+            double pion_theta = V3_3pi_corr[i].Theta()*TMath::RadToDeg();
+           //Phi has to be checked F.H. 24.8.19
+            double phi_pion = V3_3pi_corr[i].Phi() + TMath::Pi();
+            double pion_mom_corr = V3_3pi_corr[i].Mag();
+
+            if (q_pi3[i] == 1) { //acceptance for pi plus
+                pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
+            }
+            else if (q_pi3[i] == -1) {    //acceptance for pi minus. using electron acceptance map
+                pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
+            }
+            else { std::cout << "WARNING: 3 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
+
         }
 
-        pi3_rot_func(fbeam_en, V3_3pi, q_pi3,radstat_pi3,V3_q,&P_0pi, P_1pi, P_320pi,P_3210pi);
+        // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+        //If any fiducial is not fullfilled continue to next event
+        if ( ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[0],  q_pi3[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[1],  q_pi3[1]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[2],  q_pi3[2]) ) )
+        {
+              continue;
+        }
+
+        pi3_rot_func(fbeam_en, V3_3pi_corr, q_pi3,radstat_pi3,V3_q,&P_0pi, P_1pi, P_320pi,P_3210pi);
+
+        double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2];
+        double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec; //Is this correct in the following loop? F.H. 09/01/19
 
  //---------------------------3pi->0pi----------------------------------------------
-        h1_E_rec_3pi_weight->Fill(E_rec,(-P_0pi)*1/Mott_cross_sec);
-        h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi)*1/Mott_cross_sec);
-        h1_E_rec_30pi->Fill(E_rec,(P_0pi)*1/Mott_cross_sec);
+        h1_E_rec_3pi_weight->Fill(E_rec,(-P_0pi)*histoweight);
+        h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi)*histoweight);
+        h1_E_rec_30pi->Fill(E_rec,(P_0pi)*histoweight);
 
         for(int h = 0; h < N_3pi; h++){ //loop over three pions
 
 //---------------------------3pi->1pi->0pi----------------------------------------------
-          h1_E_rec_3pi_weight->Fill(E_rec,P_1pi[h]*1/Mott_cross_sec);
-          h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1pi[h]*1/Mott_cross_sec);
-          h1_E_rec_310pi->Fill(E_rec,(P_1pi[h])*1/Mott_cross_sec);
+          h1_E_rec_3pi_weight->Fill(E_rec,P_1pi[h]*histoweight);
+          h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1pi[h]*histoweight);
+          h1_E_rec_310pi->Fill(E_rec,(P_1pi[h])*histoweight);
  //---------------------------3pi->2pi->0pi----------------------------------------------
-          h1_E_rec_3pi_weight->Fill(E_rec,P_320pi[h]*1/Mott_cross_sec);
-          h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_320pi[h]*1/Mott_cross_sec);
-          h1_E_rec_320pi->Fill(E_rec,(P_320pi[h])*1/Mott_cross_sec);
+          h1_E_rec_3pi_weight->Fill(E_rec,P_320pi[h]*histoweight);
+          h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_320pi[h]*histoweight);
+          h1_E_rec_320pi->Fill(E_rec,(P_320pi[h])*histoweight);
 //---------------------------3pi->2pi->1pi->0pi----------------------------------------------
           for(int g = 0; g < N_2pi; g++){ //loop over two pions
-            h1_E_rec_3pi_weight->Fill(E_rec,(-P_3210pi[h][g])*1/Mott_cross_sec);
-            h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_3210pi[h][g])*1/Mott_cross_sec);
-            h1_E_rec_3210pi->Fill(E_rec,(P_3210pi[h][g])*1/Mott_cross_sec);
+            h1_E_rec_3pi_weight->Fill(E_rec,(-P_3210pi[h][g])*histoweight);
+            h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_3210pi[h][g])*histoweight);
+            h1_E_rec_3210pi->Fill(E_rec,(P_3210pi[h][g])*histoweight);
           }
         }//end of 3pi loop
      }//end of 3pi requirement
@@ -1750,7 +1845,7 @@ void genie_analysis::Loop()
      if(num_pi == 4){    //no photons for now F.H. 29.8.19
 
        const int N_4pi=4;
-       TVector3 V3_4pi[N_4pi];
+       TVector3 V3_4pi_corr[N_4pi];
        int q_pi4[N_4pi]={0};
        bool  radstat_pi4[N_4pi]={false};
        double P_0pi=0;
@@ -1761,35 +1856,72 @@ void genie_analysis::Loop()
        double P_4310pi=0;
        double P_4320pi=0;
        double P_43210pi=0;
+       double pion_acc_ratio[N_4pi] = {0};
 
-       for (int h = 0; h < N_4pi;h++){ //loop over four pions
+       for (int i = 0; i < num_pi; i++) {
 
-         V3_4pi[h].SetXYZ(p[ind_pi_phot[h]]*cx[ind_pi_phot[h]],p[ind_pi_phot[h]]*cy[ind_pi_phot[h]],p[ind_pi_phot[h]]*cz[ind_pi_phot[h]]);
-         q_pi4[h]=q[ind_pi_phot[h]];
-         radstat_pi4[h]=ec_radstat_n[h];
+           radstat_pi4[i] = ec_radstat_n[i];
+           if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
+               q_pi4[i] = 1;
+           }
+           else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
+               q_pi4[i] = -1;
+           }
+           else {  std::cout << "WARNING: 4pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+
+           double SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
+    // not used       double SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
+
+           V3_4pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
+
+           double pion_theta = V3_4pi_corr[i].Theta()*TMath::RadToDeg();
+          //Phi has to be checked F.H. 24.8.19
+           double phi_pion = V3_4pi_corr[i].Phi() + TMath::Pi();
+           double pion_mom_corr = V3_4pi_corr[i].Mag();
+
+           if (q_pi4[i] == 1) { //acceptance for pi plus
+               pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
+           }
+           else if (q_pi4[i] == -1) {    //acceptance for pi minus. using electron acceptance map
+               pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
+           }
+           else { std::cout << "WARNING: 4 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
+
        }
 
-       pi4_rot_func(fbeam_en, V3_4pi, q_pi4,radstat_pi4,V3_q,&P_0pi,&P_410pi,&P_420pi,&P_4210pi,&P_430pi,&P_4310pi,&P_4320pi,&P_43210pi);
+       // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+       //If any fiducial is not fullfilled continue to next event
+       if ( ( !Pi_phot_fid_united(fbeam_en, V3_4pi_corr[0],  q_pi4[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_4pi_corr[1],  q_pi4[1]) )
+         || ( !Pi_phot_fid_united(fbeam_en, V3_4pi_corr[2],  q_pi4[2]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_4pi_corr[3],  q_pi4[3]) ) )
+       {
+             continue;
+       }
+
+       pi4_rot_func(fbeam_en, V3_4pi_corr, q_pi4, radstat_pi4, V3_q, &P_0pi,&P_410pi,&P_420pi,&P_4210pi,&P_430pi,&P_4310pi,&P_4320pi,&P_43210pi);
+
+       double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2] * pion_acc_ratio[3];
+       double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec; //Is this correct in the following loop? F.H. 09/01/19
+
 
  //---------------------------4pi->0pi----------------------------------------------
-//why is it here not split like for 3pi case, sum over all weights is done here
-       h1_E_rec_4pi_weight->Fill(E_rec,(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*1/Mott_cross_sec);
-       h1_E_rec_4pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*1/Mott_cross_sec);
-       h1_E_rec_40pi->Fill(E_rec,(P_0pi)*1/Mott_cross_sec);
+//why is it here not split like for 3pi case, sum over all weights is done here F.H 04.08.19
+       h1_E_rec_4pi_weight->Fill(E_rec,(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight);
+       h1_E_rec_4pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight);
+       h1_E_rec_40pi->Fill(E_rec,(P_0pi)*histoweight);
 //---------------------------4pi->1pi->0pi----------------------------------------------
-       h1_E_rec_410pi->Fill(E_rec,(P_410pi)*1/Mott_cross_sec);
+       h1_E_rec_410pi->Fill(E_rec,(P_410pi)*histoweight);
 //---------------------------4pi->2pi->0pi----------------------------------------------
-       h1_E_rec_420pi->Fill(E_rec,(P_420pi)*1/Mott_cross_sec);
+       h1_E_rec_420pi->Fill(E_rec,(P_420pi)*histoweight);
 //---------------------------4pi->2pi->1pi->0pi----------------------------------------------
-       h1_E_rec_4210pi->Fill(E_rec,(P_4210pi)*1/Mott_cross_sec);
+       h1_E_rec_4210pi->Fill(E_rec,(P_4210pi)*histoweight);
 //---------------------------4pi->3pi->0pi----------------------------------------------
-       h1_E_rec_430pi->Fill(E_rec,(P_430pi)*1/Mott_cross_sec);
+       h1_E_rec_430pi->Fill(E_rec,(P_430pi)*histoweight);
 //---------------------------4pi->3pi->1pi->0pi----------------------------------------------
-       h1_E_rec_4310pi->Fill(E_rec,(P_4310pi)*1/Mott_cross_sec);
+       h1_E_rec_4310pi->Fill(E_rec,(P_4310pi)*histoweight);
 //---------------------------4pi->3pi->2pi->0pi----------------------------------------------
-       h1_E_rec_4320pi->Fill(E_rec,(P_4320pi)*1/Mott_cross_sec);
+       h1_E_rec_4320pi->Fill(E_rec,(P_4320pi)*histoweight);
 //---------------------------4pi->3pi->2pi->1pi->0pi----------------------------------------------
-       h1_E_rec_43210pi->Fill(E_rec,(P_43210pi)*1/Mott_cross_sec);
+       h1_E_rec_43210pi->Fill(E_rec,(P_43210pi)*histoweight);
 
      }//end of 4 pi/photon requirement
 
@@ -1925,7 +2057,7 @@ void genie_analysis::Loop()
        if (num_pi_phot==3) {
 
          const int N_3pi=3;
-         TVector3 V3_3pi[N_3pi],V3_3pi_rot[N_3pi],V3_p_rot;
+         TVector3 V3_3pi_corr[N_3pi],V3_3pi_rot[N_3pi],V3_p_rot;
          bool pi3_stat[N_3pi]={false};
          int q_pi3[N_3pi];
          bool radstat_pi3[N_3pi]={false};
@@ -1937,9 +2069,9 @@ void genie_analysis::Loop()
          double P_1p3pi=0;
          V3_q=(V4_beam-V4_el).Vect();
 
-         V3_3pi[0].SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);
-         V3_3pi[1].SetXYZ(p[ind_pi_phot[1]]*cx[ind_pi_phot[1]],p[ind_pi_phot[1]]*cy[ind_pi_phot[1]],p[ind_pi_phot[1]]*cz[ind_pi_phot[1]]);
-         V3_3pi[2].SetXYZ(p[ind_pi_phot[2]]*cx[ind_pi_phot[2]],p[ind_pi_phot[2]]*cy[ind_pi_phot[2]],p[ind_pi_phot[2]]*cz[ind_pi_phot[2]]);
+         V3_3pi_corr[0].SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);
+         V3_3pi_corr[1].SetXYZ(p[ind_pi_phot[1]]*cx[ind_pi_phot[1]],p[ind_pi_phot[1]]*cy[ind_pi_phot[1]],p[ind_pi_phot[1]]*cz[ind_pi_phot[1]]);
+         V3_3pi_corr[2].SetXYZ(p[ind_pi_phot[2]]*cx[ind_pi_phot[2]],p[ind_pi_phot[2]]*cy[ind_pi_phot[2]],p[ind_pi_phot[2]]*cz[ind_pi_phot[2]]);
          q_pi3[0]=q[ind_pi_phot[0]];
          q_pi3[1]=q[ind_pi_phot[1]];
          q_pi3[2]=q[ind_pi_phot[2]];
@@ -1947,7 +2079,7 @@ void genie_analysis::Loop()
          radstat_pi3[1]=ec_radstat_n[1];
          radstat_pi3[2]=ec_radstat_n[2];
 
-         prot1_pi3_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_3pi,q_pi3,radstat_pi3,&P_1p3pi);
+         prot1_pi3_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_3pi_corr,q_pi3,radstat_pi3,&P_1p3pi);
 
  //---------------------------------- 1p 3pi->1p 0pi  total ?? F.H. 08/13/19 check logic here compared to 1p 2pi case ----------------------------------------------
          h1_E_tot_1p3pi->Fill(E_tot,P_1p3pi*1/Mott_cross_sec);

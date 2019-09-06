@@ -60,8 +60,8 @@ void genie_analysis::Loop()
 
   double reso_p = 0.01; // smearing for the proton
   double reso_e = 0.005; // smearing for the electrons
-  double reso_pipl = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
-  double reso_pimi = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
+//  double reso_pipl = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
+//  double reso_pimi = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
   double reso_pi = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
 
   double N_prot1 = 0, N_prot2 = 0,N_prot_both = 0;
@@ -471,8 +471,6 @@ void genie_analysis::Loop()
   TH1F *h1_E_rec_cut005_newcut3 = new TH1F("h1_E_rec_cut005_newcut3","",n_bins,x_values);
 	TH1F *h1_E_rec_undetfactor  = new TH1F("h1_E_rec_undetfactor","",n_bins,x_values);
   TH1F *h1_E_tot_undetfactor  = new TH1F("h1_E_tot_undetfactor","",n_bins,x_values);
-  TH1F *h1_E_tot_undetfactor_pipl  = new TH1F("h1_E_tot_undetfactor_pipl","",n_bins,x_values);
-  TH1F *h1_E_tot_undetfactor_pimi  = new TH1F("h1_E_tot_undetfactor_pimi","",n_bins,x_values);
   TH1F *h1_E_tot_1p2pi  = new TH1F("h1_E_tot_1p2pi","",n_bins,x_values);
   TH1F *h1_E_rec_1p2pi  = new TH1F("h1_E_rec_1p2pi","",n_bins,x_values);
   TH1F *h1_E_tot_1p3pi  = new TH1F("h1_E_tot_1p3pi","",n_bins,x_values);
@@ -788,8 +786,6 @@ void genie_analysis::Loop()
     h2_N_prot_pi_phot_nonrad->Fill(num_pi_phot_nonrad,num_p);
     h2_N_pi_phot[num_p]->Fill(ec_num_n,num_pi);
 
-    int ind_phot;
-    int ind_p;      //temp proton index
     //Events with exactly 2 protons
 	  if(num_p == 2)
     {
@@ -1678,8 +1674,15 @@ void genie_analysis::Loop()
         }
         else { std::cout << "WARNING: 1 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
+        // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+        //If any fiducial is not fullfilled continue to next event
+        if ( ( !Pi_phot_fid_united(fbeam_en, V3_pi_corr,  charge) ) )
+        {
+            continue;
+        }
 
-	      pi1_rot_func(fbeam_en, V3_pi_corr, charge, ec_radstat_n[0], V3_q, &P_undet);
+
+        pi1_rot_func(fbeam_en, V3_pi_corr, charge, ec_radstat_n[0], V3_q, &P_undet);
 
         double histoweight = pion_acc_ratio * WeightIncl;
 
@@ -1928,10 +1931,8 @@ void genie_analysis::Loop()
 
    //------------------------------------------requiring there to be a proton -------------------------------------
     //Events with exactly one proton
-     if( num_p==1)
+     if( num_p == 1)
      {
-
-       ind_p = index_p[0];
 
        double SmearedPp;
        double SmearedEp;
@@ -1968,58 +1969,217 @@ void genie_analysis::Loop()
        TLorentzVector V4_prot_el_tot = V4_prot_corr + V4_el;
 
        double p_perp_tot = TMath::Sqrt(V4_prot_el_tot.Px()*V4_prot_el_tot.Px() + V4_prot_el_tot.Py()*V4_prot_el_tot.Py());
-       double p_z_tot = V4_prot_el_tot.Pz();
-       double p_tot = V4_prot_el_tot.Rho();
        double E_tot = V4_el.E() + V4_prot_corr.E() -m_prot + bind_en[ftarget];
 
+//These Histograms are events with 1 electron and  1 proton and multiple pions
+       double histoweight_inc = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec;
 
+       h1_E_tot->Fill(E_tot,histoweight_inc);
+       h1_E_rec_1prot->Fill(E_rec,histoweight_inc);
+       h1_E_tot_1prot->Fill(E_tot,histoweight_inc);
+       h2_Erec_pperp->Fill(p_perp_tot,E_rec,histoweight_inc);
+
+       //---------------------------------- 1p 0pi   ----------------------------------------------
+       //	      if(num_pi_phot == 0){
+       if(num_pi == 0){    //no photons for now F.H. 29.8.19
+
+          double histoweight = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec;
+
+          h2_Erec_pperp_newcut2->Fill(p_perp_tot,E_rec,histoweight);
+     	    h1_E_rec_cut2_new->Fill(E_rec,histoweight);
+     	    h1_E_tot_cut2->Fill(E_tot,histoweight);
+     	    h1_E_tot_cut2_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],histoweight);
+     	    h1_E_rec_cut2_new_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],histoweight);
+     	    h2_pperp_W->Fill(W_var,p_perp_tot,histoweight);
+     	    h1_theta0->Fill((V4_beam.Vect()).Angle(V4_prot_el_tot.Vect()) *TMath::RadToDeg(),histoweight);
+     	    h2_Ecal_Eqe->Fill(E_rec,E_tot,histoweight);
+     	    h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,histoweight);
+     	    h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,histoweight);
+
+          for(int i = 0; i < n_slice; i++)
+          {
+            if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
+              h1_Etot_Npi0[i]->Fill(E_tot,histoweight);
+              h1_Erec_Npi0[i]->Fill(E_rec,histoweight);
+            }
+          }
+          for (int i = 0; i < N_pperp; i++){
+     	      for(int j = 0; j < N_Ecal; j++){
+     		      if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i])  {
+                  h1_Etot_Npi0_Ecalcut[i][j]->Fill(E_tot,histoweight);
+              }
+            }
+     	    }
+          if (p_perp_tot < 0.2){
+            h1_E_rec_cut005_newcut3->Fill(E_rec,histoweight);
+     	      h2_Erec_pperp_cut3->Fill(p_perp_tot,E_rec,histoweight);
+     	    }
+       }//num pi=0
+       //---------------------------------- 1p 1pi   ----------------------------------------------
+       //	      if(num_pi_phot == 1){
+       if(num_pi == 1){    //no photons for now F.H. 29.8.19
+
+          double N_piphot_det;
+          double N_piphot_undet;
+          TVector3 V3_pi_corr;
+          int charge = 0;
+          double pion_acc_ratio = 0;
+
+          if ( index_pipl[0] == index_pi[0] ) { //pion is a piplus
+            charge = 1;
+          }
+          else if ( index_pimi[0] == index_pi[0] ) { //pion is a piminus
+            charge = -1;
+          }
+          else {  std::cout << "WARNING: 1pion events: No charge for one pion could be assigned.  "  << std::endl; continue; }
+
+          SmearedPp = gRandom->Gaus(pf[index_pi[0]],reso_pi*pf[index_pi[0]]);
+          SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
+
+          V3_pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
+
+          double pion_theta = V3_pi_corr.Theta()*TMath::RadToDeg();
+          //Phi has to be checked F.H. 24.8.19
+          double phi_pion = V3_pi_corr.Phi() + TMath::Pi();
+          double pion_mom_corr = V3_pi_corr.Mag();
+
+          if (charge == 1) { //acceptance for pi plus
+            pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
+          }
+          else if (charge == -1) {    //acceptance for pi minus. using electron acceptance map
+            pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
+          }
+          else { std::cout << "WARNING: 1 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
+
+          // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+          //If any fiducial is not fullfilled continue to next event
+          if ( ( !Pi_phot_fid_united(fbeam_en, V3_pi_corr,  charge) ) )
+          {
+              continue;
+          }
+
+          prot1_pi1_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_pi_corr, q[ind_pi_phot[0]],ec_radstat_n[0], &N_piphot_det,&N_piphot_undet);
+
+          double histoweight = pion_acc_ratio * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec; //1proton, 1 Pion, 1 electron acceptance, GENIE weight and Mott
+
+          if(N_piphot_det!=0){
+
+             h1_E_rec_undetfactor->Fill(E_rec,(N_piphot_undet/N_piphot_det)*histoweight);
+             h1_E_tot_undetfactor->Fill(E_tot,(N_piphot_undet/N_piphot_det)*histoweight);
+             h2_Erec_pperp_1p1pi->Fill(p_perp_tot,E_rec,(N_piphot_undet/N_piphot_det)*histoweight);
+             h1_E_rec_undetfactor_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(N_piphot_undet/N_piphot_det)*histoweight);
+             h1_E_tot_undetfactor_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],(N_piphot_undet/N_piphot_det)*histoweight);
+             h2_pperp_W->Fill(W_var,p_perp_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
+             h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),-(N_piphot_undet/N_piphot_det)*histoweight);
+             h2_Ecal_Eqe->Fill(E_rec,E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
+             h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
+             h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
+
+             for(int i = 0; i < n_slice; i++)
+             {
+               if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
+                 h1_Etot_bkgd_pipl_pimi_fact[i]->Fill(E_tot,(N_piphot_undet/N_piphot_det)*histoweight);
+                 h1_Erec_bkgd_pipl_pimi_new_fact[i]->Fill(E_rec,(N_piphot_undet/N_piphot_det)*histoweight);
+                 h1_Etot_bkgd_pipl_pimi_fact_pipl[i]->Fill(E_tot,(N_piphot_undet/N_piphot_det)*histoweight);
+                 h1_Etot_Npi1[i]->Fill(E_tot,histoweight);
+                 h1_Erec_Npi1[i]->Fill(E_rec,histoweight);
+               }
+             }
+             for (int i = 0; i < N_pperp; i++){
+               for(int j = 0; j < N_Ecal; j++){
+                 if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i]) {
+                     h1_Etot_bkgd_pipl_pimi_fact_Ecalcut[i][j]->Fill(E_tot,(N_piphot_undet/N_piphot_det)*histoweight);
+                 }
+               }
+             }
+          } //end of N_piphot_det!=0
+
+          h1_E_rec_cutpi1_piplpimi->Fill(E_rec,histoweight);
+          h1_E_tot_cutpi1_piplpimi->Fill(E_tot,histoweight);
+
+       }//end of 1p 1pi requirement
 
  //---------------------------------- 1p 2pi   ----------------------------------------------
-       if (num_pi_phot==2) {
+ //	      if(num_pi_phot == 2){
+       if(num_pi == 2){    //no photons for now F.H. 29.8.19
 
          const int N_2pi=2;
-         TVector3 V3_2pi[N_2pi],V3_2pi_rot[N_2pi],V3_p_rot;
-         bool pi2_stat[N_2pi]={false};
+         TVector3 V3_2pi_corr[N_2pi],V3_2pi_rot[N_2pi],V3_p_rot;
          int q_pi2[N_2pi];
          bool radstat_pi2[N_2pi]={false};
          double P_1p0pi=0;
          double P_1p1pi[N_2pi]={0};
-         V3_q=(V4_beam-V4_el).Vect();
 
-         V3_2pi[0].SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);
-         V3_2pi[1].SetXYZ(p[ind_pi_phot[1]]*cx[ind_pi_phot[1]],p[ind_pi_phot[1]]*cy[ind_pi_phot[1]],p[ind_pi_phot[1]]*cz[ind_pi_phot[1]]);
-         q_pi2[0]=q[ind_pi_phot[0]];
-         q_pi2[1]=q[ind_pi_phot[1]];
-         radstat_pi2[0]=ec_radstat_n[0];
-         radstat_pi2[1]=ec_radstat_n[1];
+         double pion_acc_ratio[N_2pi] = {0};
 
-         prot1_pi2_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_2pi,q_pi2,radstat_pi2,&P_1p0pi,P_1p1pi);
+         for (int i = 0; i < num_pi; i++) {
+
+             radstat_pi2[i] = ec_radstat_n[i];
+             if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
+                 q_pi2[i] = 1;
+             }
+             else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
+                 q_pi2[i] = -1;
+             }
+             else {  std::cout << "WARNING: 1Proton 2pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+
+             SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
+             SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
+
+             V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
+
+             double pion_theta = V3_2pi_corr[i].Theta()*TMath::RadToDeg();
+            //Phi has to be checked F.H. 24.8.19
+             double phi_pion = V3_2pi_corr[i].Phi() + TMath::Pi();
+             double pion_mom_corr = V3_2pi_corr[i].Mag();
+
+             if (q_pi2[i] == 1) { //acceptance for pi plus
+                 pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
+             }
+             else if (q_pi2[i] == -1) {    //acceptance for pi minus. using electron acceptance map
+                 pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
+             }
+             else { std::cout << "WARNING: 1 Proton 2 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
+
+         }
+
+         // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+         //If any fiducial is not fullfilled continue to next event
+         if ( ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[0],  q_pi2[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[1],  q_pi2[1]) ) )
+         {
+               continue;
+         }
+
+         prot1_pi2_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_2pi_corr,q_pi2,radstat_pi2,&P_1p0pi,P_1p1pi);
+
+         double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1];
+         double histoweight = weight_pions * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec; //1proton, 2 Pion, 1 electron acceptance, GENIE weight and Mott
 
  //---------------------------------- 1p 2pi->1p1pi   ----------------------------------------------
 
          for(int z = 0; z < N_2pi; z++){  //to consider 2 diff. 1pi states
 
-           h1_E_tot_1p2pi->Fill(E_tot,P_1p1pi[z]*1/Mott_cross_sec);
-           h1_E_rec_1p2pi->Fill(E_rec,P_1p1pi[z]*1/Mott_cross_sec);
-           h2_Erec_pperp_1p2pi_1p1pi->Fill(p_perp_tot,E_rec,P_1p1pi[z]*1/Mott_cross_sec);
-           h1_E_tot_1p2pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p1pi[z]*1/Mott_cross_sec);
-           h1_E_rec_1p2pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1p1pi[z]*1/Mott_cross_sec);
-           h2_pperp_W->Fill(W_var,p_perp_tot,P_1p1pi[z]*1/Mott_cross_sec);
-           h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),P_1p1pi[z]*1/Mott_cross_sec);
-           h2_Ecal_Eqe->Fill(E_rec,E_tot,P_1p1pi[z]*1/Mott_cross_sec);
-           h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,P_1p1pi[z]*1/Mott_cross_sec);
-           h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,P_1p1pi[z]*1/Mott_cross_sec);
+           h1_E_tot_1p2pi->Fill(E_tot,P_1p1pi[z]*histoweight);
+           h1_E_rec_1p2pi->Fill(E_rec,P_1p1pi[z]*histoweight);
+           h2_Erec_pperp_1p2pi_1p1pi->Fill(p_perp_tot,E_rec,P_1p1pi[z]*histoweight);
+           h1_E_tot_1p2pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p1pi[z]*histoweight);
+           h1_E_rec_1p2pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1p1pi[z]*histoweight);
+           h2_pperp_W->Fill(W_var,p_perp_tot,P_1p1pi[z]*histoweight);
+           h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),P_1p1pi[z]*histoweight);
+           h2_Ecal_Eqe->Fill(E_rec,E_tot,P_1p1pi[z]*histoweight);
+           h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,P_1p1pi[z]*histoweight);
+           h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,P_1p1pi[z]*histoweight);
 
            for(int i = 0; i < n_slice; i++){
 	            if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
-	               h1_Etot_bkgd_1p2pi[i]->Fill(E_tot,P_1p1pi[z]*1/Mott_cross_sec);
-	               h1_Erec_bkgd_1p2pi[i]->Fill(E_rec,P_1p1pi[z]*1/Mott_cross_sec);
+	               h1_Etot_bkgd_1p2pi[i]->Fill(E_tot,P_1p1pi[z]*histoweight);
+	               h1_Erec_bkgd_1p2pi[i]->Fill(E_rec,P_1p1pi[z]*histoweight);
 	            }
            }
            for (int i = 0; i < N_pperp; i++){
 	            for(int j = 0; j < N_Ecal; j++){
 	               if(E_tot > Ecal_lowlim[j] && E_tot < Ecal_uplim[j] && p_perp_tot>pperp_cut[i])  {
-                    h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi[i][j]->Fill(E_tot,P_1p1pi[z]*1/Mott_cross_sec);
+                    h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi[i][j]->Fill(E_tot,P_1p1pi[z]*histoweight);
                  }
 	            }
            }
@@ -2027,172 +2187,114 @@ void genie_analysis::Loop()
 
  //---------------------------------- 1p 2pi->1p0pi   ----------------------------------------------
 
-         h1_E_tot_1p2pi_1p0pi->Fill(E_tot,P_1p0pi*1/Mott_cross_sec);
-         h1_E_rec_1p2pi_1p0pi->Fill(E_rec,P_1p0pi*1/Mott_cross_sec);
-         h2_Erec_pperp_1p2pi_1p0pi->Fill(p_perp_tot,E_rec,P_1p0pi*1/Mott_cross_sec);
-         h1_E_tot_1p2pi_1p0pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p0pi*1/Mott_cross_sec);
-         h1_E_rec_1p2pi_1p0pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1p0pi*1/Mott_cross_sec);
-         h2_pperp_W->Fill(W_var,p_perp_tot,-P_1p0pi*1/Mott_cross_sec);
-         h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),-P_1p0pi*1/Mott_cross_sec);
-         h2_Ecal_Eqe->Fill(E_rec,E_tot,-P_1p0pi*1/Mott_cross_sec);
-         h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,-P_1p0pi*1/Mott_cross_sec);
-         h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,-P_1p0pi*1/Mott_cross_sec);
+         h1_E_tot_1p2pi_1p0pi->Fill(E_tot,P_1p0pi*histoweight);
+         h1_E_rec_1p2pi_1p0pi->Fill(E_rec,P_1p0pi*histoweight);
+         h2_Erec_pperp_1p2pi_1p0pi->Fill(p_perp_tot,E_rec,P_1p0pi*histoweight);
+         h1_E_tot_1p2pi_1p0pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p0pi*histoweight);
+         h1_E_rec_1p2pi_1p0pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1p0pi*histoweight);
+         h2_pperp_W->Fill(W_var,p_perp_tot,-P_1p0pi*histoweight);
+         h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),-P_1p0pi*histoweight);
+         h2_Ecal_Eqe->Fill(E_rec,E_tot,-P_1p0pi*histoweight);
+         h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,-P_1p0pi*histoweight);
+         h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,-P_1p0pi*histoweight);
 
          for(int i = 0; i < n_slice; i++){
            if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
-	            h1_Etot_bkgd_1p2pi_1p0pi[i]->Fill(E_tot,P_1p0pi*1/Mott_cross_sec);
-	            h1_Erec_bkgd_1p2pi_1p0pi[i]->Fill(E_rec,P_1p0pi*1/Mott_cross_sec);
+	            h1_Etot_bkgd_1p2pi_1p0pi[i]->Fill(E_tot,P_1p0pi*histoweight);
+	            h1_Erec_bkgd_1p2pi_1p0pi[i]->Fill(E_rec,P_1p0pi*histoweight);
            }
          }
          for (int i = 0;i < N_pperp; i++){
            for(int j = 0; j < N_Ecal; j++){
 	            if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i]) {
-                  h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi[i][j]->Fill(E_tot,P_1p0pi*1/Mott_cross_sec);
+                  h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi[i][j]->Fill(E_tot,P_1p0pi*histoweight);
               }
            }
          }
        }//1p 2pi statetment ends
 
  //---------------------------------- 1p 3pi   ----------------------------------------------
-       if (num_pi_phot==3) {
+ //	      if(num_pi_phot == 3){
+       if(num_pi == 3){    //no photons for now F.H. 29.8.19
 
          const int N_3pi=3;
          TVector3 V3_3pi_corr[N_3pi],V3_3pi_rot[N_3pi],V3_p_rot;
-         bool pi3_stat[N_3pi]={false};
          int q_pi3[N_3pi];
          bool radstat_pi3[N_3pi]={false};
-         double N_3pi_p=0;
-         double N_1pi_1p[N_3pi]={0};
-         double N_pi=0;
-         double N_nopi=0;
-         double N_0pi_1p=0;
-         double P_1p3pi=0;
-         V3_q=(V4_beam-V4_el).Vect();
+         double P_1p3pi = 0;
+         double pion_acc_ratio[N_3pi] = {0};
 
-         V3_3pi_corr[0].SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);
-         V3_3pi_corr[1].SetXYZ(p[ind_pi_phot[1]]*cx[ind_pi_phot[1]],p[ind_pi_phot[1]]*cy[ind_pi_phot[1]],p[ind_pi_phot[1]]*cz[ind_pi_phot[1]]);
-         V3_3pi_corr[2].SetXYZ(p[ind_pi_phot[2]]*cx[ind_pi_phot[2]],p[ind_pi_phot[2]]*cy[ind_pi_phot[2]],p[ind_pi_phot[2]]*cz[ind_pi_phot[2]]);
-         q_pi3[0]=q[ind_pi_phot[0]];
-         q_pi3[1]=q[ind_pi_phot[1]];
-         q_pi3[2]=q[ind_pi_phot[2]];
-         radstat_pi3[0]=ec_radstat_n[0];
-         radstat_pi3[1]=ec_radstat_n[1];
-         radstat_pi3[2]=ec_radstat_n[2];
+         for (int i = 0; i < num_pi; i++) {
+
+             radstat_pi3[i] = ec_radstat_n[i];
+             if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
+                 q_pi3[i] = 1;
+             }
+             else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
+                 q_pi3[i] = -1;
+             }
+             else {  std::cout << "WARNING: 3pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+
+             SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
+             SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
+
+             V3_3pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
+
+             double pion_theta = V3_3pi_corr[i].Theta()*TMath::RadToDeg();
+            //Phi has to be checked F.H. 24.8.19
+             double phi_pion = V3_3pi_corr[i].Phi() + TMath::Pi();
+             double pion_mom_corr = V3_3pi_corr[i].Mag();
+
+             if (q_pi3[i] == 1) { //acceptance for pi plus
+                 pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
+             }
+             else if (q_pi3[i] == -1) {    //acceptance for pi minus. using electron acceptance map
+                 pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
+             }
+             else { std::cout << "WARNING: 3 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
+
+         }
+
+         // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+         //If any fiducial is not fullfilled continue to next event
+         if ( ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[0],  q_pi3[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[1],  q_pi3[1]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[2],  q_pi3[2]) ) )
+         {
+               continue;
+         }
 
          prot1_pi3_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_3pi_corr,q_pi3,radstat_pi3,&P_1p3pi);
 
+         double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2] * pion_acc_ratio[3];
+         double histoweight = weight_pions * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec; //1proton, 3 Pion, 1 electron acceptance, GENIE weight and Mott
+
+
  //---------------------------------- 1p 3pi->1p 0pi  total ?? F.H. 08/13/19 check logic here compared to 1p 2pi case ----------------------------------------------
-         h1_E_tot_1p3pi->Fill(E_tot,P_1p3pi*1/Mott_cross_sec);
-         h1_E_rec_1p3pi->Fill(E_rec,P_1p3pi*1/Mott_cross_sec);
-         h2_Erec_pperp_1p3pi->Fill(p_perp_tot,E_rec,P_1p3pi*1/Mott_cross_sec);
-         h1_E_tot_1p3pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p3pi*1/Mott_cross_sec);
-         h1_E_rec_1p3pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1p3pi*1/Mott_cross_sec);
-         h2_pperp_W->Fill(W_var,p_perp_tot,P_1p3pi*1/Mott_cross_sec);
-         h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),P_1p3pi*1/Mott_cross_sec);
-         h2_Ecal_Eqe->Fill(E_rec,E_tot,P_1p3pi*1/Mott_cross_sec);
-         h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,P_1p3pi*1/Mott_cross_sec);
-         h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,P_1p3pi*1/Mott_cross_sec);
+         h1_E_tot_1p3pi->Fill(E_tot,P_1p3pi*histoweight);
+         h1_E_rec_1p3pi->Fill(E_rec,P_1p3pi*histoweight);
+         h2_Erec_pperp_1p3pi->Fill(p_perp_tot,E_rec,P_1p3pi*histoweight);
+         h1_E_tot_1p3pi_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p3pi*histoweight);
+         h1_E_rec_1p3pi_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1p3pi*histoweight);
+         h2_pperp_W->Fill(W_var,p_perp_tot,P_1p3pi*histoweight);
+         h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),P_1p3pi*histoweight);
+         h2_Ecal_Eqe->Fill(E_rec,E_tot,P_1p3pi*histoweight);
+         h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,P_1p3pi*histoweight);
+         h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,P_1p3pi*histoweight);
 
          for(int i = 0; i < n_slice; i++){
            if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
-             h1_Etot_bkgd_1p3pi[i]->Fill(E_tot,P_1p3pi*1/Mott_cross_sec);
-             h1_Erec_bkgd_1p3pi[i]->Fill(E_rec,P_1p3pi*1/Mott_cross_sec);
+             h1_Etot_bkgd_1p3pi[i]->Fill(E_tot,P_1p3pi*histoweight);
+             h1_Erec_bkgd_1p3pi[i]->Fill(E_rec,P_1p3pi*histoweight);
            }
          }
          for (int i = 0; i < N_pperp; i++){
            for(int j = 0; j < N_Ecal; j++){
              if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i])  {
-                h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[i][j]->Fill(E_tot,P_1p3pi*1/Mott_cross_sec);
+                h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[i][j]->Fill(E_tot,P_1p3pi*histoweight);
              }
            }
          }
        }//end of 1p 3pi requirement
 
-  //---------------------------------- 1p 1pi   ----------------------------------------------
-       if (num_pi_phot==1) {
-         double N_piphot_det,N_piphot_undet;
-         TVector3 V3_pi_phot;
-         V3_q=(V4_beam-V4_el).Vect();
-         V3_pi_phot.SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);	N_piphot_det=N_piphot_undet=0;
-
-         prot1_pi1_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_pi_phot, q[ind_pi_phot[0]],ec_radstat_n[0], &N_piphot_det,&N_piphot_undet);
-
-		     if(N_piphot_det!=0){
-
-	          h1_E_rec_undetfactor->Fill(E_rec,(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-	          h1_E_tot_undetfactor->Fill(E_tot,(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-	          h1_E_tot_undetfactor_pipl->Fill(E_tot,(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-	          h2_Erec_pperp_1p1pi->Fill(p_perp_tot,E_rec,(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-		        h1_E_rec_undetfactor_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-		        h1_E_tot_undetfactor_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-		        h2_pperp_W->Fill(W_var,p_perp_tot,-(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-		        h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),-(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-		        h2_Ecal_Eqe->Fill(E_rec,E_tot,-(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-		        h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,-(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-	          h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,-(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-
-            for(int i = 0; i < n_slice; i++)
-            {
-              if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
-                h1_Etot_bkgd_pipl_pimi_fact[i]->Fill(E_tot,(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-                h1_Erec_bkgd_pipl_pimi_new_fact[i]->Fill(E_rec,(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-                h1_Etot_bkgd_pipl_pimi_fact_pipl[i]->Fill(E_tot,(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-                h1_Etot_Npi1[i]->Fill(E_tot,1/Mott_cross_sec);
-                h1_Erec_Npi1[i]->Fill(E_rec,1/Mott_cross_sec);
-              }
-            }
-            for (int i = 0; i < N_pperp; i++){
-              for(int j = 0; j < N_Ecal; j++){
-                if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i]) {
-                    h1_Etot_bkgd_pipl_pimi_fact_Ecalcut[i][j]->Fill(E_tot,(N_piphot_undet/N_piphot_det)*1/Mott_cross_sec);
-                }
-              }
-		        }
-		     } //end of N_piphot_det!=0
-
-	       h1_E_rec_cutpi1_piplpimi->Fill(E_rec,1/Mott_cross_sec);
-	       h1_E_tot_cutpi1_piplpimi->Fill(E_tot,1/Mott_cross_sec);
-
-       }//end of 1p 1pi requirement
-
-  //---------------------------------- 1p 0pi   ----------------------------------------------
-       if (num_pi_phot==0){
-
-          h2_Erec_pperp_newcut2->Fill(p_perp_tot,E_rec,1/Mott_cross_sec);
-	        h1_E_rec_cut2_new->Fill(E_rec,1/Mott_cross_sec);
-	        h1_E_tot_cut2->Fill(E_tot,1/Mott_cross_sec);
-	        h1_E_tot_cut2_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],1/Mott_cross_sec);
-	        h1_E_rec_cut2_new_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],1/Mott_cross_sec);
-	        h2_pperp_W->Fill(W_var,p_perp_tot,1/Mott_cross_sec);
-	        h1_theta0->Fill((V4_beam.Vect()).Angle(V4_prot_el_tot.Vect()) *TMath::RadToDeg(),1/Mott_cross_sec);
-	        h2_Ecal_Eqe->Fill(E_rec,E_tot,1/Mott_cross_sec);
-	        h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,1/Mott_cross_sec);
-	        h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,1/Mott_cross_sec);
-
-          for(int i = 0; i < n_slice; i++)
-          {
-            if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
-              h1_Etot_Npi0[i]->Fill(E_tot,1/Mott_cross_sec);
-              h1_Erec_Npi0[i]->Fill(E_rec,1/Mott_cross_sec);
-            }
-          }
-          for (int i = 0; i < N_pperp; i++){
-	           for(int j = 0; j < N_Ecal; j++){
-		             if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i])  {
-                     h1_Etot_Npi0_Ecalcut[i][j]->Fill(E_tot,1/Mott_cross_sec);
-                 }
-             }
-	        }
-          if (p_perp_tot < 0.2){
-            h1_E_rec_cut005_newcut3->Fill(E_rec,1/Mott_cross_sec);
-	          h2_Erec_pperp_cut3->Fill(p_perp_tot,E_rec,1/Mott_cross_sec);
-	        }
-       }//num pi=0
-
-       h1_E_tot->Fill(E_tot,1/Mott_cross_sec);
-       h1_E_rec_1prot->Fill(E_rec,1/Mott_cross_sec);
-       h1_E_tot_1prot->Fill(E_tot,1/Mott_cross_sec);
-       h2_Erec_pperp->Fill(p_perp_tot,E_rec,1/Mott_cross_sec);
 
      } // 1proton ends
 

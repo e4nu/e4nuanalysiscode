@@ -14,12 +14,12 @@ OBJECTS1   := run_e2a_ep_neutrino6_united4_radphot.o Fiducial.o e2a_ep_neutrino6
 OBJECTS2   := run_genie_analysis.o Fiducial.o genie_analysis.o
 
 
-all: run_e2a_ep run_genie_analysis
+all: e2a_ep genie_analysis
 
 genie_analysis: $(OBJECTS2)
 		$(CXX) -o genie_analysis $(OBJECTS2) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
 
-run_e2a_ep: $(OBJECTS1)
+e2a_ep: $(OBJECTS1)
 	$(CXX) -o e2a_ep $(OBJECTS1) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
 
 clean:

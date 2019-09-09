@@ -652,8 +652,8 @@ void genie_analysis::Loop()
 
     //Calculation of kinematic quantities (nu, Q2, x bjorken, q and W)
     double nu = -(V4_el-V4_beam).E();
-    double Q2 = -(V4_el-V4_beam).Mag2();
-    double x_bjk = Q2/(2*m_prot*nu);
+    double reco_Q2 = -(V4_el-V4_beam).Mag2();
+    double x_bjk = reco_Q2/(2*m_prot*nu);
     TVector3 V3_q = (V4_beam-V4_el).Vect();
     double W_var = TMath::Sqrt((m_prot+nu)*(m_prot+nu)-V3_q*V3_q);
 
@@ -667,16 +667,16 @@ void genie_analysis::Loop()
     //Filling Histogram for electron kinematics
     h1_xbjk->Fill(x_bjk);
     h1_xbjk_weight->Fill(x_bjk,WeightIncl);
-    h1_Q2->Fill(Q2);
-    h1_Q2_weight->Fill(Q2,WeightIncl);
-    h2_Q2_nu->Fill(nu,Q2);
-    h2_Q2_nu_weight->Fill(nu,Q2,WeightIncl);
-    h2_Q2_xbjk_weight->Fill(x_bjk,Q2,WeightIncl);
+    h1_Q2->Fill(reco_Q2);
+    h1_Q2_weight->Fill(reco_Q2,WeightIncl);
+    h2_Q2_nu->Fill(nu,reco_Q2);
+    h2_Q2_nu_weight->Fill(nu,reco_Q2,WeightIncl);
+    h2_Q2_xbjk_weight->Fill(x_bjk,reco_Q2,WeightIncl);
     h1_Wvar->Fill(W_var);
     h1_Wvar_weight->Fill(W_var,WeightIncl);
-    h2_Q2_W->Fill(W_var,Q2);
+    h2_Q2_W->Fill(W_var,reco_Q2);
     h2_xB_W->Fill(W_var,x_bjk);
-    h2_Q2_W_weight->Fill(W_var,Q2,WeightIncl);
+    h2_Q2_W_weight->Fill(W_var,reco_Q2,WeightIncl);
 
     h1_el_Mott_crosssec->Fill(Mott_cross_sec);
     h2_el_theta_phi->Fill(el_phi_mod,el_theta);
@@ -4406,6 +4406,7 @@ void genie_analysis::LoopCLAS()
     }
 
     fTorusCurrent=2250; //only true for 2.2 and 4.4 GeV
+    //Make new if condition depending on beam energy. F.H. 9/9/19
 //1500 is not used anymore, no runnumber in GENIE simulation files
   /*  if((runnb>18283 && runnb<18289) || (runnb>18300 && runnb<18304) || (runnb>18317 && runnb<18329))        fTorusCurrent=750;    //setting appropriate torrus magnet current
     else if ((runnb>18293 && runnb<18301) || (runnb>18305 && runnb<18317) || (runnb>18328 && runnb<18336))  fTorusCurrent=1500;
@@ -4419,13 +4420,8 @@ void genie_analysis::LoopCLAS()
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-		// Outgoing e', Uncorr and corrected are the same.Needs to be changed later to one TLorentzVector
-//We need the momentum corrected values here
+		// Outgoing e', Onl corrected  values from GENIE data structure
 		TLorentzVector V4_el(pxl,pyl,pzl,El);
-
-    TLorentzVector V4_el_uncorr(pxl,pyl,pzl,El);
-
-    //We need the momentum corrected values here
     TVector3 V3_el(pxl,pyl,pzl);
 
 
@@ -4445,31 +4441,27 @@ void genie_analysis::LoopCLAS()
 
     //Calculation of kinematic quantities (nu, Q2, x bjorken, q and W)
     double nu = -(V4_el-V4_beam).E();
-    double Q2 = -(V4_el-V4_beam).Mag2();
-    double x_bjk = Q2/(2*m_prot*nu);
+    double reco_Q2 = -(V4_el-V4_beam).Mag2();
+    double x_bjk = reco_Q2/(2*m_prot*nu);
     TVector3 V3_q = (V4_beam-V4_el).Vect();
     double W_var = TMath::Sqrt((m_prot+nu)*(m_prot+nu)-V3_q*V3_q);
 
 
-    h1_el_mom->Fill(V4_el_uncorr.Rho(),WeightIncl);
     h1_el_mom_corr->Fill(V4_el.Rho(),WeightIncl);
-    h1_el_mom_ratio->Fill(V4_el.Rho()/V4_el_uncorr.Rho(),WeightIncl);
-    h2_el_pcorr_puncorr->Fill(V4_el.Rho(),V4_el.Rho()/V4_el_uncorr.Rho(),WeightIncl);
-    h2_el_mom_diff->Fill(V4_el.Rho(),V4_el.Rho()-V4_el_uncorr.Rho(),WeightIncl);
 
     //Filling Histogram for electron kinematics
     h1_xbjk->Fill(x_bjk);
     h1_xbjk_weight->Fill(x_bjk,WeightIncl);
-    h1_Q2->Fill(Q2);
-    h1_Q2_weight->Fill(Q2,WeightIncl);
-    h2_Q2_nu->Fill(nu,Q2);
-    h2_Q2_nu_weight->Fill(nu,Q2,WeightIncl);
-    h2_Q2_xbjk_weight->Fill(x_bjk,Q2,WeightIncl);
+    h1_Q2->Fill(reco_Q2);
+    h1_Q2_weight->Fill(reco_Q2,WeightIncl);
+    h2_Q2_nu->Fill(nu,reco_Q2);
+    h2_Q2_nu_weight->Fill(nu,reco_Q2,WeightIncl);
+    h2_Q2_xbjk_weight->Fill(x_bjk,reco_Q2,WeightIncl);
     h1_Wvar->Fill(W_var);
     h1_Wvar_weight->Fill(W_var,WeightIncl);
-    h2_Q2_W->Fill(W_var,Q2);
+    h2_Q2_W->Fill(W_var,reco_Q2);
     h2_xB_W->Fill(W_var,x_bjk);
-    h2_Q2_W_weight->Fill(W_var,Q2,WeightIncl);
+    h2_Q2_W_weight->Fill(W_var,reco_Q2,WeightIncl);
 
     h1_el_Mott_crosssec->Fill(Mott_cross_sec);
     h2_el_theta_phi->Fill(el_phi_mod,el_theta);

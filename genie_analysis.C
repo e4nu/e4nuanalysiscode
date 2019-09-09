@@ -589,7 +589,7 @@ void genie_analysis::Loop()
     //for (Long64_t jentry=0; jentry<200000;jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
-
+    int nb = GetEntry(jentry);
     if( jentry%200000 == 0 )
     {
 	         gDirectory->Write("hist_Files", TObject::kOverwrite);
@@ -636,8 +636,11 @@ void genie_analysis::Loop()
     //WARNING: Needs to be checked if this also works for GENIE data F.H. 08/24/19
     double e_acc_ratio = acceptance_c(el_momentum, cos(el_theta), phi_ElectronOut, 11,file_acceptance);
 
+    //do we need this before e-acc_ratio calculation F.H. 9/9/19
     if (phi_ElectronOut < TMath::Pi()) {phi_ElectronOut += TMath::Pi();}
     else {phi_ElectronOut -= TMath::Pi();}
+    //converting theta to degree for 2d plot
+    el_theta = el_theta*TMath::RadToDeg();
 
 
     //Calculated Mott Cross Section and Weights for Inclusive Histograms
@@ -690,6 +693,10 @@ void genie_analysis::Loop()
     int ind_pi_phot[20];
     int index_pipl[20]; //index for each pi plus
     int index_pimi[20]; //index for each pi minus
+    //Array initialize to -1
+    for (int i = 0; i<20; i++) {
+      index_p[i] = -1;   index_pi[i] = -1;   index_pipl[i] = -1;   index_pimi[i] = -1;   ind_pi_phot[i] = -1;
+    }
     //Number of hadrons
     int num_p = 0;
     int num_pi = 0;
@@ -727,7 +734,7 @@ void genie_analysis::Loop()
           num_pi = num_pi + 1;
           num_pi_phot = num_pi_phot + 1;
           num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
-          index_pimi[num_pimi - 1] = i;
+          index_pimi[num_pi - 1] = i;
           index_pi[num_pi - 1] = i;
           ind_pi_phot[num_pi_phot - 1] = i;
           PiMinusID.push_back(i);
@@ -740,7 +747,7 @@ void genie_analysis::Loop()
           num_pi  = num_pi + 1;
           num_pi_phot = num_pi_phot + 1;
           num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
-          index_pipl[num_pipl - 1] = i;
+          index_pipl[num_pi - 1] = i;
           index_pi[num_pi - 1] = i;
           ind_pi_phot[num_pi_phot - 1] = i;
           PiPlusID.push_back(i);
@@ -4398,7 +4405,7 @@ void genie_analysis::LoopCLAS()
     //for (Long64_t jentry=0; jentry<200000;jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
-
+    int nb = GetEntry(jentry);
     if( jentry%200000 == 0 )
     {
 	         gDirectory->Write("hist_Files", TObject::kOverwrite);
@@ -4426,7 +4433,7 @@ void genie_analysis::LoopCLAS()
 
 
     double el_momentum = V3_el.Mag();
-    double el_theta = V3_el.Theta();
+    double el_theta = V3_el.Theta()*TMath::RadToDeg();
     //Definition as for data. WARNING: Needs to be checked if this also works for GENIE data F.H. 08/24/19
     double el_phi_mod = V3_el.Phi()*TMath::RadToDeg()+30; //Add extra 30 degree rotation in phi
     if(el_phi_mod<0)  el_phi_mod  = el_phi_mod+360; //Add 360 so that electron phi is between 0 and 360 degree
@@ -4475,6 +4482,10 @@ void genie_analysis::LoopCLAS()
     int ind_pi_phot[20];
     int index_pipl[20]; //index for each pi plus
     int index_pimi[20]; //index for each pi minus
+    //Setting arrays
+    for (int i = 0; i<20; i++) {
+      index_p[i] = -1;   index_pi[i] = -1;   index_pipl[i] = -1;   index_pimi[i] = -1;   ind_pi_phot[i] = -1;
+    }
     //Number of hadrons
     int num_p = 0;
     int num_pi = 0;
@@ -4512,7 +4523,7 @@ void genie_analysis::LoopCLAS()
           num_pi = num_pi + 1;
           num_pi_phot = num_pi_phot + 1;
           num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
-          index_pimi[num_pimi - 1] = i;
+          index_pimi[num_pi - 1] = i;
           index_pi[num_pi - 1] = i;
           ind_pi_phot[num_pi_phot - 1] = i;
           PiMinusID.push_back(i);
@@ -4525,7 +4536,7 @@ void genie_analysis::LoopCLAS()
           num_pi  = num_pi + 1;
           num_pi_phot = num_pi_phot + 1;
           num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
-          index_pipl[num_pipl - 1] = i;
+          index_pipl[num_pi - 1] = i;
           index_pi[num_pi - 1] = i;
           ind_pi_phot[num_pi_phot - 1] = i;
           PiPlusID.push_back(i);

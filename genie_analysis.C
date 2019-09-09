@@ -211,9 +211,9 @@ void genie_analysis::Loop()
   TLorentzVector V4_target(0,0,0,target_mass[ftarget]);
   //Acceptance Maps
   TString WhichMap = "e2a_maps";
-  TFile* file_acceptance = TFile::Open("maps/"+WhichMap+"/"+WhichMap+"_12C_E_"+E_acc_file+".root");
-  TFile* file_acceptance_p = TFile::Open("maps/"+WhichMap+"/"+WhichMap+"_12C_E_"+E_acc_file+"_p.root");
-  TFile* file_acceptance_pip = TFile::Open("maps/"+WhichMap+"/"+WhichMap+"_12C_E_"+E_acc_file+"_pip.root");
+  TFile* file_acceptance = TFile::Open(WhichMap+"/"+WhichMap+"_12C_E_"+E_acc_file+".root");
+  TFile* file_acceptance_p = TFile::Open(WhichMap+"/"+WhichMap+"_12C_E_"+E_acc_file+"_p.root");
+  TFile* file_acceptance_pip = TFile::Open(WhichMap+"/"+WhichMap+"_12C_E_"+E_acc_file+"_pip.root");
 
 
   //Output file definition

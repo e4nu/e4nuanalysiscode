@@ -49,7 +49,7 @@ public :
    Bool_t          singlek;
    Bool_t          nuel;
    Bool_t          em;
-   Bool_t          genie_cc;
+   Bool_t          cc;
    Bool_t          nc;
    Bool_t          charm;
    Int_t           neut_code;
@@ -144,7 +144,7 @@ public :
    TBranch        *b_singlek;   //!
    TBranch        *b_nuel;   //!
    TBranch        *b_em;   //!
-   TBranch        *b_genie_cc;   //!
+   TBranch        *b_cc;   //!
    TBranch        *b_nc;   //!
    TBranch        *b_charm;   //!
    TBranch        *b_neut_code;   //!
@@ -224,7 +224,7 @@ public :
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
    virtual void     Loop();
-   virtual void     LoopCLAS();   
+   virtual void     LoopCLAS();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    void SetFiducialCutParameters(std::string beam_en) {
@@ -370,7 +370,7 @@ void genie_analysis::Init(TTree *tree)
    fChain->SetBranchAddress("singlek", &singlek, &b_singlek);
    fChain->SetBranchAddress("nuel", &nuel, &b_nuel);
    fChain->SetBranchAddress("em", &em, &b_em);
-   fChain->SetBranchAddress("genie_cc", &genie_cc, &b_genie_cc);
+   fChain->SetBranchAddress("cc", &cc, &b_cc);
    fChain->SetBranchAddress("nc", &nc, &b_nc);
    fChain->SetBranchAddress("charm", &charm, &b_charm);
    fChain->SetBranchAddress("neut_code", &neut_code, &b_neut_code);

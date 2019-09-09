@@ -17,10 +17,10 @@ OBJECTS2   := run_genie_analysis.o Fiducial.o genie_analysis.o
 all: run_e2a_ep run_genie_analysis
 
 genie_analysis: $(OBJECTS2)
-		$(CXX) -o run_genie_analysis $(OBJECTS2) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
+		$(CXX) -o genie_analysis $(OBJECTS2) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
 
 run_e2a_ep: $(OBJECTS1)
-	$(CXX) -o run_e2a_ep $(OBJECTS1) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
+	$(CXX) -o e2a_ep $(OBJECTS1) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
 
 clean:
 	@echo 'Removing all build files'

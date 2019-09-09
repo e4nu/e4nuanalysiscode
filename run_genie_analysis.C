@@ -22,7 +22,7 @@ int main(int argc, char **argv)
   std::string beam_en = argv[2];
   int choice = atoi(argv[3]);
 
-  if (choice != 1 || choice != 0) {
+  if (choice != 1 && choice != 0) {
     std::cout << "Unknown option for parameter 3. It should be either 0 or 1. The given value is " << choice << std::endl;
     return 0;
   }

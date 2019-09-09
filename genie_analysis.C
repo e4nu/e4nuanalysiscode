@@ -596,11 +596,11 @@ void genie_analysis::Loop()
 		       cout<<jentry<<endl;
     }
 
-//1500 is not used anymore
-    if((runnb>18283 && runnb<18289) || (runnb>18300 && runnb<18304) || (runnb>18317 && runnb<18329))        fTorusCurrent=750;    //setting appropriate torrus magnet current
+//1500 is not used anymore, no runnumber in GENIE simulation files
+  /*  if((runnb>18283 && runnb<18289) || (runnb>18300 && runnb<18304) || (runnb>18317 && runnb<18329))        fTorusCurrent=750;    //setting appropriate torrus magnet current
     else if ((runnb>18293 && runnb<18301) || (runnb>18305 && runnb<18317) || (runnb>18328 && runnb<18336))  fTorusCurrent=1500;
     else fTorusCurrent=2250;
-
+*/
     if(jentry == 0){ //was n_evt == 1 before but jentry = n_evnt - 1
           //SetMomCorrParameters(); Functions is missing F.H. 08/01/19
           fiducialcut->SetConstants(fTorusCurrent, target_name, en_beam, en_beam_Ecal, en_beam_Eqe);
@@ -1301,7 +1301,7 @@ void genie_analysis::Loop()
              else { std::cout << "WARNING: 3proton and 1 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
 
-             prot3_pi1_rot_func(fbeam_en,  V3_q,V3_prot_corr,V3_prot_uncorr, V3_pi_corr,q[ind_pi_phot[0]],ec_radstat_n[0], V4_el,  Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
+             prot3_pi1_rot_func(fbeam_en,  V3_q,V3_prot_corr,V3_prot_uncorr, V3_pi_corr, charge ,ec_radstat_n[0], V4_el,  Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
 
              double histoweight = pion_acc_ratio * weight_protons * e_acc_ratio * wght/Mott_cross_sec; //Weight for 3protons, 1 pion, 1 electron, GENIE weight and Mott cross section
 
@@ -2058,7 +2058,7 @@ void genie_analysis::Loop()
               continue;
           }
 
-          prot1_pi1_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_pi_corr, q[ind_pi_phot[0]],ec_radstat_n[0], &N_piphot_det,&N_piphot_undet);
+          prot1_pi1_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_pi_corr, charge, ec_radstat_n[0], &N_piphot_det,&N_piphot_undet);
 
           double histoweight = pion_acc_ratio * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec; //1proton, 1 Pion, 1 electron acceptance, GENIE weight and Mott
 
@@ -2264,7 +2264,7 @@ void genie_analysis::Loop()
 
          prot1_pi3_rot_func(fbeam_en, V3_q,V3_prot_uncorr,V3_3pi_corr,q_pi3,radstat_pi3,&P_1p3pi);
 
-         double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2] * pion_acc_ratio[3];
+         double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2];
          double histoweight = weight_pions * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec; //1proton, 3 Pion, 1 electron acceptance, GENIE weight and Mott
 
 

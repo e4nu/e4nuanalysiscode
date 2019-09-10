@@ -4487,7 +4487,7 @@ void genie_analysis::LoopCLAS()
 
 
     double el_momentum = V3_el.Mag();
-    double el_theta = V3_el.Theta()*TMath::RadToDeg();
+    double el_theta = V3_el.Theta();
     //Definition as for data. WARNING: Needs to be checked if this also works for GENIE data F.H. 08/24/19
     double el_phi_mod = V3_el.Phi()*TMath::RadToDeg(); //Add extra 30 degree rotation in phi
 //    double el_phi_mod = V3_el.Phi()*TMath::RadToDeg()+30; //Add extra 30 degree rotation in phi
@@ -4498,6 +4498,7 @@ void genie_analysis::LoopCLAS()
     //Calculated Mott Cross Section and Weights for Inclusive Histograms
     double Mott_cross_sec = ( pow(fine_struc_const,2.)*(cos(el_theta)+1))/(2*pow(El,2)*pow((1-cos(el_theta)),2.));
     double WeightIncl = 1./Mott_cross_sec;
+    el_theta = el_theta*TMath::RadToDeg();
 
     double E_rec = (m_prot*bind_en[ftarget]+m_prot*V4_el.E())/(m_prot-V4_el.E()+V4_el.Rho()*cos(el_theta));  //using the same value of single nucleon separation E Ecal and Eqe
 

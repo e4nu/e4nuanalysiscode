@@ -205,7 +205,7 @@ void genie_analysis::Loop()
 
 
   gRandom = new TRandom3();
-  //  gRandom->SetSeed(0);
+  gRandom->SetSeed(10);
 
   TLorentzVector V4_beam(0,0,en_beam[fbeam_en],en_beam[fbeam_en]);
   TLorentzVector V4_target(0,0,0,target_mass[ftarget]);
@@ -366,7 +366,8 @@ void genie_analysis::Loop()
   TH2F *h2_N_prot_pi=new TH2F("h2_N_prot_pi","",10,0,5,10,0,5);
   TH2F *h2_N_prot_pi_phot=new TH2F("h2_N_prot_pi_phot","",10,0,5,10,0,5);
   TH2F *h2_N_prot_pi_phot_nonrad=new TH2F("h2_N_prot_pi_phot_nonrad","",10,0,5,10,0,5);
-  TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,0,180);
+//  TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,0,180);
+  TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,10,60); // apapadop
   TH2F *h2_el_mom_diff = new TH2F("h2_el_mom_diff","",500,0.,1.,500,-0.1,0.1);
   TH2F *h2_Q2_nu = new TH2F("h2_Q2_nu","",200,0,3.5,200,0,5);
   TH2F *h2_Q2_nu_weight = new TH2F("h2_Q2_nu_weight","",200,0,3.5,200,0,5);
@@ -613,39 +614,42 @@ void genie_analysis::Loop()
 		// Outgoing e', Uncorr and corrected are the same.Needs to be changed later to one TLorentzVector
 
 		TLorentzVector V4_el(pxl,pyl,pzl,El);
-    TLorentzVector V4_el_uncorr(pxl,pyl,pzl,El);
-    TVector3 V3_el(pxl,pyl,pzl);
+		TLorentzVector V4_el_uncorr(pxl,pyl,pzl,El);
+		TVector3 V3_el(pxl,pyl,pzl);
 
-    //Smearing of ELectron Vector from Simulation
-    double SmearedPe = gRandom->Gaus(pl,reso_e*pl);
-    double SmearedEe = sqrt( SmearedPe*SmearedPe + e_mass * e_mass );
-    V3_el.SetXYZ(SmearedPe/pl * pxl,SmearedPe/pl * pyl,SmearedPe/pl * pzl);
-    V4_el.SetPxPyPzE(V3_el.X(),V3_el.Y(),V3_el.Z(),SmearedEe);
+		//Smearing of Electron Vector from Simulation
+		double SmearedPe = gRandom->Gaus(pl,reso_e*pl);
+		double SmearedEe = sqrt( SmearedPe*SmearedPe + e_mass * e_mass );
+		V3_el.SetXYZ(SmearedPe/pl * pxl,SmearedPe/pl * pyl,SmearedPe/pl * pzl);
+		V4_el.SetPxPyPzE(V3_el.X(),V3_el.Y(),V3_el.Z(),SmearedEe);
+		double phi_ElectronOut = V3_el.Phi(); //in Radians
+// apapadop
+		V3_el.SetPhi(phi_ElectronOut + TMath::Pi() ); // Vec.Phi() is between (-180,180), add 180 to set the range to (0,360)
 
-  //Fiducial Cuts with the smeared values
-    if (!EFiducialCut(fbeam_en,V3_el) ) continue; // Electron theta & phi fiducial cuts
+		//Fiducial Cuts with the smeared values
+		if (!EFiducialCut(fbeam_en,V3_el) ) continue; // Electron theta & phi fiducial cuts
 
-    double el_momentum = V3_el.Mag();
-    double el_theta = V3_el.Theta();
-    //Definition as for data. WARNING: Needs to be checked if this also works for GENIE data F.H. 08/24/19
-    double el_phi_mod = V3_el.Phi()*TMath::RadToDeg()+30; //Add extra 30 degree rotation in phi
-    if(el_phi_mod<0)  el_phi_mod  = el_phi_mod+360; //Add 360 so that electron phi is between 0 and 360 degree
-    double phi_ElectronOut = V3_el.Phi()+TMath::Pi(); //in Radians
+//apapadop
+// WARNING: Needs to be checked 30 degrees must be added
+		phi_ElectronOut += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+		double el_momentum = V3_el.Mag();
+		double el_theta = V3_el.Theta();
 
-    //acceptance_c takes phi in radians and here unmodified by 30 degree.
-    //WARNING: Needs to be checked if this also works for GENIE data F.H. 08/24/19
-    double e_acc_ratio = acceptance_c(el_momentum, cos(el_theta), phi_ElectronOut, 11,file_acceptance);
+		//acceptance_c takes phi in radians and here unmodified by 30 degree.
+		//WARNING: Needs to be checked if this also works for GENIE data F.H. 08/24/19
+		double e_acc_ratio = acceptance_c(el_momentum, cos(el_theta), phi_ElectronOut, 11,file_acceptance);
+//double e_acc_ratio = 1.;
 
-    //do we need this before e-acc_ratio calculation F.H. 9/9/19
-    if (phi_ElectronOut < TMath::Pi()) {phi_ElectronOut += TMath::Pi();}
-    else {phi_ElectronOut -= TMath::Pi();}
-    //converting theta to degree for 2d plot
-    el_theta = el_theta*TMath::RadToDeg();
+		double el_phi_mod = phi_ElectronOut*TMath::RadToDeg();
+		if(el_phi_mod<0)  el_phi_mod  = el_phi_mod+360; //Add 360 so that electron phi is between 0 and 360 degree
 
+		//Calculated Mott Cross Section and Weights for Inclusive Histograms
+		double Mott_cross_sec = ( pow(fine_struc_const,2.)*(cos(el_theta)+1))/(2*pow(El,2)*pow((1-cos(el_theta)),2.));
+		double WeightIncl = wght*e_acc_ratio / Mott_cross_sec;
 
-    //Calculated Mott Cross Section and Weights for Inclusive Histograms
-    double Mott_cross_sec = ( pow(fine_struc_const,2.)*(cos(el_theta)+1))/(2*pow(El,2)*pow((1-cos(el_theta)),2.));
-    double WeightIncl = wght*e_acc_ratio / Mott_cross_sec;
+		//converting theta to degrees
+		el_theta = el_theta*TMath::RadToDeg();
+
       //Energy reconstruction for electron only method
   //double E_rec_old = (2*(m_prot-bind_en[ftarget])*V4_el.E()+m_prot*m_prot-(m_prot-bind_en[ftarget])*(m_prot-bind_en[ftarget]))/(2*(m_prot-bind_en[ftarget]-V4_el.E()+V4_el.Rho()*cz[ind_em]));  //using the same value of single nucleon separation E for Ecal and Eqe
   //FROM AFROS CODE: THIS CORRESPONDS TO THE OLD E_REC
@@ -682,7 +686,7 @@ void genie_analysis::Loop()
     h2_Q2_W_weight->Fill(W_var,reco_Q2,WeightIncl);
 
     h1_el_Mott_crosssec->Fill(Mott_cross_sec);
-    h2_el_theta_phi->Fill(el_phi_mod,el_theta);
+    h2_el_theta_phi->Fill(el_phi_mod,el_theta,WeightIncl);
     h1_el_theta->Fill(el_theta);
 
     //Now we are done with the selection of electrons. Next step is looking for other hadrons in the events
@@ -794,9 +798,8 @@ void genie_analysis::Loop()
     h2_N_prot_pi_phot_nonrad->Fill(num_pi_phot_nonrad,num_p);
     h2_N_pi_phot[num_p]->Fill(ec_num_n,num_pi);
 
-    //Events with exactly 2 protons
-	  if(num_p == 2)
-    {
+	//Events with exactly 2 protons
+	if(num_p == 2) {
 
           double SmearedPp;
           double SmearedEp;
@@ -807,36 +810,41 @@ void genie_analysis::Loop()
     	   	SmearedPp = gRandom->Gaus(pf[index_p[0]],reso_p*pf[index_p[0]]);
       		SmearedEp = sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
 
-          TVector3 V3_prot_corr1;
-      		V3_prot_corr1.SetXYZ(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]]);
+	TVector3 V3_prot_corr1;
+	V3_prot_corr1.SetXYZ(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]]);
+// apapadop
+double phi_prot1 = V3_prot_corr1.Phi();
+V3_prot_corr1.SetPhi(phi_prot1 + TMath::Pi()); // Vec.Phi() is between (-180,180)
+if (!PFiducialCut(fbeam_en, V3_prot_corr1) ) { continue; } // Proton theta & phi fiducial cuts
+phi_prot1 += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
-    	   	if (!PFiducialCut(fbeam_en, V3_prot_corr1) ) { continue; } // Proton theta & phi fiducial cuts
+	double p_theta1 = V3_prot_corr1.Theta();
+	double prot_mom_corr1 = V3_prot_corr1.Mag();
+	//Proton 1 weight
+	double p_acc_ratio1 = acceptance_c(prot_mom_corr1, cos(p_theta1), phi_prot1, 2212,file_acceptance_p);
+	p_theta1 = p_theta1*TMath::RadToDeg();
 
-          double p_theta1 = V3_prot_corr1.Theta()*TMath::RadToDeg();
-          double prot_mom_corr1 = V3_prot_corr1.Mag();
-          //Phi has to be checked F.H. 24.8.19
-          double phi_prot1 = V3_prot_corr1.Phi() + TMath::Pi();
-        //Proton 1 weight
-          double p_acc_ratio1 = acceptance_c(prot_mom_corr1, cos(p_theta1), phi_prot1, 2212,file_acceptance_p);
+	//Kinematic for second proton
+	SmearedPp = gRandom->Gaus(pf[index_p[1]],reso_p*pf[index_p[1]]);
+	SmearedEp = sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
 
-     //Kinematic for second proton
-          SmearedPp = gRandom->Gaus(pf[index_p[1]],reso_p*pf[index_p[1]]);
-          SmearedEp = sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
+	TVector3 V3_prot_corr2;
+	V3_prot_corr2.SetXYZ(SmearedPp/pf[index_p[1]] * pxf[index_p[1]],SmearedPp/pf[index_p[1]] * pyf[index_p[1]],SmearedPp/pf[index_p[1]] * pzf[index_p[1]]);
 
-          TVector3 V3_prot_corr2;
-          V3_prot_corr2.SetXYZ(SmearedPp/pf[index_p[1]] * pxf[index_p[1]],SmearedPp/pf[index_p[1]] * pyf[index_p[1]],SmearedPp/pf[index_p[1]] * pzf[index_p[1]]);
+// apapadop
+double phi_prot2 = V3_prot_corr2.Phi();
+V3_prot_corr2.SetPhi(phi_prot2 + TMath::Pi()); // Vec.Phi() is between (-180,180)
+if (!PFiducialCut(fbeam_en, V3_prot_corr2) ) { continue; } // Proton theta & phi fiducial cuts
+phi_prot2 += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
-          if (!PFiducialCut(fbeam_en, V3_prot_corr2) ) { continue; } // Proton theta & phi fiducial cuts
+	double p_theta2 = V3_prot_corr2.Theta();
+	double prot_mom_corr2 = V3_prot_corr2.Mag();
+	//Proton 2 weight
+	double p_acc_ratio2 = acceptance_c(prot_mom_corr2, cos(p_theta2), phi_prot2, 2212,file_acceptance_p);
+	p_theta2 = p_theta2*TMath::RadToDeg();
 
-          double p_theta2 = V3_prot_corr2.Theta()*TMath::RadToDeg();
-          double prot_mom_corr2 = V3_prot_corr2.Mag();
-          //Phi has to be checked F.H. 24.8.19
-          double phi_prot2 = V3_prot_corr2.Phi() + TMath::Pi();
-        //Proton 1 weight
-          double p_acc_ratio2 = acceptance_c(prot_mom_corr2, cos(p_theta2), phi_prot2, 2212,file_acceptance_p);
-
-          //Total proton weight
-          double weight_protons = p_acc_ratio1 * p_acc_ratio2;
+	//Total proton weight
+	double weight_protons = p_acc_ratio1 * p_acc_ratio2;
 
           TVector3 V3_2prot_uncorr[2];
           V3_2prot_uncorr[0] = V4_prot_uncorr1.Vect();
@@ -846,7 +854,7 @@ void genie_analysis::Loop()
           V3_2prot_corr[0] = V3_prot_corr1;
           V3_2prot_corr[1] = V3_prot_corr2;
 
- //---------------------------------- 2p 0pi->  1p0pi   ----------------------------------------------
+	//---------------------------------- 2p 0pi->  1p0pi   ----------------------------------------------
 
 
           double E_tot_2p[2]={0};
@@ -893,8 +901,7 @@ void genie_analysis::Loop()
             h1_E_rec_2p_det->Fill(E_rec,histoweight);
           }//no pions cut and N_prot_both!=0
 
-
- //---------------------------------- 2p 1pi   ----------------------------------------------
+	//---------------------------------- 2p 1pi   ----------------------------------------------
  //Const int can be placed somewhere up after if for 2 protons F.H. 05.09.19
           const int N_2prot=2;
 //Variable might can be placed in a more local context F.H. 05.09.19
@@ -923,16 +930,19 @@ void genie_analysis::Loop()
             TVector3 V3_1pi_corr;
             V3_1pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
 
+// apapadop
+double phi_pion = V3_1pi_corr.Phi();
+V3_1pi_corr.SetPhi(phi_pion + TMath::Pi()); // Vec.Phi() is between (-180,180)
+phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+
             // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus
             if ( !Pi_phot_fid_united(fbeam_en, V3_1pi_corr, charge) )
             {
               continue;
             }
 
-            double pion_theta = V3_1pi_corr.Theta()*TMath::RadToDeg();
-            //Phi has to be checked F.H. 24.8.19
-            double phi_pion = V3_1pi_corr.Phi() + TMath::Pi();
-            double pion_mom_corr = V3_1pi_corr.Mag();
+	double pion_theta = V3_1pi_corr.Theta();
+	double pion_mom_corr = V3_1pi_corr.Mag();
 
             double pion_acc_ratio = 0;
             if (charge == 1) { //acceptance for pi plus
@@ -943,6 +953,7 @@ void genie_analysis::Loop()
             }
             else { std::cout << "WARNING: 2proton and 1 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
+	pion_theta = pion_theta*TMath::RadToDeg();
 
             double P_2p1pito2p0pi[2] = {0};
             double P_2p1pito1p1pi[2] = {0};
@@ -955,7 +966,7 @@ void genie_analysis::Loop()
 
             for(int z=0; z < N_2prot; z++){ //looping over two protons
 
- //---------------------------------- 2p 1pi ->2p 0pi   ----------------------------------------------
+	//---------------------------------- 2p 1pi ->2p 0pi   ----------------------------------------------
 
               h1_E_tot_2p1pi_2p0pi->Fill(Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
               h1_E_rec_2p1pi_2p0pi->Fill(E_rec,P_2p1pito2p0pi[z]*histoweight);
@@ -981,7 +992,8 @@ void genie_analysis::Loop()
                    }
                 }
               }
- //---------------------------------- 2p 1pi ->1p 1pi   ----------------------------------------------
+
+	//---------------------------------- 2p 1pi ->1p 1pi   ----------------------------------------------
 
               h1_E_tot_2p1pi_1p1pi->Fill(E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
               h1_E_rec_2p1pi_1p1pi->Fill(E_rec,P_2p1pito1p1pi[z]*histoweight);
@@ -1038,7 +1050,8 @@ void genie_analysis::Loop()
           }//1pi requirement
 
 
-//---------------------------------- 2p 2pi   ----------------------------------------------
+	//---------------------------------- 2p 2pi   ----------------------------------------------
+
           const int N_2pi=2;
           int q_pi2[2];
           double Ecal_2p2pi[N_2prot];
@@ -1067,9 +1080,12 @@ void genie_analysis::Loop()
 
               V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-              double pion_theta = V3_2pi_corr[i].Theta()*TMath::RadToDeg();
-              //Phi has to be checked F.H. 24.8.19
-              double phi_pion = V3_2pi_corr[i].Phi() + TMath::Pi();
+// apapadop
+	double phi_pion = V3_2pi_corr[i].Phi();
+	V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+	phi_pion += TMath::Pi();
+
+              double pion_theta = V3_2pi_corr[i].Theta();
               double pion_mom_corr = V3_2pi_corr[i].Mag();
 
               if (q_pi2[i] == 1) { //acceptance for pi plus
@@ -1097,7 +1113,7 @@ void genie_analysis::Loop()
 
             for(int z = 0; z < N_2prot; z++){ //looping over two protons
 
-//---------------------------------- 2p 2pi ->1p 0pi   ----------------------------------------------
+		//---------------------------------- 2p 2pi ->1p 0pi   ----------------------------------------------
 
               h1_E_tot_2p2pi->Fill(E_tot_2p[z], Ptot_2p[z]*histoweight);
               h1_E_rec_2p2pi->Fill(E_rec,Ptot_2p[z]*histoweight);
@@ -1165,12 +1181,15 @@ void genie_analysis::Loop()
           V3_prot_corr[i].SetXYZ(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]]);
           V4_p_corr[i].SetPxPyPzE(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]],SmearedEp);
 
-          double p_theta = V3_prot_corr[i].Theta()*TMath::RadToDeg();
-          double prot_mom_corr = V3_prot_corr[i].Mag();
-          //Phi has to be checked F.H. 24.8.19
-          double phi_prot = V3_prot_corr[i].Phi() + TMath::Pi();
-        //Proton acceptance weight
-          p_acc_ratio[i] = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
+// apapadop
+	double phi_prot = V3_el.Phi(); //in Radians
+	V3_prot_corr[i].SetPhi(phi_ElectronOut + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+	phi_prot += TMath::Pi();
+
+	double p_theta = V3_prot_corr[i].Theta();
+	double prot_mom_corr = V3_prot_corr[i].Mag();
+	//Proton acceptance weight
+	p_acc_ratio[i] = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
 
 	        V4_prot_el[i] = V4_p_corr[i] + V4_el;
 	        E_cal[i] = V4_el.E()+ V4_p_corr[i].E() - m_prot + bind_en[ftarget];
@@ -1200,7 +1219,7 @@ void genie_analysis::Loop()
 	         for(int count = 0; count < N_comb; count++)    { //Loop over number of combinations
                for(int j = 0; j < N_2p; j++)    { //loop over two protons
 
- //-----------------------------------------  3p to 2p->1p  -----------------------------------------------------------------------
+		//-----------------------------------------  3p to 2p->1p  -----------------------------------------------------------------------
 
                   h1_E_tot_3pto2p->Fill(E_cal_3pto2p[count][j], P_3pto2p[count][j]*histoweight);
 		              h1_E_rec_3pto2p->Fill(E_rec, P_3pto2p[count][j]*histoweight);
@@ -1231,7 +1250,8 @@ void genie_analysis::Loop()
                } //end loop over protons
 	         } //end loop over combination N_comb
 
- //-----------------------------------------  3p to 1p  -----------------------------------------------------------------------
+		//-----------------------------------------  3p to 1p  -----------------------------------------------------------------------
+
 	         for(int j = 0; j < N_3p; j++)    {
 
 		             P_3pto1p[j]= N_p1[j]/N_p_three;
@@ -1264,7 +1284,7 @@ void genie_analysis::Loop()
 	         } //end loop over N_3p
 	      }//end if num_pi_phot==0 && N_p_three!=0, no pions
 
-//----------------------------------3p 1pi ----------------------------------------------------------
+	//----------------------------------3p 1pi ----------------------------------------------------------
 
 //        if (num_pi_phot==1) { //no photons for now F.H. 29.8.19
         if (num_pi == 1) { //number of pions  = 1
@@ -1288,15 +1308,18 @@ void genie_analysis::Loop()
 
              V3_pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
 
+// apapadop
+	double phi_pion = V3_pi_corr.Phi(); //in Radians
+	V3_pi_corr.SetPhi(phi_ElectronOut + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+	phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+
              // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus
              if ( !Pi_phot_fid_united(fbeam_en, V3_pi_corr, charge) )
              {
                continue;
              }
 
-             double pion_theta = V3_pi_corr.Theta()*TMath::RadToDeg();
-             //Phi has to be checked F.H. 24.8.19
-             double phi_pion = V3_pi_corr.Phi() + TMath::Pi();
+             double pion_theta = V3_pi_corr.Theta();
              double pion_mom_corr = V3_pi_corr.Mag();
 
              double pion_acc_ratio = 0;
@@ -1379,12 +1402,15 @@ void genie_analysis::Loop()
           V3_prot4_corr[i].SetXYZ(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]]);
           V4_p4_corr[i].SetPxPyPzE(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]],SmearedEp);
 
-          double p_theta = V3_prot4_corr[i].Theta()*TMath::RadToDeg();
+// apapadop
+	double phi_prot = V3_prot4_corr[i].Phi(); //in Radians
+	V3_prot4_corr[i].SetPhi(phi_prot + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+	phi_prot += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+
+          double p_theta = V3_prot4_corr[i].Theta();
           double prot_mom_corr = V3_prot4_corr[i].Mag();
-          //Phi has to be checked F.H. 24.8.19
-          double phi_prot = V3_prot4_corr[i].Phi() + TMath::Pi();
-        //Proton acceptance weight
-          p_acc_ratio[i] = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
+	//Proton acceptance weight
+	p_acc_ratio[i] = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
 
           V4_prot4_el[i] = V4_p4_corr[i] + V4_el;
           E_cal_p4[i] = V4_el.E() + V4_p4_corr[i].E() - m_prot + bind_en[ftarget];
@@ -1646,7 +1672,7 @@ void genie_analysis::Loop()
 	     h1_E_rec_0pi_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],WeightIncl);
      }
 
-//----------------------------- e- ,1pi  -----------------------------------------
+	//----------------------------- e- ,1pi  -----------------------------------------
 
 //	      if(num_pi_phot == 1){
      if(num_pi == 1){    //no photons for now F.H. 29.8.19
@@ -1669,10 +1695,13 @@ void genie_analysis::Loop()
 
         V3_pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
 
-        double pion_theta = V3_pi_corr.Theta()*TMath::RadToDeg();
-        //Phi has to be checked F.H. 24.8.19
-        double phi_pion = V3_pi_corr.Phi() + TMath::Pi();
-        double pion_mom_corr = V3_pi_corr.Mag();
+// apapadop
+	double phi_pion = V3_pi_corr.Phi(); //in Radians
+	V3_pi_corr.SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+	phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+
+	double pion_theta = V3_pi_corr.Theta();
+	double pion_mom_corr = V3_pi_corr.Mag();
 
         if (charge == 1) { //acceptance for pi plus
           pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
@@ -1700,7 +1729,8 @@ void genie_analysis::Loop()
 	      if(!ec_radstat_n[0])  h1_E_rec_1pi->Fill(E_rec,histoweight);
 	      if(ec_num_n==1)       h2_phot_e_angle_Erec->Fill(E_rec,V3_pi_corr.Angle(V4_el.Vect())*TMath::RadToDeg());
 	   }
-//----------------------------- e- ,2pi  -----------------------------------------
+
+	//----------------------------- e- ,2pi  -----------------------------------------
 
 //	      if(num_pi_phot == 2){
      if(num_pi == 2){    //no photons for now F.H. 29.8.19
@@ -1729,9 +1759,12 @@ void genie_analysis::Loop()
 
             V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-            double pion_theta = V3_2pi_corr[i].Theta()*TMath::RadToDeg();
-           //Phi has to be checked F.H. 24.8.19
-            double phi_pion = V3_2pi_corr[i].Phi() + TMath::Pi();
+// apapadop
+	double phi_pion = V3_2pi_corr[i].Phi(); //in Radians
+	V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+	phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+
+            double pion_theta = V3_2pi_corr[i].Theta();
             double pion_mom_corr = V3_2pi_corr[i].Mag();
 
             if (q_pi2[i] == 1) { //acceptance for pi plus
@@ -1800,9 +1833,12 @@ void genie_analysis::Loop()
 
             V3_3pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-            double pion_theta = V3_3pi_corr[i].Theta()*TMath::RadToDeg();
-           //Phi has to be checked F.H. 24.8.19
-            double phi_pion = V3_3pi_corr[i].Phi() + TMath::Pi();
+// apapadop
+	double phi_pion = V3_3pi_corr[i].Phi(); //in Radians
+	V3_3pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+	phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+
+            double pion_theta = V3_3pi_corr[i].Theta();
             double pion_mom_corr = V3_3pi_corr[i].Mag();
 
             if (q_pi3[i] == 1) { //acceptance for pi plus
@@ -1885,9 +1921,12 @@ void genie_analysis::Loop()
 
            V3_4pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-           double pion_theta = V3_4pi_corr[i].Theta()*TMath::RadToDeg();
-          //Phi has to be checked F.H. 24.8.19
-           double phi_pion = V3_4pi_corr[i].Phi() + TMath::Pi();
+// apapadop
+	double phi_pion = V3_4pi_corr[i].Phi(); //in Radians
+	V3_4pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+	phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+
+           double pion_theta = V3_4pi_corr[i].Theta();
            double pion_mom_corr = V3_4pi_corr[i].Mag();
 
            if (q_pi4[i] == 1) { //acceptance for pi plus
@@ -1960,15 +1999,18 @@ void genie_analysis::Loop()
        V3_prot_corr.SetXYZ(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]]);
        V4_prot_corr.SetPxPyPzE(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]],SmearedEp);
 
-       if (!PFiducialCut(fbeam_en, V3_prot_corr) ) { continue; } // Proton theta & phi fiducial cuts
+// apapadop
+	double phi_prot = V3_prot_corr.Phi(); //in Radians
+	V3_prot_corr.SetPhi(phi_prot + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+	phi_prot += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+
+	if (!PFiducialCut(fbeam_en, V3_prot_corr) ) { continue; } // Proton theta & phi fiducial cuts
 
        //Proton kinematic variables
-       double p_theta = V3_prot_corr.Theta()*TMath::RadToDeg();
+       double p_theta = V3_prot_corr.Theta();
        double prot_mom_corr = V3_prot_corr.Mag();
-       //Phi has to be checked F.H. 24.8.19
-       double phi_prot = V3_prot_corr.Phi() + TMath::Pi();
-     //Proton weight
-       double p_acc_ratio = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
+	//Proton weight
+	double p_acc_ratio = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
 
 
        h1_prot_mom->Fill(prot_mom_corr);
@@ -2046,9 +2088,12 @@ void genie_analysis::Loop()
 
           V3_pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
 
-          double pion_theta = V3_pi_corr.Theta()*TMath::RadToDeg();
-          //Phi has to be checked F.H. 24.8.19
-          double phi_pion = V3_pi_corr.Phi() + TMath::Pi();
+// apapadop
+double phi_pion = V3_pi_corr.Phi(); //in Radians
+V3_pi_corr.SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+
+          double pion_theta = V3_pi_corr.Theta();
           double pion_mom_corr = V3_pi_corr.Mag();
 
           if (charge == 1) { //acceptance for pi plus
@@ -2136,9 +2181,12 @@ void genie_analysis::Loop()
 
              V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-             double pion_theta = V3_2pi_corr[i].Theta()*TMath::RadToDeg();
-            //Phi has to be checked F.H. 24.8.19
-             double phi_pion = V3_2pi_corr[i].Phi() + TMath::Pi();
+// apapadop
+		double phi_pion = V3_2pi_corr[i].Phi(); //in Radians
+		V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+		phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+
+             double pion_theta = V3_2pi_corr[i].Theta();
              double pion_mom_corr = V3_2pi_corr[i].Mag();
 
              if (q_pi2[i] == 1) { //acceptance for pi plus
@@ -2248,9 +2296,12 @@ void genie_analysis::Loop()
 
              V3_3pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-             double pion_theta = V3_3pi_corr[i].Theta()*TMath::RadToDeg();
-            //Phi has to be checked F.H. 24.8.19
-             double phi_pion = V3_3pi_corr[i].Phi() + TMath::Pi();
+// apapadop
+double phi_pion = V3_3pi_corr[i].Phi(); //in Radians
+V3_3pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+
+             double pion_theta = V3_3pi_corr[i].Theta();
              double pion_mom_corr = V3_3pi_corr[i].Mag();
 
              if (q_pi3[i] == 1) { //acceptance for pi plus
@@ -2770,7 +2821,9 @@ void genie_analysis::Loop()
   TH1F *h_Erec_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*)  h_Erec_subtruct_piplpimi_2p1pi_1p1pi->Clone("h_Erec_subtruct_piplpimi_2p1pi_1p0pi");
   h_Erec_subtruct_piplpimi_2p1pi_1p0pi->Add(h1_E_rec_2p1pi_1p0pi,-1);
 
-  TH1F *h_Etot_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*) h_Etot_subtruct_piplpimi_2p1pi_1p1pi->Clone("h_Etot_subtruct_piplpimi_2p1pi_1p0pi");
+// apapadop
+//  TH1F *h_Etot_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*) h_Etot_subtruct_piplpimi_2p1pi_1p1pi->Clone("h_Etot_subtruct_piplpimi_2p1pi_1p0pi");
+  TH1F *h_Etot_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*) h_Etot_subtruct_piplpimi_2p1pi_1p1pi->Clone("epRecoEnergy_slice_0");
   h_Etot_subtruct_piplpimi_2p1pi_1p0pi->Add(h1_E_tot_2p1pi_1p0pi,-1);
 
   TH2F *h2_Erec_pperp_sub_2p1pi_1p0pi=(TH2F*) h2_Erec_pperp_sub_2p1pi_1p1pi->Clone("h2_Erec_pperp_sub_2p1pi_1p0pi");
@@ -3832,16 +3885,17 @@ if(!radstat[0] || !radstat[1]  || !radstat[2]|| !radstat[3]){
 double genie_analysis::acceptance_c(double p, double cost, double phi, int particle_id,TFile* file_acceptance) {
 
 	//Redefinition of the phi angle
+	// because the acceptance maps are defined between (-30,330)
 
-	int redef = -30;
-	//int redef = 0;
+	//int redef = -30;
+	int redef = 0;
 
 	TH3D * acc;
 	TH3D * gen;
 
 	acc = (TH3D*)file_acceptance->Get("Accepted Particles");
 	gen = (TH3D*)file_acceptance->Get("Generated Particles");
-
+if(phi > (2*TMath::Pi() - TMath::Pi()/6.) ) { phi -= 2*TMath::Pi(); }
 	//Find number of generated events
 
 	double pbin_gen = gen->GetXaxis()->FindBin(p);
@@ -4027,13 +4081,13 @@ void genie_analysis::LoopCLAS()
 
 
   gRandom = new TRandom3();
-  //  gRandom->SetSeed(0);
+  gRandom->SetSeed(10);
 
   TLorentzVector V4_beam(0,0,en_beam[fbeam_en],en_beam[fbeam_en]);
   TLorentzVector V4_target(0,0,0,target_mass[ftarget]);
 
   //Output file definition
-  TFile *file_out = new TFile(Form("e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");
+  TFile *file_out = new TFile(Form("e2a_ep_%s_%s_neutrino6_united4_radphot_test_data.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");
 
   //Defining EC limits
   fiducialcut->up_lim1_ec =new TF1("up_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
@@ -4182,7 +4236,7 @@ void genie_analysis::LoopCLAS()
   TH2F *h2_N_prot_pi=new TH2F("h2_N_prot_pi","",10,0,5,10,0,5);
   TH2F *h2_N_prot_pi_phot=new TH2F("h2_N_prot_pi_phot","",10,0,5,10,0,5);
   TH2F *h2_N_prot_pi_phot_nonrad=new TH2F("h2_N_prot_pi_phot_nonrad","",10,0,5,10,0,5);
-  TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,0,180);
+  TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,10,60);
   TH2F *h2_el_mom_diff = new TH2F("h2_el_mom_diff","",500,0.,1.,500,-0.1,0.1);
   TH2F *h2_Q2_nu = new TH2F("h2_Q2_nu","",200,0,3.5,200,0,5);
   TH2F *h2_Q2_nu_weight = new TH2F("h2_Q2_nu_weight","",200,0,3.5,200,0,5);
@@ -4435,7 +4489,8 @@ void genie_analysis::LoopCLAS()
     double el_momentum = V3_el.Mag();
     double el_theta = V3_el.Theta()*TMath::RadToDeg();
     //Definition as for data. WARNING: Needs to be checked if this also works for GENIE data F.H. 08/24/19
-    double el_phi_mod = V3_el.Phi()*TMath::RadToDeg()+30; //Add extra 30 degree rotation in phi
+    double el_phi_mod = V3_el.Phi()*TMath::RadToDeg(); //Add extra 30 degree rotation in phi
+//    double el_phi_mod = V3_el.Phi()*TMath::RadToDeg()+30; //Add extra 30 degree rotation in phi
     if(el_phi_mod<0)  el_phi_mod  = el_phi_mod+360; //Add 360 so that electron phi is between 0 and 360 degree
 
 
@@ -6222,7 +6277,9 @@ void genie_analysis::LoopCLAS()
   TH1F *h_Erec_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*)  h_Erec_subtruct_piplpimi_2p1pi_1p1pi->Clone("h_Erec_subtruct_piplpimi_2p1pi_1p0pi");
   h_Erec_subtruct_piplpimi_2p1pi_1p0pi->Add(h1_E_rec_2p1pi_1p0pi,-1);
 
-  TH1F *h_Etot_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*) h_Etot_subtruct_piplpimi_2p1pi_1p1pi->Clone("h_Etot_subtruct_piplpimi_2p1pi_1p0pi");
+// apapadop
+//  TH1F *h_Etot_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*) h_Etot_subtruct_piplpimi_2p1pi_1p1pi->Clone("h_Etot_subtruct_piplpimi_2p1pi_1p0pi");
+  TH1F *h_Etot_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*) h_Etot_subtruct_piplpimi_2p1pi_1p1pi->Clone("epRecoEnergy_slice_0");
   h_Etot_subtruct_piplpimi_2p1pi_1p0pi->Add(h1_E_tot_2p1pi_1p0pi,-1);
 
   TH2F *h2_Erec_pperp_sub_2p1pi_1p0pi=(TH2F*) h2_Erec_pperp_sub_2p1pi_1p1pi->Clone("h2_Erec_pperp_sub_2p1pi_1p0pi");

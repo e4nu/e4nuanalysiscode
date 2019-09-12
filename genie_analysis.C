@@ -558,6 +558,8 @@ void genie_analysis::Loop()
   TH1F *h1_Etot_p_bkgd_slice_Ecalcut_3p1pi[2][6];
   TH1F *h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut_1p3pi_1p0pi[2][6];
 
+// Can be removed // Mariana has not used them in a year
+
   for (int i=0;i<N_pperp;i++){
     for(int j=0;j<N_Ecal;j++){
 
@@ -3886,6 +3888,8 @@ double genie_analysis::acceptance_c(double p, double cost, double phi, int parti
 
 	//Redefinition of the phi angle
 	// because the acceptance maps are defined between (-30,330)
+
+// Check that phi is between (0,360)
 
 	//int redef = -30;
 	int redef = 0;

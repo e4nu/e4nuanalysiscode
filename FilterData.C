@@ -1,7 +1,6 @@
+#define FILTERDATA_C
 
-#define E2A_EP_C
-
-#include "e2a_ep_neutrino6_united4_radphot.h"
+//#include "e2a_ep_neutrino6_united4_radphot.h"
 #include "FilterData.h"
 #include "Constants.h"
 #include <TH2.h>
@@ -684,7 +683,7 @@ if (ftarget=="56Fe") { TargetPdgCode = 1000260560; TargetZ = 26; TargetA = 56; }
   fsub_e = new TF1("fsub_e",FSub_e,0.,5.,2);
 
   //initialize Fiducial functions for EC limits
-  fiducialcut-InitEClimits();
+  fiducialcut->InitEClimits();
 
 /** Beginning of Event Loop **/
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -922,7 +921,7 @@ for (int WhichFinalStateParticle = 0; WhichFinalStateParticle < FinalStatePartic
 
 // apapadop
 
-genie_x = x_berk;
+genie_x = x_bjk;
 genie_Q2reco = Q2;
 genie_W = W_var;
 genie_El = V4_el.E();

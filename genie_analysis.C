@@ -71,70 +71,22 @@ void genie_analysis::Loop()
   TVector3 V3_rotprot1,V3_rotprot2,V3_rotprot3,V3_rot_pi,V3_rotprot;
   TVector3 V3_phot_angles;
 
-  int N_pperp,N_Ecal;
-  double *pperp_cut,*Ecal_lowlim,*Ecal_uplim;
-
   TString E_acc_file;
 
   if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) //1.1 GeV  Configuration parameters and cuts
   {
       E_acc_file="1_161";
-      N_pperp=2;
-      N_Ecal=6;
-      pperp_cut=new double[N_pperp];
-      Ecal_lowlim=new double[N_Ecal];
-      Ecal_uplim=new double[N_Ecal];
-      pperp_cut[0]=0.;
-      pperp_cut[1]=0.2;
-      for (int i=0;i<N_Ecal;i++){
-         Ecal_lowlim[i]=0.45+i*0.18;
-	       Ecal_uplim[i]=0.63+i*0.18;
-      }
-      Ecal_lowlim[5]=0.;
-      Ecal_uplim[5]=1.35;
-      for (int i=0;i<N_Ecal;i++)	cout<<Ecal_lowlim[i]<<"  to  "<<Ecal_uplim[i]<<endl;
-
   }
 
 
   if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.) //2.2 GeV  Configuration parameters and cuts
   {
       E_acc_file="2_261";
-      N_pperp=2;
-      N_Ecal=6;
-      pperp_cut=new double[N_pperp];
-      Ecal_lowlim=new double[N_Ecal];
-      Ecal_uplim=new double[N_Ecal];
-      pperp_cut[0]=0.;
-      pperp_cut[1]=0.2;
-      for (int i=0;i<N_Ecal;i++){
-	       Ecal_lowlim[i]=0.75+i*0.25;
-	        Ecal_uplim[i]=1.+i*0.25;
-      }
-      Ecal_lowlim[5]=0.;
-      Ecal_uplim[5]=2.;
-      for (int i=0;i<N_Ecal;i++)	cout<<Ecal_lowlim[i]<<"  to  "<<Ecal_uplim[i]<<endl;
-
   }
 
   if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5)  //4.4 GeV  Configuration parameters and cuts
   {
       E_acc_file="4_461";
-      N_pperp=2;
-      N_Ecal=6;
-      pperp_cut=new double[N_pperp];
-      Ecal_lowlim=new double[N_Ecal];
-      Ecal_uplim=new double[N_Ecal];
-      pperp_cut[0]=0.;
-      pperp_cut[1]=0.2;
-      for (int i=0;i<N_Ecal;i++){
-	        Ecal_lowlim[i]=1.5+i*0.5;
-	        Ecal_uplim[i]=2.+i*0.5;
-      }
-      Ecal_lowlim[5]=0.;
-      Ecal_uplim[5]=4.;
-      for (int i=0;i<N_Ecal;i++)	cout<<Ecal_lowlim[i]<<"  to  "<<Ecal_uplim[i]<<endl;;
-
   }
   //Further constants for binding energies and target masses
   Ecal_offset["3He"]=0.004;
@@ -2618,9 +2570,6 @@ void genie_analysis::Loop()
   // skim_tree->AutoSave();
 
 
-  delete[]  pperp_cut;
-  delete[] Ecal_lowlim;
-  delete[] Ecal_uplim;
 //  delete up_lim1_ec;delete up_lim2_ec;delete up_lim3_ec;delete up_lim4_ec;delete up_lim5_ec;delete up_lim6_ec;delete low_lim1_ec;delete low_lim2_ec;delete low_lim3_ec;delete low_lim4_ec;delete low_lim5_ec;delete low_lim6_ec;
 //  delete  rightside_lim1_ec;delete rightside_lim2_ec;delete rightside_lim3_ec;delete rightside_lim4_ec; delete rightside_lim5_ec;delete rightside_lim6_ec;delete leftside_lim1_ec;delete leftside_lim2_ec; delete leftside_lim3_ec;delete leftside_lim4_ec;delete leftside_lim5_ec;delete leftside_lim6_ec;
 
@@ -3684,70 +3633,22 @@ void genie_analysis::LoopCLAS()
   TVector3 V3_rotprot1,V3_rotprot2,V3_rotprot3,V3_rot_pi,V3_rotprot;
   TVector3 V3_phot_angles;
 
-  int N_pperp,N_Ecal;
-  double *pperp_cut,*Ecal_lowlim,*Ecal_uplim;
-
   TString E_acc_file;
 
   if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) //1.1 GeV  Configuration parameters and cuts
   {
       E_acc_file="1_161";
-      N_pperp=2;
-      N_Ecal=6;
-      pperp_cut=new double[N_pperp];
-      Ecal_lowlim=new double[N_Ecal];
-      Ecal_uplim=new double[N_Ecal];
-      pperp_cut[0]=0.;
-      pperp_cut[1]=0.2;
-      for (int i=0;i<N_Ecal;i++){
-         Ecal_lowlim[i]=0.45+i*0.18;
-	       Ecal_uplim[i]=0.63+i*0.18;
-      }
-      Ecal_lowlim[5]=0.;
-      Ecal_uplim[5]=1.35;
-      for (int i=0;i<N_Ecal;i++)	cout<<Ecal_lowlim[i]<<"  to  "<<Ecal_uplim[i]<<endl;
-
   }
 
 
   if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.) //2.2 GeV  Configuration parameters and cuts
   {
       E_acc_file="2_261";
-      N_pperp=2;
-      N_Ecal=6;
-      pperp_cut=new double[N_pperp];
-      Ecal_lowlim=new double[N_Ecal];
-      Ecal_uplim=new double[N_Ecal];
-      pperp_cut[0]=0.;
-      pperp_cut[1]=0.2;
-      for (int i=0;i<N_Ecal;i++){
-	       Ecal_lowlim[i]=0.75+i*0.25;
-	        Ecal_uplim[i]=1.+i*0.25;
-      }
-      Ecal_lowlim[5]=0.;
-      Ecal_uplim[5]=2.;
-      for (int i=0;i<N_Ecal;i++)	cout<<Ecal_lowlim[i]<<"  to  "<<Ecal_uplim[i]<<endl;
-
   }
 
   if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5)  //4.4 GeV  Configuration parameters and cuts
   {
       E_acc_file="4_461";
-      N_pperp=2;
-      N_Ecal=6;
-      pperp_cut=new double[N_pperp];
-      Ecal_lowlim=new double[N_Ecal];
-      Ecal_uplim=new double[N_Ecal];
-      pperp_cut[0]=0.;
-      pperp_cut[1]=0.2;
-      for (int i=0;i<N_Ecal;i++){
-	        Ecal_lowlim[i]=1.5+i*0.5;
-	        Ecal_uplim[i]=2.+i*0.5;
-      }
-      Ecal_lowlim[5]=0.;
-      Ecal_uplim[5]=4.;
-      for (int i=0;i<N_Ecal;i++)	cout<<Ecal_lowlim[i]<<"  to  "<<Ecal_uplim[i]<<endl;;
-
   }
   //Further constants for binding energies and target masses
   Ecal_offset["3He"]=0.004;
@@ -5198,7 +5099,7 @@ void genie_analysis::LoopCLAS()
               h1_Etot_Npi0[i]->Fill(E_tot,histoweight);
               h1_Erec_Npi0[i]->Fill(E_rec,histoweight);
             }
-          } 
+          }
           if (p_perp_tot < 0.2){
             h1_E_rec_cut005_newcut3->Fill(E_rec,histoweight);
      	      h2_Erec_pperp_cut3->Fill(p_perp_tot,E_rec,histoweight);
@@ -5811,11 +5712,6 @@ void genie_analysis::LoopCLAS()
 
   gDirectory->Write("hist_Files", TObject::kOverwrite);
   // skim_tree->AutoSave();
-
-
-  delete[]  pperp_cut;
-  delete[] Ecal_lowlim;
-  delete[] Ecal_uplim;
 
 }
 

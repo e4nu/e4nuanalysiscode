@@ -506,7 +506,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 
 
   //initialize Fiducial functions for EC limits
-  fiducialcut-InitEClimits();
+  fiducialcut->InitEClimits();
 
   //Definition and initialization of Histograms
   TH1F *h1_el_vertuncorr=new TH1F("h1_el_vertuncorr","",200,-10,10);

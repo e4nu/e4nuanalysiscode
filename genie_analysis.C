@@ -172,7 +172,9 @@ void genie_analysis::Loop()
   TFile *file_out = new TFile(Form("e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");
 
   //initialize Fiducial functions for EC limits
-  fiducialcut-InitEClimits();
+  fiducialcut->InitEClimits();
+  std::cout << " Test InitEClimits GenieLoop " << fiducialcut->up_lim1_ec->Eval(60) << std::cout;
+
 
 
   //Definition and initialization of Histograms
@@ -3676,7 +3678,7 @@ void genie_analysis::LoopCLAS()
   TFile *file_out = new TFile(Form("e2a_ep_%s_%s_neutrino6_united4_radphot_test_data.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");
 
   //initialize Fiducial functions for EC limits
-  fiducialcut-InitEClimits();
+  fiducialcut->InitEClimits();
 
   //Definition and initialization of Histograms
   TH1F *h1_el_Mott_crosssec = new TH1F("h1_el_Mott_crosssec","",200,0.,0.01);

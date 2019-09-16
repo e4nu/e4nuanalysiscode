@@ -1,5 +1,5 @@
-#ifndef E2A_EP_H
-#define E2A_EP_H
+#ifndef FILTERDATA_H
+#define FILTERDATA_H
 
 #include <TROOT.h>
 #include <TChain.h>

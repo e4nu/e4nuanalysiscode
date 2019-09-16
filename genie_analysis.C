@@ -535,53 +535,6 @@ void genie_analysis::Loop()
   for(int h=0;h<20;h++){
     h2_N_pi_phot[h]=new TH2F(Form("h2_N_pi_phot_%d",h),"",10,0,5,10,0,5);
   }
-  //Decleration of 2-dim histograms arrays
-  TH1F *h1_Etot_Npi0_Ecalcut[2][6], *h1_Etot_bkgd_pipl_pimi_fact_Ecalcut[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut[2][6];
-  TH1F *h1_Etot_piplpimi_subtruct_fact_Ecalcut[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[2][6];
-
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut41[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut42[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut431[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut43[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut31[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut32[2][6];
-
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p0pi[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p1pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_2p0pi[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p0pi[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p1pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut_2p2pi_1p0pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut_3p1pi_1p0pi[2][6];
-
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut41[2][6], *h1_Etot_p_bkgd_slice_Ecalcut421[2][6], *h1_Etot_p_bkgd_slice_Ecalcut431[2][6], *h1_Etot_p_bkgd_slice_Ecalcut4321[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut31[2][6], *h1_Etot_p_bkgd_slice_Ecalcut321[2][6];
-
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi[2][6], *h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut_2p1pito2p0pi[2][6], *h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p1pi[2][6], *h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p0pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut_2p2pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut_3p1pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut_1p3pi_1p0pi[2][6];
-
-// Can be removed // Mariana has not used them in a year
-
-  for (int i=0;i<N_pperp;i++){
-    for(int j=0;j<N_Ecal;j++){
-
-      h1_Etot_Npi0_Ecalcut[i][j]=  new TH1F(Form("h1_Etot_Npi0_Ecalcut_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_bkgd_pipl_pimi_fact_Ecalcut[i][j]=  new TH1F(Form("h1_Etot_bkgd_pipl_pimi_fact_Ecalcut_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut41[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut41_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut421[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut421_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut431[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut431_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut4321[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut4321_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut31[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut31_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut321[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut321_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_2p1pito2p0pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut3_2p1pito2p0pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p1pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p1pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p0pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p0pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_1p3pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_2p2pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_2p2pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_3p1pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_3p1pi_%d_%d",i+1,j+1),"",1,0,6);
-    }
-  }
 
   TH1D::SetDefaultSumw2();
 	TH2D::SetDefaultSumw2();
@@ -626,7 +579,7 @@ void genie_analysis::Loop()
 		V4_el.SetPxPyPzE(V3_el.X(),V3_el.Y(),V3_el.Z(),SmearedEe);
 		double phi_ElectronOut = V3_el.Phi(); //in Radians
 // apapadop
-		V3_el.SetPhi(phi_ElectronOut + TMath::Pi() ); // Vec.Phi() is between (-180,180), add 180 to set the range to (0,360)
+		V3_el.SetPhi(phi_ElectronOut + TMath::Pi() ); // Vec.Phi() is between (-180,180),  GENIE coordinate system flipped with respect to CLAS
 
 		//Fiducial Cuts with the smeared values
 		if (!EFiducialCut(fbeam_en,V3_el) ) continue; // Electron theta & phi fiducial cuts
@@ -812,41 +765,43 @@ void genie_analysis::Loop()
     	   	SmearedPp = gRandom->Gaus(pf[index_p[0]],reso_p*pf[index_p[0]]);
       		SmearedEp = sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
 
-	TVector3 V3_prot_corr1;
-	V3_prot_corr1.SetXYZ(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]]);
-// apapadop
-double phi_prot1 = V3_prot_corr1.Phi();
-V3_prot_corr1.SetPhi(phi_prot1 + TMath::Pi()); // Vec.Phi() is between (-180,180)
-if (!PFiducialCut(fbeam_en, V3_prot_corr1) ) { continue; } // Proton theta & phi fiducial cuts
-phi_prot1 += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+	        TVector3 V3_prot_corr1;
+	        V3_prot_corr1.SetXYZ(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]]);
+          // apapadop
+          double phi_prot1 = V3_prot_corr1.Phi();
+          V3_prot_corr1.SetPhi(phi_prot1 + TMath::Pi()); // Vec.Phi() is between (-180,180), // GENIE coordinate system flipped with respect to CLAS
 
-	double p_theta1 = V3_prot_corr1.Theta();
-	double prot_mom_corr1 = V3_prot_corr1.Mag();
-	//Proton 1 weight
-	double p_acc_ratio1 = acceptance_c(prot_mom_corr1, cos(p_theta1), phi_prot1, 2212,file_acceptance_p);
-	p_theta1 = p_theta1*TMath::RadToDeg();
+          if (!PFiducialCut(fbeam_en, V3_prot_corr1) ) { continue; } // Proton theta & phi fiducial cuts
+          phi_prot1 += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
-	//Kinematic for second proton
-	SmearedPp = gRandom->Gaus(pf[index_p[1]],reso_p*pf[index_p[1]]);
-	SmearedEp = sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
+	        double p_theta1 = V3_prot_corr1.Theta();
+	        double prot_mom_corr1 = V3_prot_corr1.Mag();
+	        //Proton 1 weight
+	        double p_acc_ratio1 = acceptance_c(prot_mom_corr1, cos(p_theta1), phi_prot1, 2212,file_acceptance_p);
+	        p_theta1 = p_theta1*TMath::RadToDeg();
 
-	TVector3 V3_prot_corr2;
-	V3_prot_corr2.SetXYZ(SmearedPp/pf[index_p[1]] * pxf[index_p[1]],SmearedPp/pf[index_p[1]] * pyf[index_p[1]],SmearedPp/pf[index_p[1]] * pzf[index_p[1]]);
+	        //Kinematic for second proton
+	        SmearedPp = gRandom->Gaus(pf[index_p[1]],reso_p*pf[index_p[1]]);
+	        SmearedEp = sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
 
-// apapadop
-double phi_prot2 = V3_prot_corr2.Phi();
-V3_prot_corr2.SetPhi(phi_prot2 + TMath::Pi()); // Vec.Phi() is between (-180,180)
-if (!PFiducialCut(fbeam_en, V3_prot_corr2) ) { continue; } // Proton theta & phi fiducial cuts
-phi_prot2 += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+	        TVector3 V3_prot_corr2;
+	        V3_prot_corr2.SetXYZ(SmearedPp/pf[index_p[1]] * pxf[index_p[1]],SmearedPp/pf[index_p[1]] * pyf[index_p[1]],SmearedPp/pf[index_p[1]] * pzf[index_p[1]]);
 
-	double p_theta2 = V3_prot_corr2.Theta();
-	double prot_mom_corr2 = V3_prot_corr2.Mag();
-	//Proton 2 weight
-	double p_acc_ratio2 = acceptance_c(prot_mom_corr2, cos(p_theta2), phi_prot2, 2212,file_acceptance_p);
-	p_theta2 = p_theta2*TMath::RadToDeg();
+          // apapadop
+          double phi_prot2 = V3_prot_corr2.Phi();
+          V3_prot_corr2.SetPhi(phi_prot2 + TMath::Pi()); // Vec.Phi() is between (-180,180) // GENIE coordinate system flipped with respect to CLAS
 
-	//Total proton weight
-	double weight_protons = p_acc_ratio1 * p_acc_ratio2;
+          if (!PFiducialCut(fbeam_en, V3_prot_corr2) ) { continue; } // Proton theta & phi fiducial cuts
+          phi_prot2 += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+
+          double p_theta2 = V3_prot_corr2.Theta();
+          double prot_mom_corr2 = V3_prot_corr2.Mag();
+          //Proton 2 weight
+          double p_acc_ratio2 = acceptance_c(prot_mom_corr2, cos(p_theta2), phi_prot2, 2212,file_acceptance_p);
+          p_theta2 = p_theta2*TMath::RadToDeg();
+
+          //Total proton weight
+          double weight_protons = p_acc_ratio1 * p_acc_ratio2;
 
           TVector3 V3_2prot_uncorr[2];
           V3_2prot_uncorr[0] = V4_prot_uncorr1.Vect();
@@ -882,14 +837,6 @@ phi_prot2 += TMath::Pi(); // GENIE coordinate system flipped with respect to CLA
               h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot_2p[f],-P_N_2p[f]*histoweight);
               h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot_2p[f],-P_N_2p[f]*histoweight);
 
-              for (int i = 0; i < N_pperp; i++) {
-	               for(int j = 0; j < N_Ecal; j++) {
-	                  if(E_tot_2p[f] > Ecal_lowlim[j] && E_tot_2p[f] < Ecal_uplim[j] && p_perp_tot_2p[f] > pperp_cut[i])
-                    {
-                       h1_Etot_p_bkgd_slice_Ecalcut[i][j]->Fill(E_tot_2p[f],P_N_2p[f]*histoweight);
-                    }
-	               }
-              }
               for(int i = 0 ; i < n_slice; i++)
               {
 	               if (p_perp_tot_2p[f] < pperp_max[i] && p_perp_tot_2p[f] > pperp_min[i]) {
@@ -932,10 +879,10 @@ phi_prot2 += TMath::Pi(); // GENIE coordinate system flipped with respect to CLA
             TVector3 V3_1pi_corr;
             V3_1pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
 
-// apapadop
-double phi_pion = V3_1pi_corr.Phi();
-V3_1pi_corr.SetPhi(phi_pion + TMath::Pi()); // Vec.Phi() is between (-180,180)
-phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+            // apapadop
+            double phi_pion = V3_1pi_corr.Phi();
+            V3_1pi_corr.SetPhi(phi_pion + TMath::Pi()); // Vec.Phi() is between (-180,180)
+            phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
             // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus
             if ( !Pi_phot_fid_united(fbeam_en, V3_1pi_corr, charge) )
@@ -943,8 +890,8 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
               continue;
             }
 
-	double pion_theta = V3_1pi_corr.Theta();
-	double pion_mom_corr = V3_1pi_corr.Mag();
+            double pion_theta = V3_1pi_corr.Theta();
+            double pion_mom_corr = V3_1pi_corr.Mag();
 
             double pion_acc_ratio = 0;
             if (charge == 1) { //acceptance for pi plus
@@ -954,8 +901,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
               pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
             }
             else { std::cout << "WARNING: 2proton and 1 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
-
-	pion_theta = pion_theta*TMath::RadToDeg();
 
             double P_2p1pito2p0pi[2] = {0};
             double P_2p1pito1p1pi[2] = {0};
@@ -987,14 +932,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 	                 h1_Erec_p_bkgd_slice_2p1pi_to2p0pi[i]->Fill(E_rec,P_2p1pito2p0pi[z]*histoweight);
                 }
               }
-              for (int i = 0; i < N_pperp; i++){
-                for(int j = 0; j < N_Ecal; j++){
-	                 if(Ecal_2p1pi_to2p0pi[z] > Ecal_lowlim[j] && Ecal_2p1pi_to2p0pi[z] < Ecal_uplim[j] && p_miss_perp_2p1pi_to2p0pi[z] > pperp_cut[i]) {
-                       h1_Etot_p_bkgd_slice_Ecalcut_2p1pito2p0pi[i][j]->Fill(Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
-                   }
-                }
-              }
-
 	//---------------------------------- 2p 1pi ->1p 1pi   ----------------------------------------------
 
               h1_E_tot_2p1pi_1p1pi->Fill(E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
@@ -1014,13 +951,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
                   h1_Erec_p_bkgd_slice_2p1pi_to1p1pi[i]->Fill(E_rec,P_2p1pito1p1pi[z]*histoweight);
                 }
               }
-              for (int i = 0; i < N_pperp; i++){
-                for(int j = 0; j < N_Ecal; j++){
-                  if(E_tot_2p[z] > Ecal_lowlim[j] && E_tot_2p[z] < Ecal_uplim[j] && p_perp_tot_2p[z] > pperp_cut[i])  {
-                     h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p1pi[i][j]->Fill(E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
-                  }
-                }
-              }
 //---------------------------------- 2p 1pi ->1p 0pi   ----------------------------------------------
 
               h1_E_tot_2p1pi_1p0pi->Fill(E_tot_2p[z], P_2p1pito1p0pi[z]*histoweight);
@@ -1038,13 +968,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
                 if (p_perp_tot_2p[z]<pperp_max[i] && p_perp_tot_2p[z]>pperp_min[i]){
 	                 h1_Etot_p_bkgd_slice_2p1pi_to1p0pi[i]->Fill(E_tot_2p[z],P_2p1pito1p0pi[z]*histoweight);
 	                 h1_Erec_p_bkgd_slice_2p1pi_to1p0pi[i]->Fill(E_rec,P_2p1pito1p0pi[z]*histoweight);
-                }
-              }
-              for (int i = 0;i < N_pperp; i++){
-                for(int j = 0; j < N_Ecal; j++){
-                  if(E_tot_2p[z] > Ecal_lowlim[j] && E_tot_2p[z] < Ecal_uplim[j] && p_perp_tot_2p[z] > pperp_cut[i]) {
-                      h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p0pi[i][j]->Fill(E_tot_2p[z],P_2p1pito1p0pi[z]*histoweight);
-                  }
                 }
               }
 
@@ -1082,10 +1005,10 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
               V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-// apapadop
-	double phi_pion = V3_2pi_corr[i].Phi();
-	V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
-	phi_pion += TMath::Pi();
+              // apapadop
+              double phi_pion = V3_2pi_corr[i].Phi();
+              V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+              phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
               double pion_theta = V3_2pi_corr[i].Theta();
               double pion_mom_corr = V3_2pi_corr[i].Mag();
@@ -1135,13 +1058,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 	                 h1_Erec_p_bkgd_slice_2p2pi[i]->Fill(E_rec,Ptot_2p[z]*histoweight);
                 }
               }
-              for (int i = 0;i < N_pperp; i++){
-                for(int j = 0; j < N_Ecal; j++){
-                  if(E_tot_2p[z]>Ecal_lowlim[j] && E_tot_2p[z]<Ecal_uplim[j] && p_perp_tot_2p[z]>pperp_cut[i]) {
-                      h1_Etot_p_bkgd_slice_Ecalcut_2p2pi[i][j]->Fill(E_tot_2p[z],Ptot_2p[z]*histoweight);
-                  }
-                }
-              }
             }   //Filling the histogram for two protons
           }//2pi requirement
 
@@ -1183,15 +1099,15 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
           V3_prot_corr[i].SetXYZ(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]]);
           V4_p_corr[i].SetPxPyPzE(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]],SmearedEp);
 
-// apapadop
-	double phi_prot = V3_el.Phi(); //in Radians
-	V3_prot_corr[i].SetPhi(phi_ElectronOut + TMath::Pi() ); // Vec.Phi() is between (-180,180)
-	phi_prot += TMath::Pi();
+          // apapadop
+          double phi_prot = V3_el.Phi(); //in Radians
+          V3_prot_corr[i].SetPhi(phi_ElectronOut + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+          phi_prot += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
-	double p_theta = V3_prot_corr[i].Theta();
-	double prot_mom_corr = V3_prot_corr[i].Mag();
-	//Proton acceptance weight
-	p_acc_ratio[i] = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
+          double p_theta = V3_prot_corr[i].Theta();
+          double prot_mom_corr = V3_prot_corr[i].Mag();
+          //Proton acceptance weight
+          p_acc_ratio[i] = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
 
 	        V4_prot_el[i] = V4_p_corr[i] + V4_el;
 	        E_cal[i] = V4_el.E()+ V4_p_corr[i].E() - m_prot + bind_en[ftarget];
@@ -1234,14 +1150,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 	                h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 	                h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 
-		              for (int n = 0; n < N_pperp;n++){
-		                  for(int z = 0; z < N_Ecal; z++){
-		                      if(E_cal_3pto2p[count][j]>Ecal_lowlim[z] && E_cal_3pto2p[count][j]<Ecal_uplim[z] && p_miss_perp_3pto2p[count][j]>pperp_cut[n]) {
-                              h1_Etot_p_bkgd_slice_Ecalcut321[n][z]->Fill(E_cal_3pto2p[count][j], P_3pto2p[count][j]*histoweight);
-                          }
-		                  }
-		              }
-
 		              for(int i = 0; i < n_slice; i++)
 		              {
 		                  if (p_miss_perp_3pto2p[count][j]<pperp_max[i] && p_miss_perp_3pto2p[count][j]>pperp_min[i]){
@@ -1267,14 +1175,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 		             h2_Ecal_Eqe->Fill(E_rec,E_cal[j],-P_3pto1p[j]*histoweight);
 		             h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal[j],-P_3pto1p[j]*histoweight);
 		             h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal[j],-P_3pto1p[j]*histoweight);
-
-		             for (int n = 0; n < N_pperp; n++){
-		                 for(int z = 0; z < N_Ecal; z++){
-		                     if(E_cal[j] > Ecal_lowlim[z] && E_cal[j] < Ecal_uplim[z] && p_miss_perp[j]>pperp_cut[n]) {
-                             h1_Etot_p_bkgd_slice_Ecalcut31[n][z]->Fill(E_cal[j], P_3pto1p[j]*histoweight);
-                         }
-		                 }
-		             }
 
 		             for(int i = 0; i < n_slice; i++)
 		             {
@@ -1310,10 +1210,10 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
              V3_pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
 
-// apapadop
-	double phi_pion = V3_pi_corr.Phi(); //in Radians
-	V3_pi_corr.SetPhi(phi_ElectronOut + TMath::Pi() ); // Vec.Phi() is between (-180,180)
-	phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+             // apapadop
+             double phi_pion = V3_pi_corr.Phi(); //in Radians
+             V3_pi_corr.SetPhi(phi_ElectronOut + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+             phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
              // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus
              if ( !Pi_phot_fid_united(fbeam_en, V3_pi_corr, charge) )
@@ -1351,13 +1251,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 		             h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal[j],P_tot_3p[j]*histoweight);
 		             h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal[j],P_tot_3p[j]*histoweight);
 
-		             for (int n = 0; n < N_pperp; n++){
-		                 for(int z = 0; z < N_Ecal; z++){
-		                     if(E_cal[j]>Ecal_lowlim[z] && E_cal[j]<Ecal_uplim[z] && p_miss_perp[j]>pperp_cut[n]) {
-                             h1_Etot_p_bkgd_slice_Ecalcut_3p1pi[n][z]->Fill(E_cal[j],P_tot_3p[j]*histoweight);
-                         }
-		                 }
-		             }
 		             for(int i = 0; i < n_slice; i++)
 		             {
 		                 if (p_miss_perp[j]<pperp_max[i] && p_miss_perp[j]>pperp_min[i]){
@@ -1404,15 +1297,15 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
           V3_prot4_corr[i].SetXYZ(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]]);
           V4_p4_corr[i].SetPxPyPzE(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]],SmearedEp);
 
-// apapadop
-	double phi_prot = V3_prot4_corr[i].Phi(); //in Radians
-	V3_prot4_corr[i].SetPhi(phi_prot + TMath::Pi() ); // Vec.Phi() is between (-180,180)
-	phi_prot += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+          // apapadop
+          double phi_prot = V3_prot4_corr[i].Phi(); //in Radians
+          V3_prot4_corr[i].SetPhi(phi_prot + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+          phi_prot += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
           double p_theta = V3_prot4_corr[i].Theta();
           double prot_mom_corr = V3_prot4_corr[i].Mag();
-	//Proton acceptance weight
-	p_acc_ratio[i] = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
+          //Proton acceptance weight
+	        p_acc_ratio[i] = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
 
           V4_prot4_el[i] = V4_p4_corr[i] + V4_el;
           E_cal_p4[i] = V4_el.E() + V4_p4_corr[i].E() - m_prot + bind_en[ftarget];
@@ -1521,13 +1414,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 		                      h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 		                      h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 
-		                      for (int n = 0; n < N_pperp; n++){
-			                       for(int z = 0; z < N_Ecal; z++){
-			                            if(E_cal_4pto3p[count][j] > Ecal_lowlim[z] && E_cal_4pto3p[count][j] < Ecal_uplim[z] && p_miss_perp_4pto3p[count][j]>pperp_cut[n])  {
-                                     h1_Etot_p_bkgd_slice_Ecalcut4321[n][z]->Fill(E_cal_4pto3p[count][j], P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
-                                  }
-                             }
-		                      }
 		                      for(int i = 0; i < n_slice; i++)
 			                    {
 			                         if (p_miss_perp_4pto3p[count][j]<pperp_max[i] && p_miss_perp_4pto3p[count][j]>pperp_min[i]){
@@ -1553,13 +1439,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 		                     h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
 		                     h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
 
-		                     for (int n = 0; n < N_pperp; n++){
-		                         for(int z = 0; z < N_Ecal; z++){
-			                            if(E_cal_43pto1p[j] > Ecal_lowlim[z] && E_cal_43pto1p[j] < Ecal_uplim[z] && p_miss_perp_43pto1p[j]>pperp_cut[n]) {
-                                      h1_Etot_p_bkgd_slice_Ecalcut431[n][z]->Fill(E_cal_43pto1p[j], P_43pto1p[j]*histoweight);
-                                  }
-		                         }
-		                     }
                          for(int i = 0; i <n_slice; i++)
 		                     {
 			                        if (p_miss_perp_43pto1p[j]<pperp_max[i] && p_miss_perp_43pto1p[j]>pperp_min[i]){
@@ -1605,13 +1484,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 	                               h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 		                             h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 
-	                               for (int n = 0; n < N_pperp; n++){
-	                                  for(int z = 0; z < N_Ecal; z++){
-	                                     if(E_cal_4pto2p[j] > Ecal_lowlim[z] && E_cal_4pto2p[j] < Ecal_uplim[z] && p_miss_perp_4pto2p[j]>pperp_cut[n]) {
-                                          h1_Etot_p_bkgd_slice_Ecalcut421[n][z]->Fill(E_cal_4pto2p[j], P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
-                                       }
-	                                  }
-	                               }
 	                               for(int i = 0; i < n_slice; i++)
 	                               {
 	                                  if (p_miss_perp_4pto2p[j]<pperp_max[i] && p_miss_perp_4pto2p[j]>pperp_min[i]){
@@ -1642,13 +1514,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 		                  h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_p4[j],-P_4pto1p[j]*histoweight);
 		                  h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_p4[j],-P_4pto1p[j]*histoweight);
 
-		                  for (int n = 0; n < N_pperp; n++){
-		                      for(int z = 0; z < N_Ecal; z++){
-		                          if(E_cal_p4[j] > Ecal_lowlim[z] && E_cal_p4[j] < Ecal_uplim[z] && p_miss_perp_p4[j]>pperp_cut[n]) {
-                                  h1_Etot_p_bkgd_slice_Ecalcut41[n][z]->Fill(E_cal_p4[j], P_4pto1p[j]*histoweight);
-                              }
-		                      }
-		                  }
 		                  for(int i = 0; i < n_slice; i++)
 		                  {
 		                      if (p_miss_perp_p4[j]<pperp_max[i] && p_miss_perp_p4[j]>pperp_min[i]){
@@ -1697,13 +1562,13 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
         V3_pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
 
-// apapadop
-	double phi_pion = V3_pi_corr.Phi(); //in Radians
-	V3_pi_corr.SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
-	phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+        // apapadop
+        double phi_pion = V3_pi_corr.Phi(); //in Radians
+        V3_pi_corr.SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+        phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
-	double pion_theta = V3_pi_corr.Theta();
-	double pion_mom_corr = V3_pi_corr.Mag();
+        double pion_theta = V3_pi_corr.Theta();
+        double pion_mom_corr = V3_pi_corr.Mag();
 
         if (charge == 1) { //acceptance for pi plus
           pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
@@ -1761,10 +1626,10 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
             V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-// apapadop
-	double phi_pion = V3_2pi_corr[i].Phi(); //in Radians
-	V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
-	phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+            // apapadop
+            double phi_pion = V3_2pi_corr[i].Phi(); //in Radians
+            V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+            phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
             double pion_theta = V3_2pi_corr[i].Theta();
             double pion_mom_corr = V3_2pi_corr[i].Mag();
@@ -1835,10 +1700,10 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
             V3_3pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-// apapadop
-	double phi_pion = V3_3pi_corr[i].Phi(); //in Radians
-	V3_3pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
-	phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+            // apapadop
+            double phi_pion = V3_3pi_corr[i].Phi(); //in Radians
+            V3_3pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+            phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
             double pion_theta = V3_3pi_corr[i].Theta();
             double pion_mom_corr = V3_3pi_corr[i].Mag();
@@ -1923,10 +1788,10 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
            V3_4pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-// apapadop
-	double phi_pion = V3_4pi_corr[i].Phi(); //in Radians
-	V3_4pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
-	phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+           // apapadop
+           double phi_pion = V3_4pi_corr[i].Phi(); //in Radians
+           V3_4pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+           phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
            double pion_theta = V3_4pi_corr[i].Theta();
            double pion_mom_corr = V3_4pi_corr[i].Mag();
@@ -2001,19 +1866,18 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
        V3_prot_corr.SetXYZ(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]]);
        V4_prot_corr.SetPxPyPzE(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]],SmearedEp);
 
-// apapadop
-	double phi_prot = V3_prot_corr.Phi(); //in Radians
-	V3_prot_corr.SetPhi(phi_prot + TMath::Pi() ); // Vec.Phi() is between (-180,180)
-	phi_prot += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+       // apapadop
+       double phi_prot = V3_prot_corr.Phi(); //in Radians
+       V3_prot_corr.SetPhi(phi_prot + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+       phi_prot += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
-	if (!PFiducialCut(fbeam_en, V3_prot_corr) ) { continue; } // Proton theta & phi fiducial cuts
+       if (!PFiducialCut(fbeam_en, V3_prot_corr) ) { continue; } // Proton theta & phi fiducial cuts
 
        //Proton kinematic variables
        double p_theta = V3_prot_corr.Theta();
        double prot_mom_corr = V3_prot_corr.Mag();
-	//Proton weight
-	double p_acc_ratio = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
-
+       //Proton weight
+       double p_acc_ratio = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
 
        h1_prot_mom->Fill(prot_mom_corr);
        h1_prot_mom_ratio->Fill(prot_mom_corr/pf[index_p[0]]);
@@ -2055,13 +1919,7 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
               h1_Erec_Npi0[i]->Fill(E_rec,histoweight);
             }
           }
-          for (int i = 0; i < N_pperp; i++){
-     	      for(int j = 0; j < N_Ecal; j++){
-     		      if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i])  {
-                  h1_Etot_Npi0_Ecalcut[i][j]->Fill(E_tot,histoweight);
-              }
-            }
-     	    }
+
           if (p_perp_tot < 0.2){
             h1_E_rec_cut005_newcut3->Fill(E_rec,histoweight);
      	      h2_Erec_pperp_cut3->Fill(p_perp_tot,E_rec,histoweight);
@@ -2090,10 +1948,10 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
           V3_pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
 
-// apapadop
-double phi_pion = V3_pi_corr.Phi(); //in Radians
-V3_pi_corr.SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
-phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+          // apapadop
+          double phi_pion = V3_pi_corr.Phi(); //in Radians
+          V3_pi_corr.SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+          phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
           double pion_theta = V3_pi_corr.Theta();
           double pion_mom_corr = V3_pi_corr.Mag();
@@ -2140,13 +1998,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
                  h1_Erec_Npi1[i]->Fill(E_rec,histoweight);
                }
              }
-             for (int i = 0; i < N_pperp; i++){
-               for(int j = 0; j < N_Ecal; j++){
-                 if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i]) {
-                     h1_Etot_bkgd_pipl_pimi_fact_Ecalcut[i][j]->Fill(E_tot,(N_piphot_undet/N_piphot_det)*histoweight);
-                 }
-               }
-             }
           } //end of N_piphot_det!=0
 
           h1_E_rec_cutpi1_piplpimi->Fill(E_rec,histoweight);
@@ -2183,10 +2034,10 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
              V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-// apapadop
-		double phi_pion = V3_2pi_corr[i].Phi(); //in Radians
-		V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
-		phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+             // apapadop
+             double phi_pion = V3_2pi_corr[i].Phi(); //in Radians
+             V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+	           phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
              double pion_theta = V3_2pi_corr[i].Theta();
              double pion_mom_corr = V3_2pi_corr[i].Mag();
@@ -2234,13 +2085,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 	               h1_Erec_bkgd_1p2pi[i]->Fill(E_rec,P_1p1pi[z]*histoweight);
 	            }
            }
-           for (int i = 0; i < N_pperp; i++){
-	            for(int j = 0; j < N_Ecal; j++){
-	               if(E_tot > Ecal_lowlim[j] && E_tot < Ecal_uplim[j] && p_perp_tot>pperp_cut[i])  {
-                    h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi[i][j]->Fill(E_tot,P_1p1pi[z]*histoweight);
-                 }
-	            }
-           }
          } //end loop over N_2pi
 
  //---------------------------------- 1p 2pi->1p0pi   ----------------------------------------------
@@ -2260,13 +2104,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
            if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
 	            h1_Etot_bkgd_1p2pi_1p0pi[i]->Fill(E_tot,P_1p0pi*histoweight);
 	            h1_Erec_bkgd_1p2pi_1p0pi[i]->Fill(E_rec,P_1p0pi*histoweight);
-           }
-         }
-         for (int i = 0;i < N_pperp; i++){
-           for(int j = 0; j < N_Ecal; j++){
-	            if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i]) {
-                  h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi[i][j]->Fill(E_tot,P_1p0pi*histoweight);
-              }
            }
          }
        }//1p 2pi statetment ends
@@ -2298,10 +2135,10 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
              V3_3pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
 
-// apapadop
-double phi_pion = V3_3pi_corr[i].Phi(); //in Radians
-V3_3pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
-phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+             // apapadop
+             double phi_pion = V3_3pi_corr[i].Phi(); //in Radians
+             V3_3pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
+             phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
              double pion_theta = V3_3pi_corr[i].Theta();
              double pion_mom_corr = V3_3pi_corr[i].Mag();
@@ -2345,13 +2182,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
            if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
              h1_Etot_bkgd_1p3pi[i]->Fill(E_tot,P_1p3pi*histoweight);
              h1_Erec_bkgd_1p3pi[i]->Fill(E_rec,P_1p3pi*histoweight);
-           }
-         }
-         for (int i = 0; i < N_pperp; i++){
-           for(int j = 0; j < N_Ecal; j++){
-             if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i])  {
-                h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[i][j]->Fill(E_tot,P_1p3pi*histoweight);
-             }
            }
          }
        }//end of 1p 3pi requirement
@@ -2481,91 +2311,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
   }
 
  //------------------------------------fractional energy reconstruction plots --------------------------------------
-
-  for (int i = 0; i < N_pperp; i++) {
-    for(int j = 0;j < N_Ecal; j++) {
-
-      //------------------------------------using the ratio of the pi- to pi+  --------------------------------------
-      h1_Etot_piplpimi_subtruct_fact_Ecalcut[i][j]=(TH1F*)  h1_Etot_Npi0_Ecalcut[i][j]->Clone(Form("h1_Etot_piplpimi_subtruct_fact_Ecalcut_%d_%d",i+1,i+j));
-      h1_Etot_piplpimi_subtruct_fact_Ecalcut[i][j]->Add(h1_Etot_bkgd_pipl_pimi_fact_Ecalcut[i][j],-1);
-
-      //------------------------------------subtracting 2p contribution from 1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut[i][j]=(TH1F*) h1_Etot_piplpimi_subtruct_fact_Ecalcut[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut[i][j],-1);
-
- //------------------------------------subtracting 3p to  2p->1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut32[i][j]=(TH1F*) h1_Etot_p_bkgd_slice_sub_Ecalcut[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut32_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut32[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut321[i][j]);
-
- //------------------------------------subtracting 3p to  1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut31[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut32[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut31_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut31[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut31[i][j],-1);
-
- //------------------------------------subtracting 4p to  3p->2p->1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut43[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut31[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut43_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut43[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut4321[i][j],-1);
-
- //------------------------------------subtracting 4p to  3p->1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut431[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut43[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut431_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut431[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut431[i][j]);
-
-//------------------------------------subtracting 4p to  2p->1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut42[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut431[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut42_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut42[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut421[i][j]);
-
-//------------------------------------subtracting 4p to  1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut41[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut42[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut41_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut41[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut41[i][j],-1);
-
-//------------------------------------undetected 1p 2pi ->1p1pi ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p1pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut41[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p1pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p1pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi[i][j]);
-
-//------------------------------------undetected 1p 2pi-> 1p 0pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p0pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p1pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p0pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p0pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi[i][j],-1);
-
-//------------------------------------undetected 1p 3pi-> 1p 0pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_1p3pi_1p0pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_1p3pi_1p0pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_1p3pi_1p0pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[i][j]);
-
-//------------------------------------undetected 2p 2pi ->1p 0pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p2pi_1p0pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_1p3pi_1p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_2p2pi_1p0pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p2pi_1p0pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_2p2pi[i][j]);
-
-//------------------------------------undetected 3p 1pi ->1p 0pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_3p1pi_1p0pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_2p2pi_1p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_3p1pi_1p0pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_3p1pi_1p0pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_3p1pi[i][j]);
-
-//------------------------------------undetected 2p 1pi ->2p 0pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_2p0pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_3p1pi_1p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_2p0pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_2p0pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_2p1pito2p0pi[i][j]);
-
-//------------------------------------undetected 2p 1pi ->1p 1pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p1pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_2p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p1pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p1pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p1pi[i][j]);
-
-//------------------------------------undetected 2p 1pi ->1p 0pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p0pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p1pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p0pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p0pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p0pi[i][j],-1);
-
-    } //end of loop over N_Ecal
-  } // end of loop over N_pperp
 
   //------------------------------------using the ratio of the pi- to pi+  ---------------------------------------
 
@@ -2868,18 +2613,6 @@ phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
   TH1F *h_Erec_subtruct_piplpimi_noprot_frac_feed4pi = (TH1F*)  h_Erec_subtruct_piplpimi_noprot_frac_feed3pi->Clone("h_Erec_subtruct_piplpimi_noprot_frac_feed4pi");
   h_Erec_subtruct_piplpimi_noprot_frac_feed4pi->Add(h1_E_rec_4pi_weight_frac_feed);
-
-
-  cout<<" ---------------------------final subtracted -----------------------"<<endl;
-  for (int i=0;i<N_pperp;i++){
-    for(int j=0;j<N_Ecal;j++){
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]=   (TH1F *)   h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]->Divide(h_Etot_subtruct_piplpimi_2p1pi_1p0pi);
-      cout<<200+i*200<<"   "<<j+1<<"   "<<h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]->GetBinContent(1)<<"  Error  "<<h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]->GetBinError(1)<<endl;
-
-
-    }
-  }
 
   gDirectory->Write("hist_Files", TObject::kOverwrite);
   // skim_tree->AutoSave();
@@ -4408,51 +4141,6 @@ void genie_analysis::LoopCLAS()
   for(int h=0;h<20;h++){
     h2_N_pi_phot[h]=new TH2F(Form("h2_N_pi_phot_%d",h),"",10,0,5,10,0,5);
   }
-  //Decleration of 2-dim histograms arrays
-  TH1F *h1_Etot_Npi0_Ecalcut[2][6], *h1_Etot_bkgd_pipl_pimi_fact_Ecalcut[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut[2][6];
-  TH1F *h1_Etot_piplpimi_subtruct_fact_Ecalcut[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[2][6];
-
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut41[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut42[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut431[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut43[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut31[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut32[2][6];
-
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p0pi[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p1pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_2p0pi[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p0pi[2][6],*h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p1pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut_2p2pi_1p0pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_sub_Ecalcut_3p1pi_1p0pi[2][6];
-
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut41[2][6], *h1_Etot_p_bkgd_slice_Ecalcut421[2][6], *h1_Etot_p_bkgd_slice_Ecalcut431[2][6], *h1_Etot_p_bkgd_slice_Ecalcut4321[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut31[2][6], *h1_Etot_p_bkgd_slice_Ecalcut321[2][6];
-
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi[2][6], *h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut_2p1pito2p0pi[2][6], *h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p1pi[2][6], *h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p0pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut_2p2pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut_3p1pi[2][6];
-  TH1F *h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[2][6], *h1_Etot_p_bkgd_slice_sub_Ecalcut_1p3pi_1p0pi[2][6];
-
-  for (int i=0;i<N_pperp;i++){
-    for(int j=0;j<N_Ecal;j++){
-
-      h1_Etot_Npi0_Ecalcut[i][j]=  new TH1F(Form("h1_Etot_Npi0_Ecalcut_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_bkgd_pipl_pimi_fact_Ecalcut[i][j]=  new TH1F(Form("h1_Etot_bkgd_pipl_pimi_fact_Ecalcut_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut41[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut41_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut421[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut421_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut431[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut431_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut4321[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut4321_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut31[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut31_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut321[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut321_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_2p1pito2p0pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut3_2p1pito2p0pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p1pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p1pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p0pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p0pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_1p3pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_2p2pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_2p2pi_%d_%d",i+1,j+1),"",1,0,6);
-      h1_Etot_p_bkgd_slice_Ecalcut_3p1pi[i][j]=  new TH1F(Form("h1_Etot_p_bkgd_slice_Ecalcut_3p1pi_%d_%d",i+1,j+1),"",1,0,6);
-    }
-  }
 
   TH1D::SetDefaultSumw2();
 	TH2D::SetDefaultSumw2();
@@ -4690,14 +4378,6 @@ void genie_analysis::LoopCLAS()
               h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot_2p[f],-P_N_2p[f]*histoweight);
               h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot_2p[f],-P_N_2p[f]*histoweight);
 
-              for (int i = 0; i < N_pperp; i++) {
-	               for(int j = 0; j < N_Ecal; j++) {
-	                  if(E_tot_2p[f] > Ecal_lowlim[j] && E_tot_2p[f] < Ecal_uplim[j] && p_perp_tot_2p[f] > pperp_cut[i])
-                    {
-                       h1_Etot_p_bkgd_slice_Ecalcut[i][j]->Fill(E_tot_2p[f],P_N_2p[f]*histoweight);
-                    }
-	               }
-              }
               for(int i = 0 ; i < n_slice; i++)
               {
 	               if (p_perp_tot_2p[f] < pperp_max[i] && p_perp_tot_2p[f] > pperp_min[i]) {
@@ -4767,13 +4447,6 @@ void genie_analysis::LoopCLAS()
 	                 h1_Erec_p_bkgd_slice_2p1pi_to2p0pi[i]->Fill(E_rec,P_2p1pito2p0pi[z]*histoweight);
                 }
               }
-              for (int i = 0; i < N_pperp; i++){
-                for(int j = 0; j < N_Ecal; j++){
-	                 if(Ecal_2p1pi_to2p0pi[z] > Ecal_lowlim[j] && Ecal_2p1pi_to2p0pi[z] < Ecal_uplim[j] && p_miss_perp_2p1pi_to2p0pi[z] > pperp_cut[i]) {
-                       h1_Etot_p_bkgd_slice_Ecalcut_2p1pito2p0pi[i][j]->Fill(Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
-                   }
-                }
-              }
  //---------------------------------- 2p 1pi ->1p 1pi   ----------------------------------------------
 
               h1_E_tot_2p1pi_1p1pi->Fill(E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
@@ -4793,13 +4466,6 @@ void genie_analysis::LoopCLAS()
                   h1_Erec_p_bkgd_slice_2p1pi_to1p1pi[i]->Fill(E_rec,P_2p1pito1p1pi[z]*histoweight);
                 }
               }
-              for (int i = 0; i < N_pperp; i++){
-                for(int j = 0; j < N_Ecal; j++){
-                  if(E_tot_2p[z] > Ecal_lowlim[j] && E_tot_2p[z] < Ecal_uplim[j] && p_perp_tot_2p[z] > pperp_cut[i])  {
-                     h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p1pi[i][j]->Fill(E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
-                  }
-                }
-              }
 //---------------------------------- 2p 1pi ->1p 0pi   ----------------------------------------------
 
               h1_E_tot_2p1pi_1p0pi->Fill(E_tot_2p[z], P_2p1pito1p0pi[z]*histoweight);
@@ -4817,13 +4483,6 @@ void genie_analysis::LoopCLAS()
                 if (p_perp_tot_2p[z]<pperp_max[i] && p_perp_tot_2p[z]>pperp_min[i]){
 	                 h1_Etot_p_bkgd_slice_2p1pi_to1p0pi[i]->Fill(E_tot_2p[z],P_2p1pito1p0pi[z]*histoweight);
 	                 h1_Erec_p_bkgd_slice_2p1pi_to1p0pi[i]->Fill(E_rec,P_2p1pito1p0pi[z]*histoweight);
-                }
-              }
-              for (int i = 0;i < N_pperp; i++){
-                for(int j = 0; j < N_Ecal; j++){
-                  if(E_tot_2p[z] > Ecal_lowlim[j] && E_tot_2p[z] < Ecal_uplim[j] && p_perp_tot_2p[z] > pperp_cut[i]) {
-                      h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p0pi[i][j]->Fill(E_tot_2p[z],P_2p1pito1p0pi[z]*histoweight);
-                  }
                 }
               }
 
@@ -4886,13 +4545,6 @@ void genie_analysis::LoopCLAS()
                 if (p_perp_tot_2p[z]<pperp_max[i] && p_perp_tot_2p[z]>pperp_min[i]){
 	                 h1_Etot_p_bkgd_slice_2p2pi[i]->Fill(E_tot_2p[z],Ptot_2p[z]*histoweight);
 	                 h1_Erec_p_bkgd_slice_2p2pi[i]->Fill(E_rec,Ptot_2p[z]*histoweight);
-                }
-              }
-              for (int i = 0;i < N_pperp; i++){
-                for(int j = 0; j < N_Ecal; j++){
-                  if(E_tot_2p[z]>Ecal_lowlim[j] && E_tot_2p[z]<Ecal_uplim[j] && p_perp_tot_2p[z]>pperp_cut[i]) {
-                      h1_Etot_p_bkgd_slice_Ecalcut_2p2pi[i][j]->Fill(E_tot_2p[z],Ptot_2p[z]*histoweight);
-                  }
                 }
               }
             }   //Filling the histogram for two protons
@@ -4964,14 +4616,6 @@ void genie_analysis::LoopCLAS()
 	                h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 	                h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 
-		              for (int n = 0; n < N_pperp;n++){
-		                  for(int z = 0; z < N_Ecal; z++){
-		                      if(E_cal_3pto2p[count][j]>Ecal_lowlim[z] && E_cal_3pto2p[count][j]<Ecal_uplim[z] && p_miss_perp_3pto2p[count][j]>pperp_cut[n]) {
-                              h1_Etot_p_bkgd_slice_Ecalcut321[n][z]->Fill(E_cal_3pto2p[count][j], P_3pto2p[count][j]*histoweight);
-                          }
-		                  }
-		              }
-
 		              for(int i = 0; i < n_slice; i++)
 		              {
 		                  if (p_miss_perp_3pto2p[count][j]<pperp_max[i] && p_miss_perp_3pto2p[count][j]>pperp_min[i]){
@@ -4996,14 +4640,6 @@ void genie_analysis::LoopCLAS()
 		             h2_Ecal_Eqe->Fill(E_rec,E_cal[j],-P_3pto1p[j]*histoweight);
 		             h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal[j],-P_3pto1p[j]*histoweight);
 		             h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal[j],-P_3pto1p[j]*histoweight);
-
-		             for (int n = 0; n < N_pperp; n++){
-		                 for(int z = 0; z < N_Ecal; z++){
-		                     if(E_cal[j] > Ecal_lowlim[z] && E_cal[j] < Ecal_uplim[z] && p_miss_perp[j]>pperp_cut[n]) {
-                             h1_Etot_p_bkgd_slice_Ecalcut31[n][z]->Fill(E_cal[j], P_3pto1p[j]*histoweight);
-                         }
-		                 }
-		             }
 
 		             for(int i = 0; i < n_slice; i++)
 		             {
@@ -5054,13 +4690,6 @@ void genie_analysis::LoopCLAS()
 		             h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal[j],P_tot_3p[j]*histoweight);
 		             h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal[j],P_tot_3p[j]*histoweight);
 
-		             for (int n = 0; n < N_pperp; n++){
-		                 for(int z = 0; z < N_Ecal; z++){
-		                     if(E_cal[j]>Ecal_lowlim[z] && E_cal[j]<Ecal_uplim[z] && p_miss_perp[j]>pperp_cut[n]) {
-                             h1_Etot_p_bkgd_slice_Ecalcut_3p1pi[n][z]->Fill(E_cal[j],P_tot_3p[j]*histoweight);
-                         }
-		                 }
-		             }
 		             for(int i = 0; i < n_slice; i++)
 		             {
 		                 if (p_miss_perp[j]<pperp_max[i] && p_miss_perp[j]>pperp_min[i]){
@@ -5196,13 +4825,6 @@ void genie_analysis::LoopCLAS()
 		                      h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 		                      h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 
-		                      for (int n = 0; n < N_pperp; n++){
-			                       for(int z = 0; z < N_Ecal; z++){
-			                            if(E_cal_4pto3p[count][j] > Ecal_lowlim[z] && E_cal_4pto3p[count][j] < Ecal_uplim[z] && p_miss_perp_4pto3p[count][j]>pperp_cut[n])  {
-                                     h1_Etot_p_bkgd_slice_Ecalcut4321[n][z]->Fill(E_cal_4pto3p[count][j], P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
-                                  }
-                             }
-		                      }
 		                      for(int i = 0; i < n_slice; i++)
 			                    {
 			                         if (p_miss_perp_4pto3p[count][j]<pperp_max[i] && p_miss_perp_4pto3p[count][j]>pperp_min[i]){
@@ -5228,13 +4850,6 @@ void genie_analysis::LoopCLAS()
 		                     h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
 		                     h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
 
-		                     for (int n = 0; n < N_pperp; n++){
-		                         for(int z = 0; z < N_Ecal; z++){
-			                            if(E_cal_43pto1p[j] > Ecal_lowlim[z] && E_cal_43pto1p[j] < Ecal_uplim[z] && p_miss_perp_43pto1p[j]>pperp_cut[n]) {
-                                      h1_Etot_p_bkgd_slice_Ecalcut431[n][z]->Fill(E_cal_43pto1p[j], P_43pto1p[j]*histoweight);
-                                  }
-		                         }
-		                     }
                          for(int i = 0; i <n_slice; i++)
 		                     {
 			                        if (p_miss_perp_43pto1p[j]<pperp_max[i] && p_miss_perp_43pto1p[j]>pperp_min[i]){
@@ -5280,13 +4895,6 @@ void genie_analysis::LoopCLAS()
 	                               h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 		                             h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 
-	                               for (int n = 0; n < N_pperp; n++){
-	                                  for(int z = 0; z < N_Ecal; z++){
-	                                     if(E_cal_4pto2p[j] > Ecal_lowlim[z] && E_cal_4pto2p[j] < Ecal_uplim[z] && p_miss_perp_4pto2p[j]>pperp_cut[n]) {
-                                          h1_Etot_p_bkgd_slice_Ecalcut421[n][z]->Fill(E_cal_4pto2p[j], P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
-                                       }
-	                                  }
-	                               }
 	                               for(int i = 0; i < n_slice; i++)
 	                               {
 	                                  if (p_miss_perp_4pto2p[j]<pperp_max[i] && p_miss_perp_4pto2p[j]>pperp_min[i]){
@@ -5317,13 +4925,6 @@ void genie_analysis::LoopCLAS()
 		                  h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_p4[j],-P_4pto1p[j]*histoweight);
 		                  h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_p4[j],-P_4pto1p[j]*histoweight);
 
-		                  for (int n = 0; n < N_pperp; n++){
-		                      for(int z = 0; z < N_Ecal; z++){
-		                          if(E_cal_p4[j] > Ecal_lowlim[z] && E_cal_p4[j] < Ecal_uplim[z] && p_miss_perp_p4[j]>pperp_cut[n]) {
-                                  h1_Etot_p_bkgd_slice_Ecalcut41[n][z]->Fill(E_cal_p4[j], P_4pto1p[j]*histoweight);
-                              }
-		                      }
-		                  }
 		                  for(int i = 0; i < n_slice; i++)
 		                  {
 		                      if (p_miss_perp_p4[j]<pperp_max[i] && p_miss_perp_p4[j]>pperp_min[i]){
@@ -5597,14 +5198,7 @@ void genie_analysis::LoopCLAS()
               h1_Etot_Npi0[i]->Fill(E_tot,histoweight);
               h1_Erec_Npi0[i]->Fill(E_rec,histoweight);
             }
-          }
-          for (int i = 0; i < N_pperp; i++){
-     	      for(int j = 0; j < N_Ecal; j++){
-     		      if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i])  {
-                  h1_Etot_Npi0_Ecalcut[i][j]->Fill(E_tot,histoweight);
-              }
-            }
-     	    }
+          } 
           if (p_perp_tot < 0.2){
             h1_E_rec_cut005_newcut3->Fill(E_rec,histoweight);
      	      h2_Erec_pperp_cut3->Fill(p_perp_tot,E_rec,histoweight);
@@ -5654,13 +5248,6 @@ void genie_analysis::LoopCLAS()
                  h1_Etot_bkgd_pipl_pimi_fact_pipl[i]->Fill(E_tot,(N_piphot_undet/N_piphot_det)*histoweight);
                  h1_Etot_Npi1[i]->Fill(E_tot,histoweight);
                  h1_Erec_Npi1[i]->Fill(E_rec,histoweight);
-               }
-             }
-             for (int i = 0; i < N_pperp; i++){
-               for(int j = 0; j < N_Ecal; j++){
-                 if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i]) {
-                     h1_Etot_bkgd_pipl_pimi_fact_Ecalcut[i][j]->Fill(E_tot,(N_piphot_undet/N_piphot_det)*histoweight);
-                 }
                }
              }
           } //end of N_piphot_det!=0
@@ -5721,13 +5308,6 @@ void genie_analysis::LoopCLAS()
 	               h1_Erec_bkgd_1p2pi[i]->Fill(E_rec,P_1p1pi[z]*histoweight);
 	            }
            }
-           for (int i = 0; i < N_pperp; i++){
-	            for(int j = 0; j < N_Ecal; j++){
-	               if(E_tot > Ecal_lowlim[j] && E_tot < Ecal_uplim[j] && p_perp_tot>pperp_cut[i])  {
-                    h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi[i][j]->Fill(E_tot,P_1p1pi[z]*histoweight);
-                 }
-	            }
-           }
          } //end loop over N_2pi
 
  //---------------------------------- 1p 2pi->1p0pi   ----------------------------------------------
@@ -5747,13 +5327,6 @@ void genie_analysis::LoopCLAS()
            if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
 	            h1_Etot_bkgd_1p2pi_1p0pi[i]->Fill(E_tot,P_1p0pi*histoweight);
 	            h1_Erec_bkgd_1p2pi_1p0pi[i]->Fill(E_rec,P_1p0pi*histoweight);
-           }
-         }
-         for (int i = 0;i < N_pperp; i++){
-           for(int j = 0; j < N_Ecal; j++){
-	            if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i]) {
-                  h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi[i][j]->Fill(E_tot,P_1p0pi*histoweight);
-              }
            }
          }
        }//1p 2pi statetment ends
@@ -5804,13 +5377,6 @@ void genie_analysis::LoopCLAS()
            if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
              h1_Etot_bkgd_1p3pi[i]->Fill(E_tot,P_1p3pi*histoweight);
              h1_Erec_bkgd_1p3pi[i]->Fill(E_rec,P_1p3pi*histoweight);
-           }
-         }
-         for (int i = 0; i < N_pperp; i++){
-           for(int j = 0; j < N_Ecal; j++){
-             if(E_tot>Ecal_lowlim[j] && E_tot<Ecal_uplim[j] && p_perp_tot>pperp_cut[i])  {
-                h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[i][j]->Fill(E_tot,P_1p3pi*histoweight);
-             }
            }
          }
        }//end of 1p 3pi requirement
@@ -5940,91 +5506,6 @@ void genie_analysis::LoopCLAS()
   }
 
  //------------------------------------fractional energy reconstruction plots --------------------------------------
-
-  for (int i = 0; i < N_pperp; i++) {
-    for(int j = 0;j < N_Ecal; j++) {
-
-      //------------------------------------using the ratio of the pi- to pi+  --------------------------------------
-      h1_Etot_piplpimi_subtruct_fact_Ecalcut[i][j]=(TH1F*)  h1_Etot_Npi0_Ecalcut[i][j]->Clone(Form("h1_Etot_piplpimi_subtruct_fact_Ecalcut_%d_%d",i+1,i+j));
-      h1_Etot_piplpimi_subtruct_fact_Ecalcut[i][j]->Add(h1_Etot_bkgd_pipl_pimi_fact_Ecalcut[i][j],-1);
-
-      //------------------------------------subtracting 2p contribution from 1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut[i][j]=(TH1F*) h1_Etot_piplpimi_subtruct_fact_Ecalcut[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut[i][j],-1);
-
- //------------------------------------subtracting 3p to  2p->1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut32[i][j]=(TH1F*) h1_Etot_p_bkgd_slice_sub_Ecalcut[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut32_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut32[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut321[i][j]);
-
- //------------------------------------subtracting 3p to  1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut31[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut32[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut31_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut31[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut31[i][j],-1);
-
- //------------------------------------subtracting 4p to  3p->2p->1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut43[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut31[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut43_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut43[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut4321[i][j],-1);
-
- //------------------------------------subtracting 4p to  3p->1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut431[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut43[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut431_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut431[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut431[i][j]);
-
-//------------------------------------subtracting 4p to  2p->1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut42[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut431[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut42_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut42[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut421[i][j]);
-
-//------------------------------------subtracting 4p to  1p events  --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut41[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut42[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut41_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut41[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut41[i][j],-1);
-
-//------------------------------------undetected 1p 2pi ->1p1pi ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p1pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut41[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p1pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p1pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p1pi[i][j]);
-
-//------------------------------------undetected 1p 2pi-> 1p 0pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p0pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p1pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p0pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p0pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_1p2pito1p0pi[i][j],-1);
-
-//------------------------------------undetected 1p 3pi-> 1p 0pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_1p3pi_1p0pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_1p2pi_1p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_1p3pi_1p0pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_1p3pi_1p0pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_1p3pi[i][j]);
-
-//------------------------------------undetected 2p 2pi ->1p 0pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p2pi_1p0pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_1p3pi_1p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_2p2pi_1p0pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p2pi_1p0pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_2p2pi[i][j]);
-
-//------------------------------------undetected 3p 1pi ->1p 0pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_3p1pi_1p0pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_2p2pi_1p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_3p1pi_1p0pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_3p1pi_1p0pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_3p1pi[i][j]);
-
-//------------------------------------undetected 2p 1pi ->2p 0pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_2p0pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_3p1pi_1p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_2p0pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_2p0pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_2p1pito2p0pi[i][j]);
-
-//------------------------------------undetected 2p 1pi ->1p 1pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p1pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_2p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p1pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p1pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p1pi[i][j]);
-
-//------------------------------------undetected 2p 1pi ->1p 0pi  ------ --------------------------------------
-
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p0pi[i][j]=(TH1F*)  h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p1pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p0pi_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p0pi[i][j]->Add(h1_Etot_p_bkgd_slice_Ecalcut_2p1pito1p0pi[i][j],-1);
-
-    } //end of loop over N_Ecal
-  } // end of loop over N_pperp
 
   //------------------------------------using the ratio of the pi- to pi+  ---------------------------------------
 
@@ -6327,18 +5808,6 @@ void genie_analysis::LoopCLAS()
 
   TH1F *h_Erec_subtruct_piplpimi_noprot_frac_feed4pi = (TH1F*)  h_Erec_subtruct_piplpimi_noprot_frac_feed3pi->Clone("h_Erec_subtruct_piplpimi_noprot_frac_feed4pi");
   h_Erec_subtruct_piplpimi_noprot_frac_feed4pi->Add(h1_E_rec_4pi_weight_frac_feed);
-
-
-  cout<<" ---------------------------final subtracted -----------------------"<<endl;
-  for (int i=0;i<N_pperp;i++){
-    for(int j=0;j<N_Ecal;j++){
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]=   (TH1F *)   h1_Etot_p_bkgd_slice_sub_Ecalcut_2p1pi_1p0pi[i][j]->Clone(Form("h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p_%d_%d",i+1,j+1));
-      h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]->Divide(h_Etot_subtruct_piplpimi_2p1pi_1p0pi);
-      cout<<200+i*200<<"   "<<j+1<<"   "<<h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]->GetBinContent(1)<<"  Error  "<<h1_Etot_p_bkgd_slice_sub_Ecalcut_ratio4p[i][j]->GetBinError(1)<<endl;
-
-
-    }
-  }
 
   gDirectory->Write("hist_Files", TObject::kOverwrite);
   // skim_tree->AutoSave();

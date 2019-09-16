@@ -1,7 +1,6 @@
+#define FILTERDATA_C
 
-#define E2A_EP_C
-
-#include "e2a_ep_neutrino6_united4_radphot.h"
+//#include "e2a_ep_neutrino6_united4_radphot.h"
 #include "FilterData.h"
 #include "Constants.h"
 #include <TH2.h>

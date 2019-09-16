@@ -12,6 +12,9 @@
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
+std::string a_target = "C12";
+std::string a_beam_en = "2261";
+
 class FilterData {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -293,7 +296,7 @@ public :
 #endif
 #ifdef E2A_EP_C
 
-FilterData::FilterData(std::string a_target,std::string a_beam_en, TTree *tree) : fChain(0)
+FilterData::FilterData(TTree *tree) : fChain(0)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.

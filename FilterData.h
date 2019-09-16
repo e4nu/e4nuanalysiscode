@@ -244,7 +244,7 @@ public :
    TBranch        *b_lec_z;   //!
    TBranch        *b_lec_c2;   //!
 
-   FilterData(std::string, std::string,TTree *tree=0);
+   FilterData(TTree *tree=0);
    virtual ~FilterData();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);

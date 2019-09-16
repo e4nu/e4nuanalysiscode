@@ -173,7 +173,7 @@ void genie_analysis::Loop()
 
   //initialize Fiducial functions for EC limits
   fiducialcut->InitEClimits();
-  std::cout << " Test InitEClimits GenieLoop " << fiducialcut->up_lim1_ec->Eval(60) << std::cout;
+//  std::cout << " Test InitEClimits GenieLoop " << fiducialcut->up_lim1_ec->Eval(60) << std::endl;
 
 
 

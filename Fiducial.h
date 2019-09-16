@@ -16,6 +16,7 @@
 
 struct Fiducial {
 
+  void InitEClimits();
   void SetConstants(int in_TorusCurrent, std::string in_target_name, std::map<std::string,double> in_en_beam, std::map<std::string,double> en_beam_Ecal, std::map<std::string,double> en_beam_Eqe);
   void SetFiducialCutParameters(std::string beam_en);
   Bool_t GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t sector,Float_t *EPhiMin, Float_t *EPhiMax);

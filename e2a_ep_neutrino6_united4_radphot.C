@@ -428,7 +428,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 
 
   gRandom = new TRandom3();
-  //  gRandom->SetSeed(0);
+  gRandom->SetSeed(10);
 
   TLorentzVector V4_beam(0,0,en_beam[fbeam_en],en_beam[fbeam_en]);
   TLorentzVector V4_target(0,0,0,target_mass[ftarget]);
@@ -505,57 +505,8 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
   fsub_e = new TF1("fsub_e",FSub_e,0.,5.,2);
 
 
-  //Defining EC limits
-  fiducialcut->up_lim1_ec =new TF1("up_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  fiducialcut->up_lim2_ec =new TF1("up_lim2_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  fiducialcut->up_lim3_ec =new TF1("up_lim3_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  fiducialcut->up_lim4_ec =new TF1("up_lim4_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  fiducialcut->up_lim5_ec =new TF1("up_lim5_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  fiducialcut->up_lim6_ec =new TF1("up_lim6_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  fiducialcut->low_lim1_ec=new TF1("low_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  fiducialcut->low_lim2_ec=new TF1("low_lim2_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  fiducialcut->low_lim3_ec=new TF1("low_lim3_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  fiducialcut->low_lim4_ec=new TF1("low_lim4_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  fiducialcut->low_lim5_ec=new TF1("low_lim5_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  fiducialcut->low_lim6_ec=new TF1("low_lim6_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  fiducialcut->rightside_lim1_ec=new TF1("rightside_lim1_ec","[0]*(x+[1])+[2]",0,360);
-  fiducialcut->leftside_lim1_ec=new TF1("leftside_lim1_ec","[0]*(x+[1])+[2]",0,360);
-  fiducialcut->rightside_lim2_ec=new TF1("rightside_lim2_ec","[0]*(x+[1])+[2]",0,360);
-  fiducialcut->leftside_lim2_ec=new TF1("leftside_lim2_ec","[0]*(x+[1])+[2]",0,360);
-  fiducialcut->rightside_lim3_ec=new TF1("rightside_lim3_ec","[0]*(x+[1])+[2]",0,360);
-  fiducialcut->leftside_lim3_ec=new TF1("leftside_lim3_ec","[0]*(x+[1])+[2]",0,360);
-  fiducialcut->rightside_lim4_ec=new TF1("rightside_lim4_ec","[0]*(x+[1])+[2]",0,360);
-  fiducialcut->leftside_lim4_ec=new TF1("leftside_lim4_ec","[0]*(x+[1])+[2]",0,360);
-  fiducialcut->rightside_lim5_ec=new TF1("rightside_lim5_ec","[0]*(x+[1])+[2]",0,360);
-  fiducialcut->leftside_lim5_ec=new TF1("leftside_lim5_ec","[0]*(x+[1])+[2]",0,360);
-  fiducialcut->rightside_lim6_ec=new TF1("rightside_lim6_ec","[0]*(x+[1])+[2]",0,360);
-  fiducialcut->leftside_lim6_ec=new TF1("leftside_lim6_ec","[0]*(x+[1])+[2]",0,360);
-
-
-  fiducialcut->up_lim1_ec->SetParameters(0.995,30,-0.0001);
-  fiducialcut->up_lim2_ec->SetParameters(0.995,90,-0.0001);
-  fiducialcut->up_lim3_ec->SetParameters(0.995,150,-0.0001);
-  fiducialcut->up_lim4_ec->SetParameters(0.995,210,-0.0001);
-  fiducialcut->up_lim5_ec->SetParameters(0.995,270,-0.0001);
-  fiducialcut->up_lim6_ec->SetParameters(0.995,330,-0.0001);
-  fiducialcut->low_lim1_ec->SetParameters(0.7,30,-0.00005);
-  fiducialcut->low_lim2_ec->SetParameters(0.7,90,-0.00005);
-  fiducialcut->low_lim3_ec->SetParameters(0.7,150,-0.00005);
-  fiducialcut->low_lim4_ec->SetParameters(0.7,210,-0.00005);
-  fiducialcut->low_lim5_ec->SetParameters(0.7,270,-0.00005);
-  fiducialcut->low_lim6_ec->SetParameters(0.7,330,-0.00005);
-  fiducialcut->leftside_lim1_ec->SetParameters(0.11,0,0.03);
-  fiducialcut->rightside_lim1_ec->SetParameters(-0.11,-60,0.03);
-  fiducialcut->leftside_lim2_ec->SetParameters(0.11,-60,0.03);
-  fiducialcut->rightside_lim2_ec->SetParameters(-0.11,-120,0.03);
-  fiducialcut->leftside_lim3_ec->SetParameters(0.11,-120,0.03);
-  fiducialcut->rightside_lim3_ec->SetParameters(-0.11,-180,0.03);
-  fiducialcut->leftside_lim4_ec->SetParameters(0.11,-180,0.03);
-  fiducialcut->rightside_lim4_ec->SetParameters(-0.11,-240,0.03);
-  fiducialcut->leftside_lim5_ec->SetParameters(0.11,-240,0.03);
-  fiducialcut->rightside_lim5_ec->SetParameters(-0.11,-300,0.03);
-  fiducialcut->leftside_lim6_ec->SetParameters(0.11,-300,0.03);
-  fiducialcut->rightside_lim6_ec->SetParameters(-0.11,-360,0.03);
+  //initialize Fiducial functions for EC limits
+  fiducialcut-InitEClimits();
 
   //Definition and initialization of Histograms
   TH1F *h1_el_vertuncorr=new TH1F("h1_el_vertuncorr","",200,-10,10);
@@ -3604,8 +3555,6 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
   delete[] Ecal_lowlim;
   delete[] Ecal_uplim;
   delete pipl_deltat_sig;delete pipl_deltat_mean;delete pimi_deltat_sig;delete pimi_deltat_mean;delete fsum_pimi;delete fsub_pimi;delete fsum_pipl;delete fsub_pipl;delete prot_deltat_sig;delete prot_deltat_mean;delete fsum_prot;delete fsub_prot;delete el_Epratio_sig;delete el_Epratio_mean;delete fsum_e;delete fsub_e;
-//  delete up_lim1_ec;delete up_lim2_ec;delete up_lim3_ec;delete up_lim4_ec;delete up_lim5_ec;delete up_lim6_ec;delete low_lim1_ec;delete low_lim2_ec;delete low_lim3_ec;delete low_lim4_ec;delete low_lim5_ec;delete low_lim6_ec;
-//  delete  rightside_lim1_ec;delete rightside_lim2_ec;delete rightside_lim3_ec;delete rightside_lim4_ec; delete rightside_lim5_ec;delete rightside_lim6_ec;delete leftside_lim1_ec;delete leftside_lim2_ec; delete leftside_lim3_ec;delete leftside_lim4_ec;delete leftside_lim5_ec;delete leftside_lim6_ec;
 
 }
 

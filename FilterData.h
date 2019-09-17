@@ -6,7 +6,11 @@
 #include <TFile.h>
 #include <TVector3.h>
 #include <TLorentzVector.h>
-#include "Fiducial.h"
+/*#include "Fiducial.h"*/
+
+#include <iostream>
+
+//using namespace std;
 
 // Header file for the classes stored in the TTree if any.
 
@@ -20,10 +24,10 @@ public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
 
-   std::string ftarget;    // The target name  // ------------------------------->>>>>>>>>>>>>Mariana
-   std::string fbeam_en;   // The beam energy  // ------------------------------->>>>>>>>>>>>>Mariana
+   std::string ftarget;    // The target name  
+   std::string fbeam_en;   // The beam energy  
 
-   Fiducial   *fiducialcut;
+/*   Fiducial   *fiducialcut;*/
    int fTorusCurrent;
    std::string target_name;
    std::map<std::string,double> en_beam;
@@ -253,9 +257,11 @@ public :
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
-   void SetFiducialCutParameters(std::string beam_en) {
+
+/*   void SetFiducialCutParameters(std::string beam_en) {
      fiducialcut->SetFiducialCutParameters(beam_en);
    }
+
    Bool_t EFiducialCut(std::string beam_en, TVector3 momentum) {
      return fiducialcut->EFiducialCut(beam_en, momentum);
    }
@@ -276,25 +282,12 @@ public :
    }
    Bool_t GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t sector, Float_t *EPhiMin, Float_t *EPhiMax) {
      return fiducialcut->GetEPhiLimits(beam_en, momentum, theta, sector, EPhiMin, EPhiMax);
-   }
-   void prot3_rot_func(std::string beam_en, TVector3 V3q, TVector3 V3prot[3],TVector3  V3prot_uncorr[3],TLorentzVector V4el,double Ecal_3pto2p[][2],double  pmiss_perp_3pto2p[][2],double  P3pto2p[][2],double N_p1[3],double Ecal_3pto1p[3],double  pmiss_perp_3pto1p[3], double *N_p3det);
-   void prot2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot[2],TVector3  V3prot_uncorr[2],TLorentzVector V4el,double Ecal_2pto1p[2],double  pmiss_perp_2pto1p[2],double  P2pto1p[2], double *Nboth);
-   void prot1_pi1_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi, int q_pi,bool radstat, double *N_pi_p,double *N_nopi_p);
-   void prot1_pi2_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi[2], int q_pi[2],bool radstat[2], double *P_1p0pi,double P_1p1pi[2]);
-   void prot1_pi3_rot_func(std::string beam_en, TVector3 V3q, TVector3  V3prot,TVector3 V3pi[3], int q_pi[3],bool radstat[3],double *P_tot);
-   void prot2_pi1_rot_func(std::string beam_en, TVector3 V3q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_1pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_2p1pi_to2p0pi[2],double p_miss_perp_2p1pi_to2p0pi[2],double P_2p1pito2p0pi[2],double P_2p1pito1p1pi[2],double P_2p1pito1p0pi[2],double *P_tot);
-   void prot2_pi2_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_2prot_corr[2],TVector3 V3_2prot_uncorr[2],TVector3 V3_2pi[2], int q_pi[2],bool radstat[2],TLorentzVector V4_el, double Ecal_2p2pi[2],double p_miss_perp_2p2pi[2],double P_tot_2p[2]);
-   void prot3_pi1_rot_func(std::string beam_en, TVector3 V3_q,TVector3 V3_3prot_corr[3],TVector3 V3_3prot_uncorr[3],TVector3 V3_pi, int q_pi,bool radstat,TLorentzVector V4_el, double Ecal_3p1pi[3],double p_miss_perp_3p1pi[3],double P_tot_3p[3]);
-   void pi1_rot_func(std::string beam_en, TVector3 V3_pi, int q_pi,bool radstat,TVector3 V3_q,double *P_pi);
-   void pi2_rot_func(std::string beam_en, TVector3 V3_pi[2], int q_pi[2],bool radstat[2], TVector3 V3_q,double *P_0pi,double P_1pi[2]);
-   void pi3_rot_func(std::string beam_en, TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,double *P_0pi,double P_1pi[3],double P_320[3],double P_3210[][2]);
-   void pi4_rot_func(std::string beam_en, TVector3 V3_pi[4], int q_pi[4],bool radstat[4], TVector3 V3_q,double *P_0pi,double *P_410,double *P_420,double *P_4210,double *P_430,double *P_4310,double *P_4320,double *P_43210);
-
+   }*/
 
 };
 
 #endif
-#ifdef E2A_EP_C
+#ifdef FILTERDATA_C
 
 FilterData::FilterData(TTree *tree) : fChain(0)
 {
@@ -302,7 +295,7 @@ FilterData::FilterData(TTree *tree) : fChain(0)
 // used to generate this class and read the Tree.
    if (tree == 0) {
 
-     fiducialcut = new Fiducial();
+//*     fiducialcut = new Fiducial();*/
      ftarget = a_target;
      fbeam_en=a_beam_en;
      fTorusCurrent = 0;

@@ -1162,8 +1162,8 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 
     if(jentry == 0){ //was n_evt == 1 before but jentry = n_evnt - 1
           //SetMomCorrParameters(); Functions is missing F.H. 08/01/19
-          fiducialcut->SetConstants(fTorusCurrent, target_name, en_beam, en_beam_Ecal, en_beam_Eqe);
-          SetFiducialCutParameters(fbeam_en);
+          fiducialcut->SetConstants(fTorusCurrent, target_name, en_beam);
+          fiducialcut->SetFiducialCutParameters(fbeam_en);
     }
 
     int n_elec = 0;

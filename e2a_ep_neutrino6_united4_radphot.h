@@ -7,6 +7,7 @@
 #include <TVector3.h>
 #include <TLorentzVector.h>
 #include "Fiducial.h"
+#include "Subtraction.h"
 
 // Header file for the classes stored in the TTree if any.
 
@@ -21,6 +22,7 @@ public :
    std::string fbeam_en;   // The beam energy  // ------------------------------->>>>>>>>>>>>>Mariana
 
    Fiducial   *fiducialcut;
+   Subtraction *rotation;
    int fTorusCurrent;
    std::string target_name;
    std::map<std::string,double> en_beam;
@@ -250,7 +252,7 @@ public :
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
-   
+
    Bool_t EFiducialCut(std::string beam_en, TVector3 momentum) {
      return fiducialcut->EFiducialCut(beam_en, momentum);
    }
@@ -298,8 +300,9 @@ e2a_ep_neutrino6_united4_radphot::e2a_ep_neutrino6_united4_radphot(std::string a
    if (tree == 0) {
 
      fiducialcut = new Fiducial();
+     rotation = new Subtraction();
      ftarget = a_target;
-     fbeam_en=a_beam_en;
+     fbeam_en= a_beam_en;
      fTorusCurrent = 0;
 
 

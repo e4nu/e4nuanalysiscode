@@ -250,9 +250,7 @@ public :
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
-   void SetFiducialCutParameters(std::string beam_en) {
-     fiducialcut->SetFiducialCutParameters(beam_en);
-   }
+   
    Bool_t EFiducialCut(std::string beam_en, TVector3 momentum) {
      return fiducialcut->EFiducialCut(beam_en, momentum);
    }

@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <TF1.h>
+
 #include <iostream>
 #include <fstream>
 #include <iomanip>

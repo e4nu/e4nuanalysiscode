@@ -69,13 +69,10 @@ void Fiducial::InitEClimits()
    rightside_lim6_ec->SetParameters(-0.11,-360,0.03);
 }
 
-void Fiducial::SetConstants(int in_TorusCurrent, std::string in_target_name, std::map<std::string,double> in_en_beam, std::map<std::string,double> in_en_beam_Ecal, std::map<std::string,double> in_en_beam_Eqe) {
+void Fiducial::SetConstants(int in_TorusCurrent, std::string in_target_name, std::map<std::string,double> in_en_beam) {
   fTorusCurrent = in_TorusCurrent;
   target_name = in_target_name;
   en_beam = in_en_beam;
-  en_beam_Ecal = in_en_beam_Ecal;
-  en_beam_Eqe = in_en_beam_Eqe;
-
 }
 
 void Fiducial::SetFiducialCutParameters(std::string beam_en){

@@ -7,6 +7,7 @@
 #include <TVector3.h>
 #include <TLorentzVector.h>
 #include "Fiducial.h"
+#include "Subtraction.h"
 
 // Header file for the classes stored in the TTree if any.
 
@@ -20,7 +21,9 @@ public :
    std::string ftarget;    // The target name  // ------------------------------->>>>>>>>>>>>>Mariana
    std::string fbeam_en;   // The beam energy  // ------------------------------->>>>>>>>>>>>>Mariana
 
+   const int N_tot = 10;
    Fiducial   *fiducialcut;
+   Subtraction *rotation;
    int fTorusCurrent;
    std::string target_name;
    std::map<std::string,double> en_beam;
@@ -227,6 +230,7 @@ public :
    virtual void     LoopCLAS();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
+
    void SetFiducialCutParameters(std::string beam_en) {
      fiducialcut->SetFiducialCutParameters(beam_en);
    }
@@ -277,8 +281,9 @@ genie_analysis::genie_analysis(std::string a_target,std::string a_beam_en, TTree
    if (tree == 0) {
 
      fiducialcut = new Fiducial();
+     rotation = new Subtraction();
      ftarget = a_target;
-     fbeam_en=a_beam_en;
+     fbeam_en = a_beam_en;
      fTorusCurrent = 0;
 
 
@@ -299,7 +304,8 @@ genie_analysis::genie_analysis(std::string a_target,std::string a_beam_en, TTree
       TChain * chain = new TChain("gst","genie_analysis");
 //      chain->Add(Form("/work/clas/clase2/Mariana/data/e2a_%s_%s_v1/*.root/h10", ftarget.c_str(), fbeam_en.c_str()));
 //     chain->Add(Form("../mySamples/hA2018/eresmaid_12C_2_261_hA2018_FSI_NoRadCorr.root"));
-      chain->Add(Form("../mySamples/Data/eresmaid_12C_2_261_Data_FSI.root"));
+    //  chain->Add(Form("../mySamples/Data/eresmaid_12C_2_261_Data_FSI.root"));
+        chain->Add(Form("files/eresmaid_12C_2_261_Data_FSI.root"));
       //chain->Add("datafile.root/h10");
 
       tree = chain;

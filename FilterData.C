@@ -35,73 +35,31 @@ extern Float_t ProtonMomCorrection_He3_4Cell(std::string atarget, TLorentzVector
 
 //e- E_tot/p vs p PID cut
 extern Double_t FSum_e(Double_t *x,Double_t *par);
-//{
-//  if(x[0]<par[1])       return el_Epratio_mean->EvalPar(x)+par[0]*el_Epratio_sig->EvalPar(x);
-//  else if(x[0]>=par[1]) return el_Epratio_mean->Eval(par[1])+par[0]*el_Epratio_sig->Eval(par[1]);
-//  else return -1;
-//}
 
 extern Double_t FSub_e(Double_t *x,Double_t *par);
-//{
-//  if(x[0]<par[1])       return el_Epratio_mean->EvalPar(x)-par[0]*el_Epratio_sig->EvalPar(x);
-//  else if(x[0]>=par[1]) return el_Epratio_mean->Eval(par[1])-par[0]*el_Epratio_sig->Eval(par[1]);
-//  else return -1;
-//}
 
 //proton Delta_t vs momentum PID cut
 
 extern Double_t FSum_prot(Double_t *x, Double_t *par);
-//{   //the 2 parameters are the cut range and momentum limit
-//  if(x[0] < par[1])         return prot_deltat_mean->EvalPar(x)+par[0]*prot_deltat_sig->EvalPar(x);
-//  else if(x[0] >= par[1])   return prot_deltat_mean->Eval(par[1])+par[0]*prot_deltat_sig->Eval(par[1]);
-//  else return -1;
-//}
-
 extern Double_t FSub_prot(Double_t *x,Double_t *par);
-//{
-//  if(x[0] < par[1])         return prot_deltat_mean->EvalPar(x)-par[0]*prot_deltat_sig->EvalPar(x);
-//  else if(x[0] >= par[1])   return prot_deltat_mean->Eval(par[1])-par[0]*prot_deltat_sig->Eval(par[1]);
-//  else return -1;
-//}
 
 //To Draw two sigma pid cuts lines on Delta t vs p distribution of negative pions
 
 extern Double_t FSum_pimi(Double_t *x,Double_t *par);
-//{
-//  if(x[0]<par[1]) return pimi_deltat_mean->EvalPar(x)+par[0]*pimi_deltat_sig->EvalPar(x);
-//  else if(x[0]>=par[1])return pimi_deltat_mean->Eval(par[1])+par[0]*pimi_deltat_sig->Eval(par[1]);
-//  else return -1;
-//}
 
 extern Double_t FSub_pimi(Double_t *x,Double_t *par);
-//{
-//  if(x[0]<par[1]) return pimi_deltat_mean->EvalPar(x)-par[0]*pimi_deltat_sig->EvalPar(x);
-//  else if(x[0]>=par[1])return pimi_deltat_mean->Eval(par[1])-par[0]*pimi_deltat_sig->Eval(par[1]);
-//  else return -1;
-//}
 
 //To Draw two sigma pid cuts lines on Delta t vs p distribution of negative pions
 extern Double_t FSum_pipl(Double_t *x,Double_t *par);
-//{
-
-//  if(x[0]<par[1])  return pipl_deltat_mean->EvalPar(x)+par[0]*pipl_deltat_sig->EvalPar(x);
-//  else if(x[0]>=par[1]) return pipl_deltat_mean->Eval(par[1])+par[0]*pipl_deltat_sig->Eval(par[1]);
-//  else return -1;
-//}
 
 extern Double_t FSub_pipl(Double_t *x,Double_t *par);
-//{
-//  if(x[0]<par[1]) return pipl_deltat_mean->EvalPar(x)-par[0]*pipl_deltat_sig->EvalPar(x);
-//  else if(x[0]>=par[1])return pipl_deltat_mean->Eval(par[1])-par[0]*pipl_deltat_sig->Eval(par[1]);
-//  else return -1;
-//}
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+int CounterEvents = 0;
+
 void FilterData::Loop()
 {
-
-std::cout << "hello loop " << std::endl;
 
 	std::map<std::string,double>vert_min;
 	std::map<std::string,double>vert_max;
@@ -708,6 +666,7 @@ std::cout << "hello loop " << std::endl;
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
 
 		Long64_t ientry = LoadTree(jentry);
+		int nb = GetEntry(jentry);
 		if (ientry < 0) break;
 
 		if( jentry%200000 == 0 )
@@ -747,11 +706,11 @@ std::cout << "hello loop " << std::endl;
 		int n_elec = 0;
 		const int ind_em=0; //Index for electron
 		if (ec[ind_em] <=0) {
-			std::cout << "Possible problem with making electron ec vector. EC index below/equal Zero: ec[ind_em] =  " << ec[ind_em] << std::endl;
+//			std::cout << "Possible problem with making electron ec vector. EC index below/equal Zero: ec[ind_em] =  " << ec[ind_em] << std::endl;
 			continue;
 		}
 		if (sc[ind_em] <=0) {
-			std::cout << "Possible problem with making electron ec vector. SC index below/equal zero: sc[ind_em] =  " << sc[ind_em] << std::endl;
+//			std::cout << "Possible problem with making electron ec vector. SC index below/equal zero: sc[ind_em] =  " << sc[ind_em] << std::endl;
 			continue;
 		}
 
@@ -1007,6 +966,8 @@ std::cout << "hello loop " << std::endl;
 		int IndexInFinalStateParticleArray = 0;
 
 		// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+		CounterEvents++;
 
 		//Loop for Hadrons, electrons have i=0
 	
@@ -1303,108 +1264,11 @@ std::cout << "hello loop " << std::endl;
 
 	} //end of event loop (jentry)
 
+	std::cout << "CounterEvents = " << CounterEvents << std::endl;
+
 	gStyle->SetOptFit(1);
 	gDirectory->Write("hist_Files", TObject::kOverwrite);
 
 } //End Loop function
-
-// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-//double vz_corr(TF1 *vz_corr_func, double phi,double theta)            //correction function for vertex , takes the arguments in Deg.
-//{
-//  //  return (0.2)*cos((phi+47.9)*TMath::DegToRad())/tan(theta*TMath::DegToRad());
-//   // vertex correction function obtained for the empty runs 18393 and 18394, works fine for 3He runs at 2.261[GeV] beam energy
-
-//  return (-(vz_corr_func->GetParameter(1)))*cos((phi-(vz_corr_func->GetParameter(2)))*TMath::DegToRad())/tan(theta*TMath::DegToRad());
-//  //vertex correction function for 4He runs at 2.261[GeV] beam energy obtained for the empty run18283
-
-//}
-
-//// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-//TVector3 FindUVW(TVector3 xyz)
-//{
-//  // get the U V W distance to EC edge for the purpose of geometry cut
-//  // ported from Stepan's function ec_xyz_duvw. the input is lab coordinates
-//  // of the EC hit.
-//  Float_t x = xyz.X(); Float_t y = xyz.Y(); Float_t z = xyz.Z();
-//  Float_t xi,yi,zi,u,v,w;
-//  Float_t ec_the = 0.4363323;
-//  Float_t ylow = -182.974; Float_t yhi = 189.956;
-//  Float_t tgrho=1.95325; Float_t sinrho=0.8901256; Float_t cosrho=0.455715;
-//  Float_t phi=xyz.Phi()*180./TMath::Pi(); if(phi<-30) phi+=360;
-//  Int_t ec_sect = (phi+30)/60.; if(ec_sect<0)ec_sect=0; if(ec_sect>5)ec_sect=5;
-//  Float_t ec_phi = ec_sect*TMath::Pi()/3.;
-//  xi = -x*sin(ec_phi) + y*cos(ec_phi);
-//  yi = x*cos(ec_the)*cos(ec_phi) + y*cos(ec_the)*sin(ec_phi) - z*sin(ec_the);
-//  zi = x*sin(ec_the)*cos(ec_phi) + y*sin(ec_the)*sin(ec_phi) + z*cos(ec_the);
-//  zi -= 510.32;
-//  u = (yi-ylow)/sinrho;
-//  v = (yhi-ylow)/tgrho - xi + (yhi-yi)/tgrho;
-//  w = ((yhi-ylow)/tgrho + xi + (yhi-yi)/tgrho)/2./cosrho;
-//  TVector3 uvw(u,v,w);
-//  return uvw;
-//}
-
-//// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-//Bool_t CutUVW(TVector3 ecxyz)
-//{
-//  // Cut the edges of EC according to UVW distance threshold defined by par_EcUVW array.
-//  // If it passes the cut, return true, if not return false
-//  TVector3 ecuvw = FindUVW(ecxyz);
-//  Float_t phi=ecxyz.Phi()*180/TMath::Pi(); if(phi<-30) phi+=360;
-//  Int_t sector = (phi+30)/60; if(sector<0)sector=0; if(sector>5) sector=5;
-//  return (ecuvw.X()>par_EcUVW[sector][0] && ecuvw.Y()<par_EcUVW[sector][1] && ecuvw.Z()<par_EcUVW[sector][2]);
-//}
-
-//// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-//Float_t ProtonMomCorrection_He3_4Cell(std::string atarget, TLorentzVector V4Pr, Float_t vertex_p ){
-
-//  // Low energy proton momentum correction function
-//  // to be used with He3 target (4th target cell) (RUN # 18338-18438)
-//  // Input: Proton momentum 4 vector, and Z coord of proton vertex.
-//  // Returns the corrected MAGNITUDE of the proton momentum,
-
-//  Float_t  up_parm[6]   = {2.001,  -14.94,  47.2,   -77.59,  65.73,  -22.85};
-//  Float_t  down_parm[6] = {1.4165, -13.004, 48.897, -92.443, 86.984, -32.424};
-
-//  Float_t  proton_p     = V4Pr.Vect().Mag();
-//  Float_t  thetta_p     = V4Pr.Vect().Theta()*57.3;
-//  Float_t  polinom_up   = (((((up_parm[5]*proton_p+up_parm[4])*proton_p+up_parm[3])
-//			  *proton_p+up_parm[2])*proton_p+up_parm[1])*proton_p+up_parm[0]);
-
-//  Float_t polinom_down = (((((down_parm[5]*proton_p+down_parm[4])*proton_p+down_parm[3])
-//			  *proton_p+down_parm[2])*proton_p+down_parm[1])*proton_p+down_parm[0]);
-
-
-//  if(polinom_up<0.  ) polinom_up   = 0;
-//  if(polinom_down<0.) polinom_down = 0;
-
-//  Float_t  p_corr_up   = proton_p + proton_p*polinom_up;
-//  Float_t  p_corr_down = proton_p + proton_p*polinom_down;
-
-//  p_corr_down=p_corr_down*4./3-proton_p/3;//artificial cut to match with Bins distribution
-//  p_corr_up=p_corr_down;//artificial cut to match with Bins distribution
-
-//  if((thetta_p>=70.)) return p_corr_up;
-
-//  if((thetta_p < 30.)||(vertex_p>=(1/20.*thetta_p-5/2))||
-//     (thetta_p<=(-200*proton_p+86))){
-//    return p_corr_down;
-//  }
-
-
-
-//  if((thetta_p<=70.)&&(thetta_p>=30)&&
-//     (thetta_p>(20*vertex_p+50))){
-//    return p_corr_up;
-//  }else if(proton_p<0.57){
-//    return p_corr_down;
-//  } else { return p_corr_up;}
-
-//  return -1.;
-//}
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

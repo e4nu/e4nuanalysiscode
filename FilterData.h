@@ -6,7 +6,7 @@
 #include <TFile.h>
 #include <TVector3.h>
 #include <TLorentzVector.h>
-/*#include "Fiducial.h"*/
+#include "Fiducial.h"
 
 #include <iostream>
 
@@ -16,8 +16,8 @@
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
-std::string a_target = "C12";
-std::string a_beam_en = "2261";
+//std::string a_target = "C12";
+//std::string a_beam_en = "2261";
 
 class FilterData {
 public :
@@ -27,7 +27,7 @@ public :
    std::string ftarget;    // The target name  
    std::string fbeam_en;   // The beam energy  
 
-/*   Fiducial   *fiducialcut;*/
+   Fiducial   *fiducialcut;
    int fTorusCurrent;
    std::string target_name;
    std::map<std::string,double> en_beam;
@@ -248,7 +248,7 @@ public :
    TBranch        *b_lec_z;   //!
    TBranch        *b_lec_c2;   //!
 
-   FilterData(TTree *tree=0);
+   FilterData(std::string a_target,std::string a_beam_en, TTree *tree=0);
    virtual ~FilterData();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -258,7 +258,7 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 
-/*   void SetFiducialCutParameters(std::string beam_en) {
+   void SetFiducialCutParameters(std::string beam_en) {
      fiducialcut->SetFiducialCutParameters(beam_en);
    }
 
@@ -282,20 +282,20 @@ public :
    }
    Bool_t GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t sector, Float_t *EPhiMin, Float_t *EPhiMax) {
      return fiducialcut->GetEPhiLimits(beam_en, momentum, theta, sector, EPhiMin, EPhiMax);
-   }*/
+   }
 
 };
 
 #endif
 #ifdef FILTERDATA_C
 
-FilterData::FilterData(TTree *tree) : fChain(0)
+FilterData::FilterData(std::string a_target,std::string a_beam_en, TTree *tree) : fChain(0)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
 
-//*     fiducialcut = new Fiducial();*/
+     fiducialcut = new Fiducial();
      ftarget = a_target;
      fbeam_en=a_beam_en;
      fTorusCurrent = 0;

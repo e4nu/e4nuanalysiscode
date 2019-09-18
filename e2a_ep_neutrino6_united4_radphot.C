@@ -20,12 +20,17 @@
 #include <TF1.h>
 #include <TGraph.h>
 
+// Loading all the constants from Constant.h (e_mass, m_prot, m_pimi, m_pipl, m_pion, m_neut = 0.939565,                                                              
+// H3_bind_en, He4_bind_en, C12_bind_en, B_bind_en, He3_bind_en, D2_bind_en, Fe_bind_en, Mn_bind_en
+
 using namespace std;
-using namespace Constants;
 
 void SetFiducialCutParameters(std::string beam_en); // Load Fidicual Parameters for 1.1 and 4.4 GeV from file
 //void SetMomCorrParameters();
 
+// Also used by FilterData.{C,h}
+
+TF1 *pipl_deltat_sig,*pipl_deltat_mean,*pimi_deltat_sig,*pimi_deltat_mean, *prot_deltat_sig, *prot_deltat_mean,*el_Epratio_sig,*el_Epratio_mean;
 
 double vz_corr(TF1 *vz_corr_func, double phi,double theta);
 TVector3 FindUVW(TVector3 xyz);
@@ -147,7 +152,8 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
   if (fChain == 0) return;
 
   Long64_t nentries = fChain->GetEntriesFast();
-  //nentries =8000000;
+  //      nentries =8000000;
+  //     nentries =1000000;
 
   double N_prot1 = 0, N_prot2 = 0,N_prot_both = 0;
   double eps;
@@ -1127,6 +1133,8 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
   h1_E_tot_2p1pi_1p0pi->Sumw2();
   h1_E_rec_2p1pi_1p0pi->Sumw2();
 
+  int CounterEvents = 0;
+
 /** Beginning of Event Loop **/
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
     //for (Long64_t jentry=0; jentry<200000;jentry++) {
@@ -1170,7 +1178,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
     int n_elec = 0;
     const int ind_em=0; //Index for electron
     if (ec[ind_em] <=0) {
-      std::cout << "Possible problem with making electron ec vector. EC index below/equal Zero: ec[ind_em] =  " << ec[ind_em] << std::endl;
+      //      std::cout << "Possible problem with making electron ec vector. EC index below/equal Zero: ec[ind_em] =  " << ec[ind_em] << std::endl;
       continue;
     }
     if (sc[ind_em] <=0) {
@@ -1473,6 +1481,8 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
     const double phot_e_phidiffcut=30; //electron - photon phi difference cut
     double photon_ece;
     const double EC_sampling_frac = 0.31; //for photons
+
+    CounterEvents ++;
 
    //Loop for Hadrons, electrons have i=0
     for( int i = 1; i < TMath::Min(gpart, 20); i++ )
@@ -3461,7 +3471,8 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
   TH1F *h_Erec_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*)  h_Erec_subtruct_piplpimi_2p1pi_1p1pi->Clone("h_Erec_subtruct_piplpimi_2p1pi_1p0pi");
   h_Erec_subtruct_piplpimi_2p1pi_1p0pi->Add(h1_E_rec_2p1pi_1p0pi,-1);
 
-  TH1F *h_Etot_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*) h_Etot_subtruct_piplpimi_2p1pi_1p1pi->Clone("h_Etot_subtruct_piplpimi_2p1pi_1p0pi");
+  //  TH1F *h_Etot_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*) h_Etot_subtruct_piplpimi_2p1pi_1p1pi->Clone("h_Etot_subtruct_piplpimi_2p1pi_1p0pi");
+  TH1F *h_Etot_subtruct_piplpimi_2p1pi_1p0pi=(TH1F*) h_Etot_subtruct_piplpimi_2p1pi_1p1pi->Clone("epRecoEnergy_slice_0");
   h_Etot_subtruct_piplpimi_2p1pi_1p0pi->Add(h1_E_tot_2p1pi_1p0pi,-1);
 
   TH1F *h_Etot_subtruct_piplpimi09_2p1pi_1p0pi=(TH1F*)  h_Etot_subtruct_piplpimi09_2p1pi_1p1pi->Clone("h_Etot_subtruct_piplpimi09_2p1pi_1p0pi");
@@ -3551,6 +3562,8 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
   gDirectory->Write("hist_Files", TObject::kOverwrite);
   // skim_tree->AutoSave();
 
+
+  std::cout << "CounterEvents = " << CounterEvents << std::endl;
 
   delete[]  pperp_cut;
   delete[] Ecal_lowlim;

@@ -22,8 +22,9 @@
 #include <TGraph.h>
 
 using namespace std;
-using namespace Constants;
 
+// Loading all the constants from Constant.h (e_mass, m_prot, m_pimi, m_pipl, m_pion, m_neut = 0.939565,
+// H3_bind_en, He4_bind_en, C12_bind_en, B_bind_en, He3_bind_en, D2_bind_en, Fe_bind_en, Mn_bind_en
 
 void genie_analysis::Loop()
 {

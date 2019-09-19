@@ -10,7 +10,7 @@ CXXFLAGS  += -std=c++11 -Wall -Wshadow -Warray-bounds -Wmissing-field-initialize
 LD        := g++
 LDFLAGS   := $(ROOTLDFLAGS)
 
-OBJECTS1   := run_e2a_ep_neutrino6_united4_radphot.o Fiducial.o Subtraction.o e2a_ep_neutrino6_united4_radphot.o
+OBJECTS1   := FilterData.o run_e2a_ep_neutrino6_united4_radphot.o Fiducial.o e2a_ep_neutrino6_united4_radphot.o
 OBJECTS2   := Subtraction.o run_genie_analysis.o Fiducial.o genie_analysis.o
 
 

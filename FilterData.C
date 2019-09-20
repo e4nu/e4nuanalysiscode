@@ -1088,7 +1088,7 @@ void FilterData::Loop()
 							double PiMinusP = V3_pimi.Mag();
 							double PiMinusE = TMath::Sqrt(PiMinusP*PiMinusP + m_pimi * m_pimi);
 
-							genie_pdgf[IndexInFinalStateParticleArray] = id[i];
+							genie_pdgf[IndexInFinalStateParticleArray] = -211;
 							genie_Ef[IndexInFinalStateParticleArray] = PiMinusE;
 							genie_pxf[IndexInFinalStateParticleArray] = V3_pimi.X();
 							genie_pyf[IndexInFinalStateParticleArray] = V3_pimi.Y();
@@ -1151,7 +1151,7 @@ void FilterData::Loop()
 							double PiPlusP = V3_pipl.Mag();
 							double PiPlusE = TMath::Sqrt(PiPlusP*PiPlusP + m_pipl * m_pipl);
 
-							genie_pdgf[IndexInFinalStateParticleArray] = id[i];
+							genie_pdgf[IndexInFinalStateParticleArray] = 211;
 							genie_Ef[IndexInFinalStateParticleArray] = PiPlusE;
 							genie_pxf[IndexInFinalStateParticleArray] = V3_pipl.X();
 							genie_pyf[IndexInFinalStateParticleArray] = V3_pipl.Y();
@@ -1160,7 +1160,7 @@ void FilterData::Loop()
 							genie_cthf[IndexInFinalStateParticleArray] = V3_pipl.CosTheta();
 							IndexInFinalStateParticleArray++;
 
-							// ---------------------------------------------------------------------------------------------------------------------------------------------
+							// -----------------------------------------------------------------------------------------------------------------------------------
 
 						} //vert cut ends
 
@@ -1209,7 +1209,7 @@ void FilterData::Loop()
 
 						// apapadop
 
-						genie_pdgf[IndexInFinalStateParticleArray] = id[i];
+						genie_pdgf[IndexInFinalStateParticleArray] = 22;
 						genie_Ef[IndexInFinalStateParticleArray] = V3_phot_angles.Mag();
 						genie_pxf[IndexInFinalStateParticleArray] = V3_phot_angles.X();
 						genie_pyf[IndexInFinalStateParticleArray] = V3_phot_angles.Y();

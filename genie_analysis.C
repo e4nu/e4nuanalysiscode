@@ -3156,6 +3156,8 @@ void genie_analysis::LoopCLAS()
 
     } //end of hadron loop
 
+std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " << num_pipl << "  num_pimi = " << num_pimi << std::endl;
+
     //Filling Histograms with multiplicities
     h1_Npi->Fill(num_pi);
     h1_Nprot->Fill(num_p);

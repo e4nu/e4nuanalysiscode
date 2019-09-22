@@ -1072,7 +1072,7 @@ void FilterData::Loop()
 					if(PimiFiducialCut(fbeam_en, V3_pimi, &pimi_phimin, &pimi_phimax)) {  //Pi minus fiducial cuts
 
 						//main vertex cut for pi minus
-						if(abs(el_vert_corr-pimi_vert_corr) < pimi_vertcut) {
+						if(fabs(el_vert_corr-pimi_vert_corr) < pimi_vertcut) {
 
 							num_pimi = num_pimi + 1;
 							num_pi = num_pi + 1;
@@ -1136,7 +1136,7 @@ void FilterData::Loop()
 
 					if (PiplFiducialCut(fbeam_en, V3_pipl, &pipl_phimin, &pipl_phimax)){ //Pi Plus fiducial cut
 
-						if (abs(el_vert_corr-pipl_vert_corr) < pipl_vertcut) { //pi plus vertex cut
+						if (fabs(el_vert_corr-pipl_vert_corr) < pipl_vertcut) { //pi plus vertex cut
 							num_pipl = num_pipl + 1;
 							num_pi  = num_pi + 1;
 							num_pi_phot = num_pi_phot + 1;
@@ -1227,7 +1227,7 @@ void FilterData::Loop()
 
 						//Cut on Radiation photon via angle with respect to the electron
 						//within 40 degrees in theta and 30 degrees in phi
-						if(V3_phot_angles.Angle(V3_el)*TMath::RadToDeg() < phot_rad_cut && abs(neut_phi_mod-el_phi_mod) < phot_e_phidiffcut ) {
+						if(V3_phot_angles.Angle(V3_el)*TMath::RadToDeg() < phot_rad_cut && fabs(neut_phi_mod-el_phi_mod) < phot_e_phidiffcut ) {
 							ec_radstat_n[num_pi_phot - 1] = true; //select radiation photons
 						}
 						if(!ec_radstat_n[num_pi_phot - 1]) num_pi_phot_nonrad = num_pi_phot_nonrad + 1;

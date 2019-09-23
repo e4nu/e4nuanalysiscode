@@ -1447,9 +1447,13 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
     int num_pipl = 0;
     int num_pi_phot_nonrad=0; //counting all pions and non-radiation photons
     //Index and number variables for neutral particles
-    int ec_index_n[20];
     int ec_num_n = 0;
     bool ec_radstat_n[20] = {false};
+
+    //Setting arrays
+    for (int i = 0; i<20; i++) {
+      index_p[i] = -1;   index_pi[i] = -1;   index_pipl[i] = -1;   index_pimi[i] = -1;   ind_pi_phot[i] = -1;
+    }
 
     double pimi_phi, pimi_phi_mod, pimi_theta; //Pi Minus
     double pipl_phi, pipl_phi_mod, pipl_theta; //Pi Plus
@@ -1726,7 +1730,6 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 	                 if(Phot_fid(V3_phot_angles)){ //photon fiducial function
 
                      ec_num_n = ec_num_n + 1;
-	                   ec_index_n[ec_num_n - 1] = i;
 	                   num_pi_phot = num_pi_phot + 1;
 	                   ind_pi_phot[num_pi_phot - 1] = i;
                      //Photon EC energy deposit

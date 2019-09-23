@@ -3080,7 +3080,6 @@ void genie_analysis::LoopCLAS()
     int num_pipl = 0;
     int num_pi_phot_nonrad=0; //counting all pions and non-radiation photons
     //Index and number variables for neutral particles
-    int ec_index_n[20];
     int ec_num_n = 0;
     bool ec_radstat_n[20] = {false};
 
@@ -3133,7 +3132,6 @@ void genie_analysis::LoopCLAS()
        if (pdgf[i] == 22) { // && pf[i] > 0.3) {
 
             /*  ec_num_n = ec_num_n + 1;
-              ec_index_n[ec_num_n - 1] = i;
               num_pi_phot = num_pi_phot + 1;
               ind_pi_phot[num_pi_phot - 1] = i;*/ //no events with photons for now F.H. 28.08.19
        				PhotonID.push_back(i);

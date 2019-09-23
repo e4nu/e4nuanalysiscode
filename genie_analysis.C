@@ -3068,9 +3068,10 @@ void genie_analysis::LoopCLAS()
     int ind_pi_phot[20];
     int index_pipl[20]; //index for each pi plus
     int index_pimi[20]; //index for each pi minus
+    bool ec_radstat_n[20];
     //Setting arrays
     for (int i = 0; i<20; i++) {
-      index_p[i] = -1;   index_pi[i] = -1;   index_pipl[i] = -1;   index_pimi[i] = -1;   ind_pi_phot[i] = -1;
+      index_p[i] = -1;   index_pi[i] = -1;   index_pipl[i] = -1;   index_pimi[i] = -1;   ind_pi_phot[i] = -1; ec_radstat_n[i] = false;
     }
     //Number of hadrons
     int num_p = 0;
@@ -3081,7 +3082,6 @@ void genie_analysis::LoopCLAS()
     int num_pi_phot_nonrad=0; //counting all pions and non-radiation photons
     //Index and number variables for neutral particles
     int ec_num_n = 0;
-    bool ec_radstat_n[20] = {false};
 
   //  const double phot_rad_cut = 40;
   //  const double phot_e_phidiffcut=30; //electron - photon phi difference cut
@@ -3137,14 +3137,13 @@ void genie_analysis::LoopCLAS()
        				PhotonID.push_back(i);
               /* WARNING: THe folloiwng needs to be implemented for simulation data F.H. 24.08.19
               //Cut on Radiation photon via angle with respect to the electron
-              double neut_phi = TMath::ATan2(cy[i],cx[i])*TMath::RadToDeg();
-              double neut_phi_mod = neut_phi + 30; //Add 30 degree
+              V3_phot_angles.SetXYZ(pxf[i],pyf[i],pzf[i]);
+              double neut_phi_mod = V3_phot_angles.Phi()*TMath::RadToDeg() + 30; //Add 30 degree
               if (neut_phi_mod < 0) neut_phi_mod = neut_phi_mod + 360;  //Neutral particle is between 0 and 360 degree
 
               //within 40 degrees in theta and 30 degrees in phi
-               V3_phot_angles.SetXYZ(p[i]*cx[i],p[i]*cy[i],p[i]*cz[i]);
-              if(V3_phot_angles.Angle(V3_el)*TMath::RadToDeg() < phot_rad_cut && abs(neut_phi_mod-el_phi_mod) < phot_e_phidiffcut ) {
-                  ec_radstat_n[num_pi_phot] = true; //select radiation photons
+              if(V3_phot_angles.Angle(V3_el)*TMath::RadToDeg() < phot_rad_cut && fabs(neut_phi_mod-el_phi_mod) < phot_e_phidiffcut ) {
+                  ec_radstat_n[num_pi_phot - 1] = true; //select radiation photons
 
               }
               if(!ec_radstat_n[num_pi_phot]) num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
@@ -3154,7 +3153,7 @@ void genie_analysis::LoopCLAS()
 
     } //end of hadron loop
 
-std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " << num_pipl << "  num_pimi = " << num_pimi << std::endl;
+//std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " << num_pipl << "  num_pimi = " << num_pimi << std::endl;
 
     //Filling Histograms with multiplicities
     h1_Npi->Fill(num_pi);
@@ -3200,8 +3199,8 @@ std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " <
 
           rotation->prot2_rot_func(V3_2prot_corr, V3_2prot_uncorr, V4_el, E_tot_2p, p_perp_tot_2p, P_N_2p , &N_prot_both);
 
-      //    if(num_pi_phot==0 && N_prot_both!=0){ // no photons for now F.H. 29.8.19
-          if(num_pi == 0 && N_prot_both != 0){
+          if(num_pi_phot==0 && N_prot_both!=0){ // no photons for now F.H. 29.8.19
+	  //          if(num_pi == 0 && N_prot_both != 0){
             double histoweight = 1./Mott_cross_sec; //total weight from 2p acceptance , 1e acceptance, Mott, and GENIE weight
 
             for(int f = 0; f < num_p; f++){    //looping through two protons
@@ -3246,6 +3245,14 @@ std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " <
             }
             else if (num_pipl == 1 && num_pimi == 0) {
               charge = 1;
+            }
+            //radiation status is false if real photon
+            else if (num_pipl == 0 && num_pimi == 0 && (!ec_radstat_n[0]) )  {
+              charge = 0;
+            }
+            //skip radiation photon
+            else if (num_pipl == 0 && num_pimi == 0 && ec_radstat_n[0] ) {
+	            charge = 0;
             }
             else {
               std::cout << "2 proton 1 pi loop Problem with Pion count and identification. Num Pi = " << num_pi << " , Num PiPlus = " << num_pipl << " , Num PiMinus = " << num_pimi << std::endl;
@@ -3350,13 +3357,18 @@ std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " <
               else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
                 q_pi2[i] = -1;
               }
-              else {  std::cout << "WARNING: 2p 2pion event: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+              else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
+                q_pi2[i] = 0;
+              }
+              else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
+		            q_pi2[i] = 0;
+              }
+              else {  std::cout << "WARNING: 2p 2pion event: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
 
               V3_2pi_corr[i].SetXYZ(pxf[index_pi[i]],pyf[index_pi[i]],pzf[index_pi[i]]);
 
 
             }
-
 
             rotation->prot2_pi2_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_2pi_corr,q_pi2,ecstat_pi2 ,V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
 
@@ -3503,13 +3515,17 @@ std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " <
              if ( index_pipl[0] == index_pi[0] ) { //pion is a piplus
                charge = 1;
              }
-             else if ( index_pimi[0] == index_pi[0] ) { //pion is a piminus
-               charge = -1;
+             //radiation status is false if real photon
+             else if (num_pipl == 0 && num_pimi == 0 && (!ec_radstat_n[0]) )  {
+               charge = 0;
+             }
+             //skip radiation photon
+             else if (num_pipl == 0 && num_pimi == 0 && ec_radstat_n[0] ) {
+	       charge = 0;
              }
              else {  std::cout << "WARNING: 3p 1pion event: No charge for one pion could be assigned. Pion number " << index_pi[0] << std::endl; continue; }
 
              V3_pi_corr.SetXYZ(pxf[index_pi[0]],pyf[index_pi[0]],pzf[index_pi[0]]);
-
 
              rotation->prot3_pi1_rot_func(V3_prot_corr,V3_prot_uncorr, V3_pi_corr, charge ,ec_radstat_n[0], V4_el,  Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
 
@@ -3801,8 +3817,13 @@ std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " <
         if ( index_pipl[0] == index_pi[0] ) { //pion is a piplus
           charge = 1;
         }
-        else if ( index_pimi[0] == index_pi[0] ) { //pion is a piminus
-          charge = -1;
+        //radiation status is false if real photon
+        else if (num_pipl == 0 && num_pimi == 0 && (!ec_radstat_n[0]) )  {
+          charge = 0;
+        }
+        //skip radiation photon
+        else if (num_pipl == 0 && num_pimi == 0 && ec_radstat_n[0] ) {
+	         charge = 0;
         }
         else {  std::cout << "WARNING: 1pion events: No charge for one pion could be assigned.  "  << std::endl; continue; }
 
@@ -3836,8 +3857,8 @@ std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " <
             if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
                 q_pi2[i] = 1;
             }
-            else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
-                q_pi2[i] = -1;
+            else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
+	              q_pi2[i] = 0;
             }
             else {  std::cout << "WARNING: 2pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
 
@@ -3882,8 +3903,8 @@ std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " <
             if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
                 q_pi3[i] = 1;
             }
-            else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
-                q_pi3[i] = -1;
+            else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
+	              q_pi3[i] = 0;
             }
             else {  std::cout << "WARNING: 3pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
 
@@ -3942,8 +3963,8 @@ std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " <
            if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
                q_pi4[i] = 1;
            }
-           else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
-               q_pi4[i] = -1;
+           else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
+	             q_pi4[i] = 0;
            }
            else {  std::cout << "WARNING: 4pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
 
@@ -4054,8 +4075,13 @@ std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " <
           if ( index_pipl[0] == index_pi[0] ) { //pion is a piplus
             charge = 1;
           }
-          else if ( index_pimi[0] == index_pi[0] ) { //pion is a piminus
-            charge = -1;
+          //radiation status is false if real photon
+          else if (num_pipl == 0 && num_pimi == 0 && (!ec_radstat_n[0]) )  {
+            charge = 0;
+          }
+          //skip radiation photon
+          else if (num_pipl == 0 && num_pimi == 0 && ec_radstat_n[0] ) {
+	           charge = 0;
           }
           else {  std::cout << "WARNING: 1pion events: No charge for one pion could be assigned.  "  << std::endl; continue; }
 
@@ -4112,8 +4138,8 @@ std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " <
              if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
                  q_pi2[i] = 1;
              }
-             else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
-                 q_pi2[i] = -1;
+             else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
+	                q_pi2[i] = 0;
              }
              else {  std::cout << "WARNING: 1Proton 2pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
 
@@ -4179,14 +4205,15 @@ std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " <
          bool radstat_pi3[N_3pi]={false};
          double P_1p3pi = 0;
 
-         for (int i = 0; i < num_pi; i++) {
+	 //         for (int i = 0; i < num_pi; i++) {
+         for (int i = 0; i < num_pi_phot; i++) {
 
              radstat_pi3[i] = ec_radstat_n[i];
              if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
                  q_pi3[i] = 1;
              }
-             else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
-                 q_pi3[i] = -1;
+             else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
+	               q_pi3[i] = 0;
              }
              else {  std::cout << "WARNING: 3pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
 

@@ -494,17 +494,15 @@ void genie_analysis::Loop()
 		if (!EFiducialCut(fbeam_en,V3_el) ) continue; // Electron theta & phi fiducial cuts
 
 //apapadop
-// WARNING: Needs to be checked 30 degrees must be added
 		phi_ElectronOut += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 		double el_momentum = V3_el.Mag();
 		double el_theta = V3_el.Theta();
 
 		//acceptance_c takes phi in radians and here unmodified by 30 degree.
-		//WARNING: Needs to be checked if this also works for GENIE data F.H. 08/24/19
 		double e_acc_ratio = acceptance_c(el_momentum, cos(el_theta), phi_ElectronOut, 11,file_acceptance);
-//double e_acc_ratio = 1.;
 
-		double el_phi_mod = phi_ElectronOut*TMath::RadToDeg();
+
+		double el_phi_mod = phi_ElectronOut*TMath::RadToDeg()  + 30; //Add 30 degree for plotting and photon phi cut
 		if(el_phi_mod<0)  el_phi_mod  = el_phi_mod+360; //Add 360 so that electron phi is between 0 and 360 degree
 
 		//Calculated Mott Cross Section and Weights for Inclusive Histograms
@@ -564,10 +562,7 @@ void genie_analysis::Loop()
     int ind_pi_phot[20];
     int index_pipl[20]; //index for each pi plus
     int index_pimi[20]; //index for each pi minus
-    //Array initialize to -1
-    for (int i = 0; i<20; i++) {
-      index_p[i] = -1;   index_pi[i] = -1;   index_pipl[i] = -1;   index_pimi[i] = -1;   ind_pi_phot[i] = -1;
-    }
+
     //Number of hadrons
     int num_p = 0;
     int num_pi = 0;
@@ -578,10 +573,16 @@ void genie_analysis::Loop()
     //Index and number variables for neutral particles
     int ec_index_n[20];
     int ec_num_n = 0;
-    bool ec_radstat_n[20] = {false};
+    bool ec_radstat_n[20];
 
-  //  const double phot_rad_cut = 40;
-  //  const double phot_e_phidiffcut=30; //electron - photon phi difference cut
+    //Array initialize to -1
+    for (int i = 0; i<20; i++) {
+      index_p[i] = -1;   index_pi[i] = -1;   index_pipl[i] = -1;   index_pimi[i] = -1;   ind_pi_phot[i] = -1;
+      ec_index_n[i] = -1;   ec_radstat_n[i] = false;
+    }
+
+    const double phot_rad_cut = 40;
+    const double phot_e_phidiffcut=30; //electron - photon phi difference cut
 
     // Creating vectors to store id of particles in the array
     vector <int> ProtonID; vector <int> PiPlusID; vector <int> PiMinusID; vector <int> PhotonID;
@@ -605,8 +606,8 @@ void genie_analysis::Loop()
           num_pi = num_pi + 1;
           num_pi_phot = num_pi_phot + 1;
           num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
-          index_pimi[num_pi - 1] = i;
-          index_pi[num_pi - 1] = i;
+          index_pimi[num_pi_phot - 1] = i;
+          index_pi[num_pi_phot - 1] = i;
           ind_pi_phot[num_pi_phot - 1] = i;
           PiMinusID.push_back(i);
 
@@ -618,36 +619,30 @@ void genie_analysis::Loop()
           num_pi  = num_pi + 1;
           num_pi_phot = num_pi_phot + 1;
           num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
-          index_pipl[num_pi - 1] = i;
-          index_pi[num_pi - 1] = i;
+          index_pipl[num_pi_phot - 1] = i;
+          index_pi[num_pi_phot - 1] = i;
           ind_pi_phot[num_pi_phot - 1] = i;
           PiPlusID.push_back(i);
 
        }
 
-
        if (pdgf[i] == 22 && pf[i] > 0.3) {
 
-            /*  ec_num_n = ec_num_n + 1;
-              ec_index_n[ec_num_n - 1] = i;
-              num_pi_phot = num_pi_phot + 1;
-              ind_pi_phot[num_pi_phot - 1] = i;*/ //no events with photons for now F.H. 28.08.19
-       				PhotonID.push_back(i);
-              /* WARNING: THe folloiwng needs to be implemented for simulation data F.H. 24.08.19
-              //Cut on Radiation photon via angle with respect to the electron
-              double neut_phi = TMath::ATan2(cy[i],cx[i])*TMath::RadToDeg();
-              double neut_phi_mod = neut_phi + 30; //Add 30 degree
-              if (neut_phi_mod < 0) neut_phi_mod = neut_phi_mod + 360;  //Neutral particle is between 0 and 360 degree
+          ec_num_n = ec_num_n + 1;
+          num_pi_phot = num_pi_phot + 1;
+          ind_pi_phot[num_pi_phot - 1] = i;  //no events with photons for now F.H. 28.08.19
+          PhotonID.push_back(i);
+          // WARNING: THe following needs to be implemented for simulation data F.H. 24.08.19
+          //Cut on Radiation photon via angle with respect to the electron
+          V3_phot_angles.SetXYZ(pxf[i],pyf[i],pzf[i]);
+          double neut_phi_mod = V3_phot_angles.Phi()*TMath::RadToDeg() + 30; //Add 30 degree
+          if (neut_phi_mod < 0) neut_phi_mod = neut_phi_mod + 360;  //Neutral particle is between 0 and 360 degree
 
-              //within 40 degrees in theta and 30 degrees in phi
-               V3_phot_angles.SetXYZ(p[i]*cx[i],p[i]*cy[i],p[i]*cz[i]);
-              if(V3_phot_angles.Angle(V3_el)*TMath::RadToDeg() < phot_rad_cut && abs(neut_phi_mod-el_phi_mod) < phot_e_phidiffcut ) {
-                  ec_radstat_n[num_pi_phot] = true; //select radiation photons
+          //within 40 degrees in theta and 30 degrees in phi
+          if(V3_phot_angles.Angle(V3_el)*TMath::RadToDeg() < phot_rad_cut && fabs(neut_phi_mod-el_phi_mod) < phot_e_phidiffcut ) {
+             ec_radstat_n[num_pi_phot - 1] = true; //select radiation photons
 
-              }
-              if(!ec_radstat_n[num_pi_phot]) num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
-              */
-
+          }
        }
 
     } //end of hadron loop
@@ -733,8 +728,8 @@ void genie_analysis::Loop()
 
           rotation->prot2_rot_func( V3_2prot_corr, V3_2prot_uncorr, V4_el, E_tot_2p, p_perp_tot_2p, P_N_2p , &N_prot_both);
 
-      //    if(num_pi_phot==0 && N_prot_both!=0){ // no photons for now F.H. 29.8.19
-          if(num_pi == 0 && N_prot_both != 0){
+          if(num_pi_phot==0 && N_prot_both!=0){
+      //    if(num_pi == 0 && N_prot_both != 0){
             double histoweight = weight_protons*e_acc_ratio*wght/Mott_cross_sec; //total weight from 2p acceptance , 1e acceptance, Mott, and GENIE weight
 
             for(int f = 0; f < num_p; f++){    //looping through two protons
@@ -769,8 +764,8 @@ void genie_analysis::Loop()
           double Ecal_2p1pi_to2p0pi[N_2prot]={0};
           double p_miss_perp_2p1pi_to2p0pi[N_2prot]={0};
 
-//          if (num_pi_phot==1) { //no photons for now F.H. 29.8.19
-          if (num_pi == 1) {
+          if (num_pi_phot==1) {
+//          if (num_pi == 1) {
 
             int charge = 0;
             if (num_pimi == 1 && num_pipl == 0) {
@@ -779,8 +774,16 @@ void genie_analysis::Loop()
             else if (num_pipl == 1 && num_pimi == 0) {
               charge = 1;
             }
+            //radiation status is false if real photon
+            else if (num_pipl == 0 && num_pimi == 0 && (!ec_radstat_n[0]) )  {
+              charge = 0;
+            }
+            //skip radiation photon
+            else if (num_pipl == 0 && num_pimi == 0 && ec_radstat_n[0] ) {
+	            charge = 0;
+            }
             else {
-              std::cout << "2 proton 1 pi loop Problem with Pion count and identification. Num Pi = " << num_pi << " , Num PiPlus = " << num_pipl << " , Num PiMinus = " << num_pimi << std::endl;
+              std::cout << "2 proton 1 pi loop Problem with Pion/Photon count and identification. Num Pi = " << num_pi << " , Num PiPlus = " << num_pipl << " , Num PiMinus = " << num_pimi << std::endl;
               continue;
             }
 
@@ -811,6 +814,9 @@ void genie_analysis::Loop()
             }
             else if (charge == -1) {    //acceptance for pi minus. using electron acceptance map
               pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
+            }
+            else if (charge == 0) {    //acceptance for neutral, setting to 1 for now F.H. 09/24/19
+              pion_acc_ratio = 1;
             }
             else { std::cout << "WARNING: 2proton and 1 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
@@ -896,21 +902,27 @@ void genie_analysis::Loop()
           double Ptot_2p[2]={0};
           bool ecstat_pi2[N_2pi]={false};
 
-          //          if (num_pi_phot==2) { //no photons for now F.H. 29.8.19
-          if (num_pi == 2) {
+          if (num_pi_phot==2) { //no photons for now F.H. 29.8.19
+//          if (num_pi == 2) {
 
             TVector3 V3_2pi_corr[N_2pi];
             double pion_acc_ratio[N_2pi] = {0};
-            for (int i = 0; i < num_pi; i++) {
+            for (int i = 0; i < num_pi_phot; i++) {
 
               ecstat_pi2[i] = ec_radstat_n[i];
-              if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
+              if ( index_pipl[i] == ind_pi_phot[i] ) { //i-th pion is a piplus
                 q_pi2[i] = 1;
               }
-              else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
+              else if ( index_pimi[i] == ind_pi_phot[i] ) { //i-th pion is a piminus
                 q_pi2[i] = -1;
               }
-              else {  std::cout << "WARNING: 2p 2pion event: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+              else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
+                q_pi2[i] = 0;
+              }
+              else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
+                q_pi2[i] = 0;
+              }
+              else {  std::cout << "WARNING: 2p 2pion event: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
 
               SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
               SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
@@ -931,11 +943,15 @@ void genie_analysis::Loop()
               else if (q_pi2[i] == -1) {    //acceptance for pi minus. using electron acceptance map
                 pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
               }
+              else if (q_pi2[i] == 0) {    //acceptance for photon set to 1 for now F.H. 09/24/19
+                pion_acc_ratio[i] = 1;
+              }
               else { std::cout << "WARNING: 2proton and 2 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
             }
 
             // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+            // Pi+Pi_phot_fid_united with 0 is for Photons/Pi0
             //If any fiducial is not fullfilled continue to next event
             if ( ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[0],  q_pi2[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[1],  q_pi2[1]) )  )
             {
@@ -1043,8 +1059,8 @@ void genie_analysis::Loop()
         //acceptance weight for all three protons
         double weight_protons =  p_acc_ratio[0] * p_acc_ratio[1] * p_acc_ratio[2];
 
-//	      if(num_pi_phot==0 && N_p_three!=0){
-	      if(num_pi == 0 && N_p_three != 0){    //no photons for now F.H. 29.8.19
+	      if(num_pi_phot==0 && N_p_three!=0){
+//	      if(num_pi == 0 && N_p_three != 0){    //no photons for now F.H. 29.8.19
            double histoweight = weight_protons * e_acc_ratio * wght/Mott_cross_sec; //Weight for 3protons, 1 electron, GENIE weight and Mott cross section
 	         for(int count = 0; count < N_comb; count++)    { //Loop over number of combinations
                for(int j = 0; j < N_2p; j++)    { //loop over two protons
@@ -1100,8 +1116,8 @@ void genie_analysis::Loop()
 
 	//----------------------------------3p 1pi ----------------------------------------------------------
 
-//        if (num_pi_phot==1) { //no photons for now F.H. 29.8.19
-        if (num_pi == 1) { //number of pions  = 1
+        if (num_pi_phot==1) { //no photons for now F.H. 29.8.19
+//        if (num_pi == 1) { //number of pions  = 1
 
              double P_tot_3p[N_3p]={0};
              double Ecal_3p1pi[N_3p]={0};
@@ -1109,13 +1125,21 @@ void genie_analysis::Loop()
              double charge = 0;
              TVector3 V3_pi_corr;
 
-             if ( index_pipl[0] == index_pi[0] ) { //pion is a piplus
-               charge = 1;
-             }
-             else if ( index_pimi[0] == index_pi[0] ) { //pion is a piminus
+             if (num_pimi == 1 && num_pipl == 0) {
                charge = -1;
              }
-             else {  std::cout << "WARNING: 3p 1pion event: No charge for one pion could be assigned. Pion number " << index_pi[0] << std::endl; continue; }
+             else if (num_pipl == 1 && num_pimi == 0) {
+               charge = 1;
+             }
+             //radiation status is false if real photon
+             else if (num_pipl == 0 && num_pimi == 0 && (!ec_radstat_n[0]) )  {
+               charge = 0;
+             }
+             //skip radiation photon
+             else if (num_pipl == 0 && num_pimi == 0 && ec_radstat_n[0] ) {
+ 	            charge = 0;
+             }
+             else {  std::cout << "WARNING: 3p 1pion event: No charge for one pion/photon could be assigned. Pion number " << index_pi[0] << std::endl; continue; }
 
              SmearedPp = gRandom->Gaus(pf[index_pi[0]],reso_pi*pf[index_pi[0]]);
              SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
@@ -1142,6 +1166,9 @@ void genie_analysis::Loop()
              }
              else if (charge == -1) {    //acceptance for pi minus. using electron acceptance map
                pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
+             }
+             else if (charge == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+               pion_acc_ratio = 1;
              }
              else { std::cout << "WARNING: 3proton and 1 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
@@ -1445,29 +1472,37 @@ void genie_analysis::Loop()
 
      h1_E_rec->Fill(E_rec,WeightIncl);
 
-     //	      if(num_pi_phot ==0){
-     if(num_pi == 0){    //no photons for now F.H. 29.8.19
+     if(num_pi_phot ==0){
+//     if(num_pi == 0){    //no photons for now F.H. 29.8.19
        h1_E_rec_0pi->Fill(E_rec,WeightIncl);
 	     h1_E_rec_0pi_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],WeightIncl);
      }
 
 	//----------------------------- e- ,1pi  -----------------------------------------
 
-//	      if(num_pi_phot == 1){
-     if(num_pi == 1){    //no photons for now F.H. 29.8.19
+     if(num_pi_phot == 1){
+//     if(num_pi == 1){    //no photons for now F.H. 29.8.19
 
         TVector3 V3_pi_corr;
         double P_undet=0;
         int charge = 0;
         double pion_acc_ratio = 0;
 
-        if ( index_pipl[0] == index_pi[0] ) { //pion is a piplus
-          charge = 1;
-        }
-        else if ( index_pimi[0] == index_pi[0] ) { //pion is a piminus
+        if (num_pimi == 1 && num_pipl == 0) {
           charge = -1;
         }
-        else {  std::cout << "WARNING: 1pion events: No charge for one pion could be assigned.  "  << std::endl; continue; }
+        else if (num_pipl == 1 && num_pimi == 0) {
+          charge = 1;
+        }
+        //radiation status is false if real photon
+        else if (num_pipl == 0 && num_pimi == 0 && (!ec_radstat_n[0]) )  {
+          charge = 0;
+        }
+        //skip radiation photon
+        else if (num_pipl == 0 && num_pimi == 0 && ec_radstat_n[0] ) {
+         charge = 0;
+        }
+        else {  std::cout << "WARNING: 1pion events: No charge for one pion/photon could be assigned.  "  << std::endl; continue; }
 
         double SmearedPp = gRandom->Gaus(pf[index_pi[0]],reso_pi*pf[index_pi[0]]);
         double SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
@@ -1488,9 +1523,13 @@ void genie_analysis::Loop()
         else if (charge == -1) {    //acceptance for pi minus. using electron acceptance map
           pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
         }
+        else if (charge == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+          pion_acc_ratio = 1;
+        }
         else { std::cout << "WARNING: 1 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
         // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+        // Pi_phot_fid_united with 0 is for Photon/Pi0
         //If any fiducial is not fullfilled continue to next event
         if ( ( !Pi_phot_fid_united(fbeam_en, V3_pi_corr,  charge) ) )
         {
@@ -1511,8 +1550,8 @@ void genie_analysis::Loop()
 
 	//----------------------------- e- ,2pi  -----------------------------------------
 
-//	      if(num_pi_phot == 2){
-     if(num_pi == 2){    //no photons for now F.H. 29.8.19
+     if(num_pi_phot == 2){
+  //   if(num_pi == 2){    //no photons for now F.H. 29.8.19
 
 	      const int N_2pi = 2;
 	      TVector3 V3_2pi_corr[N_2pi];
@@ -1522,16 +1561,22 @@ void genie_analysis::Loop()
         double P_0pi = 0;
         double pion_acc_ratio[N_2pi] = {0};
 
-        for (int i = 0; i < num_pi; i++) {
+        for (int i = 0; i < num_pi_phot; i++) {
 
             radstat_pi2[i] = ec_radstat_n[i];
-            if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
-                q_pi2[i] = 1;
+            if ( index_pipl[i] == ind_pi_phot[i] ) { //i-th pion is a piplus
+              q_pi2[i] = 1;
             }
-            else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
-                q_pi2[i] = -1;
+            else if ( index_pimi[i] == ind_pi_phot[i] ) { //i-th pion is a piminus
+              q_pi2[i] = -1;
             }
-            else {  std::cout << "WARNING: 2pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+            else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
+              q_pi2[i] = 0;
+            }
+            else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
+              q_pi2[i] = 0;
+            }
+            else {  std::cout << "WARNING: 2pion events: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
 
             double SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
             double SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
@@ -1552,11 +1597,15 @@ void genie_analysis::Loop()
             else if (q_pi2[i] == -1) {    //acceptance for pi minus. using electron acceptance map
                 pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
             }
+            else if (q_pi2[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+                pion_acc_ratio[i] = 1;
+            }
             else { std::cout << "WARNING: 2 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
         }
 
       // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+      // Pi_phot_fid_united with 0 is for Photon/Pi0
       //If any fiducial is not fullfilled continue to next event
         if ( ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[0],  q_pi2[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[1],  q_pi2[1]) )  )
         {
@@ -1582,8 +1631,8 @@ void genie_analysis::Loop()
 
 //----------------------------- e- ,3pi  -----------------------------------------
 
-//	      if(num_pi_phot == 3){
-     if(num_pi == 3){    //no photons for now F.H. 29.8.19
+	   if(num_pi_phot == 3){
+  //   if(num_pi == 3){    //no photons for now F.H. 29.8.19
 
         const int N_3pi=3;
         const int N_2pi=2;
@@ -1596,16 +1645,22 @@ void genie_analysis::Loop()
         double P_3210pi[N_3pi][N_2pi]={0};
         double pion_acc_ratio[N_3pi] = {0};
 
-        for (int i = 0; i < num_pi; i++) {
+        for (int i = 0; i < num_pi_phot; i++) {
 
             radstat_pi3[i] = ec_radstat_n[i];
-            if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
-                q_pi3[i] = 1;
+            if ( index_pipl[i] == ind_pi_phot[i] ) { //i-th pion is a piplus
+              q_pi3[i] = 1;
             }
-            else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
-                q_pi3[i] = -1;
+            else if ( index_pimi[i] == ind_pi_phot[i] ) { //i-th pion is a piminus
+              q_pi3[i] = -1;
             }
-            else {  std::cout << "WARNING: 3pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+            else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
+              q_pi3[i] = 0;
+            }
+            else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
+              q_pi3[i] = 0;
+            }
+            else {  std::cout << "WARNING: 3pion events: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
 
             double SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
             double SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
@@ -1626,11 +1681,15 @@ void genie_analysis::Loop()
             else if (q_pi3[i] == -1) {    //acceptance for pi minus. using electron acceptance map
                 pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
             }
+            else if (q_pi3[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+                pion_acc_ratio[i] = 1;
+            }
             else { std::cout << "WARNING: 3 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
         }
 
         // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+        // Pi_phot_fid_united with 0 is for Photons/Pi0
         //If any fiducial is not fullfilled continue to next event
         if ( ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[0],  q_pi3[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[1],  q_pi3[1]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[2],  q_pi3[2]) ) )
         {
@@ -1667,8 +1726,8 @@ void genie_analysis::Loop()
      }//end of 3pi requirement
 
 //----------------------------- e- ,4pi  -----------------------------------------
-//	      if(num_pi_phot == 4){
-     if(num_pi == 4){    //no photons for now F.H. 29.8.19
+	   if(num_pi_phot == 4){
+  //   if(num_pi == 4){    //no photons for now F.H. 29.8.19
 
        const int N_4pi=4;
        TVector3 V3_4pi_corr[N_4pi];
@@ -1684,16 +1743,22 @@ void genie_analysis::Loop()
        double P_43210pi=0;
        double pion_acc_ratio[N_4pi] = {0};
 
-       for (int i = 0; i < num_pi; i++) {
+       for (int i = 0; i < num_pi_phot; i++) {
 
            radstat_pi4[i] = ec_radstat_n[i];
-           if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
-               q_pi4[i] = 1;
+           if ( index_pipl[i] == ind_pi_phot[i] ) { //i-th pion is a piplus
+             q_pi4[i] = 1;
            }
-           else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
-               q_pi4[i] = -1;
+           else if ( index_pimi[i] == ind_pi_phot[i] ) { //i-th pion is a piminus
+             q_pi4[i] = -1;
            }
-           else {  std::cout << "WARNING: 4pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+           else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
+             q_pi4[i] = 0;
+           }
+           else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
+             q_pi4[i] = 0;
+           }
+           else {  std::cout << "WARNING: 4pion events: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
 
            double SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
     // not used       double SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
@@ -1714,11 +1779,15 @@ void genie_analysis::Loop()
            else if (q_pi4[i] == -1) {    //acceptance for pi minus. using electron acceptance map
                pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
            }
+           else if (q_pi4[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+               pion_acc_ratio[i] = 1;
+           }
            else { std::cout << "WARNING: 4 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
        }
 
        // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+        // Pi_phot_fid_united with 0 is for Photon/Pi0
        //If any fiducial is not fullfilled continue to next event
        if ( ( !Pi_phot_fid_united(fbeam_en, V3_4pi_corr[0],  q_pi4[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_4pi_corr[1],  q_pi4[1]) )
          || ( !Pi_phot_fid_united(fbeam_en, V3_4pi_corr[2],  q_pi4[2]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_4pi_corr[3],  q_pi4[3]) ) )
@@ -1808,8 +1877,8 @@ void genie_analysis::Loop()
        h2_Erec_pperp->Fill(p_perp_tot,E_rec,histoweight_inc);
 
        //---------------------------------- 1p 0pi   ----------------------------------------------
-       //	      if(num_pi_phot == 0){
-       if(num_pi == 0){    //no photons for now F.H. 29.8.19
+       if(num_pi_phot == 0){
+  //     if(num_pi == 0){    //no photons for now F.H. 29.8.19
 
           double histoweight = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec;
 
@@ -1838,8 +1907,8 @@ void genie_analysis::Loop()
      	    }
        }//num pi=0
        //---------------------------------- 1p 1pi   ----------------------------------------------
-       //	      if(num_pi_phot == 1){
-       if(num_pi == 1){    //no photons for now F.H. 29.8.19
+       if(num_pi_phot == 1){
+    //   if(num_pi == 1){    //no photons for now F.H. 29.8.19
 
           double N_piphot_det;
           double N_piphot_undet;
@@ -1847,13 +1916,21 @@ void genie_analysis::Loop()
           int charge = 0;
           double pion_acc_ratio = 0;
 
-          if ( index_pipl[0] == index_pi[0] ) { //pion is a piplus
-            charge = 1;
-          }
-          else if ( index_pimi[0] == index_pi[0] ) { //pion is a piminus
+          if (num_pimi == 1 && num_pipl == 0) {
             charge = -1;
           }
-          else {  std::cout << "WARNING: 1pion events: No charge for one pion could be assigned.  "  << std::endl; continue; }
+          else if (num_pipl == 1 && num_pimi == 0) {
+            charge = 1;
+          }
+          //radiation status is false if real photon
+          else if (num_pipl == 0 && num_pimi == 0 && (!ec_radstat_n[0]) )  {
+            charge = 0;
+          }
+          //skip radiation photon
+          else if (num_pipl == 0 && num_pimi == 0 && ec_radstat_n[0] ) {
+           charge = 0;
+          }
+          else {  std::cout << "WARNING: 1pion events: No charge for one pion/photon could be assigned.  "  << std::endl; continue; }
 
           SmearedPp = gRandom->Gaus(pf[index_pi[0]],reso_pi*pf[index_pi[0]]);
           SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
@@ -1874,9 +1951,13 @@ void genie_analysis::Loop()
           else if (charge == -1) {    //acceptance for pi minus. using electron acceptance map
             pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
           }
+          else if (charge == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+            pion_acc_ratio = 1;
+          }
           else { std::cout << "WARNING: 1 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
           // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+          // Pi_phot_fid_united with 0 is for Photon/Pi0
           //If any fiducial is not fullfilled continue to next event
           if ( ( !Pi_phot_fid_united(fbeam_en, V3_pi_corr,  charge) ) )
           {
@@ -1918,8 +1999,8 @@ void genie_analysis::Loop()
        }//end of 1p 1pi requirement
 
  //---------------------------------- 1p 2pi   ----------------------------------------------
- //	      if(num_pi_phot == 2){
-       if(num_pi == 2){    //no photons for now F.H. 29.8.19
+       if(num_pi_phot == 2){
+  //     if(num_pi == 2){    //no photons for now F.H. 29.8.19
 
          const int N_2pi=2;
          TVector3 V3_2pi_corr[N_2pi],V3_2pi_rot[N_2pi],V3_p_rot;
@@ -1930,16 +2011,22 @@ void genie_analysis::Loop()
 
          double pion_acc_ratio[N_2pi] = {0};
 
-         for (int i = 0; i < num_pi; i++) {
+         for (int i = 0; i < num_pi_phot; i++) {
 
              radstat_pi2[i] = ec_radstat_n[i];
-             if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
-                 q_pi2[i] = 1;
+             if ( index_pipl[i] == ind_pi_phot[i] ) { //i-th pion is a piplus
+               q_pi2[i] = 1;
              }
-             else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
-                 q_pi2[i] = -1;
+             else if ( index_pimi[i] == ind_pi_phot[i] ) { //i-th pion is a piminus
+               q_pi2[i] = -1;
              }
-             else {  std::cout << "WARNING: 1Proton 2pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+             else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
+               q_pi2[i] = 0;
+             }
+             else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
+               q_pi2[i] = 0;
+             }
+             else {  std::cout << "WARNING: 1Proton 2pion events: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
 
              SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
              SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
@@ -1960,11 +2047,15 @@ void genie_analysis::Loop()
              else if (q_pi2[i] == -1) {    //acceptance for pi minus. using electron acceptance map
                  pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
              }
+             else if (q_pi2[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+                 pion_acc_ratio[i] = 1;
+             }
              else { std::cout << "WARNING: 1 Proton 2 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
          }
 
          // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+         // Pi_phot_fid_united with 0 for Photons/Pi0
          //If any fiducial is not fullfilled continue to next event
          if ( ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[0],  q_pi2[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[1],  q_pi2[1]) ) )
          {
@@ -2021,8 +2112,8 @@ void genie_analysis::Loop()
        }//1p 2pi statetment ends
 
  //---------------------------------- 1p 3pi   ----------------------------------------------
- //	      if(num_pi_phot == 3){
-       if(num_pi == 3){    //no photons for now F.H. 29.8.19
+       if(num_pi_phot == 3){
+    //   if(num_pi == 3){    //no photons for now F.H. 29.8.19
 
          const int N_3pi=3;
          TVector3 V3_3pi_corr[N_3pi],V3_3pi_rot[N_3pi],V3_p_rot;
@@ -2034,13 +2125,19 @@ void genie_analysis::Loop()
          for (int i = 0; i < num_pi; i++) {
 
              radstat_pi3[i] = ec_radstat_n[i];
-             if ( index_pipl[i] == index_pi[i] ) { //i-th pion is a piplus
-                 q_pi3[i] = 1;
+             if ( index_pipl[i] == ind_pi_phot[i] ) { //i-th pion is a piplus
+               q_pi3[i] = 1;
              }
-             else if ( index_pimi[i] == index_pi[i] ) { //i-th pion is a piminus
-                 q_pi3[i] = -1;
+             else if ( index_pimi[i] == ind_pi_phot[i] ) { //i-th pion is a piminus
+               q_pi3[i] = -1;
              }
-             else {  std::cout << "WARNING: 3pion events: No charge for one pion could be assigned. Pion number " << i << std::endl; continue; }
+             else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
+               q_pi3[i] = 0;
+             }
+             else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
+               q_pi3[i] = 0;
+             }
+             else {  std::cout << "WARNING: 3pion events: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
 
              SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
              SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
@@ -2061,11 +2158,15 @@ void genie_analysis::Loop()
              else if (q_pi3[i] == -1) {    //acceptance for pi minus. using electron acceptance map
                  pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
              }
+             else if (q_pi3[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+                 pion_acc_ratio[i] = 1;
+             }
              else { std::cout << "WARNING: 3 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
          }
 
          // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
+         // Pi_phot_fid_united with 0 is for Photons/Pi0
          //If any fiducial is not fullfilled continue to next event
          if ( ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[0],  q_pi3[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[1],  q_pi3[1]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[2],  q_pi3[2]) ) )
          {

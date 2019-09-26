@@ -1446,6 +1446,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
     int num_pimi = 0;
     int num_pipl = 0;
     int num_pi_phot_nonrad=0; //counting all pions and non-radiation photons
+    int num_phot_rad = 0; //counting radiation photons
     //Index and number variables for neutral particles
     int ec_num_n = 0;
     bool ec_radstat_n[20] = {false};
@@ -1740,6 +1741,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 	                   if(V3_phot_angles.Angle(V3_el)*TMath::RadToDeg() < phot_rad_cut && abs(neut_phi_mod-el_phi_mod) < phot_e_phidiffcut ) {
 		                     ec_radstat_n[num_pi_phot - 1] = true; //select radiation photons
                          h1_photon_EC_E->Fill(photon_ece/EC_sampling_frac);
+                         num_phot_rad = num_phot_rad + 1;
 	                   }
 	                   if(!ec_radstat_n[num_pi_phot - 1]) num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
 
@@ -1754,6 +1756,11 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 	         } //if neutral particles
 
     } //end of hadron loop
+
+    //Skip event if there is at least one radiation photon
+    if (num_phot_rad > 0) {
+      continue;
+    }
 
     //Filling Histograms with multiplicities
     h1_Npi->Fill(num_pi);

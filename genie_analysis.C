@@ -570,6 +570,7 @@ void genie_analysis::Loop()
     int num_pimi = 0;
     int num_pipl = 0;
     int num_pi_phot_nonrad=0; //counting all pions and non-radiation photons
+    int num_phot_rad = 0; //counting radiation photons
     //Index and number variables for neutral particles
     int ec_index_n[20];
     int ec_num_n = 0;
@@ -641,11 +642,18 @@ void genie_analysis::Loop()
           //within 40 degrees in theta and 30 degrees in phi
           if(V3_phot_angles.Angle(V3_el)*TMath::RadToDeg() < phot_rad_cut && fabs(neut_phi_mod-el_phi_mod) < phot_e_phidiffcut ) {
              ec_radstat_n[num_pi_phot - 1] = true; //select radiation photons
-
+             num_phot_rad = num_phot_rad + 1;
           }
+
        }
 
     } //end of hadron loop
+
+
+    //Skip event if there is at least one radiation photon
+    if (num_phot_rad > 0) {
+      continue;
+    }
 
     //Filling Histograms with multiplicities
     h1_Npi->Fill(num_pi);
@@ -3181,6 +3189,7 @@ void genie_analysis::LoopCLAS()
     int num_pimi = 0;
     int num_pipl = 0;
     int num_pi_phot_nonrad=0; //counting all pions and non-radiation photons
+    int num_phot_rad = 0; //counting radiation photons
     //Index and number variables for neutral particles
     int ec_num_n = 0;
 
@@ -3245,7 +3254,7 @@ void genie_analysis::LoopCLAS()
               //within 40 degrees in theta and 30 degrees in phi
               if(V3_phot_angles.Angle(V3_el)*TMath::RadToDeg() < phot_rad_cut && fabs(neut_phi_mod-el_phi_mod) < phot_e_phidiffcut ) {
                   ec_radstat_n[num_pi_phot - 1] = true; //select radiation photons
-
+                  num_phot_rad = num_phot_rad + 1;
               }
               if(!ec_radstat_n[num_pi_phot]) num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
 
@@ -3253,6 +3262,10 @@ void genie_analysis::LoopCLAS()
 
     } //end of hadron loop
 
+    //Skip event if there is at least one radiation photon
+    if (num_phot_rad > 0) {
+      continue;
+    }
 //std::cout << "num_p = " << num_p << "  num_pi = " << num_pi << "  num_pipl = " << num_pipl << "  num_pimi = " << num_pimi << std::endl;
 
     //Filling Histograms with multiplicities

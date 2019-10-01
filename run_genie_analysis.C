@@ -29,12 +29,8 @@ int main(int argc, char **argv)
 
 
   genie_analysis  t(target,beam_en);
-  if (choice ==1){
-    t.Loop();
-  }
-  if (choice ==0){
-    t.LoopCLAS();
-  }
+  t.Loop(choice);
+
 
   return 0;
 }

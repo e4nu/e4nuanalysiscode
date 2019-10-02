@@ -66,6 +66,9 @@ void genie_analysis::Loop(Int_t choice)
 //  double reso_pimi = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
   double reso_pi = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
 
+  double Wcut = 2; //cut for all beam energies < 2
+  double Q2cut = 0; // cut for 1.1 GeV > 0.1, for 2.2 GeV > 0.4 and 4.4 GeV > 0.8
+
   const int n_slice=3;
   const double pperp_min[n_slice]={0.,0.2,0.4};
   const double pperp_max[n_slice]={0.2,0.4,10.};
@@ -77,17 +80,20 @@ void genie_analysis::Loop(Int_t choice)
   if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) //1.1 GeV  Configuration parameters and cuts
   {
       E_acc_file="1_161";
+      Q2cut = 0.1;
   }
 
 
   if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.) //2.2 GeV  Configuration parameters and cuts
   {
       E_acc_file="2_261";
+      Q2cut = 0.4;
   }
 
   if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.)  //4.4 GeV  Configuration parameters and cuts
   {
       E_acc_file="4_461";
+      Q2cut = 0.8;
   }
   //Further constants for binding energies and target masses
   Ecal_offset["3He"]=0.004;
@@ -554,6 +560,9 @@ void genie_analysis::Loop(Int_t choice)
     TVector3 V3_q = (V4_beam-V4_el).Vect();
     double W_var = TMath::Sqrt((m_prot+nu)*(m_prot+nu)-V3_q*V3_q);
 
+    //Cuts on Q2 and W, only keep events with Q2 > Q2cut and W < Wcut
+    if ( reco_Q2 < Q2cut || W_var > Wcut) continue;
+
     //Set q vector for the following rotations for the subtraction procedure
     rotation->SetQVector(V3_q);
 //    rotation->PrintQVector();
@@ -621,7 +630,7 @@ void genie_analysis::Loop(Int_t choice)
     for (int i = 0; i < nf; i++)
     {
         //Start of proton selection
-       if (pdgf[i] == 2212) { //} && pf[i] > 0.3) {
+       if (pdgf[i] == 2212  && pf[i] > 0.3) {
 
           num_p = num_p + 1;
           index_p[num_p - 1] = i;
@@ -629,7 +638,7 @@ void genie_analysis::Loop(Int_t choice)
 
        }
 
-       if (pdgf[i] == -211) { //} && pf[i] > 0.15)  {
+       if (pdgf[i] == -211  && pf[i] > 0.15)  {
 
           num_pimi = num_pimi + 1;
           num_pi = num_pi + 1;
@@ -642,7 +651,7 @@ void genie_analysis::Loop(Int_t choice)
 
        }
 
-       if ( pdgf[i] == 211) { //} && pf[i] > 0.15)  {
+       if ( pdgf[i] == 211  && pf[i] > 0.15)  {
 
           num_pipl = num_pipl + 1;
           num_pi  = num_pi + 1;
@@ -655,7 +664,7 @@ void genie_analysis::Loop(Int_t choice)
 
        }
 
-       if (pdgf[i] == 22) { //} && pf[i] > 0.3) {
+       if (pdgf[i] == 22  && pf[i] > 0.3) {
 
           ec_num_n = ec_num_n + 1;
           num_pi_phot = num_pi_phot + 1;

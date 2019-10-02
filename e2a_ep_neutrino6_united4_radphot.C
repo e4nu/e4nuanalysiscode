@@ -1916,7 +1916,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
             double P_2p1pito1p0pi[2]={0};
             double Ptot=0;
 
-            rotation->prot2_pi1_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_1pi, q[ind_pi_phot[0]],ec_radstat_n[0],V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
+            rotation->prot2_pi1_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_1pi, q[ind_pi_phot[0]],V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
 
             for(int z=0; z < N_2prot; z++){ //looping over two protons
 
@@ -2022,7 +2022,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
             ecstat_pi2[0] = ec_radstat_n[0];
             ecstat_pi2[1] = ec_radstat_n[1];
 
-            rotation->prot2_pi2_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_2pi,q_pi2,ecstat_pi2 ,V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
+            rotation->prot2_pi2_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_2pi,q_pi2 ,V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
 
             for(int z = 0; z < N_2prot; z++){ //looping over two protons
 
@@ -2215,7 +2215,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
              V3_q=(V4_beam-V4_el).Vect();
              V3_pi_phot.SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);
 
-             rotation->prot3_pi1_rot_func(V3_prot_corr,V3_prot, V3_pi_phot,q[ind_pi_phot[0]],ec_radstat_n[0], V4_el,  Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
+             rotation->prot3_pi1_rot_func(V3_prot_corr,V3_prot, V3_pi_phot,q[ind_pi_phot[0]], V4_el,  Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
 
 	           for(int j = 0; j < N_3p; j++)    { //loop over 3 protons
 
@@ -2558,7 +2558,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
 	   if (num_pi_phot==1) {
 
 	      V3_pi.SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);
-	      rotation->pi1_rot_func(V3_pi,q[ind_pi_phot[0]],ec_radstat_n[0],&P_undet);
+	      rotation->pi1_rot_func(V3_pi,q[ind_pi_phot[0]],&P_undet);
 
 	      h1_E_rec_1pi_weight->Fill(E_rec,P_undet*1/Mott_cross_sec);
 	      h1_E_rec_1pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_undet*1/Mott_cross_sec);
@@ -2584,7 +2584,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
         radstat_pi2[0]=ec_radstat_n[0];
         radstat_pi2[1]=ec_radstat_n[1];
 
-        rotation->pi2_rot_func( V3_2pi, q_pi2,radstat_pi2, &P_0pi,P_1pi);
+        rotation->pi2_rot_func( V3_2pi, q_pi2,&P_0pi,P_1pi);
 
 //----------------------------- e- ,2pi->0pi (-) -----------------------------------------
         h1_E_rec_2pi_weight->Fill(E_rec,(-P_0pi)*1/Mott_cross_sec);
@@ -2619,7 +2619,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
           radstat_pi3[h]=ec_radstat_n[h];
         }
 
-        rotation->pi3_rot_func( V3_3pi, q_pi3,radstat_pi3,&P_0pi, P_1pi, P_320pi,P_3210pi);
+        rotation->pi3_rot_func( V3_3pi, q_pi3,&P_0pi, P_1pi, P_320pi,P_3210pi);
 
  //---------------------------3pi->0pi----------------------------------------------
         h1_E_rec_3pi_weight->Fill(E_rec,(-P_0pi)*1/Mott_cross_sec);
@@ -2668,7 +2668,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
          radstat_pi4[h]=ec_radstat_n[h];
        }
 
-       rotation->pi4_rot_func( V3_4pi, q_pi4,radstat_pi4,&P_0pi,&P_410pi,&P_420pi,&P_4210pi,&P_430pi,&P_4310pi,&P_4320pi,&P_43210pi);
+       rotation->pi4_rot_func( V3_4pi, q_pi4,&P_0pi,&P_410pi,&P_420pi,&P_4210pi,&P_430pi,&P_4310pi,&P_4320pi,&P_43210pi);
 
  //---------------------------4pi->0pi----------------------------------------------
 //why is it here not split like for 3pi case, sum over all weights is done here
@@ -2753,7 +2753,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
          radstat_pi2[0]=ec_radstat_n[0];
          radstat_pi2[1]=ec_radstat_n[1];
 
-         rotation->prot1_pi2_rot_func(V3_prot_uncorr,V3_2pi,q_pi2,radstat_pi2,&P_1p0pi,P_1p1pi);
+         rotation->prot1_pi2_rot_func(V3_prot_uncorr,V3_2pi,q_pi2,&P_1p0pi,P_1p1pi);
 
  //---------------------------------- 1p 2pi->1p1pi   ----------------------------------------------
 
@@ -2841,7 +2841,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
          radstat_pi3[1]=ec_radstat_n[1];
          radstat_pi3[2]=ec_radstat_n[2];
 
-         rotation->prot1_pi3_rot_func(V3_prot_uncorr,V3_3pi,q_pi3,radstat_pi3,&P_1p3pi);
+         rotation->prot1_pi3_rot_func(V3_prot_uncorr,V3_3pi,q_pi3,&P_1p3pi);
 
  //---------------------------------- 1p 3pi->1p 0pi  total ?? F.H. 08/13/19 check logic here compared to 1p 2pi case ----------------------------------------------
          h1_E_tot_1p3pi->Fill(E_tot,P_1p3pi*1/Mott_cross_sec);
@@ -2878,7 +2878,7 @@ void e2a_ep_neutrino6_united4_radphot::Loop()
          V3_q=(V4_beam-V4_el).Vect();
          V3_pi_phot.SetXYZ(p[ind_pi_phot[0]]*cx[ind_pi_phot[0]],p[ind_pi_phot[0]]*cy[ind_pi_phot[0]],p[ind_pi_phot[0]]*cz[ind_pi_phot[0]]);	N_piphot_det=N_piphot_undet=0;
 
-         rotation->prot1_pi1_rot_func(V3_prot_uncorr,V3_pi_phot, q[ind_pi_phot[0]],ec_radstat_n[0], &N_piphot_det,&N_piphot_undet);
+         rotation->prot1_pi1_rot_func(V3_prot_uncorr,V3_pi_phot, q[ind_pi_phot[0]], &N_piphot_det,&N_piphot_undet);
 
 		     if(N_piphot_det!=0){
 

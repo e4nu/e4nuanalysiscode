@@ -671,7 +671,7 @@ void genie_analysis::Loop(Int_t choice)
              ec_radstat_n[num_pi_phot - 1] = true; //select radiation photons
              num_phot_rad = num_phot_rad + 1;
           }
-          if(!ec_radstat_n[num_pi_phot]) num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
+          if(!ec_radstat_n[num_pi_phot-1]) num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
 
        }
 
@@ -713,7 +713,7 @@ void genie_analysis::Loop(Int_t choice)
 
           if (choice == 0) { //CLAS data
               V3_prot_corr1.SetXYZ(pxf[index_p[0]+60],pyf[index_p[0]+60],pzf[index_p[0]+60]);
-              V3_prot_corr1.SetXYZ(pxf[index_p[1]+60],pyf[index_p[1]+60],pzf[index_p[1]+60]);
+              V3_prot_corr2.SetXYZ(pxf[index_p[1]+60],pyf[index_p[1]+60],pzf[index_p[1]+60]);
           }
           if (choice == 1) { //GENIE data
               //Kinematic for first proton, smearing

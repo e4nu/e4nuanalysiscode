@@ -108,7 +108,7 @@ Double_t FSub_pipl(Double_t *x,Double_t *par){
 }
 
 
- const int N_tot=10;
+ const int N_tot=100;
 
 
 

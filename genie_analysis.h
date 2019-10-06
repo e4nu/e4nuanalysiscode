@@ -21,7 +21,7 @@ public :
    std::string ftarget;    // The target name  // ------------------------------->>>>>>>>>>>>>Mariana
    std::string fbeam_en;   // The beam energy  // ------------------------------->>>>>>>>>>>>>Mariana
 
-   const int N_tot = 10;
+   const int N_tot = 100;
    Fiducial   *fiducialcut;
    Subtraction *rotation;
    int fTorusCurrent;

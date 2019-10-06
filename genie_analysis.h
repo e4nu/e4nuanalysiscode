@@ -302,11 +302,11 @@ genie_analysis::genie_analysis(std::string a_target,std::string a_beam_en, TTree
       // of trees.
       TChain * chain = new TChain("gst","genie_analysis");
 //      chain->Add(Form("/work/clas/clase2/Mariana/data/e2a_%s_%s_v1/*.root/h10", ftarget.c_str(), fbeam_en.c_str()));
-//     chain->Add(Form("../mySamples/hA2018/eresmaid_12C_2_261_hA2018_FSI_NoRadCorr.root"));
+     chain->Add(Form("../mySamples/hA2018/eresmaid_12C_2_261_hA2018_FSI_NoRadCorr.root"));
     //  chain->Add(Form("../mySamples/Data/eresmaid_12C_2_261_Data_FSI.root"));
 //        chain->Add(Form("files/eresmaid_12C_2_261_Data_FSI.root"));
 //        chain->Add(Form("files/eresmaid_12C_2_261_Data_FSI.root"));
-      chain->Add("/w/hallb-scifs17exp/clas/claseg2/apapadop/genie_filtered_data_e2a_ep_C12_2261_neutrino6_united4_radphot_test_8M.root");
+//      chain->Add("/w/hallb-scifs17exp/clas/claseg2/apapadop/genie_filtered_data_e2a_ep_C12_2261_neutrino6_united4_radphot_test_8M.root");
       //chain->Add("datafile.root/h10");
 
       tree = chain;

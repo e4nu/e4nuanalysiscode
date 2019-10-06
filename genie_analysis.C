@@ -202,10 +202,12 @@ void genie_analysis::Loop(Int_t choice)
   TH1F *h1_Q2_weight = new TH1F("h1_Q2_weight","",400,0,6);
   TH1F *h1_el_theta = new TH1F("h1_el_theta","",200,0,180);
   TH1F *h1_Nprot=new TH1F("h1_Nprot","",10,0,5);
+  TH1F *h1_Nprot_NonZeroProt=new TH1F("h1_Nprot_NonZeroProt","",8,1,5);
   TH1F *h1_Nphot=new TH1F("h1_Nphot","",10,0,5);
   TH1F *h1_Npiphot=new TH1F("h1_Npiphot","",10,0,5);
   TH1F *h1_Npiphot_norad=new TH1F("h1_Npiphot_norad","",10,0,5);
   TH1F *h1_Npi=new TH1F("h1_Npi","",10,0,5);
+  TH1F *h1_Npi_NonZeroProt=new TH1F("h1_Npi_NonZeroProt","",10,0,5);
   TH1F *h1_Npipl=new TH1F("h1_Npipl","",10,0,5);
   TH1F *h1_Npimi=new TH1F("h1_Npimi","",10,0,5);
   TH1F *h1_el_mom = new TH1F("h1_el_mom","",100,1.2,6);
@@ -696,6 +698,12 @@ void genie_analysis::Loop(Int_t choice)
     //Filling Histograms with multiplicities
     h1_Npi->Fill(num_pi);
     h1_Nprot->Fill(num_p);
+
+    if (num_p > 0) {
+	h1_Nprot_NonZeroProt->Fill(num_p);
+	h1_Npi_NonZeroProt->Fill(num_pi);
+    }
+
     h1_Nphot->Fill(ec_num_n);
     h1_Npipl->Fill(num_pipl);
     h1_Npimi->Fill(num_pimi);

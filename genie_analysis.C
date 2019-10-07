@@ -73,7 +73,6 @@ void genie_analysis::Loop(Int_t choice)
   const double pperp_min[n_slice]={0.,0.2,0.4};
   const double pperp_max[n_slice]={0.2,0.4,10.};
   TVector3 V3_rotprot1,V3_rotprot2,V3_rotprot3,V3_rot_pi,V3_rotprot;
-  TVector3 V3_phot_angles;
 
   TString E_acc_file;
 
@@ -600,6 +599,13 @@ void genie_analysis::Loop(Int_t choice)
     int index_pipl[20]; //index for each pi plus
     int index_pimi[20]; //index for each pi minus
 
+    int charge_pi[20]; //Charge for the pions and photons
+    //Smeared Momentum and Energy values for GENIE (simulation) data
+    double Smeared_Pp[20]; //smeared momentum values for protons
+    double Smeared_Ep[20]; //smeared energy values for protons
+    double Smeared_Ppi[20]; //smeared momentum values for pions
+    double Smeared_Epi[20]; //smeared energy values for pions
+
     //Number of hadrons
     int num_p = 0;
     int num_pi = 0;
@@ -614,9 +620,12 @@ void genie_analysis::Loop(Int_t choice)
     bool ec_radstat_n[20];
 
     //Array initialize to -1 or false
-    for (int i = 0; i<20; i++) {
+    for (int i = 0; i < 20; i++) {
       index_p[i] = -1;   index_pi[i] = -1;   index_pipl[i] = -1;   index_pimi[i] = -1;   ind_pi_phot[i] = -1;
       ec_index_n[i] = -1;   ec_radstat_n[i] = false;
+      charge_pi[i] = -2; //default number should be not a possible real charge
+      Smeared_Pp[i]  = 0; Smeared_Ep[i]  = 0;  //default 0 momentum and energy after smearing
+      Smeared_Ppi[i] = 0; Smeared_Epi[i] = 0;  //default 0 momentum and energy after smearing
     }
 
     const double phot_rad_cut = 40;
@@ -626,62 +635,136 @@ void genie_analysis::Loop(Int_t choice)
     vector <int> ProtonID; vector <int> PiPlusID; vector <int> PiMinusID; vector <int> PhotonID;
     ProtonID.clear(); PiPlusID.clear(); PiMinusID.clear();  PhotonID.clear();
 
+
    //Loop for Hadrons
     for (int i = 0; i < nf; i++)
     {
         //Start of proton selection
        if (pdgf[i] == 2212  && pf[i] > 0.3) {
+         if ( choice == 1) { //GENIE data
+           //Smearing of proton
+           double temp_smear_P = gRandom->Gaus(pf[i],reso_p*pf[i]);
+           double temp_smear_E = sqrt( temp_smear_P*temp_smear_P + m_prot * m_prot );
 
-          num_p = num_p + 1;
-          index_p[num_p - 1] = i;
-          ProtonID.push_back(i);
+           TVector3 V3_prot_corr(temp_smear_P/pf[i] * pxf[i],temp_smear_P/pf[i] * pyf[i],temp_smear_P/pf[i] * pzf[i]);
+           double phi_prot = V3_prot_corr.Phi();
+           V3_prot_corr.SetPhi(phi_prot + TMath::Pi()); // Vec.Phi() is between (-180,180), // GENIE coordinate system flipped with respect to CLAS
+           if (!PFiducialCut(fbeam_en, V3_prot_corr) ) { continue; } // Proton theta & phi fiducial cuts
 
+           num_p = num_p + 1;
+           index_p[num_p - 1] = i;
+           ProtonID.push_back(i);
+           Smeared_Pp[num_p - 1] = temp_smear_P;
+           Smeared_Ep[num_p - 1] = temp_smear_E;
+         }
+         else { //CLAS data does not need Fiducial Cut again
+           num_p = num_p + 1;
+           index_p[num_p - 1] = i;
+           ProtonID.push_back(i);
+         }
        }
 
-       if (pdgf[i] == -211  && pf[i] > 0.15)  {
+       if (pdgf[i] == -211  && pf[i] > 0.15)  { //PI minus
+         if ( choice == 1) { //GENIE data
+           //Smearing of pi minus
+           double temp_smear_P = gRandom->Gaus(pf[i],reso_pi*pf[i]);
+           double temp_smear_E = sqrt( temp_smear_P*temp_smear_P + m_pion * m_pion );
 
-          num_pimi = num_pimi + 1;
-          num_pi = num_pi + 1;
-          num_pi_phot = num_pi_phot + 1;
-          num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
-          index_pimi[num_pi_phot - 1] = i;
-          index_pi[num_pi_phot - 1] = i;
-          ind_pi_phot[num_pi_phot - 1] = i;
-          PiMinusID.push_back(i);
+           TVector3 V3_pi_corr(temp_smear_P/pf[i] * pxf[i],temp_smear_P/pf[i] * pyf[i],temp_smear_P/pf[i] * pzf[i]);
+           double phi_pion = V3_pi_corr.Phi();
+           V3_pi_corr.SetPhi(phi_pion + TMath::Pi()); // Vec.Phi() is between (-180,180)
+           // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus
+           if ( !Pi_phot_fid_united(fbeam_en, V3_pi_corr, -1) )     {  continue; }
 
+           num_pimi = num_pimi + 1;
+           num_pi = num_pi + 1;
+           num_pi_phot = num_pi_phot + 1;
+           num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
+           index_pimi[num_pi_phot - 1] = i;
+           index_pi[num_pi_phot - 1] = i;
+           ind_pi_phot[num_pi_phot - 1] = i;
+           PiMinusID.push_back(i);
+           charge_pi[num_pi_phot - 1] = -1;
+           Smeared_Ppi[num_pi_phot - 1] = temp_smear_P;
+           Smeared_Epi[num_pi_phot - 1] = temp_smear_E;
+         }
+         else { //CLAS data does not need Fiducial Cut again
+           num_pimi = num_pimi + 1;
+           num_pi = num_pi + 1;
+           num_pi_phot = num_pi_phot + 1;
+           num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
+           index_pimi[num_pi_phot - 1] = i;
+           index_pi[num_pi_phot - 1] = i;
+           ind_pi_phot[num_pi_phot - 1] = i;
+           PiMinusID.push_back(i);
+           charge_pi[num_pi_phot - 1] = -1;
+         }
        }
 
        if ( pdgf[i] == 211  && pf[i] > 0.15)  {
+         if ( choice == 1) { //GENIE data
+           //Smearing of pi plus
+           double temp_smear_P = gRandom->Gaus(pf[i],reso_pi*pf[i]);
+           double temp_smear_E = sqrt( temp_smear_P*temp_smear_P + m_pion * m_pion );
 
-          num_pipl = num_pipl + 1;
-          num_pi  = num_pi + 1;
-          num_pi_phot = num_pi_phot + 1;
-          num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
-          index_pipl[num_pi_phot - 1] = i;
-          index_pi[num_pi_phot - 1] = i;
-          ind_pi_phot[num_pi_phot - 1] = i;
-          PiPlusID.push_back(i);
+           TVector3 V3_pi_corr(temp_smear_P/pf[i] * pxf[i],temp_smear_P/pf[i] * pyf[i],temp_smear_P/pf[i] * pzf[i]);
+           double phi_pion = V3_pi_corr.Phi();
+           V3_pi_corr.SetPhi(phi_pion + TMath::Pi()); // Vec.Phi() is between (-180,180)
+           // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus
+           if ( !Pi_phot_fid_united(fbeam_en, V3_pi_corr, 1) )     {  continue; }
 
+           num_pipl = num_pipl + 1;
+           num_pi  = num_pi + 1;
+           num_pi_phot = num_pi_phot + 1;
+           num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
+           index_pipl[num_pi_phot - 1] = i;
+           index_pi[num_pi_phot - 1] = i;
+           ind_pi_phot[num_pi_phot - 1] = i;
+           PiPlusID.push_back(i);
+           charge_pi[num_pi_phot - 1] = 1;
+           Smeared_Ppi[num_pi_phot - 1] = temp_smear_P;
+           Smeared_Epi[num_pi_phot - 1] = temp_smear_E;
+         }
+         else { //CLAS data does not need Fiducial Cut again
+           num_pipl = num_pipl + 1;
+           num_pi  = num_pi + 1;
+           num_pi_phot = num_pi_phot + 1;
+           num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
+           index_pipl[num_pi_phot - 1] = i;
+           index_pi[num_pi_phot - 1] = i;
+           ind_pi_phot[num_pi_phot - 1] = i;
+           PiPlusID.push_back(i);
+           charge_pi[num_pi_phot - 1] = 1;
+         }
        }
 
        if (pdgf[i] == 22  && pf[i] > 0.3) {
 
-          ec_num_n = ec_num_n + 1;
-          num_pi_phot = num_pi_phot + 1;
-          ind_pi_phot[num_pi_phot - 1] = i;  //no events with photons for now F.H. 28.08.19
-          PhotonID.push_back(i);
-          //Cut on Radiation photon via angle with respect to the electron
-          V3_phot_angles.SetXYZ(pxf[i],pyf[i],pzf[i]);
+          //Determine photon vector for the cut on radiation photon via angle with respect to the electron
+          TVector3 V3_phot_angles(pxf[i],pyf[i],pzf[i]);
+          if (choice == 1) { //GENIE data
+            //no smearing of GENIE photons
+            double phi_photon = V3_phot_angles.Phi();
+            V3_phot_angles.SetPhi(phi_photon + TMath::Pi()); // Vec.Phi() is between (-180,180)
+            if ( !Pi_phot_fid_united(fbeam_en, V3_phot_angles, 0) )  { continue;}
+          }
+
           double neut_phi_mod = V3_phot_angles.Phi()*TMath::RadToDeg() + 30; //Add 30 degree
           if (neut_phi_mod < 0) neut_phi_mod = neut_phi_mod + 360;  //Neutral particle is between 0 and 360 degree
 
-          //within 40 degrees in theta and 30 degrees in phi
+          ec_num_n = ec_num_n + 1;
+          num_pi_phot = num_pi_phot + 1;
+          ind_pi_phot[num_pi_phot - 1] = i;
+          PhotonID.push_back(i);
+          //within 40 degrees in theta and 30 degrees in phi. Electron phi has already added 30 degree and between 0 to 360
           if(V3_phot_angles.Angle(V3_el)*TMath::RadToDeg() < phot_rad_cut && fabs(neut_phi_mod-el_phi_mod) < phot_e_phidiffcut ) {
              ec_radstat_n[num_pi_phot - 1] = true; //select radiation photons
              num_phot_rad = num_phot_rad + 1;
           }
-          if(!ec_radstat_n[num_pi_phot-1]) num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
-
+          if(!ec_radstat_n[num_pi_phot - 1]) {
+            num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
+            charge_pi[num_pi_phot - 1] = 0;
+          }
        }
 
     } //end of hadron loop
@@ -708,8 +791,7 @@ void genie_analysis::Loop(Int_t choice)
 	//Events with exactly 2 protons
 	if(num_p == 2)
   {
-          double SmearedPp;
-          double SmearedEp;
+
         //LorentzVectors for protons without momentum smearing or corrections
           TLorentzVector V4_prot_uncorr1(pxf[index_p[0]],pyf[index_p[0]],pzf[index_p[0]],TMath::Sqrt(m_prot*m_prot+pf[index_p[0]]*pf[index_p[0]]));
           TLorentzVector V4_prot_uncorr2(pxf[index_p[1]],pyf[index_p[1]],pzf[index_p[1]],TMath::Sqrt(m_prot*m_prot+pf[index_p[1]]*pf[index_p[1]]));
@@ -724,17 +806,12 @@ void genie_analysis::Loop(Int_t choice)
               V3_prot_corr1.SetXYZ(pxf[index_p[0]+60],pyf[index_p[0]+60],pzf[index_p[0]+60]);
               V3_prot_corr2.SetXYZ(pxf[index_p[1]+60],pyf[index_p[1]+60],pzf[index_p[1]+60]);
           }
-          if (choice == 1) { //GENIE data
-              //Kinematic for first proton, smearing
-              SmearedPp = gRandom->Gaus(pf[index_p[0]],reso_p*pf[index_p[0]]);
-              SmearedEp = sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
+          if (choice == 1) { //GENIE data, fiducials are done in hadron loop
 
-              V3_prot_corr1.SetXYZ(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]]);
+              V3_prot_corr1.SetXYZ(Smeared_Pp[0]/pf[index_p[0]] * pxf[index_p[0]],Smeared_Pp[0]/pf[index_p[0]] * pyf[index_p[0]],Smeared_Pp[0]/pf[index_p[0]] * pzf[index_p[0]]);
               // apapadop
               double phi_prot1 = V3_prot_corr1.Phi();
               V3_prot_corr1.SetPhi(phi_prot1 + TMath::Pi()); // Vec.Phi() is between (-180,180), // GENIE coordinate system flipped with respect to CLAS
-
-              if (!PFiducialCut(fbeam_en, V3_prot_corr1) ) { continue; } // Proton theta & phi fiducial cuts
               phi_prot1 += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
               double p_theta1 = V3_prot_corr1.Theta();
@@ -742,16 +819,10 @@ void genie_analysis::Loop(Int_t choice)
               //Proton 1 weight
               p_acc_ratio1 = acceptance_c(prot_mom_corr1, cos(p_theta1), phi_prot1, 2212,file_acceptance_p);
 
-              //Kinematic for second proton
-    	        SmearedPp = gRandom->Gaus(pf[index_p[1]],reso_p*pf[index_p[1]]);
-    	        SmearedEp = sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
-
-    	        V3_prot_corr2.SetXYZ(SmearedPp/pf[index_p[1]] * pxf[index_p[1]],SmearedPp/pf[index_p[1]] * pyf[index_p[1]],SmearedPp/pf[index_p[1]] * pzf[index_p[1]]);
+    	        V3_prot_corr2.SetXYZ(Smeared_Pp[1]/pf[index_p[1]] * pxf[index_p[1]],Smeared_Pp[1]/pf[index_p[1]] * pyf[index_p[1]],Smeared_Pp[1]/pf[index_p[1]] * pzf[index_p[1]]);
               // apapadop
               double phi_prot2 = V3_prot_corr2.Phi();
               V3_prot_corr2.SetPhi(phi_prot2 + TMath::Pi()); // Vec.Phi() is between (-180,180) // GENIE coordinate system flipped with respect to CLAS
-
-              if (!PFiducialCut(fbeam_en, V3_prot_corr2) ) { continue; } // Proton theta & phi fiducial cuts
               phi_prot2 += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
               double p_theta2 = V3_prot_corr2.Theta();
@@ -818,26 +889,6 @@ void genie_analysis::Loop(Int_t choice)
 
           if (num_pi_phot==1) {
 
-            int charge = 0;
-            if (num_pimi == 1 && num_pipl == 0) {
-              charge = -1;
-            }
-            else if (num_pipl == 1 && num_pimi == 0) {
-              charge = 1;
-            }
-            //radiation status is false if real photon
-            else if (num_pipl == 0 && num_pimi == 0 && (!ec_radstat_n[0]) )  {
-              charge = 0;
-            }
-            //skip radiation photon
-            else if (num_pipl == 0 && num_pimi == 0 && ec_radstat_n[0] ) {
-	            charge = 0;
-            }
-            else {
-              std::cout << "2 proton 1 pi loop Problem with Pion/Photon count and identification. Num Pi = " << num_pi << " , Num PiPlus = " << num_pipl << " , Num PiMinus = " << num_pimi << std::endl;
-              continue;
-            }
-
             TVector3 V3_1pi_corr;
             double pion_acc_ratio = 1;
 
@@ -846,32 +897,23 @@ void genie_analysis::Loop(Int_t choice)
             }
             if (choice == 1) { //GENIE data
               pion_acc_ratio = 0;//reset to 0 just to be save
-              SmearedPp = gRandom->Gaus(pf[index_pi[0]],reso_pi*pf[index_pi[0]]);
-              SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
-
-              V3_1pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
+              V3_1pi_corr.SetXYZ(Smeared_Ppi[0]/pf[index_pi[0]] * pxf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pyf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pzf[index_pi[0]]);
 
               // apapadop
               double phi_pion = V3_1pi_corr.Phi();
               V3_1pi_corr.SetPhi(phi_pion + TMath::Pi()); // Vec.Phi() is between (-180,180)
               phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
-              // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus
-              if ( !Pi_phot_fid_united(fbeam_en, V3_1pi_corr, charge) )
-              {
-                continue;
-              }
-
               double pion_theta = V3_1pi_corr.Theta();
               double pion_mom_corr = V3_1pi_corr.Mag();
 
-              if (charge == 1) { //acceptance for pi plus
+              if (charge_pi[0] == 1) { //acceptance for pi plus
                 pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
               }
-              else if (charge == -1) {    //acceptance for pi minus. using electron acceptance map
+              else if (charge_pi[0] == -1) {    //acceptance for pi minus. using electron acceptance map
                 pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
               }
-              else if (charge == 0) {    //acceptance for neutral, setting to 1 for now F.H. 09/24/19
+              else if (charge_pi[0] == 0) {    //acceptance for neutral, setting to 1 for now F.H. 09/24/19
                 pion_acc_ratio = 1;
               }
               else { std::cout << "WARNING: 2proton and 1 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
@@ -882,7 +924,7 @@ void genie_analysis::Loop(Int_t choice)
             double P_2p1pito1p0pi[2] = {0};
             double Ptot = 0;
 
-            rotation->prot2_pi1_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_1pi_corr, charge, V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
+            rotation->prot2_pi1_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_1pi_corr, charge_pi[0], V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
 
             double histoweight = pion_acc_ratio * weight_protons * e_acc_ratio * wght/Mott_cross_sec; //Is this correct in the following loop? F.H. 09/01/19
 
@@ -953,11 +995,9 @@ void genie_analysis::Loop(Int_t choice)
 	//---------------------------------- 2p 2pi   ----------------------------------------------
 
           const int N_2pi=2;
-          int q_pi2[2];
           double Ecal_2p2pi[N_2prot];
           double p_miss_perp_2p2pi[N_2prot];
           double Ptot_2p[2]={0};
-          bool ecstat_pi2[N_2pi]={false};
 
           if (num_pi_phot == 2) {
 
@@ -965,31 +1005,13 @@ void genie_analysis::Loop(Int_t choice)
             double pion_acc_ratio[N_2pi] = {1};
             for (int i = 0; i < num_pi_phot; i++) {
 
-              ecstat_pi2[i] = ec_radstat_n[i];
-              if ( index_pipl[i] == ind_pi_phot[i] ) { //i-th pion is a piplus
-                q_pi2[i] = 1;
-              }
-              else if ( index_pimi[i] == ind_pi_phot[i] ) { //i-th pion is a piminus
-                q_pi2[i] = -1;
-              }
-              else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
-                q_pi2[i] = 0;
-              }
-              else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
-                q_pi2[i] = 0;
-              }
-              else {  std::cout << "WARNING: 2p 2pion event: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
-
               if (choice == 0) { //CLAS data
                  V3_2pi_corr[i].SetXYZ(pxf[ind_pi_phot[i]],pyf[ind_pi_phot[i]],pzf[ind_pi_phot[i]]);
                  pion_acc_ratio[i] = 1; //Acceptance 1 for CLAS data
               }
               if (choice == 1) { //GENIE data
-                 pion_acc_ratio[i] = 0; //reset to 0 just to be safe
-                 SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
-                 SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
-
-                 V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
+                 pion_acc_ratio[i] = 0; //reset to 0 just to be same
+                 V3_2pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[index_pi[i]] * pxf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pyf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pzf[index_pi[i]]);
                  // apapadop
                  double phi_pion = V3_2pi_corr[i].Phi();
                  V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
@@ -998,13 +1020,13 @@ void genie_analysis::Loop(Int_t choice)
                  double pion_theta = V3_2pi_corr[i].Theta();
                  double pion_mom_corr = V3_2pi_corr[i].Mag();
 
-                 if (q_pi2[i] == 1) { //acceptance for pi plus
+                 if (charge_pi[i] == 1) { //acceptance for pi plus
                    pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
                  }
-                 else if (q_pi2[i] == -1) {    //acceptance for pi minus. using electron acceptance map
+                 else if (charge_pi[i] == -1) {    //acceptance for pi minus. using electron acceptance map
                    pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
                  }
-                 else if (q_pi2[i] == 0) {    //acceptance for photon set to 1 for now F.H. 09/24/19
+                 else if (charge_pi[i] == 0) {    //acceptance for photon set to 1 for now F.H. 09/24/19
                    pion_acc_ratio[i] = 1;
                  }
                  else { std::cout << "WARNING: 2proton and 2 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue;
@@ -1012,15 +1034,7 @@ void genie_analysis::Loop(Int_t choice)
               }
             }
 
-            // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
-            // Pi+Pi_phot_fid_united with 0 is for Photons/Pi0
-            //If any fiducial is not fullfilled continue to next event
-            if ( choice == 1 && ( ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[0],  q_pi2[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[1],  q_pi2[1]) ) ) )
-            {
-              continue;
-            }
-
-            rotation->prot2_pi2_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_2pi_corr,q_pi2, V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
+            rotation->prot2_pi2_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_2pi_corr,charge_pi, V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
 
             double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1];
             double histoweight = weight_pions * weight_protons * e_acc_ratio * wght/Mott_cross_sec; //Is this correct in the following loop? F.H. 09/01/19
@@ -1056,9 +1070,6 @@ void genie_analysis::Loop(Int_t choice)
   //Events with exactly 3 protons
 	  if(num_p == 3){
 
-        double SmearedPp;
-        double SmearedEp;
-
 	      const int N_3p = 3;
 	      TLorentzVector V4_p_uncorr[N_3p], V4_p_corr[N_3p],V4_prot_el[N_3p];
 	      TVector3 V3_prot_uncorr[N_3p],V3_prot_corr[N_3p],V3_3p_rot[N_3p];
@@ -1089,13 +1100,8 @@ void genie_analysis::Loop(Int_t choice)
           }
           if (choice == 1) { //GENIE data
             p_acc_ratio[i] = 0; //Reset just to be sure
-            //Smearing of Proton
-            SmearedPp = gRandom->Gaus(pf[index_p[i]],reso_p*pf[index_p[i]]);
-            SmearedEp = TMath::Sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
-
-            V3_prot_corr[i].SetXYZ(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]]);
-            V4_p_corr[i].SetPxPyPzE(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]],SmearedEp);
-
+            V3_prot_corr[i].SetXYZ(Smeared_Pp[i]/pf[index_p[i]] * pxf[index_p[i]],Smeared_Pp[i]/pf[index_p[i]] * pyf[index_p[i]],Smeared_Pp[i]/pf[index_p[i]] * pzf[index_p[i]]);
+            V4_p_corr[i].SetPxPyPzE(Smeared_Pp[i]/pf[index_p[i]] * pxf[index_p[i]],Smeared_Pp[i]/pf[index_p[i]] * pyf[index_p[i]],Smeared_Pp[i]/pf[index_p[i]] * pzf[index_p[i]],Smeared_Ep[i]);
             // apapadop
             double phi_prot = V3_el.Phi(); //in Radians
             V3_prot_corr[i].SetPhi(phi_prot + TMath::Pi() ); // Vec.Phi() is between (-180,180)
@@ -1112,10 +1118,6 @@ void genie_analysis::Loop(Int_t choice)
 	        p_miss_perp[i] = TMath::Sqrt(V4_prot_el[i].Px()*V4_prot_el[i].Px() + V4_prot_el[i].Py()*V4_prot_el[i].Py());
 
         } //end loop over N_3p
-
-        //If one of the smeared protons doesn't get through fiducials, skip event for GENIE data
-        if ( choice == 1 && ( (!PFiducialCut(fbeam_en, V3_prot_corr[0]) ) || (!PFiducialCut(fbeam_en, V3_prot_corr[1]) ) || (!PFiducialCut(fbeam_en, V3_prot_corr[2]) ) ) ) { continue; }
-
 
         V3_prot_el[0][0]=V4_el.Vect()+V3_prot_uncorr[0];
         V3_prot_el[0][1]=V4_el.Vect()+V3_prot_uncorr[1];
@@ -1192,25 +1194,8 @@ void genie_analysis::Loop(Int_t choice)
              double P_tot_3p[N_3p]={0};
              double Ecal_3p1pi[N_3p]={0};
              double p_miss_perp_3p1pi[N_3p]={0};
-             double charge = 0;
              TVector3 V3_pi_corr;
              double pion_acc_ratio = 1;
-
-             if (num_pimi == 1 && num_pipl == 0) {
-               charge = -1;
-             }
-             else if (num_pipl == 1 && num_pimi == 0) {
-               charge = 1;
-             }
-             //radiation status is false if real photon
-             else if (num_pipl == 0 && num_pimi == 0 && (!ec_radstat_n[0]) )  {
-               charge = 0;
-             }
-             //skip radiation photon
-             else if (num_pipl == 0 && num_pimi == 0 && ec_radstat_n[0] ) {
- 	            charge = 0;
-             }
-             else {  std::cout << "WARNING: 3p 1pion event: No charge for one pion/photon could be assigned. Pion number " << index_pi[0] << std::endl; continue; }
 
              if (choice == 0) { //CLAS data
                V3_pi_corr.SetXYZ(pxf[ind_pi_phot[0]],pyf[ind_pi_phot[0]],pzf[ind_pi_phot[0]]);
@@ -1218,39 +1203,29 @@ void genie_analysis::Loop(Int_t choice)
              }
              if (choice == 1){ //GENIE data
                pion_acc_ratio = 0; //Reset to 0 just to be sure
-               SmearedPp = gRandom->Gaus(pf[index_pi[0]],reso_pi*pf[index_pi[0]]);
-               SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
-
-               V3_pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
-
+               V3_pi_corr.SetXYZ(Smeared_Ppi[0]/pf[index_pi[0]] * pxf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pyf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pzf[index_pi[0]]);
                // apapadop
                double phi_pion = V3_pi_corr.Phi(); //in Radians
                V3_pi_corr.SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
                phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
 
-               // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus
-               if ( !Pi_phot_fid_united(fbeam_en, V3_pi_corr, charge) )
-               {
-                 continue;
-               }
-
                double pion_theta = V3_pi_corr.Theta();
                double pion_mom_corr = V3_pi_corr.Mag();
 
-               if (charge == 1) { //acceptance for pi plus
+               if (charge_pi[0] == 1) { //acceptance for pi plus
                  pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
                }
-               else if (charge == -1) {    //acceptance for pi minus. using electron acceptance map
+               else if (charge_pi[0] == -1) {    //acceptance for pi minus. using electron acceptance map
                  pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
                }
-               else if (charge == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+               else if (charge_pi[0] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
                  pion_acc_ratio = 1;
                }
                else { std::cout << "WARNING: 3proton and 1 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
              }
 
-             rotation->prot3_pi1_rot_func(V3_prot_corr,V3_prot_uncorr, V3_pi_corr, charge , V4_el,  Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
+             rotation->prot3_pi1_rot_func(V3_prot_corr,V3_prot_uncorr, V3_pi_corr, charge_pi[0] , V4_el,  Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
 
              //for CLAS data is histoweight = 1/Mott_cross_sec
              double histoweight = pion_acc_ratio * weight_protons * e_acc_ratio * wght/Mott_cross_sec; //Weight for 3protons, 1 pion, 1 electron, GENIE weight and Mott cross section
@@ -1283,9 +1258,6 @@ void genie_analysis::Loop(Int_t choice)
 //Events with exactly 4 protons
 	 	 if(num_p==4){
 
-        double SmearedPp;
-        double SmearedEp;
-
 	      const int N_p4=4;
 	      TLorentzVector V4_p4_uncorr[N_p4], V4_p4_corr[N_p4],V4_prot4_el[N_p4];
 	      TVector3 V3_prot4_uncorr[N_p4],V3_prot4_corr[N_p4];
@@ -1314,12 +1286,8 @@ void genie_analysis::Loop(Int_t choice)
           }
           if (choice == 1) { //GENIE data
             p_acc_ratio[i] = 0; //Reset to 0 just to be sure
-            //Smearing of Proton
-            SmearedPp = gRandom->Gaus(pf[index_p[i]],reso_p*pf[index_p[i]]);
-            SmearedEp = TMath::Sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
-
-            V3_prot4_corr[i].SetXYZ(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]]);
-            V4_p4_corr[i].SetPxPyPzE(SmearedPp/pf[index_p[i]] * pxf[index_p[i]],SmearedPp/pf[index_p[i]] * pyf[index_p[i]],SmearedPp/pf[index_p[i]] * pzf[index_p[i]],SmearedEp);
+            V3_prot4_corr[i].SetXYZ(Smeared_Pp[i]/pf[index_p[i]] * pxf[index_p[i]],Smeared_Pp[i]/pf[index_p[i]] * pyf[index_p[i]],Smeared_Pp[i]/pf[index_p[i]] * pzf[index_p[i]]);
+            V4_p4_corr[i].SetPxPyPzE(Smeared_Pp[i]/pf[index_p[i]] * pxf[index_p[i]],Smeared_Pp[i]/pf[index_p[i]] * pyf[index_p[i]],Smeared_Pp[i]/pf[index_p[i]] * pzf[index_p[i]],Smeared_Ep[i]);
 
             // apapadop
             double phi_prot = V3_prot4_corr[i].Phi(); //in Radians
@@ -1329,21 +1297,13 @@ void genie_analysis::Loop(Int_t choice)
             double p_theta = V3_prot4_corr[i].Theta();
             double prot_mom_corr = V3_prot4_corr[i].Mag();
             //Proton acceptance weight
-   	        p_acc_ratio[i] = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212,file_acceptance_p);
+   	        p_acc_ratio[i] = acceptance_c(prot_mom_corr, cos(p_theta), phi_prot, 2212, file_acceptance_p);
           }
 
           V4_prot4_el[i] = V4_p4_corr[i] + V4_el;
           E_cal_p4[i] = V4_el.E() + V4_p4_corr[i].E() - m_prot + bind_en[ftarget];
           p_miss_perp_p4[i] = TMath::Sqrt(V4_prot4_el[i].Px()*V4_prot4_el[i].Px() + V4_prot4_el[i].Py()*V4_prot4_el[i].Py());
         } //end loop over N_p4
-
-        //If one of the smeared protons doesn't get through fiducials, skip event for GENIE data
-        if ( choice == 1 && (
-             (!PFiducialCut(fbeam_en, V3_prot4_corr[0]) ) || (!PFiducialCut(fbeam_en, V3_prot4_corr[1]) ) ||
-             (!PFiducialCut(fbeam_en, V3_prot4_corr[2]) ) || (!PFiducialCut(fbeam_en, V3_prot4_corr[3]) )    ) )
-        {
-          continue;
-        }
 
         //acceptance weight for all four protons. It is 1 for CLAS data
         double weight_protons =  p_acc_ratio[0] * p_acc_ratio[1] * p_acc_ratio[2] * p_acc_ratio[3];
@@ -1494,7 +1454,7 @@ void genie_analysis::Loop(Int_t choice)
 		                      V3p2_uncorr[0]=V3_prot4_uncorr[ind1];
 		                      V3p2_uncorr[1]=V3_prot4_uncorr[ind2];
 
-		                      rotation->prot2_rot_func( V3p2,V3p2_uncorr, V4_el,E_cal_4pto2p,p_miss_perp_4pto2p,  P_4pto2p, &N_two);
+		                      rotation->prot2_rot_func( V3p2, V3p2_uncorr, V4_el,E_cal_4pto2p,p_miss_perp_4pto2p,  P_4pto2p, &N_two);
 
 		                      if( N_two!=0  && N_p_four!=0){
 		                          for(int j = 0; j < N_2p; j++)  {  //looping through  1 proton combination out of 2 protons
@@ -1571,24 +1531,7 @@ void genie_analysis::Loop(Int_t choice)
 
         TVector3 V3_pi_corr;
         double P_undet=0;
-        int charge = 0;
         double pion_acc_ratio = 1;
-
-        if (num_pimi == 1 && num_pipl == 0) {
-          charge = -1;
-        }
-        else if (num_pipl == 1 && num_pimi == 0) {
-          charge = 1;
-        }
-        //radiation status is false if real photon
-        else if (num_pipl == 0 && num_pimi == 0 && (!ec_radstat_n[0]) )  {
-          charge = 0;
-        }
-        //skip radiation photon
-        else if (num_pipl == 0 && num_pimi == 0 && ec_radstat_n[0] ) {
-         charge = 0;
-        }
-        else {  std::cout << "WARNING: 1pion events: No charge for one pion/photon could be assigned.  "  << std::endl; continue; }
 
         if (choice == 0) { //CLAS data
            V3_pi_corr.SetXYZ(pxf[ind_pi_phot[0]], pyf[ind_pi_phot[0]], pzf[ind_pi_phot[0]]);
@@ -1596,11 +1539,7 @@ void genie_analysis::Loop(Int_t choice)
         }
         if (choice == 1) { //GENIE data
            pion_acc_ratio = 0; //reset just to be sure
-           double SmearedPp = gRandom->Gaus(pf[index_pi[0]],reso_pi*pf[index_pi[0]]);
-  // not used atm         double SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
-
-           V3_pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
-
+           V3_pi_corr.SetXYZ(Smeared_Ppi[0]/pf[index_pi[0]] * pxf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pyf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pzf[index_pi[0]]);
            // apapadop
            double phi_pion = V3_pi_corr.Phi(); //in Radians
            V3_pi_corr.SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
@@ -1609,27 +1548,20 @@ void genie_analysis::Loop(Int_t choice)
            double pion_theta = V3_pi_corr.Theta();
            double pion_mom_corr = V3_pi_corr.Mag();
 
-           if (charge == 1) { //acceptance for pi plus
+           if (charge_pi[0] == 1) { //acceptance for pi plus
              pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
            }
-           else if (charge == -1) {    //acceptance for pi minus. using electron acceptance map
+           else if (charge_pi[0] == -1) {    //acceptance for pi minus. using electron acceptance map
              pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
            }
-           else if (charge == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+           else if (charge_pi[0] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
              pion_acc_ratio = 1;
            }
            else { std::cout << "WARNING: 1 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
-           // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
-           // Pi_phot_fid_united with 0 is for Photon/Pi0
-           //If any fiducial is not fullfilled continue to next event
-           if ( ( !Pi_phot_fid_united(fbeam_en, V3_pi_corr,  charge) ) )
-           {
-               continue;
-           }
         }
 
-        rotation->pi1_rot_func( V3_pi_corr, charge, &P_undet);
+        rotation->pi1_rot_func( V3_pi_corr, charge_pi[0], &P_undet);
 
         //histoweight is 1/Mott_cross_sec for CLAS data
         double histoweight = pion_acc_ratio * WeightIncl;
@@ -1647,28 +1579,11 @@ void genie_analysis::Loop(Int_t choice)
 
 	      const int N_2pi = 2;
 	      TVector3 V3_2pi_corr[N_2pi];
-	      int q_pi2[N_2pi];
-        bool radstat_pi2[N_2pi] = {false};
 	      double P_1pi[N_2pi] = {0};
         double P_0pi = 0;
         double pion_acc_ratio[N_2pi] = {1};
 
         for (int i = 0; i < num_pi_phot; i++) {
-
-            radstat_pi2[i] = ec_radstat_n[i];
-            if ( index_pipl[i] == ind_pi_phot[i] ) { //i-th pion is a piplus
-              q_pi2[i] = 1;
-            }
-            else if ( index_pimi[i] == ind_pi_phot[i] ) { //i-th pion is a piminus
-              q_pi2[i] = -1;
-            }
-            else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
-              q_pi2[i] = 0;
-            }
-            else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
-              q_pi2[i] = 0;
-            }
-            else {  std::cout << "WARNING: 2pion events: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
 
             if (choice == 0) { //CLAS data
               V3_2pi_corr[i].SetXYZ( pxf[ind_pi_phot[i]], pyf[ind_pi_phot[i]], pzf[ind_pi_phot[i]]);
@@ -1676,11 +1591,7 @@ void genie_analysis::Loop(Int_t choice)
             }
             if (choice == 1) { //GENIE data
               pion_acc_ratio[i] = 0; //Reset just to be secure
-              double SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
-  //not used atm            double SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
-
-              V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
-
+              V3_2pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[index_pi[i]] * pxf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pyf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pzf[index_pi[i]]);
               // apapadop
               double phi_pion = V3_2pi_corr[i].Phi(); //in Radians
               V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
@@ -1689,28 +1600,20 @@ void genie_analysis::Loop(Int_t choice)
               double pion_theta = V3_2pi_corr[i].Theta();
               double pion_mom_corr = V3_2pi_corr[i].Mag();
 
-              if (q_pi2[i] == 1) { //acceptance for pi plus
+              if (charge_pi[i] == 1) { //acceptance for pi plus
                   pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
               }
-              else if (q_pi2[i] == -1) {    //acceptance for pi minus. using electron acceptance map
+              else if (charge_pi[i] == -1) {    //acceptance for pi minus. using electron acceptance map
                   pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
               }
-              else if (q_pi2[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+              else if (charge_pi[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
                   pion_acc_ratio[i] = 1;
               }
               else { std::cout << "WARNING: 2 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
             }
         } //end loop over num_pi_phot
 
-      // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
-      // Pi_phot_fid_united with 0 is for Photon/Pi0
-      //If any fiducial is not fullfilled continue to next event, only for GENIE data
-        if ( choice == 1 && ( ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[0],  q_pi2[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[1],  q_pi2[1]) ) ) )
-        {
-            continue;
-        }
-
-        rotation->pi2_rot_func(V3_2pi_corr, q_pi2, &P_0pi,P_1pi);
+        rotation->pi2_rot_func(V3_2pi_corr, charge_pi, &P_0pi,P_1pi);
         //weight_pions is 1 for CLAS data
         double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1];
         //histoweight is 1/Mott_cross_sec for CLAS data
@@ -1735,8 +1638,6 @@ void genie_analysis::Loop(Int_t choice)
         const int N_3pi=3;
         const int N_2pi=2;
         TVector3 V3_3pi_corr[N_3pi];
-        int q_pi3[N_3pi]={0};
-        bool radstat_pi3[N_3pi]={false};
         double P_0pi = 0;
         double P_1pi[N_3pi]={0};
         double P_320pi[N_3pi]={0};
@@ -1745,32 +1646,13 @@ void genie_analysis::Loop(Int_t choice)
 
         for (int i = 0; i < num_pi_phot; i++) {
 
-            radstat_pi3[i] = ec_radstat_n[i];
-            if ( index_pipl[i] == ind_pi_phot[i] ) { //i-th pion is a piplus
-              q_pi3[i] = 1;
-            }
-            else if ( index_pimi[i] == ind_pi_phot[i] ) { //i-th pion is a piminus
-              q_pi3[i] = -1;
-            }
-            else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
-              q_pi3[i] = 0;
-            }
-            else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
-              q_pi3[i] = 0;
-            }
-            else {  std::cout << "WARNING: 3pion events: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
-
             if (choice == 0) { //CLAS data
                V3_3pi_corr[i].SetXYZ( pxf[ind_pi_phot[i]], pyf[ind_pi_phot[i]], pzf[ind_pi_phot[i]]);
                pion_acc_ratio[i] = 1; //Acceptance is 1 for CLAS data
             }
             if (choice == 1) { //GENIE data
                pion_acc_ratio[i] = 0; //Reset just to be sure
-               double SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
-      //not used atm         double SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
-
-               V3_3pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
-
+               V3_3pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[index_pi[i]] * pxf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pyf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pzf[index_pi[i]]);
                // apapadop
                double phi_pion = V3_3pi_corr[i].Phi(); //in Radians
                V3_3pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
@@ -1779,30 +1661,20 @@ void genie_analysis::Loop(Int_t choice)
                double pion_theta = V3_3pi_corr[i].Theta();
                double pion_mom_corr = V3_3pi_corr[i].Mag();
 
-               if (q_pi3[i] == 1) { //acceptance for pi plus
+               if (charge_pi[i] == 1) { //acceptance for pi plus
                    pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
                }
-               else if (q_pi3[i] == -1) {    //acceptance for pi minus. using electron acceptance map
+               else if (charge_pi[i] == -1) {    //acceptance for pi minus. using electron acceptance map
                    pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
                }
-               else if (q_pi3[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+               else if (charge_pi[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
                    pion_acc_ratio[i] = 1;
                }
                else { std::cout << "WARNING: 3 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
             }
         } //end loop over num_pi_phot
 
-        // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
-        // Pi_phot_fid_united with 0 is for Photons/Pi0
-        //If any fiducial is not fullfilled continue to next event, only for GENIE data
-        if ( choice == 1 &&
-              (  ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[0],  q_pi3[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[1],  q_pi3[1]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[2],  q_pi3[2]) ) )
-           )
-        {
-              continue;
-        }
-
-        rotation->pi3_rot_func( V3_3pi_corr, q_pi3, &P_0pi, P_1pi, P_320pi,P_3210pi);
+        rotation->pi3_rot_func( V3_3pi_corr, charge_pi, &P_0pi, P_1pi, P_320pi,P_3210pi);
         //weight_pions is 1 for CLAS data
         double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2];
         //histoweight is 1/Mott_cross_sec for CLAS data
@@ -1837,8 +1709,6 @@ void genie_analysis::Loop(Int_t choice)
 
        const int N_4pi=4;
        TVector3 V3_4pi_corr[N_4pi];
-       int q_pi4[N_4pi]={0};
-       bool  radstat_pi4[N_4pi]={false};
        double P_0pi=0;
        double P_410pi=0;
        double P_420pi=0;
@@ -1851,32 +1721,13 @@ void genie_analysis::Loop(Int_t choice)
 
        for (int i = 0; i < num_pi_phot; i++) {
 
-           radstat_pi4[i] = ec_radstat_n[i];
-           if ( index_pipl[i] == ind_pi_phot[i] ) { //i-th pion is a piplus
-             q_pi4[i] = 1;
-           }
-           else if ( index_pimi[i] == ind_pi_phot[i] ) { //i-th pion is a piminus
-             q_pi4[i] = -1;
-           }
-           else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
-             q_pi4[i] = 0;
-           }
-           else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
-             q_pi4[i] = 0;
-           }
-           else {  std::cout << "WARNING: 4pion events: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
-
            if (choice == 0) { //CLAS data
               V3_4pi_corr[i].SetXYZ( pxf[ind_pi_phot[i]], pyf[ind_pi_phot[i]], pzf[ind_pi_phot[i]]);
               pion_acc_ratio[i] = 1; //Acceptance is 1 for CLAS data
            }
            if (choice == 1) { //GENIE data
               pion_acc_ratio[i] = 0; //Reset just to be sure
-              double SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
-       // not used       double SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
-
-              V3_4pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
-
+              V3_4pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[index_pi[i]] * pxf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pyf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pzf[index_pi[i]]);
               // apapadop
               double phi_pion = V3_4pi_corr[i].Phi(); //in Radians
               V3_4pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
@@ -1885,30 +1736,20 @@ void genie_analysis::Loop(Int_t choice)
               double pion_theta = V3_4pi_corr[i].Theta();
               double pion_mom_corr = V3_4pi_corr[i].Mag();
 
-              if (q_pi4[i] == 1) { //acceptance for pi plus
+              if (charge_pi[i] == 1) { //acceptance for pi plus
                   pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
               }
-              else if (q_pi4[i] == -1) {    //acceptance for pi minus. using electron acceptance map
+              else if (charge_pi[i] == -1) {    //acceptance for pi minus. using electron acceptance map
                   pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
               }
-              else if (q_pi4[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+              else if (charge_pi[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
                   pion_acc_ratio[i] = 1;
               }
               else { std::cout << "WARNING: 4 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
            }
        } //end loop over num_pi_phot
 
-       // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
-        // Pi_phot_fid_united with 0 is for Photon/Pi0
-       //If any fiducial is not fullfilled continue to next event, only for GENIE data
-       if ( choice == 1 && (
-            ( !Pi_phot_fid_united(fbeam_en, V3_4pi_corr[0],  q_pi4[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_4pi_corr[1],  q_pi4[1]) )
-         || ( !Pi_phot_fid_united(fbeam_en, V3_4pi_corr[2],  q_pi4[2]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_4pi_corr[3],  q_pi4[3]) ) ) )
-       {
-             continue;
-       }
-
-       rotation->pi4_rot_func(V3_4pi_corr, q_pi4, &P_0pi,&P_410pi,&P_420pi,&P_4210pi,&P_430pi,&P_4310pi,&P_4320pi,&P_43210pi);
+       rotation->pi4_rot_func(V3_4pi_corr, charge_pi, &P_0pi,&P_410pi,&P_420pi,&P_4210pi,&P_430pi,&P_4310pi,&P_4320pi,&P_43210pi);
 
        //weight_pions is 1 for CLAS data
        double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2] * pion_acc_ratio[3];
@@ -1943,9 +1784,6 @@ void genie_analysis::Loop(Int_t choice)
      if( num_p == 1)
      {
 
-       double SmearedPp;
-       double SmearedEp;
-
      //Vector for proton without momentum smearing
        TLorentzVector V4_prot_uncorr(pxf[index_p[0]],pyf[index_p[0]],pzf[index_p[0]],TMath::Sqrt(m_prot*m_prot+pf[index_p[0]]*pf[index_p[0]]));
        TVector3 V3_prot_uncorr = V4_prot_uncorr.Vect();
@@ -1965,20 +1803,14 @@ void genie_analysis::Loop(Int_t choice)
        }
        if (choice == 1) { //GENIE data
            p_acc_ratio = 0; //Reset just to be sure
-         //Smearing of Proton
-           SmearedPp = gRandom->Gaus(pf[index_p[0]],reso_p*pf[index_p[0]]);
-           SmearedEp = sqrt( SmearedPp*SmearedPp + m_prot * m_prot );
-
+          //Fiducial cuts are done in the hadron loop
           //Vector for proton with momentum smearing
-           V3_prot_corr.SetXYZ(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]]);
-           V4_prot_corr.SetPxPyPzE(SmearedPp/pf[index_p[0]] * pxf[index_p[0]],SmearedPp/pf[index_p[0]] * pyf[index_p[0]],SmearedPp/pf[index_p[0]] * pzf[index_p[0]],SmearedEp);
-
+           V3_prot_corr.SetXYZ(Smeared_Pp[0]/pf[index_p[0]] * pxf[index_p[0]],Smeared_Pp[0]/pf[index_p[0]] * pyf[index_p[0]],Smeared_Pp[0]/pf[index_p[0]] * pzf[index_p[0]]);
+           V4_prot_corr.SetPxPyPzE(Smeared_Pp[0]/pf[index_p[0]] * pxf[index_p[0]],Smeared_Pp[0]/pf[index_p[0]] * pyf[index_p[0]],Smeared_Pp[0]/pf[index_p[0]] * pzf[index_p[0]],Smeared_Ep[0]);
            // apapadop
            double phi_prot = V3_prot_corr.Phi(); //in Radians
            V3_prot_corr.SetPhi(phi_prot + TMath::Pi() ); // Vec.Phi() is between (-180,180)
            phi_prot += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
-
-           if (!PFiducialCut(fbeam_en, V3_prot_corr) ) { continue; } // Proton theta & phi fiducial cuts
 
            //Proton kinematic variables
            double p_theta = V3_prot_corr.Theta();
@@ -2041,24 +1873,7 @@ void genie_analysis::Loop(Int_t choice)
           double N_piphot_det;
           double N_piphot_undet;
           TVector3 V3_pi_corr;
-          int charge = 0;
           double pion_acc_ratio = 1;
-
-          if (num_pimi == 1 && num_pipl == 0) {
-            charge = -1;
-          }
-          else if (num_pipl == 1 && num_pimi == 0) {
-            charge = 1;
-          }
-          //radiation status is false if real photon
-          else if (num_pipl == 0 && num_pimi == 0 && (!ec_radstat_n[0]) )  {
-            charge = 0;
-          }
-          //skip radiation photon
-          else if (num_pipl == 0 && num_pimi == 0 && ec_radstat_n[0] ) {
-           charge = 0;
-          }
-          else {  std::cout << "WARNING: 1pion events: No charge for one pion/photon could be assigned.  "  << std::endl; continue; }
 
           if (choice == 0) { //CLAS data
              pion_acc_ratio = 1; //Acceptance is 1 for CLAS data
@@ -2066,11 +1881,7 @@ void genie_analysis::Loop(Int_t choice)
           }
           if (choice == 1) { //GENIE data
              pion_acc_ratio = 1; //Reset to 0 just to be sure
-             SmearedPp = gRandom->Gaus(pf[index_pi[0]],reso_pi*pf[index_pi[0]]);
-             SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
-
-             V3_pi_corr.SetXYZ(SmearedPp/pf[index_pi[0]] * pxf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pyf[index_pi[0]],SmearedPp/pf[index_pi[0]] * pzf[index_pi[0]]);
-
+             V3_pi_corr.SetXYZ(Smeared_Ppi[0]/pf[index_pi[0]] * pxf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pyf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pzf[index_pi[0]]);
              // apapadop
              double phi_pion = V3_pi_corr.Phi(); //in Radians
              V3_pi_corr.SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
@@ -2079,27 +1890,20 @@ void genie_analysis::Loop(Int_t choice)
              double pion_theta = V3_pi_corr.Theta();
              double pion_mom_corr = V3_pi_corr.Mag();
 
-             if (charge == 1) { //acceptance for pi plus
+             if (charge_pi[0] == 1) { //acceptance for pi plus
                pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
              }
-             else if (charge == -1) {    //acceptance for pi minus. using electron acceptance map
+             else if (charge_pi[0] == -1) {    //acceptance for pi minus. using electron acceptance map
                pion_acc_ratio = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
              }
-             else if (charge == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+             else if (charge_pi[0] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
                pion_acc_ratio = 1;
              }
              else { std::cout << "WARNING: 1 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
-             // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
-             // Pi_phot_fid_united with 0 is for Photon/Pi0
-             //If any fiducial is not fullfilled continue to next event
-             if ( ( !Pi_phot_fid_united(fbeam_en, V3_pi_corr,  charge) ) )
-             {
-                 continue;
-             }
           }
 
-          rotation->prot1_pi1_rot_func(V3_prot_uncorr,V3_pi_corr, charge, &N_piphot_det,&N_piphot_undet);
+          rotation->prot1_pi1_rot_func(V3_prot_uncorr,V3_pi_corr, charge_pi[0], &N_piphot_det,&N_piphot_undet);
 
           //histoweight is 1/Mott_cross_sec for CLAS data
           double histoweight = pion_acc_ratio * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec; //1proton, 1 Pion, 1 electron acceptance, GENIE weight and Mott
@@ -2139,8 +1943,6 @@ void genie_analysis::Loop(Int_t choice)
 
          const int N_2pi=2;
          TVector3 V3_2pi_corr[N_2pi],V3_2pi_rot[N_2pi],V3_p_rot;
-         int q_pi2[N_2pi];
-         bool radstat_pi2[N_2pi]={false};
          double P_1p0pi=0;
          double P_1p1pi[N_2pi]={1};
 
@@ -2148,31 +1950,13 @@ void genie_analysis::Loop(Int_t choice)
 
          for (int i = 0; i < num_pi_phot; i++) {
 
-             radstat_pi2[i] = ec_radstat_n[i];
-             if ( index_pipl[i] == ind_pi_phot[i] ) { //i-th pion is a piplus
-               q_pi2[i] = 1;
-             }
-             else if ( index_pimi[i] == ind_pi_phot[i] ) { //i-th pion is a piminus
-               q_pi2[i] = -1;
-             }
-             else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
-               q_pi2[i] = 0;
-             }
-             else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
-               q_pi2[i] = 0;
-             }
-             else {  std::cout << "WARNING: 1Proton 2pion events: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
-
              if (choice == 0) { //CLAS data
                 V3_2pi_corr[i].SetXYZ( pxf[ind_pi_phot[i]], pyf[ind_pi_phot[i]], pzf[ind_pi_phot[i]]);
                 pion_acc_ratio[i] = 1; //Acceptance is 1 for CLAS data
              }
              if (choice == 1) { //GENIE data
-                SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
-                SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
 
-                V3_2pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
-
+                V3_2pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[index_pi[i]] * pxf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pyf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pzf[index_pi[i]]);
                 // apapadop
                 double phi_pion = V3_2pi_corr[i].Phi(); //in Radians
                 V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
@@ -2181,28 +1965,20 @@ void genie_analysis::Loop(Int_t choice)
                 double pion_theta = V3_2pi_corr[i].Theta();
                 double pion_mom_corr = V3_2pi_corr[i].Mag();
 
-                if (q_pi2[i] == 1) { //acceptance for pi plus
+                if (charge_pi[i] == 1) { //acceptance for pi plus
                    pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
                 }
-                else if (q_pi2[i] == -1) {    //acceptance for pi minus. using electron acceptance map
+                else if (charge_pi[i] == -1) {    //acceptance for pi minus. using electron acceptance map
                    pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
                 }
-                else if (q_pi2[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+                else if (charge_pi[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
                    pion_acc_ratio[i] = 1;
                 }
                 else { std::cout << "WARNING: 1 Proton 2 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
              }
          } //end loop over num_pi_phot
 
-         // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
-         // Pi_phot_fid_united with 0 for Photons/Pi0
-         //If any fiducial is not fullfilled continue to next event, only for GENIE data
-         if ( choice == 1 && ( ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[0],  q_pi2[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_2pi_corr[1],  q_pi2[1]) ) ) )
-         {
-               continue;
-         }
-
-         rotation->prot1_pi2_rot_func(V3_prot_uncorr,V3_2pi_corr,q_pi2,&P_1p0pi,P_1p1pi);
+         rotation->prot1_pi2_rot_func(V3_prot_uncorr,V3_2pi_corr,charge_pi,&P_1p0pi,P_1p1pi);
          //weight_pions is 1 for CLAS data
          double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1];
          //histoweight is 1/Mott_cross_sec for CLAS data
@@ -2257,27 +2033,10 @@ void genie_analysis::Loop(Int_t choice)
 
          const int N_3pi=3;
          TVector3 V3_3pi_corr[N_3pi],V3_3pi_rot[N_3pi],V3_p_rot;
-         int q_pi3[N_3pi];
-         bool radstat_pi3[N_3pi]={false};
          double P_1p3pi = 0;
          double pion_acc_ratio[N_3pi] = {1};
 
          for (int i = 0; i < num_pi_phot; i++) {
-
-             radstat_pi3[i] = ec_radstat_n[i];
-             if ( index_pipl[i] == ind_pi_phot[i] ) { //i-th pion is a piplus
-               q_pi3[i] = 1;
-             }
-             else if ( index_pimi[i] == ind_pi_phot[i] ) { //i-th pion is a piminus
-               q_pi3[i] = -1;
-             }
-             else if (ind_pi_phot[i]!= -1 && !ec_radstat_n[i] ) { //i-th particle is a neutral
-               q_pi3[i] = 0;
-             }
-             else if (ind_pi_phot[i]!= -1 && ec_radstat_n[i] ) { //i-th particle is a radiation photon
-               q_pi3[i] = 0;
-             }
-             else {  std::cout << "WARNING: 3pion events: No charge for one pion/photon could be assigned. Pion number " << i << std::endl; continue; }
 
              if (choice == 0) { //CLAS data
                 V3_3pi_corr[i].SetXYZ( pxf[ind_pi_phot[i]], pyf[ind_pi_phot[i]], pzf[ind_pi_phot[i]]);
@@ -2285,11 +2044,7 @@ void genie_analysis::Loop(Int_t choice)
              }
              if (choice == 1) { //GENIE data
                 pion_acc_ratio[i] = 0; //Reset to 0 just to be sure
-                SmearedPp = gRandom->Gaus(pf[index_pi[i]],reso_pi*pf[index_pi[i]]);
-                SmearedEp = sqrt( SmearedPp*SmearedPp + m_pion * m_pion );
-
-                V3_3pi_corr[i].SetXYZ(SmearedPp/pf[index_pi[i]] * pxf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pyf[index_pi[i]],SmearedPp/pf[index_pi[i]] * pzf[index_pi[i]]);
-
+                V3_3pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[index_pi[i]] * pxf[index_pi[i]],Smeared_Pp[i]/pf[index_pi[i]] * pyf[index_pi[i]],Smeared_Pp[i]/pf[index_pi[i]] * pzf[index_pi[i]]);
                 // apapadop
                 double phi_pion = V3_3pi_corr[i].Phi(); //in Radians
                 V3_3pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
@@ -2298,29 +2053,20 @@ void genie_analysis::Loop(Int_t choice)
                 double pion_theta = V3_3pi_corr[i].Theta();
                 double pion_mom_corr = V3_3pi_corr[i].Mag();
 
-                if (q_pi3[i] == 1) { //acceptance for pi plus
+                if (charge_pi[i] == 1) { //acceptance for pi plus
                     pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, 211, file_acceptance_pip);
                 }
-                else if (q_pi3[i] == -1) {    //acceptance for pi minus. using electron acceptance map
+                else if (charge_pi[i] == -1) {    //acceptance for pi minus. using electron acceptance map
                     pion_acc_ratio[i] = acceptance_c(pion_mom_corr, cos(pion_theta), phi_pion, -211, file_acceptance);
                 }
-                else if (q_pi3[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
+                else if (charge_pi[i] == 0) {    //acceptance for photon/pi0 is 1 for now F.H. 09/24/19
                     pion_acc_ratio[i] = 1;
                 }
                 else { std::cout << "WARNING: 3 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
              }
          } //end loop over num_pi_phot
 
-         // Pi_phot_fid_united with +1 is for Piplus and Pi_phot_fid_united with -1 is for Piminus.
-         // Pi_phot_fid_united with 0 is for Photons/Pi0
-         //If any fiducial is not fullfilled continue to next event, only for GENIE data
-         if ( choice == 1 &&
-           ( ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[0],  q_pi3[0]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[1],  q_pi3[1]) ) || ( !Pi_phot_fid_united(fbeam_en, V3_3pi_corr[2],  q_pi3[2]) ) ) )
-         {
-               continue;
-         }
-
-         rotation->prot1_pi3_rot_func(V3_prot_uncorr, V3_3pi_corr, q_pi3, &P_1p3pi);
+         rotation->prot1_pi3_rot_func(V3_prot_uncorr, V3_3pi_corr, charge_pi, &P_1p3pi);
          //weight_pions is 1 for CLAS data
          double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2];
          //histoweight is 1/Mott_cross_sec for CLAS data

@@ -535,7 +535,7 @@ void genie_analysis::Loop(Int_t choice)
 
         //acceptance_c takes phi in radians and here unmodified by 30 degree.
         e_acc_ratio = acceptance_c(el_momentum, cos(el_theta), phi_ElectronOut, 11,file_acceptance);
-	if ( fabs(e_acc_ratio) != e_acc_ratio ) { continue; }
+	      if ( fabs(e_acc_ratio) != e_acc_ratio ) { continue; }
 
     }
 
@@ -549,9 +549,6 @@ void genie_analysis::Loop(Int_t choice)
 		double Mott_cross_sec = ( pow(fine_struc_const,2.)*(cos(el_theta)+1))/(2*pow(El,2)*pow((1-cos(el_theta)),2.));
 		double WeightIncl = wght*e_acc_ratio / Mott_cross_sec;
 
-		//converting theta to degrees
-		el_theta = el_theta*TMath::RadToDeg();
-
      //Calculation of Reconstructed Energy from ELectron only
     double E_rec = (m_prot*bind_en[ftarget]+m_prot*V4_el.E())/(m_prot-V4_el.E()+V4_el.Rho()*cos(el_theta));  //using the same value of single nucleon separation E Ecal and Eqe
 
@@ -561,6 +558,9 @@ void genie_analysis::Loop(Int_t choice)
     double x_bjk = reco_Q2/(2*m_prot*nu);
     TVector3 V3_q = (V4_beam-V4_el).Vect();
     double W_var = TMath::Sqrt((m_prot+nu)*(m_prot+nu)-V3_q*V3_q);
+
+    //converting theta to degrees
+    el_theta = el_theta*TMath::RadToDeg();
 
     //Cuts on Q2 and W, only keep events with Q2 > Q2cut and W < Wcut
     if ( reco_Q2 < Q2cut || W_var > Wcut) continue;
@@ -783,8 +783,8 @@ void genie_analysis::Loop(Int_t choice)
     h1_Nprot->Fill(num_p);
 
     if (num_p > 0) {
-	h1_Nprot_NonZeroProt->Fill(num_p);
-	h1_Npi_NonZeroProt->Fill(num_pi);
+	     h1_Nprot_NonZeroProt->Fill(num_p);
+	     h1_Npi_NonZeroProt->Fill(num_pi);
     }
 
     h1_Nphot->Fill(ec_num_n);
@@ -827,7 +827,7 @@ void genie_analysis::Loop(Int_t choice)
               double prot_mom_corr1 = V3_prot_corr1.Mag();
               //Proton 1 weight
               p_acc_ratio1 = acceptance_c(prot_mom_corr1, cos(p_theta1), phi_prot1, 2212,file_acceptance_p);
-		if ( fabs(p_acc_ratio1) != p_acc_ratio1 ) { continue; }
+		          if ( fabs(p_acc_ratio1) != p_acc_ratio1 ) { continue; }
 
     	        V3_prot_corr2.SetXYZ(Smeared_Pp[1]/pf[index_p[1]] * pxf[index_p[1]],Smeared_Pp[1]/pf[index_p[1]] * pyf[index_p[1]],Smeared_Pp[1]/pf[index_p[1]] * pzf[index_p[1]]);
               // apapadop
@@ -839,7 +839,7 @@ void genie_analysis::Loop(Int_t choice)
               double prot_mom_corr2 = V3_prot_corr2.Mag();
               //Proton 2 weight
               p_acc_ratio2 = acceptance_c(prot_mom_corr2, cos(p_theta2), phi_prot2, 2212,file_acceptance_p);
-		if ( fabs(p_acc_ratio2) != p_acc_ratio2 ) { continue; }
+		          if ( fabs(p_acc_ratio2) != p_acc_ratio2 ) { continue; }
           }
 
           //Total proton weight

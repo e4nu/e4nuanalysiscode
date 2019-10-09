@@ -103,7 +103,7 @@ void FilterData::Loop()
 	if (fChain == 0) return;
 
 	Long64_t nentries = fChain->GetEntriesFast();
-	nentries = 8000000;
+	//	nentries = 8000000;
 
 	double N_prot1 = 0, N_prot2 = 0,N_prot_both = 0;
 	double eps;
@@ -404,7 +404,7 @@ void FilterData::Loop()
 	}
 
 	//Output file definition
-	TFile *file_out = new TFile(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/genie_filtered_data_e2a_ep_%s_%s_neutrino6_united4_radphot_test_8M.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");
+	TFile *file_out = new TFile(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/genie_filtered_data_e2a_ep_%s_%s_neutrino6_united4_radphot_test_100M.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");
 
 	// -------------------------------------------------------------------------------------------------------------------------------------------------------
 

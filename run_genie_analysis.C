@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     return 0;
   }
 
-  genie_analysis  t(target,beam_en, rotations);
+  genie_analysis  t(target,beam_en, rotations,choice);
   t.Loop(choice);
 
 

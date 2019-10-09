@@ -25,6 +25,7 @@ public :
    Fiducial   *fiducialcut;
    Subtraction *rotation;
    int fTorusCurrent;
+   int fchoice;
    std::string target_name;
    std::map<std::string,double> en_beam;
    std::map<std::string,double> en_beam_Ecal;
@@ -220,7 +221,7 @@ public :
    TBranch        *b_sumKEf;   //!
    TBranch        *b_calresp0;   //!
 
-   genie_analysis(std::string, std::string, int ,TTree *tree=0);
+   genie_analysis(std::string, std::string, int, int ,TTree *tree=0);
    virtual ~genie_analysis();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -273,7 +274,7 @@ public :
 #endif
 #ifdef GENIE_ANALYSIS_C
 
-genie_analysis::genie_analysis(std::string a_target,std::string a_beam_en, int number_rotations, TTree *tree) : fChain(0)
+genie_analysis::genie_analysis(std::string a_target,std::string a_beam_en, int number_rotations, int choice,TTree *tree) : fChain(0)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
@@ -286,6 +287,7 @@ genie_analysis::genie_analysis(std::string a_target,std::string a_beam_en, int n
      ftarget = a_target;
      fbeam_en = a_beam_en;
      fTorusCurrent = 0;
+     fchoice = choice;
 
 
 
@@ -303,13 +305,8 @@ genie_analysis::genie_analysis(std::string a_target,std::string a_beam_en, int n
       // The following code should be used if you want this class to access a chain
       // of trees.
       TChain * chain = new TChain("gst","genie_analysis");
-//      chain->Add(Form("/work/clas/clase2/Mariana/data/e2a_%s_%s_v1/*.root/h10", ftarget.c_str(), fbeam_en.c_str()));
-     chain->Add(Form("../mySamples/hA2018/eresmaid_12C_2_261_hA2018_FSI_NoRadCorr.root"));
-    //  chain->Add(Form("../mySamples/Data/eresmaid_12C_2_261_Data_FSI.root"));
-//        chain->Add(Form("files/eresmaid_12C_2_261_Data_FSI.root"));
-//        chain->Add(Form("files/eresmaid_12C_2_261_Data_FSI.root"));
-//      chain->Add("/w/hallb-scifs17exp/clas/claseg2/apapadop/genie_filtered_data_e2a_ep_C12_2261_neutrino6_united4_radphot_test_8M.root");
-      //chain->Add("datafile.root/h10");
+      if (fchoice == 1) { chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/eresmaid_%s_%s_hA2018_FSI_NoRadCorr.root", ftarget.c_str(), fbeam_en.c_str())); }
+      if (fchoice == 0) { chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/genie_filtered_data_e2a_ep_%s_%s_neutrino6_united4_radphot_test_100M.root",ftarget.c_str(), fbeam_en.c_str())); }
 
       tree = chain;
 #endif // SINGLE_TREE

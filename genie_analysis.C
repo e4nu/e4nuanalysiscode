@@ -179,7 +179,9 @@ void genie_analysis::Loop(Int_t choice) {
 	}
 
 	//Output file definition
-	TFile *file_out = new TFile(Form("e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");
+	TFile *file_out;
+	if (choice == 0) { file_out = new TFile(Form("data_e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");}
+	else { file_out = new TFile(Form("genie_e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");}
 
 	//initialize Fiducial functions for EC limits
 	fiducialcut->InitEClimits();

@@ -204,7 +204,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_Npipl=new TH1F("h1_Npipl","",10,0,5);
 	TH1F *h1_Npimi=new TH1F("h1_Npimi","",10,0,5);
 	TH1F *h1_el_mom = new TH1F("h1_el_mom","",100,0.2,6);
-	TH1F *h1_el_mom_corr = new TH1F("h1_el_mom_corr","",100,1.2,6);
+	TH1F *h1_el_mom_corr = new TH1F("h1_el_mom_corr","",100,0.,5.);
 	TH1F *h1_el_mom_ratio = new TH1F("h1_el_mom_ratio","",50,0.97,1.01);
 	TH1F *h1_prot_mom = new TH1F("h1_prot_mom","",300,0,3);
 	TH1F *h1_prot_mom_ratio = new TH1F("h1_prot_mom_ratio","",50,0.97,1.2);

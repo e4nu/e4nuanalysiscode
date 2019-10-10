@@ -315,7 +315,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 	TH2F *h2_phot_e_angle_Erec= new TH2F("h2_phot_e_angle_Erec","",400,0,4.7,300,0,180);
 
-	TH2F* h2_QVector_theta_phi = new TH2F("h2_QVector_theta_phi","",200,0,360,200,10,60);
+	TH2F* h2_QVector_theta_phi = new TH2F("h2_QVector_theta_phi","",200,0,360,200,0,80);
 
 	//Binning for energy reconstruction histograms
 	int n_bins;
@@ -551,7 +551,9 @@ void genie_analysis::Loop(Int_t choice) {
 		double x_bjk = reco_Q2/(2*m_prot*nu);
 		TVector3 V3_q = (V4_beam-V4_el).Vect();
 		double V3_q_theta_deg = V3_q.Theta() * 180. / TMath::Pi();
-		double V3_q_phi_deg = V3_q.Phi() * 180. / TMath::Pi() + 30.; if (V3_q_phi_deg > 360) { V3_q_phi_deg = V3_q_phi_deg -360.; }
+		double V3_q_phi_deg = V3_q.Phi() * 180. / TMath::Pi() + 30.; 
+		if (V3_q_phi_deg > 360) { V3_q_phi_deg = V3_q_phi_deg - 360.; } 
+		if (V3_q_phi_deg < 0) { V3_q_phi_deg = V3_q_phi_deg + 360.; }
 		double W_var = TMath::Sqrt((m_prot+nu)*(m_prot+nu)-V3_q*V3_q);
 
 		//converting theta to degrees

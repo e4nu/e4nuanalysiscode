@@ -549,6 +549,10 @@ void genie_analysis::Loop(Int_t choice) {
 		double nu = -(V4_el-V4_beam).E();
 		double reco_Q2 = -(V4_el-V4_beam).Mag2();
 		double x_bjk = reco_Q2/(2*m_prot*nu);
+
+		// QE selection
+		//if ( fabs(x_bjk - 1.) > 0.2) { continue; }
+
 		TVector3 V3_q = (V4_beam-V4_el).Vect();
 		double V3_q_theta_deg = V3_q.Theta() * 180. / TMath::Pi();
 		double V3_q_phi_deg = V3_q.Phi() * 180. / TMath::Pi() + 30.; 

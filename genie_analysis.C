@@ -191,6 +191,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_el_Mott_crosssec = new TH1F("h1_el_Mott_crosssec","",200,0.,0.01);
 	TH1F *h1_Wvar = new TH1F("h1_Wvar","",400,0,3);
 	TH1F *h1_Wvar_weight = new TH1F("h1_Wvar_weight","",400,0,3);
+	TH1F *h1_nu_weight = new TH1F("h1_nu_weight","",400,0,3);
 	TH1F *h1_xbjk = new TH1F("h1_xbjk","",400,0,3);
 	TH1F *h1_xbjk_weight = new TH1F("h1_xbjk_weight","",400,0,3);
 	TH1F *h1_Q2 = new TH1F("h1_Q2","",400,0,6);
@@ -900,6 +901,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjk_weight->Fill(x_bjk,-P_N_2p[f]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,-P_N_2p[f]*histoweight);
 					h1_Wvar_weight->Fill(W_var,-P_N_2p[f]*histoweight);
+					h1_nu_weight->Fill(nu,-P_N_2p[f]*histoweight);
 					h1_el_mom_corr->Fill(V4_el.Rho(),-P_N_2p[f]*histoweight);
 					h1_prot_mom->Fill(V3_2prot_corr[f].Mag(),-P_N_2p[f]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot_2p[f],-P_N_2p[f]*histoweight);
@@ -988,6 +990,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjk_weight->Fill(x_bjk,P_2p1pito2p0pi[z]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,P_2p1pito2p0pi[z]*histoweight);
 					h1_Wvar_weight->Fill(W_var,P_2p1pito2p0pi[z]*histoweight);
+					h1_nu_weight->Fill(nu,P_2p1pito2p0pi[z]*histoweight);
 					h1_el_mom_corr->Fill(V4_el.Rho(),P_2p1pito2p0pi[z]*histoweight);
 					h1_prot_mom->Fill(V3_2prot_corr[z].Mag(),P_2p1pito2p0pi[z]*histoweight);
 					h1_MissMomentum->Fill(p_miss_perp_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
@@ -1015,6 +1018,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjk_weight->Fill(x_bjk,P_2p1pito1p1pi[z]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,P_2p1pito1p1pi[z]*histoweight);
 					h1_Wvar_weight->Fill(W_var,P_2p1pito1p1pi[z]*histoweight);
+					h1_nu_weight->Fill(nu,P_2p1pito1p1pi[z]*histoweight);
 					h1_el_mom_corr->Fill(V4_el.Rho(),P_2p1pito1p1pi[z]*histoweight);
 					h1_prot_mom->Fill(V3_2prot_corr[z].Mag(),P_2p1pito1p1pi[z]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
@@ -1042,6 +1046,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjk_weight->Fill(x_bjk,-P_2p1pito1p0pi[z]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,-P_2p1pito1p0pi[z]*histoweight);
 					h1_Wvar_weight->Fill(W_var,-P_2p1pito1p0pi[z]*histoweight);
+					h1_nu_weight->Fill(nu,-P_2p1pito1p0pi[z]*histoweight);
 					h1_el_mom_corr->Fill(V4_el.Rho(),-P_2p1pito1p0pi[z]*histoweight);
 					h1_prot_mom->Fill(V3_2prot_corr[z].Mag(),-P_2p1pito1p0pi[z]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
@@ -1128,6 +1133,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjk_weight->Fill(x_bjk,Ptot_2p[z]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,Ptot_2p[z]*histoweight);
 					h1_Wvar_weight->Fill(W_var,Ptot_2p[z]*histoweight);
+					h1_nu_weight->Fill(nu,Ptot_2p[z]*histoweight);
 					h1_el_mom_corr->Fill(V4_el.Rho(),Ptot_2p[z]*histoweight);
 					h1_prot_mom->Fill(V3_2prot_corr[z].Mag(),Ptot_2p[z]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],Ptot_2p[z]*histoweight);
@@ -1245,6 +1251,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_xbjk_weight->Fill(x_bjk,P_3pto2p[count][j]*histoweight);
 						h1_Q2_weight->Fill(reco_Q2,P_3pto2p[count][j]*histoweight);
 						h1_Wvar_weight->Fill(W_var,P_3pto2p[count][j]*histoweight);
+						h1_nu_weight->Fill(nu,P_3pto2p[count][j]*histoweight);
 						h1_el_mom_corr->Fill(V4_el.Rho(),P_3pto2p[count][j]*histoweight);
 						h1_prot_mom->Fill(V3_prot_corr[j].Mag(),P_3pto2p[count][j]*histoweight);
 						h1_MissMomentum->Fill(p_miss_perp_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
@@ -1281,6 +1288,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjk_weight->Fill(x_bjk,-P_3pto1p[j]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,-P_3pto1p[j]*histoweight);
 					h1_Wvar_weight->Fill(W_var,-P_3pto1p[j]*histoweight);
+					h1_nu_weight->Fill(nu,-P_3pto1p[j]*histoweight);
 					h1_el_mom_corr->Fill(V4_el.Rho(),-P_3pto1p[j]*histoweight);
 					h1_prot_mom->Fill(V3_prot_corr[j].Mag(),-P_3pto1p[j]*histoweight);
 					h1_MissMomentum->Fill(p_miss_perp[j],-P_3pto1p[j]*histoweight);
@@ -1362,6 +1370,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjk_weight->Fill(x_bjk,P_tot_3p[j]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,P_tot_3p[j]*histoweight);
 					h1_Wvar_weight->Fill(W_var,P_tot_3p[j]*histoweight);
+					h1_nu_weight->Fill(nu,P_tot_3p[j]*histoweight);
 					h1_el_mom_corr->Fill(V4_el.Rho(),P_tot_3p[j]*histoweight);
 					h1_prot_mom->Fill(V3_prot_corr[j].Mag(),P_tot_3p[j]*histoweight);
 					h1_MissMomentum->Fill(p_miss_perp[j],P_tot_3p[j]*histoweight);
@@ -1548,6 +1557,7 @@ void genie_analysis::Loop(Int_t choice) {
 								h1_xbjk_weight->Fill(x_bjk,-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_Q2_weight->Fill(reco_Q2,-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_Wvar_weight->Fill(W_var,-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
+								h1_nu_weight->Fill(nu,-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_el_mom_corr->Fill(V4_el.Rho(),-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_prot_mom->Fill(V3_prot_corr[j].Mag(),-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_MissMomentum->Fill(p_miss_perp_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
@@ -1585,6 +1595,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h1_xbjk_weight->Fill(x_bjk,P_43pto1p[j]*histoweight);
 							h1_Q2_weight->Fill(reco_Q2,P_43pto1p[j]*histoweight);
 							h1_Wvar_weight->Fill(W_var,P_43pto1p[j]*histoweight);
+							h1_nu_weight->Fill(nu,P_43pto1p[j]*histoweight);
 							h1_el_mom_corr->Fill(V4_el.Rho(),P_43pto1p[j]*histoweight);
 							h1_prot_mom->Fill(V3_prot_corr[j].Mag(),P_43pto1p[j]*histoweight);
 							h1_MissMomentum->Fill(p_miss_perp_43pto1p[j],P_43pto1p[j]*histoweight);
@@ -1648,6 +1659,7 @@ void genie_analysis::Loop(Int_t choice) {
 									h1_xbjk_weight->Fill(x_bjk,P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h1_Q2_weight->Fill(reco_Q2,P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h1_Wvar_weight->Fill(W_var,P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
+									h1_nu_weight->Fill(nu,P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h1_el_mom_corr->Fill(V4_el.Rho(),P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h1_prot_mom->Fill(V3p2[j].Mag(),P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h1_MissMomentum->Fill(p_miss_perp_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
@@ -1696,6 +1708,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_xbjk_weight->Fill(x_bjk,-P_4pto1p[j]*histoweight);
 						h1_Q2_weight->Fill(reco_Q2,-P_4pto1p[j]*histoweight);
 						h1_Wvar_weight->Fill(W_var,-P_4pto1p[j]*histoweight);
+						h1_nu_weight->Fill(nu,-P_4pto1p[j]*histoweight);
 						h1_el_mom_corr->Fill(V4_el.Rho(),-P_4pto1p[j]*histoweight);
 						h1_prot_mom->Fill(V3_prot_corr[j].Mag(),-P_4pto1p[j]*histoweight);
 						h1_MissMomentum->Fill(p_miss_perp_p4[j],-P_4pto1p[j]*histoweight);
@@ -2111,6 +2124,7 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_xbjk_weight->Fill(x_bjk,histoweight);
 				h1_Q2_weight->Fill(reco_Q2,histoweight);
 				h1_Wvar_weight->Fill(W_var,histoweight);
+				h1_nu_weight->Fill(nu,histoweight);
 				h1_el_mom_corr->Fill(V4_el.Rho(),histoweight);
 				h1_prot_mom->Fill(V3_prot_corr.Mag(),histoweight);
 				h1_MissMomentum->Fill(p_perp_tot,histoweight);
@@ -2197,6 +2211,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjk_weight->Fill(x_bjk,-(N_piphot_undet/N_piphot_det)*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,-(N_piphot_undet/N_piphot_det)*histoweight);
 					h1_Wvar_weight->Fill(W_var,-(N_piphot_undet/N_piphot_det)*histoweight);
+					h1_nu_weight->Fill(nu,-(N_piphot_undet/N_piphot_det)*histoweight);
 					h1_el_mom_corr->Fill(V4_el.Rho(),-(N_piphot_undet/N_piphot_det)*histoweight);
 					h1_prot_mom->Fill(V3_prot_corr.Mag(),-(N_piphot_undet/N_piphot_det)*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
@@ -2289,6 +2304,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjk_weight->Fill(x_bjk,P_1p1pi[z]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,P_1p1pi[z]*histoweight);
 					h1_Wvar_weight->Fill(W_var,P_1p1pi[z]*histoweight);
+					h1_nu_weight->Fill(nu,P_1p1pi[z]*histoweight);
 					h1_el_mom_corr->Fill(V4_el.Rho(),P_1p1pi[z]*histoweight);
 					h1_prot_mom->Fill(V3_prot_corr.Mag(),P_1p1pi[z]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot,P_1p1pi[z]*histoweight);
@@ -2320,6 +2336,7 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_xbjk_weight->Fill(x_bjk,-P_1p0pi*histoweight);
 				h1_Q2_weight->Fill(reco_Q2,-P_1p0pi*histoweight);
 				h1_Wvar_weight->Fill(W_var,-P_1p0pi*histoweight);
+				h1_nu_weight->Fill(nu,-P_1p0pi*histoweight);
 				h1_el_mom_corr->Fill(V4_el.Rho(),-P_1p0pi*histoweight);
 				h1_prot_mom->Fill(V3_prot_corr.Mag(),-P_1p0pi*histoweight);
 				h1_MissMomentum->Fill(p_perp_tot,-P_1p0pi*histoweight);
@@ -2400,6 +2417,7 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_xbjk_weight->Fill(x_bjk,P_1p3pi*histoweight);
 				h1_Q2_weight->Fill(reco_Q2,P_1p3pi*histoweight);
 				h1_Wvar_weight->Fill(W_var,P_1p3pi*histoweight);
+				h1_nu_weight->Fill(nu,P_1p3pi*histoweight);
 				h1_el_mom_corr->Fill(V4_el.Rho(),P_1p3pi*histoweight);
 				h1_prot_mom->Fill(V3_prot_corr.Mag(),P_1p3pi*histoweight);
 				h1_MissMomentum->Fill(p_perp_tot,P_1p3pi*histoweight);

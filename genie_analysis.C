@@ -172,10 +172,14 @@ void genie_analysis::Loop(Int_t choice) {
 	TFile* file_acceptance_p;
 	TFile* file_acceptance_pip;
 
+	TString Target = "12C";
+	if (ftarget.c_str() == "3He") { Target = "3He"; }
+	if (ftarget.c_str() == "4He") { Target = "4He"; }
+
 	if (choice == 1) { //Only need acceptance maps for GENIE simulation data
-		file_acceptance = TFile::Open(WhichMap+"/"+WhichMap+"_12C_E_"+E_acc_file+".root");
-		file_acceptance_p = TFile::Open(WhichMap+"/"+WhichMap+"_12C_E_"+E_acc_file+"_p.root");
-		file_acceptance_pip = TFile::Open(WhichMap+"/"+WhichMap+"_12C_E_"+E_acc_file+"_pip.root");
+		file_acceptance = TFile::Open(WhichMap+"/"+WhichMap+"_"+Target+"_E_"+E_acc_file+".root");
+		file_acceptance_p = TFile::Open(WhichMap+"/"+WhichMap+"_"+Target+"_E_"+E_acc_file+"_p.root");
+		file_acceptance_pip = TFile::Open(WhichMap+"/"+WhichMap+"_"+Target+"_E_"+E_acc_file+"_pip.root");
 	}
 
 	//Output file definition

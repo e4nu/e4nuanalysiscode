@@ -227,10 +227,10 @@ for(int i = 0 ; i < 8 ; i++){
 
  else if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.){
 
-  std::ifstream param_file2(Form("./PFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));//reading the proton fiducial cut parameters at 4GeV
-  std::ifstream param_file(Form("./FCP_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
-  std::ifstream param_file3(Form("./PIPFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
-  std::ifstream param_file4(Form("./PIMFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
+  std::ifstream param_file2(Form("./FiducialsCorrections/PFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));//reading the proton fiducial cut parameters at 4GeV
+  std::ifstream param_file(Form("./FiducialsCorrections/FCP_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
+  std::ifstream param_file3(Form("./FiducialsCorrections/PIPFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
+  std::ifstream param_file4(Form("./FiducialsCorrections/PIMFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
   //
    // reads FC parameters for 1.1GeV , e- fiducial cut parameters at 1GeV
    //

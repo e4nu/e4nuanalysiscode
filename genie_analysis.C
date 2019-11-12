@@ -6,7 +6,6 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 
-
 #include <TH1D.h>
 #include <TFile.h>
 #include <TMath.h>
@@ -19,6 +18,10 @@
 #include <TF1.h>
 #include <TH3.h>
 #include <TGraph.h>
+
+#include <iomanip>
+#include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -472,10 +475,13 @@ void genie_analysis::Loop(Int_t choice) {
 		//Read Entry
 		int nb = GetEntry(jentry);
 		if (nb == 0) { std::cout <<"Event loop: 0 byte read for entry " << jentry << ". Indicate failure in reading the file" <<	std::endl;}
+
+		if (jentry%1000 == 0) {std::cout << jentry/1000 << " k " << std::setprecision(3) << double(jentry)/fChain->GetEntries()*100. << " %"<< std::endl;}
+
 		if( jentry%200000 == 0 )
 		{
 			gDirectory->Write("hist_Files", TObject::kOverwrite);
-			cout<<jentry<<endl;
+			//cout<<jentry<<endl;
 		}
 
 		if(jentry == 0){ //first entry to initialize TorusCurrent, Fiducials and Subtraction classes

@@ -19,11 +19,36 @@
 #include <TH3.h>
 #include <TGraph.h>
 
+#include <vector>
 #include <iomanip>
 #include <sstream>
 #include <iostream>
 
 using namespace std;
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+vector<double> CalculateCalKineVars(double ECal,TLorentzVector FSElectron) {
+
+	vector<double> CalKineVars; CalKineVars.clear();
+
+	TLorentzVector V4_beam_Cal(0,0,ECal,ECal);
+	double nu_Cal = -(FSElectron-V4_beam_Cal).E();
+	double Q2_Cal = -(FSElectron-V4_beam_Cal).Mag2();
+	double x_bjk_Cal = Q2_Cal/(2*m_prot*nu_Cal);
+	TVector3 V3_q_Cal = (V4_beam_Cal-FSElectron).Vect();
+	double W_var_Cal = TMath::Sqrt((m_prot+nu_Cal)*(m_prot+nu_Cal)-V3_q_Cal*V3_q_Cal);
+
+	CalKineVars.push_back(nu_Cal); // 0-th element: energy transfer using Ecal
+	CalKineVars.push_back(Q2_Cal); // 1st element: Q2 using Ecal
+	CalKineVars.push_back(x_bjk_Cal); // 2nd element: xB using Ecal
+	CalKineVars.push_back(W_var_Cal); // 3rd element: invariant mass using Ecal
+
+	return CalKineVars;
+
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Loading all the constants from Constant.h (e_mass, m_prot, m_pimi, m_pipl, m_pion, m_neut = 0.939565,
 // H3_bind_en, He4_bind_en, C12_bind_en, B_bind_en, He3_bind_en, D2_bind_en, Fe_bind_en, Mn_bind_en
@@ -197,12 +222,8 @@ void genie_analysis::Loop(Int_t choice) {
 	//Definition and initialization of Histograms
 	TH1F *h1_el_Mott_crosssec = new TH1F("h1_el_Mott_crosssec","",200,0.,0.01);
 	TH1F *h1_Wvar = new TH1F("h1_Wvar","",400,0,3);
-	TH1F *h1_Wvar_weight = new TH1F("h1_Wvar_weight","",400,0,3);
-	TH1F *h1_nu_weight = new TH1F("h1_nu_weight","",400,0,3);
 	TH1F *h1_xbjk = new TH1F("h1_xbjk","",400,0,3);
-	TH1F *h1_xbjk_weight = new TH1F("h1_xbjk_weight","",400,0,3);
 	TH1F *h1_Q2 = new TH1F("h1_Q2","",400,0,6);
-	TH1F *h1_Q2_weight = new TH1F("h1_Q2_weight","",400,0,6);
 	TH1F *h1_el_theta = new TH1F("h1_el_theta","",200,0,180);
 	TH1F *h1_Nprot=new TH1F("h1_Nprot","",10,0,5);
 	TH1F *h1_Nprot_NonZeroProt=new TH1F("h1_Nprot_NonZeroProt","",8,1,5);
@@ -219,6 +240,14 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_el_mom_ratio = new TH1F("h1_el_mom_ratio","",50,0.97,1.01);
 	TH1F *h1_prot_mom = new TH1F("h1_prot_mom","",300,0,3);
 	TH1F *h1_prot_mom_ratio = new TH1F("h1_prot_mom_ratio","",50,0.97,1.2);
+	TH1F *h1_Wvar_weight = new TH1F("h1_Wvar_weight","",400,0,3);
+	TH1F *h1_xbjk_weight = new TH1F("h1_xbjk_weight","",400,0,3);
+	TH1F *h1_Q2_weight = new TH1F("h1_Q2_weight","",400,0,6);
+	TH1F *h1_nu_weight = new TH1F("h1_nu_weight","",400,0,3);
+	TH1F *h1_WvarCal_weight = new TH1F("h1_WvarCal_weight","",400,0,3);
+	TH1F *h1_xbjkCal_weight = new TH1F("h1_xbjkCal_weight","",400,0,3);
+	TH1F *h1_Q2Cal_weight = new TH1F("h1_Q2Cal_weight","",400,0,6);
+	TH1F *h1_nuCal_weight = new TH1F("h1_nuCal_weight","",400,0,3);
 
 	//Binning for fractional feed down energy histograms
 	int N_qe;
@@ -466,6 +495,11 @@ void genie_analysis::Loop(Int_t choice) {
 
 	TH1D::SetDefaultSumw2();
 	TH2D::SetDefaultSumw2();
+
+	// apapadop: vector containing kinematic variables using Ecal
+	vector<double> CalKineVars{};
+	// apapadop: Weight to fill the plots mentioned above
+	double LocalWeight;
 
 	/** Beginning of Event Loop **/
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -916,6 +950,19 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_prot_mom->Fill(V3_2prot_corr[f].Mag(),-P_N_2p[f]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot_2p[f],-P_N_2p[f]*histoweight);
 
+					// -----------------------------------------------------------------------------------------------
+					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+					CalKineVars = CalculateCalKineVars(E_tot_2p[f],V4_el);
+					LocalWeight = -P_N_2p[f]*histoweight;
+
+					h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					// -----------------------------------------------------------------------------------------------
+
 					for(int i = 0 ; i < n_slice; i++) {
 
 						if (p_perp_tot_2p[f] < pperp_max[i] && p_perp_tot_2p[f] > pperp_min[i]) {
@@ -1005,6 +1052,19 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_prot_mom->Fill(V3_2prot_corr[z].Mag(),P_2p1pito2p0pi[z]*histoweight);
 					h1_MissMomentum->Fill(p_miss_perp_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
 
+					// -----------------------------------------------------------------------------------------------
+					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+					CalKineVars = CalculateCalKineVars(Ecal_2p1pi_to2p0pi[z],V4_el);
+					LocalWeight = P_2p1pito2p0pi[z]*histoweight;
+
+					h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					// -----------------------------------------------------------------------------------------------
+
 					for(int i = 0; i < n_slice; i++){
 						if (p_miss_perp_2p1pi_to2p0pi[z]<pperp_max[i] && p_miss_perp_2p1pi_to2p0pi[z]>pperp_min[i]){
 							h1_Etot_p_bkgd_slice_2p1pi_to2p0pi[i]->Fill(Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
@@ -1033,6 +1093,19 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_prot_mom->Fill(V3_2prot_corr[z].Mag(),P_2p1pito1p1pi[z]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
 
+					// -----------------------------------------------------------------------------------------------
+					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+					CalKineVars = CalculateCalKineVars(E_tot_2p[z],V4_el);
+					LocalWeight = P_2p1pito1p1pi[z]*histoweight;
+
+					h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					// -----------------------------------------------------------------------------------------------
+
 					for(int i = 0; i < n_slice; i++){
 						if (p_perp_tot_2p[z]<pperp_max[i] && p_perp_tot_2p[z]>pperp_min[i]){
 							h1_Etot_p_bkgd_slice_2p1pi_to1p1pi[i]->Fill(E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
@@ -1060,6 +1133,19 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_el_mom_corr->Fill(V4_el.Rho(),-P_2p1pito1p0pi[z]*histoweight);
 					h1_prot_mom->Fill(V3_2prot_corr[z].Mag(),-P_2p1pito1p0pi[z]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
+
+					// -----------------------------------------------------------------------------------------------
+					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+					CalKineVars = CalculateCalKineVars(E_tot_2p[z],V4_el);
+					LocalWeight = -P_2p1pito1p0pi[z]*histoweight;
+
+					h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					// -----------------------------------------------------------------------------------------------
 
 					for(int i = 0; i < n_slice; i++) {
 
@@ -1147,6 +1233,19 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_el_mom_corr->Fill(V4_el.Rho(),Ptot_2p[z]*histoweight);
 					h1_prot_mom->Fill(V3_2prot_corr[z].Mag(),Ptot_2p[z]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],Ptot_2p[z]*histoweight);
+
+					// -----------------------------------------------------------------------------------------------
+					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+					CalKineVars = CalculateCalKineVars(E_tot_2p[z],V4_el);
+					LocalWeight = Ptot_2p[z]*histoweight;
+
+					h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					// -----------------------------------------------------------------------------------------------
 
 					for(int i = 0; i < n_slice; i++) {
 
@@ -1266,6 +1365,19 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_prot_mom->Fill(V3_prot_corr[j].Mag(),P_3pto2p[count][j]*histoweight);
 						h1_MissMomentum->Fill(p_miss_perp_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 
+						// -----------------------------------------------------------------------------------------------
+						// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+						CalKineVars = CalculateCalKineVars(E_cal_3pto2p[count][j],V4_el);
+						LocalWeight = P_3pto2p[count][j]*histoweight;
+
+						h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+						h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+						h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+						h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+						// -----------------------------------------------------------------------------------------------
+
 						for(int i = 0; i < n_slice; i++) {
 
 							if (p_miss_perp_3pto2p[count][j]<pperp_max[i] && p_miss_perp_3pto2p[count][j]>pperp_min[i]) {
@@ -1302,6 +1414,19 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_el_mom_corr->Fill(V4_el.Rho(),-P_3pto1p[j]*histoweight);
 					h1_prot_mom->Fill(V3_prot_corr[j].Mag(),-P_3pto1p[j]*histoweight);
 					h1_MissMomentum->Fill(p_miss_perp[j],-P_3pto1p[j]*histoweight);
+
+					// -----------------------------------------------------------------------------------------------
+					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+					CalKineVars = CalculateCalKineVars(E_cal[j],V4_el);
+					LocalWeight = -P_3pto1p[j]*histoweight;
+
+					h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					// -----------------------------------------------------------------------------------------------
 
 					for(int i = 0; i < n_slice; i++) {
 					
@@ -1384,6 +1509,19 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_el_mom_corr->Fill(V4_el.Rho(),P_tot_3p[j]*histoweight);
 					h1_prot_mom->Fill(V3_prot_corr[j].Mag(),P_tot_3p[j]*histoweight);
 					h1_MissMomentum->Fill(p_miss_perp[j],P_tot_3p[j]*histoweight);
+
+					// -----------------------------------------------------------------------------------------------
+					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+					CalKineVars = CalculateCalKineVars(E_cal[j],V4_el);
+					LocalWeight = P_tot_3p[j]*histoweight;
+
+					h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					// -----------------------------------------------------------------------------------------------
 
 					for(int i = 0; i < n_slice; i++)
 					{
@@ -1572,6 +1710,19 @@ void genie_analysis::Loop(Int_t choice) {
 								h1_prot_mom->Fill(V3_prot_corr[j].Mag(),-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_MissMomentum->Fill(p_miss_perp_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 
+								// -----------------------------------------------------------------------------------------------
+								// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+								CalKineVars = CalculateCalKineVars(E_cal_4pto3p[count][j],V4_el);
+								LocalWeight = -P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight;
+
+								h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+								h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+								h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+								h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+								// -----------------------------------------------------------------------------------------------
+
 								for(int i = 0; i < n_slice; i++) {
 
 									if (p_miss_perp_4pto3p[count][j]<pperp_max[i] && p_miss_perp_4pto3p[count][j]>pperp_min[i]){
@@ -1609,6 +1760,19 @@ void genie_analysis::Loop(Int_t choice) {
 							h1_el_mom_corr->Fill(V4_el.Rho(),P_43pto1p[j]*histoweight);
 							h1_prot_mom->Fill(V3_prot_corr[j].Mag(),P_43pto1p[j]*histoweight);
 							h1_MissMomentum->Fill(p_miss_perp_43pto1p[j],P_43pto1p[j]*histoweight);
+
+							// -----------------------------------------------------------------------------------------------
+							// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+							CalKineVars = CalculateCalKineVars(E_cal_43pto1p[j],V4_el);
+							LocalWeight = P_43pto1p[j]*histoweight;
+
+							h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+							h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+							h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+							h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+							// -----------------------------------------------------------------------------------------------
 
 							for(int i = 0; i <n_slice; i++) {
 
@@ -1674,6 +1838,19 @@ void genie_analysis::Loop(Int_t choice) {
 									h1_prot_mom->Fill(V3p2[j].Mag(),P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h1_MissMomentum->Fill(p_miss_perp_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 
+									// -----------------------------------------------------------------------------------------------
+									// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+									CalKineVars = CalculateCalKineVars(E_cal_4pto2p[j],V4_el);
+									LocalWeight = P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight;
+
+									h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+									h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+									h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+									h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+									// -----------------------------------------------------------------------------------------------
+
 									for(int i = 0; i < n_slice; i++){
 
 										if (p_miss_perp_4pto2p[j]<pperp_max[i] && p_miss_perp_4pto2p[j]>pperp_min[i]){
@@ -1722,6 +1899,19 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_el_mom_corr->Fill(V4_el.Rho(),-P_4pto1p[j]*histoweight);
 						h1_prot_mom->Fill(V3_prot_corr[j].Mag(),-P_4pto1p[j]*histoweight);
 						h1_MissMomentum->Fill(p_miss_perp_p4[j],-P_4pto1p[j]*histoweight);
+
+						// -----------------------------------------------------------------------------------------------
+						// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+						CalKineVars = CalculateCalKineVars(E_cal_p4[j],V4_el);
+						LocalWeight = -P_4pto1p[j]*histoweight;
+
+						h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+						h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+						h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+						h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+						// -----------------------------------------------------------------------------------------------
 
 						for(int i = 0; i < n_slice; i++) {
 
@@ -2139,6 +2329,19 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_prot_mom->Fill(V3_prot_corr.Mag(),histoweight);
 				h1_MissMomentum->Fill(p_perp_tot,histoweight);
 
+				// -----------------------------------------------------------------------------------------------
+				// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+				CalKineVars = CalculateCalKineVars(E_tot,V4_el);
+				LocalWeight = histoweight;
+
+				h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+				h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+				h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+				h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+				// -----------------------------------------------------------------------------------------------
+
 				for(int i = 0; i < n_slice; i++) {
 
 					if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
@@ -2225,6 +2428,19 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_el_mom_corr->Fill(V4_el.Rho(),-(N_piphot_undet/N_piphot_det)*histoweight);
 					h1_prot_mom->Fill(V3_prot_corr.Mag(),-(N_piphot_undet/N_piphot_det)*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
+
+					// -----------------------------------------------------------------------------------------------
+					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+					CalKineVars = CalculateCalKineVars(E_tot,V4_el);
+					LocalWeight = -(N_piphot_undet/N_piphot_det)*histoweight;
+
+					h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					// -----------------------------------------------------------------------------------------------
 
 					for(int i = 0; i < n_slice; i++) {
 
@@ -2319,6 +2535,19 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_prot_mom->Fill(V3_prot_corr.Mag(),P_1p1pi[z]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot,P_1p1pi[z]*histoweight);
 
+					// -----------------------------------------------------------------------------------------------
+					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+					CalKineVars = CalculateCalKineVars(E_tot,V4_el);
+					LocalWeight = P_1p1pi[z]*histoweight;
+
+					h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					// -----------------------------------------------------------------------------------------------
+
 					for(int i = 0; i < n_slice; i++){
 
 						if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){
@@ -2350,6 +2579,19 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_el_mom_corr->Fill(V4_el.Rho(),-P_1p0pi*histoweight);
 				h1_prot_mom->Fill(V3_prot_corr.Mag(),-P_1p0pi*histoweight);
 				h1_MissMomentum->Fill(p_perp_tot,-P_1p0pi*histoweight);
+
+				// -----------------------------------------------------------------------------------------------
+				// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+				CalKineVars = CalculateCalKineVars(E_tot,V4_el);
+				LocalWeight = -P_1p0pi*histoweight;
+
+				h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+				h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+				h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+				h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+				// -----------------------------------------------------------------------------------------------
 
 				for(int i = 0; i < n_slice; i++){
 
@@ -2431,6 +2673,19 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_el_mom_corr->Fill(V4_el.Rho(),P_1p3pi*histoweight);
 				h1_prot_mom->Fill(V3_prot_corr.Mag(),P_1p3pi*histoweight);
 				h1_MissMomentum->Fill(p_perp_tot,P_1p3pi*histoweight);
+
+				// -----------------------------------------------------------------------------------------------
+				// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+
+				CalKineVars = CalculateCalKineVars(E_tot,V4_el);
+				LocalWeight = P_1p3pi*histoweight;
+
+				h1_nuCal_weight->Fill(CalKineVars.at(0),LocalWeight);
+				h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
+				h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
+				h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+				// -----------------------------------------------------------------------------------------------
 
 				for(int i = 0; i < n_slice; i++){
 					if (p_perp_tot<pperp_max[i] && p_perp_tot>pperp_min[i]){

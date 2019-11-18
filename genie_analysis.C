@@ -504,6 +504,11 @@ void genie_analysis::Loop(Int_t choice) {
 	// Weight to fill the plots mentioned above
 	double LocalWeight;
 
+	// Signal Event Counter -> 1e1p0pi events (everything lese is bkg)
+	int SignalEvents = 0;
+	int EQESignalEventsWithin5Perc = 0;
+	int ECalSignalEventsWithin5Perc = 0;
+
 	/** Beginning of Event Loop **/
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
 
@@ -2315,14 +2320,21 @@ void genie_analysis::Loop(Int_t choice) {
 
 			if(num_pi_phot == 0){
 
+				double ECalReso = (E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en];
+				double EQEReso = (E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en];
+
+				SignalEvents++;
+				if (fabs(ECalReso)*100. < 5) { ECalSignalEventsWithin5Perc++; }
+				if (fabs(EQEReso)*100. < 5) { EQESignalEventsWithin5Perc++; }
+
 				//histoweight is 1/Mott_cross_sec for CLAS data
 				double histoweight = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec;
 
 				h2_Erec_pperp_newcut2->Fill(p_perp_tot,E_rec,histoweight);
 				h1_E_rec_cut2_new->Fill(E_rec,histoweight);
 				h1_E_tot_cut2->Fill(E_tot,histoweight);
-				h1_E_tot_cut2_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],histoweight);
-				h1_E_rec_cut2_new_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],histoweight);
+				h1_E_tot_cut2_fracfeed->Fill(ECalReso,histoweight);
+				h1_E_rec_cut2_new_fracfeed->Fill(EQEReso,histoweight);
 				h2_pperp_W->Fill(W_var,p_perp_tot,histoweight);
 				h1_theta0->Fill((V4_beam.Vect()).Angle(V4_prot_el_tot.Vect()) *TMath::RadToDeg(),histoweight);
 				h2_Ecal_Eqe->Fill(E_rec,E_tot,histoweight);
@@ -2338,7 +2350,7 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_MissMomentum->Fill(p_perp_tot,histoweight);
 
 				// -----------------------------------------------------------------------------------------------
-				// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+				// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 				CalKineVars = CalculateCalKineVars(E_tot,V4_el);
 				LocalWeight = histoweight;
@@ -3140,6 +3152,18 @@ void genie_analysis::Loop(Int_t choice) {
 
 	gDirectory->Write("hist_Files", TObject::kOverwrite);
 	// skim_tree->AutoSave();
+
+	// --------------------------------------------------------------------------------------------------------
+
+	std::cout << std::endl << "Initial # Events = " << fChain->GetEntries() << std::endl;
+	std::cout << std::endl << "Signal Definition # Events = " << SignalEvents << std::endl;
+	std::cout << std::endl << "Passing Rate = " << int(double(SignalEvents) / double(fChain->GetEntries())*100.) << " \%"<< std::endl << std::endl;
+
+	std::cout << std::endl << "# Events With ECal Within 5\% of ETrue = " << ECalSignalEventsWithin5Perc << std::endl;
+	std::cout << std::endl << "ECal Rate = " << int(double(ECalSignalEventsWithin5Perc) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+
+	std::cout << std::endl << "# Events With EQE Within 5\% of ETrue = " << EQESignalEventsWithin5Perc << std::endl;
+	std::cout << std::endl << "EQE Rate = " << int(double(EQESignalEventsWithin5Perc) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
 
 }
 

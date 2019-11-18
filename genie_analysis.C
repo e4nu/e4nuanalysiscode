@@ -91,6 +91,9 @@ void genie_analysis::Loop(Int_t choice) {
 	//double reso_pimi = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
 	double reso_pi = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
 
+	// Resolution defined above seems to be insufficient at 1.1 GeV -> tripled it for all particles
+	if(fbeam_en == "1161") { reso_p = 3*reso_p; reso_e = 3*reso_e; reso_pi = 3*reso_pi; }
+
 	double Wcut = 2; //cut for all beam energies < 2
 	double Q2cut = 0; // cut for 1.1 GeV > 0.1, for 2.2 GeV > 0.4 and 4.4 GeV > 0.8
 
@@ -496,9 +499,9 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1D::SetDefaultSumw2();
 	TH2D::SetDefaultSumw2();
 
-	// apapadop: vector containing kinematic variables using Ecal
+	// Vector containing kinematic variables using Ecal
 	vector<double> CalKineVars{};
-	// apapadop: Weight to fill the plots mentioned above
+	// Weight to fill the plots mentioned above
 	double LocalWeight;
 
 	/** Beginning of Event Loop **/
@@ -579,6 +582,11 @@ void genie_analysis::Loop(Int_t choice) {
 			if ( fabs(e_acc_ratio) != e_acc_ratio ) { continue; }
 
 		}
+
+		// Explicit cuts on electron momentum
+		if (fbeam_en=="1161" && el_momentum < 0.4) { continue; }
+		if (fbeam_en=="2261" && el_momentum < 0.55) { continue; }
+		if (fbeam_en=="4461" && el_momentum < 1.1) { continue; }
 
 		//Definition as for data. It is also correct for GENIE simulation data since V3_el is rotated above by 180 degree in phi
 		double el_phi_mod = V3_el.Phi()*TMath::RadToDeg()  + 30; //Add 30 degree for plotting and photon phi cut
@@ -951,7 +959,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_perp_tot_2p[f],-P_N_2p[f]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(E_tot_2p[f],V4_el);
 					LocalWeight = -P_N_2p[f]*histoweight;
@@ -1053,7 +1061,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_miss_perp_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(Ecal_2p1pi_to2p0pi[z],V4_el);
 					LocalWeight = P_2p1pito2p0pi[z]*histoweight;
@@ -1094,7 +1102,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(E_tot_2p[z],V4_el);
 					LocalWeight = P_2p1pito1p1pi[z]*histoweight;
@@ -1135,7 +1143,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(E_tot_2p[z],V4_el);
 					LocalWeight = -P_2p1pito1p0pi[z]*histoweight;
@@ -1235,7 +1243,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],Ptot_2p[z]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(E_tot_2p[z],V4_el);
 					LocalWeight = Ptot_2p[z]*histoweight;
@@ -1366,7 +1374,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_MissMomentum->Fill(p_miss_perp_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 
 						// -----------------------------------------------------------------------------------------------
-						// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+						// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 						CalKineVars = CalculateCalKineVars(E_cal_3pto2p[count][j],V4_el);
 						LocalWeight = P_3pto2p[count][j]*histoweight;
@@ -1416,7 +1424,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_miss_perp[j],-P_3pto1p[j]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(E_cal[j],V4_el);
 					LocalWeight = -P_3pto1p[j]*histoweight;
@@ -1511,7 +1519,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_miss_perp[j],P_tot_3p[j]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(E_cal[j],V4_el);
 					LocalWeight = P_tot_3p[j]*histoweight;
@@ -1711,7 +1719,7 @@ void genie_analysis::Loop(Int_t choice) {
 								h1_MissMomentum->Fill(p_miss_perp_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 
 								// -----------------------------------------------------------------------------------------------
-								// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+								// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 								CalKineVars = CalculateCalKineVars(E_cal_4pto3p[count][j],V4_el);
 								LocalWeight = -P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight;
@@ -1762,7 +1770,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h1_MissMomentum->Fill(p_miss_perp_43pto1p[j],P_43pto1p[j]*histoweight);
 
 							// -----------------------------------------------------------------------------------------------
-							// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+							// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 							CalKineVars = CalculateCalKineVars(E_cal_43pto1p[j],V4_el);
 							LocalWeight = P_43pto1p[j]*histoweight;
@@ -1839,7 +1847,7 @@ void genie_analysis::Loop(Int_t choice) {
 									h1_MissMomentum->Fill(p_miss_perp_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 
 									// -----------------------------------------------------------------------------------------------
-									// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+									// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 									CalKineVars = CalculateCalKineVars(E_cal_4pto2p[j],V4_el);
 									LocalWeight = P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight;

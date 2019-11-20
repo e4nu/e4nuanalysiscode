@@ -328,7 +328,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,10,60);
 	TH2F *h2_el_mom_diff = new TH2F("h2_el_mom_diff","",500,0.,1.,500,-0.1,0.1);
 	TH2F *h2_Q2_nu = new TH2F("h2_Q2_nu","",200,0,3.5,200,0,5);
-	TH2F *h2_Q2_nu_weight = new TH2F("h2_Q2_nu_weight","",200,0,3.5,200,0,5);
+	TH2F *h2_Q2_nu_weight = new TH2F("h2_Q2_nu_weight","",400,0,3,400,0,6);
 	TH2F *h2_Q2_xbjk_weight = new TH2F("h2_Q2_xbjk_weight","",200,0,3,200,0,5);
 	TH2F *h2_Q2_W=new TH2F("h2_Q2_W","",200,0,3,200,0,5);
 	TH2F *h2_xB_W=new TH2F("h2_xB_W","",200,0,3,200,0,3);
@@ -614,7 +614,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 		//Calculated Mott Cross Section and Weights for Inclusive Histograms
 		//Wght and e_acc_ratio is 1 for CLAS data
-		double Mott_cross_sec = ( pow(fine_struc_const,2.)*(cos(el_theta)+1))/(2*pow(El,2)*pow((1-cos(el_theta)),2.));
+		double Mott_cross_sec = ( pow(fine_struc_const,2.)*(cos(el_theta)+1))/(2*pow(El,2.)*pow((1-cos(el_theta)),2.));
 		double WeightIncl = wght*e_acc_ratio / Mott_cross_sec;
 
 		//Calculation of Reconstructed Energy from ELectron only
@@ -2479,6 +2479,8 @@ void genie_analysis::Loop(Int_t choice) {
 			h2_Erec_pperp->Fill(p_perp_tot,E_rec,histoweight_inc);
 
 			//---------------------------------- 1p 0pi   ----------------------------------------------
+
+			// Main Plots
 
 			if(num_pi_phot == 0){
 

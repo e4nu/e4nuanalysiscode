@@ -658,7 +658,7 @@ void genie_analysis::Loop(Int_t choice) {
 		h2_el_theta_phi->Fill(el_phi_mod,el_theta,WeightIncl);
 		h1_el_theta->Fill(el_theta);
 		h2_Q2_nu->Fill(nu,reco_Q2);
-		h2_Q2_nu_weight->Fill(nu,reco_Q2,WeightIncl);
+//		h2_Q2_nu_weight->Fill(nu,reco_Q2,WeightIncl);
 		h2_Q2_xbjk_weight->Fill(x_bjk,reco_Q2,WeightIncl);
 		h2_Q2_W->Fill(W_var,reco_Q2);
 		h2_xB_W->Fill(W_var,x_bjk);
@@ -1004,6 +1004,8 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
 
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+
 					// Fill plots based on underlying interactions
 
 					ECal_BreakDown[0]->Fill(E_tot_2p[f],LocalWeight);
@@ -1115,6 +1117,8 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
 
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+
 					// Fill plots based on underlying interactions
 
 					ECal_BreakDown[0]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
@@ -1165,6 +1169,8 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
 
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+
 					// Fill plots based on underlying interactions
 
 					ECal_BreakDown[0]->Fill(E_tot_2p[z],LocalWeight);
@@ -1214,6 +1220,8 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
 
 					// Fill plots based on underlying interactions
 
@@ -1323,6 +1331,8 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
 
 					// Fill plots based on underlying interactions
 
@@ -1464,6 +1474,8 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 						h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
 
+						h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+
 						// Fill plots based on underlying interactions
 
 						ECal_BreakDown[0]->Fill(E_cal_3pto2p[count][j],LocalWeight);
@@ -1522,6 +1534,8 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
 
 					// Fill plots based on underlying interactions
 
@@ -1626,6 +1640,8 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
 
 					// Fill plots based on underlying interactions
 
@@ -1836,6 +1852,8 @@ void genie_analysis::Loop(Int_t choice) {
 								h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 								h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
 
+								h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+
 								// Fill plots based on underlying interactions
 
 								ECal_BreakDown[0]->Fill(E_cal_4pto3p[count][j],LocalWeight);
@@ -1895,6 +1913,8 @@ void genie_analysis::Loop(Int_t choice) {
 							h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 							h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 							h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+							h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
 
 							// Fill plots based on underlying interactions
 
@@ -1982,6 +2002,8 @@ void genie_analysis::Loop(Int_t choice) {
 									h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 									h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
 
+									h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+
 									// Fill plots based on underlying interactions
 
 									ECal_BreakDown[0]->Fill(E_cal_4pto2p[j],LocalWeight);
@@ -2052,6 +2074,8 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 						h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 						h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+						h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
 
 						// Fill plots based on underlying interactions
 
@@ -2503,6 +2527,8 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 				h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
 
+				h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+
 				// Fill plots based on underlying interactions
 
 				ECal_BreakDown[0]->Fill(E_tot,LocalWeight);
@@ -2611,6 +2637,8 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
 
 					// Fill plots based on underlying interactions
 
@@ -2727,6 +2755,8 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
 
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+
 					// Fill plots based on underlying interactions
 
 					ECal_BreakDown[0]->Fill(E_tot,LocalWeight);
@@ -2780,6 +2810,8 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 				h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 				h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+				h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
 
 				// Fill plots based on underlying interactions
 
@@ -2883,6 +2915,8 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 				h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 				h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+				h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
 
 				// Fill plots based on underlying interactions
 

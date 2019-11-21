@@ -245,7 +245,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_Wvar_weight = new TH1F("h1_Wvar_weight","",400,0,3);
 	TH1F *h1_xbjk_weight = new TH1F("h1_xbjk_weight","",400,0,3);
 	TH1F *h1_Q2_weight = new TH1F("h1_Q2_weight","",400,0,6);
-	TH1F *h1_nu_weight = new TH1F("h1_nu_weight","",400,0,3);
+	TH1F *h1_nu_weight = new TH1F("h1_nu_weight","",400,0,4);
 	TH1F *h1_WvarCal_weight = new TH1F("h1_WvarCal_weight","",400,0,3);
 	TH1F *h1_xbjkCal_weight = new TH1F("h1_xbjkCal_weight","",400,0,3);
 	TH1F *h1_Q2Cal_weight = new TH1F("h1_Q2Cal_weight","",400,0,6);
@@ -328,7 +328,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,10,60);
 	TH2F *h2_el_mom_diff = new TH2F("h2_el_mom_diff","",500,0.,1.,500,-0.1,0.1);
 	TH2F *h2_Q2_nu = new TH2F("h2_Q2_nu","",200,0,3.5,200,0,5);
-	TH2F *h2_Q2_nu_weight = new TH2F("h2_Q2_nu_weight","",400,0,3,400,0,6);
+	TH2F *h2_Q2_nu_weight = new TH2F("h2_Q2_nu_weight","",400,0,4,400,0,6);
 	TH2F *h2_Q2_xbjk_weight = new TH2F("h2_Q2_xbjk_weight","",200,0,3,200,0,5);
 	TH2F *h2_Q2_W=new TH2F("h2_Q2_W","",200,0,3,200,0,5);
 	TH2F *h2_xB_W=new TH2F("h2_xB_W","",200,0,3,200,0,3);

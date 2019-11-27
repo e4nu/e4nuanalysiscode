@@ -499,10 +499,13 @@ void genie_analysis::Loop(Int_t choice) {
 	const int NInt = 5; // All Interactions = 0, QE = 1, MEC = 2, RES = 3, DIS = 4
 	TH1D* ECal_BreakDown[NInt];
 	TH1D* EQE_BreakDown[NInt];
+	TH1D* InclusiveEQE_BreakDown[NInt];
+
 	for (int WhichInt = 0; WhichInt < NInt; WhichInt++) {
 
 		ECal_BreakDown[WhichInt] = new TH1D(Form("ECal_Int_%d",WhichInt),";E^{Cal} (GeV)",n_bins,x_values);
 		EQE_BreakDown[WhichInt] = new TH1D(Form("EQE_Int_%d",WhichInt),";E^{QE} (GeV)",n_bins,x_values);
+		InclusiveEQE_BreakDown[WhichInt] = new TH1D(Form("InclusiveEQE_Int_%d",WhichInt),";E^{QE} (GeV)",n_bins,x_values);
 
 	}
 
@@ -2118,6 +2121,10 @@ void genie_analysis::Loop(Int_t choice) {
 
 			h1_E_rec_0pi->Fill(E_rec,WeightIncl);
 			h1_E_rec_0pi_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],WeightIncl);
+
+			// Inclusive Case BreakDown
+			InclusiveEQE_BreakDown[0]->Fill(E_rec,WeightIncl);
+			if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,WeightIncl); }
 		}
 
 		//----------------------------- e- ,1pi  -----------------------------------------
@@ -2166,6 +2173,10 @@ void genie_analysis::Loop(Int_t choice) {
 
 			h1_E_rec_1pi_weight->Fill(E_rec,P_undet*histoweight);
 			h1_E_rec_1pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_undet*histoweight);
+
+			// Inclusive Case BreakDown
+			InclusiveEQE_BreakDown[0]->Fill(E_rec,-P_undet*histoweight);
+			if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,-P_undet*histoweight); }
 
 			if(!ec_radstat_n[0])  h1_E_rec_1pi->Fill(E_rec,histoweight);
 			if(ec_num_n==1)     	h2_phot_e_angle_Erec->Fill(E_rec,V3_pi_corr.Angle(V4_el.Vect())*TMath::RadToDeg());
@@ -2226,6 +2237,10 @@ void genie_analysis::Loop(Int_t choice) {
 			h1_E_rec_2pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi)*histoweight);
 			h1_E_rec_20pi->Fill(E_rec,(P_0pi)*histoweight);
 
+			// Inclusive Case BreakDown
+			InclusiveEQE_BreakDown[0]->Fill(E_rec,(-P_0pi)*histoweight);
+			if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(-P_0pi)*histoweight); }
+
 			//----------------------------- e- ,2pi->1pi->0pi (+)  -----------------------------------------
 
 			for(int k = 0; k < N_2pi; k++){ //loop over two pions
@@ -2233,6 +2248,10 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_E_rec_2pi_weight->Fill(E_rec,P_1pi[k]*histoweight);
 				h1_E_rec_2pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1pi[k]*histoweight);
 				h1_E_rec_21pi->Fill(E_rec,(P_1pi[k])*histoweight);
+
+				// Inclusive Case BreakDown
+				InclusiveEQE_BreakDown[0]->Fill(E_rec,(P_1pi[k])*histoweight);
+				if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_1pi[k])*histoweight); }
 			}
 
 		} //end if for two pion events
@@ -2299,6 +2318,10 @@ void genie_analysis::Loop(Int_t choice) {
 			h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi)*histoweight);
 			h1_E_rec_30pi->Fill(E_rec,(P_0pi)*histoweight);
 
+			// Inclusive Case BreakDown
+			InclusiveEQE_BreakDown[0]->Fill(E_rec,(P_0pi)*histoweight);
+			if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_0pi)*histoweight); }
+
 			for(int h = 0; h < N_3pi; h++){ //loop over three pions
 
 				//---------------------------3pi->1pi->0pi----------------------------------------------
@@ -2307,11 +2330,19 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1pi[h]*histoweight);
 				h1_E_rec_310pi->Fill(E_rec,(P_1pi[h])*histoweight);
 
+				// Inclusive Case BreakDown
+				InclusiveEQE_BreakDown[0]->Fill(E_rec,(P_1pi[h])*histoweight);
+				if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_1pi[h])*histoweight); }
+
 				//---------------------------3pi->2pi->0pi----------------------------------------------
 
 				h1_E_rec_3pi_weight->Fill(E_rec,P_320pi[h]*histoweight);
 				h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_320pi[h]*histoweight);
 				h1_E_rec_320pi->Fill(E_rec,(P_320pi[h])*histoweight);
+
+				// Inclusive Case BreakDown
+				InclusiveEQE_BreakDown[0]->Fill(E_rec,(P_320pi[h])*histoweight);
+				if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_320pi[h])*histoweight); }
 
 				//---------------------------3pi->2pi->1pi->0pi----------------------------------------------
 
@@ -2320,6 +2351,10 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_E_rec_3pi_weight->Fill(E_rec,(-P_3210pi[h][g])*histoweight);
 					h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_3210pi[h][g])*histoweight);
 					h1_E_rec_3210pi->Fill(E_rec,(P_3210pi[h][g])*histoweight);
+
+					// Inclusive Case BreakDown
+					InclusiveEQE_BreakDown[0]->Fill(E_rec,(-P_3210pi[h][g])*histoweight);
+					if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(-P_3210pi[h][g])*histoweight); }
 
 				}
 
@@ -2392,6 +2427,10 @@ void genie_analysis::Loop(Int_t choice) {
 			h1_E_rec_4pi_weight->Fill(E_rec,(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight);
 			h1_E_rec_4pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight);
 			h1_E_rec_40pi->Fill(E_rec,(P_0pi)*histoweight);
+
+			// Inclusive Case BreakDown
+			InclusiveEQE_BreakDown[0]->Fill(E_rec,(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight);
+			if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight); }
 
 			//---------------------------4pi->1pi->0pi----------------------------------------------
 

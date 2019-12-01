@@ -327,9 +327,13 @@ void genie_analysis::Loop(Int_t choice) {
 //	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,0,180);
 	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,10,60);
 	TH2F *h2_el_mom_diff = new TH2F("h2_el_mom_diff","",500,0.,1.,500,-0.1,0.1);
-	TH2F *h2_Q2_nu = new TH2F("h2_Q2_nu","",200,0,3.5,200,0,5);
-	TH2F *h2_Q2_nu_weight = new TH2F("h2_Q2_nu_weight","",400,0,4,400,0,6);
-	TH2F *h2_Q2_nu_weight_FirstSector = new TH2F("h2_Q2_nu_weight_FirstSector","",400,0,4,400,0,6);
+
+	int NBinsNu = 300, NBinsQ2 = 300;
+	double MinNu = 0., MaxNu = 4.; double MinQ2 = 0., MaxQ2 = 6.;
+	TH2F *h2_Q2_nu = new TH2F("h2_Q2_nu","",NBinsNu,MinNu,MaxNu,NBinsQ2,MinQ2,MaxQ2);
+	TH2F *h2_Q2_nu_weight = new TH2F("h2_Q2_nu_weight","",NBinsNu,MinNu,MaxNu,NBinsQ2,MinQ2,MaxQ2);
+	TH2F *h2_Q2_nu_weight_FirstSector = new TH2F("h2_Q2_nu_weight_FirstSector","",NBinsNu,MinNu,MaxNu,NBinsQ2,MinQ2,MaxQ2);
+
 	TH2F *h2_Q2_xbjk_weight = new TH2F("h2_Q2_xbjk_weight","",200,0,3,200,0,5);
 	TH2F *h2_Q2_W=new TH2F("h2_Q2_W","",200,0,3,200,0,5);
 	TH2F *h2_xB_W=new TH2F("h2_xB_W","",200,0,3,200,0,3);

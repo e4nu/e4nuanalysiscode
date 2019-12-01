@@ -528,8 +528,10 @@ void genie_analysis::Loop(Int_t choice) {
 	int MECSignalEvents = 0;
 	int RESSignalEvents = 0;
 	int DISSignalEvents = 0;
-	int EQESignalEventsWithin5Perc = 0;
-	int ECalSignalEventsWithin5Perc = 0;
+
+	int EQESignalEventsWithin5Perc = 0, EQESignalEventsWithin5Perc_FirstSlice = 0, EQESignalEventsWithin5Perc_SecondSlice = 0, EQESignalEventsWithin5Perc_ThirdSlice = 0;
+	int ECalSignalEventsWithin5Perc = 0, ECalSignalEventsWithin5Perc_FirstSlice = 0, ECalSignalEventsWithin5Perc_SecondSlice = 0, ECalSignalEventsWithin5Perc_ThirdSlice = 0;
+	int PMiss_FirstSlice = 0, PMiss_SecondSlice = 0, PMiss_ThirdSlice = 0;
 
 	/** Beginning of Event Loop **/
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -2538,8 +2540,24 @@ void genie_analysis::Loop(Int_t choice) {
 				double EQEReso = (E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en];
 
 				SignalEvents++;
-				if (fabs(ECalReso)*100. < 5) { ECalSignalEventsWithin5Perc++; }
-				if (fabs(EQEReso)*100. < 5) { EQESignalEventsWithin5Perc++; }
+
+				if (p_perp_tot < 0.2) { PMiss_FirstSlice++; }
+				if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { PMiss_SecondSlice++; }
+				if (p_perp_tot > 0.4) { PMiss_ThirdSlice++; }
+
+				if (fabs(ECalReso)*100. < 5) { 
+					ECalSignalEventsWithin5Perc++; 
+					if (p_perp_tot < 0.2) { ECalSignalEventsWithin5Perc_FirstSlice++; }
+					if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { ECalSignalEventsWithin5Perc_SecondSlice++; }
+					if (p_perp_tot > 0.4) { ECalSignalEventsWithin5Perc_ThirdSlice++; }
+				}
+
+				if (fabs(EQEReso)*100. < 5) { 
+					EQESignalEventsWithin5Perc++; 
+					if (p_perp_tot < 0.2) { EQESignalEventsWithin5Perc_FirstSlice++; }
+					if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { EQESignalEventsWithin5Perc_SecondSlice++; }
+					if (p_perp_tot > 0.4) { EQESignalEventsWithin5Perc_ThirdSlice++; }
+				}
 
 				if (Interaction == 1) { QESignalEvents++; }
 				else if (Interaction == 2) { MECSignalEvents++; }
@@ -3440,12 +3458,23 @@ void genie_analysis::Loop(Int_t choice) {
 	std::cout << std::endl << "Passing Rate = " << int(double(SignalEvents) / double(fChain->GetEntries())*100.) << " \%"<< std::endl << std::endl;
 
 	std::cout << std::endl << "-----------------------------------------------------------------------------------------------------" << std::endl;
+	std::cout << std::endl << "PMiss Fraction 1st Slice = " << int(double(PMiss_FirstSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "PMiss Fraction 2nd Slice = " << int(double(PMiss_SecondSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "PMiss Fraction 3rd Slice = " << int(double(PMiss_ThirdSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+
+	std::cout << std::endl << "-----------------------------------------------------------------------------------------------------" << std::endl;
 	std::cout << std::endl << "# Events With ECal Within 5\% of ETrue = " << ECalSignalEventsWithin5Perc << std::endl;
-	std::cout << std::endl << "ECal Rate = " << int(double(ECalSignalEventsWithin5Perc) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "ECal 5% Fraction = " << int(double(ECalSignalEventsWithin5Perc) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "ECal 5% Fraction 1st Slice = " << int(double(ECalSignalEventsWithin5Perc_FirstSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "ECal 5% Fraction 2nd Slice = " << int(double(ECalSignalEventsWithin5Perc_SecondSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "ECal 5% Fraction 3rd Slice = " << int(double(ECalSignalEventsWithin5Perc_ThirdSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
 
 	std::cout << std::endl << "-----------------------------------------------------------------------------------------------------" << std::endl;
 	std::cout << std::endl << "# Events With EQE Within 5\% of ETrue = " << EQESignalEventsWithin5Perc << std::endl;
-	std::cout << std::endl << "EQE Rate = " << int(double(EQESignalEventsWithin5Perc) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "EQE 5% Fraction = " << int(double(EQESignalEventsWithin5Perc) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "EQE 5% Fraction 1st Slice = " << int(double(EQESignalEventsWithin5Perc_FirstSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "EQE 5% Fraction 2nd Slice = " << int(double(EQESignalEventsWithin5Perc_SecondSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "EQE 5% Fraction 3rd Slice = " << int(double(EQESignalEventsWithin5Perc_ThirdSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
 
 	if (choice == 1) {
 

@@ -91,6 +91,9 @@ void genie_analysis::Loop(Int_t choice) {
 	//double reso_pimi = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
 	double reso_pi = 0.007; //smearing for pions, executive decision by Larry (28.08.19)
 
+	// Resolution defined above seems to be insufficient at 1.1 GeV -> tripled it for all particles
+	if(fbeam_en == "1161") { reso_p = 3*reso_p; reso_e = 3*reso_e; reso_pi = 3*reso_pi; }
+
 	double Wcut = 2; //cut for all beam energies < 2
 	double Q2cut = 0; // cut for 1.1 GeV > 0.1, for 2.2 GeV > 0.4 and 4.4 GeV > 0.8
 
@@ -187,7 +190,6 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_Etot_p_bkgd_slice_sub431[n_slice],*h1_Erec_p_bkgd_slice_sub431[n_slice];
 	TH2F *h2_N_pi_phot[20];
 
-
 	gRandom = new TRandom3();
 	gRandom->SetSeed(10);
 
@@ -243,7 +245,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_Wvar_weight = new TH1F("h1_Wvar_weight","",400,0,3);
 	TH1F *h1_xbjk_weight = new TH1F("h1_xbjk_weight","",400,0,3);
 	TH1F *h1_Q2_weight = new TH1F("h1_Q2_weight","",400,0,6);
-	TH1F *h1_nu_weight = new TH1F("h1_nu_weight","",400,0,3);
+	TH1F *h1_nu_weight = new TH1F("h1_nu_weight","",400,0,4);
 	TH1F *h1_WvarCal_weight = new TH1F("h1_WvarCal_weight","",400,0,3);
 	TH1F *h1_xbjkCal_weight = new TH1F("h1_xbjkCal_weight","",400,0,3);
 	TH1F *h1_Q2Cal_weight = new TH1F("h1_Q2Cal_weight","",400,0,6);
@@ -316,7 +318,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_E_tot_undetfactor_fracfeed = new TH1F("h1_E_tot_undetfactor_fracfeed","",N_qe,x_qe);
 
 	TH1F *h1_theta0=new TH1F("h1_theta0","",300,0,180);
-	TH2F *h2_Ecal_Eqe=new TH2F("h2_Ecal_Eqe","",600,0,5,600,0,5);
+	TH2F *h2_Ecal_Eqe=new TH2F("h2_Ecal_Eqe","",600,0,6.,600,0,6.);
 	TH2F *h2_EqeEcalratio_Eqe=new TH2F("h2_EqeEcalratio_Eqe","",600,0,5,300,0,2);
 	TH2F *h2_EqeEcaldiff_Eqe=new TH2F("h2_EqeEcaldiff_Eqe","",600,0,5,300,-3,3);
 	TH2F *h2_N_prot_pi=new TH2F("h2_N_prot_pi","",10,0,5,10,0,5);
@@ -325,8 +327,13 @@ void genie_analysis::Loop(Int_t choice) {
 //	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,0,180);
 	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,10,60);
 	TH2F *h2_el_mom_diff = new TH2F("h2_el_mom_diff","",500,0.,1.,500,-0.1,0.1);
-	TH2F *h2_Q2_nu = new TH2F("h2_Q2_nu","",200,0,3.5,200,0,5);
-	TH2F *h2_Q2_nu_weight = new TH2F("h2_Q2_nu_weight","",200,0,3.5,200,0,5);
+
+	int NBinsNu = 300, NBinsQ2 = 300;
+	double MinNu = 0., MaxNu = 4.; double MinQ2 = 0., MaxQ2 = 6.;
+	TH2F *h2_Q2_nu = new TH2F("h2_Q2_nu","",NBinsNu,MinNu,MaxNu,NBinsQ2,MinQ2,MaxQ2);
+	TH2F *h2_Q2_nu_weight = new TH2F("h2_Q2_nu_weight","",NBinsNu,MinNu,MaxNu,NBinsQ2,MinQ2,MaxQ2);
+	TH2F *h2_Q2_nu_weight_FirstSector = new TH2F("h2_Q2_nu_weight_FirstSector","",NBinsNu,MinNu,MaxNu,NBinsQ2,MinQ2,MaxQ2);
+
 	TH2F *h2_Q2_xbjk_weight = new TH2F("h2_Q2_xbjk_weight","",200,0,3,200,0,5);
 	TH2F *h2_Q2_W=new TH2F("h2_Q2_W","",200,0,3,200,0,5);
 	TH2F *h2_xB_W=new TH2F("h2_xB_W","",200,0,3,200,0,3);
@@ -493,13 +500,38 @@ void genie_analysis::Loop(Int_t choice) {
 		h2_N_pi_phot[h]=new TH2F(Form("h2_N_pi_phot_%d",h),"",10,0,5,10,0,5);
 	}
 
+	// Plots for interaction break down for GENIE samples
+	const int NInt = 5; // All Interactions = 0, QE = 1, MEC = 2, RES = 3, DIS = 4
+	TH1D* ECal_BreakDown[NInt];
+	TH1D* EQE_BreakDown[NInt];
+	TH1D* InclusiveEQE_BreakDown[NInt];
+
+	for (int WhichInt = 0; WhichInt < NInt; WhichInt++) {
+
+		ECal_BreakDown[WhichInt] = new TH1D(Form("ECal_Int_%d",WhichInt),";E^{Cal} (GeV)",n_bins,x_values);
+		EQE_BreakDown[WhichInt] = new TH1D(Form("EQE_Int_%d",WhichInt),";E^{QE} (GeV)",n_bins,x_values);
+		InclusiveEQE_BreakDown[WhichInt] = new TH1D(Form("InclusiveEQE_Int_%d",WhichInt),";E^{QE} (GeV)",n_bins,x_values);
+
+	}
+
 	TH1D::SetDefaultSumw2();
 	TH2D::SetDefaultSumw2();
 
-	// apapadop: vector containing kinematic variables using Ecal
+	// Vector containing kinematic variables using Ecal
 	vector<double> CalKineVars{};
-	// apapadop: Weight to fill the plots mentioned above
+	// Weight to fill the plots mentioned above
 	double LocalWeight;
+
+	// Signal Event Counter -> 1e1p0pi events (everything lese is bkg)
+	int SignalEvents = 0;
+	int QESignalEvents = 0;
+	int MECSignalEvents = 0;
+	int RESSignalEvents = 0;
+	int DISSignalEvents = 0;
+
+	int EQESignalEventsWithin5Perc = 0, EQESignalEventsWithin5Perc_FirstSlice = 0, EQESignalEventsWithin5Perc_SecondSlice = 0, EQESignalEventsWithin5Perc_ThirdSlice = 0;
+	int ECalSignalEventsWithin5Perc = 0, ECalSignalEventsWithin5Perc_FirstSlice = 0, ECalSignalEventsWithin5Perc_SecondSlice = 0, ECalSignalEventsWithin5Perc_ThirdSlice = 0;
+	int PMiss_FirstSlice = 0, PMiss_SecondSlice = 0, PMiss_ThirdSlice = 0;
 
 	/** Beginning of Event Loop **/
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -545,7 +577,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 		double SmearedPe;
 		double SmearedEe;
-		double e_acc_ratio = 1;	//will be 1 for CLAS data
+		double e_acc_ratio = 1.;	//will be 1 for CLAS data
 
 		// Outgoing e',	Uncorr and corrected are the same read from root file.
 		//V4_el and V3_el will be changed by smearing for GENIE simulation data
@@ -580,6 +612,11 @@ void genie_analysis::Loop(Int_t choice) {
 
 		}
 
+		// Explicit cuts on electron momentum
+		if (fbeam_en=="1161" && el_momentum < 0.4) { continue; }
+		if (fbeam_en=="2261" && el_momentum < 0.55) { continue; }
+		if (fbeam_en=="4461" && el_momentum < 1.1) { continue; }
+
 		//Definition as for data. It is also correct for GENIE simulation data since V3_el is rotated above by 180 degree in phi
 		double el_phi_mod = V3_el.Phi()*TMath::RadToDeg()  + 30; //Add 30 degree for plotting and photon phi cut
 		if(el_phi_mod<0)  el_phi_mod  = el_phi_mod+360; //Add 360 so that electron phi is between 0 and 360 degree
@@ -587,7 +624,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 		//Calculated Mott Cross Section and Weights for Inclusive Histograms
 		//Wght and e_acc_ratio is 1 for CLAS data
-		double Mott_cross_sec = ( pow(fine_struc_const,2.)*(cos(el_theta)+1))/(2*pow(El,2)*pow((1-cos(el_theta)),2.));
+		double Mott_cross_sec = ( pow(fine_struc_const,2.)*(cos(el_theta)+1))/(2*pow(El,2.)*pow((1-cos(el_theta)),2.));
 		double WeightIncl = wght*e_acc_ratio / Mott_cross_sec;
 
 		//Calculation of Reconstructed Energy from ELectron only
@@ -631,16 +668,10 @@ void genie_analysis::Loop(Int_t choice) {
 		h2_el_theta_phi->Fill(el_phi_mod,el_theta,WeightIncl);
 		h1_el_theta->Fill(el_theta);
 		h2_Q2_nu->Fill(nu,reco_Q2);
-		h2_Q2_nu_weight->Fill(nu,reco_Q2,WeightIncl);
 		h2_Q2_xbjk_weight->Fill(x_bjk,reco_Q2,WeightIncl);
 		h2_Q2_W->Fill(W_var,reco_Q2);
 		h2_xB_W->Fill(W_var,x_bjk);
 		h2_Q2_W_weight->Fill(W_var,reco_Q2,WeightIncl);
-
-//		h1_xbjk_weight->Fill(x_bjk,WeightIncl);
-//		h1_Q2_weight->Fill(reco_Q2,WeightIncl);
-//		h1_Wvar_weight->Fill(W_var,WeightIncl);
-//		h1_el_mom_corr->Fill(V4_el.Rho(),WeightIncl);
 
 		//Now we are done with the selection of electrons. Next step is looking for other hadrons in the events
 
@@ -841,6 +872,22 @@ void genie_analysis::Loop(Int_t choice) {
 		  continue;
 		}
 
+		// -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+		// For GENIE samples, identify the interaction type
+
+		int Interaction = -1;
+		if (choice == 1) {
+
+			if (qel) { Interaction = 1; }
+			if (mec) { Interaction = 2; }
+			if (res) { Interaction = 3; }
+			if (dis) { Interaction = 4; }
+
+		}
+
+		// -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 		//Filling Histograms with multiplicities
 		h1_Npi->Fill(num_pi);
 		h1_Nprot->Fill(num_p);
@@ -951,7 +998,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_perp_tot_2p[f],-P_N_2p[f]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(E_tot_2p[f],V4_el);
 					LocalWeight = -P_N_2p[f]*histoweight;
@@ -960,6 +1007,18 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+					if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+					// Fill plots based on underlying interactions
+
+					ECal_BreakDown[0]->Fill(E_tot_2p[f],LocalWeight);
+					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+ 					if (choice == 1) {
+						ECal_BreakDown[Interaction]->Fill(E_tot_2p[f],LocalWeight);
+						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+					}
 
 					// -----------------------------------------------------------------------------------------------
 
@@ -1053,7 +1112,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_miss_perp_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(Ecal_2p1pi_to2p0pi[z],V4_el);
 					LocalWeight = P_2p1pito2p0pi[z]*histoweight;
@@ -1062,6 +1121,18 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+					if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+					// Fill plots based on underlying interactions
+
+					ECal_BreakDown[0]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
+					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+ 					if (choice == 1) {
+						ECal_BreakDown[Interaction]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
+						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+					}
 
 					// -----------------------------------------------------------------------------------------------
 
@@ -1094,7 +1165,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(E_tot_2p[z],V4_el);
 					LocalWeight = P_2p1pito1p1pi[z]*histoweight;
@@ -1103,6 +1174,18 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+					if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+					// Fill plots based on underlying interactions
+
+					ECal_BreakDown[0]->Fill(E_tot_2p[z],LocalWeight);
+					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+ 					if (choice == 1) {
+						ECal_BreakDown[Interaction]->Fill(E_tot_2p[z],LocalWeight);
+						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+					}
 
 					// -----------------------------------------------------------------------------------------------
 
@@ -1135,7 +1218,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(E_tot_2p[z],V4_el);
 					LocalWeight = -P_2p1pito1p0pi[z]*histoweight;
@@ -1144,6 +1227,18 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+					if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+					// Fill plots based on underlying interactions
+
+					ECal_BreakDown[0]->Fill(E_tot_2p[z],LocalWeight);
+					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+ 					if (choice == 1) {
+						ECal_BreakDown[Interaction]->Fill(E_tot_2p[z],LocalWeight);
+						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+					}
 
 					// -----------------------------------------------------------------------------------------------
 
@@ -1235,7 +1330,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],Ptot_2p[z]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(E_tot_2p[z],V4_el);
 					LocalWeight = Ptot_2p[z]*histoweight;
@@ -1244,6 +1339,18 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+					if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+					// Fill plots based on underlying interactions
+
+					ECal_BreakDown[0]->Fill(E_tot_2p[z],LocalWeight);
+					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+ 					if (choice == 1) {
+						ECal_BreakDown[Interaction]->Fill(E_tot_2p[z],LocalWeight);
+						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+					}
 
 					// -----------------------------------------------------------------------------------------------
 
@@ -1366,7 +1473,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_MissMomentum->Fill(p_miss_perp_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 
 						// -----------------------------------------------------------------------------------------------
-						// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+						// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 						CalKineVars = CalculateCalKineVars(E_cal_3pto2p[count][j],V4_el);
 						LocalWeight = P_3pto2p[count][j]*histoweight;
@@ -1375,6 +1482,18 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 						h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 						h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+						h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+						if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+						// Fill plots based on underlying interactions
+
+						ECal_BreakDown[0]->Fill(E_cal_3pto2p[count][j],LocalWeight);
+						EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+	 					if (choice == 1) {
+							ECal_BreakDown[Interaction]->Fill(E_cal_3pto2p[count][j],LocalWeight);
+							EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+						}
 
 						// -----------------------------------------------------------------------------------------------
 
@@ -1416,7 +1535,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_miss_perp[j],-P_3pto1p[j]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(E_cal[j],V4_el);
 					LocalWeight = -P_3pto1p[j]*histoweight;
@@ -1425,6 +1544,18 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+					if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+					// Fill plots based on underlying interactions
+
+					ECal_BreakDown[0]->Fill(E_cal[j],LocalWeight);
+					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+	 				if (choice == 1) {
+						ECal_BreakDown[Interaction]->Fill(E_cal[j],LocalWeight);
+						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+					}
 
 					// -----------------------------------------------------------------------------------------------
 
@@ -1511,7 +1642,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_MissMomentum->Fill(p_miss_perp[j],P_tot_3p[j]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
-					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 					CalKineVars = CalculateCalKineVars(E_cal[j],V4_el);
 					LocalWeight = P_tot_3p[j]*histoweight;
@@ -1520,6 +1651,18 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+					if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+					// Fill plots based on underlying interactions
+
+					ECal_BreakDown[0]->Fill(E_cal[j],LocalWeight);
+					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+	 				if (choice == 1) {
+						ECal_BreakDown[Interaction]->Fill(E_cal[j],LocalWeight);
+						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+					}
 
 					// -----------------------------------------------------------------------------------------------
 
@@ -1711,7 +1854,7 @@ void genie_analysis::Loop(Int_t choice) {
 								h1_MissMomentum->Fill(p_miss_perp_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 
 								// -----------------------------------------------------------------------------------------------
-								// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+								// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 								CalKineVars = CalculateCalKineVars(E_cal_4pto3p[count][j],V4_el);
 								LocalWeight = -P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight;
@@ -1720,6 +1863,18 @@ void genie_analysis::Loop(Int_t choice) {
 								h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 								h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 								h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+								h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+								if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+								// Fill plots based on underlying interactions
+
+								ECal_BreakDown[0]->Fill(E_cal_4pto3p[count][j],LocalWeight);
+								EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+				 				if (choice == 1) {
+									ECal_BreakDown[Interaction]->Fill(E_cal_4pto3p[count][j],LocalWeight);
+									EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+								}
 
 								// -----------------------------------------------------------------------------------------------
 
@@ -1762,7 +1917,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h1_MissMomentum->Fill(p_miss_perp_43pto1p[j],P_43pto1p[j]*histoweight);
 
 							// -----------------------------------------------------------------------------------------------
-							// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+							// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 							CalKineVars = CalculateCalKineVars(E_cal_43pto1p[j],V4_el);
 							LocalWeight = P_43pto1p[j]*histoweight;
@@ -1771,6 +1926,18 @@ void genie_analysis::Loop(Int_t choice) {
 							h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 							h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 							h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+							h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+							if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+							// Fill plots based on underlying interactions
+
+							ECal_BreakDown[0]->Fill(E_cal_43pto1p[j],LocalWeight);
+							EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+				 			if (choice == 1) {
+								ECal_BreakDown[Interaction]->Fill(E_cal_43pto1p[j],LocalWeight);
+								EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+							}
 
 							// -----------------------------------------------------------------------------------------------
 
@@ -1839,7 +2006,7 @@ void genie_analysis::Loop(Int_t choice) {
 									h1_MissMomentum->Fill(p_miss_perp_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 
 									// -----------------------------------------------------------------------------------------------
-									// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+									// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 									CalKineVars = CalculateCalKineVars(E_cal_4pto2p[j],V4_el);
 									LocalWeight = P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight;
@@ -1848,6 +2015,18 @@ void genie_analysis::Loop(Int_t choice) {
 									h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 									h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 									h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+									h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+									if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+									// Fill plots based on underlying interactions
+
+									ECal_BreakDown[0]->Fill(E_cal_4pto2p[j],LocalWeight);
+									EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+						 			if (choice == 1) {
+										ECal_BreakDown[Interaction]->Fill(E_cal_4pto2p[j],LocalWeight);
+										EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+									}
 
 									// -----------------------------------------------------------------------------------------------
 
@@ -1911,6 +2090,18 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 						h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
 
+						h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+						if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+						// Fill plots based on underlying interactions
+
+						ECal_BreakDown[0]->Fill(E_cal_p4[j],LocalWeight);
+						EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+						if (choice == 1) {
+							ECal_BreakDown[Interaction]->Fill(E_cal_p4[j],LocalWeight);
+							EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+						}
+
 						// -----------------------------------------------------------------------------------------------
 
 						for(int i = 0; i < n_slice; i++) {
@@ -1943,6 +2134,10 @@ void genie_analysis::Loop(Int_t choice) {
 
 			h1_E_rec_0pi->Fill(E_rec,WeightIncl);
 			h1_E_rec_0pi_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],WeightIncl);
+
+			// Inclusive Case BreakDown
+			InclusiveEQE_BreakDown[0]->Fill(E_rec,WeightIncl);
+			if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,WeightIncl); }
 		}
 
 		//----------------------------- e- ,1pi  -----------------------------------------
@@ -1991,6 +2186,10 @@ void genie_analysis::Loop(Int_t choice) {
 
 			h1_E_rec_1pi_weight->Fill(E_rec,P_undet*histoweight);
 			h1_E_rec_1pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_undet*histoweight);
+
+			// Inclusive Case BreakDown
+			InclusiveEQE_BreakDown[0]->Fill(E_rec,-P_undet*histoweight);
+			if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,-P_undet*histoweight); }
 
 			if(!ec_radstat_n[0])  h1_E_rec_1pi->Fill(E_rec,histoweight);
 			if(ec_num_n==1)     	h2_phot_e_angle_Erec->Fill(E_rec,V3_pi_corr.Angle(V4_el.Vect())*TMath::RadToDeg());
@@ -2051,6 +2250,10 @@ void genie_analysis::Loop(Int_t choice) {
 			h1_E_rec_2pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi)*histoweight);
 			h1_E_rec_20pi->Fill(E_rec,(P_0pi)*histoweight);
 
+			// Inclusive Case BreakDown
+			InclusiveEQE_BreakDown[0]->Fill(E_rec,(-P_0pi)*histoweight);
+			if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(-P_0pi)*histoweight); }
+
 			//----------------------------- e- ,2pi->1pi->0pi (+)  -----------------------------------------
 
 			for(int k = 0; k < N_2pi; k++){ //loop over two pions
@@ -2058,6 +2261,10 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_E_rec_2pi_weight->Fill(E_rec,P_1pi[k]*histoweight);
 				h1_E_rec_2pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1pi[k]*histoweight);
 				h1_E_rec_21pi->Fill(E_rec,(P_1pi[k])*histoweight);
+
+				// Inclusive Case BreakDown
+				InclusiveEQE_BreakDown[0]->Fill(E_rec,(P_1pi[k])*histoweight);
+				if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_1pi[k])*histoweight); }
 			}
 
 		} //end if for two pion events
@@ -2124,6 +2331,10 @@ void genie_analysis::Loop(Int_t choice) {
 			h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi)*histoweight);
 			h1_E_rec_30pi->Fill(E_rec,(P_0pi)*histoweight);
 
+			// Inclusive Case BreakDown
+			InclusiveEQE_BreakDown[0]->Fill(E_rec,(P_0pi)*histoweight);
+			if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_0pi)*histoweight); }
+
 			for(int h = 0; h < N_3pi; h++){ //loop over three pions
 
 				//---------------------------3pi->1pi->0pi----------------------------------------------
@@ -2132,11 +2343,19 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_1pi[h]*histoweight);
 				h1_E_rec_310pi->Fill(E_rec,(P_1pi[h])*histoweight);
 
+				// Inclusive Case BreakDown
+				InclusiveEQE_BreakDown[0]->Fill(E_rec,(P_1pi[h])*histoweight);
+				if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_1pi[h])*histoweight); }
+
 				//---------------------------3pi->2pi->0pi----------------------------------------------
 
 				h1_E_rec_3pi_weight->Fill(E_rec,P_320pi[h]*histoweight);
 				h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_320pi[h]*histoweight);
 				h1_E_rec_320pi->Fill(E_rec,(P_320pi[h])*histoweight);
+
+				// Inclusive Case BreakDown
+				InclusiveEQE_BreakDown[0]->Fill(E_rec,(P_320pi[h])*histoweight);
+				if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_320pi[h])*histoweight); }
 
 				//---------------------------3pi->2pi->1pi->0pi----------------------------------------------
 
@@ -2145,6 +2364,10 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_E_rec_3pi_weight->Fill(E_rec,(-P_3210pi[h][g])*histoweight);
 					h1_E_rec_3pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_3210pi[h][g])*histoweight);
 					h1_E_rec_3210pi->Fill(E_rec,(P_3210pi[h][g])*histoweight);
+
+					// Inclusive Case BreakDown
+					InclusiveEQE_BreakDown[0]->Fill(E_rec,(-P_3210pi[h][g])*histoweight);
+					if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(-P_3210pi[h][g])*histoweight); }
 
 				}
 
@@ -2217,6 +2440,10 @@ void genie_analysis::Loop(Int_t choice) {
 			h1_E_rec_4pi_weight->Fill(E_rec,(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight);
 			h1_E_rec_4pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight);
 			h1_E_rec_40pi->Fill(E_rec,(P_0pi)*histoweight);
+
+			// Inclusive Case BreakDown
+			InclusiveEQE_BreakDown[0]->Fill(E_rec,(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight);
+			if (choice == 1) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight); }
 
 			//---------------------------4pi->1pi->0pi----------------------------------------------
 
@@ -2305,7 +2532,37 @@ void genie_analysis::Loop(Int_t choice) {
 
 			//---------------------------------- 1p 0pi   ----------------------------------------------
 
+			// Main Plots
+
 			if(num_pi_phot == 0){
+
+				double ECalReso = (E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en];
+				double EQEReso = (E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en];
+
+				SignalEvents++;
+
+				if (p_perp_tot < 0.2) { PMiss_FirstSlice++; }
+				if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { PMiss_SecondSlice++; }
+				if (p_perp_tot > 0.4) { PMiss_ThirdSlice++; }
+
+				if (fabs(ECalReso)*100. < 5) { 
+					ECalSignalEventsWithin5Perc++; 
+					if (p_perp_tot < 0.2) { ECalSignalEventsWithin5Perc_FirstSlice++; }
+					if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { ECalSignalEventsWithin5Perc_SecondSlice++; }
+					if (p_perp_tot > 0.4) { ECalSignalEventsWithin5Perc_ThirdSlice++; }
+				}
+
+				if (fabs(EQEReso)*100. < 5) { 
+					EQESignalEventsWithin5Perc++; 
+					if (p_perp_tot < 0.2) { EQESignalEventsWithin5Perc_FirstSlice++; }
+					if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { EQESignalEventsWithin5Perc_SecondSlice++; }
+					if (p_perp_tot > 0.4) { EQESignalEventsWithin5Perc_ThirdSlice++; }
+				}
+
+				if (Interaction == 1) { QESignalEvents++; }
+				else if (Interaction == 2) { MECSignalEvents++; }
+				else if (Interaction == 3) { RESSignalEvents++; }
+				else if (Interaction == 4) { DISSignalEvents++; }
 
 				//histoweight is 1/Mott_cross_sec for CLAS data
 				double histoweight = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec;
@@ -2313,8 +2570,8 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_Erec_pperp_newcut2->Fill(p_perp_tot,E_rec,histoweight);
 				h1_E_rec_cut2_new->Fill(E_rec,histoweight);
 				h1_E_tot_cut2->Fill(E_tot,histoweight);
-				h1_E_tot_cut2_fracfeed->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],histoweight);
-				h1_E_rec_cut2_new_fracfeed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],histoweight);
+				h1_E_tot_cut2_fracfeed->Fill(ECalReso,histoweight);
+				h1_E_rec_cut2_new_fracfeed->Fill(EQEReso,histoweight);
 				h2_pperp_W->Fill(W_var,p_perp_tot,histoweight);
 				h1_theta0->Fill((V4_beam.Vect()).Angle(V4_prot_el_tot.Vect()) *TMath::RadToDeg(),histoweight);
 				h2_Ecal_Eqe->Fill(E_rec,E_tot,histoweight);
@@ -2330,7 +2587,7 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_MissMomentum->Fill(p_perp_tot,histoweight);
 
 				// -----------------------------------------------------------------------------------------------
-				// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
+				// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 				CalKineVars = CalculateCalKineVars(E_tot,V4_el);
 				LocalWeight = histoweight;
@@ -2339,6 +2596,18 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 				h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 				h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+				h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+				if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+				// Fill plots based on underlying interactions
+
+				ECal_BreakDown[0]->Fill(E_tot,LocalWeight);
+				EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+				if (choice == 1) {
+					ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
+					EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+				}
 
 				// -----------------------------------------------------------------------------------------------
 
@@ -2439,6 +2708,18 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+					if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+					// Fill plots based on underlying interactions
+
+					ECal_BreakDown[0]->Fill(E_tot,LocalWeight);
+					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+					if (choice == 1) {
+						ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
+						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+					}
 
 					// -----------------------------------------------------------------------------------------------
 
@@ -2546,6 +2827,18 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 					h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
 
+					h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+					if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+					// Fill plots based on underlying interactions
+
+					ECal_BreakDown[0]->Fill(E_tot,LocalWeight);
+					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+					if (choice == 1) {
+						ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
+						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+					}
+
 					// -----------------------------------------------------------------------------------------------
 
 					for(int i = 0; i < n_slice; i++){
@@ -2590,6 +2883,18 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 				h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 				h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+				h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+				if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+				// Fill plots based on underlying interactions
+
+				ECal_BreakDown[0]->Fill(E_tot,LocalWeight);
+				EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+				if (choice == 1) {
+					ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
+					EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+				}
 
 				// -----------------------------------------------------------------------------------------------
 
@@ -2684,6 +2989,18 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_Q2Cal_weight->Fill(CalKineVars.at(1),LocalWeight);
 				h1_xbjkCal_weight->Fill(CalKineVars.at(2),LocalWeight);
 				h1_WvarCal_weight->Fill(CalKineVars.at(3),LocalWeight);
+
+				h2_Q2_nu_weight->Fill(nu,reco_Q2,LocalWeight);
+				if (el_phi_mod > 0 && el_phi_mod< 60) {h2_Q2_nu_weight_FirstSector->Fill(nu,reco_Q2,LocalWeight); }
+
+				// Fill plots based on underlying interactions
+
+				ECal_BreakDown[0]->Fill(E_tot,LocalWeight);
+				EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
+				if (choice == 1) {
+					ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
+					EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
+				}
 
 				// -----------------------------------------------------------------------------------------------
 
@@ -3132,6 +3449,42 @@ void genie_analysis::Loop(Int_t choice) {
 
 	gDirectory->Write("hist_Files", TObject::kOverwrite);
 	// skim_tree->AutoSave();
+
+	// --------------------------------------------------------------------------------------------------------
+
+	std::cout << std::endl << "-----------------------------------------------------------------------------------------------------" << std::endl;
+	std::cout << std::endl << "Initial # Events = " << fChain->GetEntries() << std::endl;
+	std::cout << std::endl << "1e1p0pi Signal # Events = " << SignalEvents << std::endl;
+	std::cout << std::endl << "Passing Rate = " << int(double(SignalEvents) / double(fChain->GetEntries())*100.) << " \%"<< std::endl << std::endl;
+
+	std::cout << std::endl << "-----------------------------------------------------------------------------------------------------" << std::endl;
+	std::cout << std::endl << "PMiss Fraction 1st Slice = " << int(double(PMiss_FirstSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "PMiss Fraction 2nd Slice = " << int(double(PMiss_SecondSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "PMiss Fraction 3rd Slice = " << int(double(PMiss_ThirdSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+
+	std::cout << std::endl << "-----------------------------------------------------------------------------------------------------" << std::endl;
+	std::cout << std::endl << "# Events With ECal Within 5\% of ETrue = " << ECalSignalEventsWithin5Perc << std::endl;
+	std::cout << std::endl << "ECal 5% Fraction = " << int(double(ECalSignalEventsWithin5Perc) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "ECal 5% Fraction 1st Slice = " << int(double(ECalSignalEventsWithin5Perc_FirstSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "ECal 5% Fraction 2nd Slice = " << int(double(ECalSignalEventsWithin5Perc_SecondSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "ECal 5% Fraction 3rd Slice = " << int(double(ECalSignalEventsWithin5Perc_ThirdSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+
+	std::cout << std::endl << "-----------------------------------------------------------------------------------------------------" << std::endl;
+	std::cout << std::endl << "# Events With EQE Within 5\% of ETrue = " << EQESignalEventsWithin5Perc << std::endl;
+	std::cout << std::endl << "EQE 5% Fraction = " << int(double(EQESignalEventsWithin5Perc) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "EQE 5% Fraction 1st Slice = " << int(double(EQESignalEventsWithin5Perc_FirstSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "EQE 5% Fraction 2nd Slice = " << int(double(EQESignalEventsWithin5Perc_SecondSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+	std::cout << std::endl << "EQE 5% Fraction 3rd Slice = " << int(double(EQESignalEventsWithin5Perc_ThirdSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
+
+	if (choice == 1) {
+
+		std::cout << std::endl << "QE Fractional Contribution = " << int(double(QESignalEvents) / double(SignalEvents)*100.) << " \%" << std::endl;
+		std::cout << std::endl << "MEC Fractional Contribution = " << int(double(MECSignalEvents) / double(SignalEvents)*100.) << " \%" << std::endl;
+		std::cout << std::endl << "RES Fractional Contribution = " << int(double(RESSignalEvents) / double(SignalEvents)*100.) << " \%" << std::endl;
+		std::cout << std::endl << "DIS Fractional Contribution = " << int(double(DISSignalEvents) / double(SignalEvents)*100.) << " \%" << std::endl;
+		std::cout << std::endl << "-----------------------------------------------------------------------------------------------------" << std::endl;
+
+	}
 
 }
 

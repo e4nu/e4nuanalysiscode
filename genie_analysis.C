@@ -454,6 +454,20 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_E_tot_2p1pi_1p0pi	= new TH1F("h1_E_tot_2p1pi_1p0pi","",n_bins,x_values);
 	TH1F *h1_E_rec_2p1pi_1p0pi	= new TH1F("h1_E_rec_2p1pi_1p0pi","",n_bins,x_values);
 
+	// Unweighted plots for the number of events
+
+	TH1F *h1_MissMomentum_NoWeight = new TH1F("MissMomentum_NoWeight","",100,0.,1.);
+
+	TH1F *h1_ECal_Slice0_NoWeight = new TH1F("epRecoEnergy_slice_0_NoWeight","",n_bins,x_values);
+	TH1F *h1_ECal_Slice1_NoWeight = new TH1F("epRecoEnergy_slice_1_NoWeight","",n_bins,x_values);
+	TH1F *h1_ECal_Slice2_NoWeight = new TH1F("epRecoEnergy_slice_2_NoWeight","",n_bins,x_values);
+	TH1F *h1_ECal_Slice3_NoWeight = new TH1F("epRecoEnergy_slice_3_NoWeight","",n_bins,x_values);
+
+	TH1F *h1_EQE_Slice0_NoWeight = new TH1F("eRecoEnergy_slice_0_NoWeight","",n_bins,x_values);
+	TH1F *h1_EQE_Slice1_NoWeight = new TH1F("eRecoEnergy_slice_1_NoWeight","",n_bins,x_values);
+	TH1F *h1_EQE_Slice2_NoWeight = new TH1F("eRecoEnergy_slice_2_NoWeight","",n_bins,x_values);
+	TH1F *h1_EQE_Slice3_NoWeight = new TH1F("eRecoEnergy_slice_3_NoWeight","",n_bins,x_values);
+
 	//Defintions of Histogram for each slice
 	for(int h = 0; h < n_slice; h++){
 		h1_Erec_p_bkgd_slice[h]= new TH1F(Form("h1_Erec_p_bkgd_slice_%d",h+1),"",n_bins,x_values);
@@ -2585,6 +2599,19 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_el_mom_corr->Fill(V4_el.Rho(),histoweight);
 				h1_prot_mom->Fill(V3_prot_corr.Mag(),histoweight);
 				h1_MissMomentum->Fill(p_perp_tot,histoweight);
+
+				// -----------------------------------------------------------------------------------------------
+
+				// Unweighted plots for number of events
+
+				h1_MissMomentum_NoWeight->Fill(p_perp_tot);
+
+				h1_ECal_Slice0_NoWeight->Fill(E_tot);
+				h1_EQE_Slice0_NoWeight->Fill(E_rec);
+
+				if (p_perp_tot < 0.2) { h1_ECal_Slice1_NoWeight->Fill(E_tot); h1_EQE_Slice1_NoWeight->Fill(E_rec); }
+				if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { h1_ECal_Slice2_NoWeight->Fill(E_tot); h1_EQE_Slice2_NoWeight->Fill(E_rec); }
+				if (p_perp_tot > 0.4) { h1_ECal_Slice3_NoWeight->Fill(E_tot); h1_EQE_Slice3_NoWeight->Fill(E_rec); }
 
 				// -----------------------------------------------------------------------------------------------
 				// Reconstruct xB, W, Q2 using Ecal instead of Etrue

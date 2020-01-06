@@ -2538,6 +2538,7 @@ void genie_analysis::Loop(Int_t choice) {
 			//These Histograms are events with 1 electron and  1 proton and multiple pions
 			//histoweight_inc is 1/Mott_cross_sec for CLAS data
 			double histoweight_inc = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec;
+			double histoweight_NoMott = p_acc_ratio * e_acc_ratio * wght;
 
 			h1_E_tot->Fill(E_tot,histoweight_inc);
 			h1_E_rec_1prot->Fill(E_rec,histoweight_inc);
@@ -2604,14 +2605,14 @@ void genie_analysis::Loop(Int_t choice) {
 
 				// Unweighted plots for number of events
 
-				h1_MissMomentum_NoWeight->Fill(p_perp_tot);
+				h1_MissMomentum_NoWeight->Fill(p_perp_tot,histoweight_NoMott);
 
-				h1_ECal_Slice0_NoWeight->Fill(E_tot);
-				h1_EQE_Slice0_NoWeight->Fill(E_rec);
+				h1_ECal_Slice0_NoWeight->Fill(E_tot,histoweight_NoMott);
+				h1_EQE_Slice0_NoWeight->Fill(E_rec,histoweight_NoMott);
 
-				if (p_perp_tot < 0.2) { h1_ECal_Slice1_NoWeight->Fill(E_tot); h1_EQE_Slice1_NoWeight->Fill(E_rec); }
-				if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { h1_ECal_Slice2_NoWeight->Fill(E_tot); h1_EQE_Slice2_NoWeight->Fill(E_rec); }
-				if (p_perp_tot > 0.4) { h1_ECal_Slice3_NoWeight->Fill(E_tot); h1_EQE_Slice3_NoWeight->Fill(E_rec); }
+				if (p_perp_tot < 0.2) { h1_ECal_Slice1_NoWeight->Fill(E_tot,histoweight_NoMott); h1_EQE_Slice1_NoWeight->Fill(E_rec,histoweight_NoMott); }
+				if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { h1_ECal_Slice2_NoWeight->Fill(E_tot,histoweight_NoMott); h1_EQE_Slice2_NoWeight->Fill(E_rec,histoweight_NoMott); }
+				if (p_perp_tot > 0.4) { h1_ECal_Slice3_NoWeight->Fill(E_tot,histoweight_NoMott); h1_EQE_Slice3_NoWeight->Fill(E_rec,histoweight_NoMott); }
 
 				// -----------------------------------------------------------------------------------------------
 				// Reconstruct xB, W, Q2 using Ecal instead of Etrue

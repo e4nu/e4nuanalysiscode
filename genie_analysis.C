@@ -318,7 +318,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_E_tot_undetfactor_fracfeed = new TH1F("h1_E_tot_undetfactor_fracfeed","",N_qe,x_qe);
 
 	TH1F *h1_theta0=new TH1F("h1_theta0","",300,0,180);
-	TH2F *h2_Ecal_Eqe=new TH2F("h2_Ecal_Eqe","",600,0,6.,600,0,6.);
+	TH2F *h2_Ecal_Eqe=new TH2F("h2_Ecal_Eqe","",800,0,8.,800,0,8.);
 	TH2F *h2_EqeEcalratio_Eqe=new TH2F("h2_EqeEcalratio_Eqe","",600,0,5,300,0,2);
 	TH2F *h2_EqeEcaldiff_Eqe=new TH2F("h2_EqeEcaldiff_Eqe","",600,0,5,300,-3,3);
 	TH2F *h2_N_prot_pi=new TH2F("h2_N_prot_pi","",10,0,5,10,0,5);

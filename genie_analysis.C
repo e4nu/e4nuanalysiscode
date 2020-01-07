@@ -55,6 +55,9 @@ vector<double> CalculateCalKineVars(double ECal,TLorentzVector FSElectron) {
 
 void genie_analysis::Loop(Int_t choice) {
 
+	TH1D::SetDefaultSumw2();
+	TH2D::SetDefaultSumw2();
+
 	//Choice = 0 is for analysis of CLAS data while choice = 1 is for the analysis of GENIE Simulation
 	if (choice != 1 && choice != 0) {
 		std::cout << "This parameter value is not implemented in genie_analysis::Loop(). It should be either 0 or 1. The given value is " << choice << std::endl;
@@ -526,12 +529,9 @@ void genie_analysis::Loop(Int_t choice) {
 		ECal_BreakDown[WhichInt] = new TH1D(Form("ECal_Int_%d",WhichInt),";E^{Cal} (GeV)",n_bins,x_values);
 		EQE_BreakDown[WhichInt] = new TH1D(Form("EQE_Int_%d",WhichInt),";E^{QE} (GeV)",n_bins,x_values);
 		InclusiveEQE_BreakDown[WhichInt] = new TH1D(Form("InclusiveEQE_Int_%d",WhichInt),";E^{QE} (GeV)",n_bins,x_values);
-		Pmiss_BreakDown[WhichInt] = new TH1D(Form("Pmiss_Int_%d",WhichInt),";P_{miss}^{#perp} [GeV/c]",n_bins,x_values);
+		Pmiss_BreakDown[WhichInt] = new TH1D(Form("Pmiss_Int_%d",WhichInt),";P_{miss}^{#perp} [GeV/c]",100,0.,1.);
 
 	}
-
-	TH1D::SetDefaultSumw2();
-	TH2D::SetDefaultSumw2();
 
 	// Vector containing kinematic variables using Ecal
 	vector<double> CalKineVars{};

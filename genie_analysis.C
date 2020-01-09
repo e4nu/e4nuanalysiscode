@@ -523,6 +523,8 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1D* EQE_BreakDown[NInt];
 	TH1D* InclusiveEQE_BreakDown[NInt];
 	TH1D* Pmiss_BreakDown[NInt];
+	TH1D* Q2_BreakDown[NInt];
+	TH1D* Nu_BreakDown[NInt];
 
 	for (int WhichInt = 0; WhichInt < NInt; WhichInt++) {
 
@@ -530,6 +532,8 @@ void genie_analysis::Loop(Int_t choice) {
 		EQE_BreakDown[WhichInt] = new TH1D(Form("EQE_Int_%d",WhichInt),";E^{QE} (GeV)",n_bins,x_values);
 		InclusiveEQE_BreakDown[WhichInt] = new TH1D(Form("InclusiveEQE_Int_%d",WhichInt),";E^{QE} (GeV)",n_bins,x_values);
 		Pmiss_BreakDown[WhichInt] = new TH1D(Form("Pmiss_Int_%d",WhichInt),";P_{miss}^{#perp} [GeV/c]",100,0.,1.);
+		Q2_BreakDown[WhichInt] = new TH1D(Form("Q2_Int_%d",WhichInt),";Q^{2} [GeV^{2}/c^{2}]",NBinsQ2,MinQ2,MaxQ2);
+		Nu_BreakDown[WhichInt] = new TH1D(Form("Nu_Int_%d",WhichInt),";Energy Transfer [GeV]",NBinsNu,MinNu,MaxNu);
 
 	}
 
@@ -1032,10 +1036,15 @@ void genie_analysis::Loop(Int_t choice) {
 					ECal_BreakDown[0]->Fill(E_tot_2p[f],LocalWeight);
 					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 					Pmiss_BreakDown[0]->Fill(p_perp_tot_2p[f],LocalWeight);
+					Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+					Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
  					if (choice == 1) {
 						ECal_BreakDown[Interaction]->Fill(E_tot_2p[f],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 						Pmiss_BreakDown[Interaction]->Fill(p_perp_tot_2p[f],LocalWeight);
+						Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+						Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 					}
 
 					// -----------------------------------------------------------------------------------------------
@@ -1148,10 +1157,15 @@ void genie_analysis::Loop(Int_t choice) {
 					ECal_BreakDown[0]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
 					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 					Pmiss_BreakDown[0]->Fill(p_miss_perp_2p1pi_to2p0pi[z],LocalWeight);
+					Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+					Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
  					if (choice == 1) {
 						ECal_BreakDown[Interaction]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 						Pmiss_BreakDown[Interaction]->Fill(p_miss_perp_2p1pi_to2p0pi[z],LocalWeight);
+						Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+						Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 					}
 
 					// -----------------------------------------------------------------------------------------------
@@ -1203,10 +1217,15 @@ void genie_analysis::Loop(Int_t choice) {
 					ECal_BreakDown[0]->Fill(E_tot_2p[z],LocalWeight);
 					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 					Pmiss_BreakDown[0]->Fill(p_perp_tot_2p[z],LocalWeight);
+					Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+					Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
  					if (choice == 1) {
 						ECal_BreakDown[Interaction]->Fill(E_tot_2p[z],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 						Pmiss_BreakDown[Interaction]->Fill(p_perp_tot_2p[z],LocalWeight);
+						Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+						Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 					}
 
 					// -----------------------------------------------------------------------------------------------
@@ -1258,10 +1277,15 @@ void genie_analysis::Loop(Int_t choice) {
 					ECal_BreakDown[0]->Fill(E_tot_2p[z],LocalWeight);
 					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 					Pmiss_BreakDown[0]->Fill(p_perp_tot_2p[z],LocalWeight);
+					Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+					Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
  					if (choice == 1) {
 						ECal_BreakDown[Interaction]->Fill(E_tot_2p[z],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 						Pmiss_BreakDown[Interaction]->Fill(p_perp_tot_2p[z],LocalWeight);
+						Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+						Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 					}
 
 					// -----------------------------------------------------------------------------------------------
@@ -1372,10 +1396,15 @@ void genie_analysis::Loop(Int_t choice) {
 					ECal_BreakDown[0]->Fill(E_tot_2p[z],LocalWeight);
 					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 					Pmiss_BreakDown[0]->Fill(p_perp_tot_2p[z],LocalWeight);
+					Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+					Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
  					if (choice == 1) {
 						ECal_BreakDown[Interaction]->Fill(E_tot_2p[z],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 						Pmiss_BreakDown[Interaction]->Fill(p_perp_tot_2p[z],LocalWeight);
+						Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+						Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 					}
 
 					// -----------------------------------------------------------------------------------------------
@@ -1517,10 +1546,15 @@ void genie_analysis::Loop(Int_t choice) {
 						ECal_BreakDown[0]->Fill(E_cal_3pto2p[count][j],LocalWeight);
 						EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 						Pmiss_BreakDown[0]->Fill(p_miss_perp_3pto2p[count][j],LocalWeight);
+						Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+						Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
 	 					if (choice == 1) {
 							ECal_BreakDown[Interaction]->Fill(E_cal_3pto2p[count][j],LocalWeight);
 							EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 							Pmiss_BreakDown[Interaction]->Fill(p_miss_perp_3pto2p[count][j],LocalWeight);
+							Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+							Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 						}
 
 						// -----------------------------------------------------------------------------------------------
@@ -1581,10 +1615,15 @@ void genie_analysis::Loop(Int_t choice) {
 					ECal_BreakDown[0]->Fill(E_cal[j],LocalWeight);
 					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 					Pmiss_BreakDown[0]->Fill(p_miss_perp[j],LocalWeight);
+					Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+					Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
 	 				if (choice == 1) {
 						ECal_BreakDown[Interaction]->Fill(E_cal[j],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 						Pmiss_BreakDown[Interaction]->Fill(p_miss_perp[j],LocalWeight);
+						Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+						Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 					}
 
 					// -----------------------------------------------------------------------------------------------
@@ -1690,10 +1729,15 @@ void genie_analysis::Loop(Int_t choice) {
 					ECal_BreakDown[0]->Fill(E_cal[j],LocalWeight);
 					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 					Pmiss_BreakDown[0]->Fill(p_miss_perp[j],LocalWeight);
+					Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+					Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
 	 				if (choice == 1) {
 						ECal_BreakDown[Interaction]->Fill(E_cal[j],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 						Pmiss_BreakDown[Interaction]->Fill(p_miss_perp[j],LocalWeight);
+						Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+						Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 					}
 
 					// -----------------------------------------------------------------------------------------------
@@ -1904,10 +1948,15 @@ void genie_analysis::Loop(Int_t choice) {
 								ECal_BreakDown[0]->Fill(E_cal_4pto3p[count][j],LocalWeight);
 								EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 								Pmiss_BreakDown[0]->Fill(p_miss_perp_4pto3p[count][j],LocalWeight);
+								Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+								Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
 				 				if (choice == 1) {
 									ECal_BreakDown[Interaction]->Fill(E_cal_4pto3p[count][j],LocalWeight);
 									EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 									Pmiss_BreakDown[Interaction]->Fill(p_miss_perp_4pto3p[count][j],LocalWeight);
+									Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+									Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 								}
 
 								// -----------------------------------------------------------------------------------------------
@@ -1969,10 +2018,15 @@ void genie_analysis::Loop(Int_t choice) {
 							ECal_BreakDown[0]->Fill(E_cal_43pto1p[j],LocalWeight);
 							EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 							Pmiss_BreakDown[0]->Fill(p_miss_perp_43pto1p[j],LocalWeight);
+							Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+							Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
 				 			if (choice == 1) {
 								ECal_BreakDown[Interaction]->Fill(E_cal_43pto1p[j],LocalWeight);
 								EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 								Pmiss_BreakDown[Interaction]->Fill(p_miss_perp_43pto1p[j],LocalWeight);
+								Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+								Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 							}
 
 							// -----------------------------------------------------------------------------------------------
@@ -2060,10 +2114,15 @@ void genie_analysis::Loop(Int_t choice) {
 									ECal_BreakDown[0]->Fill(E_cal_4pto2p[j],LocalWeight);
 									EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 									Pmiss_BreakDown[0]->Fill(p_miss_perp_4pto2p[j],LocalWeight);
+									Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+									Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
 						 			if (choice == 1) {
 										ECal_BreakDown[Interaction]->Fill(E_cal_4pto2p[j],LocalWeight);
 										EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 										Pmiss_BreakDown[Interaction]->Fill(p_miss_perp_4pto2p[j],LocalWeight);
+										Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+										Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 									}
 
 									// -----------------------------------------------------------------------------------------------
@@ -2136,10 +2195,15 @@ void genie_analysis::Loop(Int_t choice) {
 						ECal_BreakDown[0]->Fill(E_cal_p4[j],LocalWeight);
 						EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 						Pmiss_BreakDown[0]->Fill(p_miss_perp_p4[j],LocalWeight);
+						Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+						Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
 						if (choice == 1) {
 							ECal_BreakDown[Interaction]->Fill(E_cal_p4[j],LocalWeight);
 							EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 							Pmiss_BreakDown[Interaction]->Fill(p_miss_perp_p4[j],LocalWeight);
+							Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+							Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 						}
 
 						// -----------------------------------------------------------------------------------------------
@@ -2659,10 +2723,15 @@ void genie_analysis::Loop(Int_t choice) {
 				ECal_BreakDown[0]->Fill(E_tot,LocalWeight);
 				EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 				Pmiss_BreakDown[0]->Fill(p_perp_tot,LocalWeight);
+				Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+				Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
 				if (choice == 1) {
 					ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
 					EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 					Pmiss_BreakDown[Interaction]->Fill(p_perp_tot,LocalWeight);
+					Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+					Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 				}
 
 				// -----------------------------------------------------------------------------------------------
@@ -2773,10 +2842,15 @@ void genie_analysis::Loop(Int_t choice) {
 					ECal_BreakDown[0]->Fill(E_tot,LocalWeight);
 					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 					Pmiss_BreakDown[0]->Fill(p_perp_tot,LocalWeight);
+					Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+					Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
 					if (choice == 1) {
 						ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 						Pmiss_BreakDown[Interaction]->Fill(p_perp_tot,LocalWeight);
+						Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+						Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 					}
 
 					// -----------------------------------------------------------------------------------------------
@@ -2893,10 +2967,15 @@ void genie_analysis::Loop(Int_t choice) {
 					ECal_BreakDown[0]->Fill(E_tot,LocalWeight);
 					EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 					Pmiss_BreakDown[0]->Fill(p_perp_tot,LocalWeight);
+					Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+					Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
 					if (choice == 1) {
 						ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 						Pmiss_BreakDown[Interaction]->Fill(p_perp_tot,LocalWeight);
+						Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+						Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 					}
 
 					// -----------------------------------------------------------------------------------------------
@@ -2952,10 +3031,15 @@ void genie_analysis::Loop(Int_t choice) {
 				ECal_BreakDown[0]->Fill(E_tot,LocalWeight);
 				EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 				Pmiss_BreakDown[0]->Fill(p_perp_tot,LocalWeight);
+				Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+				Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
 				if (choice == 1) {
 					ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
 					EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 					Pmiss_BreakDown[Interaction]->Fill(p_perp_tot,LocalWeight);
+					Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+					Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 				}
 
 				// -----------------------------------------------------------------------------------------------
@@ -3060,10 +3144,15 @@ void genie_analysis::Loop(Int_t choice) {
 				ECal_BreakDown[0]->Fill(E_tot,LocalWeight);
 				EQE_BreakDown[0]->Fill(E_rec,LocalWeight);
 				Pmiss_BreakDown[0]->Fill(p_perp_tot,LocalWeight);
+				Q2_BreakDown[0]->Fill(reco_Q2,LocalWeight);
+				Nu_BreakDown[0]->Fill(nu,LocalWeight);
+
 				if (choice == 1) {
 					ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
 					EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
 					Pmiss_BreakDown[Interaction]->Fill(p_perp_tot,LocalWeight);
+					Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
+					Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 				}
 
 				// -----------------------------------------------------------------------------------------------

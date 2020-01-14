@@ -100,9 +100,14 @@ void genie_analysis::Loop(Int_t choice) {
 	double Wcut = 2; //cut for all beam energies < 2
 	double Q2cut = 0; // cut for 1.1 GeV > 0.1, for 2.2 GeV > 0.4 and 4.4 GeV > 0.8
 
-	const int n_slice=3;
-	const double pperp_min[n_slice]={0.,0.2,0.4};
-	const double pperp_max[n_slice]={0.2,0.4,10.};
+//	const int n_slice=3;
+//	const double pperp_min[n_slice]={0.,0.2,0.4};
+//	const double pperp_max[n_slice]={0.2,0.4,10.};
+
+	const int n_slice=3; // Stick to the 3 slices
+	const double pperp_min[n_slice]={0.,0.3,10.};
+	const double pperp_max[n_slice]={0.3,10.,100.};
+
 	TVector3 V3_rotprot1,V3_rotprot2,V3_rotprot3,V3_rot_pi,V3_rotprot;
 
 	TString E_acc_file;
@@ -2645,22 +2650,22 @@ void genie_analysis::Loop(Int_t choice) {
 
 				SignalEvents++;
 
-				if (p_perp_tot < 0.2) { PMiss_FirstSlice++; }
-				if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { PMiss_SecondSlice++; }
-				if (p_perp_tot > 0.4) { PMiss_ThirdSlice++; }
+				if (p_perp_tot < pperp_max[0]) { PMiss_FirstSlice++; }
+				if (p_perp_tot > pperp_max[0] && p_perp_tot < pperp_max[1]) { PMiss_SecondSlice++; }
+				if (p_perp_tot > pperp_max[1]) { PMiss_ThirdSlice++; }
 
 				if (fabs(ECalReso)*100. < 5) { 
 					ECalSignalEventsWithin5Perc++; 
-					if (p_perp_tot < 0.2) { ECalSignalEventsWithin5Perc_FirstSlice++; }
-					if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { ECalSignalEventsWithin5Perc_SecondSlice++; }
-					if (p_perp_tot > 0.4) { ECalSignalEventsWithin5Perc_ThirdSlice++; }
+					if (p_perp_tot < pperp_max[0]) { ECalSignalEventsWithin5Perc_FirstSlice++; }
+					if (p_perp_tot > pperp_max[0] && p_perp_tot < pperp_max[1]) { ECalSignalEventsWithin5Perc_SecondSlice++; }
+					if (p_perp_tot > pperp_max[1]) { ECalSignalEventsWithin5Perc_ThirdSlice++; }
 				}
 
 				if (fabs(EQEReso)*100. < 5) { 
 					EQESignalEventsWithin5Perc++; 
-					if (p_perp_tot < 0.2) { EQESignalEventsWithin5Perc_FirstSlice++; }
-					if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { EQESignalEventsWithin5Perc_SecondSlice++; }
-					if (p_perp_tot > 0.4) { EQESignalEventsWithin5Perc_ThirdSlice++; }
+					if (p_perp_tot < pperp_max[0]) { EQESignalEventsWithin5Perc_FirstSlice++; }
+					if (p_perp_tot > pperp_max[0] && p_perp_tot < pperp_max[1]) { EQESignalEventsWithin5Perc_SecondSlice++; }
+					if (p_perp_tot > pperp_max[1]) { EQESignalEventsWithin5Perc_ThirdSlice++; }
 				}
 
 				if (Interaction == 1) { QESignalEvents++; }
@@ -2699,9 +2704,9 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_ECal_Slice0_NoWeight->Fill(E_tot,histoweight_NoMott);
 				h1_EQE_Slice0_NoWeight->Fill(E_rec,histoweight_NoMott);
 
-				if (p_perp_tot < 0.2) { h1_ECal_Slice1_NoWeight->Fill(E_tot,histoweight_NoMott); h1_EQE_Slice1_NoWeight->Fill(E_rec,histoweight_NoMott); }
-				if (p_perp_tot > 0.2 && p_perp_tot < 0.4) { h1_ECal_Slice2_NoWeight->Fill(E_tot,histoweight_NoMott); h1_EQE_Slice2_NoWeight->Fill(E_rec,histoweight_NoMott); }
-				if (p_perp_tot > 0.4) { h1_ECal_Slice3_NoWeight->Fill(E_tot,histoweight_NoMott); h1_EQE_Slice3_NoWeight->Fill(E_rec,histoweight_NoMott); }
+				if (p_perp_tot < pperp_max[0]) { h1_ECal_Slice1_NoWeight->Fill(E_tot,histoweight_NoMott); h1_EQE_Slice1_NoWeight->Fill(E_rec,histoweight_NoMott); }
+				if (p_perp_tot > pperp_max[0] && p_perp_tot < pperp_max[1]) { h1_ECal_Slice2_NoWeight->Fill(E_tot,histoweight_NoMott); h1_EQE_Slice2_NoWeight->Fill(E_rec,histoweight_NoMott); }
+				if (p_perp_tot > pperp_max[1]) { h1_ECal_Slice3_NoWeight->Fill(E_tot,histoweight_NoMott); h1_EQE_Slice3_NoWeight->Fill(E_rec,histoweight_NoMott); }
 
 				// -----------------------------------------------------------------------------------------------
 				// Reconstruct xB, W, Q2 using Ecal instead of Etrue

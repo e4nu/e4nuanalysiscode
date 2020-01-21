@@ -523,7 +523,7 @@ void genie_analysis::Loop(Int_t choice) {
 	}
 
 	// Plots for interaction break down for GENIE samples
-	const int NInt = 5; // All Interactions = 0, QE = 1, MEC = 2, RES = 3, DIS = 4
+	const int NInt = 6; // All Interactions = 0, QE = 1, MEC = 2, RES = 3, DIS = 4, Other = 6
 	TH1D* ECal_BreakDown[NInt];
 	TH1D* EQE_BreakDown[NInt];
 	TH1D* InclusiveEQE_BreakDown[NInt];
@@ -552,6 +552,7 @@ void genie_analysis::Loop(Int_t choice) {
 	int MECSignalEvents = 0;
 	int RESSignalEvents = 0;
 	int DISSignalEvents = 0;
+	int OtherSignalEvents = 0;
 
 	int EQESignalEventsWithin5Perc = 0, EQESignalEventsWithin5Perc_FirstSlice = 0, EQESignalEventsWithin5Perc_SecondSlice = 0, EQESignalEventsWithin5Perc_ThirdSlice = 0;
 	int ECalSignalEventsWithin5Perc = 0, ECalSignalEventsWithin5Perc_FirstSlice = 0, ECalSignalEventsWithin5Perc_SecondSlice = 0, ECalSignalEventsWithin5Perc_ThirdSlice = 0;
@@ -2681,6 +2682,7 @@ void genie_analysis::Loop(Int_t choice) {
 				else if (Interaction == 2) { MECSignalEvents++; }
 				else if (Interaction == 3) { RESSignalEvents++; }
 				else if (Interaction == 4) { DISSignalEvents++; }
+				else { OtherSignalEvents++; }
 
 				//histoweight is 1/Mott_cross_sec for CLAS data
 				double histoweight = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec;

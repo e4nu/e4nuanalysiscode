@@ -649,10 +649,15 @@ void genie_analysis::Loop(Int_t choice) {
 		//Calculated Mott Cross Section and Weights for Inclusive Histograms
 		//Wght and e_acc_ratio is 1 for CLAS data
 		double Mott_cross_sec = ( pow(fine_struc_const,2.)*(cos(el_theta)+1))/(2*pow(El,2.)*pow((1-cos(el_theta)),2.));
+
+		// For neutrino scattering
+		//Mott_cross_sec = 1.;
+
 		double WeightIncl = wght*e_acc_ratio / Mott_cross_sec;
 
 		//Calculation of Reconstructed Energy from ELectron only
-		double E_rec = (m_prot*bind_en[ftarget]+m_prot*V4_el.E())/(m_prot-V4_el.E()+V4_el.Rho()*cos(el_theta));  //using the same value of single nucleon separation E Ecal and Eqe
+		//using the same value of single nucleon separation E Ecal and Eqe
+		double E_rec = (m_prot*bind_en[ftarget]+m_prot*V4_el.E())/(m_prot-V4_el.E()+V4_el.Rho()*cos(el_theta));
 
 		//Calculation of kinematic quantities (nu, Q2, x bjorken, q and W)
 		double nu = -(V4_el-V4_beam).E();

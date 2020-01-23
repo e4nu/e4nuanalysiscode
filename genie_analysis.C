@@ -540,7 +540,7 @@ void genie_analysis::Loop(Int_t choice) {
 		Pmiss_BreakDown[WhichInt] = new TH1D(Form("Pmiss_Int_%d",WhichInt),";P_{miss}^{#perp} [GeV/c]",100,0.,1.);
 		Q2_BreakDown[WhichInt] = new TH1D(Form("Q2_Int_%d",WhichInt),";Q^{2} [GeV^{2}/c^{2}]",400,0,6);
 		Nu_BreakDown[WhichInt] = new TH1D(Form("Nu_Int_%d",WhichInt),";Energy Transfer [GeV]",400,0,4);
-		Pe_BreakDown[WhichInt] = new TH1D(Form("Pe_Int_%d",WhichInt),";P_{e} [GeV/c]",400,0,4);
+		Pe_BreakDown[WhichInt] = new TH1D(Form("Pe_Int_%d",WhichInt),";P_{e} [GeV/c]",100,0.,5.);
 	}
 
 	// Vector containing kinematic variables using Ecal
@@ -653,8 +653,17 @@ void genie_analysis::Loop(Int_t choice) {
 		//Wght and e_acc_ratio is 1 for CLAS data
 		double Mott_cross_sec = ( pow(fine_struc_const,2.)*(cos(el_theta)+1))/(2*pow(El,2.)*pow((1-cos(el_theta)),2.));
 
+		// ---------------------------------------------------------------------------------------------------------------------
+
 		// For neutrino scattering
 		//Mott_cross_sec = 1.;
+
+		// ---------------------------------------------------------------------------------------------------------------------
+
+		// For GENIE Systematics
+		// TString Var = "FormZone";
+
+		// ---------------------------------------------------------------------------------------------------------------------
 
 		double WeightIncl = wght*e_acc_ratio / Mott_cross_sec;
 

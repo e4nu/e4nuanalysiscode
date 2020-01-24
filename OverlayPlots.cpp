@@ -114,7 +114,8 @@ void OverlayPlots() {
 	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
 
 //	Style.push_back(9); Style.push_back(3); Style.push_back(7); Style.push_back(5);
-	Style.push_back(9); Style.push_back(9); Style.push_back(9); Style.push_back(9);
+//	Style.push_back(9); Style.push_back(9); Style.push_back(9); Style.push_back(9); // fancy dashed lines 
+	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
 	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
 
@@ -762,7 +763,8 @@ void OverlayPlots() {
 								TLegendEntry* l1 = legGenie->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
 								l1->SetTextColor(BreakDownColors[j-1]);
 
-								BreakDownPlots[j-1]->Draw("hist same");
+//								BreakDownPlots[j-1]->Draw("hist same");
+								BreakDownPlots[j-1]->Draw("C hist same");
 
 							} // end of the look over the GENIE break down
 
@@ -829,7 +831,11 @@ void OverlayPlots() {
 									|| OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_3"  ) { Plots[WhichFSIModel]->SetMarkerSize(3.); }
 								gStyle->SetErrorX(0); // Removing the horizontal errors
 								Plots[WhichFSIModel]->Draw("e same"); 
-							} else { Plots[WhichFSIModel]->Draw("hist same"); Plots[0]->Draw("e same"); }
+							} else { 
+								//Plots[WhichFSIModel]->Draw("hist same"); // draw them as histos
+								Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
+								Plots[0]->Draw("e same"); 
+							}
 						}
 
 						// ---------------------------------------------------------------------------------------------------

@@ -104,7 +104,7 @@ void OverlayPlots() {
 //	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
 //	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
-	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);
+	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
 //	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
@@ -597,7 +597,8 @@ void OverlayPlots() {
 						if (NameOfPlots[WhichPlot] == "h1_Q2_weight" || NameOfPlots[WhichPlot] == "h1_Q2Cal_weight") { for (int i = 0; i < 2; i++) 
 							{ Plots[WhichFSIModel]->Rebin();} Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,2.); }
 
-if ( (NameOfPlots[WhichPlot] == "h1_Q2_weight" || NameOfPlots[WhichPlot] == "h1_Q2Cal_weight") && xBCut[WhichxBCut] == "xBCut") { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,2.); }
+						if ( (NameOfPlots[WhichPlot] == "h1_Q2_weight" || NameOfPlots[WhichPlot] == "h1_Q2Cal_weight") && xBCut[WhichxBCut] == "xBCut") 
+							{ Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,2.5); }
 
 						if (NameOfPlots[WhichPlot] == "h1_theta0") 
 							{ Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,60.); }
@@ -605,7 +606,8 @@ if ( (NameOfPlots[WhichPlot] == "h1_Q2_weight" || NameOfPlots[WhichPlot] == "h1_
 						if (NameOfPlots[WhichPlot] == "h1_nu_weight" || NameOfPlots[WhichPlot] == "h1_nuCal_weight") 
 							{ for (int i = 0; i < 3; i++) {Plots[WhichFSIModel]->Rebin();} Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,1.7); }
 
-if ( (NameOfPlots[WhichPlot] == "h1_nu_weight" || NameOfPlots[WhichPlot] == "h1_nuCal_weight") && xBCut[WhichxBCut] == "xBCut") { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.2,1.2); }
+						if ( (NameOfPlots[WhichPlot] == "h1_nu_weight" || NameOfPlots[WhichPlot] == "h1_nuCal_weight") && xBCut[WhichxBCut] == "xBCut") 
+							{ Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.2,1.2); }
 
 						if (string(NameOfPlots[WhichPlot]).find("MissMomentum") != std::string::npos) { for (int i = 0; i < 2; i++) 
 							{ Plots[WhichFSIModel]->Rebin();} }
@@ -645,7 +647,9 @@ if ( (NameOfPlots[WhichPlot] == "h1_nu_weight" || NameOfPlots[WhichPlot] == "h1_
 
 						// Genie Break Down
 
-						if (FSILabel[WhichFSIModel] == "Genie" && 
+						if (
+							FSILabel[WhichFSIModel] == "Genie" && 
+							//FSILabel[WhichFSIModel] == "Rad" &&
 							( (NameOfPlots[WhichPlot] == "MissMomentum" /*&& nucleus[WhichNucleus] == "12C" && DoubleE[WhichEnergy] == 2.261*/)  || 
 							NameOfPlots[WhichPlot] == "h1_Q2_weight"|| 
 							NameOfPlots[WhichPlot] == "h1_nu_weight" ||
@@ -679,9 +683,14 @@ if ( (NameOfPlots[WhichPlot] == "h1_nu_weight" || NameOfPlots[WhichPlot] == "h1_
 								if (NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_noprot_3pi") 
 								{ 
 									BreakDownPlots.push_back( (TH1D*)( FileSample->Get("InclusiveEQE_Int_"+ToString(j)) ) ); 
-									if (xBCut[WhichxBCut] == "xBCut") {
+									if (xBCut[WhichxBCut] == "xBCut" && DoubleE[WhichEnergy] == 1.161) {
 										BreakDownPlots[j-1]->GetXaxis()->SetRangeUser(1.05,1.35);
 										Plots[0]->GetXaxis()->SetRangeUser(1.05,1.3);
+									}
+
+									if (xBCut[WhichxBCut] == "xBCut" && DoubleE[WhichEnergy] == 4.461) {
+										BreakDownPlots[j-1]->GetXaxis()->SetRangeUser(3.5,5.5);
+										Plots[0]->GetXaxis()->SetRangeUser(3.5,5.5);
 									}
 								}
 								if (NameOfPlots[WhichPlot] == "epRecoEnergy_slice_0") 

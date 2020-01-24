@@ -100,11 +100,11 @@ void genie_analysis::Loop(Int_t choice) {
 	double Wcut = 2; //cut for all beam energies < 2
 	double Q2cut = 0; // cut for 1.1 GeV > 0.1, for 2.2 GeV > 0.4 and 4.4 GeV > 0.8
 
-//	const int n_slice=3;
+	const int n_slice=3; // Stick to the 3 slices
 	const double pperp_min[n_slice]={0.,0.2,0.4};
 	const double pperp_max[n_slice]={0.2,0.4,10.};
 
-	const int n_slice=3; // Stick to the 3 slices
+//	const int n_slice=3; // Stick to the 3 slices
 //	const double pperp_min[n_slice]={0.,0.3,10.};
 //	const double pperp_max[n_slice]={0.3,10.,100.};
 

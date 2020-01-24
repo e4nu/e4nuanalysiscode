@@ -244,7 +244,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_Npi_NonZeroProt=new TH1F("h1_Npi_NonZeroProt","",10,-0.5,4.5);
 	TH1F *h1_Npipl=new TH1F("h1_Npipl","",10,-0.5,4.5);
 	TH1F *h1_Npimi=new TH1F("h1_Npimi","",10,-0.5,4.5);
-	TH1F *h1_MissMomentum = new TH1F("MissMomentum","",100,0.,1.);
+	TH1F *h1_MissMomentum = new TH1F("MissMomentum","",80,0.,1.);
 	TH1F *h1_el_mom = new TH1F("h1_el_mom","",100,0.2,6);
 	TH1F *h1_el_mom_corr = new TH1F("h1_el_mom_corr","",100,0.,5.);
 	TH1F *h1_el_mom_ratio = new TH1F("h1_el_mom_ratio","",50,0.97,1.01);
@@ -537,7 +537,7 @@ void genie_analysis::Loop(Int_t choice) {
 		ECal_BreakDown[WhichInt] = new TH1D(Form("ECal_Int_%d",WhichInt),";E^{Cal} (GeV)",n_bins,x_values);
 		EQE_BreakDown[WhichInt] = new TH1D(Form("EQE_Int_%d",WhichInt),";E^{QE} (GeV)",n_bins,x_values);
 		InclusiveEQE_BreakDown[WhichInt] = new TH1D(Form("InclusiveEQE_Int_%d",WhichInt),";E^{QE} (GeV)",n_bins,x_values);
-		Pmiss_BreakDown[WhichInt] = new TH1D(Form("Pmiss_Int_%d",WhichInt),";P_{miss}^{#perp} [GeV/c]",100,0.,1.);
+		Pmiss_BreakDown[WhichInt] = new TH1D(Form("Pmiss_Int_%d",WhichInt),";P_{miss}^{#perp} [GeV/c]",80,0.,1.);
 		Q2_BreakDown[WhichInt] = new TH1D(Form("Q2_Int_%d",WhichInt),";Q^{2} [GeV^{2}/c^{2}]",400,0,6);
 		Nu_BreakDown[WhichInt] = new TH1D(Form("Nu_Int_%d",WhichInt),";Energy Transfer [GeV]",400,0,4);
 		Pe_BreakDown[WhichInt] = new TH1D(Form("Pe_Int_%d",WhichInt),";P_{e} [GeV/c]",100,0.,5.);

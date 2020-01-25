@@ -104,8 +104,8 @@ void OverlayPlots() {
 //	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
 //	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
-	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
-//	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
+//	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
+	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
@@ -236,10 +236,11 @@ void OverlayPlots() {
 					else if (
 						OutputPlotNames[WhichPlot]=="epRecoEnergy_slice_1" || 
 						OutputPlotNames[WhichPlot]=="epRecoEnergy_slice_2" || 
+						OutputPlotNames[WhichPlot]=="epRecoEnergy_slice_3" || 
 						OutputPlotNames[WhichPlot]=="MissMomentum"
 						)
 						{ pad1->SetLeftMargin(0.11); }
-					else { pad1->SetLeftMargin(0.09); }
+					else { pad1->SetLeftMargin(0.1); }
 					pad1->SetRightMargin(0.04);
 
 					pad2->SetTopMargin(0.21);
@@ -257,8 +258,8 @@ void OverlayPlots() {
 					double LegXmin = 0.7, LegYmin = 0.52, YSpread = 0.35;
 					if (xBCut[WhichxBCut] == "xBCut") { LegXmin = 0.6; }
 					if ( OutputPlotNames[WhichPlot]=="InclusiveeRecoEnergy_slice_0" ) { LegXmin = 0.14; LegYmin = 0.53; }
-					if ( OutputPlotNames[WhichPlot]=="epRecoEnergy_slice_0" ) { LegXmin = 0.14; LegYmin = 0.4; YSpread = 0.45; }
-					if ( OutputPlotNames[WhichPlot]=="MissMomentum" ) { LegXmin = 0.49; LegYmin = 0.39; YSpread = 0.5; }
+					if ( OutputPlotNames[WhichPlot]=="epRecoEnergy_slice_0" ) { LegXmin = 0.15; LegYmin = 0.5; YSpread = 0.35; }
+					if ( OutputPlotNames[WhichPlot]=="MissMomentum" ) { LegXmin = 0.6; LegYmin = 0.5; YSpread = 0.35; }
 
 					TLegend* legGenie = new TLegend(LegXmin,LegYmin,LegXmin+0.15,LegYmin+YSpread);
 					legGenie->SetNColumns(1);
@@ -341,7 +342,8 @@ void OverlayPlots() {
 							OutputPlotNames[WhichPlot] =="MissMomentum" ||
 							OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_0" ||
 							OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_1" ||
-							OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_2"
+							OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_2" ||
+							OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_3"
 						) { Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(TextSize); }
 
 						if (string(OutputPlotNames[WhichPlot]).find("_NoWeight") != std::string::npos) 
@@ -377,7 +379,7 @@ void OverlayPlots() {
 							OutputPlotNames[WhichPlot] =="MissMomentum"
 						)
 							{ Plots[WhichFSIModel]->GetYaxis()->SetTitleOffset(0.65); }
-						else { Plots[WhichFSIModel]->GetYaxis()->SetTitleOffset(0.5); }
+						else { Plots[WhichFSIModel]->GetYaxis()->SetTitleOffset(0.6); }
 						Plots[WhichFSIModel]->SetLineWidth(LineWidth);
 
 //						if (FSILabel[WhichFSIModel] == "Data" 
@@ -393,8 +395,8 @@ void OverlayPlots() {
 						TLatex* LowPercPmiss = new TLatex();
 						TLatex* MidPercPmiss = new TLatex();
 						TLatex* HighPercPmiss = new TLatex();
-//						double LowPmiss = 0.2, MidPmiss = 0.4, HighPmiss = 1.;
-						double LowPmiss = 0.3, MidPmiss = 10., HighPmiss = 11.;
+						double LowPmiss = 0.2, MidPmiss = 0.4, HighPmiss = 1.;
+//						double LowPmiss = 0.3, MidPmiss = 10., HighPmiss = 11.;
 						TString LowPercPmissString = "", MidPercPmissString = "", HighPercPmissString = "";
 
 						if (string(NameOfPlots[WhichPlot]).find("MissMomentum") != std::string::npos && xBCut[WhichxBCut] == "NoxBCut") { 
@@ -556,9 +558,25 @@ void OverlayPlots() {
 
 						}
 
+						// --------------------------------------------------------------------------------------
+
+						// Scaling Factor
+
+//						double ScalingFactor = Plots[0]->Integral() / Plots[WhichFSIModel]->Integral(); // default
+
+						double ScalingFactor = 1. / Plots[WhichFSIModel]->Integral(); // area normalized
+
+//						double ScalingFactor = 1. / Plots[WhichFSIModel]->GetMaximum(); // peak at 1
+
+//						double ScalingFactor = Plots[0]->GetEntries() / Plots[WhichFSIModel]->GetEntries();
+//						double ScalingFactor = Plots[0]->GetMaximum() / Plots[WhichFSIModel]->GetMaximum();
+//						double ScalingFactor = 18E8 / Plots[WhichFSIModel]->GetMaximum();
+//						double ScalingFactor = 1.;
+						Plots[WhichFSIModel]->Scale(ScalingFactor);
+
 						// -----------------------------------------------------------------------------------
 
-						// Accounting for the fact that the bin width is not constant
+						// Accounting for the fact that the bin width might not be constant
 
 						ReweightPlots(Plots[WhichFSIModel]);
 
@@ -622,16 +640,21 @@ void OverlayPlots() {
 						if (NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed" && xBCut[WhichxBCut] == "xBCut") 
 							{ for (int i = 0; i < 0; i++) {Plots[WhichFSIModel]->Rebin();} Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(-0.2,0.2); }
 
-						// --------------------------------------------------------------------------------------
+//						// --------------------------------------------------------------------------------------
 
-						// Scaling Factor
+//						// Scaling Factor
 
-						double ScalingFactor = Plots[0]->Integral() / Plots[WhichFSIModel]->Integral();
-//						double ScalingFactor = Plots[0]->GetEntries() / Plots[WhichFSIModel]->GetEntries();
-//						double ScalingFactor = Plots[0]->GetMaximum() / Plots[WhichFSIModel]->GetMaximum();
-//						double ScalingFactor = 18E8 / Plots[WhichFSIModel]->GetMaximum();
-//						double ScalingFactor = 1.;
-						Plots[WhichFSIModel]->Scale(ScalingFactor);
+////						double ScalingFactor = Plots[0]->Integral() / Plots[WhichFSIModel]->Integral(); // default
+
+//						double ScalingFactor = 1. / Plots[WhichFSIModel]->Integral(); // area normalized
+
+////						double ScalingFactor = 1. / Plots[WhichFSIModel]->GetMaximum(); // peak at 1
+
+////						double ScalingFactor = Plots[0]->GetEntries() / Plots[WhichFSIModel]->GetEntries();
+////						double ScalingFactor = Plots[0]->GetMaximum() / Plots[WhichFSIModel]->GetMaximum();
+////						double ScalingFactor = 18E8 / Plots[WhichFSIModel]->GetMaximum();
+////						double ScalingFactor = 1.;
+//						Plots[WhichFSIModel]->Scale(ScalingFactor);
 
 						// ----------------------------------------------------------------------------------
 
@@ -763,8 +786,8 @@ void OverlayPlots() {
 								TLegendEntry* l1 = legGenie->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
 								l1->SetTextColor(BreakDownColors[j-1]);
 
-//								BreakDownPlots[j-1]->Draw("hist same");
-								BreakDownPlots[j-1]->Draw("C hist same");
+								BreakDownPlots[j-1]->Draw("hist same");
+//								BreakDownPlots[j-1]->Draw("C hist same");
 
 							} // end of the look over the GENIE break down
 
@@ -778,7 +801,7 @@ void OverlayPlots() {
 						if (localmax > max) { max = localmax; }
 //						double height = 1.4;
 						double height = 1.05;
-						if (string(OutputPlotNames[WhichPlot]).find("RecoEnergy_slice_3") != std::string::npos) { height = 1.5; }
+//						if (string(OutputPlotNames[WhichPlot]).find("RecoEnergy_slice_3") != std::string::npos) { height = 1.5; }
 						if ( xBCut[WhichxBCut] == "xBCut" ) { height = 1.1; }
 						Plots[0]->GetYaxis()->SetRangeUser(0.,height*max);
 
@@ -789,7 +812,7 @@ void OverlayPlots() {
 						Plots[0]->GetXaxis()->SetTitle(XLabel);
 
 						if (
-							/*string(NameOfPlots[WhichPlot]).find("MissMomentum") != std::string::npos ||*/
+							string(NameOfPlots[WhichPlot]).find("MissMomentum") != std::string::npos ||
 							NameOfPlots[WhichPlot] == "h1_Nphot" || 
 							NameOfPlots[WhichPlot] == "h1_Nprot" ||
 							NameOfPlots[WhichPlot] == "h1_Npi" ||
@@ -832,8 +855,8 @@ void OverlayPlots() {
 								gStyle->SetErrorX(0); // Removing the horizontal errors
 								Plots[WhichFSIModel]->Draw("e same"); 
 							} else { 
-								//Plots[WhichFSIModel]->Draw("hist same"); // draw them as histos
-								Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
+								Plots[WhichFSIModel]->Draw("hist same"); // draw them as histos
+//								Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
 								Plots[0]->Draw("e same"); 
 							}
 						}
@@ -1065,9 +1088,9 @@ void OverlayPlots() {
 //					if ( NameOfPlots[WhichPlot] == "MissMomentum" || OutputPlotNames[WhichPlot]=="InclusiveeRecoEnergy_slice_0" ) { legGenie->Draw(); }
 					if ( 
 						(NameOfPlots[WhichPlot] == "MissMomentum" && nucleus[WhichNucleus] == "12C" && DoubleE[WhichEnergy] == 2.261) 
-						|| (OutputPlotNames[WhichPlot]=="epRecoEnergy_slice_0" && nucleus[WhichNucleus] == "12C") 
+						|| (OutputPlotNames[WhichPlot]=="epRecoEnergy_slice_0" && nucleus[WhichNucleus] == "12C" && DoubleE[WhichEnergy] == 2.261) 
 					) 
-						{ legGenie->Draw(); }
+						{ legGenie->SetTextSize(TextSize-0.04);legGenie->Draw(); }
 
 					TLatex latex;
 					latex.SetTextFont(FontStyle);

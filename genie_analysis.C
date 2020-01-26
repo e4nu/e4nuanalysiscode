@@ -205,6 +205,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TLorentzVector V4_target(0,0,0,target_mass[ftarget]);
 
 	//Acceptance Maps
+
 	TString WhichMap = "e2a_maps";
 	TFile* file_acceptance;
 	TFile* file_acceptance_p;
@@ -220,10 +221,29 @@ void genie_analysis::Loop(Int_t choice) {
 		file_acceptance_pip = TFile::Open(WhichMap+"/"+WhichMap+"_"+Target+"_E_"+E_acc_file+"_pip.root");
 	}
 
+	// ---------------------------------------------------------------------------------------------------------------
+
+	// GENIE Systematic Uncertainties
+
+//	TString TweakedVariable = "FormZone";
+//	TFile *fweights = new TFile("/w/hallb-scifs17exp/clas/claseg2/apapadop/myWeights/weights_"+TweakedVariable+"_"+TString(ftarget)+"_"+TString(fbeam_en)+".root");
+//	TTree *tweights = (TTree*)fweights->Get(TweakedVariable);
+//	int NtweightsEntries = tweights->GetEntries();
+
+//	TArrayF* weights = NULL;
+//	double fArray;
+//	tweights->SetBranchAddress("weights", &weights);
+//	int Ntfileentries = fChain->GetEntries();
+
+	// ---------------------------------------------------------------------------------------------------------------
+
 	//Output file definition
+
 	TFile *file_out;
 	if (choice == 0) { file_out = new TFile(Form("data_e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");}
 	else { file_out = new TFile(Form("genie_e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");}
+
+	// ---------------------------------------------------------------------------------------------------------------
 
 	//initialize Fiducial functions for EC limits
 	fiducialcut->InitEClimits();
@@ -560,8 +580,17 @@ void genie_analysis::Loop(Int_t choice) {
 	int ECalSignalEventsWithin5Perc = 0, ECalSignalEventsWithin5Perc_FirstSlice = 0, ECalSignalEventsWithin5Perc_SecondSlice = 0, ECalSignalEventsWithin5Perc_ThirdSlice = 0;
 	int PMiss_FirstSlice = 0, PMiss_SecondSlice = 0, PMiss_ThirdSlice = 0;
 
+	// ---------------------------------------------------------------------------------------------------------------
+
+	// Get the number of events to run overall
+	
+//	int Nentries = TMath::Min(Ntfileentries,NtweightsEntries);
+
+	// ---------------------------------------------------------------------------------------------------------------
+
 	/** Beginning of Event Loop **/
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
+//	for (Long64_t jentry=0; jentry<Nentries;jentry++) {
 
 		Long64_t ientry = LoadTree(jentry);
 		if (ientry < 0) break;
@@ -636,6 +665,21 @@ void genie_analysis::Loop(Int_t choice) {
 			//acceptance_c takes phi in radians and here unmodified by 30 degree.
 			e_acc_ratio = acceptance_c(el_momentum, cos(el_theta), phi_ElectronOut, 11,file_acceptance);
 			if ( fabs(e_acc_ratio) != e_acc_ratio ) { continue; }
+
+			// --------------------------------------------------------------------------------------------------
+
+			// GENIE Systematic Uncertainties
+
+//			tweights->GetEntry(jentry);
+//			float* ArrayWeights = weights->GetArray();
+
+////			double TuningWeight = ArrayWeights[0]; // - 1 sigma variation
+////			double TuningWeight = ArrayWeights[1]; // 0 sigma variation
+//			double TuningWeight = ArrayWeights[2]; // + 1 sigma variation	
+
+//			e_acc_ratio = e_acc_ratio * TuningWeight;
+
+			// --------------------------------------------------------------------------------------------------		
 
 		}
 

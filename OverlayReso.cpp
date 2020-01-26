@@ -26,7 +26,7 @@ void OverlayReso() {
 	SetOffsetAndSize();
 
 	int Ndivisions = 3;
-	int LineWidth = 3;
+	int LineWidth = 5;
 	double TextSize = 0.07;
 	
 	TString version = "v3_0_6/";
@@ -34,6 +34,7 @@ void OverlayReso() {
 	int FontStyle = 132;
 	TGaxis::SetMaxDigits(3);
 	TGaxis::SetExponentOffset(-0.1, 1., "y");
+	gStyle->SetLineStyleString(11,"80 60");
 	
 	TString version = "v3_0_6/";
 
@@ -41,10 +42,10 @@ void OverlayReso() {
 	std::vector<TString> LabelE; std::vector<TString> JustE; std::vector<TString> FSIModel; std::vector<TString> OutputPlotNames;
 	std::vector<TString> FSILabel; std::vector<TString> NameOfPlots;  std::vector<TString> XLabels;
 
-	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C");
-//	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");
+//	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C");
+	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");
 
-	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); JustE.push_back("1.161 GeV");
+//	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); JustE.push_back("1.161 GeV");
 	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); JustE.push_back("2.261 GeV");
 	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV"); JustE.push_back("4.461 GeV");
  
@@ -74,16 +75,20 @@ void OverlayReso() {
 	// Larry's suggestion following Barak's paper
 
 	// 12C
-//	int Colors[NEnergies][NFSIModels] = {{kAzure+7}{kAzure-5}{kBlue}};
-	int Colors[NEnergies][NFSIModels] = {{kAzure+7,kAzure+7}{kAzure-5,kAzure-5}{kBlue,kBlue}};
-	int LineStyle[NEnergies] = {2,7,1};
-	int MarkerStyle[NEnergies] = {22,21,20};
+////	int Colors[NEnergies][NFSIModels] = {{kAzure+7}{kAzure-5}{kBlue}};
+////	int Colors[NEnergies][NFSIModels] = {{kAzure+7,kAzure+7}{kAzure-5,kAzure-5}{kBlue,kBlue}};
+//	int Colors[NEnergies][NFSIModels] = {{kRed,kRed}{kGreen-3,kGreen-3}{kBlue,kBlue}};
+////	int Colors[NEnergies][NFSIModels] = {{kMagenta,kMagenta}{kGreen-3,kGreen-3}{kBlue,kBlue}};
+////	int Colors[NEnergies][NFSIModels] = {{kRed,kRed}{kOrange-3,kOrange-3}{kBlue,kBlue}};
+//	int LineStyle[NEnergies] = {2,11,1};
+//	int MarkerStyle[NEnergies] = {22,21,20};
 
 	// 56Fe
-////	int Colors[NEnergies][NFSIModels] = {{kAzure+7}{kBlue}};
-//	int Colors[NEnergies][NFSIModels] = {{kAzure+7,kAzure+7}{kBlue,kBlue}};
-//	int LineStyle[NEnergies] = {2,1};
-//	int MarkerStyle[NEnergies] = {22,20};
+//	int Colors[NEnergies][NFSIModels] = {{kAzure+7}{kBlue}};
+//	int Colors[NEnergies][NFSIModels] = {{kAzure-5,kAzure-5}{kBlue,kBlue}};
+	int Colors[NEnergies][NFSIModels] = {{kGreen-3,kGreen-3}{kBlue,kBlue}};
+	int LineStyle[NEnergies] = {11,1};
+	int MarkerStyle[NEnergies] = {21,20};
 
 //	int Colors[NEnergies][NFSIModels] = {/*{kGreen-3,kGreen-3}*/{kBlue,kBlue}{kRed,kRed}};
 //	int Colors[NEnergies][NFSIModels] = {{kGreen+7,kGreen}{kBlack,kRed}{kBlue,kMagenta}};
@@ -111,7 +116,7 @@ void OverlayReso() {
 				PlotCanvas->SetBottomMargin(0.16);
 //				PlotCanvas->SetTopMargin(0.22);
 
-				TLegend* leg = new TLegend(0.12,0.6,0.39,0.8);
+				TLegend* leg = new TLegend(0.12,0.6,0.4,0.8);
 				leg->SetNColumns(2);
 
 				double max = -99.;
@@ -131,7 +136,7 @@ void OverlayReso() {
 						Plots[WhichEnergy][WhichFSIModel] =  (TH1D*)( FileSample->Get(NameOfPlots[WhichPlot]) );
 						Plots[WhichEnergy][WhichFSIModel]->Rebin(4);
 						Plots[WhichEnergy][WhichFSIModel]->SetLineColor(Colors[WhichEnergy][WhichFSIModel]);
-						Plots[WhichEnergy][WhichFSIModel]->SetLineWidth(LineWidth);
+						Plots[WhichEnergy][WhichFSIModel]->SetLineWidth(LineWidth-WhichEnergy);
 						CenterAxisTitle(Plots[WhichEnergy][WhichFSIModel]);
 
 						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetLabelFont(FontStyle);

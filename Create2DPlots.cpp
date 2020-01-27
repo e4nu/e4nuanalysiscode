@@ -49,14 +49,17 @@ void Create2DPlots() {
 //	xBCut.push_back("xBCut");
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
-	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 //	FSIModel.push_back("hA2018_Truth_NoRadCorr"); FSILabel.push_back("GENIE (Truth)");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 //	FSIModel.push_back("hN2018_Final_NoRadCorr"); FSILabel.push_back("GENIE hN2018");  DirNames.push_back("hN2018_Truth_NoRadCorr");
 
 //	NameOfPlots.push_back("h2_Ecal_Eqe"); XLabelOfPlots.push_back("E^{QE} (GeV)"); YLabelOfPlots.push_back("E^{cal} (GeV)"); OutputPlotNames.push_back("ECalVsEQE2D");
 //	NameOfPlots.push_back("h2_Q2_nu_weight"); XLabelOfPlots.push_back("Energy Transfer (GeV)"); YLabelOfPlots.push_back("Q^{2} (GeV^{2}/c^{2})"); OutputPlotNames.push_back("Q2VsNu2D");
+
 	NameOfPlots.push_back("h2_Q2_nu_weight_FirstSector"); XLabelOfPlots.push_back("Energy Transfer [GeV]"); YLabelOfPlots.push_back("Q^{2} [GeV^{2}/c^{2}]"); OutputPlotNames.push_back("Q2VsNu2D_FirstSector");
+
+//	NameOfPlots.push_back("h2_Etot_pperp"); XLabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); YLabelOfPlots.push_back("E^{cal} (GeV)"); OutputPlotNames.push_back("ECalVsPmiss2D");
 
 	int NxBCuts = xBCut.size();
 	int NNuclei = nucleus.size();
@@ -134,7 +137,7 @@ void Create2DPlots() {
 //										 FSIModel[WhichFSIModel]+"_"+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+NameOfPlots[WhichPlot]+"_"+xBCut[WhichxBCut],
 //										 205,34,1024,768);
 
-						TString PathToFiles = "myFiles/"+ E[WhichEnergy] + "/"+FSIModel[WhichFSIModel]+"/"+xBCut[WhichxBCut]+"/";
+						TString PathToFiles = "../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[WhichFSIModel]+"/"+xBCut[WhichxBCut]+"/";
 						TString FileName = PathToFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+FSIModel[WhichFSIModel]+"_Plots_FSI_em.root";
 						TFile* FileSample = TFile::Open(FileName);
 
@@ -151,7 +154,8 @@ void Create2DPlots() {
 						Plots->GetXaxis()->SetLabelSize(TextSize);
 						Plots->GetXaxis()->SetTitleSize(TextSize);
 						Plots->GetXaxis()->SetTitleOffset(1.);
-						if ( NameOfPlots[WhichPlot] == "h2_Ecal_Eqe" ) { Plots->GetXaxis()->SetTitle(JustNucleus[WhichNucleus]+"(e,e'p)_{1p0#pi}"+XLabelOfPlots[WhichPlot]); }
+						if ( NameOfPlots[WhichPlot] == "h2_Ecal_Eqe" ) 
+							{ Plots->GetXaxis()->SetTitle(JustNucleus[WhichNucleus]+"(e,e'p)_{1p0#pi }"+XLabelOfPlots[WhichPlot]); }
 						else { Plots->GetXaxis()->SetTitle(XLabelOfPlots[WhichPlot]); }
 
 
@@ -160,10 +164,11 @@ void Create2DPlots() {
 						Plots->GetYaxis()->SetLabelSize(TextSize);
 						Plots->GetYaxis()->SetTitleSize(TextSize);
 						Plots->GetYaxis()->SetTitleOffset(0.8);
-						if ( NameOfPlots[WhichPlot] == "h2_Ecal_Eqe" ) { Plots->GetYaxis()->SetTitle(JustNucleus[WhichNucleus]+"(e,e'p)_{1p0#pi}"+YLabelOfPlots[WhichPlot]); }
+						if ( NameOfPlots[WhichPlot] == "h2_Ecal_Eqe" || NameOfPlots[WhichPlot] == "h2_Etot_pperp" ) 
+							{ Plots->GetYaxis()->SetTitle(JustNucleus[WhichNucleus]+"(e,e'p)_{1p0#pi} "+YLabelOfPlots[WhichPlot]); }
 						else { Plots->GetYaxis()->SetTitle(YLabelOfPlots[WhichPlot]); }
 
-						// --------------------------------------------------------------------------------------------------------------------------------------------------
+						// --------------------------------------------------------------------------------------------------------------------------
 
 						// Rebinning & Ranges
 
@@ -224,7 +229,20 @@ void Create2DPlots() {
 
 						}
 
-						// --------------------------------------------------------------------------------------------------------------------------------------------------
+						if ( NameOfPlots[WhichPlot] == "h2_Etot_pperp" ) {
+
+//							pad1->SetLogz();
+//							pad2->SetLogz();
+
+							if (E[WhichEnergy] == "2_261") { 
+								for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
+								XMin = 0.; XMax = 1.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+								YMin = 0.5; YMax = 2.8;	Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
+							}
+
+						}
+
+						// -----------------------------------------------------------------------------------------------------------------------------
 
 						double ScalingFactor = TMath::Power(10.,6.) / Plots->GetMaximum();
 						Plots->Scale(ScalingFactor);
@@ -242,7 +260,7 @@ void Create2DPlots() {
 						Plots->Draw("colt");
 						PlotCanvas->Update();
 
-						// -------------------------------------------------------------------------------------------------------------------------------------------
+						// ----------------------------------------------------------------------------------------------------------------
 
 						// TLines & TLatex
 
@@ -302,6 +320,16 @@ void Create2DPlots() {
 
 						}
 
+						if ( NameOfPlots[WhichPlot] == "h2_Etot_pperp" ) {
+
+//							Plots->GetXaxis()->SetTitle();
+							if (FSILabel[WhichFSIModel] == "Genie" ) { Plots->GetYaxis()->SetTitle(); Plots->GetYaxis()->SetLabelSize(0.); }
+
+							Plots->GetXaxis()->SetNdivisions(5);
+							Plots->GetYaxis()->SetNdivisions(Ndivisions);
+
+						}
+
 						// --------------------------------------------------------------------------------------------------
 
 //						TPaletteAxis *palette = (TPaletteAxis*)Plots->GetListOfFunctions()->FindObject("palette");
@@ -316,7 +344,7 @@ void Create2DPlots() {
 
 					} // End of the loop over the FSI Models 
 
-					PlotCanvas->SaveAs("myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/"+E[WhichEnergy]+"/"+nucleus[WhichNucleus]+"_" 
+					PlotCanvas->SaveAs("../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/"+E[WhichEnergy]+"/"+nucleus[WhichNucleus]+"_" 
 							+E[WhichEnergy]+"_" +OutputPlotNames[WhichPlot]+".pdf");
 
 						//delete PlotCanvas;

@@ -305,6 +305,10 @@ void genie_analysis::Loop(Int_t choice) {
 	}
 
 	//Definitions of further Histograms
+
+	TH1F *CosDeltaThetaElectronPhotonAboveThreshold=new TH1F("CosDeltaThetaElectronPhotonAboveThreshold","",100,-1.,1.);
+	TH1F *CosDeltaPhiElectronPhotonAboveThreshold=new TH1F("CosDeltaPhiElectronPhotonAboveThreshold","",100,-1.,1.);
+
 	TH1F *h1_E_rec_1pi_weight_frac_feed=new TH1F("h1_E_rec_1pi_weight_frac_feed","",N_qe,x_qe);
 	TH1F *h1_E_rec_2pi_weight_frac_feed=new TH1F("h1_E_rec_2pi_weight_frac_feed","",N_qe,x_qe);
 	TH1F *h1_E_rec_3pi_weight_frac_feed=new TH1F("h1_E_rec_3pi_weight_frac_feed","",N_qe,x_qe);
@@ -925,22 +929,26 @@ void genie_analysis::Loop(Int_t choice) {
 
 			if (pdgf[i] == 22  && pf[i] > 0.3) {
 
-				 //Determine photon vector for the cut on radiation photon via angle with respect to the electron
-				 TVector3 V3_phot_angles(pxf[i],pyf[i],pzf[i]);
-				 if (choice == 1) { //GENIE data
-					 //no smearing of GENIE photons
-					 double phi_photon = V3_phot_angles.Phi();
-					 V3_phot_angles.SetPhi(phi_photon + TMath::Pi()); // Vec.Phi() is between (-180,180)
-					 if ( !Pi_phot_fid_united(fbeam_en, V3_phot_angles, 0) )  { continue;}
-				 }
+				//Determine photon vector for the cut on radiation photon via angle with respect to the electron
+				TVector3 V3_phot_angles(pxf[i],pyf[i],pzf[i]);
+				if (choice == 1) { //GENIE data
+					//no smearing of GENIE photons
+					double phi_photon = V3_phot_angles.Phi();
+					V3_phot_angles.SetPhi(phi_photon + TMath::Pi()); // Vec.Phi() is between (-180,180)
+					if ( !Pi_phot_fid_united(fbeam_en, V3_phot_angles, 0) )  { continue;}
+				}
 
-				 double neut_phi_mod = V3_phot_angles.Phi()*TMath::RadToDeg() + 30; //Add 30 degree
-				 if (neut_phi_mod < 0) neut_phi_mod = neut_phi_mod + 360;  //Neutral particle is between 0 and 360 degree
+				double neut_phi_mod = V3_phot_angles.Phi()*TMath::RadToDeg() + 30; //Add 30 degree
+				if (neut_phi_mod < 0) neut_phi_mod = neut_phi_mod + 360;  //Neutral particle is between 0 and 360 degree
 
-				 ec_num_n = ec_num_n + 1;
-				 num_pi_phot = num_pi_phot + 1;
-				 ind_pi_phot[num_pi_phot - 1] = i;
-				 PhotonID.push_back(i);
+				ec_num_n = ec_num_n + 1;
+				num_pi_phot = num_pi_phot + 1;
+				ind_pi_phot[num_pi_phot - 1] = i;
+				PhotonID.push_back(i);
+
+				CosDeltaThetaElectronPhotonAboveThreshold->Fill( cos( V3_phot_angles.Angle(V3_el) ) );
+				CosDeltaPhiElectronPhotonAboveThreshold->Fill( cos( neut_phi_mod-el_phi_mod*TMath::Pi()/180. ) );
+
 				 //within 40 degrees in theta and 30 degrees in phi. Electron phi has already added 30 degree and between 0 to 360
 				 if(V3_phot_angles.Angle(V3_el)*TMath::RadToDeg() < phot_rad_cut && fabs(neut_phi_mod-el_phi_mod) < phot_e_phidiffcut ) {
 					  ec_radstat_n[num_pi_phot - 1] = true; //select radiation photons

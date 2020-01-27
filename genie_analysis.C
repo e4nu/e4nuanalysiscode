@@ -360,7 +360,7 @@ void genie_analysis::Loop(Int_t choice) {
 	double MinNu = 0., MaxNu = 4.; double MinQ2 = 0., MaxQ2 = 6.;
 	TH2F *h2_Q2_nu = new TH2F("h2_Q2_nu","",NBinsNu,MinNu,MaxNu,NBinsQ2,MinQ2,MaxQ2);
 	TH2F *h2_Q2_nu_weight = new TH2F("h2_Q2_nu_weight","",NBinsNu,MinNu,MaxNu,NBinsQ2,MinQ2,MaxQ2);
-	TH2F *h2_Q2_nu_weight_FirstSector = new TH2F("h2_Q2_nu_weight_FirstSector","",NBinsNu,MinNu,MaxNu,NBinsQ2,MinQ2,MaxQ2);
+	TH2F *h2_Q2_nu_weight_FirstSector = new TH2F("h2_Q2_nu_weight_FirstSector","",0.7*NBinsNu,MinNu,MaxNu,0.7*NBinsQ2,MinQ2,MaxQ2);
 
 	TH2F *h2_Q2_xbjk_weight = new TH2F("h2_Q2_xbjk_weight","",200,0,3,200,0,5);
 	TH2F *h2_Q2_W=new TH2F("h2_Q2_W","",200,0,3,200,0,5);

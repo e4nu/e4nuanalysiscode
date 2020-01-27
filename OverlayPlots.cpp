@@ -103,9 +103,9 @@ void OverlayPlots() {
 	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
 //	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
-//	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
+	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
 //	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
-	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
+//	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
@@ -786,8 +786,8 @@ void OverlayPlots() {
 								TLegendEntry* l1 = legGenie->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
 								l1->SetTextColor(BreakDownColors[j-1]);
 
-								BreakDownPlots[j-1]->Draw("hist same");
-//								BreakDownPlots[j-1]->Draw("C hist same");
+//								BreakDownPlots[j-1]->Draw("hist same");
+								BreakDownPlots[j-1]->Draw("C hist same");
 
 							} // end of the look over the GENIE break down
 
@@ -855,8 +855,8 @@ void OverlayPlots() {
 								gStyle->SetErrorX(0); // Removing the horizontal errors
 								Plots[WhichFSIModel]->Draw("e same"); 
 							} else { 
-								Plots[WhichFSIModel]->Draw("hist same"); // draw them as histos
-//								Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
+//								Plots[WhichFSIModel]->Draw("hist same"); // draw them as histos
+								Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
 								Plots[0]->Draw("e same"); 
 							}
 						}

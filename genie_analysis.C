@@ -948,7 +948,6 @@ void genie_analysis::Loop(Int_t choice) {
 				ind_pi_phot[num_pi_phot - 1] = i;
 				PhotonID.push_back(i);
 
-				charge_pi[num_pi_phot - 1] = 0;
 				Smeared_Ppi[num_pi_phot - 1] = V3_phot_angles.Mag();
 				Smeared_Epi[num_pi_phot - 1] = V3_phot_angles.Mag();
 

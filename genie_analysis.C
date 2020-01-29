@@ -920,7 +920,7 @@ void genie_analysis::Loop(Int_t choice) {
 					num_pi_phot = num_pi_phot + 1;
 					num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
 					index_pipl[num_pi_phot - 1] = i;
-					index_pi[num_pi_phot - 1] = i;
+					ind_pi_phot[num_pi_phot - 1] = i;
 					ind_pi_phot[num_pi_phot - 1] = i;
 					PiPlusID.push_back(i);
 					charge_pi[num_pi_phot - 1] = 1;
@@ -947,6 +947,10 @@ void genie_analysis::Loop(Int_t choice) {
 				num_pi_phot = num_pi_phot + 1;
 				ind_pi_phot[num_pi_phot - 1] = i;
 				PhotonID.push_back(i);
+
+				charge_pi[num_pi_phot - 1] = 0;
+				Smeared_Ppi[num_pi_phot - 1] = V3_phot_angles.Mag();
+				Smeared_Epi[num_pi_phot - 1] = V3_phot_angles.Mag();
 
 				CosDeltaThetaElectronPhotonAboveThreshold->Fill( cos( V3_phot_angles.Angle(V3_el) ) );
 				CosDeltaPhiElectronPhotonAboveThreshold->Fill( cos( neut_phi_mod-el_phi_mod*TMath::Pi()/180. ) );
@@ -1166,7 +1170,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 				if (choice == 1) { //GENIE data
 					pion_acc_ratio = 0;//reset to 0 just to be save
-					V3_1pi_corr.SetXYZ(Smeared_Ppi[0]/pf[index_pi[0]] * pxf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pyf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pzf[index_pi[0]]);
+					V3_1pi_corr.SetXYZ(Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pxf[ind_pi_phot[0]],Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pyf[ind_pi_phot[0]],Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pzf[ind_pi_phot[0]]);
 
 					double phi_pion = V3_1pi_corr.Phi();
 					V3_1pi_corr.SetPhi(phi_pion + TMath::Pi()); // Vec.Phi() is between (-180,180)
@@ -1415,8 +1419,8 @@ void genie_analysis::Loop(Int_t choice) {
 
 					if (choice == 1) { //GENIE data
 						pion_acc_ratio[i] = 0; //reset to 0 just to be same
-						V3_2pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[index_pi[i]] * pxf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pyf[index_pi[i]],
-								Smeared_Ppi[i]/pf[index_pi[i]] * pzf[index_pi[i]]);
+						V3_2pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pxf[ind_pi_phot[i]],Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pyf[ind_pi_phot[i]],
+								Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pzf[ind_pi_phot[i]]);
 						double phi_pion = V3_2pi_corr[i].Phi();
 						V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
 						phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
@@ -1759,8 +1763,8 @@ void genie_analysis::Loop(Int_t choice) {
 				if (choice == 1){ //GENIE data
 
 					pion_acc_ratio = 0; //Reset to 0 just to be sure
-					V3_pi_corr.SetXYZ(Smeared_Ppi[0]/pf[index_pi[0]] * pxf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pyf[index_pi[0]],
-							Smeared_Ppi[0]/pf[index_pi[0]] * pzf[index_pi[0]]);
+					V3_pi_corr.SetXYZ(Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pxf[ind_pi_phot[0]],Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pyf[ind_pi_phot[0]],
+							Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pzf[ind_pi_phot[0]]);
 
 					double phi_pion = V3_pi_corr.Phi(); //in Radians
 					V3_pi_corr.SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
@@ -2375,8 +2379,8 @@ void genie_analysis::Loop(Int_t choice) {
 
 			if (choice == 1) { //GENIE data
 				pion_acc_ratio = 0; //reset just to be sure
-				V3_pi_corr.SetXYZ(Smeared_Ppi[0]/pf[index_pi[0]] * pxf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pyf[index_pi[0]],
-						Smeared_Ppi[0]/pf[index_pi[0]] * pzf[index_pi[0]]);
+				V3_pi_corr.SetXYZ(Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pxf[ind_pi_phot[0]],Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pyf[ind_pi_phot[0]],
+						Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pzf[ind_pi_phot[0]]);
 				double phi_pion = V3_pi_corr.Phi(); //in Radians
 				V3_pi_corr.SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
 				phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
@@ -2434,8 +2438,8 @@ void genie_analysis::Loop(Int_t choice) {
 
 				if (choice == 1) { //GENIE data
 					pion_acc_ratio[i] = 0; //Reset just to be secure
-					V3_2pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[index_pi[i]] * pxf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pyf[index_pi[i]],
-							Smeared_Ppi[i]/pf[index_pi[i]] * pzf[index_pi[i]]);
+					V3_2pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pxf[ind_pi_phot[i]],Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pyf[ind_pi_phot[i]],
+							Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pzf[ind_pi_phot[i]]);
 					double phi_pion = V3_2pi_corr[i].Phi(); //in Radians
 					V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
 					phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
@@ -2513,8 +2517,8 @@ void genie_analysis::Loop(Int_t choice) {
 				if (choice == 1) { //GENIE data
 
 					pion_acc_ratio[i] = 0; //Reset just to be sure
-					V3_3pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[index_pi[i]] * pxf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pyf[index_pi[i]],
-								Smeared_Ppi[i]/pf[index_pi[i]] * pzf[index_pi[i]]);
+					V3_3pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pxf[ind_pi_phot[i]],Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pyf[ind_pi_phot[i]],
+								Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pzf[ind_pi_phot[i]]);
 					double phi_pion = V3_3pi_corr[i].Phi(); //in Radians
 					V3_3pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
 					phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
@@ -2621,8 +2625,8 @@ void genie_analysis::Loop(Int_t choice) {
 				if (choice == 1) { //GENIE data
 
 						pion_acc_ratio[i] = 0; //Reset just to be sure
-						V3_4pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[index_pi[i]] * pxf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pyf[index_pi[i]],
-									Smeared_Ppi[i]/pf[index_pi[i]] * pzf[index_pi[i]]);
+						V3_4pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pxf[ind_pi_phot[i]],Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pyf[ind_pi_phot[i]],
+									Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pzf[ind_pi_phot[i]]);
 						// apapadop
 						double phi_pion = V3_4pi_corr[i].Phi(); //in Radians
 						V3_4pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
@@ -2895,8 +2899,8 @@ void genie_analysis::Loop(Int_t choice) {
 				if (choice == 1) { //GENIE data
 
 					pion_acc_ratio = 1; //Reset to 0 just to be sure
-					V3_pi_corr.SetXYZ(Smeared_Ppi[0]/pf[index_pi[0]] * pxf[index_pi[0]],Smeared_Ppi[0]/pf[index_pi[0]] * pyf[index_pi[0]],
-							Smeared_Ppi[0]/pf[index_pi[0]] * pzf[index_pi[0]]);
+					V3_pi_corr.SetXYZ(Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pxf[ind_pi_phot[0]],Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pyf[ind_pi_phot[0]],
+							Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pzf[ind_pi_phot[0]]);
 					double phi_pion = V3_pi_corr.Phi(); //in Radians
 					V3_pi_corr.SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
 					phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
@@ -3020,8 +3024,8 @@ void genie_analysis::Loop(Int_t choice) {
 
 					if (choice == 1) { //GENIE data
 
-						V3_2pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[index_pi[i]] * pxf[index_pi[i]],Smeared_Ppi[i]/pf[index_pi[i]] * pyf[index_pi[i]],
-									Smeared_Ppi[i]/pf[index_pi[i]] * pzf[index_pi[i]]);
+						V3_2pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pxf[ind_pi_phot[i]],Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pyf[ind_pi_phot[i]],
+									Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pzf[ind_pi_phot[i]]);
 						double phi_pion = V3_2pi_corr[i].Phi(); //in Radians
 						V3_2pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
 						phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
@@ -3205,8 +3209,8 @@ void genie_analysis::Loop(Int_t choice) {
 
 					if (choice == 1) { //GENIE data
 						pion_acc_ratio[i] = 0; //Reset to 0 just to be sure
-						V3_3pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[index_pi[i]] * pxf[index_pi[i]],Smeared_Pp[i]/pf[index_pi[i]] * pyf[index_pi[i]],
-									Smeared_Pp[i]/pf[index_pi[i]] * pzf[index_pi[i]]);
+						V3_3pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pxf[ind_pi_phot[i]],Smeared_Pp[i]/pf[ind_pi_phot[i]] * pyf[ind_pi_phot[i]],
+									Smeared_Pp[i]/pf[ind_pi_phot[i]] * pzf[ind_pi_phot[i]]);
 						double phi_pion = V3_3pi_corr[i].Phi(); //in Radians
 						V3_3pi_corr[i].SetPhi(phi_pion + TMath::Pi() ); // Vec.Phi() is between (-180,180)
 						phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS

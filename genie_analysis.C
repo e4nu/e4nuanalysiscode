@@ -309,7 +309,8 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *CosDeltaThetaElectronPhotonAboveThreshold=new TH1F("CosDeltaThetaElectronPhotonAboveThreshold","",100,-1.,1.);
 	TH1F *CosDeltaPhiElectronPhotonAboveThreshold=new TH1F("CosDeltaPhiElectronPhotonAboveThreshold","",100,-1.,1.);
 
-	TH2F *CosThetaGammaEgamma=new TH2F("CosThetaGammaEgamma","",100,-1.,1.,600,0.,6.);
+	TH2F *RadCosThetaGammaEgamma = new TH2F("RadCosThetaGammaEgamma","",100,-1.,1.,600,0.,6.);
+	TH2F *RadCosDeltaThetaGammaEgamma = new TH2F("RadCosDeltaThetaGammaEgamma","",100,-1.,1.,600,0.,6.);
 
 	TH1F *h1_E_rec_1pi_weight_frac_feed=new TH1F("h1_E_rec_1pi_weight_frac_feed","",N_qe,x_qe);
 	TH1F *h1_E_rec_2pi_weight_frac_feed=new TH1F("h1_E_rec_2pi_weight_frac_feed","",N_qe,x_qe);
@@ -953,16 +954,21 @@ void genie_analysis::Loop(Int_t choice) {
 
 				CosDeltaThetaElectronPhotonAboveThreshold->Fill( cos( V3_phot_angles.Angle(V3_el) ) );
 				CosDeltaPhiElectronPhotonAboveThreshold->Fill( cos( neut_phi_mod-el_phi_mod*TMath::Pi()/180. ) );
-				CosThetaGammaEgamma->Fill(V3_phot_angles.CosTheta(),V3_phot_angles.Mag());
 
 				 //within 40 degrees in theta and 30 degrees in phi. Electron phi has already added 30 degree and between 0 to 360
+
 				 if(V3_phot_angles.Angle(V3_el)*TMath::RadToDeg() < phot_rad_cut && fabs(neut_phi_mod-el_phi_mod) < phot_e_phidiffcut ) {
-					  ec_radstat_n[num_pi_phot - 1] = true; //select radiation photons
-					  num_phot_rad = num_phot_rad + 1;
+
+					ec_radstat_n[num_pi_phot - 1] = true; //select radiation photons
+					num_phot_rad = num_phot_rad + 1;
+					RadCosThetaGammaEgamma->Fill(V3_phot_angles.CosTheta(),V3_phot_angles.Mag() ,WeightIncl);
+					RadCosDeltaThetaGammaEgamma->Fill( cos( V3_phot_angles.Angle(V3_el) ) ,V3_phot_angles.Mag() ,WeightIncl);
+
 				 }
+
 				 if(!ec_radstat_n[num_pi_phot - 1]) {
-					 num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
-					 charge_pi[num_pi_phot - 1] = 0;
+					num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
+					charge_pi[num_pi_phot - 1] = 0;
 				 }
 			}
 

@@ -77,7 +77,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 	
 	TString version = "v3_0_6/";
 
-	int NECalRebin = 1;
+	double YRange[4] = {0.04,0.4,0.7,1.};
 
 	// From Mariana's analysis note
 
@@ -169,7 +169,8 @@ void OverlayPmissFig3b_e4nuPaper() {
 
 					PlotCanvas->cd();
 					double step = (1. - YPadStart) / 3.;
-					double XMinPad = 0., XMaxPad = 1., YMinPad = YPadStart + step * WhichPlot, YMaxPad = YPadStart + step * (WhichPlot+1);
+//					double XMinPad = 0., XMaxPad = 1., YMinPad = YPadStart + step * WhichPlot, YMaxPad = YPadStart + step * (WhichPlot+1);
+					double XMinPad = 0., XMaxPad = 1., YMinPad = YRange[WhichPlot], YMaxPad = YRange[WhichPlot+1];
 					//if (WhichPlot == 0) { YMinPad = 0.; }
 
 					// ----------------------------------------------------------------------------------------
@@ -321,7 +322,10 @@ void OverlayPmissFig3b_e4nuPaper() {
 						myPmissSlice->SetTextColor(kBlack);
 						myPmissSlice->SetTextSize(TextSize);
 						pad->cd();
-						if (OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_3") { myPmissSlice->DrawLatexNDC(0.3,0.3,LabelOfPlots[WhichPlot]); }
+						if (OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_3") { 
+							myPmissSlice->SetTextSize(TextSize-0.02);
+							myPmissSlice->DrawLatexNDC(0.3,0.3,LabelOfPlots[WhichPlot]); 
+						}
 						else { myPmissSlice->DrawLatexNDC(0.2,0.8,LabelOfPlots[WhichPlot]); }
 
 						// -----------------------------------------------------------------------------------
@@ -382,21 +386,23 @@ void OverlayPmissFig3b_e4nuPaper() {
 				latexYTitle.SetTextSize(8*TextSize);
 				latexYTitle.SetTextColor(kBlack);
 				latexYTitle.SetTextAngle(90);
-				latexYTitle.DrawLatexNDC(0.8,0.3,"Weighted Events / GeV");		
+				latexYTitle.DrawLatexNDC(0.8,0.27,"Weighted Events / GeV");		
 
 				// -----------------------------------------------------------------------------------------------------------------------------------------
 
 				// Pads to get rid of some 0's on the axes
 
 				PlotCanvas->cd();
-				TPad* padWhite1 = new TPad("padWhite1","padWhite1",0.06,0.65,0.11,0.7, 21); 
+				TPad* padWhite1 = new TPad("padWhite1","padWhite1",0.06,0.67,0.11,0.72, 21); 
 				padWhite1->SetFillColor(kWhite); 
+//				padWhite1->SetFillColor(kBlack); 
 				padWhite1->Draw();
 				padWhite1->cd();
 
 				PlotCanvas->cd();
-				TPad* padWhite2 = new TPad("padWhite2","padWhite2",0.06,0.36,0.11,0.41, 21); 
+				TPad* padWhite2 = new TPad("padWhite2","padWhite2",0.06,0.4,0.11,0.45, 21); 
 				padWhite2->SetFillColor(kWhite); 
+//				padWhite2->SetFillColor(kBlack);
 				padWhite2->Draw();
 				padWhite2->cd();				
 

@@ -18,9 +18,9 @@
 
 using namespace std;
 
-#include  "./Secondary_Code/CenterAxisTitle.cpp"
-#include "./Secondary_Code/SetOffsetAndSize.cpp"
-#include "./Secondary_Code/ToString.cpp"
+#include "/home/afroditi/Dropbox/PhD/Secondary_Code/CenterAxisTitle.cpp"
+#include "/home/afroditi/Dropbox/PhD/Secondary_Code/SetOffsetAndSize.cpp"
+#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
 
 void OverlayECalVsEQE_FigExtData9() {
 
@@ -36,7 +36,6 @@ void OverlayECalVsEQE_FigExtData9() {
 	std::vector<TString> LabelE; std::vector<TString> FSIModel; std::vector<TString> DirNames;
 	std::vector<TString> FSILabel; std::vector<TString> NameOfPlots; std::vector<TString> XLabelOfPlots; std::vector<TString> YLabelOfPlots;  std::vector<TString> OutputPlotNames;
 
-////	nucleus.push_back("3He"); LabelsOfSamples.push_back("^{3}He");
 //	nucleus.push_back("4He"); LabelsOfSamples.push_back("^{4}He");  JustNucleus.push_back("He");
 //	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
 	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
@@ -49,28 +48,9 @@ void OverlayECalVsEQE_FigExtData9() {
 //	xBCut.push_back("xBCut");
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
-//	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
-//	FSIModel.push_back("hA2018_Truth_NoRadCorr"); FSILabel.push_back("GENIE (Truth)");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hN2018_Final_NoRadCorr"); FSILabel.push_back("GENIE hN2018");  DirNames.push_back("hN2018_Truth_NoRadCorr");
-
-//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM_Adi"); FSILabel.push_back("NoRad");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("hA2018_Final_RadCorr_LFGM_Adi"); FSILabel.push_back("Rad");  DirNames.push_back("hA2018_Truth_RadCorr");
-
-
-//	NameOfPlots.push_back("h2_Ecal_Eqe"); XLabelOfPlots.push_back("E^{QE} (GeV)"); YLabelOfPlots.push_back("E^{cal} (GeV)"); OutputPlotNames.push_back("ECalVsEQE2D");
-//	NameOfPlots.push_back("h2_Q2_nu_weight"); XLabelOfPlots.push_back("Energy Transfer (GeV)"); YLabelOfPlots.push_back("Q^{2} (GeV^{2}/c^{2})"); OutputPlotNames.push_back("Q2VsNu2D");
-
-//	NameOfPlots.push_back("h2_Q2_nu_weight_FirstSector"); XLabelOfPlots.push_back("Energy Transfer [GeV]"); YLabelOfPlots.push_back("Q^{2} [GeV^{2}/c^{2}]"); OutputPlotNames.push_back("Q2VsNu2D_FirstSector");
-
-//	NameOfPlots.push_back("EePrimeVsEgamma"); XLabelOfPlots.push_back("E_{#gamma} [GeV]"); YLabelOfPlots.push_back("E_{e'} [GeV]"); OutputPlotNames.push_back("EePrimeVsEgamma");
-
-	NameOfPlots.push_back("RadCosThetaGammaEgamma"); XLabelOfPlots.push_back("cos(#theta_{#gamma})"); YLabelOfPlots.push_back("E_{#gamma} [GeV]"); OutputPlotNames.push_back("CosThetaGammaEgamma");
-
-	NameOfPlots.push_back("RadCosDeltaThetaGammaEgamma"); XLabelOfPlots.push_back("cos(#Delta#theta_{#gamma,e'})"); YLabelOfPlots.push_back("E_{#gamma} [GeV]"); OutputPlotNames.push_back("CosDeltaThetaGammaEgamma");
-
-//	NameOfPlots.push_back("h2_Etot_pperp"); XLabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); YLabelOfPlots.push_back("E^{cal} (GeV)"); OutputPlotNames.push_back("ECalVsPmiss2D");
+	NameOfPlots.push_back("h2_Ecal_Eqe"); XLabelOfPlots.push_back("E^{QE} (GeV)"); YLabelOfPlots.push_back("E^{cal} (GeV)"); OutputPlotNames.push_back("ECalVsEQE2D");
 
 	int NxBCuts = xBCut.size();
 	int NNuclei = nucleus.size();
@@ -98,13 +78,11 @@ void OverlayECalVsEQE_FigExtData9() {
 
 					TCanvas* PlotCanvas = new TCanvas(nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+NameOfPlots[WhichPlot]+"_"+xBCut[WhichxBCut],
 										 nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+NameOfPlots[WhichPlot]+"_"+xBCut[WhichxBCut],
-//										 205,34,1024,768);
-//										 205,34,2048,1656);
 										 205,34,2024,768);
 
 					// ---------------------------------------------------------------------------------------------------------------------------
 
-					// Dimensions of TPads (pad2 will be deleted at the very end for the Ereco plots)
+					// Dimensions of TPads
 
 					double XMinPadOne = 0., XMaxPadOne = 0.5, YMinPadOne = 0., YMaxPadOne = 1.;
 					double XMinPadTwo = 0.5, XMaxPadTwo = 1., YMinPadTwo = 0., YMaxPadTwo = YMaxPadOne;
@@ -123,8 +101,6 @@ void OverlayECalVsEQE_FigExtData9() {
 					pad4->SetFillColor(kWhite); pad4->Draw();
 					pad1->SetBottomMargin(0.18);
 					pad2->SetBottomMargin(0.18);
-//					pad2->SetTopMargin(0.21);
-//					pad1->cd();
 
 					pad4->cd();
 					TLatex *title = new TLatex(); 
@@ -141,12 +117,7 @@ void OverlayECalVsEQE_FigExtData9() {
 
 						if (FSILabel[WhichFSIModel] == "Data") 
 							{ pad1->cd(); gStyle->SetTitleSize(TextSize,"t"); pad1->SetRightMargin(0.); pad1->SetLeftMargin(0.15); }
-//						else { pad2->cd(); pad2->SetLeftMargin(0.014); pad2->SetRightMargin(0.15); }
 						else { pad2->cd(); pad2->SetLeftMargin(0.0); pad2->SetRightMargin(0.15); }
-
-//						TCanvas* PlotCanvas = new TCanvas(FSIModel[WhichFSIModel]+"_"+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+NameOfPlots[WhichPlot]+"_"+xBCut[WhichxBCut],
-//										 FSIModel[WhichFSIModel]+"_"+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+NameOfPlots[WhichPlot]+"_"+xBCut[WhichxBCut],
-//										 205,34,1024,768);
 
 						TString PathToFiles = "../../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[WhichFSIModel]+"/"+xBCut[WhichxBCut]+"/";
 						TString FileName = PathToFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+FSIModel[WhichFSIModel]+"_Plots_FSI_em.root";
@@ -155,7 +126,6 @@ void OverlayECalVsEQE_FigExtData9() {
 						TH2D* Plots =  (TH2D*)( FileSample->Get(NameOfPlots[WhichPlot]) ) ;
 
 						CenterAxisTitle(Plots);
-//						Plots->SetTitle(FSILabel[WhichFSIModel]+" " + LabelsOfSamples[WhichNucleus] + " " +LabelE[WhichEnergy]);
 						Plots->SetTitleSize(TextSize,"t");
 						if (FSILabel[WhichFSIModel] == "Data") { gStyle->SetTitleX(.54); }
 						else { gStyle->SetTitleX(.47); }
@@ -175,9 +145,7 @@ void OverlayECalVsEQE_FigExtData9() {
 						Plots->GetYaxis()->SetLabelSize(TextSize);
 						Plots->GetYaxis()->SetTitleSize(TextSize);
 						Plots->GetYaxis()->SetTitleOffset(0.8);
-						if ( NameOfPlots[WhichPlot] == "h2_Ecal_Eqe" || NameOfPlots[WhichPlot] == "h2_Etot_pperp" ) 
-							{ Plots->GetYaxis()->SetTitle(JustNucleus[WhichNucleus]+"(e,e'p)_{1p0#pi} "+YLabelOfPlots[WhichPlot]); }
-						else { Plots->GetYaxis()->SetTitle(YLabelOfPlots[WhichPlot]); }
+						Plots->GetYaxis()->SetTitle(JustNucleus[WhichNucleus]+"(e,e'p)_{1p0#pi} "+YLabelOfPlots[WhichPlot]);
 
 						// --------------------------------------------------------------------------------------------------------------------------
 
@@ -187,72 +155,16 @@ void OverlayECalVsEQE_FigExtData9() {
 						double XMin =-99.,XMax =-99.;
 						double YMin =-99.,YMax =-99.;
 
-						if ( NameOfPlots[WhichPlot] == "h2_Ecal_Eqe" ) {
 //						PlotCanvas->SetLogz();
 						pad1->SetLogz();
 						pad2->SetLogz();
 
-						if (E[WhichEnergy] == "1_161") { 
-							for (int i = 0; i < 1; i++) { Plots->Rebin2D(); }
-							XMin = 0.4; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-							Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
-						}
+//						for (int i = 0; i < 4; i++) { Plots->Rebin2D(); }
+						for (int i = 0; i < 2; i++) { Plots->Rebin2D(); }
 
-						if (E[WhichEnergy] == "2_261") { 
-							for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
-							XMin = 0.5; XMax = 3.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-							Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
-						}
-					
-						if (E[WhichEnergy] == "4_461") { 
-							for (int i = 0; i < 4; i++) { Plots->Rebin2D(); }
-							XMin = 1.5; XMax = 5.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-							Plots->GetYaxis()->SetRangeUser(XMin,XMax); }
-						}
-
-
-						if ( string(NameOfPlots[WhichPlot]).find("h2_Q2_nu_weight") != std::string::npos ) {
-
-							if (E[WhichEnergy] == "1_161") { 
-								for (int i = 0; i < 1; i++) { Plots->Rebin2D(); } /*PlotCanvas->SetLogz();*/ XMin = 0.; XMax = 0.8; 
-								Plots->GetXaxis()->SetRangeUser(XMin,XMax); Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
-							}
-
-							if (E[WhichEnergy] == "2_261") { 
-								for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } XMin = 0.; XMax = 2.; 
-								Plots->GetXaxis()->SetRangeUser(XMin,XMax); Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
-							}
-
-							if (E[WhichEnergy] == "4_461") { 
-								for (int i = 0; i < 3; i++) { Plots->Rebin2D(); }
-								XMin = 0.; XMax = 6.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-								Plots->GetYaxis()->SetRangeUser(XMin,XMax); }
-
-						}
-
-						if ( NameOfPlots[WhichPlot] == "h2_Q2_nu_weight_FirstSector" ) {
-
-							if (E[WhichEnergy] == "2_261") { 
-								for (int i = 0; i < 0; i++) { Plots->Rebin2D(); } 
-								XMin = 0.; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-								YMin = 0.; YMax = 2.;	Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
-							}
-
-						}
-
-						if ( NameOfPlots[WhichPlot] == "h2_Etot_pperp" ) {
-
-//							pad1->SetLogz();
-//							pad2->SetLogz();
-
-							if (E[WhichEnergy] == "2_261") { 
-								for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
-								XMin = 0.; XMax = 1.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-								YMin = 0.5; YMax = 2.8;	Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
-							}
-
-						}
-
+						XMin = 1.5; XMax = 5.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+						Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
+						
 						// -----------------------------------------------------------------------------------------------------------------------------
 
 						double ScalingFactor = TMath::Power(10.,6.) / Plots->GetMaximum();
@@ -331,16 +243,6 @@ void OverlayECalVsEQE_FigExtData9() {
 
 						}
 
-						if ( NameOfPlots[WhichPlot] == "h2_Etot_pperp" ) {
-
-//							Plots->GetXaxis()->SetTitle();
-							if (FSILabel[WhichFSIModel] == "Genie" ) { Plots->GetYaxis()->SetTitle(); Plots->GetYaxis()->SetLabelSize(0.); }
-
-							Plots->GetXaxis()->SetNdivisions(5);
-							Plots->GetYaxis()->SetNdivisions(Ndivisions);
-
-						}
-
 						// --------------------------------------------------------------------------------------------------
 
 //						TPaletteAxis *palette = (TPaletteAxis*)Plots->GetListOfFunctions()->FindObject("palette");
@@ -352,10 +254,11 @@ void OverlayECalVsEQE_FigExtData9() {
 
 					} // End of the loop over the FSI Models 
 
-//					PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/"+E[WhichEnergy]+"/"+nucleus[WhichNucleus]+"_" 
-//							+E[WhichEnergy]+"_" +OutputPlotNames[WhichPlot]+".pdf");
+					PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/"+E[WhichEnergy]+"/FigExtData9_"
+							+nucleus[WhichNucleus]+"_" 
+							+E[WhichEnergy]+"_" +OutputPlotNames[WhichPlot]+".pdf");
 
-						//delete PlotCanvas;
+					//delete PlotCanvas;
 
 				} // End of the loop over the plots
 

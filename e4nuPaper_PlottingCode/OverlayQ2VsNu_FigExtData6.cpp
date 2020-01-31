@@ -178,26 +178,22 @@ void OverlayQ2VsNu_FigExtData6() {
 						if (FSILabel[WhichFSIModel] == "Data") { sample->DrawTextNDC(0.2,0.82,FSILabel[WhichFSIModel]); }
 						else { sample->DrawTextNDC(0.05,0.82,FSILabel[WhichFSIModel]); } 
 
-						if ( NameOfPlots[WhichPlot] == "h2_Q2_nu_weight_FirstSector" ) {
+						TF1 *f1; f1 = new TF1("f1","1.876*x",0.,1.8);
+						f1->SetLineWidth(2);
+						f1->SetLineColor(kBlack);
 
-							TF1 *f1; f1 = new TF1("f1","1.876*x",0.,1.8);
-							f1->SetLineWidth(2);
-							f1->SetLineColor(kBlack);
+						TLatex *lat1 = new TLatex(); lat1->SetTextColor(1);
 
-							TLatex *lat1 = new TLatex(); lat1->SetTextColor(1);
+						f1->Draw("same");
+						lat1->SetTextFont(132);
+						lat1->SetTextSize(TextSize);
+						lat1->DrawLatex(1.22,1.85,"x_{B} = 1"); 
 
-							f1->Draw("same");
-							lat1->SetTextFont(132);
-							lat1->SetTextSize(TextSize);
-							lat1->DrawLatex(1.22,1.85,"x_{B} = 1"); 
+						if (FSILabel[WhichFSIModel] == "Genie" ) { Plots->GetYaxis()->SetTitle(); Plots->GetYaxis()->SetLabelSize(0.); }
 
-							if (FSILabel[WhichFSIModel] == "Genie" ) { Plots->GetYaxis()->SetTitle(); Plots->GetYaxis()->SetLabelSize(0.); }
-
-							Plots->GetXaxis()->SetNdivisions(Ndivisions);
-							Plots->GetYaxis()->SetNdivisions(Ndivisions);
-
-						}
-
+						Plots->GetXaxis()->SetNdivisions(Ndivisions);
+						Plots->GetYaxis()->SetNdivisions(Ndivisions);
+						
 						// --------------------------------------------------------------------------------------------------
 
 //						TPaletteAxis *palette = (TPaletteAxis*)Plots->GetListOfFunctions()->FindObject("palette");
@@ -207,7 +203,8 @@ void OverlayQ2VsNu_FigExtData6() {
 
 					} // End of the loop over the FSI Models 
 
-					PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/"+E[WhichEnergy]+"/"+nucleus[WhichNucleus]+"_" 
+					PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/"+E[WhichEnergy]
+							+"/FigExtData6_"+nucleus[WhichNucleus]+"_" 
 							+E[WhichEnergy]+"_" +OutputPlotNames[WhichPlot]+".pdf");
 
 					//delete PlotCanvas;

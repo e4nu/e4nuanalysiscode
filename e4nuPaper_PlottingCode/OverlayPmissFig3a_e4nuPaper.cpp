@@ -160,8 +160,8 @@ void OverlayPmissFig3a_e4nuPaper() {
 
 					// Dimensions of TPads (pad2 will be deleted at the very end for the Ereco plots)
 
-					double XMinPadOne = 0., XMaxPadOne = 1., YMinPadOne = 0., YMaxPadOne = 0.7;
-					double XMinPadTwo = 0., XMaxPadTwo = 1., YMinPadTwo = YMaxPadOne, YMaxPadTwo = 1.;
+					double XMinPadOne = 0., XMaxPadOne = 1., YMinPadOne = 0., YMaxPadOne = 0.6;
+					double XMinPadTwo = 0., XMaxPadTwo = 1., YMinPadTwo = YMaxPadOne+0.02, YMaxPadTwo = 1.;
 
 					// ----------------------------------------------------------------------------------------
 
@@ -349,7 +349,7 @@ void OverlayPmissFig3a_e4nuPaper() {
 //					leg->SetTextSize(TextSize);
 ////					leg->Draw();
 
-						// -----------------------------------------------------------------------------------
+					// -----------------------------------------------------------------------------------
 
 					// Transverse Missing Momentum Slices // Vertical Lines
 
@@ -372,14 +372,14 @@ void OverlayPmissFig3a_e4nuPaper() {
 //					legGenieBreak->SetTextFont(FontStyle);
 
 					pad2->cd(); 
-					legGenie->SetTextSize(2*TextSize); legGenie->Draw(); 
+					legGenie->SetTextSize(1.5*TextSize); legGenie->Draw(); 
 
 					// ---------------------------------------------------------------------------------------------------
 
 					TLatex* myNucleus = new TLatex();
 					myNucleus->SetTextFont(FontStyle);
 					myNucleus->SetTextColor(kBlack);
-					myNucleus->SetTextSize(3*TextSize);
+					myNucleus->SetTextSize(2*TextSize);
 					pad2->cd();
 					myNucleus->DrawLatexNDC(0.35,0.7,JustNucleus[WhichNucleus]+"(e,e'p)_{1p0#pi}");
 

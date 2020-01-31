@@ -17,12 +17,17 @@ gROOT->ProcessLine(".L /home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp");
 
 // Extended Data Figures
 
+//gROOT->ProcessLine(".L OverlayQ2VsNu_FigExtData6.cpp"); gROOT->ProcessLine("OverlayQ2VsNu_FigExtData6()");
 
-//gROOT->ProcessLine(".L OverlayPmiss_FigExtData7.cpp"); gROOT->ProcessLine("OverlayPmiss_FigExtData7()");
+//gROOT->ProcessLine(".L OverlayMultiplicities_FigExtData7.cpp"); gROOT->ProcessLine("OverlayMultiplicities_FigExtData7()");
 
-gROOT->ProcessLine(".L OverlayReso_FigExtData8.cpp"); gROOT->ProcessLine("OverlayReso_FigExtData8()");
+//gROOT->ProcessLine(".L OverlayReso_FigExtData8.cpp"); gROOT->ProcessLine("OverlayReso_FigExtData8()");
+
+gROOT->ProcessLine(".L OverlayECalVsEQE_FigExtData9.cpp"); gROOT->ProcessLine("OverlayECalVsEQE_FigExtData9()");
 
 //gROOT->ProcessLine(".L OverlayPmiss_FigExtData10.cpp"); gROOT->ProcessLine("OverlayPmiss_FigExtData10()");
+
+//gROOT->ProcessLine(".L OverlayECal_FigExtData11.cpp"); gROOT->ProcessLine("OverlayECal_FigExtData11()");
 
 
 // ----------------------------------------------------------------------------------------
@@ -38,7 +43,7 @@ gROOT->ProcessLine(".L OverlayReso_FigExtData8.cpp"); gROOT->ProcessLine("Overla
 
 //gROOT->ProcessLine(".L OverlayReso.cpp"); gROOT->ProcessLine("OverlayReso()");
 
-//gROOT->ProcessLine(".L Create2DPlots.cpp++"); gROOT->ProcessLine("Create2DPlots()");
+//gROOT->ProcessLine(".L ../Create2DPlots.cpp++"); gROOT->ProcessLine("Create2DPlots()");
 
 //gROOT->ProcessLine(".L OverlaySlices.cpp++"); gROOT->ProcessLine("OverlaySlices()"); // Not now
 

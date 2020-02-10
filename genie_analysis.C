@@ -311,6 +311,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 	TH2F *RadCosThetaGammaEgamma = new TH2F("RadCosThetaGammaEgamma","",100,-1.,1.,600,0.,6.);
 	TH2F *RadCosDeltaThetaGammaEgamma = new TH2F("RadCosDeltaThetaGammaEgamma","",100,-1.,1.,600,0.,6.);
+	TH2F *NonRadThetaVsPhiGamma = new TH2F("NonRadThetaVsPhiGamma","",360,0.,360.,180,0.,180.);
 
 	TH1F *h1_E_rec_1pi_weight_frac_feed=new TH1F("h1_E_rec_1pi_weight_frac_feed","",N_qe,x_qe);
 	TH1F *h1_E_rec_2pi_weight_frac_feed=new TH1F("h1_E_rec_2pi_weight_frac_feed","",N_qe,x_qe);
@@ -969,6 +970,7 @@ void genie_analysis::Loop(Int_t choice) {
 				 if(!ec_radstat_n[num_pi_phot - 1]) {
 					num_pi_phot_nonrad = num_pi_phot_nonrad + 1;
 					charge_pi[num_pi_phot - 1] = 0;
+					NonRadThetaVsPhiGamma->Fill(neut_phi_mod,V3_phot_angles.Theta()*TMath::RadToDeg(),WeightIncl);
 				 }
 			}
 

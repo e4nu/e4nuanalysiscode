@@ -60,7 +60,7 @@ void ApplySystUnc(TH1D* h, double systunc) {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-void OverlayPlots() {
+void OverlayGenieV2VsV3() {
 
 	// ------------------------------------------------------------------------
 
@@ -103,8 +103,8 @@ void OverlayPlots() {
 	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
 //	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
-	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
-//	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
+//	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
+	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
 //	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
@@ -120,18 +120,8 @@ void OverlayPlots() {
 	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
-	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-
-// Test radiative corrections
-//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM_Adi"); FSILabel.push_back("NoRad");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM_Adi"); FSILabel.push_back("Rad");  DirNames.push_back("hA2018_Truth_RadCorr");
-
-	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
-
-//	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hA2018_Truth_NoRadCorr"); FSILabel.push_back("Genie (Truth)");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hN2018_Final_NoRadCorr"); FSILabel.push_back("Genie hN2018");  DirNames.push_back("hN2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("v3");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2015_Final_NoRadCorr_RFGM"); FSILabel.push_back("v2");  DirNames.push_back("hA2015_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
 //	NameOfPlots.push_back("MissMomentum_NoWeight"); LabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum_NoWeight");
@@ -161,9 +151,6 @@ void OverlayPlots() {
 //	NameOfPlots.push_back("h1_nuCal_weight"); LabelOfPlots.push_back("Reconstructed Energy Transfer [GeV]"); OutputPlotNames.push_back("nuCal");
 //	NameOfPlots.push_back("h1_WvarCal_weight"); LabelOfPlots.push_back("Reconstructed W [GeV / c^{2})]"); OutputPlotNames.push_back("WCal");
 	NameOfPlots.push_back("h_Erec_subtruct_piplpimi_noprot_3pi"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("InclusiveeRecoEnergy_slice_0");
-//	NameOfPlots.push_back("CosDeltaThetaElectronPhotonAboveThreshold"); LabelOfPlots.push_back("cos(#Delta#theta_{e',#gamma})");  OutputPlotNames.push_back("CosDeltaThetaElectronPhotonAboveThreshold");
-//	NameOfPlots.push_back("CosDeltaPhiElectronPhotonAboveThreshold"); LabelOfPlots.push_back("cos(#Delta#phi_{e',#gamma})");  OutputPlotNames.push_back("CosDeltaPhiElectronPhotonAboveThreshold");
-//	NameOfPlots.push_back("h1_E_tot_cut2"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{Cal} Before Subtraction [GeV]");  OutputPlotNames.push_back("h1_E_tot_cut2");
 
 	std::vector<TH1D*> Plots;
 	std::vector<TH1D*> Plots_Clones;
@@ -266,10 +253,10 @@ void OverlayPlots() {
 
 					Plots.clear();
 
-////					TLegend* leg = new TLegend(0.17,0.92,0.9,0.99);
-//					TLegend* leg = new TLegend(0.3,0.92,0.9,0.99);
-//					leg->SetNColumns(3);
-////					leg->SetNColumns(2);
+//					TLegend* leg = new TLegend(0.17,0.92,0.9,0.99);
+					TLegend* leg = new TLegend(0.15,0.92,0.9,0.99);
+					leg->SetNColumns(3);
+//					leg->SetNColumns(2);
 
 					double LegXmin = 0.7, LegYmin = 0.52, YSpread = 0.35;
 					if (xBCut[WhichxBCut] == "xBCut") { LegXmin = 0.6; }
@@ -404,10 +391,10 @@ void OverlayPlots() {
 						else { Plots[WhichFSIModel]->GetYaxis()->SetTitleOffset(0.6); }
 						Plots[WhichFSIModel]->SetLineWidth(LineWidth);
 
-//						if (FSILabel[WhichFSIModel] == "Data" 
-//							&& !(NameOfPlots[WhichPlot] == "h1_Nphot" || NameOfPlots[WhichPlot] == "h1_Nprot" || NameOfPlots[WhichPlot] == "h1_Npi")) 
-//							{ leg->AddEntry(Plots[WhichFSIModel],FSILabel[WhichFSIModel], "lep");}
-//						else { leg->AddEntry(Plots[WhichFSIModel],FSILabel[WhichFSIModel], "l"); }
+						if (FSILabel[WhichFSIModel] == "Data" 
+							&& !(NameOfPlots[WhichPlot] == "h1_Nphot" || NameOfPlots[WhichPlot] == "h1_Nprot" || NameOfPlots[WhichPlot] == "h1_Npi")) 
+							{ leg->AddEntry(Plots[WhichFSIModel],FSILabel[WhichFSIModel], "lep");}
+						else { leg->AddEntry(Plots[WhichFSIModel],FSILabel[WhichFSIModel], "l"); }
 //						leg->AddEntry(Plots[WhichFSIModel],FSILabel[WhichFSIModel], "l");
 
 						// --------------------------------------------------------------------------------------
@@ -706,137 +693,6 @@ void OverlayPlots() {
 
 						if (FSILabel[WhichFSIModel] == "Data") { ApplySystUnc(Plots[WhichFSIModel], SystUnc); }
 
-						// ----------------------------------------------------------------------------------
-
-						// Genie Break Down
-/*
-						if (
-							FSILabel[WhichFSIModel] == "Genie" && 
-							//FSILabel[WhichFSIModel] == "Rad" &&
-							( (NameOfPlots[WhichPlot] == "MissMomentum" )  || 
-							NameOfPlots[WhichPlot] == "h1_Q2_weight"|| 
-							NameOfPlots[WhichPlot] == "h1_nu_weight" ||
-							NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_noprot_3pi" ||
-							NameOfPlots[WhichPlot] == "epRecoEnergy_slice_0" ||
-							NameOfPlots[WhichPlot] == "h1_el_mom_corr"
-							) 
-
-						) {
-
-							//if ( xBCut[WhichxBCut] == "NoxBCut") { 
-								//if (Plots[WhichPlot] == "MissMomentum") {
-								legGenie->AddEntry(Plots[0],"Data", "lep"); 
-								legGenieBlackLine->AddEntry(Plots[0],"Data", "lep"); 
-								//}
-								legGenie->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
-								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
-							//}
-							//else { legGenie->AddEntry(Plots[WhichFSIModel],"GENIE", "l"); }
-
-							BreakDownPlots.clear();
-
-							for (int j = 1; j < 5; j++) {
-
-								if (NameOfPlots[WhichPlot] == "MissMomentum") 
-									{ BreakDownPlots.push_back( (TH1D*)( FileSample->Get("Pmiss_Int_"+ToString(j)) ) ); }
-								if (NameOfPlots[WhichPlot] == "h1_Q2_weight") 
-									{ BreakDownPlots.push_back( (TH1D*)( FileSample->Get("Q2_Int_"+ToString(j)) ) ); }
-								if (NameOfPlots[WhichPlot] == "h1_nu_weight") 
-									{ BreakDownPlots.push_back( (TH1D*)( FileSample->Get("Nu_Int_"+ToString(j)) ) ); }
-								if (NameOfPlots[WhichPlot] == "h1_el_mom_corr") 
-									{ BreakDownPlots.push_back( (TH1D*)( FileSample->Get("Pe_Int_"+ToString(j)) ) ); }
-								if (NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_noprot_3pi") 
-								{ 
-									BreakDownPlots.push_back( (TH1D*)( FileSample->Get("InclusiveEQE_Int_"+ToString(j)) ) ); 
-									if (xBCut[WhichxBCut] == "xBCut" && DoubleE[WhichEnergy] == 1.161) {
-										BreakDownPlots[j-1]->GetXaxis()->SetRangeUser(1.05,1.35);
-										Plots[0]->GetXaxis()->SetRangeUser(1.05,1.3);
-									}
-
-									if (xBCut[WhichxBCut] == "xBCut" && DoubleE[WhichEnergy] == 4.461) {
-										BreakDownPlots[j-1]->GetXaxis()->SetRangeUser(3.5,5.5);
-										Plots[0]->GetXaxis()->SetRangeUser(3.5,5.5);
-									}
-								}
-								if (NameOfPlots[WhichPlot] == "epRecoEnergy_slice_0") 
-								{ 
-									BreakDownPlots.push_back( (TH1D*)( FileSample->Get("ECal_Int_"+ToString(j)) ) ); 
-									if (xBCut[WhichxBCut] == "xBCut" && nucleus[WhichNucleus] == "12C") {
-										BreakDownPlots[j-1]->GetXaxis()->SetRangeUser(1.5,2.4);
-										Plots[0]->GetXaxis()->SetRangeUser(1.5,2.4);
-									}
-
-									if (xBCut[WhichxBCut] == "xBCut" && nucleus[WhichNucleus] == "56Fe") {
-										BreakDownPlots[j-1]->GetXaxis()->SetRangeUser(1.7,4.8);
-										Plots[0]->GetXaxis()->SetRangeUser(1.7,4.8);
-									}
-								}
-
-								ReweightPlots(BreakDownPlots[j-1]);
-								if ( 
-									NameOfPlots[WhichPlot] != "h_Erec_subtruct_piplpimi_noprot_3pi" 
-									&& NameOfPlots[WhichPlot] != "epRecoEnergy_slice_0"
-									&& NameOfPlots[WhichPlot] != "h1_el_mom_corr"
-								) 
-									{ for (int i = 0; i < 2; i++) { BreakDownPlots[j-1]->Rebin(); } }
-								if (NameOfPlots[WhichPlot] == "h1_nu_weight") { BreakDownPlots[j-1]->Rebin(); }
-								//if (NameOfPlots[WhichPlot] == "epRecoEnergy_slice_0") { BreakDownPlots[j-1]->Rebin(); }
-								if (NameOfPlots[WhichPlot] == "h1_el_mom_corr") { BreakDownPlots[j-1]->Rebin(); }
-
-								//-----------------------------------------------------------------------------------------------
-
-								//Larry's suggestion because ECal has a sharp peak and a low tail 
-								//Thus we multiply the peak by EnhaceTail
-
-								if ( (OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_0") 
-									&& DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C" ) {
-
-									double LowE = 0.95*DoubleE[WhichEnergy];
-									int LowEBin = Plots[WhichFSIModel]->FindBin(LowE);
-									int HighEBin = Plots[WhichFSIModel]->GetNbinsX();
-
-									for (int i = LowEBin+1; i <= HighEBin; i++) { 
-					
-										double content = BreakDownPlots[j-1]->GetBinContent(i);
-										double error = BreakDownPlots[j-1]->GetBinError(i);
-										double newcontent = EnhaceTail * content;
-										double newerror = EnhaceTail * error;				
-										BreakDownPlots[j-1]->SetBinContent(i,newcontent);
-										BreakDownPlots[j-1]->SetBinError(i,newerror);
-
-									}
-
-								}
-
-								//-----------------------------------------------------------------------------------------------
-
-								BreakDownPlots[j-1]->SetLineColor(BreakDownColors[j-1]);
-
-								if (    NameOfPlots[WhichPlot] != "h_Erec_subtruct_piplpimi_noprot_3pi" 
-									&& NameOfPlots[WhichPlot] != "epRecoEnergy_slice_0") ) {
-
-									int GenieNBins = Plots[WhichFSIModel]->GetNbinsX();
-									int GenieMin = Plots[WhichFSIModel]->GetXaxis()->GetXmin();
-									int GenieMax = Plots[WhichFSIModel]->GetXaxis()->GetXmax();
-									BreakDownPlots[j-1]->SetBins(GenieNBins,GenieMin,GenieMax);
-								}
-
-								BreakDownPlots[j-1]->SetLineWidth(3);
-								BreakDownPlots[j-1]->SetLineStyle(Style[j-1]);
-								BreakDownPlots[j-1]->Scale(ScalingFactor);
-								TLegendEntry* l1 = legGenie->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
-								l1->SetTextColor(BreakDownColors[j-1]);
-
-								TLegendEntry* l1Break = legGenieBreak->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
-								l1Break->SetTextColor(BreakDownColors[j-1]);
-
-//								BreakDownPlots[j-1]->Draw("hist same");
-								BreakDownPlots[j-1]->Draw("C hist same");
-
-							} // end of the look over the GENIE break down
-
-						}
-*/
 						// ---------------------------------------------------------------------------------------------------
 
 						// Max, min, title & # divisions
@@ -1136,10 +992,10 @@ void OverlayPlots() {
 
 					} // End of the loop over the FSI Models 
 
-//					leg->SetBorderSize(0);
-//					leg->SetTextFont(FontStyle);
-//					leg->SetTextSize(TextSize);
-////					leg->Draw();
+					leg->SetBorderSize(0);
+					leg->SetTextFont(FontStyle);
+					leg->SetTextSize(TextSize);
+					leg->Draw();
 
 					legGenie->SetBorderSize(0);
 					legGenie->SetTextFont(FontStyle);

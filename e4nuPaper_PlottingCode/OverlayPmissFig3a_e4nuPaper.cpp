@@ -106,10 +106,12 @@ void OverlayPmissFig3a_e4nuPaper() {
 
 	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
-	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
+//	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
+	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(429); BreakDownColors.push_back(410); BreakDownColors.push_back(610);
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
-	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
 
 	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
 
@@ -160,8 +162,8 @@ void OverlayPmissFig3a_e4nuPaper() {
 
 					// Dimensions of TPads (pad2 will be deleted at the very end for the Ereco plots)
 
-					double XMinPadOne = 0., XMaxPadOne = 1., YMinPadOne = 0., YMaxPadOne = 0.6;
-					double XMinPadTwo = 0., XMaxPadTwo = 1., YMinPadTwo = YMaxPadOne+0.02, YMaxPadTwo = 1.;
+					double XMinPadOne = 0., XMaxPadOne = 1., YMinPadOne = 0.15, YMaxPadOne = 0.75;
+					double XMinPadTwo = 0., XMaxPadTwo = 1., YMinPadTwo = YMaxPadOne+0.02, YMaxPadTwo = 0.95;
 
 					// ----------------------------------------------------------------------------------------
 
@@ -178,12 +180,13 @@ void OverlayPmissFig3a_e4nuPaper() {
 					pad2->SetTopMargin(0.);
 					pad2->SetBottomMargin(0.);
 					pad1->cd();
+					pad1->SetFrameLineWidth(30);
 
 					// ---------------------------------------------------------------------------------------
 
 					Plots.clear();
 
-					TLegend* legGenie = new TLegend(0.15,0.1,0.9,0.5);
+					TLegend* legGenie = new TLegend(0.15,0.1,0.9,0.6);
 					legGenie->SetNColumns(3);
 
 //					TLegend* legGenieBreak = new TLegend(0.6,0.55,0.4,0.68);
@@ -212,6 +215,7 @@ void OverlayPmissFig3a_e4nuPaper() {
 						Plots[WhichFSIModel]->GetXaxis()->SetLabelSize(TextSize);
 						Plots[WhichFSIModel]->GetXaxis()->SetTitleSize(TextSize);
 						Plots[WhichFSIModel]->GetXaxis()->SetTitleOffset(1.05);
+						Plots[WhichFSIModel]->GetXaxis()->SetLabelOffset(0.02);
 						Plots[WhichFSIModel]->GetXaxis()->SetTitle(LabelOfPlots[WhichPlot]);
 
 						// --------------------------------------------------------------------------------------
@@ -372,16 +376,16 @@ void OverlayPmissFig3a_e4nuPaper() {
 //					legGenieBreak->SetTextFont(FontStyle);
 
 					pad2->cd(); 
-					legGenie->SetTextSize(1.5*TextSize); legGenie->Draw(); 
+					legGenie->SetTextSize(3.*TextSize); legGenie->Draw(); 
 
 					// ---------------------------------------------------------------------------------------------------
 
 					TLatex* myNucleus = new TLatex();
 					myNucleus->SetTextFont(FontStyle);
 					myNucleus->SetTextColor(kBlack);
-					myNucleus->SetTextSize(2*TextSize);
+					myNucleus->SetTextSize(3.5*TextSize);
 					pad2->cd();
-					myNucleus->DrawLatexNDC(0.35,0.7,JustNucleus[WhichNucleus]+"(e,e'p)_{1p0#pi}");
+					myNucleus->DrawLatexNDC(0.35,0.8,JustNucleus[WhichNucleus]+"(e,e'p)_{1p0#pi}");
 
 					// -----------------------------------------------------------------------------------------------------------------------------------------
 

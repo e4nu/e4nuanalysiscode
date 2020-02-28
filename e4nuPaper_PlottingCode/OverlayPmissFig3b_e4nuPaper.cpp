@@ -77,7 +77,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 	
 	TString version = "v3_0_6/";
 
-	double YRange[4] = {0.04,0.4,0.7,1.};
+	double YRange[4] = {0.04,0.4,0.7,0.99};
 
 	// From Mariana's analysis note
 
@@ -90,8 +90,8 @@ void OverlayPmissFig3b_e4nuPaper() {
 	// Larry/Axel's suggestion for scaling the last 2 bins by EnhaceTail
 //	double EnhaceTail = 1./4.;
 //	double EnhaceTail = 1./2.;
-	double EnhaceTail = 1./3.;
-//	double EnhaceTail = 1.;
+//	double EnhaceTail = 1./3.;
+	double EnhaceTail = 1.;
 
 	std::vector<TString> xBCut; std::vector<TString> nucleus; std::vector<TString> JustNucleus; std::vector<TString> LabelsOfSamples; 
 	std::vector<TString> E; std::vector<double> DoubleE;
@@ -120,7 +120,8 @@ void OverlayPmissFig3b_e4nuPaper() {
 	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
-	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_3"); LabelOfPlots.push_back("P_{miss}^{#perp} > 400 [MeV/c]");  OutputPlotNames.push_back("epRecoEnergy_slice_3");
 	NameOfPlots.push_back("h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_2"); LabelOfPlots.push_back("200 < P_{miss}^{#perp} < 400 [MeV/c]");  OutputPlotNames.push_back("epRecoEnergy_slice_2");
@@ -176,13 +177,13 @@ void OverlayPmissFig3b_e4nuPaper() {
 					// ----------------------------------------------------------------------------------------
 
 					TPad* pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad,XMaxPad,YMaxPad, 21); 
-					pad->SetFillColor(kWhite); pad->Draw();
+					pad->SetFillColor(kWhite); pad->SetFrameBorderSize(5); pad->Draw();
 
 					pad->SetLeftMargin(LeftMargin);
 					pad->SetRightMargin(0.05);
-					pad->SetTopMargin(0.0);
-					pad->SetBottomMargin(0.0);
-					if (WhichPlot == 0) { pad->SetBottomMargin(0.2); }
+					pad->SetTopMargin(0.01);
+					pad->SetBottomMargin(0.07);
+					if (WhichPlot == 0) { pad->SetBottomMargin(0.27); }
 					pad->cd();
 
 					// ---------------------------------------------------------------------------------------
@@ -216,6 +217,8 @@ void OverlayPmissFig3b_e4nuPaper() {
 						Plots[WhichFSIModel]->GetXaxis()->SetTitleSize(TextSize);
 						Plots[WhichFSIModel]->GetXaxis()->SetTitleOffset(1.05);
 						Plots[WhichFSIModel]->GetXaxis()->SetNdivisions(5);
+						if (WhichPlot != 0) { Plots[WhichFSIModel]->GetXaxis()->SetLabelSize(0.); }
+					        else { Plots[WhichFSIModel]->GetXaxis()->SetLabelSize(0.13); }
 
 						// --------------------------------------------------------------------------------------
 
@@ -228,6 +231,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 						Plots[WhichFSIModel]->GetYaxis()->SetTickSize(0.02);
 						Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(Ndivisions);
 						Plots[WhichFSIModel]->GetYaxis()->SetTitleOffset(0.35);
+					        if (WhichPlot == 0) { Plots[WhichFSIModel]->GetXaxis()->SetLabelSize(0.13); }
 
 						//-----------------------------------------------------------------------------------------------
 
@@ -272,7 +276,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 
 						// Rebining & ranges
 
-						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.6,2.5);
+						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.6,2.35);
 
 						// ----------------------------------------------------------------------------------
 
@@ -291,7 +295,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 
 						double localmax = Plots[WhichFSIModel]->GetMaximum();
 						if (localmax > max) { max = localmax; }
-						double height = 1.05;
+						double height = 1.2;
 						Plots[0]->GetYaxis()->SetRangeUser(0.,height*max);
 
 						double localmin = Plots[WhichFSIModel]->GetBinContent(Plots[WhichFSIModel]->FindBin(4)); // multiplicity 4 is the highest one in data
@@ -302,10 +306,8 @@ void OverlayPmissFig3b_e4nuPaper() {
 						if (FSILabel[WhichFSIModel] == "Data") { 
 
 							Plots[WhichFSIModel]->SetMarkerStyle(20); 
-							Plots[WhichFSIModel]->SetMarkerSize(2.); 
 							Plots[WhichFSIModel]->SetMarkerColor(kBlack); 
-
-							Plots[WhichFSIModel]->SetMarkerSize(3.);
+							Plots[WhichFSIModel]->SetMarkerSize(2.);
 							gStyle->SetErrorX(0); // Removing the horizontal errors
 							Plots[WhichFSIModel]->Draw("e same"); 
 
@@ -324,7 +326,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 						pad->cd();
 						if (OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_3") { 
 							myPmissSlice->SetTextSize(TextSize-0.02);
-							myPmissSlice->DrawLatexNDC(0.3,0.3,LabelOfPlots[WhichPlot]); 
+							myPmissSlice->DrawLatexNDC(0.35,0.35,LabelOfPlots[WhichPlot]); 
 						}
 						else { myPmissSlice->DrawLatexNDC(0.2,0.8,LabelOfPlots[WhichPlot]); }
 
@@ -335,7 +337,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 						TLine* line1 = new TLine(LowE,0.,LowE,height*max);
 						line1->SetLineColor(kBlack); 
 						line1->SetLineWidth(LineWidth);
-						if ( OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_1" ) { line1->Draw(); }
+						//if ( OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_1" ) { line1->Draw(); }
 
 						// -----------------------------------------------------------------------------------
 
@@ -345,7 +347,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 						latexScale.SetTextFont(FontStyle);
 						latexScale.SetTextSize(TextSize);
 						latexScale.SetTextColor(kBlack);
-						if ( OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_1" ) { latexScale.DrawLatexNDC(0.85,0.47,"x1/3"); }
+						//if ( OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_1" ) { latexScale.DrawLatexNDC(0.85,0.47,"x1/3"); }
 
 					} // End of the loop over the FSI Models 
 
@@ -356,7 +358,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 				// Extra pad to add the X-axis label
 
 				PlotCanvas->cd();
-				TPad* padLabel = new TPad("padLabel","padLabel",0.,0.,1.,1.5*YPadStart, 21); 
+				TPad* padLabel = new TPad("padLabel","padLabel",0.,0.,1.,0.07, 21); 
 				padLabel->SetFillColor(kWhite); padLabel->Draw();
 
 				padLabel->SetLeftMargin(0.);
@@ -367,9 +369,9 @@ void OverlayPmissFig3b_e4nuPaper() {
 
 				TLatex latexXTitle;
 				latexXTitle.SetTextFont(FontStyle);
-				latexXTitle.SetTextSize(6*TextSize);
+				latexXTitle.SetTextSize(5*TextSize);
 				latexXTitle.SetTextColor(kBlack);
-				latexXTitle.DrawLatexNDC(0.4,0.2,"E^{Cal} [GeV]");
+				latexXTitle.DrawLatexNDC(0.25,0.5,"(e,e'p)_{1p0#pi} E_{cal} [GeV]");
 
 				// -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -393,18 +395,18 @@ void OverlayPmissFig3b_e4nuPaper() {
 				// Pads to get rid of some 0's on the axes
 
 				PlotCanvas->cd();
-				TPad* padWhite1 = new TPad("padWhite1","padWhite1",0.06,0.67,0.11,0.72, 21); 
+				TPad* padWhite1 = new TPad("padWhite1","padWhite1",0.06,0.67,0.105,0.72, 21); 
 				padWhite1->SetFillColor(kWhite); 
 //				padWhite1->SetFillColor(kBlack); 
-				padWhite1->Draw();
-				padWhite1->cd();
+				//padWhite1->Draw();
+				//padWhite1->cd();
 
 				PlotCanvas->cd();
-				TPad* padWhite2 = new TPad("padWhite2","padWhite2",0.06,0.4,0.11,0.45, 21); 
+				TPad* padWhite2 = new TPad("padWhite2","padWhite2",0.06,0.4,0.105,0.45, 21); 
 				padWhite2->SetFillColor(kWhite); 
 //				padWhite2->SetFillColor(kBlack);
-				padWhite2->Draw();
-				padWhite2->cd();				
+				//padWhite2->Draw();
+				//padWhite2->cd();				
 
 				// -----------------------------------------------------------------------------------------------------------------------------------------
 

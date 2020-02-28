@@ -68,7 +68,7 @@ void OverlayEQE_Fig2() {
 	TGaxis::SetMaxDigits(3);
 //	TGaxis::SetExponentOffset(-0.1, 1., "y");
 
-	int Ndivisions = 4;
+	int Ndivisions = 6;
 	int LineWidth = 3;
 	int FontStyle = 132;
 	double TextSize = 0.08;
@@ -117,11 +117,13 @@ void OverlayEQE_Fig2() {
 //	Style.push_back(9); Style.push_back(9); Style.push_back(9); Style.push_back(9); // fancy dashed lines 
 	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
-	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
+//	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
+	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(429); BreakDownColors.push_back(410); BreakDownColors.push_back(610);
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
 
 	NameOfPlots.push_back("h_Erec_subtruct_piplpimi_noprot_3pi"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("InclusiveeRecoEnergy_slice_0");
 
@@ -173,10 +175,12 @@ void OverlayEQE_Fig2() {
 					TPad* pad1 = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPadOne,YMinPadOne,XMaxPadOne,YMaxPadOne, 21); 
 					pad1->SetFillColor(kWhite); pad1->Draw();
 					pad1->SetTopMargin(0.1);
-					pad1->SetBottomMargin(0.19);
+					pad1->SetBottomMargin(0.23);
 					pad1->SetLeftMargin(0.1); 
 					pad1->SetRightMargin(0.04);
 					pad1->cd();
+
+pad1->SetFrameLineWidth(30);
 
 					// ---------------------------------------------------------------------------------------
 
@@ -207,7 +211,7 @@ void OverlayEQE_Fig2() {
 						Plots.push_back( (TH1D*)( FileSample->Get(NameOfPlots[WhichPlot]) ) );
 
 						Plots[WhichFSIModel]->SetLineColor(Colors[WhichFSIModel]);
-						CenterAxisTitle(Plots[WhichFSIModel]);
+						//CenterAxisTitle(Plots[WhichFSIModel]);
 						Plots[WhichFSIModel]->SetLineWidth(LineWidth);
 
 						// --------------------------------------------------------------------------------------
@@ -218,15 +222,18 @@ void OverlayEQE_Fig2() {
 						Plots[WhichFSIModel]->GetXaxis()->SetTitleFont(FontStyle);
 						Plots[WhichFSIModel]->GetXaxis()->SetLabelSize(TextSize);
 						Plots[WhichFSIModel]->GetXaxis()->SetTitleSize(TextSize);
-						Plots[WhichFSIModel]->GetXaxis()->SetTitleOffset(1.05);
+						Plots[WhichFSIModel]->GetXaxis()->SetTitleOffset(1.3);
+						Plots[WhichFSIModel]->GetXaxis()->SetLabelOffset(0.02);
 						Plots[WhichFSIModel]->GetXaxis()->SetTitle(JustNucleus[WhichNucleus]+LabelOfPlots[WhichPlot]);
+						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.45,1.5);
+
 
 						// --------------------------------------------------------------------------------------
 
 						// Y-axis label
 
 						Plots[WhichFSIModel]->GetYaxis()->SetTitleSize(TextSize); 
-						Plots[WhichFSIModel]->GetYaxis()->SetTickSize(0.);
+						//Plots[WhichFSIModel]->GetYaxis()->SetTickSize(0.);
 						Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(TextSize);
 						Plots[WhichFSIModel]->GetYaxis()->SetTitle("Weighted Events / GeV");
 
@@ -319,7 +326,7 @@ void OverlayEQE_Fig2() {
 						Plots[0]->GetXaxis()->SetTitle(XLabel);
 
 						Plots[WhichFSIModel]->GetXaxis()->SetNdivisions(Ndivisions);
-						Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(Ndivisions);
+						Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(Ndivisions/2);
 
 						// --------------------------------------------------------------------------------------------------
 
@@ -372,7 +379,7 @@ void OverlayEQE_Fig2() {
 					myEbeam->SetTextFont(FontStyle);
 					myEbeam->SetTextColor(kAzure+4);
 					myEbeam->SetTextSize(TextSize-0.02);
-					myEbeam->DrawLatexNDC(0.67,0.34,"E_{beam}");
+					myEbeam->DrawLatex(1.161- 0.5*(myEbeam->GetXsize ()),0.52,"E_{beam}");
 
 					TLatex* myArrow = new TLatex();
 					myArrow->SetTextFont(FontStyle);

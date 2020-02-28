@@ -50,6 +50,7 @@ void OverlayQ2VsNu_FigExtData6() {
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
+//	NameOfPlots.push_back("h2_Q2_nu_weight"); 
 	NameOfPlots.push_back("h2_Q2_nu_weight_FirstSector"); 
 	XLabelOfPlots.push_back("Energy Transfer [GeV]"); 
 	YLabelOfPlots.push_back("Q^{2} [GeV^{2}/c^{2}]"); 
@@ -152,14 +153,15 @@ void OverlayQ2VsNu_FigExtData6() {
 
 						// Rebinning & Ranges
 
+//						for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
+						for (int i = 0; i < 0; i++) { Plots->Rebin2D(); }
+
+						XMin = 0.; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+						YMin = 0.; YMax = 2.;	Plots->GetYaxis()->SetRangeUser(YMin,YMax);
+
 						Plots->GetZaxis()->SetRangeUser(1.,Plots->GetMaximum());
 						double XMin =-99.,XMax =-99.;
 						double YMin =-99.,YMax =-99.;
-
-//						for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
-						for (int i = 0; i < 0; i++) { Plots->Rebin2D(); }
-						XMin = 0.; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-						YMin = 0.; YMax = 2.;	Plots->GetYaxis()->SetRangeUser(YMin,YMax);
 
 						// -----------------------------------------------------------------------------------------------------------------------------
 

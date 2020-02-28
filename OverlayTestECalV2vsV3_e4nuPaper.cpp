@@ -60,7 +60,7 @@ void ApplySystUnc(TH1D* h, double systunc) {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-void OverlayECalFig4_e4nuPaper() {
+void OverlayTestECalV2vsV3_e4nuPaper() {
 
 	// ------------------------------------------------------------------------
 
@@ -113,13 +113,12 @@ void OverlayECalFig4_e4nuPaper() {
 
 	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
-//	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
-	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(429); BreakDownColors.push_back(410); BreakDownColors.push_back(610);
+	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
-//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("v3");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2015_Final_NoRadCorr_RFGM"); FSILabel.push_back("v2");  DirNames.push_back("hA2015_Truth_NoRadCorr");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
 
@@ -185,9 +184,8 @@ void OverlayECalFig4_e4nuPaper() {
 
 					pad->SetBottomMargin(0.15);
 					pad->SetTopMargin(0.);
-					pad->SetLeftMargin(0.);
-					pad->SetRightMargin(0.);
-					pad->SetFrameBorderSize(3);
+					pad->SetLeftMargin(0.017);
+					pad->SetRightMargin(0.005);
 
 					// ---------------------------------------------------------------------------------------------------------------------------
 
@@ -199,13 +197,11 @@ void OverlayECalFig4_e4nuPaper() {
 
 					Plots.clear();
 
-					TLegend* legGenieBlackLine = new TLegend(0.1,0.5,0.6,1.);
+					TLegend* legGenieBlackLine = new TLegend(0.05,0.05,0.95,0.95);
 					legGenieBlackLine->SetNColumns(1);
-					legGenieBlackLine->SetTextFont(FontStyle); 
 
-					TLegend* legGenieBreak = new TLegend(0.1,0.,0.9,0.5);
+					TLegend* legGenieBreak = new TLegend(0.13,0.25,0.55,0.45);
 					legGenieBreak->SetNColumns(2);
-					legGenieBreak->SetTextFont(FontStyle);
 
 					double max = -99.;
 					double min = 1E12;
@@ -214,11 +210,13 @@ void OverlayECalFig4_e4nuPaper() {
 
 					for (int WhichFSIModel = 0; WhichFSIModel < NFSIModels; WhichFSIModel ++) {
 
-						TString PathToFiles = "../../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[WhichFSIModel]+"/"+xBCut[WhichxBCut]+"/";
+						TString PathToFiles = "../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[WhichFSIModel]+"/"+xBCut[WhichxBCut]+"/";
 						TString FileName = PathToFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+FSIModel[WhichFSIModel]+"_Plots_FSI_em.root";
 						TFile* FileSample = TFile::Open(FileName);
-
+if (!FileSample) { continue; }
 						Plots.push_back( (TH1D*)( FileSample->Get(NameOfPlots[WhichPlot]) ) );
+
+if (!Plots[WhichFSIModel]) { continue; }
 
 						Plots[WhichFSIModel]->SetLineColor(Colors[WhichFSIModel]);
 						CenterAxisTitle(Plots[WhichFSIModel]);
@@ -285,9 +283,9 @@ void OverlayECalFig4_e4nuPaper() {
 
 						// Rebining & ranges
 
-						if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.6,1.23); }
-						if (DoubleE[WhichEnergy] == 2.261) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.7,2.4); }
-						if (DoubleE[WhichEnergy] == 4.461) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.3,4.6); }
+						if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.5,1.3); }
+						if (DoubleE[WhichEnergy] == 2.261) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.6,2.5); }
+						if (DoubleE[WhichEnergy] == 4.461) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.,4.8); }
 
 						// ----------------------------------------------------------------------------------
 
@@ -304,70 +302,9 @@ void OverlayECalFig4_e4nuPaper() {
 
 						// Genie Break Down
 
-						if (
-							FSILabel[WhichFSIModel] == "Genie"
-						) {
-
-							legGenieBlackLine->AddEntry(Plots[0],"Data", "lep"); 
-							legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
-
-							BreakDownPlots.clear();
-
-							for (int j = 1; j < 5; j++) {
-
-								BreakDownPlots.push_back( (TH1D*)( FileSample->Get("ECal_Int_"+ToString(j)) ) );
-								ReweightPlots(BreakDownPlots[j-1]);
-
-								//for (int i = 0; i < 2; i++) { BreakDownPlots[j-1]->Rebin(); }
-
-								//-----------------------------------------------------------------------------------------------
-
-								BreakDownPlots[j-1]->SetLineColor(BreakDownColors[j-1]);
-
-//								int GenieNBins = Plots[WhichFSIModel]->GetNbinsX();
-//								int GenieMin = Plots[WhichFSIModel]->GetXaxis()->GetXmin();
-//								int GenieMax = Plots[WhichFSIModel]->GetXaxis()->GetXmax();
-//								BreakDownPlots[j-1]->SetBins(GenieNBins,GenieMin,GenieMax);
-								
-								BreakDownPlots[j-1]->SetLineWidth(LineWidth);
-								BreakDownPlots[j-1]->SetLineStyle(Style[j-1]);
-								BreakDownPlots[j-1]->Scale(ScalingFactor);
-
-								//-----------------------------------------------------------------------------------------------
-
-								//Larry's suggestion because ECal has a sharp peak and a low tail 
-								//Thus we multiply the peak by EnhaceTail
-
-								if ( DoubleE[WhichEnergy] == 2.261 ) {
-
-									double LowE = 0.95*DoubleE[WhichEnergy];
-									int LowEBin = Plots[WhichFSIModel]->FindBin(LowE);
-									int HighEBin = Plots[WhichFSIModel]->GetNbinsX();
-
-									for (int i = LowEBin+1; i <= HighEBin; i++) { 
-					
-										double content = BreakDownPlots[j-1]->GetBinContent(i);
-										double error = BreakDownPlots[j-1]->GetBinError(i);
-										double newcontent = EnhaceTail * content;
-										double newerror = EnhaceTail * error;				
-										BreakDownPlots[j-1]->SetBinContent(i,newcontent);
-										BreakDownPlots[j-1]->SetBinError(i,newerror);
-
-									}
-
-								}
-
-								//-----------------------------------------------------------------------------------------------
-
-								TLegendEntry* l1Break = legGenieBreak->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
-								l1Break->SetTextColor(BreakDownColors[j-1]);
-
-//								BreakDownPlots[j-1]->Draw("hist same");
-								BreakDownPlots[j-1]->Draw("C hist same");
-
-							} // end of the look over the GENIE break down
-
-						}
+						if (FSILabel[WhichFSIModel] == "Data") legGenieBlackLine->AddEntry(Plots[0],"Data", "lep");
+						else { legGenieBlackLine->AddEntry(Plots[WhichFSIModel],FSILabel[WhichFSIModel], "l");  }
+						//legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
 
 						// ---------------------------------------------------------------------------------------------------
 
@@ -375,9 +312,8 @@ void OverlayECalFig4_e4nuPaper() {
 
 						double localmax = Plots[WhichFSIModel]->GetMaximum();
 						if (localmax > max) { max = localmax; }
-						double height = 1.15;
+						double height = 1.05;
 						if ( xBCut[WhichxBCut] == "xBCut" ) { height = 1.1; }
-						if ( DoubleE[WhichEnergy] == 2.261 ) { height = 1.4; }
 						Plots[0]->GetYaxis()->SetRangeUser(0.,height*max);
 
 						double localmin = Plots[WhichFSIModel]->GetBinContent(Plots[WhichFSIModel]->FindBin(4)); // multiplicity 4 is the highest one in data
@@ -391,14 +327,14 @@ void OverlayECalFig4_e4nuPaper() {
 						TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],height*max);
 						line->SetLineColor(kBlack); 
 						line->SetLineWidth(LineWidth);
-						if ( FSILabel[WhichFSIModel] == "Genie" && DoubleE[WhichEnergy] == 2.261) { line->Draw(); }
+						if ( FSILabel[WhichFSIModel] == "Genie") { line->Draw(); }
 
 						// --------------------------------------------------------------------------------------------------
 
 						if (FSILabel[WhichFSIModel] == "Data") { 
 
 							Plots[WhichFSIModel]->SetMarkerStyle(20); 
-							Plots[WhichFSIModel]->SetMarkerSize(1.5); 
+							Plots[WhichFSIModel]->SetMarkerSize(2.); 
 							Plots[WhichFSIModel]->SetMarkerColor(kBlack); 
 
 							gStyle->SetErrorX(0); // Removing the horizontal errors
@@ -414,20 +350,14 @@ void OverlayECalFig4_e4nuPaper() {
 
 					} // End of the loop over the FSI Models 
 
-					if ( nucleus[WhichNucleus] == "12C" && DoubleE[WhichEnergy] == 1.161) { 
-
-//						legGenieBlackLine->SetBorderSize(0); 
-						legGenieBlackLine->SetNColumns(1); 
-//						legGenieBlackLine->SetTextSize(1.5*TextSize); 
-//						legGenieBlackLine->SetTextFont(FontStyle); 
-						//legGenieBlackLine->Draw(); 
+//					if ( nucleus[WhichNucleus] == "12C" && DoubleE[WhichEnergy] == 1.161) {  
 
 //						legGenieBreak->SetBorderSize(0); 
 //						legGenieBreak->SetTextSize(1.5*TextSize);
 //						legGenieBreak->SetTextFont(FontStyle);  
-						//legGenieBreak->Draw();
+//						legGenieBreak->Draw();
 
-					}
+//					}
 
 					// -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -451,11 +381,11 @@ void OverlayECalFig4_e4nuPaper() {
 		latexIron.SetTextFont(FontStyle);
 		latexIron.SetTextSize(TextSize);
 		PlotCanvas->cd();
-		latexIron.DrawLatexNDC(0.325,0.37,"^{56}Fe");
+		latexIron.DrawLatexNDC(0.31,0.37,"^{56}Fe");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
-		TPad* pad1GeV = new TPad("pad1GeV","pad1GeV",0.09,0.89,0.26,0.99,21); 
+		TPad* pad1GeV = new TPad("pad1GeV","pad1GeV",0.09,0.85,0.26,0.95,21); 
 		pad1GeV->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		pad1GeV->Draw();
@@ -463,12 +393,12 @@ void OverlayECalFig4_e4nuPaper() {
 
 		TLatex latex1GeV;
 		latex1GeV.SetTextFont(FontStyle);
-		latex1GeV.SetTextSize(8*TextSize);
-		latex1GeV.DrawLatexNDC(0.03,0.4,"1.161 GeV");
+		latex1GeV.SetTextSize(10*TextSize);
+		latex1GeV.DrawLatexNDC(0.1,0.4,"1.161 GeV");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
-		TPad* pad2GeV = new TPad("pad2GeV","pad2GeV",0.4,0.89,0.6,0.99,21); 
+		TPad* pad2GeV = new TPad("pad2GeV","pad2GeV",0.4,0.85,0.6,0.95,21); 
 		pad2GeV->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		pad2GeV->Draw();
@@ -476,12 +406,12 @@ void OverlayECalFig4_e4nuPaper() {
 
 		TLatex latex2GeV;
 		latex2GeV.SetTextFont(FontStyle);
-		latex2GeV.SetTextSize(8*TextSize);
-		latex2GeV.DrawLatexNDC(0.05,0.4,"2.261 GeV");
+		latex2GeV.SetTextSize(10*TextSize);
+		latex2GeV.DrawLatexNDC(0.3,0.4,"2.261 GeV");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
-		TPad* pad4GeV = new TPad("pad4GeV","pad4GeV",0.7,0.89,0.9,0.99,21); 
+		TPad* pad4GeV = new TPad("pad4GeV","pad4GeV",0.7,0.85,0.9,0.95,21); 
 		pad4GeV->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		pad4GeV->Draw();
@@ -489,13 +419,12 @@ void OverlayECalFig4_e4nuPaper() {
 
 		TLatex latex4GeV;
 		latex4GeV.SetTextFont(FontStyle);
-		latex4GeV.SetTextSize(8*TextSize);
-		latex4GeV.DrawLatexNDC(0.1,0.4,"4.461 GeV");
+		latex4GeV.SetTextSize(10*TextSize);
+		latex4GeV.DrawLatexNDC(0.3,0.4,"4.461 GeV");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
-//		TPad* padPmiss = new TPad("padPmiss","padPmiss",0.55,0.03,0.9,0.16,21); 
-		TPad* padPmiss = new TPad("padPmiss","padPmiss",0.4,0.03,0.75,0.16,21); 
+		TPad* padPmiss = new TPad("padPmiss","padPmiss",0.59,0.03,0.79,0.13,21); 
 		padPmiss->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		padPmiss->Draw();
@@ -503,12 +432,12 @@ void OverlayECalFig4_e4nuPaper() {
 
 		TLatex latexPmiss;
 		latexPmiss.SetTextFont(FontStyle);
-		latexPmiss.SetTextSize(8*TextSize);
-		latexPmiss.DrawLatexNDC(0.05,0.5,"(e,e'p)_{1p0#pi} E_{cal} [GeV]");
+		latexPmiss.SetTextSize(10*TextSize);
+		latexPmiss.DrawLatexNDC(0.2,0.3,"E^{Cal} [GeV]");
 
 		// -------------------------------------------------------------------------------------------------
 	
-		TPad* padx13C12 = new TPad("padx13C12","padx13C12",0.65,0.89,0.688,0.99,21); 
+		TPad* padx13C12 = new TPad("padx13C12","padx13C12",0.65,0.7,0.688,0.8,21); 
 		padx13C12->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		padx13C12->Draw();
@@ -521,7 +450,7 @@ void OverlayECalFig4_e4nuPaper() {
 
 		// -------------------------------------------------------------------------------------------------
 	
-		TPad* padx13Fe56 = new TPad("padx13Fe56","padx13Fe56",0.65,0.51,0.688,0.61,21); 
+		TPad* padx13Fe56 = new TPad("padx13Fe56","padx13Fe56",0.65,0.3,0.688,0.4,21); 
 		padx13Fe56->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		padx13Fe56->Draw();
@@ -530,66 +459,28 @@ void OverlayECalFig4_e4nuPaper() {
 		TLatex latexx13F56;
 		latexx13F56.SetTextFont(FontStyle);
 		latexx13F56.SetTextSize(8*TextSize);
-		latexx13F56.DrawLatexNDC(0.,0.42,"x1/3");
+		latexx13F56.DrawLatexNDC(0.,0.4,"x1/3");
 
-		// -----------------------------------------------------------------------------------------------------------------------------------------
-
-		// Extra pad for the legend
-
+		// -------------------------------------------------------------------------------------------------
+	
+		TPad* padLeg = new TPad("padLeg","padLeg",0.1,0.2,0.3,0.5,21); 
+		padLeg->SetFillColor(kWhite); 
 		PlotCanvas->cd();
-		TPad* padLegend = new TPad("padLegend","padLegend",0.07,0.21,0.32,0.55, 21); 
-		padLegend->SetFillColor(kWhite); 
-		padLegend->Draw();
-		padLegend->cd();
+		padLeg->Draw();
+		padLeg->cd();
 
-		legGenieBlackLine->SetTextSize(2.5*TextSize); 
 		legGenieBlackLine->SetBorderSize(0); 
+		legGenieBlackLine->SetNColumns(1); 
+		legGenieBlackLine->SetTextSize(3.*TextSize); 
+		legGenieBlackLine->SetTextFont(FontStyle); 
 		legGenieBlackLine->Draw();
-
-		legGenieBreak->SetTextSize(2.5*TextSize); 
-		legGenieBreak->SetBorderSize(0); 
-		legGenieBreak->Draw();
-
-		// -----------------------------------------------------------------------------------------------------------------------------------------
-
-		// Extra pad for the Y-axis units carbon
-
-		PlotCanvas->cd();
-		TPad* padTitle = new TPad("padTitle","padTitle",0.047,0.57,0.069,1., 21); 
-		padTitle->SetFillColor(kWhite); 
-		padTitle->Draw();
-		padTitle->cd();
-
-		TLatex latexYTitle;
-		latexYTitle.SetTextFont(FontStyle);
-		latexYTitle.SetTextSize(12*TextSize);
-		latexYTitle.SetTextColor(kBlack);
-		latexYTitle.SetTextAngle(90);
-		latexYTitle.DrawLatexNDC(0.7,0.1,"Weighted Counts");
-
-		// -----------------------------------------------------------------------------------------------------------------------------------------
-
-//		// Extra pad for the Y-axis units iron
-
-//		PlotCanvas->cd();
-//		TPad* padTitleFe = new TPad("padTitleFe","padTitleFe",0.2,0.1,0.4,0.5,21); 
-//		padTitleFe->SetFillColor(kBlack); 
-//		padTitleFe->Draw();
-//		padTitleFe->cd();
-
-//		TLatex latexYTitleFe;
-//		latexYTitleFe.SetTextFont(FontStyle);
-//		latexYTitleFe.SetTextSize(12*TextSize);
-//		latexYTitleFe.SetTextColor(kBlack);
-//		latexYTitleFe.SetTextAngle(90);
-//		latexYTitleFe.DrawLatexNDC(0.6,0.1,"Weighted Counts");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
 		TString ext = "";
 		if ( xBCut[WhichxBCut] == "xBCut" ) { ext = "xB_"; } 
 
-		PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+ext+"Fig4"+WhatModelsAreIncluded+".pdf");
+		PlotCanvas->SaveAs("../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+ext+"TestGenieV2vsV3"+WhatModelsAreIncluded+".pdf");
 
 		//delete PlotCanvas;
 

@@ -151,6 +151,10 @@ void OverlayECalVsEQE_FigExtData9() {
 
 						// Rebinning & Ranges
 
+
+//						for (int i = 0; i < 4; i++) { Plots->Rebin2D(); }
+						for (int i = 0; i < 2; i++) { Plots->Rebin2D(); }
+
 						Plots->GetZaxis()->SetRangeUser(1.,Plots->GetMaximum());
 						double XMin =-99.,XMax =-99.;
 						double YMin =-99.,YMax =-99.;
@@ -158,9 +162,6 @@ void OverlayECalVsEQE_FigExtData9() {
 //						PlotCanvas->SetLogz();
 						pad1->SetLogz();
 						pad2->SetLogz();
-
-//						for (int i = 0; i < 4; i++) { Plots->Rebin2D(); }
-						for (int i = 0; i < 2; i++) { Plots->Rebin2D(); }
 
 						XMin = 1.5; XMax = 5.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
 						Plots->GetYaxis()->SetRangeUser(XMin,XMax); 

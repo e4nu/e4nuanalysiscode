@@ -111,7 +111,7 @@ void OverlayPmissFig3a_e4nuPaper() {
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
 
@@ -162,8 +162,8 @@ void OverlayPmissFig3a_e4nuPaper() {
 
 					// Dimensions of TPads (pad2 will be deleted at the very end for the Ereco plots)
 
-					double XMinPadOne = 0., XMaxPadOne = 1., YMinPadOne = 0.15, YMaxPadOne = 0.75;
-					double XMinPadTwo = 0., XMaxPadTwo = 1., YMinPadTwo = YMaxPadOne+0.02, YMaxPadTwo = 0.95;
+					double XMinPadOne = 0., XMaxPadOne = 1., YMinPadOne = 0.15, YMaxPadOne = 0.7;
+					double XMinPadTwo = 0., XMaxPadTwo = 1., YMinPadTwo = YMaxPadOne, YMaxPadTwo = 0.85;
 
 					// ----------------------------------------------------------------------------------------
 
@@ -385,7 +385,7 @@ void OverlayPmissFig3a_e4nuPaper() {
 					myNucleus->SetTextColor(kBlack);
 					myNucleus->SetTextSize(3.5*TextSize);
 					pad2->cd();
-					myNucleus->DrawLatexNDC(0.35,0.8,JustNucleus[WhichNucleus]+"(e,e'p)_{1p0#pi}");
+					myNucleus->DrawLatexNDC(0.25,0.8,JustNucleus[WhichNucleus]+"(e,e'p)_{1p0#pi}"+LabelE[WhichEnergy]);
 
 					// -----------------------------------------------------------------------------------------------------------------------------------------
 

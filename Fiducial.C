@@ -1136,8 +1136,8 @@ Bool_t Fiducial::PFiducialCut(std::string beam_en, TVector3 momentum){
       }
       if(status && SCpdcut){ // cut bad scintillator paddles
   			Int_t tsector = sector + 1;
-  			Float_t mom_scpd = p;     // momentum for bad sc paddles cuts
-        //in Marianas new code it is Float_t mom_scpd = momentum.Mag();
+  			Float_t mom_scpd = momentum.Mag();     // momentum for bad sc paddles cuts
+        //in Marianas new code it is Float_t mom_scpd = momentum.Mag(), previoulsy it was mom_scpd = p;
         //thus if condition of p 40 lines above is not used. Is this correct F.H. 10/31/19
       	//NOT USED if (mom_scpd>1.0)mom_scpd=1.0; // momentum greater than 1000 MeV/c, use 1000 MeV/c
       	if (mom_scpd<0.15)mom_scpd=0.15; // momentum smaller than 150 MeV/c, use 150 MeV/c
@@ -1690,8 +1690,8 @@ Bool_t Fiducial::PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t
       }
       if(status && SCpdcut){ // cut bad scintillator paddles
   			Int_t tsector = sector + 1;
-  			Float_t mom_scpd = p;          // momentum for bad sc paddles cuts
-        //F.H. 10/31/19 Mariana's update uses Float_t mom_scpd =momentum.Mag(); but this skips if conditions above on "p"
+  			Float_t mom_scpd = momentum.Mag();          // momentum for bad sc paddles cuts
+        //F.H. 10/31/19 Mariana's update mom_scpd =momentum.Mag() compared to mom_scpd= p before; but this skips if conditions above on "p"
         //NOT USED by Mariana's update  if (mom_scpd>1.0)mom_scpd=1.0; // momentum greater than 1000 MeV/c, use 1000 MeV/c
         if (mom_scpd<0.2)mom_scpd=0.2; // momentum smaller than 200 MeV/c, use 200 MeV/c
 

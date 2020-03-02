@@ -3,23 +3,32 @@
 xB=NoxBCut
 #xB=xBCut
 
-# Genie Samples
+JLabPath=/u/home/apapadop/e4nu
+LocalPath=/home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles
 
-echo "/home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/1_161/hA2018_Final_NoRadCorr/$xB/12C_1_161_hA2018_Final_NoRadCorr_Plots_FSI_em.root"
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/genie_e2a_ep_C12_1161_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/1_161/hA2018_Final_NoRadCorr/$xB/12C_1_161_hA2018_Final_NoRadCorr_Plots_FSI_em.root
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/genie_e2a_ep_4He_2261_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/2_261/hA2018_Final_NoRadCorr/$xB/4He_2_261_hA2018_Final_NoRadCorr_Plots_FSI_em.root
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/genie_e2a_ep_C12_2261_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/2_261/hA2018_Final_NoRadCorr/$xB/12C_2_261_hA2018_Final_NoRadCorr_Plots_FSI_em.root
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/genie_e2a_ep_56Fe_2261_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/2_261/hA2018_Final_NoRadCorr/$xB/56Fe_2_261_hA2018_Final_NoRadCorr_Plots_FSI_em.root
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/genie_e2a_ep_4He_4461_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/4_461/hA2018_Final_NoRadCorr/$xB/4He_4_461_hA2018_Final_NoRadCorr_Plots_FSI_em.root
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/genie_e2a_ep_C12_4461_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/4_461/hA2018_Final_NoRadCorr/$xB/12C_4_461_hA2018_Final_NoRadCorr_Plots_FSI_em.root
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/genie_e2a_ep_56Fe_4461_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/4_461/hA2018_Final_NoRadCorr/$xB/56Fe_4_461_hA2018_Final_NoRadCorr_Plots_FSI_em.root
+JLabAccount=apapadop@ftp.jlab.org
 
-# Data Samples
+DataExtension=Data_Final
+GENIEExtension=hA2018_Final_NoRadCorr_LFGM
 
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/data_e2a_ep_C12_1161_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/1_161/Data_Final/$xB/12C_1_161_Data_Final_Plots_FSI_em.root
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/data_e2a_ep_4He_2261_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/2_261/Data_Final/$xB/4He_2_261_Data_Final_Plots_FSI_em.root
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/data_e2a_ep_C12_2261_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/2_261/Data_Final/$xB/12C_2_261_Data_Final_Plots_FSI_em.root
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/data_e2a_ep_56Fe_2261_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/2_261/Data_Final/$xB/56Fe_2_261_Data_Final_Plots_FSI_em.root
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/data_e2a_ep_4He_4461_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/4_461/Data_Final/$xB/4He_4_461_Data_Final_Plots_FSI_em.root
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/data_e2a_ep_C12_4461_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/4_461/Data_Final/$xB/12C_4_461_Data_Final_Plots_FSI_em.root
-scp apapadop@ftp.jlab.org:/u/home/apapadop/e4nu/data_e2a_ep_56Fe_4461_neutrino6_united4_radphot_test.root /home/afroditi/Dropbox/PhD/myCode/30th_Refactorization/myFiles/4_461/Data_Final/$xB/56Fe_4_461_Data_Final_Plots_FSI_em.root
+##### Genie Samples
+
+echo "$LocalPath/1_161/${GENIEExtension}/$xB/12C_1_161_${GENIEExtension}_Plots_FSI_em.root"
+
+scp $JLabAccount:$JLabPath/genie_e2a_ep_C12_1161_neutrino6_united4_radphot_test.root $LocalPath/1_161/${GENIEExtension}/$xB/12C_1_161_${GENIEExtension}_Plots_FSI_em.root
+scp $JLabAccount:$JLabPath/genie_e2a_ep_4He_2261_neutrino6_united4_radphot_test.root $LocalPath/2_261/${GENIEExtension}/$xB/4He_2_261_${GENIEExtension}_Plots_FSI_em.root
+scp $JLabAccount:$JLabPath/genie_e2a_ep_C12_2261_neutrino6_united4_radphot_test.root $LocalPath/2_261/${GENIEExtension}/$xB/12C_2_261_${GENIEExtension}_Plots_FSI_em.root
+scp $JLabAccount:$JLabPath/genie_e2a_ep_56Fe_2261_neutrino6_united4_radphot_test.root $LocalPath/2_261/${GENIEExtension}/$xB/56Fe_2_261_${GENIEExtension}_Plots_FSI_em.root
+scp $JLabAccount:$JLabPath/genie_e2a_ep_4He_4461_neutrino6_united4_radphot_test.root $LocalPath/4_461/${GENIEExtension}/$xB/4He_4_461_${GENIEExtension}_Plots_FSI_em.root
+scp $JLabAccount:$JLabPath/genie_e2a_ep_C12_4461_neutrino6_united4_radphot_test.root $LocalPath/4_461/${GENIEExtension}/$xB/12C_4_461_${GENIEExtension}_Plots_FSI_em.root
+scp $JLabAccount:$JLabPath/genie_e2a_ep_56Fe_4461_neutrino6_united4_radphot_test.root $LocalPath/4_461/${GENIEExtension}/$xB/56Fe_4_461_${GENIEExtension}_Plots_FSI_em.root
+
+##### Data Samples
+
+scp $JLabAccount:$JLabPath/data_e2a_ep_C12_1161_neutrino6_united4_radphot_test.root $LocalPath/1_161/$DataExtension/$xB/12C_1_161_${DataExtension}_Plots_FSI_em.root
+scp $JLabAccount:$JLabPath/data_e2a_ep_4He_2261_neutrino6_united4_radphot_test.root $LocalPath/2_261/$DataExtension/$xB/4He_2_261_${DataExtension}_Plots_FSI_em.root
+scp $JLabAccount:$JLabPath/data_e2a_ep_C12_2261_neutrino6_united4_radphot_test.root $LocalPath/2_261/$DataExtension/$xB/12C_2_261_${DataExtension}_Plots_FSI_em.root
+scp $JLabAccount:$JLabPath/data_e2a_ep_56Fe_2261_neutrino6_united4_radphot_test.root $LocalPath/2_261/$DataExtension/$xB/56Fe_2_261_${DataExtension}_Plots_FSI_em.root
+scp $JLabAccount:$JLabPath/data_e2a_ep_4He_4461_neutrino6_united4_radphot_test.root $LocalPath/4_461/$DataExtension/$xB/4He_4_461_${DataExtension}_Plots_FSI_em.root
+scp $JLabAccount:$JLabPath/data_e2a_ep_C12_4461_neutrino6_united4_radphot_test.root $LocalPath/4_461/$DataExtension/$xB/12C_4_461_${DataExtension}_Plots_FSI_em.root
+scp $JLabAccount:$JLabPath/data_e2a_ep_56Fe_4461_neutrino6_united4_radphot_test.root $LocalPath/4_461/$DataExtension/$xB/56Fe_4_461_${DataExtension}_Plots_FSI_em.root

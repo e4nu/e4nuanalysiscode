@@ -466,7 +466,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		TLatex latex1GeV;
 		latex1GeV.SetTextFont(FontStyle);
 		latex1GeV.SetTextSize(5*TextSize);
-		latex1GeV.DrawLatexNDC(0.04,0.45,"1.161 GeV");
+		latex1GeV.DrawLatexNDC(0.04,0.45,"1.16 GeV");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -479,7 +479,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		TLatex latex2GeV;
 		latex2GeV.SetTextFont(FontStyle);
 		latex2GeV.SetTextSize(5*TextSize);
-		latex2GeV.DrawLatexNDC(0.06,0.45,"2.261 GeV");
+		latex2GeV.DrawLatexNDC(0.06,0.45,"2.26 GeV");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -492,7 +492,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		TLatex latex4GeV;
 		latex4GeV.SetTextFont(FontStyle);
 		latex4GeV.SetTextSize(5*TextSize);
-		latex4GeV.DrawLatexNDC(0.11,0.45,"4.461 GeV");
+		latex4GeV.DrawLatexNDC(0.11,0.45,"4.46 GeV");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 

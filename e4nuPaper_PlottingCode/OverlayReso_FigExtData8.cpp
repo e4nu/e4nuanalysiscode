@@ -42,15 +42,16 @@ void OverlayReso_FigExtData8() {
 	std::vector<TString> LabelE; std::vector<TString> JustE; std::vector<TString> FSIModel; std::vector<TString> OutputPlotNames;
 	std::vector<TString> FSILabel; std::vector<TString> NameOfPlots;  std::vector<TString> XLabels;
 
-	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C");
-//	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");
+//	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C");
+	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");
 
-	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); JustE.push_back("1.161 GeV");
-	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); JustE.push_back("2.261 GeV");
-	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV"); JustE.push_back("4.461 GeV");
+//	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); JustE.push_back("1.16 GeV");
+	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); JustE.push_back("2.26 GeV");
+	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV"); JustE.push_back("4.46 GeV");
  
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data");
-	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");
+//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");
 
 	xBCut.push_back("NoxBCut");
 	NameOfPlots.push_back("h_Etot_subtruct_piplpimi_factor_fracfeed"); OutputPlotNames.push_back("EcalReso");
@@ -75,22 +76,18 @@ void OverlayReso_FigExtData8() {
 	// Larry's suggestion following Barak's paper
 
 	// 12C
-//	int Colors[NEnergies][NFSIModels] = {{kAzure+7}{kAzure-5}{kBlue}};
-//	int Colors[NEnergies][NFSIModels] = {{kAzure+7,kAzure+7}{kAzure-5,kAzure-5}{kBlue,kBlue}};
-	int Colors[NEnergies][NFSIModels] = {{kRed,kRed}{kGreen-3,kGreen-3}{kBlue,kBlue}};
-//	int Colors[NEnergies][NFSIModels] = {{kMagenta,kMagenta}{kGreen-3,kGreen-3}{kBlue,kBlue}};
-//	int Colors[NEnergies][NFSIModels] = {{kRed,kRed}{kOrange-3,kOrange-3}{kBlue,kBlue}};
-	int LineStyle[NEnergies] = {2,11,1};
-	int MarkerStyle[NEnergies] = {22,21,20};
+//	int Colors[NEnergies][NFSIModels] = {{kRed,kRed}{kGreen-3,kGreen-3}{kBlue,kBlue}};
+//	int LineStyle[NEnergies] = {2,11,1};
+//	int MarkerStyle[NEnergies] = {22,21,20};
 
 	// 56Fe
-////	int Colors[NEnergies][NFSIModels] = {{kAzure+7}{kBlue}};
-////	int Colors[NEnergies][NFSIModels] = {{kAzure-5,kAzure-5}{kBlue,kBlue}};
-//	int Colors[NEnergies][NFSIModels] = {{kGreen-3,kGreen-3}{kBlue,kBlue}};
-//	int LineStyle[NEnergies] = {11,1};
-//	int MarkerStyle[NEnergies] = {21,20};
+//	int Colors[NEnergies][NFSIModels] = {{kAzure+7}{kBlue}};
+//	int Colors[NEnergies][NFSIModels] = {{kAzure-5,kAzure-5}{kBlue,kBlue}};
+	int Colors[NEnergies][NFSIModels] = {{kGreen-3,kGreen-3}{kBlue,kBlue}};
+	int LineStyle[NEnergies] = {11,1};
+	int MarkerStyle[NEnergies] = {21,20};
 
-//	int Colors[NEnergies][NFSIModels] = {/*{kGreen-3,kGreen-3}*/{kBlue,kBlue}{kRed,kRed}};
+	int Colors[NEnergies][NFSIModels] = {/*{kGreen-3,kGreen-3}*/{kBlue,kBlue}{kRed,kRed}};
 //	int Colors[NEnergies][NFSIModels] = {{kGreen+7,kGreen}{kBlack,kRed}{kBlue,kMagenta}};
 //	int Colors[NEnergies][NFSIModels] = {/*{kGreen-3,kGreen-3}*/{kBlack,kBlack}{kBlue,kBlue}};
 
@@ -144,7 +141,7 @@ void OverlayReso_FigExtData8() {
 						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetLabelSize(TextSize);
 						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetTitleSize(TextSize);
 						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetTitleOffset(0.95);
-						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetNdivisions(Ndivisions);
+						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetNdivisions(8);
 
 						Plots[WhichEnergy][WhichFSIModel]->GetYaxis()->SetTickSize(0.02);
 						Plots[WhichEnergy][WhichFSIModel]->GetYaxis()->SetLabelFont(FontStyle);

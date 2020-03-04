@@ -42,13 +42,14 @@ void OverlayECalVsEQE_FigExtData9() {
 
 //	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV");
 //	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV");
-	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");
+	E.push_back("4_461"); LabelE.push_back(" @ E = 4.46 GeV");
 
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
-	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("h2_Ecal_Eqe"); XLabelOfPlots.push_back("E^{QE} (GeV)"); YLabelOfPlots.push_back("E^{cal} (GeV)"); OutputPlotNames.push_back("ECalVsEQE2D");
 
@@ -163,7 +164,7 @@ void OverlayECalVsEQE_FigExtData9() {
 						pad1->SetLogz();
 						pad2->SetLogz();
 
-						XMin = 1.5; XMax = 5.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+						XMin = 1.5; XMax = 5.2; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
 						Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
 						
 						// -----------------------------------------------------------------------------------------------------------------------------

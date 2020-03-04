@@ -11,13 +11,13 @@ gROOT->ProcessLine(".L /home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp");
 
 //gROOT->ProcessLine(".L OverlayPmissFig3b_e4nuPaper.cpp"); gROOT->ProcessLine("OverlayPmissFig3b_e4nuPaper()");
 
-gROOT->ProcessLine(".L OverlayECalFig4_e4nuPaper.cpp"); gROOT->ProcessLine("OverlayECalFig4_e4nuPaper()");
+//gROOT->ProcessLine(".L OverlayECalFig4_e4nuPaper.cpp"); gROOT->ProcessLine("OverlayECalFig4_e4nuPaper()");
 
 // ----------------------------------------------------------------------------------------
 
 // Extended Data Figures
 
-//gROOT->ProcessLine(".L OverlayQ2VsNu_FigExtData6.cpp"); gROOT->ProcessLine("OverlayQ2VsNu_FigExtData6()");
+gROOT->ProcessLine(".L OverlayQ2VsNu_FigExtData6.cpp"); gROOT->ProcessLine("OverlayQ2VsNu_FigExtData6()");
 
 //gROOT->ProcessLine(".L OverlayMultiplicities_FigExtData7.cpp"); gROOT->ProcessLine("OverlayMultiplicities_FigExtData7()");
 

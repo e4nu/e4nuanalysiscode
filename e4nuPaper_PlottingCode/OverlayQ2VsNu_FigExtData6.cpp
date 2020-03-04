@@ -41,14 +41,15 @@ void OverlayQ2VsNu_FigExtData6() {
 //	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
 //	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV");
-	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV");
+	E.push_back("2_261"); LabelE.push_back(" @ E = 2.26 GeV");
 //	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");
 
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
-	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 //	NameOfPlots.push_back("h2_Q2_nu_weight"); 
 	NameOfPlots.push_back("h2_Q2_nu_weight_FirstSector"); 
@@ -153,7 +154,6 @@ void OverlayQ2VsNu_FigExtData6() {
 
 						// Rebinning & Ranges
 
-//						for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
 						for (int i = 0; i < 0; i++) { Plots->Rebin2D(); }
 
 						XMin = 0.; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 

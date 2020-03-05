@@ -22,7 +22,13 @@ using namespace std;
 
 // ----------------------------------------------------------------------------------------------------------------
 
-void ExtDataTale1() {
+void ExtDataTable1() {
+
+	// Range between which we want to know the fraction of reconstructed events
+
+	double range = 0.05;
+
+	// ---------------------------------------------------------------------------------------------------------
 
 	std::vector<TString> xBCut; 
 	std::vector<TString> nucleus;
@@ -35,12 +41,12 @@ void ExtDataTale1() {
 	std::vector<TString> LabelOfPlots;  
 	std::vector<TString> OutputPlotNames;
 
-//	nucleus.push_back("4He");
-	nucleus.push_back("12C");
+	nucleus.push_back("4He");
+//	nucleus.push_back("12C");
 //	nucleus.push_back("56Fe");
 
-	E.push_back("1_161"); DoubleE.push_back(1.161);
-//	E.push_back("2_261"); DoubleE.push_back(2.261);	
+//	E.push_back("1_161"); DoubleE.push_back(1.161);
+	E.push_back("2_261"); DoubleE.push_back(2.261);	
 //	E.push_back("4_461"); DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
@@ -48,9 +54,8 @@ void ExtDataTale1() {
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
 
-	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
-	NameOfPlots.push_back("eRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("eRecoEnergy_slice_0");
-	NameOfPlots.push_back("h_Erec_subtruct_piplpimi_noprot_3pi"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("InclusiveeRecoEnergy_slice_0");
+	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E_{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
+	NameOfPlots.push_back("eRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E_{QE} [GeV]");  OutputPlotNames.push_back("eRecoEnergy_slice_0");
 
 	std::vector<TH1D*> Plots;
 
@@ -95,13 +100,6 @@ void ExtDataTale1() {
 						TString FileName = PathToFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+FSIModel[WhichFSIModel]+"_Plots_FSI_em.root";
 						TFile* FileSample = TFile::Open(FileName);
 						Plots.push_back( (TH1D*)( FileSample->Get(NameOfPlots[WhichPlot]) ) );
-
-						// ---------------------------------------------------------------------------------------------------------
-
-						// Range between which we want to know the fraction of reconstructed events
-
-						double range = 0.05;
-						if (OutputPlotNames[WhichPlot] =="InclusiveeRecoEnergy_slice_0") { range = 0.1; }
 
 						// ---------------------------------------------------------------------------------------------------------
 

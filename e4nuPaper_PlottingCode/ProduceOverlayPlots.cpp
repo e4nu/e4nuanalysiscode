@@ -17,9 +17,9 @@ gROOT->ProcessLine(".L /home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp");
 
 // Extended Data Figures
 
-gROOT->ProcessLine(".L ExtDataTale1.cpp"); gROOT->ProcessLine("ExtDataTale1()");
+//gROOT->ProcessLine(".L ExtDataTable1.cpp"); gROOT->ProcessLine("ExtDataTable1()");
 
-//gROOT->ProcessLine(".L OverlayQ2VsNu_FigExtData6.cpp"); gROOT->ProcessLine("OverlayQ2VsNu_FigExtData6()");
+//gROOT->ProcessLine(".L ECalExtDataFig6_e4nuPaper.cpp"); gROOT->ProcessLine("ECalExtDataFig6_e4nuPaper()");
 
 //gROOT->ProcessLine(".L OverlayMultiplicities_FigExtData7.cpp"); gROOT->ProcessLine("OverlayMultiplicities_FigExtData7()");
 
@@ -48,6 +48,8 @@ gROOT->ProcessLine(".L ExtDataTale1.cpp"); gROOT->ProcessLine("ExtDataTale1()");
 //gROOT->ProcessLine(".L ../Create2DPlots.cpp++"); gROOT->ProcessLine("Create2DPlots()");
 
 //gROOT->ProcessLine(".L OverlaySlices.cpp++"); gROOT->ProcessLine("OverlaySlices()"); // Not now
+
+//gROOT->ProcessLine(".L OverlayQ2VsNu_FigExtData6.cpp"); gROOT->ProcessLine("OverlayQ2VsNu_FigExtData6()");
 
 //gROOT->ProcessLine(".q");
 };

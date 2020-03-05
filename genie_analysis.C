@@ -355,6 +355,9 @@ void genie_analysis::Loop(Int_t choice) {
 
 	TH1F *h1_theta0=new TH1F("h1_theta0","",300,0,180);
 	TH2F *h2_Ecal_Eqe=new TH2F("h2_Ecal_Eqe","",800,0,8.,800,0,8.);
+	TH1F *h1_Ecal=new TH1F("h1_Ecal","",100,0,10.);
+	TH2F *h2_Ecal_Etrue=new TH2F("h2_Ecal_Etrue","",100,0,10.,100,0,10.);
+	TH2F *h2_Etrue_Ecal=new TH2F("h2_Etrue_Ecal","",100,0,10.,100,0,10.);
 	TH2F *h2_EqeEcalratio_Eqe=new TH2F("h2_EqeEcalratio_Eqe","",600,0,5,300,0,2);
 	TH2F *h2_EqeEcaldiff_Eqe=new TH2F("h2_EqeEcaldiff_Eqe","",600,0,5,300,-3,3);
 	TH2F *h2_N_prot_pi=new TH2F("h2_N_prot_pi","",10,0,5,10,0,5);
@@ -597,6 +600,10 @@ void genie_analysis::Loop(Int_t choice) {
 
 	// ---------------------------------------------------------------------------------------------------------------
 
+	double XSecScale = 1.;
+
+	// ---------------------------------------------------------------------------------------------------------------
+
 	/** Beginning of Event Loop **/
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
 //	for (Long64_t jentry=0; jentry<Nentries;jentry++) {
@@ -704,7 +711,11 @@ void genie_analysis::Loop(Int_t choice) {
 
 		//Calculated Mott Cross Section and Weights for Inclusive Histograms
 		//Wght and e_acc_ratio is 1 for CLAS data
-		double Mott_cross_sec = ( pow(fine_struc_const,2.)*(cos(el_theta)+1))/(2*pow(El,2.)*pow((1-cos(el_theta)),2.));
+		//double Mott_cross_sec = ( pow(fine_struc_const,2.)*(cos(el_theta)+1))/(2*pow(El,2.)*pow((1-cos(el_theta)),2.));
+
+		double reco_Q2 = -(V4_el-V4_beam).Mag2();
+		double Q4 = reco_Q2 * reco_Q2;
+		double Mott_cross_sec = Q4;
 
 		// ---------------------------------------------------------------------------------------------------------------------
 
@@ -729,11 +740,12 @@ void genie_analysis::Loop(Int_t choice) {
 
 		//Calculation of kinematic quantities (nu, Q2, x bjorken, q and W)
 		double nu = -(V4_el-V4_beam).E();
-		double reco_Q2 = -(V4_el-V4_beam).Mag2();
 		double x_bjk = reco_Q2/(2*m_prot*nu);
 
 		// QE selection
 		//if ( fabs(x_bjk - 1.) > 0.2) { continue; }
+
+		// ---------------------------------------------------------------------------------------------------------------------
 
 		TVector3 V3_q = (V4_beam-V4_el).Vect();
 		double V3_q_theta_deg = V3_q.Theta() * 180. / TMath::Pi();
@@ -1085,7 +1097,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			if(num_pi_phot==0 && N_prot_both!=0){
 
-				double histoweight = weight_protons*e_acc_ratio*wght/Mott_cross_sec; //total weight from 2p acceptance , 1e acceptance, Mott, and GENIE weight
+				double histoweight = weight_protons*e_acc_ratio*wght/Mott_cross_sec/XSecScale; //total weight from 2p acceptance , 1e acceptance, Mott, and GENIE weight
 
 				for(int f = 0; f < num_p; f++){    //looping through two protons
 
@@ -1098,6 +1110,9 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_perp_tot_2p[f],-P_N_2p[f]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_2prot_uncorr[f]) *TMath::RadToDeg(),-P_N_2p[f]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_tot_2p[f],-P_N_2p[f]*histoweight);
+					h1_Ecal->Fill(E_tot_2p[f],-P_N_2p[f]*histoweight);
+					h2_Ecal_Etrue->Fill(E_tot_2p[f],Ev,-P_N_2p[f]*histoweight);
+					h2_Etrue_Ecal->Fill(Ev,E_tot_2p[f],-P_N_2p[f]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot_2p[f],-P_N_2p[f]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot_2p[f],-P_N_2p[f]*histoweight);
 
@@ -1207,7 +1222,8 @@ void genie_analysis::Loop(Int_t choice) {
 
 				rotation->prot2_pi1_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_1pi_corr, charge_pi[0], V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
 
-				double histoweight = pion_acc_ratio * weight_protons * e_acc_ratio * wght/Mott_cross_sec; //Is this correct in the following loop? F.H. 09/01/19
+				double histoweight = pion_acc_ratio * weight_protons * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				//Is this correct in the following loop? F.H. 09/01/19
 
 				for(int z=0; z < N_2prot; z++){ //looping over two protons
 
@@ -1222,6 +1238,9 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_miss_perp_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_2prot_uncorr[z]) *TMath::RadToDeg(),P_2p1pito2p0pi[z]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
+					h1_Ecal->Fill(Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
+					h2_Ecal_Etrue->Fill(Ecal_2p1pi_to2p0pi[z],Ev,P_2p1pito2p0pi[z]*histoweight);
+					h2_Etrue_Ecal->Fill(Ev,Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
 
@@ -1285,6 +1304,9 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_perp_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_2prot_uncorr[z])*TMath::RadToDeg(),P_2p1pito1p1pi[z]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
+					h1_Ecal->Fill(E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
+					h2_Ecal_Etrue->Fill(E_tot_2p[z],Ev,P_2p1pito1p1pi[z]*histoweight);
+					h2_Etrue_Ecal->Fill(Ev,E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
 
@@ -1348,6 +1370,9 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_perp_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_2prot_uncorr[z])*TMath::RadToDeg(),-P_2p1pito1p0pi[z]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
+					h1_Ecal->Fill(E_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
+					h2_Ecal_Etrue->Fill(E_tot_2p[z],Ev,-P_2p1pito1p0pi[z]*histoweight);
+					h2_Etrue_Ecal->Fill(Ev,E_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
 
@@ -1454,7 +1479,8 @@ void genie_analysis::Loop(Int_t choice) {
 				rotation->prot2_pi2_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_2pi_corr,charge_pi, V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
 
 				double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1];
-				double histoweight = weight_pions * weight_protons * e_acc_ratio * wght/Mott_cross_sec; //Is this correct in the following loop? F.H. 09/01/19
+				double histoweight = weight_pions * weight_protons * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				//Is this correct in the following loop? F.H. 09/01/19
 
 
 				for(int z = 0; z < N_2prot; z++){ //looping over two protons
@@ -1470,6 +1496,9 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_perp_tot_2p[z],Ptot_2p[z]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_2prot_uncorr[z])*TMath::RadToDeg(),Ptot_2p[z]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_tot_2p[z],Ptot_2p[z]*histoweight);
+					h1_Ecal->Fill(E_tot_2p[z],Ptot_2p[z]*histoweight);
+					h2_Ecal_Etrue->Fill(E_tot_2p[z],Ev,Ptot_2p[z]*histoweight);
+					h2_Etrue_Ecal->Fill(Ev,E_tot_2p[z],Ptot_2p[z]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot_2p[z],Ptot_2p[z]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot_2p[z],Ptot_2p[z]*histoweight);
 
@@ -1606,7 +1635,8 @@ void genie_analysis::Loop(Int_t choice) {
 			if(num_pi_phot==0 && N_p_three!=0){
 
 				//histoweight is 1/Mott_cross_sec for CLAS data
-				 double histoweight = weight_protons * e_acc_ratio * wght/Mott_cross_sec; //Weight for 3protons, 1 electron, GENIE weight and Mott cross section
+				double histoweight = weight_protons * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				//Weight for 3protons, 1 electron, GENIE weight and Mott cross section
 
 				for(int count = 0; count < N_comb; count++) { //Loop over number of combinations
 
@@ -1623,6 +1653,9 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_pperp_W->Fill(W_var,p_miss_perp_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 						h1_theta0->Fill((V4_beam.Vect()).Angle(V3_prot_el[count][j])*TMath::RadToDeg(),P_3pto2p[count][j]*histoweight);
 						h2_Ecal_Eqe->Fill(E_rec,E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
+						h1_Ecal->Fill(E_tot_2p[z],Ptot_2p[z]*histoweight);
+						h2_Ecal_Etrue->Fill(E_cal_3pto2p[count][j],Ev,P_3pto2p[count][j]*histoweight);
+						h2_Etrue_Ecal->Fill(Ev,E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 						h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 						h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 
@@ -1695,6 +1728,9 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_miss_perp[j],-P_3pto1p[j]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr[j])*TMath::RadToDeg(),-P_3pto1p[j]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_cal[j],-P_3pto1p[j]*histoweight);
+					h1_Ecal->Fill(E_cal[j],-P_3pto1p[j]*histoweight);
+					h2_Ecal_Etrue->Fill(E_cal[j],Ev,-P_3pto1p[j]*histoweight);
+					h2_Etrue_Ecal->Fill(Ev,E_cal[j],-P_3pto1p[j]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal[j],-P_3pto1p[j]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal[j],-P_3pto1p[j]*histoweight);
 
@@ -1798,7 +1834,7 @@ void genie_analysis::Loop(Int_t choice) {
 				rotation->prot3_pi1_rot_func(V3_prot_corr,V3_prot_uncorr, V3_pi_corr, charge_pi[0] , V4_el,	Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
 
 				//for CLAS data is histoweight = 1/Mott_cross_sec
-				double histoweight = pion_acc_ratio * weight_protons * e_acc_ratio * wght/Mott_cross_sec; 
+				double histoweight = pion_acc_ratio * weight_protons * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
 				//Weight for 3protons, 1 pion, 1 electron, GENIE weight and Mott cross section
 
 				for(int j = 0; j < N_3p; j++) { //loop over 3 protons
@@ -1812,6 +1848,9 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_miss_perp[j],P_tot_3p[j]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr[j])*TMath::RadToDeg(),P_tot_3p[j]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_cal[j],P_tot_3p[j]*histoweight);
+					h1_Ecal->Fill(E_cal[j],P_tot_3p[j]*histoweight);
+					h2_Ecal_Etrue->Fill(E_cal[j],Ev,P_tot_3p[j]*histoweight);
+					h2_Etrue_Ecal->Fill(Ev,E_cal[j],P_tot_3p[j]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal[j],P_tot_3p[j]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal[j],P_tot_3p[j]*histoweight);
 
@@ -1982,7 +2021,8 @@ void genie_analysis::Loop(Int_t choice) {
 				double p_miss_perp_43pto1p[N_3p];
 				double P_43pto1p[3] = {0};
 
-				double histoweight = weight_protons * e_acc_ratio * wght/Mott_cross_sec; //Weight for 3protons, 1 electron, GENIE weight and Mott cross section
+				double histoweight = weight_protons * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				//Weight for 3protons, 1 electron, GENIE weight and Mott cross section
 
 				for(int g = 0; g < Ncomb_4to3; g++){   //estimating the undetected 4p contribution to  3p
 
@@ -2021,7 +2061,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 							for(int j = 0;j < N_2p; j++)    {  //looping through number of 1 proton combination out of 2 protons
 
-								//-----------------------------------------  4p to 3p->2->1  -----------------------------------------------------------------------
+								//-----------------------------------------  4p to 3p->2->1  ----------------------------------------------
 
 								h1_E_tot_4pto3p->Fill(E_cal_4pto3p[count][j], P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_E_rec_4pto3p->Fill(E_rec, P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
@@ -2034,6 +2074,9 @@ void genie_analysis::Loop(Int_t choice) {
 								h2_pperp_W->Fill(W_var,p_miss_perp_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_theta0->Fill((V4_beam.Vect()).Angle(V3_el_prot[count][j])*TMath::RadToDeg(),-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h2_Ecal_Eqe->Fill(E_rec,E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
+								h1_Ecal->Fill(E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
+								h2_Ecal_Etrue->Fill(E_cal_4pto3p[count][j],Ev,-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
+								h2_Etrue_Ecal->Fill(Ev,E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 
@@ -2107,6 +2150,9 @@ void genie_analysis::Loop(Int_t choice) {
 							h2_pperp_W->Fill(W_var,p_miss_perp_43pto1p[j],P_43pto1p[j]*histoweight);
 							h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr[j])*TMath::RadToDeg(),P_43pto1p[j]*histoweight);
 							h2_Ecal_Eqe->Fill(E_rec,E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
+							h1_Ecal->Fill(E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
+							h2_Ecal_Etrue->Fill(E_cal_43pto1p[j],Ev,P_43pto1p[j]*histoweight);
+							h2_Etrue_Ecal->Fill(Ev,E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
 							h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
 							h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
 
@@ -2206,6 +2252,9 @@ void genie_analysis::Loop(Int_t choice) {
 									h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3p2_uncorr[j])*TMath::RadToDeg(),
 										P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h2_Ecal_Eqe->Fill(E_rec,E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
+									h1_Ecal->Fill(E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
+									h2_Ecal_Etrue->Fill(E_cal_4pto2p[j],Ev,P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
+									h2_Etrue_Ecal->Fill(Ev,E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 
@@ -2290,6 +2339,9 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_pperp_W->Fill(W_var,p_miss_perp_p4[j],-P_4pto1p[j]*histoweight);
 						h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot4_uncorr[j])*TMath::RadToDeg(),-P_4pto1p[j]*histoweight);
 						h2_Ecal_Eqe->Fill(E_rec,E_cal_p4[j],-P_4pto1p[j]*histoweight);
+						h1_Ecal->Fill(E_cal_p4[j],-P_4pto1p[j]*histoweight);
+						h2_Ecal_Etrue->Fill(E_cal_p4[j],Ev,-P_4pto1p[j]*histoweight);
+						h2_Etrue_Ecal->Fill(Ev,E_cal_p4[j],-P_4pto1p[j]*histoweight);
 						h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_p4[j],-P_4pto1p[j]*histoweight);
 						h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_p4[j],-P_4pto1p[j]*histoweight);
 
@@ -2413,7 +2465,7 @@ void genie_analysis::Loop(Int_t choice) {
 			rotation->pi1_rot_func( V3_pi_corr, charge_pi[0], &P_undet);
 
 			//histoweight is 1/Mott_cross_sec for CLAS data
-			double histoweight = pion_acc_ratio * WeightIncl;
+			double histoweight = pion_acc_ratio * WeightIncl/XSecScale;
 
 			h1_E_rec_1pi_weight->Fill(E_rec,P_undet*histoweight);
 			h1_E_rec_1pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_undet*histoweight);
@@ -2473,7 +2525,7 @@ void genie_analysis::Loop(Int_t choice) {
 			//weight_pions is 1 for CLAS data
 			double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1];
 			//histoweight is 1/Mott_cross_sec for CLAS data
-			double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec;
+			double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec/XSecScale;
 
 			//----------------------------- e- ,2pi->0pi (-) -----------------------------------------
 
@@ -2554,7 +2606,7 @@ void genie_analysis::Loop(Int_t choice) {
 			//weight_pions is 1 for CLAS data
 			double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2];
 			//histoweight is 1/Mott_cross_sec for CLAS data
-			double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec;
+			double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec/XSecScale;
 
 			//---------------------------3pi->0pi----------------------------------------------
 
@@ -2663,7 +2715,7 @@ void genie_analysis::Loop(Int_t choice) {
 			//weight_pions is 1 for CLAS data
 			double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2] * pion_acc_ratio[3];
 			//histoweight is 1/Mott_cross_sec for CLAS data
-			double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec;
+			double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec/XSecScale;
 
 			//---------------------------4pi->0pi----------------------------------------------
 
@@ -2755,7 +2807,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			//These Histograms are events with 1 electron and  1 proton and multiple pions
 			//histoweight_inc is 1/Mott_cross_sec for CLAS data
-			double histoweight_inc = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec;
+			double histoweight_inc = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec/XSecScale;
 			double histoweight_NoMott = p_acc_ratio * e_acc_ratio * wght;
 
 			h1_E_tot->Fill(E_tot,histoweight_inc);
@@ -2800,7 +2852,7 @@ void genie_analysis::Loop(Int_t choice) {
 				else { OtherSignalEvents++; }
 
 				//histoweight is 1/Mott_cross_sec for CLAS data
-				double histoweight = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec;
+				double histoweight = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec/XSecScale;
 
 				h2_Erec_pperp_newcut2->Fill(p_perp_tot,E_rec,histoweight);
 				h2_Etot_pperp->Fill(p_perp_tot,E_tot,histoweight);
@@ -2811,6 +2863,9 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_pperp_W->Fill(W_var,p_perp_tot,histoweight);
 				h1_theta0->Fill((V4_beam.Vect()).Angle(V4_prot_el_tot.Vect()) *TMath::RadToDeg(),histoweight);
 				h2_Ecal_Eqe->Fill(E_rec,E_tot,histoweight);
+				h1_Ecal->Fill(E_tot,histoweight);
+				h2_Ecal_Etrue->Fill(E_tot,Ev,histoweight);
+				h2_Etrue_Ecal->Fill(Ev,E_tot,histoweight);
 				h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,histoweight);
 				h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,histoweight);
 
@@ -2934,7 +2989,8 @@ void genie_analysis::Loop(Int_t choice) {
 				rotation->prot1_pi1_rot_func(V3_prot_uncorr,V3_pi_corr, charge_pi[0], &N_piphot_det,&N_piphot_undet);
 
 				//histoweight is 1/Mott_cross_sec for CLAS data
-				double histoweight = pion_acc_ratio * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec; //1proton, 1 Pion, 1 electron acceptance, GENIE weight and Mott
+				double histoweight = pion_acc_ratio * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				//1proton, 1 Pion, 1 electron acceptance, GENIE weight and Mott
 
 				if(N_piphot_det!=0){
 
@@ -2947,6 +3003,9 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_perp_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),-(N_piphot_undet/N_piphot_det)*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
+					h1_Ecal->Fill(E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
+					h2_Ecal_Etrue->Fill(E_tot,Ev,-(N_piphot_undet/N_piphot_det)*histoweight);
+					h2_Etrue_Ecal->Fill(Ev,E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
 
@@ -3060,7 +3119,8 @@ void genie_analysis::Loop(Int_t choice) {
 				//weight_pions is 1 for CLAS data
 				double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1];
 				//histoweight is 1/Mott_cross_sec for CLAS data
-				double histoweight = weight_pions * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec; //1proton, 2 Pion, 1 electron acceptance, GENIE weight and Mott
+				double histoweight = weight_pions * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				//1proton, 2 Pion, 1 electron acceptance, GENIE weight and Mott
 
 				//---------------------------------- 1p 2pi->1p1pi   ----------------------------------------------
 
@@ -3075,6 +3135,9 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_perp_tot,P_1p1pi[z]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),P_1p1pi[z]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_tot,P_1p1pi[z]*histoweight);
+					h1_Ecal->Fill(E_tot,P_1p1pi[z]*histoweight);
+					h2_Ecal_Etrue->Fill(E_tot,Ev,P_1p1pi[z]*histoweight);
+					h2_Etrue_Ecal->Fill(Ev,E_tot,P_1p1pi[z]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,P_1p1pi[z]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,P_1p1pi[z]*histoweight);
 
@@ -3142,6 +3205,9 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_pperp_W->Fill(W_var,p_perp_tot,-P_1p0pi*histoweight);
 				h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),-P_1p0pi*histoweight);
 				h2_Ecal_Eqe->Fill(E_rec,E_tot,-P_1p0pi*histoweight);
+				h1_Ecal->Fill(E_tot,-P_1p0pi*histoweight);
+				h2_Ecal_Etrue->Fill(E_tot,Ev,-P_1p0pi*histoweight);
+				h2_Etrue_Ecal->Fill(Ev,E_tot,-P_1p0pi*histoweight);
 				h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,-P_1p0pi*histoweight);
 				h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,-P_1p0pi*histoweight);
 
@@ -3245,7 +3311,8 @@ void genie_analysis::Loop(Int_t choice) {
 		 		//weight_pions is 1 for CLAS data
 				double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2];
 				//histoweight is 1/Mott_cross_sec for CLAS data
-				double histoweight = weight_pions * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec; //1proton, 3 Pion, 1 electron acceptance, GENIE weight and Mott
+				double histoweight = weight_pions * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				//1proton, 3 Pion, 1 electron acceptance, GENIE weight and Mott
 
 				//---------------------------------- 1p 3pi->1p 0pi  total ?? F.H. 08/13/19 check logic here compared to 1p 2pi case ----------------------------
 
@@ -3258,6 +3325,9 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_pperp_W->Fill(W_var,p_perp_tot,P_1p3pi*histoweight);
 				h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),P_1p3pi*histoweight);
 				h2_Ecal_Eqe->Fill(E_rec,E_tot,P_1p3pi*histoweight);
+				h1_Ecal->Fill(E_tot,P_1p3pi*histoweight);
+				h2_Ecal_Etrue->Fill(E_tot,Ev,P_1p3pi*histoweight);
+				h2_Etrue_Ecal->Fill(Ev,E_tot,P_1p3pi*histoweight);
 				h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,P_1p3pi*histoweight);
 				h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,P_1p3pi*histoweight);
 

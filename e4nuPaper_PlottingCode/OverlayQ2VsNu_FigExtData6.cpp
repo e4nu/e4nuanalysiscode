@@ -156,12 +156,12 @@ void OverlayQ2VsNu_FigExtData6() {
 
 						for (int i = 0; i < 0; i++) { Plots->Rebin2D(); }
 
-						XMin = 0.; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-						YMin = 0.; YMax = 2.;	Plots->GetYaxis()->SetRangeUser(YMin,YMax);
-
 						Plots->GetZaxis()->SetRangeUser(1.,Plots->GetMaximum());
+
 						double XMin =-99.,XMax =-99.;
 						double YMin =-99.,YMax =-99.;
+						XMin = 0.; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+						YMin = 0.; YMax = 2.;	Plots->GetYaxis()->SetRangeUser(YMin,YMax);
 
 						// -----------------------------------------------------------------------------------------------------------------------------
 

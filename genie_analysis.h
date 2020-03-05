@@ -306,8 +306,8 @@ genie_analysis::genie_analysis(std::string a_target,std::string a_beam_en, int n
       // of trees.
       TChain * chain = new TChain("gst","genie_analysis");
       if (fchoice == 1) { 
-		chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/eresmaid_%s_%s_hA2018_LFG_FSI_NoRadCorr_3M.root", ftarget.c_str(), fbeam_en.c_str())); 
-		//chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/numaid_%s_%s_hA2018_LFG_FSI_NoRadCorr_3M.root", ftarget.c_str(), fbeam_en.c_str())); 
+		chain->Add(Form("/pnfs/uboone/persistent/users/apapadop/GenieProduction/R-3_0_6/Rad-R-3_0_6_Clas_%s/G18_10a_02_11a/%s/eresmaid_%s_%s_R-3_0_6-G18_10a_02_11a_RadCorr_*M.root", fbeam_en.c_str(), ftarget.c_str(), ftarget.c_str(), fbeam_en.c_str())); 
+		//chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/numaid_%s_%s_hA2018_LFG_FSI_NoRadCorr_3M.root", ftarget.c_str(), fbeam_en.c_str()));
 	}
       if (fchoice == 0) { chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/genie_filtered_data_e2a_ep_%s_%s_neutrino6_united4_radphot_test_100M.root",ftarget.c_str(), fbeam_en.c_str())); }
 

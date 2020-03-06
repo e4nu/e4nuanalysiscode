@@ -237,6 +237,13 @@ void genie_analysis::Loop(Int_t choice) {
 
 	// ---------------------------------------------------------------------------------------------------------------
 
+	double XSecScale = 1.;
+	TFile* XSecFile = TFile::Open("/uboone/app/users/apapadop/R-3_0_6/mySplines/xsec_gxspl-FNALbig.root"); 
+	TDirectory* dir = (TDirectory*)(XSecFile->Get("nu_mu_C12"));
+	TGraph* gr = (TGraph*)dir->Get("tot_cc");
+
+	// ---------------------------------------------------------------------------------------------------------------
+
 	//Output file definition
 
 	TFile *file_out;
@@ -600,13 +607,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 	// ---------------------------------------------------------------------------------------------------------------
 
-	double XSecScale = 1.;
-	TFile* XSecFile = TFile::Open("/uboone/app/users/apapadop/R-3_0_6/mySplines/xsec_gxspl-FNALbig.root"); 
-	TDirectory* dir = (TDirectory*)(XSecFile->Get("nu_mu_C12"));
-	TGraph* gr = (TGraph*)dir->Get("tot_cc");
-
-	// ---------------------------------------------------------------------------------------------------------------
-
 	/** Beginning of Event Loop **/
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
 //	for (Long64_t jentry=0; jentry<Nentries;jentry++) {
@@ -733,11 +733,6 @@ void genie_analysis::Loop(Int_t choice) {
 			Mott_cross_sec = XSecScale;
 
 		}
-
-		// ---------------------------------------------------------------------------------------------------------------------
-
-		// For GENIE Systematics
-		// TString Var = "FormZone";
 
 		// ---------------------------------------------------------------------------------------------------------------------
 

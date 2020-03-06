@@ -601,6 +601,9 @@ void genie_analysis::Loop(Int_t choice) {
 	// ---------------------------------------------------------------------------------------------------------------
 
 	double XSecScale = 1.;
+	TFile* XSecFile = TFile::Open("/uboone/app/users/apapadop/R-3_0_6/mySplines/xsec_gxspl-FNALbig.root"); 
+	TDirectory* dir = (TDirectory*)(XSecFile->Get("nu_mu_C12"));
+	TGraph* gr = (TGraph*)dir->Get("tot_cc");
 
 	// ---------------------------------------------------------------------------------------------------------------
 
@@ -726,9 +729,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 		if (neutrino) { 
 
-			TFile* XSecFile = TFile::Open("/uboone/app/users/apapadop/R-3_0_6/mySplines/xsec_gxspl-FNALbig.root"); 
-			TDirectory* dir = (TDirectory*)(XSecFile->Get("nu_mu_C12"));
-			TGraph* gr = (TGraph*)dir->Get("tot_cc");
 			XSecScale = gr->Eval(Ev);
 			Mott_cross_sec = XSecScale;
 

@@ -719,8 +719,20 @@ void genie_analysis::Loop(Int_t choice) {
 
 		// ---------------------------------------------------------------------------------------------------------------------
 
-		// For neutrino scattering
-		//Mott_cross_sec = 1.;
+		// For neutrino scattering 
+		// switch to true for nu scattering to account for the difference in the propagator
+
+		bool neutrino = false;
+
+		if (neutrino) { 
+
+			TFile* XSecFile = TFile::Open("/uboone/app/users/apapadop/R-3_0_6/mySplines/xsec_gxspl-FNALbig.root"); 
+			TDirectory* dir = (TDirectory*)(XSecFile->Get("nu_mu_C12"));
+			TGraph* gr = (TGraph*)dir->Get("tot_cc");
+			XSecScale = gr->Eval(Ev);
+			Mott_cross_sec = XSecScale;
+
+		}
 
 		// ---------------------------------------------------------------------------------------------------------------------
 

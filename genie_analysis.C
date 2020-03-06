@@ -7,6 +7,7 @@
 #include <TCanvas.h>
 
 #include <TH1D.h>
+#include <TMatrixD.h>
 #include <TFile.h>
 #include <TMath.h>
 #include <exception>
@@ -239,8 +240,13 @@ void genie_analysis::Loop(Int_t choice) {
 
 	double XSecScale = 1.;
 	TFile* XSecFile = TFile::Open("/uboone/app/users/apapadop/R-3_0_6/mySplines/xsec_gxspl-FNALbig.root"); 
-	TDirectory* dir = (TDirectory*)(XSecFile->Get("nu_mu_C12"));
-	TGraph* gr = (TGraph*)dir->Get("tot_cc");
+
+	TGraph* gr = NULL;
+
+	if (XSecFile) {
+		TDirectory* dir = (TDirectory*)(XSecFile->Get("nu_mu_C12"));
+		gr = (TGraph*)dir->Get("tot_cc");
+	}
 
 	// ---------------------------------------------------------------------------------------------------------------
 
@@ -728,7 +734,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 		bool neutrino = false;
 
-		if (neutrino) { 
+		if (neutrino && XSecFile) { 
 
 			XSecScale = gr->Eval(Ev);
 			Mott_cross_sec = XSecScale;

@@ -715,7 +715,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 		double reco_Q2 = -(V4_el-V4_beam).Mag2();
 		double Q4 = reco_Q2 * reco_Q2;
-		double Mott_cross_sec = Q4;
+		double Mott_cross_sec = Q4 * XSecScale;
 
 		// ---------------------------------------------------------------------------------------------------------------------
 
@@ -1097,7 +1097,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			if(num_pi_phot==0 && N_prot_both!=0){
 
-				double histoweight = weight_protons*e_acc_ratio*wght/Mott_cross_sec/XSecScale; //total weight from 2p acceptance , 1e acceptance, Mott, and GENIE weight
+				double histoweight = weight_protons*e_acc_ratio*wght/Mott_cross_sec; //total weight from 2p acceptance , 1e acceptance, Mott, and GENIE weight
 
 				for(int f = 0; f < num_p; f++){    //looping through two protons
 
@@ -1222,7 +1222,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 				rotation->prot2_pi1_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_1pi_corr, charge_pi[0], V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
 
-				double histoweight = pion_acc_ratio * weight_protons * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				double histoweight = pion_acc_ratio * weight_protons * e_acc_ratio * wght/Mott_cross_sec; 
 				//Is this correct in the following loop? F.H. 09/01/19
 
 				for(int z=0; z < N_2prot; z++){ //looping over two protons
@@ -1479,7 +1479,7 @@ void genie_analysis::Loop(Int_t choice) {
 				rotation->prot2_pi2_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_2pi_corr,charge_pi, V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
 
 				double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1];
-				double histoweight = weight_pions * weight_protons * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				double histoweight = weight_pions * weight_protons * e_acc_ratio * wght/Mott_cross_sec; 
 				//Is this correct in the following loop? F.H. 09/01/19
 
 
@@ -1635,7 +1635,7 @@ void genie_analysis::Loop(Int_t choice) {
 			if(num_pi_phot==0 && N_p_three!=0){
 
 				//histoweight is 1/Mott_cross_sec for CLAS data
-				double histoweight = weight_protons * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				double histoweight = weight_protons * e_acc_ratio * wght/Mott_cross_sec; 
 				//Weight for 3protons, 1 electron, GENIE weight and Mott cross section
 
 				for(int count = 0; count < N_comb; count++) { //Loop over number of combinations
@@ -1834,7 +1834,7 @@ void genie_analysis::Loop(Int_t choice) {
 				rotation->prot3_pi1_rot_func(V3_prot_corr,V3_prot_uncorr, V3_pi_corr, charge_pi[0] , V4_el,	Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
 
 				//for CLAS data is histoweight = 1/Mott_cross_sec
-				double histoweight = pion_acc_ratio * weight_protons * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				double histoweight = pion_acc_ratio * weight_protons * e_acc_ratio * wght/Mott_cross_sec; 
 				//Weight for 3protons, 1 pion, 1 electron, GENIE weight and Mott cross section
 
 				for(int j = 0; j < N_3p; j++) { //loop over 3 protons
@@ -2021,7 +2021,7 @@ void genie_analysis::Loop(Int_t choice) {
 				double p_miss_perp_43pto1p[N_3p];
 				double P_43pto1p[3] = {0};
 
-				double histoweight = weight_protons * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				double histoweight = weight_protons * e_acc_ratio * wght/Mott_cross_sec; 
 				//Weight for 3protons, 1 electron, GENIE weight and Mott cross section
 
 				for(int g = 0; g < Ncomb_4to3; g++){   //estimating the undetected 4p contribution to  3p
@@ -2465,7 +2465,7 @@ void genie_analysis::Loop(Int_t choice) {
 			rotation->pi1_rot_func( V3_pi_corr, charge_pi[0], &P_undet);
 
 			//histoweight is 1/Mott_cross_sec for CLAS data
-			double histoweight = pion_acc_ratio * WeightIncl/XSecScale;
+			double histoweight = pion_acc_ratio * WeightIncl;
 
 			h1_E_rec_1pi_weight->Fill(E_rec,P_undet*histoweight);
 			h1_E_rec_1pi_weight_frac_feed->Fill((E_rec-en_beam_Eqe[fbeam_en])/en_beam_Eqe[fbeam_en],P_undet*histoweight);
@@ -2525,7 +2525,7 @@ void genie_analysis::Loop(Int_t choice) {
 			//weight_pions is 1 for CLAS data
 			double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1];
 			//histoweight is 1/Mott_cross_sec for CLAS data
-			double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec/XSecScale;
+			double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec;
 
 			//----------------------------- e- ,2pi->0pi (-) -----------------------------------------
 
@@ -2606,7 +2606,7 @@ void genie_analysis::Loop(Int_t choice) {
 			//weight_pions is 1 for CLAS data
 			double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2];
 			//histoweight is 1/Mott_cross_sec for CLAS data
-			double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec/XSecScale;
+			double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec;
 
 			//---------------------------3pi->0pi----------------------------------------------
 
@@ -2715,7 +2715,7 @@ void genie_analysis::Loop(Int_t choice) {
 			//weight_pions is 1 for CLAS data
 			double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2] * pion_acc_ratio[3];
 			//histoweight is 1/Mott_cross_sec for CLAS data
-			double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec/XSecScale;
+			double histoweight = weight_pions * e_acc_ratio * wght/Mott_cross_sec;
 
 			//---------------------------4pi->0pi----------------------------------------------
 
@@ -2807,7 +2807,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			//These Histograms are events with 1 electron and  1 proton and multiple pions
 			//histoweight_inc is 1/Mott_cross_sec for CLAS data
-			double histoweight_inc = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec/XSecScale;
+			double histoweight_inc = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec;
 			double histoweight_NoMott = p_acc_ratio * e_acc_ratio * wght;
 
 			h1_E_tot->Fill(E_tot,histoweight_inc);
@@ -2852,7 +2852,7 @@ void genie_analysis::Loop(Int_t choice) {
 				else { OtherSignalEvents++; }
 
 				//histoweight is 1/Mott_cross_sec for CLAS data
-				double histoweight = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec/XSecScale;
+				double histoweight = p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec;
 
 				h2_Erec_pperp_newcut2->Fill(p_perp_tot,E_rec,histoweight);
 				h2_Etot_pperp->Fill(p_perp_tot,E_tot,histoweight);
@@ -2989,7 +2989,7 @@ void genie_analysis::Loop(Int_t choice) {
 				rotation->prot1_pi1_rot_func(V3_prot_uncorr,V3_pi_corr, charge_pi[0], &N_piphot_det,&N_piphot_undet);
 
 				//histoweight is 1/Mott_cross_sec for CLAS data
-				double histoweight = pion_acc_ratio * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				double histoweight = pion_acc_ratio * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec; 
 				//1proton, 1 Pion, 1 electron acceptance, GENIE weight and Mott
 
 				if(N_piphot_det!=0){
@@ -3119,7 +3119,7 @@ void genie_analysis::Loop(Int_t choice) {
 				//weight_pions is 1 for CLAS data
 				double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1];
 				//histoweight is 1/Mott_cross_sec for CLAS data
-				double histoweight = weight_pions * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				double histoweight = weight_pions * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec; 
 				//1proton, 2 Pion, 1 electron acceptance, GENIE weight and Mott
 
 				//---------------------------------- 1p 2pi->1p1pi   ----------------------------------------------
@@ -3311,7 +3311,7 @@ void genie_analysis::Loop(Int_t choice) {
 		 		//weight_pions is 1 for CLAS data
 				double weight_pions = pion_acc_ratio[0] * pion_acc_ratio[1] * pion_acc_ratio[2];
 				//histoweight is 1/Mott_cross_sec for CLAS data
-				double histoweight = weight_pions * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec/XSecScale; 
+				double histoweight = weight_pions * p_acc_ratio * e_acc_ratio * wght/Mott_cross_sec; 
 				//1proton, 3 Pion, 1 electron acceptance, GENIE weight and Mott
 
 				//---------------------------------- 1p 3pi->1p 0pi  total ?? F.H. 08/13/19 check logic here compared to 1p 2pi case ----------------------------

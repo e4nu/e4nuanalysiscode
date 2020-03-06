@@ -725,7 +725,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 		double reco_Q2 = -(V4_el-V4_beam).Mag2();
 		double Q4 = reco_Q2 * reco_Q2;
-		double Mott_cross_sec = Q4 * XSecScale;
+		double Mott_cross_sec = (1./Q4) * XSecScale;
 
 		// ---------------------------------------------------------------------------------------------------------------------
 

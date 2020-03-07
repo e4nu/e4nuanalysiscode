@@ -12,7 +12,6 @@ JLabAccount=apapadop@uboonegpvm01.fnal.gov
 JLabPath=/uboone/app/users/apapadop/e4nu
 
 DataExtension=Data_Final
-#GENIEExtension=hA2018_Final_NoRadCorr_LFGM
 GENIEExtension=hA2018_Final_RadCorr_LFGM
 
 ##### Genie Samples

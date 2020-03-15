@@ -154,13 +154,15 @@ void OverlayECalFig4_e4nuPaper() {
 
 			for (int WhichEnergy = 0; WhichEnergy < NEnergies; WhichEnergy ++) {
 
-double MaxHeight = 2.8; // In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
+				// In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
+				double MaxHeight = 2.8;
 
 				// Loop over the nuclei
 
 				for (int WhichNucleus = 0; WhichNucleus < NNuclei; WhichNucleus ++) {
 
-if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.88; }
+//					if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.88; }
+if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.65; }
 
 					// ---------------------------------------------------------------------------------------------------------------------------
 
@@ -171,7 +173,7 @@ if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.88; }
 					double Xstep = (Xmax - Xmin) / 3.;
 					double Ystep = ( Ymax - Ymin  ) / 2.;
 					double XMinPad = Xmin + WhichEnergy * Xstep, XMaxPad = Xmin + ( WhichEnergy + 1) * Xstep;
-if (DoubleE[WhichEnergy] == 1.161 ) { XMinPad = XMinPad - 0.05; }
+					if (DoubleE[WhichEnergy] == 1.161 ) { XMinPad = XMinPad - 0.05; }
 					double YMinPad = Ymax - ( WhichNucleus + 1) * Ystep, YMaxPad = Ymax - WhichNucleus * Ystep;
 					double space = 0.07;
 
@@ -189,7 +191,7 @@ if (DoubleE[WhichEnergy] == 1.161 ) { XMinPad = XMinPad - 0.05; }
 					pad->SetTopMargin(0.0);
 					if (nucleus[WhichNucleus] == "12C") { pad->SetTopMargin(0.01); }
 					pad->SetLeftMargin(0.);
-if (DoubleE[WhichEnergy] == 1.161 ) { pad->SetLeftMargin(0.05); }
+					if (DoubleE[WhichEnergy] == 1.161 ) { pad->SetLeftMargin(0.05); }
 					pad->SetRightMargin(0.0);
 					if (DoubleE[WhichEnergy] == 4.461 ) { pad->SetRightMargin(0.01); }
 					pad->SetFrameBorderSize(10);
@@ -247,8 +249,7 @@ if (DoubleE[WhichEnergy] == 1.161 ) { pad->SetLeftMargin(0.05); }
 						Plots[WhichFSIModel]->GetYaxis()->SetTitleFont(FontStyle);
 						Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(0.);
 						Plots[WhichFSIModel]->GetYaxis()->SetLabelOffset(0.013);
-//if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(0.07); }	
-Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
+						Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 
 
 						Plots[WhichFSIModel]->GetYaxis()->SetTitle("");
@@ -290,8 +291,8 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 
 						ReweightPlots(Plots[WhichFSIModel]);
 
-if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->Scale(1./4.); }
-Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(3);
+						if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->Scale(1./4.); }
+						Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(3);
 
 						// --------------------------------------------------------------------------------------
 
@@ -535,7 +536,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 
 		// -------------------------------------------------------------------------------------------------
 	
-		TPad* padx13Fe56 = new TPad("padx13Fe56","padx13Fe56",0.675,0.51,0.71,0.58,21); 
+		TPad* padx13Fe56 = new TPad("padx13Fe56","padx13Fe56",0.675,0.52,0.71,0.59,21); 
 		padx13Fe56->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		padx13Fe56->Draw();
@@ -619,7 +620,8 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the Y-axis 1. point
 
 		PlotCanvas->cd();
-		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.41,0.34,0.426,0.39,21); 
+//		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.41,0.34,0.426,0.39,21); 
+		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.41,0.39,0.426,0.44,21); 
 		padTitleOne->SetFillColor(kWhite); 
 		padTitleOne->Draw();
 		padTitleOne->cd();
@@ -634,17 +636,17 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 
 		// Extra pad for the Y-axis 2. point
 
-		PlotCanvas->cd();
-		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.41,0.5,0.426,0.55,21); 
-		padTitleTwo->SetFillColor(kWhite); 
-		padTitleTwo->Draw();
-		padTitleTwo->cd();
+//		PlotCanvas->cd();
+//		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.41,0.5,0.426,0.55,21); 
+//		padTitleTwo->SetFillColor(kWhite); 
+//		padTitleTwo->Draw();
+//		padTitleTwo->cd();
 
-		TLatex latexYTitleTwo;
-		latexYTitleTwo.SetTextFont(FontStyle);
-		latexYTitleTwo.SetTextSize(20*TextSize);
-		latexYTitleTwo.SetTextColor(kBlack);
-		latexYTitleTwo.DrawLatexNDC(0.,0.1,"2");
+//		TLatex latexYTitleTwo;
+//		latexYTitleTwo.SetTextFont(FontStyle);
+//		latexYTitleTwo.SetTextSize(20*TextSize);
+//		latexYTitleTwo.SetTextColor(kBlack);
+//		latexYTitleTwo.DrawLatexNDC(0.,0.1,"2");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 

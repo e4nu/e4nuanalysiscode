@@ -81,18 +81,9 @@ void OverlayReso_FigExtData8() {
 //	int MarkerStyle[NEnergies] = {22,21,20};
 
 	// 56Fe
-//	int Colors[NEnergies][NFSIModels] = {{kAzure+7}{kBlue}};
-//	int Colors[NEnergies][NFSIModels] = {{kAzure-5,kAzure-5}{kBlue,kBlue}};
 	int Colors[NEnergies][NFSIModels] = {{kGreen-3,kGreen-3}{kBlue,kBlue}};
 	int LineStyle[NEnergies] = {11,1};
 	int MarkerStyle[NEnergies] = {21,20};
-
-	int Colors[NEnergies][NFSIModels] = {/*{kGreen-3,kGreen-3}*/{kBlue,kBlue}{kRed,kRed}};
-//	int Colors[NEnergies][NFSIModels] = {{kGreen+7,kGreen}{kBlack,kRed}{kBlue,kMagenta}};
-//	int Colors[NEnergies][NFSIModels] = {/*{kGreen-3,kGreen-3}*/{kBlack,kBlack}{kBlue,kBlue}};
-
-//	int Colors[NEnergies][NFSIModels] = {{kBlack}{kBlue}};
-//	int Colors[NEnergies][NFSIModels] = {{kGreen-3}{kBlack}{kBlue}};
 
 	// Loop over the xB kinematics
 
@@ -131,7 +122,8 @@ void OverlayReso_FigExtData8() {
 						TFile* FileSample = TFile::Open(FileName);
 
 						Plots[WhichEnergy][WhichFSIModel] =  (TH1D*)( FileSample->Get(NameOfPlots[WhichPlot]) );
-						Plots[WhichEnergy][WhichFSIModel]->Rebin(4);
+//						Plots[WhichEnergy][WhichFSIModel]->Rebin(4);
+						Plots[WhichEnergy][WhichFSIModel]->Rebin(1);
 						Plots[WhichEnergy][WhichFSIModel]->SetLineColor(Colors[WhichEnergy][WhichFSIModel]);
 						Plots[WhichEnergy][WhichFSIModel]->SetLineWidth(LineWidth-WhichEnergy);
 						CenterAxisTitle(Plots[WhichEnergy][WhichFSIModel]);
@@ -142,6 +134,7 @@ void OverlayReso_FigExtData8() {
 						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetTitleSize(TextSize);
 						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetTitleOffset(0.95);
 						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetNdivisions(8);
+if (NameOfPlots[WhichPlot] == "h_Etot_subtruct_piplpimi_factor_fracfeed")) { Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetRangeUser(-1.,0.1); }
 
 						Plots[WhichEnergy][WhichFSIModel]->GetYaxis()->SetTickSize(0.02);
 						Plots[WhichEnergy][WhichFSIModel]->GetYaxis()->SetLabelFont(FontStyle);

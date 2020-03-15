@@ -41,13 +41,13 @@ void ExtDataTable1() {
 	std::vector<TString> LabelOfPlots;  
 	std::vector<TString> OutputPlotNames;
 
-	nucleus.push_back("4He");
+//	nucleus.push_back("4He");
 //	nucleus.push_back("12C");
-//	nucleus.push_back("56Fe");
+	nucleus.push_back("56Fe");
 
 //	E.push_back("1_161"); DoubleE.push_back(1.161);
-	E.push_back("2_261"); DoubleE.push_back(2.261);	
-//	E.push_back("4_461"); DoubleE.push_back(4.461);
+//	E.push_back("2_261"); DoubleE.push_back(2.261);	
+	E.push_back("4_461"); DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
 

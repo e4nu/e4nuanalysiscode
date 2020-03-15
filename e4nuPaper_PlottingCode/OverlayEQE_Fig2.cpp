@@ -123,7 +123,7 @@ void OverlayEQE_Fig2() {
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("h_Erec_subtruct_piplpimi_noprot_3pi"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("InclusiveeRecoEnergy_slice_0");
 
@@ -225,7 +225,8 @@ pad1->SetFrameLineWidth(30);
 						Plots[WhichFSIModel]->GetXaxis()->SetTitleOffset(1.3);
 						Plots[WhichFSIModel]->GetXaxis()->SetLabelOffset(0.02);
 						Plots[WhichFSIModel]->GetXaxis()->SetTitle(JustNucleus[WhichNucleus]+LabelOfPlots[WhichPlot]);
-						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.45,1.5);
+//						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.45,1.5);
+Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.45,1.4);
 
 
 						// --------------------------------------------------------------------------------------
@@ -379,7 +380,8 @@ pad1->SetFrameLineWidth(30);
 					myEbeam->SetTextFont(FontStyle);
 					myEbeam->SetTextColor(kAzure+4);
 					myEbeam->SetTextSize(TextSize-0.02);
-					myEbeam->DrawLatex(1.161- 0.5*(myEbeam->GetXsize ()),0.52,"E_{beam}");
+//					myEbeam->DrawLatex(1.161- 0.5*(myEbeam->GetXsize ()),0.52,"E_{beam}");
+					myEbeam->DrawLatex(1.14,0.7,"E_{beam}");
 
 					TLatex* myArrow = new TLatex();
 					myArrow->SetTextFont(FontStyle);

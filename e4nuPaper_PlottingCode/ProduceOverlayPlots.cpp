@@ -17,13 +17,13 @@ gROOT->ProcessLine(".L /home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp");
 
 // Extended Data Figures
 
-//gROOT->ProcessLine(".L ExtDataTable1.cpp"); gROOT->ProcessLine("ExtDataTable1()");
+//gROOT->ProcessLine(".L ExtDataTable1.cpp"); gROOT->ProcessLine("ExtDataTable1()"); // do it again
 
-//gROOT->ProcessLine(".L ECalExtDataFig6_e4nuPaper.cpp"); gROOT->ProcessLine("ECalExtDataFig6_e4nuPaper()");
+//gROOT->ProcessLine(".L ECalExtDataFig6_e4nuPaper.cpp"); gROOT->ProcessLine("ECalExtDataFig6_e4nuPaper()"); // QE-like case
 
 //gROOT->ProcessLine(".L OverlayMultiplicities_FigExtData7.cpp"); gROOT->ProcessLine("OverlayMultiplicities_FigExtData7()");
 
-//gROOT->ProcessLine(".L OverlayReso_FigExtData8.cpp"); gROOT->ProcessLine("OverlayReso_FigExtData8()");
+gROOT->ProcessLine(".L OverlayReso_FigExtData8.cpp"); gROOT->ProcessLine("OverlayReso_FigExtData8()");
 
 //gROOT->ProcessLine(".L OverlayECalVsEQE_FigExtData9.cpp"); gROOT->ProcessLine("OverlayECalVsEQE_FigExtData9()");
 
@@ -35,7 +35,6 @@ gROOT->ProcessLine(".L /home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp");
 // ----------------------------------------------------------------------------------------
 
 // Playground Code
-
 
 //gROOT->ProcessLine(".L OverlayPlots.cpp"); gROOT->ProcessLine("OverlayPlots()");
 

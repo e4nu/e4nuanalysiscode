@@ -297,17 +297,13 @@ void genie_analysis::Loop(Int_t choice) {
 	//Binning for energy reconstruction histograms
 	int n_bins;
 	double *x_values;
-	int N_qe;
 	double *x_qe;
 
 	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.){
 		n_bins=38;
-		x_values=new double[n_bins+1];
-		for (int i=0;i<=17;i++) x_values[i]=0.4+i*0.04;
-		for (int i=0;i<=20;i++) x_values[i+18]=1.08+(i+1)*0.02;
-		N_qe = n_bins;
-		x_qe=new double[N_qe+1];
-		for (int i=0;i<n_bins;i++) { x_qe[i] = (x_values[i] - en_beam[fbeam_en]) / en_beam[fbeam_en]; }
+		x_values=new double[n_bins+1]; x_qe=new double[n_bins+1];
+		for (int i=0;i<=17;i++) { x_values[i]=0.4+i*0.04; x_qe[i] = (x_values[i] - en_beam[fbeam_en]) / en_beam[fbeam_en];}
+		for (int i=0;i<=20;i++) { x_values[i+18]=1.08+(i+1)*0.02; x_qe[i+18] = (x_values[i] - en_beam[fbeam_en]) / en_beam[fbeam_en]; }
 	}
 
 	if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.){
@@ -315,8 +311,7 @@ void genie_analysis::Loop(Int_t choice) {
 		x_values=new double[n_bins+1];
 		for (int i=0;i<=23;i++) x_values[i]=i*0.09;
 		for (int i=0;i<=30;i++) x_values[i+24]=2.07+(i+1)*0.03;
-		N_qe = n_bins;
-		x_qe=new double[N_qe+1];
+		x_qe=new double[n_bins+1];
 		for (int i=0;i<n_bins;i++) { x_qe[i] = (x_values[i] - en_beam[fbeam_en]) / en_beam[fbeam_en]; }
 	}
 
@@ -325,8 +320,7 @@ void genie_analysis::Loop(Int_t choice) {
 		x_values=new double[n_bins+1];
 		for (int i=0;i<=21;i++)	x_values[i]=i*0.2;
 		for (int i=0;i<=16;i++)	x_values[i+22]=4.2+(i+1)*0.05;
-		N_qe = n_bins;
-		x_qe=new double[N_qe+1];
+		x_qe=new double[n_bins+1];
 		for (int i=0;i<n_bins;i++) { x_qe[i] = (x_values[i] - en_beam[fbeam_en]) / en_beam[fbeam_en]; }
 	}
 

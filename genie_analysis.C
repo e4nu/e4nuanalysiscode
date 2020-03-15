@@ -292,30 +292,45 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_Q2Cal_weight = new TH1F("h1_Q2Cal_weight","",400,0,6);
 	TH1F *h1_nuCal_weight = new TH1F("h1_nuCal_weight","",400,0,3);
 
-	//Binning for fractional feed down energy histograms
+	// -------------------------------------------------------------------------------------------------------
+
+	//Binning for energy reconstruction histograms
+	int n_bins;
+	double *x_values;
 	int N_qe;
 	double *x_qe;
 
 	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.){
-		N_qe=109;
+		n_bins=38;
+		x_values=new double[n_bins+1];
+		for (int i=0;i<=17;i++) x_values[i]=0.4+i*0.04;
+		for (int i=0;i<=20;i++) x_values[i+18]=1.08+(i+1)*0.02;
+		N_qe = n_bins;
 		x_qe=new double[N_qe+1];
-		for (int i=0;i<=64;i++)	x_qe[i]=-1+i*0.015;
-		for (int i=0;i<=44;i++)	x_qe[i+65]=-0.04+(i+1)*0.01;
+		x_qe[i] = (x_values[i] - en_beam[fbeam_en]) / en_beam[fbeam_en];
 	}
 
 	if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.){
-		N_qe=109;
+		n_bins=54;
+		x_values=new double[n_bins+1];
+		for (int i=0;i<=23;i++) x_values[i]=i*0.09;
+		for (int i=0;i<=30;i++) x_values[i+24]=2.07+(i+1)*0.03;
+		N_qe = n_bins;
 		x_qe=new double[N_qe+1];
-		for (int i=0;i<=64;i++)	x_qe[i]=-1+i*0.015;
-		for (int i=0;i<=44;i++)	x_qe[i+65]=-0.04+(i+1)*0.01;
+		x_qe[i] = (x_values[i] - en_beam[fbeam_en]) / en_beam[fbeam_en];
 	}
 
 	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.){
-		N_qe=82;
+		n_bins=38;
+		x_values=new double[n_bins+1];
+		for (int i=0;i<=21;i++)	x_values[i]=i*0.2;
+		for (int i=0;i<=16;i++)	x_values[i+22]=4.2+(i+1)*0.05;
+		N_qe = n_bins;
 		x_qe=new double[N_qe+1];
-		for (int i=0;i<=29;i++)	x_qe[i]=-1+i*0.03;
-		for (int i=0;i<=52;i++)	x_qe[i+30]=-0.13+(i+1)*0.01;
+		x_qe[i] = (x_values[i] - en_beam[fbeam_en]) / en_beam[fbeam_en];
 	}
+
+	// -------------------------------------------------------------------------------------------------------
 
 	//Definitions of further Histograms
 
@@ -418,30 +433,30 @@ void genie_analysis::Loop(Int_t choice) {
 
 	TH2F* h2_QVector_theta_phi = new TH2F("h2_QVector_theta_phi","",200,0,360,200,0,80);
 
-	//Binning for energy reconstruction histograms
-	int n_bins;
-	double *x_values;
+//	//Binning for energy reconstruction histograms
+//	int n_bins;
+//	double *x_values;
 
-	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.){
-		n_bins=38;
-		x_values=new double[n_bins+1];
-		for (int i=0;i<=17;i++) x_values[i]=0.4+i*0.04;
-		for (int i=0;i<=20;i++) x_values[i+18]=1.08+(i+1)*0.02;
-	}
+//	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.){
+//		n_bins=38;
+//		x_values=new double[n_bins+1];
+//		for (int i=0;i<=17;i++) x_values[i]=0.4+i*0.04;
+//		for (int i=0;i<=20;i++) x_values[i+18]=1.08+(i+1)*0.02;
+//	}
 
-	if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.){
-		n_bins=54;
-		x_values=new double[n_bins+1];
-		for (int i=0;i<=23;i++) x_values[i]=i*0.09;
-		for (int i=0;i<=30;i++) x_values[i+24]=2.07+(i+1)*0.03;
-	}
+//	if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.){
+//		n_bins=54;
+//		x_values=new double[n_bins+1];
+//		for (int i=0;i<=23;i++) x_values[i]=i*0.09;
+//		for (int i=0;i<=30;i++) x_values[i+24]=2.07+(i+1)*0.03;
+//	}
 
-	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.){
-		n_bins=38;
-		x_values=new double[n_bins+1];
-		for (int i=0;i<=21;i++)	x_values[i]=i*0.2;
-		for (int i=0;i<=16;i++)	x_values[i+22]=4.2+(i+1)*0.05;
-	}
+//	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.){
+//		n_bins=38;
+//		x_values=new double[n_bins+1];
+//		for (int i=0;i<=21;i++)	x_values[i]=i*0.2;
+//		for (int i=0;i<=16;i++)	x_values[i+22]=4.2+(i+1)*0.05;
+//	}
 
 	//Definitions of further Histograms
 	TH1F *h1_E_rec_2p_det = new TH1F("h1_E_rec_2p_det","",n_bins,x_values);

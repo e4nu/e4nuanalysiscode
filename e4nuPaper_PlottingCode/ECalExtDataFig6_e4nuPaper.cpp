@@ -598,7 +598,7 @@ void ECalExtDataFig6_e4nuPaper() {
 		// Extra pad for the Y-axis 1. point
 
 		PlotCanvas->cd();
-		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.41,0.335,0.426,0.385,21); 
+		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.41,0.33,0.426,0.38,21); 
 		padTitleOne->SetFillColor(kWhite); 
 		padTitleOne->Draw();
 		padTitleOne->cd();
@@ -614,7 +614,7 @@ void ECalExtDataFig6_e4nuPaper() {
 		// Extra pad for the Y-axis 2. point
 
 		PlotCanvas->cd();
-		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.41,0.5,0.426,0.55,21); 
+		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.41,0.48,0.426,0.53,21); 
 		padTitleTwo->SetFillColor(kWhite); 
 		padTitleTwo->Draw();
 		padTitleTwo->cd();

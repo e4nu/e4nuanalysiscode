@@ -317,7 +317,7 @@ void genie_analysis::Loop(Int_t choice) {
 		n_bins=38;
 		x_values=new double[n_bins+1]; x_qe=new double[n_bins+1];
 		for (int i=0;i<=21;i++)	{ x_values[i]=i*0.2; x_qe[i] = (x_values[i] - en_beam[fbeam_en]) / en_beam[fbeam_en];}
-		for (int i=0;i<=16;i++)	{ x_values[i+22]=4.2+(i+1)*0.05; x_qe[i] = (x_values[i+22] - en_beam[fbeam_en]) / en_beam[fbeam_en];}
+		for (int i=0;i<=16;i++)	{ x_values[i+22]=4.2+(i+1)*0.05; x_qe[i+22] = (x_values[i+22] - en_beam[fbeam_en]) / en_beam[fbeam_en];}
 	}
 
 	// -------------------------------------------------------------------------------------------------------

@@ -310,14 +310,14 @@ void genie_analysis::Loop(Int_t choice) {
 		n_bins=54;
 		x_values=new double[n_bins+1]; x_qe=new double[n_bins+1];
 		for (int i=0;i<=23;i++) { x_values[i]=i*0.09; x_qe[i] = (x_values[i] - en_beam[fbeam_en]) / en_beam[fbeam_en];}
-		for (int i=0;i<=30;i++) { x_values[i+24]=2.07+(i+1)*0.03; x_qe[i+24] = (x_values[i+18] - en_beam[fbeam_en]) / en_beam[fbeam_en];}
+		for (int i=0;i<=30;i++) { x_values[i+24]=2.07+(i+1)*0.03; x_qe[i+24] = (x_values[i+24] - en_beam[fbeam_en]) / en_beam[fbeam_en];}
 	}
 
 	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.){
 		n_bins=38;
 		x_values=new double[n_bins+1]; x_qe=new double[n_bins+1];
 		for (int i=0;i<=21;i++)	{ x_values[i]=i*0.2; x_qe[i] = (x_values[i] - en_beam[fbeam_en]) / en_beam[fbeam_en];}
-		for (int i=0;i<=16;i++)	{ x_values[i+22]=4.2+(i+1)*0.05; x_qe[i] = (x_values[i+18] - en_beam[fbeam_en]) / en_beam[fbeam_en];}
+		for (int i=0;i<=16;i++)	{ x_values[i+22]=4.2+(i+1)*0.05; x_qe[i] = (x_values[i+22] - en_beam[fbeam_en]) / en_beam[fbeam_en];}
 	}
 
 	// -------------------------------------------------------------------------------------------------------

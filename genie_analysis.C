@@ -226,7 +226,33 @@ void genie_analysis::Loop(Int_t choice) {
 
 	// GENIE Systematic Uncertainties
 
-//	TString TweakedVariable = "FormZone";
+        //      TString TweakedVariable = "FormZone";                                                                                                                                                 
+        //      TString TweakedVariable = "AGKYpT1pi";                                                                                                                                                
+        //      TString TweakedVariable = "AhtBY";                                                                                                                                                    
+        //      TString TweakedVariable = "BhtBY";                                                                                                                                                    
+        //      TString TweakedVariable = "CV1uBY";                                                                                                                                                   
+        //      TString TweakedVariable = "CV2uBY";                                                                                                                                                  
+        //      TString TweakedVariable = "AGKYxF1pi";                                                                                                                                                
+        //      TString TweakedVariable = "MFP_pi";                                                                                                                                                   
+        //      TString TweakedVariable = "MFP_N";         
+        //      TString TweakedVariable = "FrCEx_pi";                                                                                                                                               
+        //      TString TweakedVariable = "FrInel_pi";                                                                       
+        //      TString TweakedVariable = "FrAbs_pi";                                                                                                        
+        //      TString TweakedVariable = "FrPiProd_pi";                                                                                                          
+        //      TString TweakedVariable = "FrCEx_N";                                                                                                      
+        //      TString TweakedVariable = "FrInel_N";                                                                                                            
+        //      TString TweakedVariable = "FrAbs_N";                                                                                                            
+        //      TString TweakedVariable = "FrPiProd_N";                                                                                                           
+        //      TString TweakedVariable = "RDecBR1gamma";                                                                                                         
+        //      TString TweakedVariable = "RDecBR1eta";                                                                                                                 
+        //      TString TweakedVariable = "EmpiricalMEC-Mq2d";                                                                                                                                        
+        //      TString TweakedVariable = "EmpiricalMEC-Mass";                                                                                                                                       
+        //      TString TweakedVariable = "EmpiricalMEC-Width";                                                                                                                                      
+        //      TString TweakedVariable = "EmpiricalMEC-APower";                                                                                                                                      
+        //      TString TweakedVariable = "EmpiricalMEC-FracPN_EM";                                                                                                                                   
+        //      TString TweakedVariable = "EmpiricalMEC-FracEMQE";
+
+
 //	TFile *fweights = new TFile("/w/hallb-scifs17exp/clas/claseg2/apapadop/myWeights/weights_"+TweakedVariable+"_"+TString(ftarget)+"_"+TString(fbeam_en)+".root");
 //	TTree *tweights = (TTree*)fweights->Get(TweakedVariable);
 //	int NtweightsEntries = tweights->GetEntries();

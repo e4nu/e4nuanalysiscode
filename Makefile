@@ -12,9 +12,10 @@ LDFLAGS   := $(ROOTLDFLAGS)
 
 OBJECTS1   := FilterData.o Subtraction.o run_e2a_ep_neutrino6_united4_radphot.o Fiducial.o e2a_ep_neutrino6_united4_radphot.o
 OBJECTS2   := Subtraction.o run_genie_analysis.o Fiducial.o genie_analysis.o
+OBJECTS3   := Subtraction.o run_systematics.o Fiducial.o systematics.o
 
 
-all: e2a_ep genie_analysis
+all: e2a_ep genie_analysis systematics
 
 genie_analysis: $(OBJECTS2)
 		$(CXX) -o genie_analysis $(OBJECTS2) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
@@ -22,9 +23,12 @@ genie_analysis: $(OBJECTS2)
 e2a_ep: $(OBJECTS1)
 	$(CXX) -o e2a_ep $(OBJECTS1) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
 
+systematics: $(OBJECTS3)
+		$(CXX) -o systematics $(OBJECTS3) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
+
 clean:
 	@echo 'Removing all build files'
-	@rm -rf *.o run_e2a_ep run_genie_analysis *~
+	@rm -rf *.o run_e2a_ep run_genie_analysis run_systematics *~
 
 %.o: %.C
 	$(CXX) -c $< -O2 $(CXXFLAGS) $(INCLUDES)

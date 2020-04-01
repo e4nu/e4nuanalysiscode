@@ -258,7 +258,7 @@ void systematics::Loop(Int_t choice, std::string tweak, int sigma) {
 	else { 
 
 		TString Dir = "Up";
-		if (sigma == -1) { Dir = "Down"; } 
+		if (sigma == 0) { Dir = "Down"; } 
 		file_out = new TFile("mySystematics"+Dir+"/genie_e2a_ep_"+TString(ftarget.c_str())+"_"+TString(fbeam_en.c_str())+"_neutrino6_united4_radphot_test_"+TString(tweak.c_str())+".root", "Recreate");
 	}
 

@@ -88,8 +88,8 @@ void OverlayTruth() {
 	// Larry/Axel's suggestion for scaling the last 2 bins by EnhaceTail
 //	double EnhaceTail = 1./4.;
 //	double EnhaceTail = 1./2.;
-	double EnhaceTail = 1./3.;
-//	double EnhaceTail = 1.;
+//	double EnhaceTail = 1./3.;
+	double EnhaceTail = 1.;
 
 	std::vector<TString> xBCut; std::vector<TString> nucleus; std::vector<TString> JustNucleus; std::vector<TString> LabelsOfSamples; 
 	std::vector<TString> E; std::vector<double> DoubleE;
@@ -111,7 +111,7 @@ void OverlayTruth() {
 //	xBCut.push_back("xBCut");
  
 //	Colors.push_back(kBlack); Colors.push_back(kRed); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
-	Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kRed); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
+	/*Colors.push_back(kBlack);*/ Colors.push_back(kBlue); Colors.push_back(kRed); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
 
 //	Style.push_back(9); Style.push_back(3); Style.push_back(7); Style.push_back(5);
 //	Style.push_back(9); Style.push_back(9); Style.push_back(9); Style.push_back(9); // fancy dashed lines 
@@ -119,15 +119,10 @@ void OverlayTruth() {
 
 	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
 
-	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
-//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie (e4nu)");  DirNames.push_back("hA2018_Truth_RadCorr");
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM_Truth"); FSILabel.push_back("Genie (Truth)");  DirNames.push_back("hA2018_Truth_RadCorr");
 //	FSIModel.push_back("hA2018_Final_RadCorr_LFGM_Truth_UnitPionEff"); FSILabel.push_back("Genie (e4nu & unit #pi eff)");  DirNames.push_back("hA2018_Truth_RadCorr");
-
-//	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hA2018_Truth_NoRadCorr"); FSILabel.push_back("Genie (Truth)");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hN2018_Final_NoRadCorr"); FSILabel.push_back("Genie hN2018");  DirNames.push_back("hN2018_Truth_NoRadCorr");
 
 //	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
 //	NameOfPlots.push_back("MissMomentum_NoWeight"); LabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum_NoWeight");
@@ -139,7 +134,7 @@ void OverlayTruth() {
 //	NameOfPlots.push_back("h1_Erec_p_bkgd_slice_sub2p1pi_2p_2"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("eRecoEnergy_slice_2");
 //	NameOfPlots.push_back("h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_3"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]");  OutputPlotNames.push_back("epRecoEnergy_slice_3");
 //	NameOfPlots.push_back("h1_Erec_p_bkgd_slice_sub2p1pi_2p_3"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("eRecoEnergy_slice_3");
-	NameOfPlots.push_back("h_Etot_subtruct_piplpimi_factor_fracfeed"); LabelOfPlots.push_back("E^{cal} Feeddown");  OutputPlotNames.push_back("EcalReso");
+//	NameOfPlots.push_back("h_Etot_subtruct_piplpimi_factor_fracfeed"); LabelOfPlots.push_back("E^{cal} Feeddown");  OutputPlotNames.push_back("EcalReso");
 //	NameOfPlots.push_back("h_Erec_subtruct_piplpimi_factor_fracfeed"); LabelOfPlots.push_back("E^{QE} Feeddown"); OutputPlotNames.push_back("EQEReso");
 //	NameOfPlots.push_back("h1_el_mom_corr");  LabelOfPlots.push_back("P_{e} (GeV / c)"); OutputPlotNames.push_back("Pmu");
 //	NameOfPlots.push_back("h1_prot_mom"); LabelOfPlots.push_back("P_{p} (GeV / c)"); OutputPlotNames.push_back("Pp");
@@ -604,6 +599,8 @@ void OverlayTruth() {
 //						double ScalingFactor = Plots[0]->GetMaximum() / Plots[WhichFSIModel]->GetMaximum();
 //						double ScalingFactor = 18E8 / Plots[WhichFSIModel]->GetMaximum();
 //						double ScalingFactor = 1.;
+
+// apapadop
 						Plots[WhichFSIModel]->Scale(ScalingFactor);
 
 						// -----------------------------------------------------------------------------------
@@ -898,7 +895,7 @@ void OverlayTruth() {
 //								else { Plots[WhichFSIModel]->SetLineColor(kBlue); Plots[WhichFSIModel]->SetLineStyle(7); }
 								Plots[WhichFSIModel]->Draw("hist same"); 
 								gStyle->SetErrorX(0); 
-								Plots[0]->Draw("e same"); 
+								if (FSILabel[0] == "Data") { Plots[0]->Draw("e same"); }
 							}
 						} 
 
@@ -920,7 +917,7 @@ void OverlayTruth() {
 							} else { 
 //								Plots[WhichFSIModel]->Draw("hist same"); // draw them as histos
 								Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
-								Plots[0]->Draw("e same"); 
+								if (FSILabel[0] == "Data") { Plots[0]->Draw("e same"); }
 							}
 						}
 
@@ -1031,7 +1028,9 @@ void OverlayTruth() {
 								line1->SetLineColor(kBlack); line1->SetLineWidth(LineWidth);
 								if ( (OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_0" || 
 								      OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_1") 
-								   && nucleus[WhichNucleus] == "12C") { line1->Draw(); }
+								   && nucleus[WhichNucleus] == "12C") { 
+//									line1->Draw(); 
+								}
 
 								// -----------------------------------------------------------------------------------------------
 
@@ -1087,7 +1086,7 @@ void OverlayTruth() {
 							&& DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C" ) {
  
 							latexScale.SetTextSize(TextSize); 
-							latexScale.DrawLatexNDC(0.86,0.47,"x1/3"); 
+//							latexScale.DrawLatexNDC(0.86,0.47,"x1/3"); 
 //							if (FSILabel[WhichFSIModel] == "Data") {
 //								latexData.DrawLatexNDC(0.4,0.43+0.3*WhichFSIModel,FSILabel[WhichFSIModel]);
 //							}

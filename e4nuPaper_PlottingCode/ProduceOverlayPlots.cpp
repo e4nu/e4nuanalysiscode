@@ -5,7 +5,7 @@ gROOT->ProcessLine(".L /home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp");
 
 // Main e4nu Paper Plots
 
-//gROOT->ProcessLine(".L OverlayEQE_Fig2.cpp"); gROOT->ProcessLine("OverlayEQE_Fig2()");
+gROOT->ProcessLine(".L OverlayEQE_Fig2.cpp"); gROOT->ProcessLine("OverlayEQE_Fig2()");
 
 //gROOT->ProcessLine(".L OverlayPmissFig3a_e4nuPaper.cpp"); gROOT->ProcessLine("OverlayPmissFig3a_e4nuPaper()");
 
@@ -23,7 +23,7 @@ gROOT->ProcessLine(".L /home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp");
 
 //gROOT->ProcessLine(".L OverlayMultiplicities_FigExtData7.cpp"); gROOT->ProcessLine("OverlayMultiplicities_FigExtData7()");
 
-gROOT->ProcessLine(".L OverlayReso_FigExtData8.cpp"); gROOT->ProcessLine("OverlayReso_FigExtData8()");
+//gROOT->ProcessLine(".L OverlayReso_FigExtData8.cpp"); gROOT->ProcessLine("OverlayReso_FigExtData8()");
 
 //gROOT->ProcessLine(".L OverlayECalVsEQE_FigExtData9.cpp"); gROOT->ProcessLine("OverlayECalVsEQE_FigExtData9()");
 

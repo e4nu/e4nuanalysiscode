@@ -100,8 +100,8 @@ void OverlayPlots() {
 	std::vector<int> Style;
 
 //	nucleus.push_back("4He"); LabelsOfSamples.push_back("^{4}He"); JustNucleus.push_back("He");
-//	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
-	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
+	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
+//	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
 //	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
 	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
@@ -111,7 +111,7 @@ void OverlayPlots() {
 //	xBCut.push_back("xBCut");
  
 //	Colors.push_back(kBlack); Colors.push_back(kRed); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
-	Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kBlack); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
+	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
 
 //	Style.push_back(9); Style.push_back(3); Style.push_back(7); Style.push_back(5);
 //	Style.push_back(9); Style.push_back(9); Style.push_back(9); Style.push_back(9); // fancy dashed lines 
@@ -121,7 +121,8 @@ void OverlayPlots() {
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
+	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
 
 //	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 //	FSIModel.push_back("hA2018_Truth_NoRadCorr"); FSILabel.push_back("Genie (Truth)");  DirNames.push_back("hA2018_Truth_NoRadCorr");
@@ -708,9 +709,9 @@ void OverlayPlots() {
 						// ----------------------------------------------------------------------------------
 
 						// Genie Break Down
-/*
+
 						if (
-							FSILabel[WhichFSIModel] == "Genie" && 
+							(FSILabel[WhichFSIModel] == "Genie" || FSILabel[WhichFSIModel] == "SuSav2") && 
 							//FSILabel[WhichFSIModel] == "Rad" &&
 							( (NameOfPlots[WhichPlot] == "MissMomentum" )  || 
 							NameOfPlots[WhichPlot] == "h1_Q2_weight"|| 
@@ -727,8 +728,8 @@ void OverlayPlots() {
 								legGenie->AddEntry(Plots[0],"Data", "lep"); 
 								legGenieBlackLine->AddEntry(Plots[0],"Data", "lep"); 
 								//}
-								legGenie->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
-								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
+								legGenie->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l"); 
+								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l"); 
 							//}
 							//else { legGenie->AddEntry(Plots[WhichFSIModel],"GENIE", "l"); }
 
@@ -835,7 +836,7 @@ void OverlayPlots() {
 							} // end of the look over the GENIE break down
 
 						}
-*/
+
 						// ---------------------------------------------------------------------------------------------------
 
 						// Max, min, title & # divisions

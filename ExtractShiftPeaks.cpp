@@ -22,13 +22,13 @@ using namespace std;
 
 // ----------------------------------------------------------------------------------------------------------------
 
-int LocateBin(TH1D* h, double max) {
+int LocateBin(TH1D* h, double max, double peak) {
 
 	int NBins = h->GetXaxis()->GetNbins();
 	
 	for (int i = 1; i <= NBins; i++) {
 
-		if (h->GetBinContent(i) == max) { return i; }
+		if (h->GetBinContent(i) == max && fabs(h->GetBinCenter(i)-peak)/peak < 0.05) { return i; }
 
 	}
 
@@ -57,11 +57,11 @@ void ExtractShiftPeaks() {
 	std::vector<TString> OutputPlotNames;
 
 //	nucleus.push_back("4He");
-	nucleus.push_back("12C");
-//	nucleus.push_back("56Fe");
+//	nucleus.push_back("12C");
+	nucleus.push_back("56Fe");
 
-	E.push_back("1_161"); DoubleE.push_back(1.161);
-//	E.push_back("2_261"); DoubleE.push_back(2.261);	
+//	E.push_back("1_161"); DoubleE.push_back(1.161);
+	E.push_back("2_261"); DoubleE.push_back(2.261);	
 //	E.push_back("4_461"); DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
@@ -69,9 +69,8 @@ void ExtractShiftPeaks() {
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
 
-//	NameOfPlots.push_back("h1_Ecal"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E_{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
-	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E_{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
-	NameOfPlots.push_back("h_Erec_subtruct_piplpimi_noprot_3pi"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E_{QE} [GeV]");  OutputPlotNames.push_back("eRecoEnergy_slice_0");
+	NameOfPlots.push_back("h1_Ecal"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E_{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
+//	NameOfPlots.push_back("h1_EQE"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E_{QE} [GeV]");  OutputPlotNames.push_back("eRecoEnergy_slice_0");
 
 	std::vector<TH1D*> Plots;
 
@@ -119,13 +118,23 @@ void ExtractShiftPeaks() {
 
 						if (WhichFSIModel != 0) {
 
+							int rebin = 0;
+
+							Plots[0]->GetXaxis()->SetRangeUser(0.9*DoubleE[WhichEnergy],1.1*DoubleE[WhichEnergy]);
+//							Plots[0]->Rebin(rebin);
 							double DataMax = Plots[0]->GetMaximum();
-							int DataMaxBin = LocateBin(Plots[0],DataMax);
+							int DataMaxBin = LocateBin(Plots[0],DataMax,DoubleE[WhichEnergy]);
 							double DataMaxBinCenter = Plots[0]->GetBinCenter(DataMaxBin);
 
+std::cout << "DataMaxBinCenter = " << DataMaxBinCenter << std::endl;
+
+							Plots[1]->GetXaxis()->SetRangeUser(0.85*DoubleE[WhichEnergy],1.15*DoubleE[WhichEnergy]);
+//							Plots[1]->Rebin(rebin);
 							double GenieMax = Plots[1]->GetMaximum();
-							int GenieMaxBin = LocateBin(Plots[1],GenieMax);
+							int GenieMaxBin = LocateBin(Plots[1],GenieMax,DoubleE[WhichEnergy]);
 							double GenieMaxBinCenter = Plots[1]->GetBinCenter(GenieMaxBin);
+
+std::cout << "GenieMaxBinCenter = " << GenieMaxBinCenter << std::endl;
 
 							double diff = (DataMaxBinCenter - GenieMaxBinCenter) * 1000.; // MeV
 

@@ -203,8 +203,6 @@ void OverlayPmissFig3a_e4nuPaper() {
 						CenterAxisTitle(Plots[WhichFSIModel]);
 						Plots[WhichFSIModel]->SetLineWidth(LineWidth);
 
-
-
 						// --------------------------------------------------------------------------------------
 
 						// X-axis

@@ -349,6 +349,7 @@ void OverlayTruth() {
 						// Y-axis label
 
 //						Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(0.);
+
 						if (
 							NameOfPlots[WhichPlot] == "h1_Nphot" || 
 							NameOfPlots[WhichPlot] == "h1_Nprot" || 

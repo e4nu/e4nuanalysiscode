@@ -709,7 +709,6 @@ void OverlayPlots() {
 						// ----------------------------------------------------------------------------------
 
 						// Genie Break Down
-
 						if (
 							(FSILabel[WhichFSIModel] == "Genie" || FSILabel[WhichFSIModel] == "SuSav2") && 
 							//FSILabel[WhichFSIModel] == "Rad" &&
@@ -730,6 +729,7 @@ void OverlayPlots() {
 								//}
 								legGenie->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l"); 
 								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l"); 
+
 							//}
 							//else { legGenie->AddEntry(Plots[WhichFSIModel],"GENIE", "l"); }
 

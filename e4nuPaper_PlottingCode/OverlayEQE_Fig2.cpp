@@ -105,6 +105,7 @@ void OverlayEQE_Fig2() {
 	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(429); BreakDownColors.push_back(410); BreakDownColors.push_back(610);
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
+
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("h_Erec_subtruct_piplpimi_noprot_3pi"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("InclusiveeRecoEnergy_slice_0");
@@ -336,6 +337,7 @@ void OverlayEQE_Fig2() {
 							legGenieBlackLine->AddEntry(UncertaintyPlots[1],"GENIE (Total)", "lf"); 
 
 							Plots[0]->Draw("e same"); 
+
 						}
 
 		                                // --------------------------------------------------------------------------------------------------

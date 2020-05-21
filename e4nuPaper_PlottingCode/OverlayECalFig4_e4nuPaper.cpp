@@ -424,7 +424,6 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 
 						} else { 
 
-
 							//Plots[WhichFSIModel]->Draw("C hist same");  // "C hist same" draw them as lines // "hist same" draw them as histos
 							UncertaintyPlots[1]->SetMarkerColor(kBlack);	
 							UncertaintyPlots[1]->SetLineColor(kBlack);
@@ -434,6 +433,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 							UncertaintyPlots[1]->SetMarkerStyle(20);
 							UncertaintyPlots[1]->Draw("3C same");
 							legGenieBlackLine->AddEntry(UncertaintyPlots[1],"GENIE (Total)", "lf"); 
+
 							Plots[0]->Draw("e same"); 
 
 						}

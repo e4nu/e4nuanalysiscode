@@ -60,7 +60,24 @@ void ApplySystUnc(TH1D* h, double systunc) {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-void OverlayPmiss_FigExtData10() {
+void ApplyGenieUnc(TH1D* h, TGraphAsymmErrors* asymmerror) {
+
+	double NBins = h->GetNbinsX(); 
+				
+	for (int i = 1; i <= NBins; i++) { 
+					
+		double error = asymmerror->GetErrorYhigh(i);
+		//cout << "error " << error << endl;
+		//double newerror = error * (1. + systunc);
+		h->SetBinError(i,error);
+
+	}
+
+}
+
+// ----------------------------------------------------------------------------------------------------------------
+
+void OverlayECalFig4_e4nuPaper() {
 
 	// ------------------------------------------------------------------------
 
@@ -82,9 +99,9 @@ void OverlayPmiss_FigExtData10() {
 
 	// ------------------------------------------------------------------------
 
-	// Larry/Axel's suggestion for scaling the last 2 bins by EnhaceTail
+	// Larry/Axel's suggestion for scaling the last 5 bins by EnhaceTail
 
-	double EnhaceTail = 1.;
+	double EnhaceTail = 1./3.;
 
 	std::vector<TString> xBCut; std::vector<TString> nucleus; std::vector<TString> JustNucleus; std::vector<TString> LabelsOfSamples; 
 	std::vector<TString> E; std::vector<double> DoubleE;
@@ -104,21 +121,23 @@ void OverlayPmiss_FigExtData10() {
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
  
-	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
+	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); 
+	Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
 
 	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
-//	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
 	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(429); BreakDownColors.push_back(410); BreakDownColors.push_back(610);
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
-//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	
+//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
 
-	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} P_{T} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
+	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]");
+	OutputPlotNames.push_back("epRecoEnergy_slice_0");
 
 	std::vector<TH1D*> Plots;
+//	std::vector<TGraphAsymmErrors*> UncertaintyPlots;
 	std::vector<TH1D*> Plots_Clones;
 
 	int NxBCuts = xBCut.size();
@@ -128,7 +147,8 @@ void OverlayPmiss_FigExtData10() {
 	int NPlots = NameOfPlots.size();
 
 	TString WhatModelsAreIncluded = "";
-	for (int LoopOverFSIModels = 0 ; LoopOverFSIModels < NFSIModels ; LoopOverFSIModels ++) { WhatModelsAreIncluded += "_"+DirNames[LoopOverFSIModels]; };
+	for (int LoopOverFSIModels = 0 ; LoopOverFSIModels < NFSIModels ; LoopOverFSIModels ++) 
+		{ WhatModelsAreIncluded += "_"+DirNames[LoopOverFSIModels]; };
 
 	TString RecoCalorimetry = "(e,e'p)";
 	TString FSI = "FSI";
@@ -141,16 +161,14 @@ void OverlayPmiss_FigExtData10() {
 	for (int WhichxBCut = 0; WhichxBCut < NxBCuts; WhichxBCut ++) {
 
 		TCanvas* PlotCanvas = new TCanvas(xBCut[WhichxBCut],xBCut[WhichxBCut],205,34,1600,900);
-//			205,34,1024,768);
-//			205,34,768,768);
-
+		
 		TLegend* legGenieBlackLine = new TLegend(0.1,0.5,0.54,1.);
 		legGenieBlackLine->SetNColumns(1);
 		legGenieBlackLine->SetTextFont(FontStyle); 
-
+					
 		TLegend* legGenieBreak = new TLegend(0.1,0.,1.,0.5);
 		legGenieBreak->SetNColumns(2);
-		legGenieBreak->SetTextFont(FontStyle);
+		legGenieBreak->SetTextFont(FontStyle);							
 
 		// Loop over the plots
 
@@ -160,15 +178,16 @@ void OverlayPmiss_FigExtData10() {
 
 			for (int WhichEnergy = 0; WhichEnergy < NEnergies; WhichEnergy ++) {
 
-				double MaxHeight = 22; // In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
+				// In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
+				double MaxHeight = 2.8;
 
 				// Loop over the nuclei
 
 				for (int WhichNucleus = 0; WhichNucleus < NNuclei; WhichNucleus ++) {
 
-					if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.55; }
+					if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.67; }
 
-					// ---------------------------------------------------------------------------------------------------------------
+					// ----------------------------------------------------------------------------
 
 					// Dimensions of TPads
 
@@ -183,8 +202,11 @@ void OverlayPmiss_FigExtData10() {
 
 					TPad* pad = new TPad(); 
 
-					if (nucleus[WhichNucleus] == "12C") { pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad,XMaxPad,YMaxPad, 21); }
-					else { pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad+space,XMaxPad,YMaxPad+space, 21); }
+					if (nucleus[WhichNucleus] == "12C") 
+						{ pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad,XMaxPad,YMaxPad, 21); }
+					else { 
+						pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad+space,XMaxPad,YMaxPad+space, 21);
+					}
 
 					pad->SetFillColor(kWhite); 
 					PlotCanvas->cd();
@@ -195,20 +217,22 @@ void OverlayPmiss_FigExtData10() {
 					pad->SetTopMargin(0.0);
 					if (nucleus[WhichNucleus] == "12C") { pad->SetTopMargin(0.01); }
 					pad->SetLeftMargin(0.);
-if (DoubleE[WhichEnergy] == 1.161 ) { pad->SetLeftMargin(0.08); }
+					if (DoubleE[WhichEnergy] == 1.161 ) { pad->SetLeftMargin(0.05); }
 					pad->SetRightMargin(0.0);
 					if (DoubleE[WhichEnergy] == 4.461 ) { pad->SetRightMargin(0.01); }
 					pad->SetFrameBorderSize(10);
 
-					// -------------------------------------------------------------------------------------------------------
+					// -------------------------------------------------------------------------------
 
 					// No data on 56Fe @ 1.161 GeV
 
 					if ( nucleus[WhichNucleus] == "56Fe" && DoubleE[WhichEnergy] == 1.161 ) { delete pad; continue; }
 
-					// --------------------------------------------------------------------------------------------------------
+					// ---------------------------------------------------------------------------------------------
 
 					Plots.clear();
+//					UncertaintyPlots.clear();
+
 
 					double max = -99.;
 					double min = 1E12;
@@ -222,6 +246,11 @@ if (DoubleE[WhichEnergy] == 1.161 ) { pad->SetLeftMargin(0.08); }
 						TFile* FileSample = TFile::Open(FileName);
 
 						Plots.push_back( (TH1D*)( FileSample->Get(NameOfPlots[WhichPlot]) ) );
+
+//						TString PathToUncertaintyFiles = "../../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[1]+"/"+xBCut[WhichxBCut]+"/";
+//						TString UncertaintyFileName = PathToUncertaintyFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+FSIModel[1]+"_Plots_FSI_em"+NameOfPlots[WhichPlot]+"_Uncertainty.root";
+//						TFile* UncertaintyFileSample = TFile::Open(UncertaintyFileName);
+//						UncertaintyPlots.push_back( (TGraphAsymmErrors*)( UncertaintyFileSample->Get(OutputPlotNames[WhichPlot]) ) );
 
 						Plots[WhichFSIModel]->SetLineColor(Colors[WhichFSIModel]);
 						CenterAxisTitle(Plots[WhichFSIModel]);
@@ -245,8 +274,7 @@ if (DoubleE[WhichEnergy] == 1.161 ) { pad->SetLeftMargin(0.08); }
 						Plots[WhichFSIModel]->GetYaxis()->SetTitleFont(FontStyle);
 						Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(0.);
 						Plots[WhichFSIModel]->GetYaxis()->SetLabelOffset(0.013);
-//if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(0.07); }	
-Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
+						Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 
 
 						Plots[WhichFSIModel]->GetYaxis()->SetTitle("");
@@ -254,7 +282,7 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 						// --------------------------------------------------------------------------------------
 
 						// Scaling Factor
-
+//Plots[WhichFSIModel]->Rebin();
 						double ScalingFactor = 1. / Plots[WhichFSIModel]->Integral();  // area normalized
 						Plots[WhichFSIModel]->Scale(ScalingFactor);
 
@@ -288,17 +316,17 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 
 						ReweightPlots(Plots[WhichFSIModel]);
 
+						if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->Scale(1./4.); }
+						Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(3);
+
 						// --------------------------------------------------------------------------------------
 
 						// Rebining & ranges
 
-//						if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.6,1.23); }
-//						if (DoubleE[WhichEnergy] == 2.261) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.7,2.4); }
-//						if (DoubleE[WhichEnergy] == 4.461) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.3,4.6); }
+						if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.7,1.29); }//0.7,1.23
+						if (DoubleE[WhichEnergy] == 2.261) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.7,2.4); }//0.7,2.4
+						if (DoubleE[WhichEnergy] == 4.461) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.5,4.6); }
 
-for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin(); }
-Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.03,0.95);
-Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(3);
 						// ----------------------------------------------------------------------------------
 
 						// Apply Systematic Uncertainties on Data Points
@@ -315,23 +343,20 @@ Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(3);
 						// Genie Break Down
 
 						if (
-							FSILabel[WhichFSIModel] == "Genie"
+							FSILabel[WhichFSIModel] == "SuSav2"
 						) {
-
-							if (DoubleE[WhichEnergy] == 1.161 && nucleus[WhichNucleus] == "12C") {
-							
+						
+							if (nucleus[WhichNucleus] == "12C" && E[WhichEnergy] == "1_161") {
 								legGenieBlackLine->AddEntry(Plots[0],"Data", "lep"); 
-								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
+								//legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
 							}
-
 							BreakDownPlots.clear();
 
 							for (int j = 1; j < 5; j++) {
 
-								BreakDownPlots.push_back( (TH1D*)( FileSample->Get("Pmiss_Int_"+ToString(j)) ) );
+								BreakDownPlots.push_back( (TH1D*)( FileSample->Get("ECal_Int_"+ToString(j)) ) );
+								//for (int i = 0; i < 1; i++) { BreakDownPlots[j-1]->Rebin(); }				
 								ReweightPlots(BreakDownPlots[j-1]);
-
-								for (int i = 0; i < 2; i++) { BreakDownPlots[j-1]->Rebin(); }
 
 								//-----------------------------------------------------------------------------------------------
 
@@ -345,6 +370,8 @@ Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(3);
 								BreakDownPlots[j-1]->SetLineWidth(LineWidth);
 								BreakDownPlots[j-1]->SetLineStyle(Style[j-1]);
 								BreakDownPlots[j-1]->Scale(ScalingFactor);
+
+								if (DoubleE[WhichEnergy] == 1.161) { BreakDownPlots[j-1]->Scale(1./4.); }
 
 								//-----------------------------------------------------------------------------------------------
 
@@ -372,13 +399,15 @@ Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(3);
 
 								//-----------------------------------------------------------------------------------------------
 
-								if (DoubleE[WhichEnergy] == 1.161 && nucleus[WhichNucleus] == "12C") {
-								TLegendEntry* l1Break = legGenieBreak->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
-								l1Break->SetTextColor(BreakDownColors[j-1]);
+								if (nucleus[WhichNucleus] == "12C" && E[WhichEnergy] == "1_161") {
+								
+									TLegendEntry* l1Break = legGenieBreak->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
+									l1Break->SetTextColor(BreakDownColors[j-1]);
 								}
-//								BreakDownPlots[j-1]->Draw("hist same");
-								BreakDownPlots[j-1]->Draw("C hist same");
 
+									BreakDownPlots[j-1]->Draw("C hist same");
+							
+								
 							} // end of the look over the GENIE break down
 
 						}
@@ -409,7 +438,7 @@ Plots[0]->GetYaxis()->SetRangeUser(0.,MaxHeight);
 TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],MaxHeight);
 						line->SetLineColor(kBlack); 
 						line->SetLineWidth(LineWidth);
-						if ( FSILabel[WhichFSIModel] == "Genie" && DoubleE[WhichEnergy] == 2.261) { line->Draw(); }
+						if ( FSILabel[WhichFSIModel] == "SuSav2" && DoubleE[WhichEnergy] == 2.261) { line->Draw(); }
 
 						// --------------------------------------------------------------------------------------------------
 
@@ -424,14 +453,53 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 
 						} else { 
 
-							Plots[WhichFSIModel]->Draw("C hist same");  // "C hist same" draw them as lines // "hist same" draw them as histos
+							// "C hist same" draw them as lines // "hist same" draw them as histos
+							
+//ApplyGenieUnc(Plots[WhichFSIModel],UncertaintyPlots[1]);
+							
+							//Plots[WhichFSIModel]->SetMarkerColor(kBlack);
+							TH1D* GenieTotalClone = (TH1D*)(Plots[WhichFSIModel]->Clone());
+							GenieTotalClone->SetLineColor(kBlack);
+							//GenieTotalClone->Draw("4C hist same");
+														
+//							Plots[WhichFSIModel]->SetLineColor(kBlack);
+//							Plots[WhichFSIModel]->SetFillColor(kBlack);
+//							Plots[WhichFSIModel]->SetFillStyle(3002);
+							
+							//Plots[WhichFSIModel]->SetMarkerSize(2.);
+							//Plots[WhichFSIModel]->SetMarkerStyle(20);								
+
+//							Plots[WhichFSIModel]->Draw("4C hist same");
+
+if ( !(DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C") ) {							 			
+							Plots[WhichFSIModel]->Draw("CE6 hist same");
+}
+							//Plots[WhichFSIModel]->Draw("E2 same");
+							Plots[WhichFSIModel]->Draw("hist C same");								
+
+							 
+//							UncertaintyPlots[1]->SetMarkerColor(kBlack);	
+//							UncertaintyPlots[1]->SetLineColor(kBlack);
+//							UncertaintyPlots[1]->SetFillColor(kBlack);
+//							UncertaintyPlots[1]->SetFillStyle(3002);
+//							UncertaintyPlots[1]->SetMarkerSize(2.);
+//							UncertaintyPlots[1]->SetMarkerStyle(20);
+							//UncertaintyPlots[1]->Draw("3C same");
+													
+							
+							if (nucleus[WhichNucleus] == "12C" && E[WhichEnergy] == "1_161") {
+							
+								//legGenieBlackLine->AddEntry(UncertaintyPlots[1],"GENIE (Total)", "lf"); 
+								//legGenieBlackLine->AddEntry(UncertaintyPlots[1],"GENIE (Total)", "l");			
+								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l");			
+							}
 							Plots[0]->Draw("e same"); 
 
 						}
 
 					} // End of the loop over the FSI Models 
 
-					// --------------------------------------------------------------------------------------------------------
+					// ---------------------------------------------------------------------------------------------------------
 
 				} // End of the loop over the energies
 
@@ -457,8 +525,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
-//		TPad* pad1GeV = new TPad("pad1GeV","pad1GeV",0.125,0.89,0.315,0.99,21);
-		TPad* pad1GeV = new TPad("pad1GeV","pad1GeV",0.225,0.89,0.415,0.99,21);
+		TPad* pad1GeV = new TPad("pad1GeV","pad1GeV",0.125,0.89,0.315,0.99,21); 
 		pad1GeV->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		pad1GeV->Draw();
@@ -471,8 +538,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
-//		TPad* pad2GeV = new TPad("pad2GeV","pad2GeV",0.45,0.89,0.6,0.99,21); 
-		TPad* pad2GeV = new TPad("pad2GeV","pad2GeV",0.53,0.89,0.68,0.99,21); 
+		TPad* pad2GeV = new TPad("pad2GeV","pad2GeV",0.45,0.89,0.6,0.99,21); 
 		pad2GeV->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		pad2GeV->Draw();
@@ -485,8 +551,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
-//		TPad* pad4GeV = new TPad("pad4GeV","pad4GeV",0.73,0.89,0.9,0.99,21); 
-		TPad* pad4GeV = new TPad("pad4GeV","pad4GeV",0.8,0.89,0.97,0.99,21); 
+		TPad* pad4GeV = new TPad("pad4GeV","pad4GeV",0.73,0.89,0.9,0.99,21); 
 		pad4GeV->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		pad4GeV->Draw();
@@ -499,7 +564,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
-		TPad* padPmiss = new TPad("padPmiss","padPmiss",0.405,0.01,0.765,0.14,21); 
+		TPad* padPmiss = new TPad("padPmiss","padPmiss",0.42,0.01,0.78,0.14,21); 
 		padPmiss->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		padPmiss->Draw();
@@ -508,7 +573,46 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		TLatex latexPmiss;
 		latexPmiss.SetTextFont(FontStyle);
 		latexPmiss.SetTextSize(5*TextSize);
-		latexPmiss.DrawLatexNDC(0.1,0.5,"(e,e'p)_{1p0#pi} P_{T} [GeV/c]");
+		latexPmiss.DrawLatexNDC(0.1,0.5,"(e,e'p)_{1p0#pi} E_{cal} [GeV]");
+
+		// -------------------------------------------------------------------------------------------------
+	
+		TPad* padx14C12 = new TPad("padx14C12","padx14C12",0.155,0.65,0.205,0.72,21); 
+		padx14C12->SetFillColor(kWhite); 
+		PlotCanvas->cd();
+		padx14C12->Draw();
+		padx14C12->cd();
+
+		TLatex latexx14C12;
+		latexx14C12.SetTextFont(FontStyle);
+		latexx14C12.SetTextSize(8*TextSize);
+		latexx14C12.DrawLatexNDC(0.,0.4,"x1/4");
+
+		// -------------------------------------------------------------------------------------------------
+	
+		TPad* padx13C12 = new TPad("padx13C12","padx13C12",0.675,0.91,0.71,0.98,21); 
+		padx13C12->SetFillColor(kWhite); 
+		PlotCanvas->cd();
+		padx13C12->Draw();
+		padx13C12->cd();
+
+		TLatex latexx13C12;
+		latexx13C12.SetTextFont(FontStyle);
+		latexx13C12.SetTextSize(7.5*TextSize);
+		latexx13C12.DrawLatexNDC(0.,0.4,"x1/3");
+
+		// -------------------------------------------------------------------------------------------------
+	
+		TPad* padx13Fe56 = new TPad("padx13Fe56","padx13Fe56",0.675,0.52,0.71,0.59,21); 
+		padx13Fe56->SetFillColor(kWhite); 
+		PlotCanvas->cd();
+		padx13Fe56->Draw();
+		padx13Fe56->cd();
+
+		TLatex latexx13F56;
+		latexx13F56.SetTextFont(FontStyle);
+		latexx13F56.SetTextSize(7.5*TextSize);
+		latexx13F56.DrawLatexNDC(0.,0.42,"x1/3");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -583,7 +687,8 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the Y-axis 1. point
 
 		PlotCanvas->cd();
-		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.41,0.34,0.426,0.39,21); 
+//		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.41,0.34,0.426,0.39,21); 
+		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.405,0.39,0.421,0.44,21); 
 		padTitleOne->SetFillColor(kWhite); 
 		padTitleOne->Draw();
 		padTitleOne->cd();
@@ -592,57 +697,30 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		latexYTitleOne.SetTextFont(FontStyle);
 		latexYTitleOne.SetTextSize(20*TextSize);
 		latexYTitleOne.SetTextColor(kBlack);
-		latexYTitleOne.DrawLatexNDC(0.,0.1,"5");
+		latexYTitleOne.DrawLatexNDC(0.,0.1,"1");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
 		// Extra pad for the Y-axis 2. point
 
-		PlotCanvas->cd();
-		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.40,0.505,0.425,0.555,21); 
-		padTitleTwo->SetFillColor(kWhite); 
-		padTitleTwo->Draw();
-		padTitleTwo->cd();
+//		PlotCanvas->cd();
+//		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.41,0.5,0.426,0.55,21); 
+//		padTitleTwo->SetFillColor(kWhite); 
+//		padTitleTwo->Draw();
+//		padTitleTwo->cd();
 
-		TLatex latexYTitleTwo;
-		latexYTitleTwo.SetTextFont(FontStyle);
-		latexYTitleTwo.SetTextSize(13*TextSize);
-		latexYTitleTwo.SetTextColor(kBlack);
-		latexYTitleTwo.DrawLatexNDC(0.,0.1,"10");
-
-		// -----------------------------------------------------------------------------------------------------------------------------------------
-
-		// Extra pad for the lower X-axis to cover half zeros
-
-		PlotCanvas->cd();
-		TPad* padWhitePadOne = new TPad("padWhitePadOne","padWhitePadOne",0.425,0.15,0.445,0.185,21); 
-		padWhitePadOne->SetFillColor(kWhite); 
-		padWhitePadOne->Draw();
-
-		// -----------------------------------------------------------------------------------------------------------------------------------------
-
-		// Extra pad for the lower X-axis to cover half zeros
-
-		PlotCanvas->cd();
-		TPad* padWhitePadTwo = new TPad("padWhitePadTwo","padWhitePadTwo",0.7,0.15,0.72,0.185,21); 
-		padWhitePadTwo->SetFillColor(kWhite); 
-		padWhitePadTwo->Draw();
-
-		// -----------------------------------------------------------------------------------------------------------------------------------------
-
-		// Extra pad for the lower X-axis to cover half zeros
-
-		PlotCanvas->cd();
-		TPad* padWhitePadThree = new TPad("padWhitePadThree","padWhitePadThree",0.111,0.551,0.131,0.586,21); 
-		padWhitePadThree->SetFillColor(kWhite); 
-		padWhitePadThree->Draw();
+//		TLatex latexYTitleTwo;
+//		latexYTitleTwo.SetTextFont(FontStyle);
+//		latexYTitleTwo.SetTextSize(20*TextSize);
+//		latexYTitleTwo.SetTextColor(kBlack);
+//		latexYTitleTwo.DrawLatexNDC(0.,0.1,"2");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
 		TString ext = "";
 		if ( xBCut[WhichxBCut] == "xBCut" ) { ext = "xB_"; } 
 
-		PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+ext+"FigExtData10"+WhatModelsAreIncluded+".pdf");
+		PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+ext+"Fig4"+WhatModelsAreIncluded+"_SuSav2.pdf");
 
 		//delete PlotCanvas;
 

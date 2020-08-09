@@ -121,7 +121,9 @@ void OverlayPmissFig3b_e4nuPaper() {
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+
+//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_3"); LabelOfPlots.push_back("P_{T} > 400 [MeV/c]");  OutputPlotNames.push_back("epRecoEnergy_slice_3");
 	NameOfPlots.push_back("h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_2"); LabelOfPlots.push_back("200 < P_{T} < 400 [MeV/c]");  OutputPlotNames.push_back("epRecoEnergy_slice_2");
@@ -353,7 +355,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 
 				} // End of the loop over the plots
 
-				// -----------------------------------------------------------------------------------------------------------------------------------------
+				// --------------------------------------------------------------------------------------------------
 
 				// Extra pad to add the X-axis label
 
@@ -373,7 +375,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 				latexXTitle.SetTextColor(kBlack);
 				latexXTitle.DrawLatexNDC(0.25,0.5,"(e,e'p)_{1p0#pi} E_{cal} [GeV]");
 
-				// -----------------------------------------------------------------------------------------------------------------------------------------
+				// -----------------------------------------------------------------------------------------
 
 				// Extra pad for the common title over the 3 pads
 
@@ -390,7 +392,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 				latexYTitle.SetTextAngle(90);
 				latexYTitle.DrawLatexNDC(0.8,0.27,"Weighted Events / GeV");		
 
-				// -----------------------------------------------------------------------------------------------------------------------------------------
+				// --------------------------------------------------------------------------------------------
 
 				// Pads to get rid of some 0's on the axes
 
@@ -408,13 +410,14 @@ void OverlayPmissFig3b_e4nuPaper() {
 				//padWhite2->Draw();
 				//padWhite2->cd();				
 
-				// -----------------------------------------------------------------------------------------------------------------------------------------
+				// ------------------------------------------------------------------------------------------------
 
 				TString ext = "";
 				if ( xBCut[WhichxBCut] == "xBCut" ) { ext = "xB_"; } 
 
-				PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/"+E[WhichEnergy]+"/"+ext+"Fig3b_"+nucleus[WhichNucleus]+"_" 
-					+E[WhichEnergy]+"_"+WhatModelsAreIncluded+".pdf");
+				PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/"
+					+E[WhichEnergy]+"/"+ext+"Fig3b_"+nucleus[WhichNucleus]+"_" 
+					+E[WhichEnergy]+"_"+WhatModelsAreIncluded+"_SuSav2.pdf");
 
 				//delete PlotCanvas;
 

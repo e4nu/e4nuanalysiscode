@@ -49,7 +49,9 @@ void OverlayECalVsEQE_FigExtData9() {
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+
+//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
 
 	NameOfPlots.push_back("h2_Ecal_Eqe"); XLabelOfPlots.push_back("E^{QE} (GeV)"); YLabelOfPlots.push_back("E^{cal} (GeV)"); OutputPlotNames.push_back("ECalVsEQE2D");
 
@@ -256,9 +258,10 @@ void OverlayECalVsEQE_FigExtData9() {
 
 					} // End of the loop over the FSI Models 
 
-					PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/"+E[WhichEnergy]+"/FigExtData9_"
+					PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/"
+							+E[WhichEnergy]+"/FigExtData9_"
 							+nucleus[WhichNucleus]+"_" 
-							+E[WhichEnergy]+"_" +OutputPlotNames[WhichPlot]+".pdf");
+							+E[WhichEnergy]+"_" +OutputPlotNames[WhichPlot]+"_SuSav2.pdf");
 
 					//delete PlotCanvas;
 

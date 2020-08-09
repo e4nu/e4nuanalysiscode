@@ -5,9 +5,9 @@
 
 // Main e4nu Paper Plots
 
-//gROOT->ProcessLine(".L OverlayEQE_Fig2.cpp"); gROOT->ProcessLine("OverlayEQE_Fig2()");
+gROOT->ProcessLine(".L OverlayEQE_Fig2.cpp"); gROOT->ProcessLine("OverlayEQE_Fig2()");
 
-gROOT->ProcessLine(".L OverlayPmissFig3a_e4nuPaper.cpp"); gROOT->ProcessLine("OverlayPmissFig3a_e4nuPaper()");
+//gROOT->ProcessLine(".L OverlayPmissFig3a_e4nuPaper.cpp"); gROOT->ProcessLine("OverlayPmissFig3a_e4nuPaper()");
 
 //gROOT->ProcessLine(".L OverlayPmissFig3b_e4nuPaper.cpp"); gROOT->ProcessLine("OverlayPmissFig3b_e4nuPaper()");
 

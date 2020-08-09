@@ -60,6 +60,23 @@ void ApplySystUnc(TH1D* h, double systunc) {
 
 // ----------------------------------------------------------------------------------------------------------------
 
+void ApplyGenieUnc(TH1D* h, TGraphAsymmErrors* asymmerror) {
+
+	double NBins = h->GetNbinsX(); 
+				
+	for (int i = 1; i <= NBins; i++) { 
+					
+		double error = asymmerror->GetErrorYhigh(i);
+		//cout << "error " << error << endl;
+		//double newerror = error * (1. + systunc);
+		h->SetBinError(i,error);
+
+	}
+
+}
+
+// ----------------------------------------------------------------------------------------------------------------
+
 void OverlayECalFig4_e4nuPaper() {
 
 	// ------------------------------------------------------------------------
@@ -104,7 +121,8 @@ void OverlayECalFig4_e4nuPaper() {
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
  
-	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
+	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); 
+	Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
 
 	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
@@ -113,7 +131,8 @@ void OverlayECalFig4_e4nuPaper() {
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
-	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
+	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]");
+	OutputPlotNames.push_back("epRecoEnergy_slice_0");
 
 	std::vector<TH1D*> Plots;
 	std::vector<TGraphAsymmErrors*> UncertaintyPlots;
@@ -126,7 +145,8 @@ void OverlayECalFig4_e4nuPaper() {
 	int NPlots = NameOfPlots.size();
 
 	TString WhatModelsAreIncluded = "";
-	for (int LoopOverFSIModels = 0 ; LoopOverFSIModels < NFSIModels ; LoopOverFSIModels ++) { WhatModelsAreIncluded += "_"+DirNames[LoopOverFSIModels]; };
+	for (int LoopOverFSIModels = 0 ; LoopOverFSIModels < NFSIModels ; LoopOverFSIModels ++) 
+		{ WhatModelsAreIncluded += "_"+DirNames[LoopOverFSIModels]; };
 
 	TString RecoCalorimetry = "(e,e'p)";
 	TString FSI = "FSI";
@@ -139,6 +159,14 @@ void OverlayECalFig4_e4nuPaper() {
 	for (int WhichxBCut = 0; WhichxBCut < NxBCuts; WhichxBCut ++) {
 
 		TCanvas* PlotCanvas = new TCanvas(xBCut[WhichxBCut],xBCut[WhichxBCut],205,34,1600,900);
+		
+		TLegend* legGenieBlackLine = new TLegend(0.1,0.5,0.54,1.);
+		legGenieBlackLine->SetNColumns(1);
+		legGenieBlackLine->SetTextFont(FontStyle); 
+					
+		TLegend* legGenieBreak = new TLegend(0.1,0.,1.,0.5);
+		legGenieBreak->SetNColumns(2);
+		legGenieBreak->SetTextFont(FontStyle);							
 
 		// Loop over the plots
 
@@ -155,10 +183,9 @@ void OverlayECalFig4_e4nuPaper() {
 
 				for (int WhichNucleus = 0; WhichNucleus < NNuclei; WhichNucleus ++) {
 
-//					if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.88; }
-if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.67; }
+					if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.67; }
 
-					// ---------------------------------------------------------------------------------------------------------------------------
+					// ----------------------------------------------------------------------------
 
 					// Dimensions of TPads
 
@@ -173,8 +200,11 @@ if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.67; }
 
 					TPad* pad = new TPad(); 
 
-					if (nucleus[WhichNucleus] == "12C") { pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad,XMaxPad,YMaxPad, 21); }
-					else { pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad+space,XMaxPad,YMaxPad+space, 21); }
+					if (nucleus[WhichNucleus] == "12C") 
+						{ pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad,XMaxPad,YMaxPad, 21); }
+					else { 
+						pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad+space,XMaxPad,YMaxPad+space, 21);
+					}
 
 					pad->SetFillColor(kWhite); 
 					PlotCanvas->cd();
@@ -190,24 +220,17 @@ if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.67; }
 					if (DoubleE[WhichEnergy] == 4.461 ) { pad->SetRightMargin(0.01); }
 					pad->SetFrameBorderSize(10);
 
-					// ---------------------------------------------------------------------------------------------------------------------------
+					// -------------------------------------------------------------------------------
 
 					// No data on 56Fe @ 1.161 GeV
 
 					if ( nucleus[WhichNucleus] == "56Fe" && DoubleE[WhichEnergy] == 1.161 ) { delete pad; continue; }
 
-					// ---------------------------------------------------------------------------------------------------------------------------
+					// ---------------------------------------------------------------------------------------------
 
 					Plots.clear();
 					UncertaintyPlots.clear();
 
-					TLegend* legGenieBlackLine = new TLegend(0.1,0.5,0.54,1.);
-					legGenieBlackLine->SetNColumns(1);
-					legGenieBlackLine->SetTextFont(FontStyle); 
-
-					TLegend* legGenieBreak = new TLegend(0.1,0.,1.,0.5);
-					legGenieBreak->SetNColumns(2);
-					legGenieBreak->SetTextFont(FontStyle);
 
 					double max = -99.;
 					double min = 1E12;
@@ -257,7 +280,7 @@ if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.67; }
 						// --------------------------------------------------------------------------------------
 
 						// Scaling Factor
-
+//Plots[WhichFSIModel]->Rebin();
 						double ScalingFactor = 1. / Plots[WhichFSIModel]->Integral();  // area normalized
 						Plots[WhichFSIModel]->Scale(ScalingFactor);
 
@@ -298,9 +321,9 @@ if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.67; }
 
 						// Rebining & ranges
 
-						if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.6,1.23); }
-						if (DoubleE[WhichEnergy] == 2.261) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.7,2.4); }
-						if (DoubleE[WhichEnergy] == 4.461) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.3,4.6); }
+						if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.7,1.29); }//0.7,1.23
+						if (DoubleE[WhichEnergy] == 2.261) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.7,2.4); }//0.7,2.4
+						if (DoubleE[WhichEnergy] == 4.461) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.5,4.6); }
 
 						// ----------------------------------------------------------------------------------
 
@@ -320,18 +343,18 @@ if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.67; }
 						if (
 							FSILabel[WhichFSIModel] == "Genie"
 						) {
-
-							legGenieBlackLine->AddEntry(Plots[0],"Data", "lep"); 
-							//legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
-
+						
+							if (nucleus[WhichNucleus] == "12C" && E[WhichEnergy] == "1_161") {
+								legGenieBlackLine->AddEntry(Plots[0],"Data", "lep"); 
+								//legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
+							}
 							BreakDownPlots.clear();
 
 							for (int j = 1; j < 5; j++) {
 
 								BreakDownPlots.push_back( (TH1D*)( FileSample->Get("ECal_Int_"+ToString(j)) ) );
+								//for (int i = 0; i < 1; i++) { BreakDownPlots[j-1]->Rebin(); }				
 								ReweightPlots(BreakDownPlots[j-1]);
-
-								//for (int i = 0; i < 2; i++) { BreakDownPlots[j-1]->Rebin(); }
 
 								//-----------------------------------------------------------------------------------------------
 
@@ -374,11 +397,15 @@ if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.67; }
 
 								//-----------------------------------------------------------------------------------------------
 
-								TLegendEntry* l1Break = legGenieBreak->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
-								l1Break->SetTextColor(BreakDownColors[j-1]);
+								if (nucleus[WhichNucleus] == "12C" && E[WhichEnergy] == "1_161") {
+								
+									TLegendEntry* l1Break = legGenieBreak->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
+									l1Break->SetTextColor(BreakDownColors[j-1]);
+								}
 
-								BreakDownPlots[j-1]->Draw("C hist same");
-
+									BreakDownPlots[j-1]->Draw("C hist same");
+							
+								
 							} // end of the look over the GENIE break down
 
 						}
@@ -424,23 +451,52 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 
 						} else { 
 
-							//Plots[WhichFSIModel]->Draw("C hist same");  // "C hist same" draw them as lines // "hist same" draw them as histos
+							// "C hist same" draw them as lines // "hist same" draw them as histos
+							
+ApplyGenieUnc(Plots[WhichFSIModel],UncertaintyPlots[1]);
+							
+							//Plots[WhichFSIModel]->SetMarkerColor(kBlack);
+							TH1D* GenieTotalClone = (TH1D*)(Plots[WhichFSIModel]->Clone());
+							GenieTotalClone->SetLineColor(kBlack);
+							//GenieTotalClone->Draw("4C hist same");
+														
+//							Plots[WhichFSIModel]->SetLineColor(kBlack);
+//							Plots[WhichFSIModel]->SetFillColor(kBlack);
+//							Plots[WhichFSIModel]->SetFillStyle(3002);
+							
+							//Plots[WhichFSIModel]->SetMarkerSize(2.);
+							//Plots[WhichFSIModel]->SetMarkerStyle(20);								
+
+//							Plots[WhichFSIModel]->Draw("4C hist same");
+
+if ( !(DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C") ) {							 			
+							Plots[WhichFSIModel]->Draw("CE6 hist same");
+}
+							//Plots[WhichFSIModel]->Draw("E2 same");
+							Plots[WhichFSIModel]->Draw("hist C same");								
+
+							 
 							UncertaintyPlots[1]->SetMarkerColor(kBlack);	
 							UncertaintyPlots[1]->SetLineColor(kBlack);
 							UncertaintyPlots[1]->SetFillColor(kBlack);
 							UncertaintyPlots[1]->SetFillStyle(3002);
 							UncertaintyPlots[1]->SetMarkerSize(2.);
 							UncertaintyPlots[1]->SetMarkerStyle(20);
-							UncertaintyPlots[1]->Draw("3C same");
-							legGenieBlackLine->AddEntry(UncertaintyPlots[1],"GENIE (Total)", "lf"); 
-
+							//UncertaintyPlots[1]->Draw("3C same");
+													
+							
+							if (nucleus[WhichNucleus] == "12C" && E[WhichEnergy] == "1_161") {
+							
+								//legGenieBlackLine->AddEntry(UncertaintyPlots[1],"GENIE (Total)", "lf"); 
+								legGenieBlackLine->AddEntry(UncertaintyPlots[1],"GENIE (Total)", "l");			
+							}
 							Plots[0]->Draw("e same"); 
 
 						}
 
 					} // End of the loop over the FSI Models 
 
-					// -----------------------------------------------------------------------------------------------------------------------------------------
+					// ---------------------------------------------------------------------------------------------------------
 
 				} // End of the loop over the energies
 
@@ -629,7 +685,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 
 		PlotCanvas->cd();
 //		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.41,0.34,0.426,0.39,21); 
-		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.41,0.39,0.426,0.44,21); 
+		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.405,0.39,0.421,0.44,21); 
 		padTitleOne->SetFillColor(kWhite); 
 		padTitleOne->Draw();
 		padTitleOne->cd();

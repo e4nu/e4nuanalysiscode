@@ -60,7 +60,7 @@ void ApplySystUnc(TH1D* h, double systunc) {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-void OverlayPlots() {
+void GaussianFitPlots() {
 
 	// ------------------------------------------------------------------------
 
@@ -100,11 +100,11 @@ void OverlayPlots() {
 	std::vector<int> Style;
 
 //	nucleus.push_back("4He"); LabelsOfSamples.push_back("^{4}He"); JustNucleus.push_back("He");
-//	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
-	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
+	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
+//	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
-//	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
-	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
+	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
+//	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
 //	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
@@ -115,23 +115,22 @@ void OverlayPlots() {
 
 //	Style.push_back(9); Style.push_back(3); Style.push_back(7); Style.push_back(5);
 //	Style.push_back(9); Style.push_back(9); Style.push_back(9); Style.push_back(9); // fancy dashed lines 
-	Style.push_back(1); Style.push_back(kDashed); Style.push_back(1); Style.push_back(1);
+	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
 	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
-	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
-//	FSIModel.push_back("SuSav2_02_11a_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
 
 //	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 //	FSIModel.push_back("hA2018_Truth_NoRadCorr"); FSILabel.push_back("Genie (Truth)");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 //	FSIModel.push_back("hN2018_Final_NoRadCorr"); FSILabel.push_back("Genie hN2018");  DirNames.push_back("hN2018_Truth_NoRadCorr");
 
-	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
+//	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
 //	NameOfPlots.push_back("MissMomentum_NoWeight"); LabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum_NoWeight");
-	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
+//	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
 //	NameOfPlots.push_back("eRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("eRecoEnergy_slice_0");
 //	NameOfPlots.push_back("h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_1"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]");  OutputPlotNames.push_back("epRecoEnergy_slice_1");
 //	NameOfPlots.push_back("h1_Erec_p_bkgd_slice_sub2p1pi_2p_1"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("eRecoEnergy_slice_1");
@@ -156,7 +155,7 @@ void OverlayPlots() {
 //	NameOfPlots.push_back("h1_xbjkCal_weight"); LabelOfPlots.push_back("Reconstructed x_{B}"); OutputPlotNames.push_back("xBCal");
 //	NameOfPlots.push_back("h1_nuCal_weight"); LabelOfPlots.push_back("Reconstructed Energy Transfer [GeV]"); OutputPlotNames.push_back("nuCal");
 //	NameOfPlots.push_back("h1_WvarCal_weight"); LabelOfPlots.push_back("Reconstructed W [GeV / c^{2})]"); OutputPlotNames.push_back("WCal");
-//	NameOfPlots.push_back("h_Erec_subtruct_piplpimi_noprot_3pi"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("InclusiveeRecoEnergy_slice_0");
+	NameOfPlots.push_back("h_Erec_subtruct_piplpimi_noprot_3pi"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("InclusiveeRecoEnergy_slice_0");
 //	NameOfPlots.push_back("CosDeltaThetaElectronPhotonAboveThreshold"); LabelOfPlots.push_back("cos(#Delta#theta_{e',#gamma})");  OutputPlotNames.push_back("CosDeltaThetaElectronPhotonAboveThreshold");
 //	NameOfPlots.push_back("CosDeltaPhiElectronPhotonAboveThreshold"); LabelOfPlots.push_back("cos(#Delta#phi_{e',#gamma})");  OutputPlotNames.push_back("CosDeltaPhiElectronPhotonAboveThreshold");
 //	NameOfPlots.push_back("h1_E_tot_cut2"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{Cal} Before Subtraction [GeV]");  OutputPlotNames.push_back("h1_E_tot_cut2");
@@ -280,7 +279,7 @@ void OverlayPlots() {
 					legGenieBlackLine->SetNColumns(1);
 
 					TLegend* legGenieBreak = new TLegend(LegXmin,0.55,0.4,0.68);
-					legGenieBreak->SetNColumns(2);
+					legGenieBreak->SetNColumns(2);					
 
 					double max = -99.;
 					double min = 1E12;
@@ -708,9 +707,8 @@ void OverlayPlots() {
 						if (FSILabel[WhichFSIModel] == "Data") { ApplySystUnc(Plots[WhichFSIModel], SystUnc); }
 
 						// ----------------------------------------------------------------------------------
-
+/*
 						// Genie Break Down
-						/*
 						if (
 							(FSILabel[WhichFSIModel] == "Genie" || FSILabel[WhichFSIModel] == "SuSav2") && 
 							//FSILabel[WhichFSIModel] == "Rad" &&
@@ -719,7 +717,6 @@ void OverlayPlots() {
 							NameOfPlots[WhichPlot] == "h1_nu_weight" ||
 							NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_noprot_3pi" ||
 							NameOfPlots[WhichPlot] == "epRecoEnergy_slice_0" ||
-							NameOfPlots[WhichPlot] == "eRecoEnergy_slice_0" ||
 							NameOfPlots[WhichPlot] == "h1_el_mom_corr"
 							) 
 
@@ -734,11 +731,8 @@ void OverlayPlots() {
 //								legGenie->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l"); 
 //								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l");
 								
-								TString Overall = "Genie (Total)";
-								if (FSILabel[WhichFSIModel] == "SuSav2") { Overall = "SuSav2 (Total)"; }
-								
-								legGenie->AddEntry(Plots[WhichFSIModel],Overall, "l"); 
-								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],Overall, "l"); 
+								legGenie->AddEntry(Plots[WhichFSIModel],"Genie (Total)", "l"); 
+								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"Genie (Total)", "l"); 
 
 							//}
 							//else { legGenie->AddEntry(Plots[WhichFSIModel],"GENIE", "l"); }
@@ -781,7 +775,6 @@ void OverlayPlots() {
 										Plots[0]->GetXaxis()->SetRangeUser(1.7,4.8);
 									}
 								}
-								
 
 								ReweightPlots(BreakDownPlots[j-1]);
 								if ( 
@@ -847,8 +840,7 @@ void OverlayPlots() {
 							} // end of the look over the GENIE break down
 
 						}
-						*/
-
+*/
 						// ---------------------------------------------------------------------------------------------------
 
 						// Max, min, title & # divisions
@@ -930,10 +922,22 @@ void OverlayPlots() {
 								Plots[WhichFSIModel]->Draw("e same"); 
 							} else { 
 //								Plots[WhichFSIModel]->Draw("hist same"); // draw them as histos
-								Plots[WhichFSIModel]->SetLineStyle(Style[WhichFSIModel]); 
 								Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
-								Plots[0]->Draw("e same"); 
+							
+								
+//								TF1* f2 = new TF1("f2","gaus",0.5,0.92);
+//								Plots[WhichFSIModel]->Fit("f2","","",0.5,0.92);
+//								f2->SetLineColor(kBlue);
+//								f2->Draw("same");								
+								
+								//Plots[0]->Draw("e same"); 
 							}
+
+								TF1* f1 = new TF1("f1","gaus",1.12,1.3);
+								Plots[WhichFSIModel]->Fit("f1","","",1.12,1.3);
+								f1->SetLineColor(kRed);
+								f1->Draw("same");							
+							
 						}
 
 						// ---------------------------------------------------------------------------------------------------
@@ -1156,7 +1160,7 @@ void OverlayPlots() {
 					leg->SetBorderSize(0);
 					leg->SetTextFont(FontStyle);
 					leg->SetTextSize(TextSize);
-					//leg->Draw(); // Just data + e.g. susav2
+					//leg->Draw();
 
 					legGenie->SetBorderSize(0);
 					legGenie->SetTextFont(FontStyle);
@@ -1178,39 +1182,39 @@ void OverlayPlots() {
 
 						legGenieBlackLine->SetNColumns(1); 
 						legGenieBlackLine->SetTextSize(TextSize-0.03); 
-						legGenieBlackLine->Draw(); 
+//						legGenieBlackLine->Draw(); 
 
 						legGenieBreak->SetTextSize(TextSize-0.03); 
-						legGenieBreak->Draw();
+//						legGenieBreak->Draw();
 
 						TLatex* myNucleus = new TLatex();
 						myNucleus->SetTextFont(FontStyle);
 						myNucleus->SetTextColor(kBlack);
 						myNucleus->SetTextSize(TextSize-0.02);
-						myNucleus->DrawLatexNDC(0.14,0.85,JustNucleus[WhichNucleus]+"(e,e')_{0#pi}");
+						//myNucleus->DrawLatexNDC(0.14,0.85,JustNucleus[WhichNucleus]+"(e,e')_{0#pi}");
 
 						TLatex* myEbeam = new TLatex();
 						myEbeam->SetTextFont(FontStyle);
 						myEbeam->SetTextColor(kAzure+4);
 						myEbeam->SetTextSize(TextSize-0.02);
-						myEbeam->DrawLatexNDC(0.67,0.34,"E_{beam}");
+						//myEbeam->DrawLatexNDC(0.67,0.34,"E_{beam}");
 
 						TLatex* myArrow = new TLatex();
 						myArrow->SetTextFont(FontStyle);
 						myArrow->SetTextColor(kAzure+4);
 						myArrow->SetTextSize(1.2*TextSize);
-						myArrow->DrawLatex(1.161,0.1,"#Downarrow");
+						//myArrow->DrawLatex(1.161,0.1,"#Downarrow");
 
 					}
 
 					if ( 
 						(NameOfPlots[WhichPlot] == "MissMomentum" && nucleus[WhichNucleus] == "12C" && DoubleE[WhichEnergy] == 2.261) 
 						|| (OutputPlotNames[WhichPlot]=="epRecoEnergy_slice_0" && nucleus[WhichNucleus] == "12C" && DoubleE[WhichEnergy] == 2.261) 
-					) { 
-					
-						legGenie->SetTextSize(TextSize-0.02);
-						legGenie->Draw(); 
-					}
+					) 
+						{ 
+						legGenie->SetTextSize(TextSize-0.04);
+						//legGenie->Draw(); 
+						}
 
 					TLatex latex;
 					latex.SetTextFont(FontStyle);

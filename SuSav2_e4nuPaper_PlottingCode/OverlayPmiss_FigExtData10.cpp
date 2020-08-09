@@ -114,7 +114,9 @@ void OverlayPmiss_FigExtData10() {
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+
+//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
 
 	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} P_{T} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
 
@@ -315,13 +317,13 @@ Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(3);
 						// Genie Break Down
 
 						if (
-							FSILabel[WhichFSIModel] == "Genie"
+							FSILabel[WhichFSIModel] == "SuSav2"
 						) {
 
 							if (DoubleE[WhichEnergy] == 1.161 && nucleus[WhichNucleus] == "12C") {
 							
 								legGenieBlackLine->AddEntry(Plots[0],"Data", "lep"); 
-								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
+								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l"); 
 							}
 
 							BreakDownPlots.clear();
@@ -409,7 +411,7 @@ Plots[0]->GetYaxis()->SetRangeUser(0.,MaxHeight);
 TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],MaxHeight);
 						line->SetLineColor(kBlack); 
 						line->SetLineWidth(LineWidth);
-						if ( FSILabel[WhichFSIModel] == "Genie" && DoubleE[WhichEnergy] == 2.261) { line->Draw(); }
+						if ( FSILabel[WhichFSIModel] == "SuSav2" && DoubleE[WhichEnergy] == 2.261) { line->Draw(); }
 
 						// --------------------------------------------------------------------------------------------------
 
@@ -642,7 +644,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		TString ext = "";
 		if ( xBCut[WhichxBCut] == "xBCut" ) { ext = "xB_"; } 
 
-		PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+ext+"FigExtData10"+WhatModelsAreIncluded+".pdf");
+		PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+ext+"FigExtData10"+WhatModelsAreIncluded+"_SuSav2.pdf");
 
 		//delete PlotCanvas;
 

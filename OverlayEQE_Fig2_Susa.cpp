@@ -5,12 +5,13 @@
 #include <TString.h>
 #include <TStyle.h>
 #include <TLegend.h>
+#include <TLegendEntry.h>
 #include <TLatex.h>
 #include <TMath.h>
 #include <TLine.h>
 #include <TPad.h>
 #include <TGaxis.h>
-#include <TGraphAsymmErrors.h>
+//#include <TGraphAsymmErrors.h>
 
 #include <iostream>
 #include <vector>
@@ -61,7 +62,7 @@ void ApplySystUnc(TH1D* h, double systunc) {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-void OverlayEQE_Fig2() {
+void OverlayEQE_Fig2_SuSa() {
 
 	// ------------------------------------------------------------------------
 
@@ -98,7 +99,8 @@ void OverlayEQE_Fig2() {
 
 	xBCut.push_back("NoxBCut");
  
-	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
+	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); 
+	Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
 
 	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
@@ -107,11 +109,12 @@ void OverlayEQE_Fig2() {
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
 
 	NameOfPlots.push_back("h_Erec_subtruct_piplpimi_noprot_3pi"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("InclusiveeRecoEnergy_slice_0");
 
 	std::vector<TH1D*> Plots;
-	std::vector<TGraphAsymmErrors*> UncertaintyPlots;
+//	std::vector<TGraphAsymmErrors*> UncertaintyPlots;
 	std::vector<TH1D*> Plots_Clones;
 
 	int NxBCuts = xBCut.size();
@@ -149,7 +152,7 @@ void OverlayEQE_Fig2() {
 									 nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+NameOfPlots[WhichPlot]+"_"+xBCut[WhichxBCut],
 									 205,34,1024,768);
 
-					// ---------------------------------------------------------------------------------------------------------------------------
+					// --------------------------------------------------------------------------------------------------------
 
 					// Dimensions of TPad
 
@@ -167,7 +170,7 @@ void OverlayEQE_Fig2() {
 					// ---------------------------------------------------------------------------------------
 
 					Plots.clear();
-					UncertaintyPlots.clear();
+					//UncertaintyPlots.clear();
 
 					double LegXmin = 0.14, LegYmin = 0.45, YSpread = 0.35;
 
@@ -187,15 +190,15 @@ void OverlayEQE_Fig2() {
 
 					for (int WhichFSIModel = 0; WhichFSIModel < NFSIModels; WhichFSIModel ++) {
 
-						TString PathToFiles = "../../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[WhichFSIModel]+"/"+xBCut[WhichxBCut]+"/";
+						TString PathToFiles = "../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[WhichFSIModel]+"/"+xBCut[WhichxBCut]+"/";
 						TString FileName = PathToFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+FSIModel[WhichFSIModel]+"_Plots_FSI_em.root";
 						TFile* FileSample = TFile::Open(FileName);
 						Plots.push_back( (TH1D*)( FileSample->Get(NameOfPlots[WhichPlot]) ) );
 
-						TString PathToUncertaintyFiles = "../../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[1]+"/"+xBCut[WhichxBCut]+"/";
-						TString UncertaintyFileName = PathToUncertaintyFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+FSIModel[1]+"_Plots_FSI_em"+NameOfPlots[WhichPlot]+"_Uncertainty.root";
-						TFile* UncertaintyFileSample = TFile::Open(UncertaintyFileName);
-						UncertaintyPlots.push_back( (TGraphAsymmErrors*)( UncertaintyFileSample->Get(OutputPlotNames[WhichPlot]) ) );
+//						TString PathToUncertaintyFiles = "../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[1]+"/"+xBCut[WhichxBCut]+"/";
+//						TString UncertaintyFileName = PathToUncertaintyFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+FSIModel[1]+"_Plots_FSI_em"+NameOfPlots[WhichPlot]+"_Uncertainty.root";
+//						TFile* UncertaintyFileSample = TFile::Open(UncertaintyFileName);
+//						UncertaintyPlots.push_back( (TGraphAsymmErrors*)( UncertaintyFileSample->Get(OutputPlotNames[WhichPlot]) ) );
 
 						Plots[WhichFSIModel]->SetLineColor(Colors[WhichFSIModel]);
 						//CenterAxisTitle(Plots[WhichFSIModel]);
@@ -234,6 +237,9 @@ void OverlayEQE_Fig2() {
 						// Scaling Factor
 
 						double ScalingFactor = 1. / Plots[WhichFSIModel]->Integral();  // area normalized
+						
+//						if (FSILabel[WhichFSIModel] != "Data") { ScalingFactor = 1.285*ScalingFactor; }
+						
 						Plots[WhichFSIModel]->Scale(ScalingFactor);
 
 						// -----------------------------------------------------------------------------------
@@ -258,13 +264,17 @@ void OverlayEQE_Fig2() {
 						// Genie Break Down
 
 						if (
-							FSILabel[WhichFSIModel] == "Genie"
+							/*FSILabel[WhichFSIModel] == "Genie" ||*/ FSILabel[WhichFSIModel] == "SuSav2"
 						) {
 
 							legGenie->AddEntry(Plots[0],"Data", "lep"); 
 							legGenieBlackLine->AddEntry(Plots[0],"Data", "lep"); 
 
-							legGenie->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
+							//if (FSILabel[WhichFSIModel] == "Genie") 
+							//	{ legGenie->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); }
+							if (FSILabel[WhichFSIModel] == "SuSav2") 
+								{ legGenie->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l"); }				
+								
 //							legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
 
 							BreakDownPlots.clear();
@@ -289,6 +299,7 @@ void OverlayEQE_Fig2() {
 								l1Break->SetTextColor(BreakDownColors[j-1]);
 
 								BreakDownPlots[j-1]->Draw("C hist same");
+								if(j==4) { legGenieBreak->AddEntry(Plots[1],"G2018", "l"); }
 
 							} // end of the look over the GENIE break down
 
@@ -326,8 +337,14 @@ void OverlayEQE_Fig2() {
 
 						} else { 
 
+							if (FSILabel[WhichFSIModel] == "Genie") 
+								{ Plots[WhichFSIModel]->SetLineStyle(kDashed); }
 							Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
-							legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l");				
+							//if (FSILabel[WhichFSIModel] == "Genie") 
+							//	{ legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); }
+							if (FSILabel[WhichFSIModel] == "SuSav2") 
+								{ legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l"); }
+								
 							/*UncertaintyPlots[1]->SetMarkerColor(kBlack);	
 							UncertaintyPlots[1]->SetLineColor(kBlack);
 							UncertaintyPlots[1]->SetFillColor(kBlack);
@@ -390,8 +407,8 @@ void OverlayEQE_Fig2() {
 					TString ext = "";
 					if ( xBCut[WhichxBCut] == "xBCut" ) { ext = "xB_"; } 
 
-					PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/"+E[WhichEnergy]+"/"+ext+nucleus[WhichNucleus]+"_" 
-						+E[WhichEnergy]+"_" +OutputPlotNames[WhichPlot]+WhatModelsAreIncluded+".pdf");
+					//PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/"+E[WhichEnergy]+"/"+ext+nucleus[WhichNucleus]+"_" 
+					//	+E[WhichEnergy]+"_" +OutputPlotNames[WhichPlot]+WhatModelsAreIncluded+".pdf");
 
 					//delete PlotCanvas;
 

@@ -65,7 +65,7 @@ void Seminar() {
 	// ------------------------------------------------------------------------
 
 	SetOffsetAndSize();
-	TGaxis::SetMaxDigits(3);
+	TGaxis::SetMaxDigits(4);
 
 	int Ndivisions = 6;
 	int LineWidth = 3;
@@ -80,12 +80,13 @@ void Seminar() {
 
 	// ------------------------------------------------------------------------
 
-	TString nucleus = "4He"; TString LabelsOfSamples = "^{4}He"; TString JustNucleus = "He";
-//	TString nucleus = "12C"; TString LabelsOfSamples = "^{12}C"; TString JustNucleus = "C";
+//	TString nucleus = "4He"; TString LabelsOfSamples = "^{4}He"; TString JustNucleus = "He";
+	TString nucleus = "12C"; TString LabelsOfSamples = "^{12}C"; TString JustNucleus = "C";
 //	TString nucleus = "56Fe"; TString LabelsOfSamples = "^{56}Fe"; TString JustNucleus = "Fe";
 
-	TString E = "2_261"; TString LabelE = " @ E = 2.261 GeV"; double DoubleE = 2.261;
-//	TString E = "4_461"; TString LabelE = " @ E = 4.461 GeV"; double DoubleE = 4.461;
+	TString E = "1_161"; double DoubleE = 1.159;
+//	TString E = "2_261"; double DoubleE = 2.257;
+//	TString E = "4_461"; double DoubleE = 4.453;
 
 	TString xBCut = "NoxBCut";
 
@@ -100,7 +101,7 @@ void Seminar() {
 
 	// ------------------------------------------------------------------------
 
-	TLegend* leg = new TLegend(0.17,0.52,0.37,0.87);
+	TLegend* leg = new TLegend(0.17,0.48,0.37,0.87);
 	leg->SetBorderSize(0);
 	leg->SetTextFont(FontStyle);
 	leg->SetTextSize(TextSize);
@@ -108,7 +109,7 @@ void Seminar() {
 	// ------------------------------------------------------------------------
 
 	TString ECalName = "epRecoEnergy_slice_0"; TString ECalLabel = "(e,e'p)_{1p0#pi} E^{cal}";
-	TString InclusiveEQEName = "h_Erec_subtruct_piplpimi_noprot_3pi"; TString InclusiveEQELabel = "(e,e')_{0#pi} E^{QE}";
+	//TString InclusiveEQEName = "h_Erec_subtruct_piplpimi_noprot_3pi"; TString InclusiveEQELabel = "(e,e')_{0#pi} E^{QE}";
 	TString EQEName = "eRecoEnergy_slice_0"; TString EQELabel = "(e,e'p)_{1p0#pi} E^{QE}";
 
 	// ------------------------------------------------------------------------
@@ -132,15 +133,17 @@ void Seminar() {
 	ECalPlot->GetXaxis()->SetTitleSize(TextSize);
 	ECalPlot->GetXaxis()->SetTitleOffset(1.05);
 	ECalPlot->GetXaxis()->SetNdivisions(Ndivisions);
-//	ECalPlot->GetYaxis()->SetTickSize(0.02);
 	ECalPlot->GetXaxis()->SetTitle("E_{reconstructed} [GeV]");
+	ECalPlot->GetXaxis()->SetLabelOffset(0.014);
+	if (E == "4_461") { ECalPlot->GetXaxis()->SetRangeUser(1.,10.); }		
 
 	TLegendEntry* lECal = leg->AddEntry(ECalPlot,ECalLabel, "");
 	lECal->SetTextColor(kBlue);
 
-	TString TitleLabel = ToString(DoubleE)+ " GeV," + LabelsOfSamples;
+	TString TitleLabel = ToString(DoubleE)+ " GeV " + LabelsOfSamples;
 	ECalPlot->SetTitle(TitleLabel);
-	gStyle->SetTitleTextColor(kOrange+7);
+	gStyle->SetTitleTextColor(kBlack);
+//	gStyle->SetTitleTextColor(kOrange+7);	
 	gStyle->SetTitleFont(FontStyle,"t");
 	gStyle->SetTitleSize(TextSize,"t");
 
@@ -155,6 +158,8 @@ void Seminar() {
 	ECalPlot->GetYaxis()->SetTitleOffset(0.95);
 	ECalPlot->GetYaxis()->SetNdivisions(Ndivisions);
 	ECalPlot->GetYaxis()->SetTitle("Weighted Events/GeV");
+	ECalPlot->GetYaxis()->SetLabelOffset(0.014);	
+	ECalPlot->GetYaxis()->SetRangeUser(0.,1.05*ECalPlot->GetMaximum());		
 
 	// ------------------------------------------------------------------------
 
@@ -168,7 +173,7 @@ void Seminar() {
 	// ------------------------------------------------------------------------
 
 	// Inclusive QE Reconstruction
-
+/*
 	TH1D* InclusiveEQEPlot = (TH1D*)( FileSample->Get(InclusiveEQEName));
 	ReweightPlots(InclusiveEQEPlot);
 
@@ -179,7 +184,7 @@ void Seminar() {
 
 	TLegendEntry* lInclusiveQE = leg->AddEntry(InclusiveEQEPlot,InclusiveEQELabel, "");
 	lInclusiveQE->SetTextColor(kRed);
-
+*/
 	// ------------------------------------------------------------------------
 
 	// Exclusive QE Reconstruction
@@ -197,18 +202,50 @@ void Seminar() {
 
 	// ------------------------------------------------------------------------
 
-	leg->Draw();
+	//leg->Draw();
+
+	// ------------------------------------------------------------------------
+	
+	TLatex latexIntChannel;
+	latexIntChannel.SetTextFont(FontStyle);
+	latexIntChannel.SetTextSize(TextSize);
+	latexIntChannel.SetTextColor(kBlack);	
+	latexIntChannel.DrawLatexNDC(0.2,0.8,"(e,e'p)_{1p0#pi}");	
+	
+	// ------------------------------------------------------------------------
+	
+	TLatex latexECal;
+	latexECal.SetTextFont(FontStyle);
+	latexECal.SetTextSize(TextSize);
+	latexECal.SetTextColor(kBlue);
+	double XCoordCal = 0.6;
+	double YCoordCal = 0.7;
+	if (E == "1_161" && nucleus == "12C") { XCoordCal = 0.55; }						
+	latexECal.DrawLatexNDC(XCoordCal,YCoordCal,"E_{Cal}");
+	
+	// ------------------------------------------------------------------------
+	
+	TLatex latexEQE;
+	latexEQE.SetTextFont(FontStyle);
+	latexEQE.SetTextSize(TextSize);
+	latexEQE.SetTextColor(kGreen-2);
+	double XCoordQE = 0.55;
+	double YCoordQE = 0.35;	
+	if (E == "1_161" && nucleus == "12C") { XCoordQE = 0.45; }
+	if (E == "2_261" && nucleus == "56Fe") { YCoordQE = 0.4; }
+	if (E == "4_461" && nucleus == "56Fe") { YCoordQE = 0.47; }	
+	latexEQE.DrawLatexNDC(XCoordQE,YCoordQE,"E_{QE}");		
 
 	// ------------------------------------------------------------------------
 
-	TLine* line = new TLine(DoubleE,0.,DoubleE,1.05*ECalPlot->GetMaximum());
+	TLine* line = new TLine(DoubleE,0.,DoubleE,ECalPlot->GetMaximum());
 	line->SetLineColor(kBlack);
 	line->SetLineWidth(3);
 	line->Draw();
 
 	// ------------------------------------------------------------------------
 
-
+	PlotCanvas->SaveAs("SeminarPlots/Ereco_"+nucleus+"_"+E+".pdf");
 }
 
 // ----------------------------------------------------------------------------------------------------------------

@@ -106,7 +106,8 @@ void OverlayPmissFig3a_e4nuPaper() {
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
-	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
+//	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
+	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("P_{T} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
 
 	std::vector<TH1D*> Plots;
 	std::vector<TGraphAsymmErrors*> UncertaintyPlots;
@@ -173,7 +174,7 @@ void OverlayPmissFig3a_e4nuPaper() {
 					pad2->SetTopMargin(0.);
 					pad2->SetBottomMargin(0.);
 					pad1->cd();
-					pad1->SetFrameLineWidth(30);
+					//pad1->SetFrameLineWidth(3);
 
 					// ---------------------------------------------------------------------------------------
 
@@ -289,8 +290,8 @@ void OverlayPmissFig3a_e4nuPaper() {
 								BreakDownPlots[j-1]->SetLineStyle(Style[j-1]);
 								BreakDownPlots[j-1]->Scale(ScalingFactor);
 								TLegendEntry* l1 = legGenie->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
-								//if (j == 2) { legGenie->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l");  }
-								if (j == 2) { legGenie->AddEntry(UncertaintyPlots[1],"GENIE (Total)", "lf");  }
+								if (j == 2) { legGenie->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l");  }
+								//if (j == 2) { legGenie->AddEntry(UncertaintyPlots[1],"GENIE (Total)", "lf");  }
 								l1->SetTextColor(BreakDownColors[j-1]);
 
 								pad1->cd();
@@ -334,14 +335,14 @@ void OverlayPmissFig3a_e4nuPaper() {
 
 						} else { 
 						
-							//Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
-							UncertaintyPlots[1]->SetMarkerColor(kBlack);	
+							Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
+							/*UncertaintyPlots[1]->SetMarkerColor(kBlack);	
 							UncertaintyPlots[1]->SetLineColor(kBlack);
 							UncertaintyPlots[1]->SetFillColor(kBlack);
 							UncertaintyPlots[1]->SetFillStyle(3002);
 							UncertaintyPlots[1]->SetMarkerSize(2.);
 							UncertaintyPlots[1]->SetMarkerStyle(20);
-							UncertaintyPlots[1]->Draw("4C same");
+							UncertaintyPlots[1]->Draw("4C same");*/
 
 							Plots[0]->Draw("e same"); 
 
@@ -379,7 +380,7 @@ void OverlayPmissFig3a_e4nuPaper() {
 					pad2->cd();
 					myNucleus->DrawLatexNDC(0.25,0.8,JustNucleus[WhichNucleus]+"(e,e'p)_{1p0#pi}"+LabelE[WhichEnergy]);
 
-					// -----------------------------------------------------------------------------------------------------------------------------------------
+					// ---------------------------------------------------------------------------------------------------------
 
 					TString ext = "";
 					if ( xBCut[WhichxBCut] == "xBCut" ) { ext = "xB_"; } 

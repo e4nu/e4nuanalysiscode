@@ -18,7 +18,8 @@ using namespace std;
 
 #include  "/home/afroditi/Dropbox/PhD/Secondary_Code/CenterAxisTitle.cpp"
 #include "/home/afroditi/Dropbox/PhD/Secondary_Code/SetOffsetAndSize.cpp"
-#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+//#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+#include "/home/afroditi/Dropbox/PhD/Secondary_Code/myFunctions.cpp"
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -113,7 +114,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 //	xBCut.push_back("xBCut");
  
 //	Colors.push_back(kBlack); Colors.push_back(kRed); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
-	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
+	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
 
 	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
@@ -122,8 +123,8 @@ void OverlayPmissFig3b_e4nuPaper() {
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
-//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_3"); LabelOfPlots.push_back("P_{T} > 400 [MeV/c]");  OutputPlotNames.push_back("epRecoEnergy_slice_3");
 	NameOfPlots.push_back("h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_2"); LabelOfPlots.push_back("200 < P_{T} < 400 [MeV/c]");  OutputPlotNames.push_back("epRecoEnergy_slice_2");
@@ -166,7 +167,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 
 				for (int WhichPlot = 0; WhichPlot < NPlots; WhichPlot ++) {
 
-					// ---------------------------------------------------------------------------------------------------------------------------
+					// --------------------------------------------------------------------------------------------
 
 					// Dimensions of TPad
 
@@ -196,6 +197,9 @@ void OverlayPmissFig3b_e4nuPaper() {
 					double min = 1E12;
 
 					// Loop over the FSI Models
+					
+					int LowBin = -1;
+					int HighBin = -1;					
 
 					for (int WhichFSIModel = 0; WhichFSIModel < NFSIModels; WhichFSIModel ++) {
 
@@ -278,7 +282,12 @@ void OverlayPmissFig3b_e4nuPaper() {
 
 						// Rebining & ranges
 
-						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.6,2.35);
+						double LowRange = 0.6;
+						double HighRange = 2.35;						
+						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(LowRange,HighRange);
+						
+						LowBin = Plots[WhichFSIModel]->GetXaxis()->FindBin(LowRange);
+						HighBin = Plots[WhichFSIModel]->GetXaxis()->FindBin(HighRange);						
 
 						// ----------------------------------------------------------------------------------
 
@@ -314,6 +323,9 @@ void OverlayPmissFig3b_e4nuPaper() {
 							Plots[WhichFSIModel]->Draw("e same"); 
 
 						} else { 
+						
+							if (FSILabel[WhichFSIModel] == "Genie") { Plots[WhichFSIModel]->SetLineStyle(kDashed); }
+						
 //							Plots[WhichFSIModel]->Draw("hist same"); // draw them as histos
 							Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
 							Plots[0]->Draw("e same"); 
@@ -353,9 +365,21 @@ void OverlayPmissFig3b_e4nuPaper() {
 
 					} // End of the loop over the FSI Models 
 
-				} // End of the loop over the plots
+				// --------------------------------------------------------------------------------------				
+				
+				// Chi2 calculation
+				
+				int NBinsX = HighBin - LowBin +1;
+				double Chi2Double = Chi2(Plots[0],Plots[1],LowBin,HighBin);
+				
+				cout << endl << endl << "Chi2/ndof = " << Chi2Double << " / " << NBinsX << endl << endl;
+				
+				// --------------------------------------------------------------------------------------				
 
 				// --------------------------------------------------------------------------------------------------
+
+				} // End of the loop over the plots
+			
 
 				// Extra pad to add the X-axis label
 

@@ -18,7 +18,8 @@ using namespace std;
 
 #include  "/home/afroditi/Dropbox/PhD/Secondary_Code/CenterAxisTitle.cpp"
 #include "/home/afroditi/Dropbox/PhD/Secondary_Code/SetOffsetAndSize.cpp"
-#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+//#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+#include "/home/afroditi/Dropbox/PhD/Secondary_Code/myFunctions.cpp"
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -121,7 +122,7 @@ void OverlayECalFig4_e4nuPaper() {
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
  
-	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); 
+	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlack); 
 	Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
 
 	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
@@ -130,8 +131,8 @@ void OverlayECalFig4_e4nuPaper() {
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 	
-//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]");
 	OutputPlotNames.push_back("epRecoEnergy_slice_0");
@@ -179,7 +180,7 @@ void OverlayECalFig4_e4nuPaper() {
 			for (int WhichEnergy = 0; WhichEnergy < NEnergies; WhichEnergy ++) {
 
 				// In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
-				double MaxHeight = 2.8;
+				double MaxHeight = 3.3;
 
 				// Loop over the nuclei
 
@@ -238,6 +239,9 @@ void OverlayECalFig4_e4nuPaper() {
 					double min = 1E12;
 
 					// Loop over the FSI Models
+					
+					int LowBin = -1;
+					int HighBin = -1;					
 
 					for (int WhichFSIModel = 0; WhichFSIModel < NFSIModels; WhichFSIModel ++) {
 
@@ -322,10 +326,18 @@ void OverlayECalFig4_e4nuPaper() {
 						// --------------------------------------------------------------------------------------
 
 						// Rebining & ranges
+						
+						double LowRange = -1;
+						double HighRange = -1;						
 
-						if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.7,1.29); }//0.7,1.23
-						if (DoubleE[WhichEnergy] == 2.261) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.7,2.4); }//0.7,2.4
-						if (DoubleE[WhichEnergy] == 4.461) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.5,4.6); }
+						if (DoubleE[WhichEnergy] == 1.161) { LowRange = 0.7; HighRange = 1.29; }
+						if (DoubleE[WhichEnergy] == 2.261) { LowRange = 0.7; HighRange = 2.4; }
+						if (DoubleE[WhichEnergy] == 4.461) { LowRange = 1.5; HighRange = 4.6; }
+												
+						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(LowRange,HighRange);
+						
+						LowBin = Plots[WhichFSIModel]->GetXaxis()->FindBin(LowRange);
+						HighBin = Plots[WhichFSIModel]->GetXaxis()->FindBin(HighRange);						
 
 						// ----------------------------------------------------------------------------------
 
@@ -405,8 +417,7 @@ void OverlayECalFig4_e4nuPaper() {
 									l1Break->SetTextColor(BreakDownColors[j-1]);
 								}
 
-									BreakDownPlots[j-1]->Draw("C hist same");
-							
+									BreakDownPlots[j-1]->Draw("C hist same");						
 								
 							} // end of the look over the GENIE break down
 
@@ -475,6 +486,7 @@ if ( !(DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C") ) {
 							Plots[WhichFSIModel]->Draw("CE6 hist same");
 }
 							//Plots[WhichFSIModel]->Draw("E2 same");
+							if (FSILabel[WhichFSIModel] == "Genie") { Plots[WhichFSIModel]->SetLineStyle(kDashed); }
 							Plots[WhichFSIModel]->Draw("hist C same");								
 
 							 
@@ -491,13 +503,23 @@ if ( !(DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C") ) {
 							
 								//legGenieBlackLine->AddEntry(UncertaintyPlots[1],"GENIE (Total)", "lf"); 
 								//legGenieBlackLine->AddEntry(UncertaintyPlots[1],"GENIE (Total)", "l");			
-								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l");			
+								if (WhichFSIModel == 1)
+									{ legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l"); }
 							}
 							Plots[0]->Draw("e same"); 
 
 						}
 
 					} // End of the loop over the FSI Models 
+					
+					// --------------------------------------------------------------------------------------				
+					
+					// Chi2 calculation
+					
+					int NBinsX = HighBin - LowBin +1;
+					double Chi2Double = Chi2(Plots[0],Plots[1],LowBin,HighBin);
+					
+					cout << endl << endl << nucleus[WhichNucleus] << "  " << E[WhichEnergy] <<  " Chi2/ndof = " << Chi2Double << " / " << NBinsX << endl << endl;
 
 					// ---------------------------------------------------------------------------------------------------------
 
@@ -623,6 +645,8 @@ if ( !(DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C") ) {
 		padLegend->SetFillColor(kWhite); 
 		padLegend->Draw();
 		padLegend->cd();
+		
+		legGenieBreak->AddEntry(Plots[2],"G2018", "l");		
 
 		legGenieBlackLine->SetTextSize(2.*TextSize); 
 		legGenieBlackLine->SetBorderSize(0); 

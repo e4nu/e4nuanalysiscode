@@ -19,7 +19,8 @@ using namespace std;
 
 #include  "/home/afroditi/Dropbox/PhD/Secondary_Code/CenterAxisTitle.cpp"
 #include "/home/afroditi/Dropbox/PhD/Secondary_Code/SetOffsetAndSize.cpp"
-#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+//#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+#include "/home/afroditi/Dropbox/PhD/Secondary_Code/myFunctions.cpp"
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -143,6 +144,9 @@ void OverlayEQE_Fig2() {
 			for (int WhichNucleus = 0; WhichNucleus < NNuclei; WhichNucleus ++) {
 
 				// Loop over the plots
+				
+				int LowBin = -1;
+				int HighBin = -1;				
 
 				for (int WhichPlot = 0; WhichPlot < NPlots; WhichPlot ++) {
 
@@ -214,7 +218,13 @@ void OverlayEQE_Fig2() {
 						Plots[WhichFSIModel]->GetXaxis()->SetTitleOffset(1.3);
 						Plots[WhichFSIModel]->GetXaxis()->SetLabelOffset(0.02);
 						Plots[WhichFSIModel]->GetXaxis()->SetTitle(JustNucleus[WhichNucleus]+LabelOfPlots[WhichPlot]);
-						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.43,1.4);
+						
+						double LowRange = 0.47;
+						double HighRange = 1.4;						
+						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(LowRange,HighRange);
+						
+						LowBin = Plots[WhichFSIModel]->GetXaxis()->FindBin(LowRange);
+						HighBin = Plots[WhichFSIModel]->GetXaxis()->FindBin(HighRange);						
 
 						// --------------------------------------------------------------------------------------
 
@@ -407,6 +417,17 @@ void OverlayEQE_Fig2() {
 
 
 				} // End of the loop over the plots
+				
+				// --------------------------------------------------------------------------------------				
+				
+				// Chi2 calculation
+				
+				int NBinsX = HighBin - LowBin +1;
+				double Chi2Double = Chi2(Plots[0],Plots[1],LowBin,HighBin);
+				
+				cout << endl << endl << "Chi2/ndof = " << Chi2Double << " / " << NBinsX << endl << endl;
+				
+				// --------------------------------------------------------------------------------------				
 
 			} // End of the loop over the nuclei
 

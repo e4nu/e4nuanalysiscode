@@ -18,7 +18,8 @@ using namespace std;
 
 #include  "/home/afroditi/Dropbox/PhD/Secondary_Code/CenterAxisTitle.cpp"
 #include "/home/afroditi/Dropbox/PhD/Secondary_Code/SetOffsetAndSize.cpp"
-#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+//#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+#include "/home/afroditi/Dropbox/PhD/Secondary_Code/myFunctions.cpp"
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -97,7 +98,7 @@ void OverlayPmissFig3a_e4nuPaper() {
 
 	xBCut.push_back("NoxBCut");
  
-	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
+	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
 
 	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
@@ -106,7 +107,7 @@ void OverlayPmissFig3a_e4nuPaper() {
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 
 	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 //	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
 	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("P_{T} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
@@ -154,7 +155,7 @@ void OverlayPmissFig3a_e4nuPaper() {
 									 nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+NameOfPlots[WhichPlot]+"_"+xBCut[WhichxBCut],
 									 205,34,850,1024);
 
-					// ---------------------------------------------------------------------------------------------------------------------------
+					// ----------------------------------------------------------------------------------------------
 
 					// Dimensions of TPads (pad2 will be deleted at the very end for the Ereco plots)
 
@@ -182,7 +183,8 @@ void OverlayPmissFig3a_e4nuPaper() {
 
 					Plots.clear();
 
-					TLegend* legGenie = new TLegend(0.15,0.1,0.9,0.6);
+//					TLegend* legGenie = new TLegend(0.15,0.1,0.9,0.6);
+					TLegend* legGenie = new TLegend(0.15,0.01,0.9,0.6);					
 					legGenie->SetNColumns(3);
 
 //					TLegend* legGenieBreak = new TLegend(0.6,0.55,0.4,0.68);
@@ -337,6 +339,7 @@ void OverlayPmissFig3a_e4nuPaper() {
 
 						} else { 
 						
+							if (FSILabel[WhichFSIModel] =="Genie") { Plots[WhichFSIModel]->SetLineStyle(kDashed); }
 							Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
 							/*UncertaintyPlots[1]->SetMarkerColor(kBlack);	
 							UncertaintyPlots[1]->SetLineColor(kBlack);
@@ -371,7 +374,9 @@ void OverlayPmissFig3a_e4nuPaper() {
 					legGenie->SetTextFont(FontStyle);
 
 					pad2->cd(); 
-					legGenie->SetTextSize(3.*TextSize); legGenie->Draw(); 
+					legGenie->SetTextSize(3.*TextSize);
+					legGenie->AddEntry(Plots[2],"G2018", "l"); 
+					legGenie->Draw(); 
 
 					// ---------------------------------------------------------------------------------------------------
 
@@ -397,6 +402,17 @@ void OverlayPmissFig3a_e4nuPaper() {
 
 
 				} // End of the loop over the plots
+				
+				// --------------------------------------------------------------------------------------				
+				
+				// Chi2 calculation
+				
+				int NBinsX = Plots[0]->GetXaxis()->GetNbins();
+				double Chi2Double = Chi2(Plots[0],Plots[1]);
+				
+				cout << endl << endl << "Chi2/ndof = " << Chi2Double << " / " << NBinsX << endl << endl;
+				
+				// --------------------------------------------------------------------------------------				
 
 			} // End of the loop over the nuclei
 

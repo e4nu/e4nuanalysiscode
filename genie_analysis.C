@@ -2399,21 +2399,21 @@ void genie_analysis::Loop(Int_t choice) {
 									Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 									Pe_BreakDown[Interaction]->Fill(V4_el.Rho(),LocalWeight);
 
-									if ((p_miss_perp_4pto3p[count][j] < pperp_max[0]) { 
+									if (p_miss_perp_4pto3p[count][j] < pperp_max[0]) { 
 
 										ECal_LowPmiss_BreakDown[Interaction]->Fill(E_cal_4pto3p[count][j],LocalWeight); 
 										EQE_LowPmiss_BreakDown[Interaction]->Fill(E_rec,LocalWeight); 
 
 									}
 
-									if ((p_miss_perp_4pto3p[count][j] > pperp_min[1] && (p_miss_perp_4pto3p[count][j] < pperp_max[1]) { 
+									if (p_miss_perp_4pto3p[count][j] > pperp_min[1] && p_miss_perp_4pto3p[count][j] < pperp_max[1]) { 
 
 										ECal_MidPmiss_BreakDown[Interaction]->Fill(E_cal_4pto3p[count][j],LocalWeight); 
 										EQE_MidPmiss_BreakDown[Interaction]->Fill(E_rec,LocalWeight); 
 
 									}
 
-									if ((p_miss_perp_4pto3p[count][j] > pperp_min[2] && (p_miss_perp_4pto3p[count][j] < pperp_max[2]) { 
+									if (p_miss_perp_4pto3p[count][j] > pperp_min[2] && p_miss_perp_4pto3p[count][j] < pperp_max[2]) { 
 
 										ECal_HighPmiss_BreakDown[Interaction]->Fill(E_cal_4pto3p[count][j],LocalWeight); 
 										EQE_HighPmiss_BreakDown[Interaction]->Fill(E_rec,LocalWeight); 

@@ -655,7 +655,7 @@ void genie_analysis::Loop(Int_t choice) {
 		Pe_BreakDown[WhichInt] = new TH1D(Form("Pe_Int_%d",WhichInt),";P_{e} [GeV/c]",100,0.,5.);
 	}
 	
-	TH2D* h2_Ecal_EePrime = new TH2D("h2_Ecal_EePrime",";E^{cal} [GeV];E_{e'}",600,0,6,600,0,600);
+	TH2D* h2_Ecal_EePrime = new TH2D("h2_Ecal_EePrime",";E^{cal} [GeV];E_{e'}",600,0,6,600,0,6);
 	TH2D* h2_Ecal_CosThetaE = new TH2D("h2_Ecal_CosThetaE",";E^{cal} [GeV];cos(#theta_{e'})",600,0,6,100,-1,1);
 	TH2D* h2_Ecal_ThetaE = new TH2D("h2_Ecal_ThetaE",";E^{cal} [GeV];#theta_{e'} [deg]",600,0,6,100,0,180);		
 

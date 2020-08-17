@@ -894,9 +894,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 		int ThetaSlice = V4_el.Theta()*180./TMath::Pi() / ThetaStep;
 		int EePrimeSlice = V4_el.E() / EePrimeStep;
-std::cout << "V4_el.E() = " << V4_el.E() << std::endl;	
-std::cout << "EePrimeStep = " << EePrimeStep << std::endl;			
-std::cout << "EePrimeSlice = " << EePrimeSlice << std::endl;
  
 		//Now we are done with the selection of electrons. Next step is looking for other hadrons in the events
 

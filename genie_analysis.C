@@ -617,7 +617,10 @@ void genie_analysis::Loop(Int_t choice) {
 
 	for (int WhichThetaSlice = 0 ; WhichThetaSlice < ThetaSlices; WhichThetaSlice++ ) {
 
-		h1_ECal_InThetaSlices[WhichThetaSlice] = new TH1F(Form("h1_ECal_InTheta_%d_To_%d_Slices",MinTheta+WhichThetaSlice*ThetaStep,MinTheta+(WhichThetaSlice+1)*ThetaStep),"",n_bins,x_values);
+		int MinThetaSlice = MinTheta+WhichThetaSlice*ThetaStep;
+		int MaxThetaSlice = MinTheta+(WhichThetaSlice+1)*ThetaStep;
+std::cout << "MinThetaSlice = " << MinThetaSlice << "  MaxThetaSlice = " << MaxThetaSlice<< std::endl;				
+		h1_ECal_InThetaSlices[WhichThetaSlice] = new TH1F(Form("h1_ECal_InTheta_%d_To_%d_Slices",MinThetaSlice,MaxThetaSlice),"",n_bins,x_values);
 
 	}
 
@@ -629,7 +632,10 @@ void genie_analysis::Loop(Int_t choice) {
 
 	for (int WhichEePrimeSlice = 0 ; WhichEePrimeSlice < EePrimeSlices; WhichEePrimeSlice++ ) {
 
-		h1_ECal_InEePrimeSlices[WhichEePrimeSlice] = new TH1F(Form("h1_ECal_InEePrime_%d_To_%d_Slices",(MinEePrime+WhichEePrimeSlice*EePrimeStep) * 1000,(MinEePrime+(WhichEePrimeSlice+1)*EePrimeStep)*1000),"",n_bins,x_values);
+		int MinEePrimeSlice = (MinEePrime+WhichEePrimeSlice*EePrimeStep) * 1000;
+		int MaxEePrimeSlice = (MinEePrime+(WhichEePrimeSlice+1)*EePrimeStep)*1000;
+std::cout << "MinEePrimeSlice = " << MinEePrimeSlice << "  MaxEePrimeSlice = " << MaxEePrimeSlice<< std::endl;
+		h1_ECal_InEePrimeSlices[WhichEePrimeSlice] = new TH1F(Form("h1_ECal_InEePrime_%d_To_%d_Slices",MinEePrimeSlice,MaxEePrimeSlice),"",n_bins,x_values);
 
 	}
 

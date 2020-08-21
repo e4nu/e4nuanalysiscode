@@ -32,7 +32,7 @@ void OverlayECal_FigExtData11() {
 	TFile* file_in = new TFile(PathToFile+target+"_4_461_Data_Final_Plots_FSI_em.root");
 
 	gStyle->SetOptStat(0);
-	gStyle->SetPadTopMargin(0.01);
+	gStyle->SetPadTopMargin(0.05);
 	gStyle->SetPadRightMargin(0.01);
 	gStyle->SetPadLeftMargin(0.15);
 	gStyle->SetPadBottomMargin(0.16);
@@ -94,7 +94,7 @@ void OverlayECal_FigExtData11() {
 	// ---------------------------------------------------------------------------------------------------- 
 
 	TCanvas *c1=new TCanvas("c1","",1024,768);
-	c1->SetTopMargin(0.01);
+	c1->SetTopMargin(0.05);
 	c1->SetRightMargin(0.01);
 	c1->SetLeftMargin(0.15);
 	c1->SetBottomMargin(0.16);

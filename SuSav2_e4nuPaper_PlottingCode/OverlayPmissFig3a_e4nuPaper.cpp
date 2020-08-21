@@ -106,7 +106,8 @@ void OverlayPmissFig3a_e4nuPaper() {
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 
-	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_NoRadCorr");	
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 //	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
@@ -184,7 +185,7 @@ void OverlayPmissFig3a_e4nuPaper() {
 					Plots.clear();
 
 //					TLegend* legGenie = new TLegend(0.15,0.1,0.9,0.6);
-					TLegend* legGenie = new TLegend(0.15,0.01,0.9,0.6);					
+					TLegend* legGenie = new TLegend(0.15,0.01,0.9,0.7);					
 					legGenie->SetNColumns(3);
 
 //					TLegend* legGenieBreak = new TLegend(0.6,0.55,0.4,0.68);
@@ -303,7 +304,7 @@ void OverlayPmissFig3a_e4nuPaper() {
 
 							} // end of the look over the GENIE break down
 
-						}
+						} // End of the SuSav2 / break down option
 
 						// ---------------------------------------------------------------------------------------------------
 
@@ -408,9 +409,13 @@ void OverlayPmissFig3a_e4nuPaper() {
 				// Chi2 calculation
 				
 				int NBinsX = Plots[0]->GetXaxis()->GetNbins();
-				double Chi2Double = Chi2(Plots[0],Plots[1]);
+				int Chi2Double = Chi2(Plots[0],Plots[1]);
 				
-				cout << endl << endl << "Chi2/ndof = " << Chi2Double << " / " << NBinsX << endl << endl;
+				cout << endl << endl << "SuSav2 Chi2/ndof = " << Chi2Double << "/" << NBinsX << endl << endl;
+				
+				int G2018Chi2Double = Chi2(Plots[0],Plots[2]);
+				
+				cout << "G2018 Chi2/ndof = " << G2018Chi2Double << "/" << NBinsX << endl << endl;				
 				
 				// --------------------------------------------------------------------------------------				
 

@@ -18,7 +18,8 @@ using namespace std;
 
 #include "/home/afroditi/Dropbox/PhD/Secondary_Code/CenterAxisTitle.cpp"
 #include "/home/afroditi/Dropbox/PhD/Secondary_Code/SetOffsetAndSize.cpp"
-#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+//#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+#include "/home/afroditi/Dropbox/PhD/Secondary_Code/myFunctions.cpp"
 
 void OverlayReso_FigExtData8() {
 
@@ -40,17 +41,18 @@ void OverlayReso_FigExtData8() {
 	std::vector<TString> LabelE; std::vector<TString> JustE; std::vector<TString> FSIModel; std::vector<TString> OutputPlotNames;
 	std::vector<TString> FSILabel; std::vector<TString> NameOfPlots;  std::vector<TString> XLabels;
 
-	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C");
-//	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");
+//	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C");
+	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");
 
-	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); JustE.push_back("1.159 GeV");
+//	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); JustE.push_back("1.159 GeV");
 	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); JustE.push_back("2.257 GeV");
 	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV"); JustE.push_back("4.453 GeV");
  
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data");
 
 //	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");
-	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");	
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");	
+	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");		
 
 	xBCut.push_back("NoxBCut");
 	NameOfPlots.push_back("h_Etot_subtruct_piplpimi_factor_fracfeed"); OutputPlotNames.push_back("EcalReso");
@@ -73,14 +75,14 @@ void OverlayReso_FigExtData8() {
 	// Larry's suggestion following Barak's paper for color skim
 
 	// 12C
-	vector< vector<int> > Colors{{kRed,kRed},{kGreen-3,kGreen-3},{kBlue,kBlue}};
-	vector<int> LineStyle{2,11,1};
-	vector<int> MarkerStyle{22,21,20};
+//	vector< vector<int> > Colors{{kRed,kRed},{kGreen-3,kGreen-3},{kBlue,kBlue}};
+//	vector<int> LineStyle{2,11,1};
+//	vector<int> MarkerStyle{22,21,20};
 
 	// 56Fe
-//	vector< vector<int> > Colors{{kGreen-3,kGreen-3},{kBlue,kBlue}};	
-//	vector<int> LineStyle{11,1};
-//	vector<int> MarkerStyle{21,20};
+	vector< vector<int> > Colors{{kGreen-3,kGreen-3},{kBlue,kBlue}};	
+	vector<int> LineStyle{11,1};
+	vector<int> MarkerStyle{21,20};
 
 	// Loop over the xB kinematics
 
@@ -104,6 +106,9 @@ void OverlayReso_FigExtData8() {
 				double max = -99.;
 
 				// Loop over the energies
+				
+				int LowBin = -1;
+				int HighBin = -1;				
 
 				for (int WhichEnergy = 0; WhichEnergy < NEnergies; WhichEnergy ++) {
 
@@ -126,10 +131,19 @@ void OverlayReso_FigExtData8() {
 						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetTitleSize(TextSize);
 						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetTitleOffset(0.95);
 						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetNdivisions(8);
+						
+						double LowRange = -1;
+						double HighRange = -1;						
 if (NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed") { 
-	Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetRangeUser(-0.85,0.2); 
+	LowRange = -0.85; HighRange = 0.2; 
 	Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetNdivisions(9); 
-} else { Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetRangeUser(-0.81,0.07); }
+} else { LowRange = -0.81; HighRange = 0.07; }
+
+						
+						Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->SetRangeUser(LowRange,HighRange);
+						
+						LowBin = Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->FindBin(LowRange);
+						HighBin = Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->FindBin(HighRange);
 
 						Plots[WhichEnergy][WhichFSIModel]->GetYaxis()->SetTickSize(0.02);
 						Plots[WhichEnergy][WhichFSIModel]->GetYaxis()->SetLabelFont(FontStyle);
@@ -162,7 +176,7 @@ if (NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed") {
 
 						double localmax = Plots[WhichEnergy][WhichFSIModel]->GetMaximum();
 						if (localmax > max) { max = localmax; }
-						Plots[0][0]->GetYaxis()->SetRangeUser(0,1.2*max);
+						Plots[0][0]->GetYaxis()->SetRangeUser(0,1.3*max);
 						PlotCanvas->Update();
 
 						TString XLabel = Plots[WhichEnergy][WhichFSIModel]->GetXaxis()->GetTitle();
@@ -184,6 +198,18 @@ if (NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed") {
 						}
 
 					} // End of the loop over the FSI Models 
+					
+					// --------------------------------------------------------------------------------------				
+					
+					// Chi2 calculation
+					
+					int NBinsX = HighBin - LowBin +1;
+					int Chi2Double = Chi2(Plots[WhichEnergy][0],Plots[WhichEnergy][1],LowBin,HighBin);
+					
+					cout << endl << endl << nucleus[WhichNucleus] << "  " << E[WhichEnergy]  << " Chi2/ndof = " << Chi2Double;
+					cout << "/" << NBinsX << endl << endl;
+					
+					// --------------------------------------------------------------------------------------				
 
 
 				} // End of the loop over the energies
@@ -201,7 +227,7 @@ if (NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed") {
 				TLatex latexDG;
 				latexDG.SetTextFont(FontStyle);
 				latexDG.SetTextSize(TextSize);
-				latexDG.DrawLatexNDC(0.13,0.83,"Data/Genie");
+				latexDG.DrawLatexNDC(0.13,0.83,"Data/SuSav2");
 
 				PlotCanvas->SaveAs("../../myPlots/pdf/"+xBCut[WhichxBCut]+"/"+version+nucleus[WhichNucleus]+"/FeedDown_"+nucleus[WhichNucleus]+"_" +OutputPlotNames[WhichPlot]+"_SuSav2.pdf");
 

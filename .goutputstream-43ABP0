@@ -4031,10 +4031,7 @@ void genie_analysis::Loop(Int_t choice) {
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
 					double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);		
-					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);	
-					
-					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
-					DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);								
+					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);					
 					
 					h2_Ecal_EePrime->Fill(E_tot,V4_el.E(),LocalWeight);
 					h2_Ecal_CosThetaE->Fill(E_tot,V4_el.CosTheta(),LocalWeight);
@@ -4145,12 +4142,6 @@ void genie_analysis::Loop(Int_t choice) {
 				Nu_BreakDown[0]->Fill(nu,LocalWeight);
 				Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 				
-				double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);		
-				double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);	
-				
-				DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
-				DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);								
-				
 				h2_Ecal_EePrime->Fill(E_tot,V4_el.E(),LocalWeight);
 				h2_Ecal_CosThetaE->Fill(E_tot,V4_el.CosTheta(),LocalWeight);
 				h2_Ecal_ThetaE->Fill(E_tot,V4_el.Theta()*180./TMath::Pi(),LocalWeight);			
@@ -4170,9 +4161,6 @@ void genie_analysis::Loop(Int_t choice) {
 					Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
 					Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 					Pe_BreakDown[Interaction]->Fill(V4_el.Rho(),LocalWeight);
-					
-					DeltaPhiT_BreakDown[Interaction]->Fill(deltaphiT,LocalWeight);	     
-					DeltaAlphaT_BreakDown[Interaction]->Fill(deltaalphaT,LocalWeight);					
 
 					if (p_perp_tot < pperp_max[0]) { 
 
@@ -4310,12 +4298,6 @@ void genie_analysis::Loop(Int_t choice) {
 				Nu_BreakDown[0]->Fill(nu,LocalWeight);
 				Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 				
-				double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);		
-				double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);	
-				
-				DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
-				DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);				
-				
 				h2_Ecal_EePrime->Fill(E_tot,V4_el.E(),LocalWeight);
 				h2_Ecal_CosThetaE->Fill(E_tot,V4_el.CosTheta(),LocalWeight);
 				h2_Ecal_ThetaE->Fill(E_tot,V4_el.Theta()*180./TMath::Pi(),LocalWeight);		
@@ -4335,9 +4317,6 @@ void genie_analysis::Loop(Int_t choice) {
 					Q2_BreakDown[Interaction]->Fill(reco_Q2,LocalWeight);
 					Nu_BreakDown[Interaction]->Fill(nu,LocalWeight);
 					Pe_BreakDown[Interaction]->Fill(V4_el.Rho(),LocalWeight);
-					
-					DeltaPhiT_BreakDown[Interaction]->Fill(deltaphiT,LocalWeight);	     
-					DeltaAlphaT_BreakDown[Interaction]->Fill(deltaalphaT,LocalWeight);					
 
 					if (p_perp_tot < pperp_max[0]) { 
 

@@ -51,7 +51,8 @@ void OverlayECalVsEQE_FigExtData9() {
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 //	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
+	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");	
 
 	NameOfPlots.push_back("h2_Ecal_Eqe"); XLabelOfPlots.push_back("E^{QE} (GeV)"); YLabelOfPlots.push_back("E^{cal} (GeV)"); OutputPlotNames.push_back("ECalVsEQE2D");
 
@@ -166,7 +167,7 @@ void OverlayECalVsEQE_FigExtData9() {
 						pad1->SetLogz();
 						pad2->SetLogz();
 
-						XMin = 1.5; XMax = 5.2; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+						XMin = 1.; XMax = 5.2; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
 						Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
 						
 						// --------------------------------------------------------------------------------------------

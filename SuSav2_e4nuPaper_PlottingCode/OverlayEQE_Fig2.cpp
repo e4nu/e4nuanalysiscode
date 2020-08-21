@@ -107,7 +107,8 @@ void OverlayEQE_Fig2() {
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 
-	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
+	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");	
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("h_Erec_subtruct_piplpimi_noprot_3pi"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("InclusiveeRecoEnergy_slice_0");
@@ -423,9 +424,13 @@ void OverlayEQE_Fig2() {
 				// Chi2 calculation
 				
 				int NBinsX = HighBin - LowBin +1;
-				double Chi2Double = Chi2(Plots[0],Plots[1],LowBin,HighBin);
+				int Chi2Double = Chi2(Plots[0],Plots[1],LowBin,HighBin);
 				
-				cout << endl << endl << "Chi2/ndof = " << Chi2Double << " / " << NBinsX << endl << endl;
+				cout << endl << endl << "SuSav2 Chi2/ndof = " << Chi2Double << " / " << NBinsX << endl << endl;
+				
+				int G2018Chi2Double = Chi2(Plots[0],Plots[2],LowBin,HighBin);
+				
+				cout << endl << endl << "G2018 Chi2/ndof = " << G2018Chi2Double << " / " << NBinsX << endl << endl;				
 				
 				// --------------------------------------------------------------------------------------				
 

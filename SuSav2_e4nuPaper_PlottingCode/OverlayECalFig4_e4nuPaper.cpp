@@ -131,7 +131,8 @@ void OverlayECalFig4_e4nuPaper() {
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 	
-	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
+	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]");
@@ -330,9 +331,13 @@ void OverlayECalFig4_e4nuPaper() {
 						double LowRange = -1;
 						double HighRange = -1;						
 
-						if (DoubleE[WhichEnergy] == 1.161) { LowRange = 0.7; HighRange = 1.29; }
-						if (DoubleE[WhichEnergy] == 2.261) { LowRange = 0.7; HighRange = 2.4; }
-						if (DoubleE[WhichEnergy] == 4.461) { LowRange = 1.5; HighRange = 4.6; }
+//						if (DoubleE[WhichEnergy] == 1.161) { LowRange = 0.7; HighRange = 1.29; }
+//						if (DoubleE[WhichEnergy] == 2.261) { LowRange = 0.7; HighRange = 2.4; }
+//						if (DoubleE[WhichEnergy] == 4.461) { LowRange = 1.5; HighRange = 4.6; }
+						
+						if (DoubleE[WhichEnergy] == 1.161) { LowRange = 0.57; HighRange = 1.29; }
+						if (DoubleE[WhichEnergy] == 2.261) { LowRange = 0.67; HighRange = 2.4; }
+						if (DoubleE[WhichEnergy] == 4.461) { LowRange = 1.5; HighRange = 4.6; }					
 												
 						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(LowRange,HighRange);
 						
@@ -482,9 +487,9 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 
 //							Plots[WhichFSIModel]->Draw("4C hist same");
 
-if ( !(DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C") ) {							 			
-							Plots[WhichFSIModel]->Draw("CE6 hist same");
-}
+//if ( !(DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C") ) {							 			
+//							Plots[WhichFSIModel]->Draw("CE6 hist same");
+//}
 							//Plots[WhichFSIModel]->Draw("E2 same");
 							if (FSILabel[WhichFSIModel] == "Genie") { Plots[WhichFSIModel]->SetLineStyle(kDashed); }
 							Plots[WhichFSIModel]->Draw("hist C same");								
@@ -506,6 +511,7 @@ if ( !(DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C") ) {
 								if (WhichFSIModel == 1)
 									{ legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l"); }
 							}
+							Plots[1]->Draw("hist C same");
 							Plots[0]->Draw("e same"); 
 
 						}
@@ -517,9 +523,15 @@ if ( !(DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C") ) {
 					// Chi2 calculation
 					
 					int NBinsX = HighBin - LowBin +1;
-					double Chi2Double = Chi2(Plots[0],Plots[1],LowBin,HighBin);
+					int Chi2Double = Chi2(Plots[0],Plots[1],LowBin,HighBin);
 					
-					cout << endl << endl << nucleus[WhichNucleus] << "  " << E[WhichEnergy] <<  " Chi2/ndof = " << Chi2Double << " / " << NBinsX << endl << endl;
+					cout << endl << endl << nucleus[WhichNucleus] << "  " << E[WhichEnergy];
+					cout <<  " SuSav2 Chi2/ndof = " << Chi2Double << "/" << NBinsX << endl << endl;
+					
+					int G2018Chi2Double = Chi2(Plots[0],Plots[2],LowBin,HighBin);
+					
+					cout << nucleus[WhichNucleus] << "  " << E[WhichEnergy];
+					cout <<  " G2018 Chi2/ndof = " << G2018Chi2Double << "/" << NBinsX << endl << endl;					
 
 					// ---------------------------------------------------------------------------------------------------------
 
@@ -695,7 +707,7 @@ if ( !(DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C") ) {
 		// Extra pad for the Y-axis 0. point
 
 		PlotCanvas->cd();
-		TPad* padTitleZero = new TPad("padTitleZero","padTitleZero",0.41,0.17,0.426,0.22,21); 
+		TPad* padTitleZero = new TPad("padTitleZero","padTitleZero",0.405,0.17,0.421,0.22,21); 
 		padTitleZero->SetFillColor(kWhite); 
 		padTitleZero->Draw();
 		padTitleZero->cd();
@@ -712,7 +724,7 @@ if ( !(DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C") ) {
 
 		PlotCanvas->cd();
 //		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.41,0.34,0.426,0.39,21); 
-		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.405,0.39,0.421,0.44,21); 
+		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.405,0.355,0.421,0.405,21); 
 		padTitleOne->SetFillColor(kWhite); 
 		padTitleOne->Draw();
 		padTitleOne->cd();

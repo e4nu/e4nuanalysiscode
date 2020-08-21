@@ -18,7 +18,8 @@ using namespace std;
 
 #include  "/home/afroditi/Dropbox/PhD/Secondary_Code/CenterAxisTitle.cpp"
 #include "/home/afroditi/Dropbox/PhD/Secondary_Code/SetOffsetAndSize.cpp"
-#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+//#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+#include "/home/afroditi/Dropbox/PhD/Secondary_Code/myFunctions.cpp"
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -104,7 +105,7 @@ void OverlayPmiss_FigExtData10() {
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
  
-	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
+	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
 
 	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
@@ -115,8 +116,9 @@ void OverlayPmiss_FigExtData10() {
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
-//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
+	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");	
 
 	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} P_{T} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
 
@@ -185,8 +187,10 @@ void OverlayPmiss_FigExtData10() {
 
 					TPad* pad = new TPad(); 
 
-					if (nucleus[WhichNucleus] == "12C") { pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad,XMaxPad,YMaxPad, 21); }
-					else { pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad+space,XMaxPad,YMaxPad+space, 21); }
+					if (nucleus[WhichNucleus] == "12C") 
+					{ pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad,XMaxPad,YMaxPad, 21); }
+					else 
+					{ pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad+space,XMaxPad,YMaxPad+space, 21); }
 
 					pad->SetFillColor(kWhite); 
 					PlotCanvas->cd();
@@ -214,6 +218,9 @@ if (DoubleE[WhichEnergy] == 1.161 ) { pad->SetLeftMargin(0.08); }
 
 					double max = -99.;
 					double min = 1E12;
+					
+					int LowBin = -1;
+					int HighBin = -1;					
 
 					// Loop over the FSI Models
 
@@ -298,9 +305,17 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 //						if (DoubleE[WhichEnergy] == 2.261) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.7,2.4); }
 //						if (DoubleE[WhichEnergy] == 4.461) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.3,4.6); }
 
-for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin(); }
-Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.03,0.95);
-Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(3);
+						for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin(); }
+
+						double LowRange = 0.03;
+						double HighRange = 0.95;						
+						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(LowRange,HighRange);
+						
+						LowBin = Plots[WhichFSIModel]->GetXaxis()->FindBin(LowRange);
+						HighBin = Plots[WhichFSIModel]->GetXaxis()->FindBin(HighRange);
+
+						Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(3);
+						
 						// ----------------------------------------------------------------------------------
 
 						// Apply Systematic Uncertainties on Data Points
@@ -383,7 +398,7 @@ Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(3);
 
 							} // end of the look over the GENIE break down
 
-						}
+						} // End of the 
 
 						// ---------------------------------------------------------------------------------------------------
 
@@ -426,12 +441,28 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 
 						} else { 
 
+							if (FSILabel[WhichFSIModel] == "Genie") { Plots[WhichFSIModel]->SetLineStyle(kDashed); }
 							Plots[WhichFSIModel]->Draw("C hist same");  // "C hist same" draw them as lines // "hist same" draw them as histos
 							Plots[0]->Draw("e same"); 
 
 						}
 
 					} // End of the loop over the FSI Models 
+					
+					// --------------------------------------------------------------------------------------				
+					
+					// Chi2 calculation
+					
+					int NBinsX = HighBin - LowBin +1;
+					int Chi2Double = Chi2(Plots[0],Plots[1],LowBin,HighBin);
+					
+					cout << endl << endl << nucleus[WhichNucleus]+" "+E[WhichEnergy] << " SuSav2 Chi2/ndof = ";
+					cout << Chi2Double << "/" << NBinsX << endl << endl;
+					
+					int G2018Chi2Double = Chi2(Plots[0],Plots[2],LowBin,HighBin);
+					
+					cout << nucleus[WhichNucleus]+" "+E[WhichEnergy] << " G2018 Chi2/ndof = ";
+					cout << G2018Chi2Double << "/" << NBinsX << endl << endl;					
 
 					// --------------------------------------------------------------------------------------------------------
 
@@ -526,6 +557,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		legGenieBlackLine->SetBorderSize(0); 
 		legGenieBlackLine->Draw();
 
+		legGenieBreak->AddEntry(Plots[2],"G2018", "l");
 		legGenieBreak->SetTextSize(2.*TextSize); 
 		legGenieBreak->SetBorderSize(0); 
 		legGenieBreak->Draw();

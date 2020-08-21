@@ -18,7 +18,8 @@ using namespace std;
 
 #include  "/home/afroditi/Dropbox/PhD/Secondary_Code/CenterAxisTitle.cpp"
 #include "/home/afroditi/Dropbox/PhD/Secondary_Code/SetOffsetAndSize.cpp"
-#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+//#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
+#include "/home/afroditi/Dropbox/PhD/Secondary_Code/myFunctions.cpp"
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -107,7 +108,7 @@ void ECalExtDataFig6_e4nuPaper() {
 
 	xBCut.push_back("xBCut");
  
-	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
+	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
 
 	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
@@ -115,8 +116,9 @@ void ECalExtDataFig6_e4nuPaper() {
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 	
-	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
-//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
+	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
 
@@ -160,7 +162,7 @@ void ECalExtDataFig6_e4nuPaper() {
 
 			for (int WhichEnergy = 0; WhichEnergy < NEnergies; WhichEnergy ++) {
 
-				double MaxHeight = 6.5; // In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
+				double MaxHeight = 7.5; // In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
 
 				// Loop over the nuclei
 
@@ -183,8 +185,10 @@ void ECalExtDataFig6_e4nuPaper() {
 
 					TPad* pad = new TPad(); 
 
-					if (nucleus[WhichNucleus] == "12C") { pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad,XMaxPad,YMaxPad, 21); }
-					else { pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad+space,XMaxPad,YMaxPad+space, 21); }
+					if (nucleus[WhichNucleus] == "12C") 
+						{ pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad,XMaxPad,YMaxPad, 21); }
+					else 
+					{ pad = new TPad(NameOfPlots[WhichPlot],NameOfPlots[WhichPlot],XMinPad,YMinPad+space,XMaxPad,YMaxPad+space, 21); }
 
 					pad->SetFillColor(kWhite); 
 					PlotCanvas->cd();
@@ -208,21 +212,22 @@ void ECalExtDataFig6_e4nuPaper() {
 
 					// ---------------------------------------------------------------------------------------------
 
-					Plots.clear(); 
-
-					TLegend* legGenieBreak = new TLegend(0.1,0.,1.,0.5);
-					legGenieBreak->SetNColumns(2);
-					legGenieBreak->SetTextFont(FontStyle);
+					Plots.clear();
 
 					double max = -99.;
 					double min = 1E12;
 
 					// Loop over the FSI Models
+					
+					int LowBin = -1;
+					int HighBin = -1;					
 
 					for (int WhichFSIModel = 0; WhichFSIModel < NFSIModels; WhichFSIModel ++) {
 
-						TString PathToFiles = "../../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[WhichFSIModel]+"/"+xBCut[WhichxBCut]+"/";
-						TString FileName = PathToFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+FSIModel[WhichFSIModel]+"_Plots_FSI_em.root";
+						TString PathToFiles = "../../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[WhichFSIModel]\
+							+"/"+xBCut[WhichxBCut]+"/";
+						TString FileName = PathToFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"\
+							+FSIModel[WhichFSIModel]+"_Plots_FSI_em.root";
 						TFile* FileSample = TFile::Open(FileName);
 
 						Plots.push_back( (TH1D*)( FileSample->Get(NameOfPlots[WhichPlot]) ) );
@@ -297,9 +302,21 @@ void ECalExtDataFig6_e4nuPaper() {
 
 						// Ranges
 
-						if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.85,1.23); }
-						if (DoubleE[WhichEnergy] == 2.261) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.3,2.4); }
-						if (DoubleE[WhichEnergy] == 4.461) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.9,4.6); }
+						double LowRange = -1;
+						double HighRange = -1;	
+
+//						if (DoubleE[WhichEnergy] == 1.161) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.85,1.23); }
+//						if (DoubleE[WhichEnergy] == 2.261) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.3,2.4); }
+//						if (DoubleE[WhichEnergy] == 4.461) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.9,4.6); }
+						
+						if (DoubleE[WhichEnergy] == 1.161) { LowRange = 0.85; HighRange = 1.23; }
+						if (DoubleE[WhichEnergy] == 2.261) { LowRange = 1.3; HighRange = 2.4; }
+						if (DoubleE[WhichEnergy] == 4.461) { LowRange = 2.8; HighRange = 4.6; }
+						
+						Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(LowRange,HighRange);
+						
+						LowBin = Plots[WhichFSIModel]->GetXaxis()->FindBin(LowRange);
+						HighBin = Plots[WhichFSIModel]->GetXaxis()->FindBin(HighRange);						
 
 						// ----------------------------------------------------------------------------------
 
@@ -320,8 +337,10 @@ void ECalExtDataFig6_e4nuPaper() {
 							FSILabel[WhichFSIModel] == "SuSav2"
 						) {
 
-							legGenieBlackLine->AddEntry(Plots[0],"Data", "lep"); 
-							legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l"); 
+							if (nucleus[WhichNucleus] == "12C" && E[WhichEnergy] == "1_161") {
+								legGenieBlackLine->AddEntry(Plots[0],"Data", "lep"); 
+								legGenieBlackLine->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l"); 
+							}
 
 							BreakDownPlots.clear();
 
@@ -367,8 +386,11 @@ void ECalExtDataFig6_e4nuPaper() {
 
 								//-----------------------------------------------------------------------------------------------
 
-								TLegendEntry* l1Break = legGenieBreak->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
-								l1Break->SetTextColor(BreakDownColors[j-1]);
+								if (nucleus[WhichNucleus] == "12C" && E[WhichEnergy] == "1_161") {
+			cout << "hello" << endl;					
+									TLegendEntry* l1Break = legGenieBreak->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
+									l1Break->SetTextColor(BreakDownColors[j-1]);
+								}
 
 //								BreakDownPlots[j-1]->Draw("hist same");
 								BreakDownPlots[j-1]->Draw("C hist same");
@@ -383,7 +405,8 @@ void ECalExtDataFig6_e4nuPaper() {
 
 						Plots[0]->GetYaxis()->SetRangeUser(0.,MaxHeight);
 
-						double localmin = Plots[WhichFSIModel]->GetBinContent(Plots[WhichFSIModel]->FindBin(4)); // multiplicity 4 is the highest one in data
+						// multiplicity 4 is the highest one in data
+						double localmin = Plots[WhichFSIModel]->GetBinContent(Plots[WhichFSIModel]->FindBin(4));
 						if (localmin < min && localmin != 0) { min = localmin; }
 
 						TString XLabel = Plots[WhichFSIModel]->GetXaxis()->GetTitle();
@@ -409,14 +432,31 @@ void ECalExtDataFig6_e4nuPaper() {
 
 						} else { 
 
-							Plots[WhichFSIModel]->Draw("C hist same");  // "C hist same" draw them as lines // "hist same" draw them as histos
+							if (FSILabel[WhichFSIModel] == "Genie") { Plots[WhichFSIModel]->SetLineStyle(kDashed); }
+							// "C hist same" draw them as lines // "hist same" draw them as histos
+							Plots[WhichFSIModel]->Draw("C hist same");  
 							Plots[0]->Draw("e same"); 
 
 						}
 
 					} // End of the loop over the FSI Models 
+					
+					// --------------------------------------------------------------------------------------				
+					
+					// Chi2 calculation
+					
+					int NBinsX = HighBin - LowBin +1;
+					int Chi2Double = Chi2(Plots[0],Plots[1],LowBin,HighBin);
+					
+					cout << endl << endl << nucleus[WhichNucleus] << "  " << E[WhichEnergy];
+					cout <<  " SuSav2 Chi2/ndof = " << Chi2Double << "/" << NBinsX << endl << endl;
+					
+					int G2018Chi2Double = Chi2(Plots[0],Plots[2],LowBin,HighBin);
+					
+					cout << nucleus[WhichNucleus] << "  " << E[WhichEnergy];
+					cout <<  " G2018 Chi2/ndof = " << G2018Chi2Double << "/" << NBinsX << endl << endl;
 
-					// -----------------------------------------------------------------------------------------------------------------------------------------
+					// -----------------------------------------------------------------------------------------------------
 
 				} // End of the loop over the energies
 
@@ -547,6 +587,7 @@ void ECalExtDataFig6_e4nuPaper() {
 
 		legGenieBreak->SetTextSize(2.*TextSize); 
 		legGenieBreak->SetBorderSize(0); 
+		legGenieBreak->AddEntry(Plots[2],"G2018","l"); 		
 		legGenieBreak->Draw();
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
@@ -588,14 +629,14 @@ void ECalExtDataFig6_e4nuPaper() {
 		// Extra pad for the Y-axis 0. point
 
 		PlotCanvas->cd();
-		TPad* padTitleZero = new TPad("padTitleZero","padTitleZero",0.41,0.17,0.426,0.22,21); 
+		TPad* padTitleZero = new TPad("padTitleZero","padTitleZero",0.405,0.17,0.4255,0.22,21); 
 		padTitleZero->SetFillColor(kWhite); 
 		padTitleZero->Draw();
 		padTitleZero->cd();
 
 		TLatex latexYTitleZero;
 		latexYTitleZero.SetTextFont(FontStyle);
-		latexYTitleZero.SetTextSize(20*TextSize);
+		latexYTitleZero.SetTextSize(16*TextSize);
 		latexYTitleZero.SetTextColor(kBlack);
 		latexYTitleZero.DrawLatexNDC(0.,0.1,"0");
 
@@ -613,23 +654,24 @@ void ECalExtDataFig6_e4nuPaper() {
 		latexYTitleOne.SetTextFont(FontStyle);
 		latexYTitleOne.SetTextSize(20*TextSize);
 		latexYTitleOne.SetTextColor(kBlack);
-		latexYTitleOne.DrawLatexNDC(0.,0.1,"2");
+		//latexYTitleOne.DrawLatexNDC(0.,0.1,"2");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
 		// Extra pad for the Y-axis 2. point
 
 		PlotCanvas->cd();
-		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.41,0.48,0.426,0.53,21); 
+		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.405,0.50,0.4255,0.55,21); 
 		padTitleTwo->SetFillColor(kWhite); 
 		padTitleTwo->Draw();
 		padTitleTwo->cd();
 
 		TLatex latexYTitleTwo;
 		latexYTitleTwo.SetTextFont(FontStyle);
-		latexYTitleTwo.SetTextSize(20*TextSize);
+		latexYTitleTwo.SetTextSize(16*TextSize);
 		latexYTitleTwo.SetTextColor(kBlack);
-		latexYTitleTwo.DrawLatexNDC(0.,0.1,"4");
+		//latexYTitleTwo.DrawLatexNDC(0.,0.1,"4");
+		latexYTitleTwo.DrawLatexNDC(0.,0.1,"5");		
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 

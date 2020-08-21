@@ -118,12 +118,14 @@ void OverlayPmissFig3b_e4nuPaper() {
 
 	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
-	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
+//	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
+	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(429); BreakDownColors.push_back(410); BreakDownColors.push_back(610);
 
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
-	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 
 	NameOfPlots.push_back("h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_3"); LabelOfPlots.push_back("P_{T} > 400 [MeV/c]");  OutputPlotNames.push_back("epRecoEnergy_slice_3");
@@ -299,6 +301,61 @@ void OverlayPmissFig3b_e4nuPaper() {
 						if ( DoubleE[WhichEnergy] == 4.461 ) { SystUnc = SystUnc4GeV; }
 
 						if (FSILabel[WhichFSIModel] == "Data") { ApplySystUnc(Plots[WhichFSIModel], SystUnc); }
+						
+						// ----------------------------------------------------------------------------------
+
+						// Genie Break Down
+
+						if (
+							FSILabel[WhichFSIModel] == "SuSav2"
+						) {
+
+							//legGenie->AddEntry(Plots[0],"Data", "lep"); 
+//							//legGenie->AddEntry(Plots[WhichFSIModel],"GENIE (Total)", "l"); 
+
+							BreakDownPlots.clear();
+
+							for (int j = 1; j < 5; j++) {
+							
+								TString PlotName = "";
+
+								if (NameOfPlots[WhichPlot] == "h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_3") 
+									{ PlotName = "ECal_HighPmiss_Int_"; }
+
+								if (NameOfPlots[WhichPlot] == "h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_2") 
+									{ PlotName = "ECal_MidPmiss_Int_"; }
+									
+								if (NameOfPlots[WhichPlot] == "h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_1") 
+									{ PlotName = "ECal_LowPmiss_Int_"; }							
+
+								BreakDownPlots.push_back( (TH1D*)( FileSample->Get(PlotName+ToString(j)) ) );
+								ReweightPlots(BreakDownPlots[j-1]);
+								//for (int i = 0; i < 2; i++) { BreakDownPlots[j-1]->Rebin(); }
+
+								//-----------------------------------------------------------------------------------------------
+
+								BreakDownPlots[j-1]->SetLineColor(BreakDownColors[j-1]);
+
+								BreakDownPlots[j-1]->GetXaxis()->SetRangeUser(LowRange,HighRange);
+								//int GenieNBins = Plots[WhichFSIModel]->GetNbinsX();
+								//int GenieMin = Plots[WhichFSIModel]->GetXaxis()->GetXmin();
+								//int GenieMax = Plots[WhichFSIModel]->GetXaxis()->GetXmax();
+								//BreakDownPlots[j-1]->SetBins(GenieNBins,GenieMin,GenieMax);
+								
+								BreakDownPlots[j-1]->SetLineWidth(3);
+								BreakDownPlots[j-1]->SetLineStyle(Style[j-1]);
+								BreakDownPlots[j-1]->Scale(ScalingFactor);
+								//TLegendEntry* l1 = legGenie->AddEntry(BreakDownPlots[j-1],GenieFSILabel[j-1], "l");
+								//if (j == 2) { legGenie->AddEntry(Plots[WhichFSIModel],"SuSav2 (Total)", "l");  }
+								//if (j == 2) { legGenie->AddEntry(UncertaintyPlots[1],"GENIE (Total)", "lf");  }
+								//l1->SetTextColor(BreakDownColors[j-1]);
+
+								pad->cd();
+								BreakDownPlots[j-1]->Draw("C hist same");
+
+							} // end of the look over the GENIE break down
+
+						} // End of the SuSav2 / break down option						
 
 						// ---------------------------------------------------------------------------------------------------
 
@@ -308,6 +365,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 						if (localmax > max) { max = localmax; }
 						double height = 1.2;
 						Plots[0]->GetYaxis()->SetRangeUser(0.,height*max);
+						//Plots[0]->GetYaxis()->SetRangeUser(-0.15,height*max);						
 
 						double localmin = Plots[WhichFSIModel]->GetBinContent(Plots[WhichFSIModel]->FindBin(4)); // multiplicity 4 is the highest one in data
 						if (localmin < min && localmin != 0) { min = localmin; }
@@ -340,7 +398,7 @@ void OverlayPmissFig3b_e4nuPaper() {
 						pad->cd();
 						if (OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_3") { 
 							myPmissSlice->SetTextSize(TextSize-0.02);
-							myPmissSlice->DrawLatexNDC(0.35,0.35,LabelOfPlots[WhichPlot]); 
+							myPmissSlice->DrawLatexNDC(0.2,0.85,LabelOfPlots[WhichPlot]); 
 						}
 						else { myPmissSlice->DrawLatexNDC(0.2,0.8,LabelOfPlots[WhichPlot]); }
 
@@ -365,18 +423,22 @@ void OverlayPmissFig3b_e4nuPaper() {
 
 					} // End of the loop over the FSI Models 
 
-				// --------------------------------------------------------------------------------------				
-				
-				// Chi2 calculation
-				
-				int NBinsX = HighBin - LowBin +1;
-				double Chi2Double = Chi2(Plots[0],Plots[1],LowBin,HighBin);
-				
-				cout << endl << endl << "Chi2/ndof = " << Chi2Double << " / " << NBinsX << endl << endl;
-				
-				// --------------------------------------------------------------------------------------				
-
-				// --------------------------------------------------------------------------------------------------
+					// --------------------------------------------------------------------------------------				
+					
+					// Chi2 calculation
+					
+					cout << endl << endl << NameOfPlots[WhichPlot] << endl;
+					
+					int NBinsX = HighBin - LowBin +1;
+					int Chi2Double = Chi2(Plots[0],Plots[1],LowBin,HighBin);
+					
+					cout << "SuSav2 Chi2/ndof = " << Chi2Double << "/" << NBinsX << endl << endl;
+					
+					int G2018Chi2Double = Chi2(Plots[0],Plots[2],LowBin,HighBin);
+					
+					cout << "G2018 Chi2/ndof = " << G2018Chi2Double << "/" << NBinsX << endl << endl;
+					
+					// --------------------------------------------------------------------------------------				
 
 				} // End of the loop over the plots
 			

@@ -679,7 +679,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 		int MinQ2Slice = (minQ2+WhichQ2Slice*Q2Step)*1000.;
 		int MaxQ2Slice = (minQ2+(WhichQ2Slice+1)*Q2Step)*1000.;
-		h1_ECal_InQ2Slices[WhichQ2Slice] = new TH1F(Form("h1_ECal_InQ2_%d_To_%d_Slices",MinQ2Slice,MaxQ2Slice),"",n_bins,x_values);
+		h1_ECal_InQ2Slices[WhichQ2Slice] = new TH1F(Form("h1_ECal_InQ2_%d_To_%d_Slices",WhichQ2Slice,WhichQ2Slice+1),"",n_bins,x_values);
 
 	}	
 

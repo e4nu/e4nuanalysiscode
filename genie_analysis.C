@@ -672,14 +672,14 @@ void genie_analysis::Loop(Int_t choice) {
 	// ---------------------------------------------------------------------------------------------------
 
 	double minQ2 = 0., maxQ2 = 2.; int Q2Slices = 10;
-	int Q2Step = (maxQ2 - minQ2) / Q2Slices;
+	double Q2Step = (maxQ2 - minQ2) / Q2Slices;
 	TH1F *h1_ECal_InQ2Slices[Q2Slices];
 
 	for (int WhichQ2Slice = 0 ; WhichQ2Slice < Q2Slices; WhichQ2Slice++ ) {
 
 		int MinQ2Slice = (minQ2+WhichQ2Slice*Q2Step)*1000.;
 		int MaxQ2Slice = (minQ2+(WhichQ2Slice+1)*Q2Step)*1000.;
-		h1_ECal_InQ2Slices[WhichQ2Slice] = new TH1F(Form("h1_ECal_InQ2_%d_To_%d_Slices",WhichQ2Slice,WhichQ2Slice+1),"",n_bins,x_values);
+		h1_ECal_InQ2Slices[WhichQ2Slice] = new TH1F(Form("h1_ECal_InQ2_%d_To_%d_Slices",MinQ2Slice,MaxQ2Slice),"",n_bins,x_values);
 
 	}	
 
@@ -1020,6 +1020,8 @@ void genie_analysis::Loop(Int_t choice) {
 		int Q2Slice = reco_Q2 / Q2Step;
 		int ThetaSlice = V4_el.Theta()*180./TMath::Pi() / ThetaStep;
 		int EePrimeSlice = V4_el.E() / EePrimeStep;
+		int ThetaSlice2D = V4_el.Theta()*180./TMath::Pi() / ThetaStep2D;
+		int EePrimeSlice2D = V4_el.E() / EePrimeStep2D;
  
 		//Now we are done with the selection of electrons. Next step is looking for other hadrons in the events
 
@@ -1406,7 +1408,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot_2p[f],LocalWeight);
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_tot_2p[f],LocalWeight);
 						h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_tot_2p[f],LocalWeight);
-						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_tot_2p[f],LocalWeight);
+						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_tot_2p[f],LocalWeight);
 					}
 
  					if (choice == 1) {
@@ -1583,7 +1585,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);					
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
 						h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
-						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
+						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
 					}
 
  					if (choice == 1) {
@@ -1698,7 +1700,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot_2p[z],LocalWeight);					
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_tot_2p[z],LocalWeight);
 						h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_tot_2p[z],LocalWeight);
-						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_tot_2p[z],LocalWeight);			
+						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_tot_2p[z],LocalWeight);			
 					}
 
  					if (choice == 1) {
@@ -1812,7 +1814,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot_2p[z],LocalWeight);					
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_tot_2p[z],LocalWeight);
 						h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_tot_2p[z],LocalWeight);
-						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_tot_2p[z],LocalWeight);			
+						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_tot_2p[z],LocalWeight);			
 					}
 
  					if (choice == 1) {
@@ -1987,7 +1989,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot_2p[z],LocalWeight);					
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_tot_2p[z],LocalWeight);
 						h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_tot_2p[z],LocalWeight);
-						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_tot_2p[z],LocalWeight);			
+						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_tot_2p[z],LocalWeight);			
 					}
 
  					if (choice == 1) {
@@ -2192,7 +2194,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal_3pto2p[count][j],LocalWeight);
 							h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_cal_3pto2p[count][j],LocalWeight);
 							h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_cal_3pto2p[count][j],LocalWeight);
-							h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_cal_3pto2p[count][j],LocalWeight);
+							h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_cal_3pto2p[count][j],LocalWeight);
 						}
 
 	 					if (choice == 1) {
@@ -2316,7 +2318,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal[j],LocalWeight);					
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_cal[j],LocalWeight);
 						h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_cal[j],LocalWeight);
-						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_cal[j],LocalWeight);
+						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_cal[j],LocalWeight);
 					}
 
 	 				if (choice == 1) {
@@ -2484,7 +2486,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal[j],LocalWeight);					
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_cal[j],LocalWeight);
 						h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_cal[j],LocalWeight);
-						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_cal[j],LocalWeight);			
+						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_cal[j],LocalWeight);			
 					}
 
 	 				if (choice == 1) {
@@ -2759,7 +2761,7 @@ void genie_analysis::Loop(Int_t choice) {
 									h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal_4pto3p[count][j],LocalWeight);
 									h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_cal_4pto3p[count][j],LocalWeight);
 									h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_cal_4pto3p[count][j],LocalWeight);
-									h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_cal_4pto3p[count][j],LocalWeight);
+									h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_cal_4pto3p[count][j],LocalWeight);
 								}
 
 				 				if (choice == 1) {
@@ -2883,7 +2885,7 @@ void genie_analysis::Loop(Int_t choice) {
 								h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal_43pto1p[j],LocalWeight);	
 								h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_cal_43pto1p[j],LocalWeight);
 								h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_cal_43pto1p[j],LocalWeight);
-								h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_cal_43pto1p[j],LocalWeight);
+								h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_cal_43pto1p[j],LocalWeight);
 							}
 
 				 			if (choice == 1) {
@@ -3034,7 +3036,7 @@ void genie_analysis::Loop(Int_t choice) {
 										h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal_4pto2p[j],LocalWeight);		
 										h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_cal_4pto2p[j],LocalWeight);
 										h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_cal_4pto2p[j],LocalWeight);
-										h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_cal_4pto2p[j],LocalWeight);		
+										h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_cal_4pto2p[j],LocalWeight);		
 									}
 
 						 			if (choice == 1) {
@@ -3170,7 +3172,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal_p4[j],LocalWeight);						
 							h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_cal_p4[j],LocalWeight);
 							h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_cal_p4[j],LocalWeight);
-							h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_cal_p4[j],LocalWeight);	
+							h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_cal_p4[j],LocalWeight);	
 						}
 		
 						if (choice == 1) {
@@ -3756,7 +3758,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot,LocalWeight);				
 					h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_tot,LocalWeight);
 					h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_tot,LocalWeight);
-					h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_tot,LocalWeight);				
+					h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_tot,LocalWeight);				
 				}
 
 				if (choice == 1) {
@@ -3932,7 +3934,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot,LocalWeight);					
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_tot,LocalWeight);
 						h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_tot,LocalWeight);
-						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_tot,LocalWeight);				
+						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_tot,LocalWeight);				
 					}
 
 					if (choice == 1) {
@@ -4113,7 +4115,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot,LocalWeight);					
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_tot,LocalWeight);
 						h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_tot,LocalWeight);
-						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_tot,LocalWeight);
+						h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_tot,LocalWeight);
 					}
 
 					if (choice == 1) {
@@ -4232,7 +4234,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot,LocalWeight);				
 					h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_tot,LocalWeight);
 					h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_tot,LocalWeight);
-					h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_tot,LocalWeight);					
+					h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_tot,LocalWeight);					
 				}
 
 				if (choice == 1) {
@@ -4401,7 +4403,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot,LocalWeight);				
 					h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_tot,LocalWeight);
 					h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_tot,LocalWeight);
-					h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice][ThetaSlice]->Fill(E_tot,LocalWeight);					
+					h1_ECal_InEePrimeAndThetaSlices[EePrimeSlice2D][ThetaSlice2D]->Fill(E_tot,LocalWeight);					
 				}
 
 				if (choice == 1) {

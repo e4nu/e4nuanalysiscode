@@ -126,7 +126,7 @@ void OverlayThetaEPrimeEcalSlices() {
 	
 	
 //	for (int WhichThetaSlice = 0 ; WhichThetaSlice < ThetaSlices; WhichThetaSlice++ ) {
-	for (int WhichThetaSlice = 3 ; WhichThetaSlice < 10; WhichThetaSlice++ ) {
+	for (int WhichThetaSlice = 5 ; WhichThetaSlice < 6; WhichThetaSlice++ ) {
 
 
 		TH1D* h1_ECal_InThetaSlices = (TH1D*)file_Data->Get(Form("h1_ECal_InTheta_%d_To_%d_Slices",int(MinTheta+WhichThetaSlice*ThetaStep),int(MinTheta+(WhichThetaSlice+1)*ThetaStep)));

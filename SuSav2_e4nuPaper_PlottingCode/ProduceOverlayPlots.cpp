@@ -5,7 +5,7 @@
 
 // Main e4nu Paper Plots
 
-gROOT->ProcessLine(".L OverlayEQE_Fig2.cpp"); gROOT->ProcessLine("OverlayEQE_Fig2()");
+//gROOT->ProcessLine(".L OverlayEQE_Fig2.cpp"); gROOT->ProcessLine("OverlayEQE_Fig2()");
 
 //gROOT->ProcessLine(".L OverlayPmissFig3a_e4nuPaper.cpp"); gROOT->ProcessLine("OverlayPmissFig3a_e4nuPaper()");
 
@@ -29,14 +29,18 @@ gROOT->ProcessLine(".L OverlayEQE_Fig2.cpp"); gROOT->ProcessLine("OverlayEQE_Fig
 
 //gROOT->ProcessLine(".L OverlayPmiss_FigExtData10.cpp"); gROOT->ProcessLine("OverlayPmiss_FigExtData10()");
 
-//gROOT->ProcessLine(".L OverlayQ2VsNu_FigExtData6.cpp"); gROOT->ProcessLine("OverlayQ2VsNu_FigExtData6()");
-
 //gROOT->ProcessLine(".L OverlayECal_FigExtData11.cpp"); gROOT->ProcessLine("OverlayECal_FigExtData11()");
 
 
 // ----------------------------------------------------------------------------------------
 
 // Playground Code
+
+gROOT->ProcessLine(".L OverlayDeltaAlphaT_FigExtData10.cpp"); gROOT->ProcessLine("OverlayDeltaAlphaT_FigExtData10()");
+
+//gROOT->ProcessLine(".L OverlayDeltaPhiT_FigExtData10.cpp"); gROOT->ProcessLine("OverlayDeltaPhiT_FigExtData10()");
+
+//gROOT->ProcessLine(".L OverlayQ2VsNu_FigExtData6.cpp"); gROOT->ProcessLine("OverlayQ2VsNu_FigExtData6()");
 
 //gROOT->ProcessLine(".L OverlayPlots.cpp"); gROOT->ProcessLine("OverlayPlots()");
 

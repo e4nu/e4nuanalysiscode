@@ -797,10 +797,19 @@ void genie_analysis::Loop(Int_t choice) {
 				
 	}
 	
-	TH2D* h2_Ecal_EePrime = new TH2D("h2_Ecal_EePrime",";E^{cal} [GeV];E_{e'}",600,0,6,600,0,6);
+	TH2D* h2_Ecal_EePrime = new TH2D("h2_Ecal_EePrime",";E^{cal} [GeV];E_{e'} [GeV]",600,0,6,600,0,6);
 	TH2D* h2_Ecal_CosThetaE = new TH2D("h2_Ecal_CosThetaE",";E^{cal} [GeV];cos(#theta_{e'})",600,0,6,100,-1,1);
 	TH2D* h2_Ecal_ThetaE = new TH2D("h2_Ecal_ThetaE",";E^{cal} [GeV];#theta_{e'} [deg]",600,0,6,100,0,180);		
 
+	TH2D* h2_DeltaPT_DeltaAlphaT = new TH2D("h2_DeltaPT_DeltaAlphaT",";P_{T} [GeV/c];#delta#alpha_{T} [deg]",\
+						  80,0.,1.,NDeltaAlphaTBins,DeltaAlphaTMin,DeltaAlphaTMax);
+						  
+	TH2D* h2_DeltaPT_DeltaPhiT = new TH2D("h2_DeltaPT_DeltaPhiT",";P_{T} [GeV/c];#delta#phi_{T} [deg]",\
+						  80,0.,1.,NDeltaPhiTBins,DeltaPhiTMin,DeltaPhiTMax);
+						  
+	TH2D* h2_DeltaAlphaT_DeltaPhiT = new TH2D("h2_DeltaAlphaT_DeltaPhiT",";#delta#alpha_{T} [deg];#delta#phi_{T} [deg]",\
+						  NDeltaAlphaTBins,DeltaAlphaTMin,DeltaAlphaTMax,NDeltaPhiTBins,DeltaPhiTMin,DeltaPhiTMax);		  						  
+	
 	// Vector containing kinematic variables using Ecal
 	vector<double> CalKineVars{};
 	// Weight to fill the plots mentioned above
@@ -1379,7 +1388,7 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[f]);					
+					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_2prot_corr[f]);					
 					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[f]);					
 							     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -1387,7 +1396,11 @@ void genie_analysis::Loop(Int_t choice) {
 					
 					h2_Ecal_EePrime->Fill(E_tot_2p[f],V4_el.E(),LocalWeight);
 					h2_Ecal_CosThetaE->Fill(E_tot_2p[f],V4_el.CosTheta(),LocalWeight);
-					h2_Ecal_ThetaE->Fill(E_tot_2p[f],V4_el.Theta()*180./TMath::Pi(),LocalWeight);	
+					h2_Ecal_ThetaE->Fill(E_tot_2p[f],V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+						  
+					h2_DeltaPT_DeltaAlphaT->Fill(p_perp_tot_2p[f],deltaalphaT,LocalWeight);
+					h2_DeltaPT_DeltaPhiT->Fill(p_perp_tot_2p[f],deltaphiT,LocalWeight);
+					h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);					
 
 					if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot_2p[f],LocalWeight);
@@ -1552,7 +1565,7 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
+					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
 					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
 							     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -1562,7 +1575,10 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Ecal_CosThetaE->Fill(Ecal_2p1pi_to2p0pi[z],V4_el.CosTheta(),LocalWeight);
 					h2_Ecal_ThetaE->Fill(Ecal_2p1pi_to2p0pi[z],V4_el.Theta()*180./TMath::Pi(),LocalWeight);
 
-
+					h2_DeltaPT_DeltaAlphaT->Fill(p_miss_perp_2p1pi_to2p0pi[z],deltaalphaT,LocalWeight);
+					h2_DeltaPT_DeltaPhiT->Fill(p_miss_perp_2p1pi_to2p0pi[z],deltaphiT,LocalWeight);
+					h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);
+					
 					if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10 ) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);					
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
@@ -1664,7 +1680,7 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
+					deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
 					deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
 							     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -1673,6 +1689,10 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Ecal_EePrime->Fill(E_tot_2p[z],V4_el.E(),LocalWeight);
 					h2_Ecal_CosThetaE->Fill(E_tot_2p[z],V4_el.CosTheta(),LocalWeight);
 					h2_Ecal_ThetaE->Fill(E_tot_2p[z],V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+					
+					h2_DeltaPT_DeltaAlphaT->Fill(p_perp_tot_2p[z],deltaalphaT,LocalWeight);
+					h2_DeltaPT_DeltaPhiT->Fill(p_perp_tot_2p[z],deltaphiT,LocalWeight);
+					h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);					
 
 					if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot_2p[z],LocalWeight);					
@@ -1782,7 +1802,11 @@ void genie_analysis::Loop(Int_t choice) {
 					
 					h2_Ecal_EePrime->Fill(E_tot_2p[z],V4_el.E(),LocalWeight);
 					h2_Ecal_CosThetaE->Fill(E_tot_2p[z],V4_el.CosTheta(),LocalWeight);
-					h2_Ecal_ThetaE->Fill(E_tot_2p[z],V4_el.Theta()*180./TMath::Pi(),LocalWeight);	
+					h2_Ecal_ThetaE->Fill(E_tot_2p[z],V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+					
+					h2_DeltaPT_DeltaAlphaT->Fill(p_perp_tot_2p[z],deltaalphaT,LocalWeight);
+					h2_DeltaPT_DeltaPhiT->Fill(p_perp_tot_2p[z],deltaphiT,LocalWeight);
+					h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);						
 
 					if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10 ) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot_2p[z],LocalWeight);					
@@ -1945,7 +1969,7 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
+					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
 					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
 							     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -1953,7 +1977,11 @@ void genie_analysis::Loop(Int_t choice) {
 					
 					h2_Ecal_EePrime->Fill(E_tot_2p[z],V4_el.E(),LocalWeight);
 					h2_Ecal_CosThetaE->Fill(E_tot_2p[z],V4_el.CosTheta(),LocalWeight);
-					h2_Ecal_ThetaE->Fill(E_tot_2p[z],V4_el.Theta()*180./TMath::Pi(),LocalWeight);	
+					h2_Ecal_ThetaE->Fill(E_tot_2p[z],V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+					
+					h2_DeltaPT_DeltaAlphaT->Fill(p_perp_tot_2p[z],deltaalphaT,LocalWeight);
+					h2_DeltaPT_DeltaPhiT->Fill(p_perp_tot_2p[z],deltaphiT,LocalWeight);
+					h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);						
 
 					if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot_2p[z],LocalWeight);					
@@ -2096,7 +2124,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 					for(int j = 0; j < N_2p; j++) { //loop over two protons
 
-						//-----------------------------------------  3p to 2p->1p  -----------------------------------------------------------------------
+						//-----------------------------------------  3p to 2p->1p  ------------------------------
 
 						h1_E_tot_3pto2p->Fill(E_cal_3pto2p[count][j], P_3pto2p[count][j]*histoweight);
 						h1_E_rec_3pto2p->Fill(E_rec, P_3pto2p[count][j]*histoweight);
@@ -2146,7 +2174,7 @@ void genie_analysis::Loop(Int_t choice) {
 						Nu_BreakDown[0]->Fill(nu,LocalWeight);
 						Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 						
-						double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);					
+						double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr[j]);					
 						double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);					
 								     
 						DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -2155,6 +2183,10 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_Ecal_EePrime->Fill(E_cal_3pto2p[count][j],V4_el.E(),LocalWeight);
 						h2_Ecal_CosThetaE->Fill(E_cal_3pto2p[count][j],V4_el.CosTheta(),LocalWeight);
 						h2_Ecal_ThetaE->Fill(E_cal_3pto2p[count][j],V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+						
+						h2_DeltaPT_DeltaAlphaT->Fill(p_miss_perp_3pto2p[count][j],deltaalphaT,LocalWeight);
+						h2_DeltaPT_DeltaPhiT->Fill(p_miss_perp_3pto2p[count][j],deltaphiT,LocalWeight);
+						h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);						
 
 						if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 							h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal_3pto2p[count][j],LocalWeight);
@@ -2213,7 +2245,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 				} //end loop over combination N_comb
 
-				//-----------------------------------------  3p to 1p  -----------------------------------------------------------------------
+				//-----------------------------------------  3p to 1p  ------------------------------------------
 
 				for(int j = 0; j < N_3p; j++)    {
 
@@ -2266,7 +2298,7 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);					
+					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr[j]);					
 					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);					
 								     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -2275,6 +2307,10 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Ecal_EePrime->Fill(E_cal[j],V4_el.E(),LocalWeight);
 					h2_Ecal_CosThetaE->Fill(E_cal[j],V4_el.CosTheta(),LocalWeight);
 					h2_Ecal_ThetaE->Fill(E_cal[j],V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+					
+					h2_DeltaPT_DeltaAlphaT->Fill(p_miss_perp[j],deltaalphaT,LocalWeight);
+					h2_DeltaPT_DeltaPhiT->Fill(p_miss_perp[j],deltaphiT,LocalWeight);
+					h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);					
 
 					if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10 ) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal[j],LocalWeight);					
@@ -2430,7 +2466,7 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);					
+					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr[j]);					
 					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);					
 								     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -2439,6 +2475,10 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Ecal_EePrime->Fill(E_cal[j],V4_el.E(),LocalWeight);
 					h2_Ecal_CosThetaE->Fill(E_cal[j],V4_el.CosTheta(),LocalWeight);
 					h2_Ecal_ThetaE->Fill(E_cal[j],V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+					
+					h2_DeltaPT_DeltaAlphaT->Fill(p_miss_perp[j],deltaalphaT,LocalWeight);
+					h2_DeltaPT_DeltaPhiT->Fill(p_miss_perp[j],deltaphiT,LocalWeight);
+					h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);					
 
 					if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal[j],LocalWeight);					
@@ -2499,7 +2539,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 		} //end if num_p == 3  3proton requirement
 
-		// ------------------------------------------------------------------------------------------------------------------------------------------
+		// -------------------------------------------------------------------------------------------------------------------------------------
 
 		//Events with exactly 4 protons
 
@@ -2649,7 +2689,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 							for(int j = 0;j < N_2p; j++)    {  //looping through number of 1 proton combination out of 2 protons
 
-								//-----------------------------------------  4p to 3p->2->1  ----------------------------------------------
+								//-----------------------------------------  4p to 3p->2->1  ---------------------------
 
 								h1_E_tot_4pto3p->Fill(E_cal_4pto3p[count][j], P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_E_rec_4pto3p->Fill(E_rec, P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
@@ -2701,7 +2741,7 @@ void genie_analysis::Loop(Int_t choice) {
 								Nu_BreakDown[0]->Fill(nu,LocalWeight);
 								Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 								
-								double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);			
+								double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr[j]);			
 								double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);
 											     
 								DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -2710,6 +2750,10 @@ void genie_analysis::Loop(Int_t choice) {
 								h2_Ecal_EePrime->Fill(E_cal_4pto3p[count][j],V4_el.E(),LocalWeight);
 								h2_Ecal_CosThetaE->Fill(E_cal_4pto3p[count][j],V4_el.CosTheta(),LocalWeight);
 								h2_Ecal_ThetaE->Fill(E_cal_4pto3p[count][j],V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+											
+								h2_DeltaPT_DeltaAlphaT->Fill(p_miss_perp_4pto3p[count][j],deltaalphaT,LocalWeight);
+								h2_DeltaPT_DeltaPhiT->Fill(p_miss_perp_4pto3p[count][j],deltaphiT,LocalWeight);
+								h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);			
 
 								if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 									h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal_4pto3p[count][j],LocalWeight);
@@ -2752,7 +2796,7 @@ void genie_analysis::Loop(Int_t choice) {
 									}
 								}
 
-								// -----------------------------------------------------------------------------------------------
+								// ------------------------------------------------------------------------
 
 								for(int i = 0; i < n_slice; i++) {
 
@@ -2767,7 +2811,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 						} //end loop over N_comb : number of 2 proton combination out of 3 protons
 
-						//-----------------------------------------  4p to 3p->1p  -----------------------------------------------------------------------
+						//-----------------------------------------  4p to 3p->1p  ----------------------------------------
 
 						for(int j = 0; j < N_3p; j++) { //4p to 3p->1, looping through 1p out of 3p
 
@@ -2821,7 +2865,7 @@ void genie_analysis::Loop(Int_t choice) {
 							Nu_BreakDown[0]->Fill(nu,LocalWeight);
 							Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 							
-							double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);			
+							double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr[j]);			
 							double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);
 											     
 							DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -2830,6 +2874,10 @@ void genie_analysis::Loop(Int_t choice) {
 							h2_Ecal_EePrime->Fill(E_cal_43pto1p[j],V4_el.E(),LocalWeight);
 							h2_Ecal_CosThetaE->Fill(E_cal_43pto1p[j],V4_el.CosTheta(),LocalWeight);
 							h2_Ecal_ThetaE->Fill(E_cal_43pto1p[j],V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+							
+							h2_DeltaPT_DeltaAlphaT->Fill(p_miss_perp_43pto1p[j],deltaalphaT,LocalWeight);
+							h2_DeltaPT_DeltaPhiT->Fill(p_miss_perp_43pto1p[j],deltaphiT,LocalWeight);
+							h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);					
 
 							if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10&& Q2Slice > 0 && Q2Slice < 10) {
 								h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal_43pto1p[j],LocalWeight);	
@@ -2897,7 +2945,7 @@ void genie_analysis::Loop(Int_t choice) {
 				double P_4pto2p[2]={0};
 				double N_two=0;
 
-				//-----------------------------------------  4p to 2p->1  -----------------------------------------------------------------------
+				//-----------------------------------------  4p to 2p->1  ---------------------------------------------------
 
 				for(int ind1 = 0; ind1 < N_p4; ind1++){          //estimating the undetected 4p contribution to  2p
 
@@ -2944,7 +2992,8 @@ void genie_analysis::Loop(Int_t choice) {
 									h1_prot_mom->Fill(V3p2[j].Mag(),P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h1_MissMomentum->Fill(p_miss_perp_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 
-									// -----------------------------------------------------------------------------------------------
+									// -----------------------------------------------------------------------
+									
 									// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
 									CalKineVars = CalculateCalKineVars(E_cal_4pto2p[j],V4_el);
@@ -2967,7 +3016,7 @@ void genie_analysis::Loop(Int_t choice) {
 									Nu_BreakDown[0]->Fill(nu,LocalWeight);
 									Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 									
-									double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3p2[j]);		
+									double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3p2[j]);		
 									double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3p2[j]);
 													     
 									DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -2976,6 +3025,10 @@ void genie_analysis::Loop(Int_t choice) {
 									h2_Ecal_EePrime->Fill(E_cal_4pto2p[j],V4_el.E(),LocalWeight);
 									h2_Ecal_CosThetaE->Fill(E_cal_4pto2p[j],V4_el.CosTheta(),LocalWeight);
 									h2_Ecal_ThetaE->Fill(E_cal_4pto2p[j],V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+											
+									h2_DeltaPT_DeltaAlphaT->Fill(p_miss_perp_4pto2p[j],deltaalphaT,LocalWeight);
+									h2_DeltaPT_DeltaPhiT->Fill(p_miss_perp_4pto2p[j],deltaphiT,LocalWeight);
+									h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);	
 
 									if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 										h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal_4pto2p[j],LocalWeight);		
@@ -3019,7 +3072,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 									}
 
-									// -----------------------------------------------------------------------------------------------
+									// ----------------------------------------------------------------------
 
 									for(int i = 0; i < n_slice; i++){
 
@@ -3043,7 +3096,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 				} //end loop over ind1
 
-				//-----------------------------------------  4p to 1p  -----------------------------------------------------------------------
+				//-----------------------------------------  4p to 1p  -------------------------------------------------------
 
 				if( N_p_four!=0){
 
@@ -3099,7 +3152,7 @@ void genie_analysis::Loop(Int_t choice) {
 						Nu_BreakDown[0]->Fill(nu,LocalWeight);
 						Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 						
-						double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);		
+						double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr[j]);		
 						double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);
 													     
 						DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -3107,7 +3160,11 @@ void genie_analysis::Loop(Int_t choice) {
 						
 						h2_Ecal_EePrime->Fill(E_cal_p4[j],V4_el.E(),LocalWeight);
 						h2_Ecal_CosThetaE->Fill(E_cal_p4[j],V4_el.CosTheta(),LocalWeight);
-						h2_Ecal_ThetaE->Fill(E_cal_p4[j],V4_el.Theta()*180./TMath::Pi(),LocalWeight);	
+						h2_Ecal_ThetaE->Fill(E_cal_p4[j],V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+						
+						h2_DeltaPT_DeltaAlphaT->Fill(p_miss_perp_p4[j],deltaalphaT,LocalWeight);
+						h2_DeltaPT_DeltaPhiT->Fill(p_miss_perp_p4[j],deltaphiT,LocalWeight);
+						h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);						
 
 						if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 							h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal_p4[j],LocalWeight);						
@@ -3173,7 +3230,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 		//We are not looking for 4 Proton and 1 Pion events!
 
-		// --------------------------------------------------------------------------------------------------------------------------------------------------------
+		// ---------------------------------------------------------------------------------------------------------------------------------------
 
 		//No Protons here, Next 150 lines are for the inclusive events
 
@@ -3681,7 +3738,7 @@ void genie_analysis::Loop(Int_t choice) {
 				Nu_BreakDown[0]->Fill(nu,LocalWeight);
 				Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 				
-				double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);		
+				double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr);		
 				double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);
 													     
 				DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -3689,7 +3746,11 @@ void genie_analysis::Loop(Int_t choice) {
 				
 				h2_Ecal_EePrime->Fill(E_tot,V4_el.E(),LocalWeight);
 				h2_Ecal_CosThetaE->Fill(E_tot,V4_el.CosTheta(),LocalWeight);
-				h2_Ecal_ThetaE->Fill(E_tot,V4_el.Theta()*180./TMath::Pi(),LocalWeight);	
+				h2_Ecal_ThetaE->Fill(E_tot,V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+				
+				h2_DeltaPT_DeltaAlphaT->Fill(p_perp_tot,deltaalphaT,LocalWeight);
+				h2_DeltaPT_DeltaPhiT->Fill(p_perp_tot,deltaphiT,LocalWeight);
+				h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);					
 
 				if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 					h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot,LocalWeight);				
@@ -3853,7 +3914,7 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);		
+					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr);		
 					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);
 														     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -3861,7 +3922,11 @@ void genie_analysis::Loop(Int_t choice) {
 					
 					h2_Ecal_EePrime->Fill(E_tot,V4_el.E(),LocalWeight);
 					h2_Ecal_CosThetaE->Fill(E_tot,V4_el.CosTheta(),LocalWeight);
-					h2_Ecal_ThetaE->Fill(E_tot,V4_el.Theta()*180./TMath::Pi(),LocalWeight);	
+					h2_Ecal_ThetaE->Fill(E_tot,V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+					
+					h2_DeltaPT_DeltaAlphaT->Fill(p_perp_tot,deltaalphaT,LocalWeight);
+					h2_DeltaPT_DeltaPhiT->Fill(p_perp_tot,deltaphiT,LocalWeight);
+					h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);						
 
 					if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot,LocalWeight);					
@@ -4030,7 +4095,7 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);		
+					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr);		
 					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);	
 					
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
@@ -4038,7 +4103,11 @@ void genie_analysis::Loop(Int_t choice) {
 					
 					h2_Ecal_EePrime->Fill(E_tot,V4_el.E(),LocalWeight);
 					h2_Ecal_CosThetaE->Fill(E_tot,V4_el.CosTheta(),LocalWeight);
-					h2_Ecal_ThetaE->Fill(E_tot,V4_el.Theta()*180./TMath::Pi(),LocalWeight);		
+					h2_Ecal_ThetaE->Fill(E_tot,V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+					
+					h2_DeltaPT_DeltaAlphaT->Fill(p_perp_tot,deltaalphaT,LocalWeight);
+					h2_DeltaPT_DeltaPhiT->Fill(p_perp_tot,deltaphiT,LocalWeight);
+					h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);							
 
 					if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot,LocalWeight);					
@@ -4153,7 +4222,11 @@ void genie_analysis::Loop(Int_t choice) {
 				
 				h2_Ecal_EePrime->Fill(E_tot,V4_el.E(),LocalWeight);
 				h2_Ecal_CosThetaE->Fill(E_tot,V4_el.CosTheta(),LocalWeight);
-				h2_Ecal_ThetaE->Fill(E_tot,V4_el.Theta()*180./TMath::Pi(),LocalWeight);			
+				h2_Ecal_ThetaE->Fill(E_tot,V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+				
+				h2_DeltaPT_DeltaAlphaT->Fill(p_perp_tot,deltaalphaT,LocalWeight);
+				h2_DeltaPT_DeltaPhiT->Fill(p_perp_tot,deltaphiT,LocalWeight);
+				h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);							
 
 				if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 					h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot,LocalWeight);				
@@ -4318,7 +4391,11 @@ void genie_analysis::Loop(Int_t choice) {
 				
 				h2_Ecal_EePrime->Fill(E_tot,V4_el.E(),LocalWeight);
 				h2_Ecal_CosThetaE->Fill(E_tot,V4_el.CosTheta(),LocalWeight);
-				h2_Ecal_ThetaE->Fill(E_tot,V4_el.Theta()*180./TMath::Pi(),LocalWeight);		
+				h2_Ecal_ThetaE->Fill(E_tot,V4_el.Theta()*180./TMath::Pi(),LocalWeight);
+				
+				h2_DeltaPT_DeltaAlphaT->Fill(p_perp_tot,deltaalphaT,LocalWeight);
+				h2_DeltaPT_DeltaPhiT->Fill(p_perp_tot,deltaphiT,LocalWeight);
+				h2_DeltaAlphaT_DeltaPhiT->Fill(deltaalphaT,deltaphiT,LocalWeight);						
 
 				if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10) {
 					h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot,LocalWeight);				

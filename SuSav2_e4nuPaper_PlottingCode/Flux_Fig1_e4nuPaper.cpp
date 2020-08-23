@@ -30,7 +30,7 @@ void Flux_Fig1_e4nuPaper() {
 	// ----------------------------------------------------------------------------------------------------------------
 	
 	int TextFont = 132;
-	double TextSize = 0.06;	
+	double TextSize = 0.08;	
 	
 	gStyle->SetOptStat(0);	
 	
@@ -40,10 +40,10 @@ void Flux_Fig1_e4nuPaper() {
 	
 	// ----------------------------------------------------------------------------------------------------------------
 	
-	TCanvas* FluxCanvas = new TCanvas("FluxCanvas","FluxCanvas",205,34,1024,768);
-	FluxCanvas->SetTitle();
-	FluxCanvas->SetBottomMargin(0.13);
-	FluxCanvas->SetLeftMargin(0.11);	
+	TCanvas* ClasFluxCanvas = new TCanvas("ClasFluxCanvas","ClasFluxCanvas",205,34,1024,768);
+	ClasFluxCanvas->SetTitle();
+	ClasFluxCanvas->SetBottomMargin(0.16);
+	ClasFluxCanvas->SetLeftMargin(0.13);	
 	
 	int nPoints = t->Draw("Enu_GeV:CLAS_fit:mix_fit","","goff"); 
 	TGraph *CLAS_Graph = new TGraph(nPoints,t->GetV1(),t->GetV2());
@@ -60,7 +60,8 @@ void Flux_Fig1_e4nuPaper() {
 	
 	CLAS_Graph->GetYaxis()->SetRangeUser(0,10);
 	CLAS_Graph->GetYaxis()->SetNdivisions(6);
-	CLAS_Graph->GetYaxis()->SetTitle("Extracted #Phi_{e} [a.u]");
+//	CLAS_Graph->GetYaxis()->SetTitle("Extracted #Phi_{e} [a.u]");
+	CLAS_Graph->GetYaxis()->SetTitle("#nu_{e} Flux [a.u]");
 	CLAS_Graph->GetYaxis()->SetTitleFont(TextFont);
 	CLAS_Graph->GetYaxis()->SetLabelFont(TextFont);
 	CLAS_Graph->GetYaxis()->SetTitleSize(TextSize);
@@ -70,28 +71,69 @@ void Flux_Fig1_e4nuPaper() {
 	CLAS_Graph->GetYaxis()->SetTitleOffset(0.7);		
 	
 	CLAS_Graph->SetTitle();
-	CLAS_Graph->SetLineWidth(3);
+	CLAS_Graph->SetLineWidth(5);
 	CLAS_Graph->SetLineColor(kGreen+2);	
 	CLAS_Graph->Draw("ac");
+
+	TLatex* ClasLatex = new TLatex(0.65,0.8,"Incident");
+	ClasLatex->SetTextFont(TextFont);
+	ClasLatex->SetTextSize(TextSize);
+	ClasLatex->SetNDC();
+	ClasLatex->Draw();
 	
 	// ------------------------------------------------------------------------------------------------------------
+	
+	TCanvas* GENIEFluxCanvas = new TCanvas("GENIEFluxCanvas","GENIEFluxCanvas",205,34,1024,768);
+	GENIEFluxCanvas->SetTitle();
+	GENIEFluxCanvas->SetBottomMargin(0.16);
+	GENIEFluxCanvas->SetLeftMargin(0.13);	
 	
 	TGraph *mix_Graph = new TGraph(nPoints,t->GetV1(),t->GetV3());
 	
-	mix_Graph->SetLineWidth(3);
+	mix_Graph->GetXaxis()->SetRangeUser(min,max);
+	mix_Graph->GetXaxis()->SetNdivisions(6);
+	mix_Graph->GetXaxis()->SetTitle("E_{#nu} [GeV]");
+	mix_Graph->GetXaxis()->SetTitleFont(TextFont);
+	mix_Graph->GetXaxis()->SetLabelFont(TextFont);
+	mix_Graph->GetXaxis()->SetTitleSize(TextSize);
+	mix_Graph->GetXaxis()->SetLabelSize(TextSize);	
+	mix_Graph->GetXaxis()->CenterTitle();
+	mix_Graph->GetXaxis()->SetTickSize(0.02);	
+	
+	mix_Graph->GetYaxis()->SetRangeUser(0,10);
+	mix_Graph->GetYaxis()->SetNdivisions(6);
+//	mix_Graph->GetYaxis()->SetTitle("Extracted #Phi_{e} [a.u]");
+	mix_Graph->GetYaxis()->SetTitle("#nu_{e} Flux [a.u]");
+	mix_Graph->GetYaxis()->SetTitleFont(TextFont);
+	mix_Graph->GetYaxis()->SetLabelFont(TextFont);
+	mix_Graph->GetYaxis()->SetTitleSize(TextSize);
+	mix_Graph->GetYaxis()->SetLabelSize(TextSize);	
+	mix_Graph->GetYaxis()->CenterTitle();
+	mix_Graph->GetYaxis()->SetTickSize(0.02);		
+	mix_Graph->GetYaxis()->SetTitleOffset(0.7);		
+	
+	mix_Graph->SetTitle();	
+	
+	mix_Graph->SetLineWidth(5);
 	mix_Graph->SetLineColor(kBlue);
 	mix_Graph->SetLineStyle(5);		
-	mix_Graph->Draw("c");		
+	mix_Graph->Draw("ac");	
+
+	TLatex* GenieLatex = new TLatex(0.55,0.8,"Reconstructed");
+	GenieLatex->SetTextFont(TextFont);
+	GenieLatex->SetTextSize(TextSize);
+	GenieLatex->SetNDC();
+	GenieLatex->Draw();	
 	
 	// ------------------------------------------------------------------------------------------------------------
 	
-	TLegend* leg = new TLegend(0.47,0.75,0.67,0.89);
-	
-	leg->SetBorderSize(0);
-	leg->SetTextFont(TextFont);
-	leg->SetTextSize(TextSize);
-	leg->AddEntry(mix_Graph,"Extracted with GENIE","l");
-	leg->AddEntry(CLAS_Graph,"Extracted with CLAS","l");	
-	leg->Draw();
+//	TLegend* leg = new TLegend(0.47,0.75,0.67,0.89);
+//	
+//	leg->SetBorderSize(0);
+//	leg->SetTextFont(TextFont);
+//	leg->SetTextSize(TextSize);
+//	leg->AddEntry(mix_Graph,"Extracted with GENIE","l");
+//	leg->AddEntry(CLAS_Graph,"Extracted with CLAS","l");	
+//	leg->Draw();
 	
 } // End of the program

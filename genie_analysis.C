@@ -30,10 +30,6 @@ using namespace std;
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 
 double DeltaAlphaTFunction(TVector3 MuonVector,TVector3 ProtonVector) {
-
-	double MuonMass_GeV = 0.106, ProtonMass_GeV = 0.938272, NeutronMass_GeV = 0.939565; // GeV
-	double DeltaM2 = TMath::Power(NeutronMass_GeV,2.) - TMath::Power(ProtonMass_GeV,2.);	
-	double BE = 0.04; // GeV	
 			
 	// STV Calculation		
 			
@@ -60,10 +56,6 @@ double DeltaAlphaTFunction(TVector3 MuonVector,TVector3 ProtonVector) {
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 
 double DeltaPhiTFunction(TVector3 MuonVector,TVector3 ProtonVector) {
-
-	double MuonMass_GeV = 0.106, ProtonMass_GeV = 0.938272, NeutronMass_GeV = 0.939565; // GeV
-	double DeltaM2 = TMath::Power(NeutronMass_GeV,2.) - TMath::Power(ProtonMass_GeV,2.);	
-	double BE = 0.04; // GeV	
 			
 	// STV Calculation		
 			
@@ -74,10 +66,6 @@ double DeltaPhiTFunction(TVector3 MuonVector,TVector3 ProtonVector) {
 	TVector3 ProtonVectorTrans;
 	ProtonVectorTrans.SetXYZ(ProtonVector.X(),ProtonVector.Y(),0.);
 	double ProtonVectorTransMag = ProtonVectorTrans.Mag();
-
-	TVector3 PtVector = MuonVectorTrans + ProtonVectorTrans;
-
-	double fPt = PtVector.Mag();
 
 	double fDeltaPhiT = TMath::ACos( (- MuonVectorTrans * ProtonVectorTrans) / ( MuonVectorTransMag * ProtonVectorTransMag ) ) * 180./TMath::Pi();
 	if (fDeltaPhiT > 180.) { fDeltaPhiT -= 180.; }

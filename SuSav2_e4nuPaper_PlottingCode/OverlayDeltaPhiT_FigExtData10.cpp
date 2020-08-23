@@ -266,13 +266,14 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 						// Scaling Factor
 
 						double ScalingFactor = 1. / Plots[WhichFSIModel]->Integral();  // area normalized
+						//double ScalingFactor = Plots[0]->Integral() / Plots[WhichFSIModel]->Integral();  // area normalized
 						Plots[WhichFSIModel]->Scale(ScalingFactor);
 
 						//-----------------------------------------------------------------------------------------------
 
 						//Larry's suggestion because ECal has a sharp peak and a low tail 
 						//Thus we multiply the peak by EnhaceTail
-
+/*
 						if ( DoubleE[WhichEnergy] == 2.261 ) {
 
 							double LowE = 0.95*DoubleE[WhichEnergy];
@@ -291,7 +292,7 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 							}
 
 						}
-
+*/
 						// -----------------------------------------------------------------------------------
 
 						// Accounting for the fact that the bin width might not be constant
@@ -334,6 +335,7 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 
 						if (
 							FSILabel[WhichFSIModel] == "SuSav2"
+//							FSILabel[WhichFSIModel] == "SuSav3"
 						) {
 
 							if (DoubleE[WhichEnergy] == 1.161 && nucleus[WhichNucleus] == "12C") {
@@ -347,7 +349,6 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 							for (int j = 1; j < 5; j++) {
 
 								BreakDownPlots.push_back( (TH1D*)( FileSample->Get("DeltaPhiT_Int_"+ToString(j)) ) );
-								ReweightPlots(BreakDownPlots[j-1]);
 
 //								for (int i = 0; i < 2; i++) { BreakDownPlots[j-1]->Rebin(); }
 
@@ -363,13 +364,14 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 								BreakDownPlots[j-1]->SetLineWidth(LineWidth);
 								BreakDownPlots[j-1]->SetLineStyle(Style[j-1]);
 								BreakDownPlots[j-1]->Scale(ScalingFactor);
-
+								ReweightPlots(BreakDownPlots[j-1]);
+								
 								//-----------------------------------------------------------------------------------------------
 
 								//Larry's suggestion because ECal has a sharp peak and a low tail 
 								//Thus we multiply the peak by EnhaceTail
 
-								if ( DoubleE[WhichEnergy] == 2.261 ) {
+/*								if ( DoubleE[WhichEnergy] == 2.261 ) {
 
 									double LowE = 0.95*DoubleE[WhichEnergy];
 									int LowEBin = Plots[WhichFSIModel]->FindBin(LowE);
@@ -387,7 +389,7 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 									}
 
 								}
-
+*/
 								//-----------------------------------------------------------------------------------------------
 
 								if (DoubleE[WhichEnergy] == 1.161 && nucleus[WhichNucleus] == "12C") {
@@ -398,8 +400,15 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 								BreakDownPlots[j-1]->Draw("C hist same");
 
 							} // end of the look over the GENIE break down
+							
+TH1D* CloneBreakDown = (TH1D*)BreakDownPlots[0]->Clone();
+for (int j = 1; j < 4; j++) { CloneBreakDown->Add(BreakDownPlots[j]); }
+CloneBreakDown->SetLineColor(kBlack);
+CloneBreakDown->SetLineStyle(kSolid);
+Plots[WhichFSIModel] = CloneBreakDown;
 
-						} // End of the 
+
+						} // End of the SuSav2 if statement for breakdown
 
 						// ---------------------------------------------------------------------------------------------------
 
@@ -414,7 +423,7 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 
 
 //Plots[0]->GetYaxis()->SetRangeUser(0.,MaxHeight);
-Plots[0]->GetYaxis()->SetRangeUser(0.,1.5*Plots[0]->GetMaximum());
+Plots[0]->GetYaxis()->SetRangeUser(0.,1.7*Plots[0]->GetMaximum());
 
 						double localmin = Plots[WhichFSIModel]->GetBinContent(Plots[WhichFSIModel]->FindBin(4)); // multiplicity 4 is the highest one in data
 						if (localmin < min && localmin != 0) { min = localmin; }
@@ -493,7 +502,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
 //		TPad* pad1GeV = new TPad("pad1GeV","pad1GeV",0.125,0.89,0.315,0.99,21);
-		TPad* pad1GeV = new TPad("pad1GeV","pad1GeV",0.195,0.89,0.385,0.99,21);
+		TPad* pad1GeV = new TPad("pad1GeV","pad1GeV",0.185,0.89,0.375,0.99,21);
 		pad1GeV->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		pad1GeV->Draw();

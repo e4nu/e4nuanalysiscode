@@ -106,6 +106,8 @@ void OverlayThetaEPrimeEcalSlices() {
 	
 	gStyle->SetOptStat(0);	
 	
+	double GlobalMax = 15.;
+	
 	// ----------------------------------------------------------------------------------------------------------------
 	
 	// Data ECal in Theta Slices 
@@ -126,7 +128,7 @@ void OverlayThetaEPrimeEcalSlices() {
 	
 	
 //	for (int WhichThetaSlice = 0 ; WhichThetaSlice < ThetaSlices; WhichThetaSlice++ ) {
-	for (int WhichThetaSlice = 5 ; WhichThetaSlice < 6; WhichThetaSlice++ ) {
+	for (int WhichThetaSlice = 3 ; WhichThetaSlice < 10; WhichThetaSlice++ ) {
 
 
 		TH1D* h1_ECal_InThetaSlices = (TH1D*)file_Data->Get(Form("h1_ECal_InTheta_%d_To_%d_Slices",int(MinTheta+WhichThetaSlice*ThetaStep),int(MinTheta+(WhichThetaSlice+1)*ThetaStep)));
@@ -134,8 +136,8 @@ void OverlayThetaEPrimeEcalSlices() {
 		
 		PrettyPlot(h1_ECal_InThetaSlices);
 		h1_ECal_InThetaSlices->SetLineColor(Colors[WhichThetaSlice]);
-		h1_ECal_InThetaSlices->GetYaxis()->SetRangeUser(0,10.);											
-		h1_ECal_InThetaSlices->Draw("same");
+		h1_ECal_InThetaSlices->GetYaxis()->SetRangeUser(0,GlobalMax);										
+		h1_ECal_InThetaSlices->Draw("hist same");
 		
 		legData_ThetaSlices->AddEntry(h1_ECal_InThetaSlices,ToString(MinTheta+WhichThetaSlice*ThetaStep)+ "^{o} < #theta_{e'} < " + ToString(MinTheta+(WhichThetaSlice+1)*ThetaStep)+"^{o}","l");	
 		
@@ -168,8 +170,8 @@ void OverlayThetaEPrimeEcalSlices() {
 		
 		PrettyPlot(h1_ECal_InThetaSlices);
 		h1_ECal_InThetaSlices->SetLineColor(Colors[WhichThetaSlice]);
-		h1_ECal_InThetaSlices->GetYaxis()->SetRangeUser(0,10.);											
-		h1_ECal_InThetaSlices->Draw("same");
+		h1_ECal_InThetaSlices->GetYaxis()->SetRangeUser(0,GlobalMax);										
+		h1_ECal_InThetaSlices->Draw("hist same");
 		
 		legSuSav2_ThetaSlices->AddEntry(h1_ECal_InThetaSlices,ToString(MinTheta+WhichThetaSlice*ThetaStep)+ "^{o} < #theta_{e'} < " + ToString(MinTheta+(WhichThetaSlice+1)*ThetaStep)+"^{o}","l");	
 		
@@ -203,8 +205,8 @@ void OverlayThetaEPrimeEcalSlices() {
 		
 		PrettyPlot(h1_ECal_InEePrimeSlices);
 		h1_ECal_InEePrimeSlices->SetLineColor(Colors[WhichEePrimeSlice]);
-		h1_ECal_InEePrimeSlices->GetYaxis()->SetRangeUser(0,10.);									
-		h1_ECal_InEePrimeSlices->Draw("same");
+		h1_ECal_InEePrimeSlices->GetYaxis()->SetRangeUser(0,GlobalMax);									
+		h1_ECal_InEePrimeSlices->Draw("hist same");
 		
 		legData_EePrimeSlices->AddEntry(h1_ECal_InEePrimeSlices,ToString(MinEePrime+WhichEePrimeSlice*EePrimeStep)+ " < E_{e'} < " + ToString(MinEePrime+(WhichEePrimeSlice+1)*EePrimeStep),"l");	
 		
@@ -235,14 +237,82 @@ void OverlayThetaEPrimeEcalSlices() {
 		
 		PrettyPlot(h1_ECal_InEePrimeSlices);
 		h1_ECal_InEePrimeSlices->SetLineColor(Colors[WhichEePrimeSlice]);
-		h1_ECal_InEePrimeSlices->GetYaxis()->SetRangeUser(0,10.);									
-		h1_ECal_InEePrimeSlices->Draw("same");
+		h1_ECal_InEePrimeSlices->GetYaxis()->SetRangeUser(0,GlobalMax);									
+		h1_ECal_InEePrimeSlices->Draw("hist same");
 		
 		legSuSav2_EePrimeSlices->AddEntry(h1_ECal_InEePrimeSlices,ToString(MinEePrime+WhichEePrimeSlice*EePrimeStep)+ " < E_{e'} < " + ToString(MinEePrime+(WhichEePrimeSlice+1)*EePrimeStep),"l");	
 		
 	}
 	
-	legSuSav2_EePrimeSlices->Draw();					
+	legSuSav2_EePrimeSlices->Draw();
+	
+	// ----------------------------------------------------------------------------------------------------------------
+	
+	// Data ECal in Q2 Slices 
+	
+	TCanvas* DataCanvas_ECal_Q2Slices = new TCanvas("DataCanvas_ECal_Q2Slices","DataCanvas_ECal_Q2Slices",205,34,1024,768);
+	
+	DataCanvas_ECal_Q2Slices->SetBottomMargin(0.15);
+	DataCanvas_ECal_Q2Slices->SetLeftMargin(0.15);	
+	
+	double MinQ2 = 0., MaxQ2 = 2.; int Q2Slices = 10;
+	double Q2Step = (MaxQ2 - MinQ2) / Q2Slices;	
+	
+	TLegend* legData_Q2Slices = new TLegend(0.4,0.3,0.6,0.85);
+	legData_Q2Slices->SetBorderSize(0);
+	legData_Q2Slices->SetTextFont(TextFont);
+	legData_Q2Slices->SetTextSize(TextSize);		
+	
+//	for (int WhichQ2Slice = 0 ; WhichQ2Slice < Q2Slices; WhichQ2Slice++ ) {
+	for (int WhichQ2Slice = 2 ; WhichQ2Slice < 10; WhichQ2Slice++ ) {
+
+
+		TH1D* h1_ECal_InQ2Slices = (TH1D*)file_Data->Get(Form("h1_ECal_InQ2_%d_To_%d_Slices",int((MinQ2+WhichQ2Slice*Q2Step)*1000),int((MinQ2+(WhichQ2Slice+1)*Q2Step)*1000)));
+		
+		
+		PrettyPlot(h1_ECal_InQ2Slices);
+		h1_ECal_InQ2Slices->SetLineColor(Colors[WhichQ2Slice]);
+		h1_ECal_InQ2Slices->GetYaxis()->SetRangeUser(0,10);									
+		h1_ECal_InQ2Slices->Draw("hist same");
+		
+		legData_Q2Slices->AddEntry(h1_ECal_InQ2Slices,ToString(MinQ2+WhichQ2Slice*Q2Step)+ " < Q^{2} < " + ToString(MinQ2+(WhichQ2Slice+1)*Q2Step),"l");	
+		
+	}
+	
+	legData_Q2Slices->Draw();	
+	
+	// ----------------------------------------------------------------------------------------------------------------
+	
+	// SuSav2 ECal in Q2 Slices 
+	
+	TCanvas* SuSav2Canvas_ECal_Q2Slices = new TCanvas("SuSav2Canvas_ECal_Q2Slices","SuSav2Canvas_ECal_Q2Slices",205,34,1024,768);
+	
+	SuSav2Canvas_ECal_Q2Slices->SetBottomMargin(0.15);
+	SuSav2Canvas_ECal_Q2Slices->SetLeftMargin(0.15);	
+	
+	
+	TLegend* legSuSav2_Q2Slices = new TLegend(0.4,0.3,0.6,0.85);
+	legSuSav2_Q2Slices->SetBorderSize(0);
+	legSuSav2_Q2Slices->SetTextFont(TextFont);
+	legSuSav2_Q2Slices->SetTextSize(TextSize);		
+	
+//	for (int WhichQ2Slice = 0 ; WhichQ2Slice < Q2Slices; WhichQ2Slice++ ) {
+	for (int WhichQ2Slice = 2 ; WhichQ2Slice < 10; WhichQ2Slice++ ) {
+
+
+		TH1D* h1_ECal_InQ2Slices = (TH1D*)file_SuSav2->Get(Form("h1_ECal_InQ2_%d_To_%d_Slices",int((MinQ2+WhichQ2Slice*Q2Step)*1000),int((MinQ2+(WhichQ2Slice+1)*Q2Step)*1000)));
+		
+		
+		PrettyPlot(h1_ECal_InQ2Slices);
+		h1_ECal_InQ2Slices->SetLineColor(Colors[WhichQ2Slice]);
+		h1_ECal_InQ2Slices->GetYaxis()->SetRangeUser(0,10);									
+		h1_ECal_InQ2Slices->Draw("hist same");
+		
+		legSuSav2_Q2Slices->AddEntry(h1_ECal_InQ2Slices,ToString(MinQ2+WhichQ2Slice*Q2Step)+ " < Q^{2} < " + ToString(MinQ2+(WhichQ2Slice+1)*Q2Step),"l");	
+		
+	}
+	
+	legSuSav2_Q2Slices->Draw();						
 	
 	// ----------------------------------------------------------------------------------------------------------------	
 

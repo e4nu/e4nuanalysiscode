@@ -1378,8 +1378,8 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_2prot_corr[f]);					
-					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[f]);					
+					double deltaphiT = DeltaPhiTFunction(V3_el,V3_2prot_corr[f]);					
+					double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_2prot_corr[f]);					
 							     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 					DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);     					
@@ -1555,8 +1555,8 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
-					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
+					double deltaphiT = DeltaPhiTFunction(V3_el,V3_2prot_corr[z]);					
+					double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_2prot_corr[z]);					
 							     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 					DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);  								
@@ -1670,8 +1670,8 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
-					deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
+					deltaphiT = DeltaPhiTFunction(V3_el,V3_2prot_corr[z]);					
+					deltaalphaT = DeltaAlphaTFunction(V3_el,V3_2prot_corr[z]);					
 							     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 					DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);  					
@@ -1784,8 +1784,8 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
-					deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
+					deltaphiT = DeltaAlphaTFunction(V3_el,V3_2prot_corr[z]);					
+					deltaalphaT = DeltaAlphaTFunction(V3_el,V3_2prot_corr[z]);					
 							     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 					DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight); 					
@@ -1959,8 +1959,8 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
-					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_2prot_corr[z]);					
+					double deltaphiT = DeltaPhiTFunction(V3_el,V3_2prot_corr[z]);					
+					double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_2prot_corr[z]);					
 							     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 					DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);					
@@ -2164,8 +2164,8 @@ void genie_analysis::Loop(Int_t choice) {
 						Nu_BreakDown[0]->Fill(nu,LocalWeight);
 						Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 						
-						double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr[j]);					
-						double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);					
+						double deltaphiT = DeltaPhiTFunction(V3_el,V3_prot_corr[j]);					
+						double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_prot_corr[j]);					
 								     
 						DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 						DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);						
@@ -2288,8 +2288,8 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr[j]);					
-					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);					
+					double deltaphiT = DeltaPhiTFunction(V3_el,V3_prot_corr[j]);					
+					double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_prot_corr[j]);					
 								     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 					DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);					
@@ -2456,8 +2456,8 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr[j]);					
-					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);					
+					double deltaphiT = DeltaPhiTFunction(V3_el,V3_prot_corr[j]);					
+					double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_prot_corr[j]);					
 								     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 					DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);					
@@ -2731,8 +2731,8 @@ void genie_analysis::Loop(Int_t choice) {
 								Nu_BreakDown[0]->Fill(nu,LocalWeight);
 								Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 								
-								double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr[j]);			
-								double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);
+								double deltaphiT = DeltaPhiTFunction(V3_el,V3_prot_corr[j]);			
+								double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_prot_corr[j]);
 											     
 								DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 								DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);			
@@ -2855,8 +2855,8 @@ void genie_analysis::Loop(Int_t choice) {
 							Nu_BreakDown[0]->Fill(nu,LocalWeight);
 							Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 							
-							double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr[j]);			
-							double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);
+							double deltaphiT = DeltaPhiTFunction(V3_el,V3_prot_corr[j]);			
+							double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_prot_corr[j]);
 											     
 							DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 							DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);					
@@ -3006,8 +3006,8 @@ void genie_analysis::Loop(Int_t choice) {
 									Nu_BreakDown[0]->Fill(nu,LocalWeight);
 									Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 									
-									double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3p2[j]);		
-									double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3p2[j]);
+									double deltaphiT = DeltaPhiTFunction(V3_el,V3p2[j]);		
+									double deltaalphaT = DeltaAlphaTFunction(V3_el,V3p2[j]);
 													     
 									DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 									DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);			
@@ -3142,8 +3142,8 @@ void genie_analysis::Loop(Int_t choice) {
 						Nu_BreakDown[0]->Fill(nu,LocalWeight);
 						Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 						
-						double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr[j]);		
-						double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr[j]);
+						double deltaphiT = DeltaPhiTFunction(V3_el,V3_prot_corr[j]);		
+						double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_prot_corr[j]);
 													     
 						DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 						DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);						
@@ -3728,8 +3728,8 @@ void genie_analysis::Loop(Int_t choice) {
 				Nu_BreakDown[0]->Fill(nu,LocalWeight);
 				Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 				
-				double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr);		
-				double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);
+				double deltaphiT = DeltaPhiTFunction(V3_el,V3_prot_corr);		
+				double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_prot_corr);
 													     
 				DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 				DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);				
@@ -3904,8 +3904,8 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr);		
-					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);
+					double deltaphiT = DeltaPhiTFunction(V3_el,V3_prot_corr);		
+					double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_prot_corr);
 														     
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 					DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);					
@@ -4085,8 +4085,8 @@ void genie_analysis::Loop(Int_t choice) {
 					Nu_BreakDown[0]->Fill(nu,LocalWeight);
 					Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 					
-					double deltaphiT = DeltaPhiTFunction(V4_el.Vect(),V3_prot_corr);		
-					double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);	
+					double deltaphiT = DeltaPhiTFunction(V3_el,V3_prot_corr);		
+					double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_prot_corr);	
 					
 					DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 					DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);								
@@ -4204,8 +4204,8 @@ void genie_analysis::Loop(Int_t choice) {
 				Nu_BreakDown[0]->Fill(nu,LocalWeight);
 				Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 				
-				double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);		
-				double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);	
+				double deltaphiT = DeltaAlphaTFunction(V3_el,V3_prot_corr);		
+				double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_prot_corr);	
 				
 				DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 				DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);								
@@ -4373,8 +4373,8 @@ void genie_analysis::Loop(Int_t choice) {
 				Nu_BreakDown[0]->Fill(nu,LocalWeight);
 				Pe_BreakDown[0]->Fill(V4_el.Rho(),LocalWeight);
 				
-				double deltaphiT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);		
-				double deltaalphaT = DeltaAlphaTFunction(V4_el.Vect(),V3_prot_corr);	
+				double deltaphiT = DeltaAlphaTFunction(V3_el,V3_prot_corr);		
+				double deltaalphaT = DeltaAlphaTFunction(V3_el,V3_prot_corr);	
 				
 				DeltaPhiT_BreakDown[0]->Fill(deltaphiT,LocalWeight);	     
 				DeltaAlphaT_BreakDown[0]->Fill(deltaalphaT,LocalWeight);				

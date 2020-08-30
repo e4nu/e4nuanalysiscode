@@ -460,6 +460,9 @@ void genie_analysis::Loop(Int_t choice) {
 
 	int NBinsOscStudies = 100; double MinOscStudies = 0., MaxOscStudies = 10.;
 
+	TH1F *h1_EQE_SuperFine=new TH1F("h1_EQE_SuperFine","",NBinsOscStudies*NBinsOscStudies,MinOscStudies,MaxOscStudies);
+	TH1F *h1_Ecal_SuperFine=new TH1F("h1_Ecal_SuperFine","",NBinsOscStudies*NBinsOscStudies,MinOscStudies,MaxOscStudies);
+
 	TH1F *h1_EQE=new TH1F("h1_EQE","",NBinsOscStudies,MinOscStudies,MaxOscStudies);
 	TH1F *h1_Ecal=new TH1F("h1_Ecal","",NBinsOscStudies,MinOscStudies,MaxOscStudies);
 	TH2F *h2_Ecal_Etrue=new TH2F("h2_Ecal_Etrue","",NBinsOscStudies,MinOscStudies,MaxOscStudies,NBinsOscStudies,MinOscStudies,MaxOscStudies);
@@ -1339,8 +1342,13 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_perp_tot_2p[f],-P_N_2p[f]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_2prot_uncorr[f]) *TMath::RadToDeg(),-P_N_2p[f]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_tot_2p[f],-P_N_2p[f]*histoweight);
+
 					h1_EQE->Fill(E_rec,-P_N_2p[f]*histoweight);
 					h1_Ecal->Fill(E_tot_2p[f],-P_N_2p[f]*histoweight);
+
+					h1_EQE_SuperFine->Fill(E_rec,-P_N_2p[f]*histoweight);
+					h1_Ecal_SuperFine->Fill(E_tot_2p[f],-P_N_2p[f]*histoweight);
+
 					h1_Ecal_Reso->Fill((E_tot_2p[f]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_N_2p[f]*histoweight);
 					h2_Ecal_Etrue->Fill(E_tot_2p[f],Ev,-P_N_2p[f]*histoweight);
 					h2_Etrue_Ecal->Fill(Ev,E_tot_2p[f],-P_N_2p[f]*histoweight);
@@ -1516,8 +1524,13 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_miss_perp_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_2prot_uncorr[z]) *TMath::RadToDeg(),P_2p1pito2p0pi[z]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
+
 					h1_EQE->Fill(E_rec,P_2p1pito2p0pi[z]*histoweight);
 					h1_Ecal->Fill(Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
+
+					h1_EQE_SuperFine->Fill(E_rec,P_2p1pito2p0pi[z]*histoweight);
+					h1_Ecal_SuperFine->Fill(Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
+
 					h1_Ecal_Reso->Fill((Ecal_2p1pi_to2p0pi[z]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_2p1pito2p0pi[z]*histoweight);
 					h2_Ecal_Etrue->Fill(Ecal_2p1pi_to2p0pi[z],Ev,P_2p1pito2p0pi[z]*histoweight);
 					h2_Etrue_Ecal->Fill(Ev,Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
@@ -1631,8 +1644,13 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_perp_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_2prot_uncorr[z])*TMath::RadToDeg(),P_2p1pito1p1pi[z]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
+
 					h1_EQE->Fill(E_rec,P_2p1pito1p1pi[z]*histoweight);
 					h1_Ecal->Fill(E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
+
+					h1_EQE_SuperFine->Fill(E_rec,P_2p1pito1p1pi[z]*histoweight);
+					h1_Ecal_SuperFine->Fill(E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
+
 					h1_Ecal_Reso->Fill((E_tot_2p[z]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_2p1pito1p1pi[z]*histoweight);
 					h2_Ecal_Etrue->Fill(E_tot_2p[z],Ev,P_2p1pito1p1pi[z]*histoweight);
 					h2_Etrue_Ecal->Fill(Ev,E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
@@ -1745,8 +1763,13 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_perp_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_2prot_uncorr[z])*TMath::RadToDeg(),-P_2p1pito1p0pi[z]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
+
 					h1_EQE->Fill(E_rec,-P_2p1pito1p0pi[z]*histoweight);
 					h1_Ecal->Fill(E_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
+
+					h1_EQE_SuperFine->Fill(E_rec,-P_2p1pito1p0pi[z]*histoweight);
+					h1_Ecal_SuperFine->Fill(E_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
+
 					h1_Ecal_Reso->Fill((E_tot_2p[z]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],-P_2p1pito1p0pi[z]*histoweight);
 					h2_Ecal_Etrue->Fill(E_tot_2p[z],Ev,-P_2p1pito1p0pi[z]*histoweight);
 					h2_Etrue_Ecal->Fill(Ev,E_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
@@ -1920,8 +1943,13 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_perp_tot_2p[z],Ptot_2p[z]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_2prot_uncorr[z])*TMath::RadToDeg(),Ptot_2p[z]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_tot_2p[z],Ptot_2p[z]*histoweight);
+
 					h1_EQE->Fill(E_rec,Ptot_2p[z]*histoweight);
 					h1_Ecal->Fill(E_tot_2p[z],Ptot_2p[z]*histoweight);
+
+					h1_EQE_SuperFine->Fill(E_rec,Ptot_2p[z]*histoweight);
+					h1_Ecal_SuperFine->Fill(E_tot_2p[z],Ptot_2p[z]*histoweight);
+
 					h1_Ecal_Reso->Fill((E_tot_2p[z]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],Ptot_2p[z]*histoweight);
 					h2_Ecal_Etrue->Fill(E_tot_2p[z],Ev,Ptot_2p[z]*histoweight);
 					h2_Etrue_Ecal->Fill(Ev,E_tot_2p[z],Ptot_2p[z]*histoweight);
@@ -2125,8 +2153,13 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_pperp_W->Fill(W_var,p_miss_perp_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 						h1_theta0->Fill((V4_beam.Vect()).Angle(V3_prot_el[count][j])*TMath::RadToDeg(),P_3pto2p[count][j]*histoweight);
 						h2_Ecal_Eqe->Fill(E_rec,E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
+
 						h1_EQE->Fill(E_rec,P_3pto2p[count][j]*histoweight);
 						h1_Ecal->Fill(E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
+
+						h1_EQE_SuperFine->Fill(E_rec,P_3pto2p[count][j]*histoweight);
+						h1_Ecal_SuperFine->Fill(E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
+
 						h1_Ecal_Reso->Fill((E_cal_3pto2p[count][j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_3pto2p[count][j]*histoweight);
 						h2_Ecal_Etrue->Fill(E_cal_3pto2p[count][j],Ev,P_3pto2p[count][j]*histoweight);
 						h2_Etrue_Ecal->Fill(Ev,E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
@@ -2249,8 +2282,13 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_miss_perp[j],-P_3pto1p[j]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr[j])*TMath::RadToDeg(),-P_3pto1p[j]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_cal[j],-P_3pto1p[j]*histoweight);
+
 					h1_EQE->Fill(E_rec,-P_3pto1p[j]*histoweight);
 					h1_Ecal->Fill(E_cal[j],-P_3pto1p[j]*histoweight);
+
+					h1_EQE_SuperFine->Fill(E_rec,-P_3pto1p[j]*histoweight);
+					h1_Ecal_SuperFine->Fill(E_cal[j],-P_3pto1p[j]*histoweight);
+
 					h1_Ecal_Reso->Fill((E_cal[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],-P_3pto1p[j]*histoweight);
 					h2_Ecal_Etrue->Fill(E_cal[j],Ev,-P_3pto1p[j]*histoweight);
 					h2_Etrue_Ecal->Fill(Ev,E_cal[j],-P_3pto1p[j]*histoweight);
@@ -2417,8 +2455,13 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_miss_perp[j],P_tot_3p[j]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr[j])*TMath::RadToDeg(),P_tot_3p[j]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_cal[j],P_tot_3p[j]*histoweight);
+
 					h1_EQE->Fill(E_rec,P_tot_3p[j]*histoweight);
 					h1_Ecal->Fill(E_cal[j],P_tot_3p[j]*histoweight);
+
+					h1_EQE_SuperFine->Fill(E_rec,P_tot_3p[j]*histoweight);
+					h1_Ecal_SuperFine->Fill(E_cal[j],P_tot_3p[j]*histoweight);
+
 					h1_Ecal_Reso->Fill((E_cal[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_tot_3p[j]*histoweight);
 					h2_Ecal_Etrue->Fill(E_cal[j],Ev,P_tot_3p[j]*histoweight);
 					h2_Etrue_Ecal->Fill(Ev,E_cal[j],P_tot_3p[j]*histoweight);
@@ -2692,8 +2735,13 @@ void genie_analysis::Loop(Int_t choice) {
 								h2_pperp_W->Fill(W_var,p_miss_perp_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_theta0->Fill((V4_beam.Vect()).Angle(V3_el_prot[count][j])*TMath::RadToDeg(),-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h2_Ecal_Eqe->Fill(E_rec,E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
+
 								h1_EQE->Fill(E_rec,-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_Ecal->Fill(E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
+
+								h1_EQE_SuperFine->Fill(E_rec,-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
+								h1_Ecal_SuperFine->Fill(E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
+
 								h1_Ecal_Reso->Fill((E_cal_4pto3p[count][j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h2_Ecal_Etrue->Fill(E_cal_4pto3p[count][j],Ev,-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h2_Etrue_Ecal->Fill(Ev,E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
@@ -2816,8 +2864,13 @@ void genie_analysis::Loop(Int_t choice) {
 							h2_pperp_W->Fill(W_var,p_miss_perp_43pto1p[j],P_43pto1p[j]*histoweight);
 							h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr[j])*TMath::RadToDeg(),P_43pto1p[j]*histoweight);
 							h2_Ecal_Eqe->Fill(E_rec,E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
+
 							h1_EQE->Fill(E_rec,P_43pto1p[j]*histoweight);
 							h1_Ecal->Fill(E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
+
+							h1_EQE_SuperFine->Fill(E_rec,P_43pto1p[j]*histoweight);
+							h1_Ecal_SuperFine->Fill(E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
+
 							h1_Ecal_Reso->Fill((E_cal_43pto1p[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_43pto1p[j]*histoweight);
 							h2_Ecal_Etrue->Fill(E_cal_43pto1p[j],Ev,P_43pto1p[j]*histoweight);
 							h2_Etrue_Ecal->Fill(Ev,E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
@@ -2966,8 +3019,13 @@ void genie_analysis::Loop(Int_t choice) {
 									h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3p2_uncorr[j])*TMath::RadToDeg(),
 										P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h2_Ecal_Eqe->Fill(E_rec,E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
+
 									h1_EQE->Fill(E_rec,P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h1_Ecal->Fill(E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
+
+									h1_EQE_SuperFine->Fill(E_rec,P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
+									h1_Ecal_SuperFine->Fill(E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
+
 									h1_Ecal_Reso->Fill((E_cal_4pto2p[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h2_Ecal_Etrue->Fill(E_cal_4pto2p[j],Ev,P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h2_Etrue_Ecal->Fill(Ev,E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
@@ -3103,8 +3161,13 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_pperp_W->Fill(W_var,p_miss_perp_p4[j],-P_4pto1p[j]*histoweight);
 						h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot4_uncorr[j])*TMath::RadToDeg(),-P_4pto1p[j]*histoweight);
 						h2_Ecal_Eqe->Fill(E_rec,E_cal_p4[j],-P_4pto1p[j]*histoweight);
+
 						h1_EQE->Fill(E_rec,-P_4pto1p[j]*histoweight);
 						h1_Ecal->Fill(E_cal_p4[j],-P_4pto1p[j]*histoweight);
+
+						h1_EQE_SuperFine->Fill(E_rec,-P_4pto1p[j]*histoweight);
+						h1_Ecal_SuperFine->Fill(E_cal_p4[j],-P_4pto1p[j]*histoweight);
+
 						h1_Ecal_Reso->Fill((E_cal_p4[j]-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],-P_4pto1p[j]*histoweight);
 						h2_Ecal_Etrue->Fill(E_cal_p4[j],Ev,-P_4pto1p[j]*histoweight);
 						h2_Etrue_Ecal->Fill(Ev,E_cal_p4[j],-P_4pto1p[j]*histoweight);
@@ -3676,8 +3739,13 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_pperp_W->Fill(W_var,p_perp_tot,histoweight);
 				h1_theta0->Fill((V4_beam.Vect()).Angle(V4_prot_el_tot.Vect()) *TMath::RadToDeg(),histoweight);
 				h2_Ecal_Eqe->Fill(E_rec,E_tot,histoweight);
+
 				h1_EQE->Fill(E_rec,histoweight);
 				h1_Ecal->Fill(E_tot,histoweight);
+
+				h1_EQE_SuperFine->Fill(E_rec,histoweight);
+				h1_Ecal_SuperFine->Fill(E_tot,histoweight);
+
 				h1_Ecal_Reso->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],histoweight);
 				h2_Ecal_Etrue->Fill(E_tot,Ev,histoweight);
 				h2_Etrue_Ecal->Fill(Ev,E_tot,histoweight);
@@ -3865,8 +3933,13 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_perp_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),-(N_piphot_undet/N_piphot_det)*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
+
 					h1_EQE->Fill(E_rec,-(N_piphot_undet/N_piphot_det)*histoweight);
 					h1_Ecal->Fill(E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
+
+					h1_EQE_SuperFine->Fill(E_rec,-(N_piphot_undet/N_piphot_det)*histoweight);
+					h1_Ecal_SuperFine->Fill(E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
+
 					h1_Ecal_Reso->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],-(N_piphot_undet/N_piphot_det)*histoweight);
 					h2_Ecal_Etrue->Fill(E_tot,Ev,-(N_piphot_undet/N_piphot_det)*histoweight);
 					h2_Etrue_Ecal->Fill(Ev,E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
@@ -4046,8 +4119,13 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_pperp_W->Fill(W_var,p_perp_tot,P_1p1pi[z]*histoweight);
 					h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),P_1p1pi[z]*histoweight);
 					h2_Ecal_Eqe->Fill(E_rec,E_tot,P_1p1pi[z]*histoweight);
+
 					h1_EQE->Fill(E_rec,P_1p1pi[z]*histoweight);
 					h1_Ecal->Fill(E_tot,P_1p1pi[z]*histoweight);
+
+					h1_EQE_SuperFine->Fill(E_rec,P_1p1pi[z]*histoweight);
+					h1_Ecal_SuperFine->Fill(E_tot,P_1p1pi[z]*histoweight);
+
 					h1_Ecal_Reso->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p1pi[z]*histoweight);
 					h2_Ecal_Etrue->Fill(E_tot,Ev,P_1p1pi[z]*histoweight);
 					h2_Etrue_Ecal->Fill(Ev,E_tot,P_1p1pi[z]*histoweight);
@@ -4165,8 +4243,13 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_pperp_W->Fill(W_var,p_perp_tot,-P_1p0pi*histoweight);
 				h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),-P_1p0pi*histoweight);
 				h2_Ecal_Eqe->Fill(E_rec,E_tot,-P_1p0pi*histoweight);
+
 				h1_EQE->Fill(E_rec,-P_1p0pi*histoweight);
 				h1_Ecal->Fill(E_tot,-P_1p0pi*histoweight);
+
+				h1_EQE_SuperFine->Fill(E_rec,-P_1p0pi*histoweight);
+				h1_Ecal_SuperFine->Fill(E_tot,-P_1p0pi*histoweight);
+
 				h1_Ecal_Reso->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],-P_1p0pi*histoweight);
 				h2_Ecal_Etrue->Fill(E_tot,Ev,-P_1p0pi*histoweight);
 				h2_Etrue_Ecal->Fill(Ev,E_tot,-P_1p0pi*histoweight);
@@ -4334,8 +4417,13 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_pperp_W->Fill(W_var,p_perp_tot,P_1p3pi*histoweight);
 				h1_theta0->Fill((V4_beam.Vect()).Angle(V4_el.Vect()+V3_prot_uncorr)*TMath::RadToDeg(),P_1p3pi*histoweight);
 				h2_Ecal_Eqe->Fill(E_rec,E_tot,P_1p3pi*histoweight);
+
 				h1_EQE->Fill(E_rec,P_1p3pi*histoweight);
 				h1_Ecal->Fill(E_tot,P_1p3pi*histoweight);
+
+				h1_EQE_SuperFine->Fill(E_rec,P_1p3pi*histoweight);
+				h1_Ecal_SuperFine->Fill(E_tot,P_1p3pi*histoweight);
+
 				h1_Ecal_Reso->Fill((E_tot-en_beam_Ecal[fbeam_en])/en_beam_Ecal[fbeam_en],P_1p3pi*histoweight);
 				h2_Ecal_Etrue->Fill(E_tot,Ev,P_1p3pi*histoweight);
 				h2_Etrue_Ecal->Fill(Ev,E_tot,P_1p3pi*histoweight);

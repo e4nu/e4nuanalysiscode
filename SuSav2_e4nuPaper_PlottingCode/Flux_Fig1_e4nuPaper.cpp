@@ -30,7 +30,8 @@ void Flux_Fig1_e4nuPaper() {
 	// ----------------------------------------------------------------------------------------------------------------
 	
 	int TextFont = 132;
-	double TextSize = 0.08;	
+	double TextSize = 0.10;	
+	int LineWidth = 8;
 	
 	gStyle->SetOptStat(0);	
 	
@@ -42,8 +43,8 @@ void Flux_Fig1_e4nuPaper() {
 	
 	TCanvas* ClasFluxCanvas = new TCanvas("ClasFluxCanvas","ClasFluxCanvas",205,34,1024,768);
 	ClasFluxCanvas->SetTitle();
-	ClasFluxCanvas->SetBottomMargin(0.16);
-	ClasFluxCanvas->SetLeftMargin(0.13);	
+	ClasFluxCanvas->SetBottomMargin(0.2);
+	ClasFluxCanvas->SetLeftMargin(0.15);	
 	
 	int nPoints = t->Draw("Enu_GeV:CLAS_fit:mix_fit","","goff"); 
 	TGraph *CLAS_Graph = new TGraph(nPoints,t->GetV1(),t->GetV2());
@@ -57,11 +58,12 @@ void Flux_Fig1_e4nuPaper() {
 	CLAS_Graph->GetXaxis()->SetLabelSize(TextSize);	
 	CLAS_Graph->GetXaxis()->CenterTitle();
 	CLAS_Graph->GetXaxis()->SetTickSize(0.02);	
+	CLAS_Graph->GetXaxis()->SetTitleOffset(0.95);
 	
 	CLAS_Graph->GetYaxis()->SetRangeUser(0,10);
 	CLAS_Graph->GetYaxis()->SetNdivisions(6);
 //	CLAS_Graph->GetYaxis()->SetTitle("Extracted #Phi_{e} [a.u]");
-	CLAS_Graph->GetYaxis()->SetTitle("#nu_{e} Flux [a.u]");
+	CLAS_Graph->GetYaxis()->SetTitle("Incident #nu_{e} Flux");
 	CLAS_Graph->GetYaxis()->SetTitleFont(TextFont);
 	CLAS_Graph->GetYaxis()->SetLabelFont(TextFont);
 	CLAS_Graph->GetYaxis()->SetTitleSize(TextSize);
@@ -71,22 +73,22 @@ void Flux_Fig1_e4nuPaper() {
 	CLAS_Graph->GetYaxis()->SetTitleOffset(0.7);		
 	
 	CLAS_Graph->SetTitle();
-	CLAS_Graph->SetLineWidth(5);
+	CLAS_Graph->SetLineWidth(LineWidth);
 	CLAS_Graph->SetLineColor(kGreen+2);	
 	CLAS_Graph->Draw("ac");
 
-	TLatex* ClasLatex = new TLatex(0.65,0.8,"Incident");
-	ClasLatex->SetTextFont(TextFont);
-	ClasLatex->SetTextSize(TextSize);
-	ClasLatex->SetNDC();
-	ClasLatex->Draw();
+//	TLatex* ClasLatex = new TLatex(0.65,0.8,"Incident");
+//	ClasLatex->SetTextFont(TextFont);
+//	ClasLatex->SetTextSize(TextSize);
+//	ClasLatex->SetNDC();
+//	ClasLatex->Draw();
 	
 	// ------------------------------------------------------------------------------------------------------------
 	
 	TCanvas* GENIEFluxCanvas = new TCanvas("GENIEFluxCanvas","GENIEFluxCanvas",205,34,1024,768);
 	GENIEFluxCanvas->SetTitle();
-	GENIEFluxCanvas->SetBottomMargin(0.16);
-	GENIEFluxCanvas->SetLeftMargin(0.13);	
+	GENIEFluxCanvas->SetBottomMargin(0.2);
+	GENIEFluxCanvas->SetLeftMargin(0.15);	
 	
 	TGraph *mix_Graph = new TGraph(nPoints,t->GetV1(),t->GetV3());
 	
@@ -98,12 +100,13 @@ void Flux_Fig1_e4nuPaper() {
 	mix_Graph->GetXaxis()->SetTitleSize(TextSize);
 	mix_Graph->GetXaxis()->SetLabelSize(TextSize);	
 	mix_Graph->GetXaxis()->CenterTitle();
-	mix_Graph->GetXaxis()->SetTickSize(0.02);	
+	mix_Graph->GetXaxis()->SetTickSize(0.02);
+	mix_Graph->GetXaxis()->SetTitleOffset(0.95);	
 	
 	mix_Graph->GetYaxis()->SetRangeUser(0,10);
 	mix_Graph->GetYaxis()->SetNdivisions(6);
 //	mix_Graph->GetYaxis()->SetTitle("Extracted #Phi_{e} [a.u]");
-	mix_Graph->GetYaxis()->SetTitle("#nu_{e} Flux [a.u]");
+	mix_Graph->GetYaxis()->SetTitle("Reconstructed #nu_{e} Flux");
 	mix_Graph->GetYaxis()->SetTitleFont(TextFont);
 	mix_Graph->GetYaxis()->SetLabelFont(TextFont);
 	mix_Graph->GetYaxis()->SetTitleSize(TextSize);
@@ -114,16 +117,19 @@ void Flux_Fig1_e4nuPaper() {
 	
 	mix_Graph->SetTitle();	
 	
-	mix_Graph->SetLineWidth(5);
+	mix_Graph->SetLineWidth(LineWidth);
 	mix_Graph->SetLineColor(kBlue);
-	mix_Graph->SetLineStyle(5);		
 	mix_Graph->Draw("ac");	
 
-	TLatex* GenieLatex = new TLatex(0.55,0.8,"Reconstructed");
-	GenieLatex->SetTextFont(TextFont);
-	GenieLatex->SetTextSize(TextSize);
-	GenieLatex->SetNDC();
-	GenieLatex->Draw();	
+	TH1D* CLAS_Graph_Clone = (TH1D*)(CLAS_Graph->Clone());
+	CLAS_Graph_Clone->SetLineWidth(2);
+	CLAS_Graph_Clone->Draw("same c");
+
+//	TLatex* GenieLatex = new TLatex(0.55,0.8,"Reconstructed");
+//	GenieLatex->SetTextFont(TextFont);
+//	GenieLatex->SetTextSize(TextSize);
+//	GenieLatex->SetNDC();
+//	GenieLatex->Draw();	
 	
 	// ------------------------------------------------------------------------------------------------------------
 	

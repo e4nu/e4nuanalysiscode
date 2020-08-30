@@ -94,13 +94,9 @@ void PrettyPlot(TH1D* h){
 void OverlayThetaEPrimeEcalSlices() {
 
 	TFile* file_Data = TFile::Open("../myFiles/2_261/Data_Final/NoxBCut/12C_2_261_Data_Final_Plots_FSI_em.root","readonly");
-	
 	TFile* file_SuSav2 = TFile::Open("../myFiles/2_261/SuSav2_RadCorr_LFGM/NoxBCut/12C_2_261_SuSav2_RadCorr_LFGM_Plots_FSI_em.root","readonly");	
 	
 	// ----------------------------------------------------------------------------------------------------------------
-	
-//	int TextFont = 132;
-//	double TextSize = 0.07;	
 	
 	std::vector<int> Colors{kYellow,kGreen,kViolet,kBlack,kRed+1,kBlue,kMagenta,410,kYellow+1,kOrange+7};
 	
@@ -315,5 +311,109 @@ void OverlayThetaEPrimeEcalSlices() {
 	legSuSav2_Q2Slices->Draw();						
 	
 	// ----------------------------------------------------------------------------------------------------------------	
+
+	// Data ECal in Q2 Slices 
+	
+	TCanvas* DataCanvas_ECal_EePrimeAndThetaSlices = new TCanvas("DataCanvas_ECal_EePrimeAndThetaSlices","DataCanvas_ECal_EePrimeAndThetaSlices",205,34,1024,768);
+	
+	DataCanvas_ECal_EePrimeAndThetaSlices->SetBottomMargin(0.15);
+	DataCanvas_ECal_EePrimeAndThetaSlices->SetLeftMargin(0.15);	
+	
+	double MinEePrime2D = 0.5, MaxEePrime2D = 2.5; int EePrimeSlices2D = 3;
+	double MinTheta2D = 10, MaxTheta2D = 60; int ThetaSlices2D = 3;	
+	double EePrimeStep2D = (MaxEePrime2D - MinEePrime2D) / EePrimeSlices2D;
+	int ThetaStep2D = (MaxTheta2D - MinTheta2D) / ThetaSlices2D;	
+	
+	TLegend* legData_EePrimeAndThetaSlices = new TLegend(0.17,0.49,0.35,0.89);
+	legData_EePrimeAndThetaSlices->SetBorderSize(0);
+	legData_EePrimeAndThetaSlices->SetTextFont(TextFont);
+	legData_EePrimeAndThetaSlices->SetTextSize(TextSize);	
+
+	int Counter = 0;	
+	
+	for (int WhichEePrimeSlice2D = 0 ; WhichEePrimeSlice2D < EePrimeSlices2D; WhichEePrimeSlice2D++ ) {
+
+		int MinEePrimeSlice2D = (MinEePrime2D+WhichEePrimeSlice2D*EePrimeStep2D) * 1000;
+		int MaxEePrimeSlice2D = (MinEePrime2D+(WhichEePrimeSlice2D+1)*EePrimeStep2D)*1000;
+
+		for (int WhichThetaSlice2D = 1 ; WhichThetaSlice2D < ThetaSlices2D; WhichThetaSlice2D++ ) {	
+		
+			int MinThetaSlice2D = MinTheta2D+WhichThetaSlice2D*ThetaStep2D;
+			int MaxThetaSlice2D = MinTheta2D+(WhichThetaSlice2D+1)*ThetaStep2D;
+
+
+			TH1D* h1_ECal_InEePrimeAndThetaSlices = (TH1D*)file_Data->Get(Form("h1_ECal_InEePrime_%d_To_%d_InTheta_%d_To_%d_Slices",\
+								MinEePrimeSlice2D,MaxEePrimeSlice2D,MinThetaSlice2D,MaxThetaSlice2D));
+			
+			
+			PrettyPlot(h1_ECal_InEePrimeAndThetaSlices);
+			h1_ECal_InEePrimeAndThetaSlices->SetLineColor(Colors[Counter+1]);
+			h1_ECal_InEePrimeAndThetaSlices->GetYaxis()->SetRangeUser(0,18);									
+			h1_ECal_InEePrimeAndThetaSlices->Draw("hist same");
+			
+			legData_EePrimeAndThetaSlices->AddEntry(h1_ECal_InEePrimeAndThetaSlices,\
+								ToString(MinEePrimeSlice2D)+ " < E_{e'} < " + ToString(MaxEePrimeSlice2D) + " & " +\
+								ToString(MinThetaSlice2D)+ " < #theta_{e'} < " + ToString(MaxThetaSlice2D)\
+								,"l");	
+
+			Counter++;
+		
+		}
+
+	}
+	
+	legData_EePrimeAndThetaSlices->Draw();
+
+	// ----------------------------------------------------------------------------------------------------------------	
+
+	// SuSav2 ECal in Q2 Slices 
+	
+	TCanvas* SuSav2Canvas_ECal_EePrimeAndThetaSlices = new TCanvas("SuSav2Canvas_ECal_EePrimeAndThetaSlices","SuSav2Canvas_ECal_EePrimeAndThetaSlices",205,34,1024,768);
+	
+	SuSav2Canvas_ECal_EePrimeAndThetaSlices->SetBottomMargin(0.15);
+	SuSav2Canvas_ECal_EePrimeAndThetaSlices->SetLeftMargin(0.15);		
+	
+	TLegend* legSuSav2_EePrimeAndThetaSlices = new TLegend(0.17,0.49,0.35,0.89);
+	legSuSav2_EePrimeAndThetaSlices->SetBorderSize(0);
+	legSuSav2_EePrimeAndThetaSlices->SetTextFont(TextFont);
+	legSuSav2_EePrimeAndThetaSlices->SetTextSize(TextSize);	
+
+	Counter = 0;	
+	
+	for (int WhichEePrimeSlice2D = 0 ; WhichEePrimeSlice2D < EePrimeSlices2D; WhichEePrimeSlice2D++ ) {
+
+		int MinEePrimeSlice2D = (MinEePrime2D+WhichEePrimeSlice2D*EePrimeStep2D) * 1000;
+		int MaxEePrimeSlice2D = (MinEePrime2D+(WhichEePrimeSlice2D+1)*EePrimeStep2D)*1000;
+
+		for (int WhichThetaSlice2D = 1 ; WhichThetaSlice2D < ThetaSlices2D; WhichThetaSlice2D++ ) {	
+		
+			int MinThetaSlice2D = MinTheta2D+WhichThetaSlice2D*ThetaStep2D;
+			int MaxThetaSlice2D = MinTheta2D+(WhichThetaSlice2D+1)*ThetaStep2D;
+
+
+			TH1D* h1_ECal_InEePrimeAndThetaSlices = (TH1D*)file_SuSav2->Get(Form("h1_ECal_InEePrime_%d_To_%d_InTheta_%d_To_%d_Slices",\
+								MinEePrimeSlice2D,MaxEePrimeSlice2D,MinThetaSlice2D,MaxThetaSlice2D));
+			
+			
+			PrettyPlot(h1_ECal_InEePrimeAndThetaSlices);
+			h1_ECal_InEePrimeAndThetaSlices->SetLineColor(Colors[Counter+1]);
+			h1_ECal_InEePrimeAndThetaSlices->GetYaxis()->SetRangeUser(0,18);									
+			h1_ECal_InEePrimeAndThetaSlices->Draw("hist same");
+			
+			legSuSav2_EePrimeAndThetaSlices->AddEntry(h1_ECal_InEePrimeAndThetaSlices,\
+								ToString(MinEePrimeSlice2D)+ " < E_{e'} < " + ToString(MaxEePrimeSlice2D) + " & " +\
+								ToString(MinThetaSlice2D)+ " < #theta_{e'} < " + ToString(MaxThetaSlice2D)\
+								,"l");	
+
+			Counter++;
+		
+		}
+
+	}
+	
+	legSuSav2_EePrimeAndThetaSlices->Draw();
+
+	// ----------------------------------------------------------------------------------------------------------------	
+
 
 } // End of the program

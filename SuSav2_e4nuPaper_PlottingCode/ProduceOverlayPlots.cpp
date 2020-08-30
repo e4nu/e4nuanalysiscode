@@ -5,6 +5,8 @@
 
 // Main e4nu Paper Plots
 
+//gROOT->ProcessLine(".L Flux_Fig1_e4nuPaper.cpp"); gROOT->ProcessLine("Flux_Fig1_e4nuPaper()");
+
 //gROOT->ProcessLine(".L OverlayEQE_Fig2.cpp"); gROOT->ProcessLine("OverlayEQE_Fig2()");
 
 //gROOT->ProcessLine(".L OverlayPmissFig3a_e4nuPaper.cpp"); gROOT->ProcessLine("OverlayPmissFig3a_e4nuPaper()");
@@ -17,9 +19,7 @@
 
 // Extended Data Figures
 
-//gROOT->ProcessLine(".L Flux_Fig1_e4nuPaper.cpp"); gROOT->ProcessLine("Flux_Fig1_e4nuPaper()");
-
-//gROOT->ProcessLine(".L ExtDataTable1.cpp"); gROOT->ProcessLine("ExtDataTable1()"); // do it again
+gROOT->ProcessLine(".L ExtDataTable1.cpp"); gROOT->ProcessLine("ExtDataTable1()"); // do it again
 
 //gROOT->ProcessLine(".L OverlayMultiplicities_FigExtData7.cpp"); gROOT->ProcessLine("OverlayMultiplicities_FigExtData7()");
 
@@ -40,7 +40,7 @@
 
 //gROOT->ProcessLine(".L OverlayDeltaAlphaT_FigExtData10.cpp"); gROOT->ProcessLine("OverlayDeltaAlphaT_FigExtData10()");
 
-gROOT->ProcessLine(".L OverlayDeltaPhiT_FigExtData10.cpp"); gROOT->ProcessLine("OverlayDeltaPhiT_FigExtData10()");
+//gROOT->ProcessLine(".L OverlayDeltaPhiT_FigExtData10.cpp"); gROOT->ProcessLine("OverlayDeltaPhiT_FigExtData10()");
 
 //gROOT->ProcessLine(".L OverlayQ2VsNu_FigExtData6.cpp"); gROOT->ProcessLine("OverlayQ2VsNu_FigExtData6()");
 

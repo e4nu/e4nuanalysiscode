@@ -118,7 +118,7 @@ void OverlayDeltaPhiT_FigExtData10() {
 
 //	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
 	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
-//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");	
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");	
 
 //	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} P_{T} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
 	NameOfPlots.push_back("DeltaPhiT_Int_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} #delta#phi_{T} [deg]"); OutputPlotNames.push_back("DeltaPhiT_Int_0");
@@ -165,13 +165,13 @@ void OverlayDeltaPhiT_FigExtData10() {
 
 			for (int WhichEnergy = 0; WhichEnergy < NEnergies; WhichEnergy ++) {
 
-				double MaxHeight = 22; // In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
+				double MaxHeight = 0.055; // In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
 
 				// Loop over the nuclei
 
 				for (int WhichNucleus = 0; WhichNucleus < NNuclei; WhichNucleus ++) {
 
-					if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.55; }
+					if (nucleus[WhichNucleus] == "56Fe") { MaxHeight = MaxHeight * 0.95; }
 
 					// ---------------------------------------------------------------------------------------------------------------
 
@@ -202,7 +202,7 @@ void OverlayDeltaPhiT_FigExtData10() {
 					pad->SetTopMargin(0.0);
 					if (nucleus[WhichNucleus] == "12C") { pad->SetTopMargin(0.01); }
 					pad->SetLeftMargin(0.);
-if (DoubleE[WhichEnergy] == 1.161 ) { pad->SetLeftMargin(0.08); }
+if (DoubleE[WhichEnergy] == 1.161 ) { pad->SetLeftMargin(0.13); }
 					pad->SetRightMargin(0.0);
 					if (DoubleE[WhichEnergy] == 4.461 ) { pad->SetRightMargin(0.01); }
 					pad->SetFrameBorderSize(10);
@@ -401,11 +401,11 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 
 							} // end of the look over the GENIE break down
 							
-TH1D* CloneBreakDown = (TH1D*)BreakDownPlots[0]->Clone();
-for (int j = 1; j < 4; j++) { CloneBreakDown->Add(BreakDownPlots[j]); }
-CloneBreakDown->SetLineColor(kBlack);
-CloneBreakDown->SetLineStyle(kSolid);
-Plots[WhichFSIModel] = CloneBreakDown;
+//TH1D* CloneBreakDown = (TH1D*)BreakDownPlots[0]->Clone();
+//for (int j = 1; j < 4; j++) { CloneBreakDown->Add(BreakDownPlots[j]); }
+//CloneBreakDown->SetLineColor(kBlack);
+//CloneBreakDown->SetLineStyle(kSolid);
+//Plots[WhichFSIModel] = CloneBreakDown;
 
 
 						} // End of the SuSav2 if statement for breakdown
@@ -422,8 +422,8 @@ Plots[WhichFSIModel] = CloneBreakDown;
 //						Plots[0]->GetYaxis()->SetRangeUser(0.,height*max);
 
 
-//Plots[0]->GetYaxis()->SetRangeUser(0.,MaxHeight);
-Plots[0]->GetYaxis()->SetRangeUser(0.,1.7*Plots[0]->GetMaximum());
+Plots[0]->GetYaxis()->SetRangeUser(0.,MaxHeight);
+//Plots[0]->GetYaxis()->SetRangeUser(0.,1.1*Plots[0]->GetMaximum());
 
 						double localmin = Plots[WhichFSIModel]->GetBinContent(Plots[WhichFSIModel]->FindBin(4)); // multiplicity 4 is the highest one in data
 						if (localmin < min && localmin != 0) { min = localmin; }
@@ -470,10 +470,10 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 					cout << endl << endl << nucleus[WhichNucleus]+" "+E[WhichEnergy] << " SuSav2 Chi2/ndof = ";
 					cout << Chi2Double << "/" << NBinsX << endl << endl;
 					
-//					int G2018Chi2Double = Chi2(Plots[0],Plots[2],LowBin,HighBin);
-//					
-//					cout << nucleus[WhichNucleus]+" "+E[WhichEnergy] << " G2018 Chi2/ndof = ";
-//					cout << G2018Chi2Double << "/" << NBinsX << endl << endl;					
+					int G2018Chi2Double = Chi2(Plots[0],Plots[2],LowBin,HighBin);
+					
+					cout << nucleus[WhichNucleus]+" "+E[WhichEnergy] << " G2018 Chi2/ndof = ";
+					cout << G2018Chi2Double << "/" << NBinsX << endl << endl;					
 
 					// --------------------------------------------------------------------------------------------------------
 
@@ -497,7 +497,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		latexIron.SetTextFont(FontStyle);
 		latexIron.SetTextSize(0.8*TextSize);
 		PlotCanvas->cd();
-		latexIron.DrawLatexNDC(0.3,0.385,"^{56}Fe");
+		latexIron.DrawLatexNDC(0.28,0.385,"^{56}Fe");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -559,7 +559,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the legend
 
 		PlotCanvas->cd();
-		TPad* padLegend = new TPad("padLegend","padLegend",0.07,0.19,0.3,0.53, 21); 
+		TPad* padLegend = new TPad("padLegend","padLegend",0.05,0.19,0.28,0.53, 21); 
 		padLegend->SetFillColor(kWhite); 
 		padLegend->Draw();
 		padLegend->cd();
@@ -568,7 +568,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		legGenieBlackLine->SetBorderSize(0); 
 		legGenieBlackLine->Draw();
 
-//		legGenieBreak->AddEntry(Plots[2],"G2018", "l");
+		legGenieBreak->AddEntry(Plots[2],"G2018", "l");
 		legGenieBreak->SetTextSize(2.*TextSize); 
 		legGenieBreak->SetBorderSize(0); 
 		legGenieBreak->Draw();
@@ -578,7 +578,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the Y-axis units carbon
 
 		PlotCanvas->cd();
-		TPad* padTitle = new TPad("padTitle","padTitle",0.065,0.58,0.09,1., 21); 
+		TPad* padTitle = new TPad("padTitle","padTitle",0.055,0.58,0.08,1., 21); 
 		padTitle->SetFillColor(kWhite); 
 		padTitle->Draw();
 		padTitle->cd();
@@ -595,7 +595,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the Y-axis units iron
 
 		PlotCanvas->cd();
-		TPad* padTitleFe = new TPad("padTitleFe","padTitleFe",0.37,0.18,0.4,0.55,21); 
+		TPad* padTitleFe = new TPad("padTitleFe","padTitleFe",0.34,0.18,0.37,0.55,21); 
 		padTitleFe->SetFillColor(kWhite); 
 		padTitleFe->Draw();
 		padTitleFe->cd();
@@ -628,32 +628,32 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the Y-axis 1. point
 
 		PlotCanvas->cd();
-		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.41,0.34,0.426,0.39,21); 
+		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.38,0.325,0.425,0.37,21); 
 		padTitleOne->SetFillColor(kWhite); 
 		padTitleOne->Draw();
 		padTitleOne->cd();
 
 		TLatex latexYTitleOne;
 		latexYTitleOne.SetTextFont(FontStyle);
-		latexYTitleOne.SetTextSize(20*TextSize);
+		latexYTitleOne.SetTextSize(12*TextSize);
 		latexYTitleOne.SetTextColor(kBlack);
-		latexYTitleOne.DrawLatexNDC(0.,0.1,"5");
+		latexYTitleOne.DrawLatexNDC(0.,0.1,"0.02");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
 		// Extra pad for the Y-axis 2. point
 
 		PlotCanvas->cd();
-		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.40,0.505,0.425,0.555,21); 
+		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.38,0.485,0.425,0.53,21); 
 		padTitleTwo->SetFillColor(kWhite); 
 		padTitleTwo->Draw();
 		padTitleTwo->cd();
 
 		TLatex latexYTitleTwo;
 		latexYTitleTwo.SetTextFont(FontStyle);
-		latexYTitleTwo.SetTextSize(13*TextSize);
+		latexYTitleTwo.SetTextSize(12*TextSize);
 		latexYTitleTwo.SetTextColor(kBlack);
-		latexYTitleTwo.DrawLatexNDC(0.,0.1,"10");
+		latexYTitleTwo.DrawLatexNDC(0.,0.1,"0.04");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -678,9 +678,9 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the lower X-axis to cover half zeros
 
 		PlotCanvas->cd();
-		TPad* padWhitePadThree = new TPad("padWhitePadThree","padWhitePadThree",0.111,0.551,0.131,0.586,21); 
+		TPad* padWhitePadThree = new TPad("padWhitePadThree","padWhitePadThree",0.131,0.551,0.151,0.586,21); 
 		padWhitePadThree->SetFillColor(kWhite); 
-		padWhitePadThree->Draw();
+//		padWhitePadThree->Draw();
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 

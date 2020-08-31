@@ -19,7 +19,7 @@
 
 // Extended Data Figures
 
-gROOT->ProcessLine(".L ExtDataTable1.cpp"); gROOT->ProcessLine("ExtDataTable1()"); // do it again
+//gROOT->ProcessLine(".L ExtDataTable1.cpp"); gROOT->ProcessLine("ExtDataTable1()"); // do it again
 
 //gROOT->ProcessLine(".L OverlayMultiplicities_FigExtData7.cpp"); gROOT->ProcessLine("OverlayMultiplicities_FigExtData7()");
 
@@ -38,7 +38,7 @@ gROOT->ProcessLine(".L ExtDataTable1.cpp"); gROOT->ProcessLine("ExtDataTable1()"
 
 // Playground Code
 
-//gROOT->ProcessLine(".L OverlayDeltaAlphaT_FigExtData10.cpp"); gROOT->ProcessLine("OverlayDeltaAlphaT_FigExtData10()");
+gROOT->ProcessLine(".L OverlayDeltaAlphaT_FigExtData10.cpp"); gROOT->ProcessLine("OverlayDeltaAlphaT_FigExtData10()");
 
 //gROOT->ProcessLine(".L OverlayDeltaPhiT_FigExtData10.cpp"); gROOT->ProcessLine("OverlayDeltaPhiT_FigExtData10()");
 

@@ -165,7 +165,7 @@ void OverlayDeltaAlphaT_FigExtData10() {
 
 			for (int WhichEnergy = 0; WhichEnergy < NEnergies; WhichEnergy ++) {
 
-				double MaxHeight = 0.022; // In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
+				double MaxHeight = 0.05; // In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
 
 				// Loop over the nuclei
 
@@ -307,7 +307,8 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 //						if (DoubleE[WhichEnergy] == 2.261) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.7,2.4); }
 //						if (DoubleE[WhichEnergy] == 4.461) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.3,4.6); }
 
-//						for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin(); }
+int NRebin = 1;
+						for (int i = 0; i < NRebin; i++) { Plots[WhichFSIModel]->Rebin(); }
 
 						double LowRange = 0.;
 						double HighRange = 180.;						
@@ -350,7 +351,7 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 
 								BreakDownPlots.push_back( (TH1D*)( FileSample->Get("DeltaAlphaT_Int_"+ToString(j)) ) );
 
-//								for (int i = 0; i < 2; i++) { BreakDownPlots[j-1]->Rebin(); }
+								for (int i = 0; i < NRebin; i++) { BreakDownPlots[j-1]->Rebin(); }
 
 								//-----------------------------------------------------------------------------------------------
 
@@ -504,7 +505,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
 //		TPad* pad1GeV = new TPad("pad1GeV","pad1GeV",0.125,0.89,0.315,0.99,21);
-		TPad* pad1GeV = new TPad("pad1GeV","pad1GeV",0.185,0.89,0.375,0.99,21);
+		TPad* pad1GeV = new TPad("pad1GeV","pad1GeV",0.18,0.89,0.34,0.99,21);
 		pad1GeV->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		pad1GeV->Draw();
@@ -518,7 +519,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
 //		TPad* pad2GeV = new TPad("pad2GeV","pad2GeV",0.45,0.89,0.6,0.99,21); 
-		TPad* pad2GeV = new TPad("pad2GeV","pad2GeV",0.53,0.89,0.68,0.99,21); 
+		TPad* pad2GeV = new TPad("pad2GeV","pad2GeV",0.5,0.89,0.65,0.99,21); 
 		pad2GeV->SetFillColor(kWhite); 
 		PlotCanvas->cd();
 		pad2GeV->Draw();
@@ -580,7 +581,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the Y-axis units carbon
 
 		PlotCanvas->cd();
-		TPad* padTitle = new TPad("padTitle","padTitle",0.055,0.58,0.08,1., 21); 
+		TPad* padTitle = new TPad("padTitle","padTitle",0.052,0.58,0.077,1., 21); 
 		padTitle->SetFillColor(kWhite); 
 		padTitle->Draw();
 		padTitle->cd();

@@ -93,8 +93,8 @@ void PrettyPlot(TH1D* h){
 
 void OverlayThetaEPrimeEcalSlices() {
 
-	TFile* file_Data = TFile::Open("../myFiles/2_261/Data_Final/NoxBCut/12C_2_261_Data_Final_Plots_FSI_em.root","readonly");
-	TFile* file_SuSav2 = TFile::Open("../myFiles/2_261/SuSav2_RadCorr_LFGM/NoxBCut/12C_2_261_SuSav2_RadCorr_LFGM_Plots_FSI_em.root","readonly");	
+	TFile* file_Data = TFile::Open("../../myFiles/2_261/Data_Final/NoxBCut/12C_2_261_Data_Final_Plots_FSI_em.root","readonly");
+	TFile* file_SuSav2 = TFile::Open("../../myFiles/2_261/SuSav2_RadCorr_LFGM/NoxBCut/12C_2_261_SuSav2_RadCorr_LFGM_Plots_FSI_em.root","readonly");	
 	
 	// ----------------------------------------------------------------------------------------------------------------
 	

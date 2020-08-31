@@ -77,6 +77,8 @@ void Flux_Fig1_e4nuPaper() {
 	CLAS_Graph->SetLineColor(kGreen+2);	
 	CLAS_Graph->Draw("ac");
 
+	ClasFluxCanvas->SaveAs("../../myPlots/pdf/IncidentFlux.pdf");
+
 //	TLatex* ClasLatex = new TLatex(0.65,0.8,"Incident");
 //	ClasLatex->SetTextFont(TextFont);
 //	ClasLatex->SetTextSize(TextSize);
@@ -106,7 +108,7 @@ void Flux_Fig1_e4nuPaper() {
 	mix_Graph->GetYaxis()->SetRangeUser(0,10);
 	mix_Graph->GetYaxis()->SetNdivisions(6);
 //	mix_Graph->GetYaxis()->SetTitle("Extracted #Phi_{e} [a.u]");
-	mix_Graph->GetYaxis()->SetTitle("Reconstructed #nu_{e} Flux");
+	mix_Graph->GetYaxis()->SetTitle("Inferred #nu_{e} Flux");
 	mix_Graph->GetYaxis()->SetTitleFont(TextFont);
 	mix_Graph->GetYaxis()->SetLabelFont(TextFont);
 	mix_Graph->GetYaxis()->SetTitleSize(TextSize);
@@ -124,6 +126,8 @@ void Flux_Fig1_e4nuPaper() {
 	TH1D* CLAS_Graph_Clone = (TH1D*)(CLAS_Graph->Clone());
 	CLAS_Graph_Clone->SetLineWidth(2);
 	CLAS_Graph_Clone->Draw("same c");
+
+	GENIEFluxCanvas->SaveAs("../../myPlots/pdf/InferredFlux.pdf");
 
 //	TLatex* GenieLatex = new TLatex(0.55,0.8,"Reconstructed");
 //	GenieLatex->SetTextFont(TextFont);

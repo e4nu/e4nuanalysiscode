@@ -704,15 +704,15 @@ void genie_analysis::Loop(Int_t choice) {
 
 	// ---------------------------------------------------------------------------------------------------
 
-	double MinCosThetaEPrime = -1, MaxCosThetaEPrime = 1.; int CosThetaEPrimeSlices = 20;
+	double MinCosThetaEPrime = 0, MaxCosThetaEPrime = 1.; int CosThetaEPrimeSlices = 20;
 	double CosThetaEPrimeStep = (MaxCosThetaEPrime - MinCosThetaEPrime) / CosThetaEPrimeSlices;
 	TH1F *h1_EePrime_InCosThetaEPrimeSlices[CosThetaEPrimeSlices];
 
 	for (int WhichCosThetaEPrimeSlice = 0 ; WhichCosThetaEPrimeSlice < CosThetaEPrimeSlices; WhichCosThetaEPrimeSlice++ ) {
 
-		int MinCosThetaEPrimeSlice = (MinCosThetaEPrime+WhichCosThetaEPrimeSlice*CosThetaEPrimeStep) * 10;
-		int MaxCosThetaEPrimeSlice = (MinCosThetaEPrime+(WhichCosThetaEPrimeSlice+1)*CosThetaEPrimeStep)*10;
-		h1_EePrime_InCosThetaEPrimeSlices[WhichCosThetaEPrimeSlice] = new TH1F(Form("h1_EePrime_InCosThetaE_%d_To_%d_Slices",MinCosThetaEPrimeSlice,MaxCosThetaEPrimeSlice),"",500,0,5);
+		//int MinCosThetaEPrimeSlice = (MinCosThetaEPrime+WhichCosThetaEPrimeSlice*CosThetaEPrimeStep) * 10;
+		//int MaxCosThetaEPrimeSlice = (MinCosThetaEPrime+(WhichCosThetaEPrimeSlice+1)*CosThetaEPrimeStep)*10;
+		h1_EePrime_InCosThetaEPrimeSlices[WhichCosThetaEPrimeSlice] = new TH1F(Form("h1_EePrime_InCosThetaE_%d_To_%d_Slices",WhichCosThetaEPrimeSlice,WhichCosThetaEPrimeSlice+1),"",500,0,5);
 
 	}
 	
@@ -1027,7 +1027,7 @@ void genie_analysis::Loop(Int_t choice) {
 		int EePrimeSlice = V4_el.E() / EePrimeStep;
 		int ThetaSlice2D = V4_el.Theta()*180./TMath::Pi() / ThetaStep2D;
 		int EePrimeSlice2D = V4_el.E() / EePrimeStep2D;
-		int CosThetaEPrimeSlice = cos(el_theta) / CosThetaEPrimeStep;
+		int CosThetaEPrimeSlice = TMath::Abs(cos(el_theta)) / CosThetaEPrimeStep;
  
 		//Now we are done with the selection of electrons. Next step is looking for other hadrons in the events
 

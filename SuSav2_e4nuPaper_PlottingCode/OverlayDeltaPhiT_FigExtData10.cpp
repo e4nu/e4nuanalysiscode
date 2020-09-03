@@ -165,7 +165,7 @@ void OverlayDeltaPhiT_FigExtData10() {
 
 			for (int WhichEnergy = 0; WhichEnergy < NEnergies; WhichEnergy ++) {
 
-				double MaxHeight = 0.055; // In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
+				double MaxHeight = 0.14; // In order to use y-axis ticks with common scale, constraint range between (0,MaxHeight)
 
 				// Loop over the nuclei
 
@@ -307,7 +307,8 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 //						if (DoubleE[WhichEnergy] == 2.261) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.7,2.4); }
 //						if (DoubleE[WhichEnergy] == 4.461) { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.3,4.6); }
 
-//						for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin(); }
+int NRebin = 1;
+						for (int i = 0; i < NRebin; i++) { Plots[WhichFSIModel]->Rebin(); }
 
 						double LowRange = 0.;
 						double HighRange = 180.;						
@@ -350,7 +351,7 @@ Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(1.2*TextSize);
 
 								BreakDownPlots.push_back( (TH1D*)( FileSample->Get("DeltaPhiT_Int_"+ToString(j)) ) );
 
-//								for (int i = 0; i < 2; i++) { BreakDownPlots[j-1]->Rebin(); }
+								for (int i = 0; i < NRebin; i++) { BreakDownPlots[j-1]->Rebin(); }
 
 								//-----------------------------------------------------------------------------------------------
 
@@ -612,7 +613,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the Y-axis 0. point
 
 		PlotCanvas->cd();
-		TPad* padTitleZero = new TPad("padTitleZero","padTitleZero",0.41,0.17,0.426,0.22,21); 
+		TPad* padTitleZero = new TPad("padTitleZero","padTitleZero",0.405,0.17,0.421,0.22,21); 
 		padTitleZero->SetFillColor(kWhite); 
 		padTitleZero->Draw();
 		padTitleZero->cd();
@@ -628,7 +629,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the Y-axis 1. point
 
 		PlotCanvas->cd();
-		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.38,0.325,0.425,0.37,21); 
+		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.385,0.325,0.425,0.37,21); 
 		padTitleOne->SetFillColor(kWhite); 
 		padTitleOne->Draw();
 		padTitleOne->cd();
@@ -637,14 +638,14 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		latexYTitleOne.SetTextFont(FontStyle);
 		latexYTitleOne.SetTextSize(12*TextSize);
 		latexYTitleOne.SetTextColor(kBlack);
-		latexYTitleOne.DrawLatexNDC(0.,0.1,"0.02");
+		latexYTitleOne.DrawLatexNDC(0.,0.1,"0.05");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
 		// Extra pad for the Y-axis 2. point
 
 		PlotCanvas->cd();
-		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.38,0.485,0.425,0.53,21); 
+		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.395,0.48,0.42,0.525,21); 
 		padTitleTwo->SetFillColor(kWhite); 
 		padTitleTwo->Draw();
 		padTitleTwo->cd();
@@ -653,7 +654,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		latexYTitleTwo.SetTextFont(FontStyle);
 		latexYTitleTwo.SetTextSize(12*TextSize);
 		latexYTitleTwo.SetTextColor(kBlack);
-		latexYTitleTwo.DrawLatexNDC(0.,0.1,"0.04");
+		latexYTitleTwo.DrawLatexNDC(0.,0.1,"0.1");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 

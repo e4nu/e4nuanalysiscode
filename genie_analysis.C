@@ -374,6 +374,8 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_Q2Cal_weight = new TH1F("h1_Q2Cal_weight","",400,0,6);
 	TH1F *h1_nuCal_weight = new TH1F("h1_nuCal_weight","",400,0,3);
 
+	TH1F *h1_EQE_FullyInclusive = new TH1F("h1_EQE_FullyInclusive","",6000,0.,6.);
+
 	// -------------------------------------------------------------------------------------------------------
 
 	//Binning for energy reconstruction histograms
@@ -1003,6 +1005,8 @@ void genie_analysis::Loop(Int_t choice) {
 		//Set q vector for the following rotations for the subtraction procedure
 		rotation->SetQVector(V3_q);
 //		rotation->PrintQVector();
+
+		h1_EQE_FullyInclusive->Fill(E_rec,WeightIncl);
 
 		h1_el_mom->Fill(V4_el_uncorr.Rho(),WeightIncl);
 		h1_el_mom_ratio->Fill(V4_el.Rho()/V4_el_uncorr.Rho(),WeightIncl);

@@ -615,7 +615,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the Y-axis 0. point
 
 		PlotCanvas->cd();
-		TPad* padTitleZero = new TPad("padTitleZero","padTitleZero",0.41,0.17,0.426,0.22,21); 
+		TPad* padTitleZero = new TPad("padTitleZero","padTitleZero",0.405,0.17,0.421,0.22,21); 
 		padTitleZero->SetFillColor(kWhite); 
 		padTitleZero->Draw();
 		padTitleZero->cd();
@@ -631,7 +631,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the Y-axis 1. point
 
 		PlotCanvas->cd();
-		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.38,0.325,0.425,0.375,21); 
+		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.38,0.305,0.425,0.355,21); 
 		padTitleOne->SetFillColor(kWhite); 
 		padTitleOne->Draw();
 		padTitleOne->cd();
@@ -640,14 +640,14 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		latexYTitleOne.SetTextFont(FontStyle);
 		latexYTitleOne.SetTextSize(12*TextSize);
 		latexYTitleOne.SetTextColor(kBlack);
-		latexYTitleOne.DrawLatexNDC(0.,0.1,"0.01");
+		latexYTitleOne.DrawLatexNDC(0.,0.1,"0.02");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 
 		// Extra pad for the Y-axis 2. point
 
 		PlotCanvas->cd();
-		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.38,0.48,0.425,0.53,21); 
+		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.38,0.445,0.425,0.495,21); 
 		padTitleTwo->SetFillColor(kWhite); 
 		padTitleTwo->Draw();
 		padTitleTwo->cd();
@@ -656,7 +656,7 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		latexYTitleTwo.SetTextFont(FontStyle);
 		latexYTitleTwo.SetTextSize(12*TextSize);
 		latexYTitleTwo.SetTextColor(kBlack);
-		latexYTitleTwo.DrawLatexNDC(0.,0.1,"0.02");
+		latexYTitleTwo.DrawLatexNDC(0.,0.1,"0.04");
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------
 

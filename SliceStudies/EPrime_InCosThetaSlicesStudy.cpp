@@ -112,7 +112,8 @@ void EPrime_InCosThetaSlicesStudy() {
 
 	//int Counter = 0;	
 	
-	for (int WhichCosThetaSlice = 0 ; WhichCosThetaSlice < CosThetaEPrimeSlices; WhichCosThetaSlice++ ) {
+//	for (int WhichCosThetaSlice = 11 ; WhichCosThetaSlice < CosThetaEPrimeSlices; WhichCosThetaSlice++ ) {
+	for (int WhichCosThetaSlice = 11 ; WhichCosThetaSlice < 19; WhichCosThetaSlice++ ) {
 
 		TCanvas* SuSav2Canvas_EePrime_InThetaSlices = new TCanvas("SuSav2Canvas_ECal_EePrimeAndThetaSlices_CosThetaBin_"+ToString(WhichCosThetaSlice),\
 								               "SuSav2Canvas_ECal_EePrimeAndThetaSlices_CosThetaBin_"+ToString(WhichCosThetaSlice),\
@@ -128,11 +129,12 @@ void EPrime_InCosThetaSlicesStudy() {
 		
 
 		PrettyPlot(h1_EePrime_Data);
+		PrettyPlot(h1_EePrime_SuSav2);		
+
 		h1_EePrime_Data->SetLineColor(kBlack);
-		h1_EePrime_Data->GetYaxis()->SetRangeUser(0,1.25*h1_EePrime_Data->GetMaximum());							
+		h1_EePrime_Data->GetYaxis()->SetRangeUser(0,1.25*TMath::Max(h1_EePrime_Data->GetMaximum(),h1_EePrime_SuSav2->GetMaximum()));							
 		h1_EePrime_Data->Draw("hist same");
 		
-		PrettyPlot(h1_EePrime_SuSav2);
 		h1_EePrime_SuSav2->SetLineColor(kBlue);
 		h1_EePrime_SuSav2->Draw("hist same");
 

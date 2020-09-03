@@ -57,7 +57,7 @@ void ExtDataTable1() {
 	
 //	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");
 	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_NoRadCorr");	
-//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
 
 //	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E_{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
 //	NameOfPlots.push_back("eRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E_{QE} [GeV]");  OutputPlotNames.push_back("eRecoEnergy_slice_0");
@@ -127,62 +127,6 @@ void ExtDataTable1() {
 
 							// ----------------------------------------------------------------------------
 
-if (E[WhichEnergy] == "4_461") { for (int i = 0; i < 3; i++) { Plots[WhichFSIModel]->Rebin(); } }
-
-							double ScalingFactor = 1./Plots[WhichFSIModel]->Integral();
-							Plots[WhichFSIModel]->Scale(ScalingFactor);
-
-Plots[WhichFSIModel]->GetXaxis()->SetTitle(LabelOfPlots[WhichPlot]);
-
-if (E[WhichEnergy] == "1_161") { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,1.8); }
-if (E[WhichEnergy] == "2_261") { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.5,3.); }
-if (E[WhichEnergy] == "4_461") { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.2,6.); }
-
-//double ClosePeakPerc = 0.1; 
-//double LowE = (1.-ClosePeakPerc)*DoubleE[WhichEnergy], HighE = (1.+ClosePeakPerc)*DoubleE[WhichEnergy];
-
-//							// ----------------------------------------------------------------------------
-
-////Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(LowE,HighE);
-////							double MaxContent = Plots[WhichFSIModel]->GetMaximum();
-//							int BinWithMaxContent = -99;
-
-//							int Nbins = Plots[WhichFSIModel]->GetXaxis()->GetNbins();
-
-//							double MaxContent = 0;
-
-//							for (int i = 0; i < Nbins; i++) {
-
-//								if ( Plots[WhichFSIModel]->GetBinCenter(i+1) > LowE && Plots[WhichFSIModel]->GetBinCenter(i+1) < HighE) {
-//
-////									if (Plots[WhichFSIModel]->GetBinContent(i+1) ==  MaxContent) { BinWithMaxContent = i+1; }
-//									if (Plots[WhichFSIModel]->GetBinContent(i+1) >  MaxContent) { 
-//										BinWithMaxContent = i+1; 
-//										MaxContent = Plots[WhichFSIModel]->GetBinContent(i+1);
-//									}
-
-//								}
-//	
-//							}
-
-//							TAxis *xaxis = Plots[WhichFSIModel]->GetXaxis();
-//							double binCenter = xaxis->GetBinCenter(BinWithMaxContent);
-
-							// ------------------------------------------------------------------------------------------------------------
-
-							// Percentages with respect to the peak energy
-/*
-							double MinE = (1.-range)*binCenter;
-							double MaxE = (1.+range)*binCenter;
-
-							int MinBin = Plots[WhichFSIModel]->FindBin(MinE);
-							int MaxBin = Plots[WhichFSIModel]->FindBin(MaxE);
-							int percentage = Plots[WhichFSIModel]->Integral(MinBin,MaxBin) / Plots[WhichFSIModel]->Integral() * 100.;
-
-							cout << endl << FSILabel[WhichFSIModel] << "  " << LabelOfPlots[WhichPlot] << ": fraction within " << int(range*100.) 
-							     << "% = " << percentage << endl;
-*/
-
 							// Percentages with respect to the true beam energy
 
 							double MinE = (1.-range)*DoubleE[WhichEnergy];
@@ -197,6 +141,18 @@ if (E[WhichEnergy] == "4_461") { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(
 							// ------------------------------------------------------------------------------------------------------------
 
 							PlotCanvas->cd();
+
+							Plots[WhichFSIModel]->GetXaxis()->SetTitle(LabelOfPlots[WhichPlot]);
+
+//if (E[WhichEnergy] == "2_261" && nucleus[WhichNucleus] == "4He") { for (int i = 0; i < 7; i++) { Plots[WhichFSIModel]->Rebin(); } }
+if (E[WhichEnergy] == "4_461") { for (int i = 0; i < 3; i++) { Plots[WhichFSIModel]->Rebin(); } }
+
+							double ScalingFactor = 1./Plots[WhichFSIModel]->Integral();
+							Plots[WhichFSIModel]->Scale(ScalingFactor);
+
+							if (E[WhichEnergy] == "1_161") { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,1.8); }
+							if (E[WhichEnergy] == "2_261") { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.5,3.); }
+							if (E[WhichEnergy] == "4_461") { Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.2,6.); }
 
 							Plots[WhichFSIModel]->SetLineColor(Colors[WhichFSIModel]);
 							if ( FSIModel[WhichFSIModel] == "Data_Final" ) { Plots[WhichFSIModel]->Draw("e same"); }

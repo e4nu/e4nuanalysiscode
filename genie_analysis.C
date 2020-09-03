@@ -1054,7 +1054,6 @@ void genie_analysis::Loop(Int_t choice) {
 		int CosThetaSlice2D = V3_el.CosTheta() / CosThetaStep2D;
 		int EePrimeSlice2D = V4_el.E() / EePrimeStep2D;
 		int CosThetaEPrimeSlice = V3_el.CosTheta() / CosThetaEPrimeStep;
-		int CosThetaEPrimeSlice2D = V3_el.CosTheta() / CosThetaEPrimeStep2D;
  
 		//Now we are done with the selection of electrons. Next step is looking for other hadrons in the events
 

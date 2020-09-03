@@ -729,8 +729,8 @@ void genie_analysis::Loop(Int_t choice) {
 	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.) { MinEePrime2D = 1.; MaxEePrime2D = 4.; }
 
 	double EePrimeStep2D = (MaxEePrime2D - MinEePrime2D) / EePrimeSlices2D;
-//	double MinTheta2D = 15, MaxTheta2D = 60; int ThetaSlices2D = 3;	
-//	int ThetaStep2D = (MaxTheta2D - MinTheta2D) / ThetaSlices2D;
+	double MinTheta2D = 15, MaxTheta2D = 60; int ThetaSlices2D = 3;	
+	int ThetaStep2D = (MaxTheta2D - MinTheta2D) / ThetaSlices2D;
 //	TH1F *h1_ECal_InEePrimeAndThetaSlices[EePrimeSlices2D][ThetaSlices2D];
 
 	double MinCosTheta2D = 0.55, MaxCosTheta2D = 1.; int CosThetaSlices2D = 3;	

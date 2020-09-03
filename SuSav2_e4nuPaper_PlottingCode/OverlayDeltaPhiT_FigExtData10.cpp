@@ -629,14 +629,14 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the Y-axis 1. point
 
 		PlotCanvas->cd();
-		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.385,0.325,0.425,0.37,21); 
+		TPad* padTitleOne = new TPad("padTitleOne","padTitleOne",0.38,0.325,0.425,0.37,21); 
 		padTitleOne->SetFillColor(kWhite); 
 		padTitleOne->Draw();
 		padTitleOne->cd();
 
 		TLatex latexYTitleOne;
 		latexYTitleOne.SetTextFont(FontStyle);
-		latexYTitleOne.SetTextSize(12*TextSize);
+		latexYTitleOne.SetTextSize(13*TextSize);
 		latexYTitleOne.SetTextColor(kBlack);
 		latexYTitleOne.DrawLatexNDC(0.,0.1,"0.05");
 
@@ -645,14 +645,14 @@ TLine* line = new TLine(0.95*DoubleE[WhichEnergy],0.,0.95*DoubleE[WhichEnergy],M
 		// Extra pad for the Y-axis 2. point
 
 		PlotCanvas->cd();
-		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.395,0.48,0.42,0.525,21); 
+		TPad* padTitleTwo = new TPad("padTitleTwo","padTitleTwo",0.39,0.48,0.42,0.525,21); 
 		padTitleTwo->SetFillColor(kWhite); 
 		padTitleTwo->Draw();
 		padTitleTwo->cd();
 
 		TLatex latexYTitleTwo;
 		latexYTitleTwo.SetTextFont(FontStyle);
-		latexYTitleTwo.SetTextSize(12*TextSize);
+		latexYTitleTwo.SetTextSize(13*TextSize);
 		latexYTitleTwo.SetTextColor(kBlack);
 		latexYTitleTwo.DrawLatexNDC(0.,0.1,"0.1");
 

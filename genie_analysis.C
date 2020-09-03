@@ -321,14 +321,14 @@ void genie_analysis::Loop(Int_t choice) {
 	// ---------------------------------------------------------------------------------------------------------------
 
 	double XSecScale = 1.;
-	TFile* XSecFile = TFile::Open("/uboone/app/users/apapadop/R-3_0_6/mySplines/xsec_gxspl-FNALbig.root"); 
+//	TFile* XSecFile = TFile::Open("/uboone/app/users/apapadop/R-3_0_6/mySplines/xsec_gxspl-FNALbig.root"); 
 
-	TGraph* gr = NULL;
+//	TGraph* gr = NULL;
 
-	if (XSecFile) {
-		TDirectory* dir = (TDirectory*)(XSecFile->Get("nu_mu_C12"));
-		gr = (TGraph*)dir->Get("tot_cc");
-	}
+//	if (XSecFile) {
+//		TDirectory* dir = (TDirectory*)(XSecFile->Get("nu_mu_C12"));
+//		gr = (TGraph*)dir->Get("tot_cc");
+//	}
 
 	// ---------------------------------------------------------------------------------------------------------------
 
@@ -720,8 +720,15 @@ void genie_analysis::Loop(Int_t choice) {
 	
 	// ---------------------------------------------------------------------------------------------------
 
-	double MinEePrime2D = 0.5, MaxEePrime2D = 2.5; int EePrimeSlices2D = 3;
-	double MinTheta2D = 10, MaxTheta2D = 60; int ThetaSlices2D = 3;	
+	int EePrimeSlices2D = 3;
+	//double MinEePrime2D = 0.5, MaxEePrime2D = 2.6;
+	double MinEePrime2D = -1, MaxEePrime2D = -1;
+
+	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) { MinEePrime2D = 0.; MaxEePrime2D = 1.2; }
+	if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.) { MinEePrime2D = 0.; MaxEePrime2D = 2.1; }
+	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.) { MinEePrime2D = 1.; MaxEePrime2D = 4.; }
+
+	double MinTheta2D = 15, MaxTheta2D = 60; int ThetaSlices2D = 3;	
 	double EePrimeStep2D = (MaxEePrime2D - MinEePrime2D) / EePrimeSlices2D;
 	int ThetaStep2D = (MaxTheta2D - MinTheta2D) / ThetaSlices2D;
 	
@@ -962,9 +969,9 @@ void genie_analysis::Loop(Int_t choice) {
 
 		bool neutrino = false;
 
-		if (neutrino && XSecFile) { 
+		if (neutrino /* && XSecFile*/) { 
 
-			XSecScale = gr->Eval(Ev);
+			//XSecScale = gr->Eval(Ev);
 			Mott_cross_sec = XSecScale;
 
 		}
@@ -1245,6 +1252,11 @@ void genie_analysis::Loop(Int_t choice) {
 		if (num_phot_rad > 0) {
 		  continue;
 		}
+
+		//Skip event if there is at least one charged pion
+		//if (num_pipl > 0 || num_pimi > 0) {
+		//  continue;
+		//}
 
 		// -------------------------------------------------------------------------------------------------------------------------
 

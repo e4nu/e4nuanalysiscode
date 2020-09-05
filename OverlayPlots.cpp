@@ -104,8 +104,8 @@ void OverlayPlots() {
 //	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
 //	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
-//	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
-	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
+	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
+//	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
@@ -119,12 +119,16 @@ void OverlayPlots() {
 
 	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
 
-	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
-//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_RadCorr");
-//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2 NoRad");  DirNames.push_back("hA2018_Truth_RadCorr");
-	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2 Rad");  DirNames.push_back("hA2018_Truth_RadCorr");
-//	FSIModel.push_back("SuSav2_02_11a_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
+////	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("G2018");  DirNames.push_back("hA2018_Truth_RadCorr");
+////	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2 NoRad");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
+////	FSIModel.push_back("SuSav2_02_11a_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
+
+	FSIModel.push_back("Data_Final_NoChargedPions"); FSILabel.push_back("Data"); DirNames.push_back("Data");
+	FSIModel.push_back("hA2018_Final_RadCorr_LFGM_NoChargedPions"); FSILabel.push_back("G2018");  DirNames.push_back("hA2018_Truth_RadCorr");
+	FSIModel.push_back("SuSav2_RadCorr_LFGM_NoChargedPions"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
 
 //	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 //	FSIModel.push_back("hA2018_Truth_NoRadCorr"); FSILabel.push_back("Genie (Truth)");  DirNames.push_back("hA2018_Truth_NoRadCorr");
@@ -330,6 +334,7 @@ void OverlayPlots() {
 							OutputPlotNames[WhichPlot] =="MissMomentum" ||
 							OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_1" ||
 							OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_0" ||
+							OutputPlotNames[WhichPlot] =="eRecoEnergy_slice_0" ||
 							NameOfPlots[WhichPlot] == "h1_Nphot" || 
 							NameOfPlots[WhichPlot] == "h1_Nprot" ||
 							NameOfPlots[WhichPlot] == "h1_Npi" ||
@@ -365,6 +370,7 @@ void OverlayPlots() {
 							OutputPlotNames[WhichPlot] =="InclusiveeRecoEnergy_slice_0" ||
 							OutputPlotNames[WhichPlot] =="FullyInclusiveeRecoEnergy_slice_0" ||
 							OutputPlotNames[WhichPlot] =="MissMomentum" ||
+							OutputPlotNames[WhichPlot] =="eRecoEnergy_slice_0" ||
 							OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_0" ||
 							OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_1" ||
 							OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_2" ||
@@ -382,6 +388,7 @@ void OverlayPlots() {
 							 OutputPlotNames[WhichPlot] =="MissMomentum" ||
 							 OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_1" ||
 							   OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_0" ||
+							   OutputPlotNames[WhichPlot] =="eRecoEnergy_slice_0" ||
 							 OutputPlotNames[WhichPlot] == "nu"
 						) 
 							{ Plots[WhichFSIModel]->GetYaxis()->SetTitle("Weighted Events / GeV");  }

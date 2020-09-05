@@ -108,7 +108,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH2D::SetDefaultSumw2();
 
 	//Choice = 0 is for analysis of CLAS data while choice = 1 is for the analysis of GENIE Simulation
-	if (choice != 1 && choice != 0) {
+	if (choice != 2 && choice != 1 && choice != 0) {
 		std::cout << "This parameter value is not implemented in genie_analysis::Loop(). It should be either 0 or 1. The given value is " << choice << std::endl;
 		std::exit(0);
 	}
@@ -272,7 +272,7 @@ void genie_analysis::Loop(Int_t choice) {
 	if (ftarget.c_str() == "3He") { Target = "3He"; }
 	if (ftarget.c_str() == "4He") { Target = "4He"; }
 
-	if (choice == 1) { //Only need acceptance maps for GENIE simulation data
+	if (choice == 1 || choice == 2) { //Only need acceptance maps for GENIE simulation data
 		file_acceptance = TFile::Open(WhichMap+"/"+WhichMap+"_"+Target+"_E_"+E_acc_file+".root");
 		file_acceptance_p = TFile::Open(WhichMap+"/"+WhichMap+"_"+Target+"_E_"+E_acc_file+"_p.root");
 		file_acceptance_pip = TFile::Open(WhichMap+"/"+WhichMap+"_"+Target+"_E_"+E_acc_file+"_pip.root");
@@ -336,7 +336,8 @@ void genie_analysis::Loop(Int_t choice) {
 
 	TFile *file_out;
 	if (choice == 0) { file_out = new TFile(Form("data_e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");}
-	else { file_out = new TFile(Form("genie_e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");}
+	if (choice == 1){ file_out = new TFile(Form("genie_e2a_ep_%s_%s_neutrino6_united4_radphot_test_SuSav2.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");}
+	if (choice == 2) { file_out = new TFile(Form("genie_e2a_ep_%s_%s_neutrino6_united4_radphot_test_G18_10a_02_11a.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate"); }
 
 	// ---------------------------------------------------------------------------------------------------------------
 
@@ -919,7 +920,7 @@ void genie_analysis::Loop(Int_t choice) {
 		double el_momentum = V3_el.Mag();
 		double el_theta = V3_el.Theta();
 
-		if (choice == 1) { //smearing, fiducials and acceptance ratio for GENIE simulation data
+		if (choice > 0) { //smearing, fiducials and acceptance ratio for GENIE simulation data
 
 			//Smearing of Electron Vector from Simulation
 			SmearedPe = gRandom->Gaus(pl,reso_e*pl);
@@ -1108,7 +1109,7 @@ void genie_analysis::Loop(Int_t choice) {
 			//Start of proton selection
 			if (pdgf[i] == 2212  && pf[i] > 0.3) {
 
-				if ( choice == 1) { //GENIE data
+				if ( choice > 0 ) { //GENIE data
 
 					//Smearing of proton
 					double temp_smear_P = gRandom->Gaus(pf[i],reso_p*pf[i]);
@@ -1137,7 +1138,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			if (pdgf[i] == -211  && pf[i] > 0.15)  { //PI minus
 
-				if ( choice == 1) { //GENIE data
+				if ( choice > 0) { //GENIE data
 
 					//Smearing of pi minus
 					double temp_smear_P = gRandom->Gaus(pf[i],reso_pi*pf[i]);
@@ -1178,7 +1179,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			if ( pdgf[i] == 211  && pf[i] > 0.15)  {
 
-				if ( choice == 1) { //GENIE data
+				if ( choice > 0) { //GENIE data
 					//Smearing of pi plus
 					double temp_smear_P = gRandom->Gaus(pf[i],reso_pi*pf[i]);
 					double temp_smear_E = sqrt( temp_smear_P*temp_smear_P + m_pion * m_pion );
@@ -1220,7 +1221,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 				//Determine photon vector for the cut on radiation photon via angle with respect to the electron
 				TVector3 V3_phot_angles(pxf[i],pyf[i],pzf[i]);
-				if (choice == 1) { //GENIE data
+				if (choice > 0) { //GENIE data
 					//no smearing of GENIE photons
 					double phi_photon = V3_phot_angles.Phi();
 					V3_phot_angles.SetPhi(phi_photon + TMath::Pi()); // Vec.Phi() is between (-180,180)
@@ -1278,7 +1279,7 @@ void genie_analysis::Loop(Int_t choice) {
 		// For GENIE samples, identify the interaction type
 
 		int Interaction = -1;
-		if (choice == 1) {
+		if (choice > 0) {
 
 			if (qel) { Interaction = 1; }
 			if (mec) { Interaction = 2; }
@@ -1327,7 +1328,7 @@ void genie_analysis::Loop(Int_t choice) {
 				V3_prot_corr2.SetXYZ(pxf[index_p[1]+60],pyf[index_p[1]+60],pzf[index_p[1]+60]);
 			}
 
-			if (choice == 1) { //GENIE data, fiducials are done in hadron loop
+			if (choice > 0) { //GENIE data, fiducials are done in hadron loop
 
 				V3_prot_corr1.SetXYZ(Smeared_Pp[0]/pf[index_p[0]] * pxf[index_p[0]],Smeared_Pp[0]/pf[index_p[0]] * pyf[index_p[0]],Smeared_Pp[0]/pf[index_p[0]] * pzf[index_p[0]]);
 				double phi_prot1 = V3_prot_corr1.Phi();
@@ -1456,7 +1457,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_tot_2p[f],LocalWeight);
 					}
 
- 					if (choice == 1) {
+ 					if (choice > 0) {
 
 						ECal_BreakDown[Interaction]->Fill(E_tot_2p[f],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -1525,7 +1526,7 @@ void genie_analysis::Loop(Int_t choice) {
 					V3_1pi_corr.SetXYZ(pxf[ind_pi_phot[0]],pyf[ind_pi_phot[0]],pzf[ind_pi_phot[0]]);
 				}
 
-				if (choice == 1) { //GENIE data
+				if (choice > 0) { //GENIE data
 					pion_acc_ratio = 0;//reset to 0 just to be save
 					V3_1pi_corr.SetXYZ(Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pxf[ind_pi_phot[0]],Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pyf[ind_pi_phot[0]],Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pzf[ind_pi_phot[0]]);
 
@@ -1641,7 +1642,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
 					}
 
- 					if (choice == 1) {
+ 					if (choice > 0) {
 
 						ECal_BreakDown[Interaction]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -1764,7 +1765,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_tot_2p[z],LocalWeight);			
 					}
 
- 					if (choice == 1) {
+ 					if (choice > 0) {
 
 						ECal_BreakDown[Interaction]->Fill(E_tot_2p[z],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -1886,7 +1887,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_tot_2p[z],LocalWeight);			
 					}
 
- 					if (choice == 1) {
+ 					if (choice > 0) {
 
 						ECal_BreakDown[Interaction]->Fill(E_tot_2p[z],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -1954,7 +1955,7 @@ void genie_analysis::Loop(Int_t choice) {
 						pion_acc_ratio[i] = 1; //Acceptance 1 for CLAS data
 					}
 
-					if (choice == 1) { //GENIE data
+					if (choice > 0) { //GENIE data
 						pion_acc_ratio[i] = 0; //reset to 0 just to be same
 						V3_2pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pxf[ind_pi_phot[i]],Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pyf[ind_pi_phot[i]],
 								Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pzf[ind_pi_phot[i]]);
@@ -2069,7 +2070,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_tot_2p[z],LocalWeight);			
 					}
 
- 					if (choice == 1) {
+ 					if (choice > 0) {
 
 						ECal_BreakDown[Interaction]->Fill(E_tot_2p[z],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -2155,7 +2156,7 @@ void genie_analysis::Loop(Int_t choice) {
 					p_acc_ratio[i] = 1; //Acceptance is 1 for CLAS datafile
 				}
 
-				if (choice == 1) { //GENIE data
+				if (choice > 0) { //GENIE data
 
 					p_acc_ratio[i] = 0; //Reset just to be sure
 					V3_prot_corr[i].SetXYZ(Smeared_Pp[i]/pf[index_p[i]] * pxf[index_p[i]],Smeared_Pp[i]/pf[index_p[i]] * pyf[index_p[i]],
@@ -2282,7 +2283,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_cal_3pto2p[count][j],LocalWeight);
 						}
 
-	 					if (choice == 1) {
+	 					if (choice > 0) {
 
 							ECal_BreakDown[Interaction]->Fill(E_cal_3pto2p[count][j],LocalWeight);
 							EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -2414,7 +2415,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_cal[j],LocalWeight);
 					}
 
-	 				if (choice == 1) {
+	 				if (choice > 0) {
 
 						ECal_BreakDown[Interaction]->Fill(E_cal[j],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -2477,7 +2478,7 @@ void genie_analysis::Loop(Int_t choice) {
 					pion_acc_ratio = 1; //Acceptance is 1 for CLAS datafile
 				}
 
-				if (choice == 1){ //GENIE data
+				if (choice > 0){ //GENIE data
 
 					pion_acc_ratio = 0; //Reset to 0 just to be sure
 					V3_pi_corr.SetXYZ(Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pxf[ind_pi_phot[0]],Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pyf[ind_pi_phot[0]],
@@ -2590,7 +2591,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_cal[j],LocalWeight);			
 					}
 
-	 				if (choice == 1) {
+	 				if (choice > 0) {
 
 						ECal_BreakDown[Interaction]->Fill(E_cal[j],LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -2676,7 +2677,7 @@ void genie_analysis::Loop(Int_t choice) {
 					p_acc_ratio[i] = 1; //Acceptance is 1 for CLAS data
 				}
 
-				if (choice == 1) { //GENIE data
+				if (choice > 0) { //GENIE data
 
 					p_acc_ratio[i] = 0; //Reset to 0 just to be sure
 					V3_prot4_corr[i].SetXYZ(Smeared_Pp[i]/pf[index_p[i]] * pxf[index_p[i]],Smeared_Pp[i]/pf[index_p[i]] * pyf[index_p[i]],
@@ -2873,7 +2874,7 @@ void genie_analysis::Loop(Int_t choice) {
 									h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_cal_4pto3p[count][j],LocalWeight);
 								}
 
-				 				if (choice == 1) {
+				 				if (choice > 0) {
 
 									ECal_BreakDown[Interaction]->Fill(E_cal_4pto3p[count][j],LocalWeight);
 									EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -3005,7 +3006,7 @@ void genie_analysis::Loop(Int_t choice) {
 								h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_cal_43pto1p[j],LocalWeight);
 							}
 
-				 			if (choice == 1) {
+				 			if (choice > 0) {
 
 								ECal_BreakDown[Interaction]->Fill(E_cal_43pto1p[j],LocalWeight);
 								EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -3164,7 +3165,7 @@ void genie_analysis::Loop(Int_t choice) {
 										h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_cal_4pto2p[j],LocalWeight);		
 									}
 
-						 			if (choice == 1) {
+						 			if (choice > 0) {
 
 										ECal_BreakDown[Interaction]->Fill(E_cal_4pto2p[j],LocalWeight);
 										EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -3308,7 +3309,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_cal_p4[j],LocalWeight);	
 						}
 		
-						if (choice == 1) {
+						if (choice > 0) {
 
 							ECal_BreakDown[Interaction]->Fill(E_cal_p4[j],LocalWeight);
 							EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -3378,7 +3379,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			// Inclusive Case BreakDown
 			InclusiveEQE_BreakDown[0]->Fill(E_rec,WeightIncl);
-			if (choice == 1 && WeightIncl > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,WeightIncl); }
+			if (choice > 0 && WeightIncl > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,WeightIncl); }
 		}
 
 		//----------------------------- e- ,1pi  -----------------------------------------
@@ -3394,7 +3395,7 @@ void genie_analysis::Loop(Int_t choice) {
 				pion_acc_ratio = 1; //acceptance is 1 for CLAS data
 			}
 
-			if (choice == 1) { //GENIE data
+			if (choice > 0) { //GENIE data
 				pion_acc_ratio = 0; //reset just to be sure
 				V3_pi_corr.SetXYZ(Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pxf[ind_pi_phot[0]],Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pyf[ind_pi_phot[0]],
 						Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pzf[ind_pi_phot[0]]);
@@ -3430,7 +3431,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			// Inclusive Case BreakDown
 			InclusiveEQE_BreakDown[0]->Fill(E_rec,-P_undet*histoweight);
-			if (choice == 1 && P_undet*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,-P_undet*histoweight); }
+			if (choice > 0 && P_undet*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,-P_undet*histoweight); }
 
 			if(!ec_radstat_n[0])  h1_E_rec_1pi->Fill(E_rec,histoweight);
 			if(ec_num_n==1)     	h2_phot_e_angle_Erec->Fill(E_rec,V3_pi_corr.Angle(V4_el.Vect())*TMath::RadToDeg());
@@ -3453,7 +3454,7 @@ void genie_analysis::Loop(Int_t choice) {
 					pion_acc_ratio[i] = 1; //Acceptance is 1 for CLAS data
 				}
 
-				if (choice == 1) { //GENIE data
+				if (choice > 0) { //GENIE data
 					pion_acc_ratio[i] = 0; //Reset just to be secure
 					V3_2pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pxf[ind_pi_phot[i]],Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pyf[ind_pi_phot[i]],
 							Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pzf[ind_pi_phot[i]]);
@@ -3493,7 +3494,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			// Inclusive Case BreakDown
 			InclusiveEQE_BreakDown[0]->Fill(E_rec,(-P_0pi)*histoweight);
-			if (choice == 1 && P_0pi*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(-P_0pi)*histoweight); }
+			if (choice > 0 && P_0pi*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(-P_0pi)*histoweight); }
 
 			//----------------------------- e- ,2pi->1pi->0pi (+)  -----------------------------------------
 
@@ -3505,7 +3506,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 				// Inclusive Case BreakDown
 				InclusiveEQE_BreakDown[0]->Fill(E_rec,(P_1pi[k])*histoweight);
-				if (choice == 1 && P_1pi[k]*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_1pi[k])*histoweight); }
+				if (choice > 0 && P_1pi[k]*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_1pi[k])*histoweight); }
 			}
 
 		} //end if for two pion events
@@ -3531,7 +3532,7 @@ void genie_analysis::Loop(Int_t choice) {
 					pion_acc_ratio[i] = 1; //Acceptance is 1 for CLAS data
 				}
 
-				if (choice == 1) { //GENIE data
+				if (choice > 0) { //GENIE data
 
 					pion_acc_ratio[i] = 0; //Reset just to be sure
 					V3_3pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pxf[ind_pi_phot[i]],Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pyf[ind_pi_phot[i]],
@@ -3574,7 +3575,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			// Inclusive Case BreakDown
 			InclusiveEQE_BreakDown[0]->Fill(E_rec,(P_0pi)*histoweight);
-			if (choice == 1 && P_0pi*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_0pi)*histoweight); }
+			if (choice > 0 && P_0pi*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_0pi)*histoweight); }
 
 			for(int h = 0; h < N_3pi; h++){ //loop over three pions
 
@@ -3586,7 +3587,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 				// Inclusive Case BreakDown
 				InclusiveEQE_BreakDown[0]->Fill(E_rec,(P_1pi[h])*histoweight);
-				if (choice == 1 && P_1pi[h]*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_1pi[h])*histoweight); }
+				if (choice > 0 && P_1pi[h]*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_1pi[h])*histoweight); }
 
 				//---------------------------3pi->2pi->0pi----------------------------------------------
 
@@ -3596,7 +3597,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 				// Inclusive Case BreakDown
 				InclusiveEQE_BreakDown[0]->Fill(E_rec,(P_320pi[h])*histoweight);
-				if (choice == 1 && P_320pi[h]*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_320pi[h])*histoweight); }
+				if (choice > 0 && P_320pi[h]*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(P_320pi[h])*histoweight); }
 
 				//---------------------------3pi->2pi->1pi->0pi----------------------------------------------
 
@@ -3608,7 +3609,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 					// Inclusive Case BreakDown
 					InclusiveEQE_BreakDown[0]->Fill(E_rec,(-P_3210pi[h][g])*histoweight);
-					if (choice == 1 && P_3210pi[h][g]*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(-P_3210pi[h][g])*histoweight); }
+					if (choice > 0 && P_3210pi[h][g]*histoweight > 0) { InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(-P_3210pi[h][g])*histoweight); }
 
 				}
 
@@ -3639,7 +3640,7 @@ void genie_analysis::Loop(Int_t choice) {
 					pion_acc_ratio[i] = 1; //Acceptance is 1 for CLAS data
 				}
 
-				if (choice == 1) { //GENIE data
+				if (choice > 0) { //GENIE data
 
 						pion_acc_ratio[i] = 0; //Reset just to be sure
 						V3_4pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pxf[ind_pi_phot[i]],Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pyf[ind_pi_phot[i]],
@@ -3684,7 +3685,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			// Inclusive Case BreakDown
 			InclusiveEQE_BreakDown[0]->Fill(E_rec,(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight);
-			if (choice == 1 && (-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight != 0) 
+			if (choice > 0 && (-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight != 0) 
 				{ InclusiveEQE_BreakDown[Interaction]->Fill(E_rec,(-P_0pi+P_410pi+P_420pi-P_4210pi+P_430pi-P_4310pi-P_4320pi+P_43210pi)*histoweight); }
 
 			//---------------------------4pi->1pi->0pi----------------------------------------------
@@ -3737,7 +3738,7 @@ void genie_analysis::Loop(Int_t choice) {
 				V3_prot_corr.SetXYZ(pxf[index_p[0]+60], pyf[index_p[0]+60], pzf[index_p[0]+60]);
 				V4_prot_corr.SetPxPyPzE(pxf[index_p[0]+60], pyf[index_p[0]+60], pzf[index_p[0]+60],TMath::Sqrt(m_prot*m_prot+pf[index_p[0]+60]*pf[index_p[0]+60]));
 			}
-			if (choice == 1) { //GENIE data
+			if (choice > 0) { //GENIE data
 				p_acc_ratio = 0; //Reset just to be sure
 				//Fiducial cuts are done in the hadron loop
 				//Vector for proton with momentum smearing
@@ -3902,7 +3903,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_tot,LocalWeight);				
 				}
 
-				if (choice == 1) {
+				if (choice > 0) {
 
 					ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
 					EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -3973,7 +3974,7 @@ void genie_analysis::Loop(Int_t choice) {
 					V3_pi_corr.SetXYZ(pxf[ind_pi_phot[0]], pyf[ind_pi_phot[0]], pzf[ind_pi_phot[0]]);
 				}
 
-				if (choice == 1) { //GENIE data
+				if (choice > 0) { //GENIE data
 
 					pion_acc_ratio = 1; //Reset to 0 just to be sure
 					V3_pi_corr.SetXYZ(Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pxf[ind_pi_phot[0]],Smeared_Ppi[0]/pf[ind_pi_phot[0]] * pyf[ind_pi_phot[0]],
@@ -4086,7 +4087,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_tot,LocalWeight);				
 					}
 
-					if (choice == 1) {
+					if (choice > 0) {
 
 						ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -4160,7 +4161,7 @@ void genie_analysis::Loop(Int_t choice) {
 						pion_acc_ratio[i] = 1; //Acceptance is 1 for CLAS data
 					}
 
-					if (choice == 1) { //GENIE data
+					if (choice > 0) { //GENIE data
 
 						V3_2pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pxf[ind_pi_phot[i]],Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pyf[ind_pi_phot[i]],
 									Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pzf[ind_pi_phot[i]]);
@@ -4275,7 +4276,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_tot,LocalWeight);
 					}
 
-					if (choice == 1) {
+					if (choice > 0) {
 
 						ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
 						EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -4402,7 +4403,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_tot,LocalWeight);					
 				}
 
-				if (choice == 1) {
+				if (choice > 0) {
 
 					ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
 					EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -4466,7 +4467,7 @@ void genie_analysis::Loop(Int_t choice) {
 						pion_acc_ratio[i] = 1; //Acceptance is 1 for CLAS data
 					}
 
-					if (choice == 1) { //GENIE data
+					if (choice > 0) { //GENIE data
 						pion_acc_ratio[i] = 0; //Reset to 0 just to be sure
 						V3_3pi_corr[i].SetXYZ(Smeared_Ppi[i]/pf[ind_pi_phot[i]] * pxf[ind_pi_phot[i]],Smeared_Pp[i]/pf[ind_pi_phot[i]] * pyf[ind_pi_phot[i]],
 									Smeared_Pp[i]/pf[ind_pi_phot[i]] * pzf[ind_pi_phot[i]]);
@@ -4579,7 +4580,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlice2D][CosThetaSlice2D]->Fill(E_tot,LocalWeight);					
 				}
 
-				if (choice == 1) {
+				if (choice > 0) {
 
 					ECal_BreakDown[Interaction]->Fill(E_tot,LocalWeight);
 					EQE_BreakDown[Interaction]->Fill(E_rec,LocalWeight);
@@ -5088,7 +5089,7 @@ void genie_analysis::Loop(Int_t choice) {
 	std::cout << std::endl << "EQE 5% Fraction 2nd Slice = " << int(double(EQESignalEventsWithin5Perc_SecondSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
 	std::cout << std::endl << "EQE 5% Fraction 3rd Slice = " << int(double(EQESignalEventsWithin5Perc_ThirdSlice) / double(SignalEvents)*100.) << " \%"<< std::endl << std::endl;
 
-	if (choice == 1) {
+	if (choice > 0) {
 
 		std::cout << std::endl << "QE Fractional Contribution = " << int(double(QESignalEvents) / double(SignalEvents)*100.) << " \%" << std::endl;
 		std::cout << std::endl << "MEC Fractional Contribution = " << int(double(MECSignalEvents) / double(SignalEvents)*100.) << " \%" << std::endl;

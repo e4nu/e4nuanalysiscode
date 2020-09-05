@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 
 
   if( argc < 5 ){
-    std::cout<<"Please specify the target (3He, 56Fe, C12, 4He), the beam energy (2261 or 4461), the data type (CLAS=0 or simulation=1) "<<std::endl;
+    std::cout<<"Please specify the target (3He, 56Fe, C12, 4He), the beam energy (2261 or 4461), the data type (CLAS=0 or SuSav2 simulation=1 or G18_10a_02_11a simulation=2) "<<std::endl;
     std::cout<<"and the number of rotations"<<std::endl;
     std::cout<<"================= Usage ==============="<<std::endl;
     std::cout<<"./genie_analysis target beam_energy 0/1 #rot"<<std::endl;
@@ -24,7 +24,7 @@ int main(int argc, char **argv)
   int choice = atoi(argv[3]);
   int rotations = atoi(argv[4]);
 
-  if (choice != 1 && choice != 0) {
+  if (choice != 2 && choice != 1 && choice != 0) {
     std::cout << "Unknown option for parameter 3. It should be either 0 or 1. The given value is " << choice << std::endl;
     return 0;
   }

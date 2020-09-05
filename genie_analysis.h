@@ -320,6 +320,14 @@ genie_analysis::genie_analysis(std::string a_target,std::string a_beam_en, int n
 		
 		//chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/numaid_%s_%s_hA2018_LFG_FSI_NoRadCorr_3M.root", ftarget.c_str(), fbeam_en.c_str()));
 	}
+
+      if (fchoice == 2) { 
+      
+      		// Radiative G2018
+		chain->Add(Form("/pnfs/genie/persistent/users/apapadop/Rad-R-3_0_6/%s_%sGeV/apapadop_G18_10a_02_11a_%s_%sGeV.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));
+
+	}
+
       if (fchoice == 0) { chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/genie_filtered_data_e2a_ep_%s_%s_neutrino6_united4_radphot_test_100M.root",ftarget.c_str(), fbeam_en.c_str())); }
 
       tree = chain;

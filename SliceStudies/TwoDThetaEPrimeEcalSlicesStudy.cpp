@@ -102,7 +102,7 @@ void TwoDThetaEPrimeEcalSlicesStudy() {
 	
 	gStyle->SetOptStat(0);	
 	
-	double GlobalMax = 17.;
+	double GlobalMax = 19.;
 
 	int FontStyle = 132;
 	double TextSize = 0.08;
@@ -112,7 +112,7 @@ void TwoDThetaEPrimeEcalSlicesStudy() {
 	// SuSav2 ECal in EePrime and ThetaPrime Slices 		
 
 	int CosThetaSlices2D = 3;
-	double MinCosTheta2D = 0.55, MaxCosTheta2D = 1.;	
+	double MinCosTheta2D = 0.65, MaxCosTheta2D = 0.95;	
 	double CosThetaStep2D = (MaxCosTheta2D - MinCosTheta2D) / CosThetaSlices2D;
 
 	double MinEePrime2D = -1, MaxEePrime2D = -1;
@@ -134,12 +134,12 @@ void TwoDThetaEPrimeEcalSlicesStudy() {
 	TString Nucleus = "56Fe"; TString NucleusLatex = "^{56}Fe";
 
 //	TString Energy = "1_161"; double DoubleEnergy = 1.161;
-//	TString Energy = "2_261"; double DoubleEnergy = 2.261;
-	TString Energy = "4_461"; double DoubleEnergy = 4.461;
+	TString Energy = "2_261"; double DoubleEnergy = 2.261;
+//	TString Energy = "4_461"; double DoubleEnergy = 4.461;
 
 	// ---------------------------------------------------------------------------------------------------------------
 
-	if(DoubleEnergy>1. && DoubleEnergy<2.) { MinEePrime2D = 0.; MaxEePrime2D = 1.2; }
+	if(DoubleEnergy>1. && DoubleEnergy<2.) { MinEePrime2D = 0.3; MaxEePrime2D = 1.2; }
 	if(DoubleEnergy>2. && DoubleEnergy<3.) { MinEePrime2D = 0.; MaxEePrime2D = 2.1; }
 	if(DoubleEnergy>4. && DoubleEnergy<5.) { MinEePrime2D = 1.; MaxEePrime2D = 4.; }
 
@@ -213,7 +213,7 @@ void TwoDThetaEPrimeEcalSlicesStudy() {
 
 			double LowRange = -1., HighRange = -1.;
 
-			if (DoubleEnergy == 1.161) { LowRange = 0.57; HighRange = 1.29; }
+			if (DoubleEnergy == 1.161) { LowRange = 0.55; HighRange = 1.29; }
 			if (DoubleEnergy == 2.261) { LowRange = 0.67; HighRange = 2.4; }
 			if (DoubleEnergy == 4.461) { LowRange = 1.5; HighRange = 4.6; }
 
@@ -248,10 +248,10 @@ void TwoDThetaEPrimeEcalSlicesStudy() {
 
 			// -------------------------------------------------------------------------------------------------------------
 
-			TLegend* legSuSav2_Slice = new TLegend(0.09,0.62,0.34,0.92);
+			TLegend* legSuSav2_Slice = new TLegend(0.11,0.62,0.2,0.92);
 			legSuSav2_Slice->SetBorderSize(0);
 			legSuSav2_Slice->SetTextFont(TextFont);
-			legSuSav2_Slice->SetTextSize(1.5*TextSize);	
+			legSuSav2_Slice->SetTextSize(1.2*TextSize);	
 
 			legSuSav2_Slice->AddEntry(h1_ECal_Data,ToString(MinEePrimeSlice2D)+ " < E_{e'} < " + ToString(MaxEePrimeSlice2D)+" GeV","");				
 			legSuSav2_Slice->AddEntry(h1_ECal_SuSav2,ToString(MinCosThetaSlice2D)+ " < cos(#theta_{e'}) < " + ToString(MaxCosThetaSlice2D),"");
@@ -324,7 +324,7 @@ void TwoDThetaEPrimeEcalSlicesStudy() {
 	
 	// ----------------------------------------------------------------------------------------------------------------	
 
-
+	SuSav2Canvas_ECal_EePrimeAndThetaSlices->SaveAs("./myPlots/"+CanvasName+".pdf");
 
 
 } // End of the program

@@ -130,8 +130,8 @@ void TwoDThetaEPrimeEcalSlicesStudy() {
 	// ---------------------------------------------------------------------------------------------------------------
 
 //	TString Nucleus = "4He"; TString NucleusLatex = "^{4}He";
-//	TString Nucleus = "12C"; TString NucleusLatex = "^{12}C";
-	TString Nucleus = "56Fe"; TString NucleusLatex = "^{56}Fe";
+	TString Nucleus = "12C"; TString NucleusLatex = "^{12}C";
+//	TString Nucleus = "56Fe"; TString NucleusLatex = "^{56}Fe";
 
 //	TString Energy = "1_161"; double DoubleEnergy = 1.161;
 	TString Energy = "2_261"; double DoubleEnergy = 2.261;
@@ -139,7 +139,7 @@ void TwoDThetaEPrimeEcalSlicesStudy() {
 
 	// ---------------------------------------------------------------------------------------------------------------
 
-	if(DoubleEnergy>1. && DoubleEnergy<2.) { MinEePrime2D = 0.3; MaxEePrime2D = 1.2; }
+	if(DoubleEnergy>1. && DoubleEnergy<2.) { MinEePrime2D = 0.45; MaxEePrime2D = 1.2; }
 	if(DoubleEnergy>2. && DoubleEnergy<3.) { MinEePrime2D = 0.; MaxEePrime2D = 2.1; }
 	if(DoubleEnergy>4. && DoubleEnergy<5.) { MinEePrime2D = 1.; MaxEePrime2D = 4.; }
 

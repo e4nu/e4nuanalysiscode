@@ -478,6 +478,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH2F *h2_N_prot_pi_phot_nonrad=new TH2F("h2_N_prot_pi_phot_nonrad","",10,0,5,10,0,5);
 //	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,0,180);
 	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,10,60);
+	TH2F *h2_el_CosTheta_E = new TH2F("h2_el_CosTheta_E",";cos(#theta);E_{e'} [GeV]",200,-1,1,600,0,6);
 	TH2F *h2_el_mom_diff = new TH2F("h2_el_mom_diff","",500,0.,1.,500,-0.1,0.1);
 
 	int NBinsNu = 300, NBinsQ2 = 300;
@@ -727,7 +728,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) { MinEePrime2D = 0.3; MaxEePrime2D = 1.2; }
 	if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.) { MinEePrime2D = 0.; MaxEePrime2D = 2.1; }
-	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.) { MinEePrime2D = 1.; MaxEePrime2D = 4.; }
+	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.) { MinEePrime2D = 1.6; MaxEePrime2D = 4.; }
 
 	double EePrimeStep2D = (MaxEePrime2D - MinEePrime2D) / EePrimeSlices2D;
 	double MinTheta2D = 15, MaxTheta2D = 60; int ThetaSlices2D = 3;	
@@ -1402,6 +1403,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Etrue_Ecal->Fill(Ev,E_tot_2p[f],-P_N_2p[f]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot_2p[f],-P_N_2p[f]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot_2p[f],-P_N_2p[f]*histoweight);
+					h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),-P_N_2p[f]*histoweight);
 
 					h1_xbjk_weight->Fill(x_bjk,-P_N_2p[f]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,-P_N_2p[f]*histoweight);
@@ -1593,6 +1595,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Etrue_Ecal->Fill(Ev,Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-Ecal_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
+					h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),P_2p1pito2p0pi[z]*histoweight);
 
 					h1_xbjk_weight->Fill(x_bjk,P_2p1pito2p0pi[z]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,P_2p1pito2p0pi[z]*histoweight);
@@ -1722,6 +1725,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Etrue_Ecal->Fill(Ev,E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
+					h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),P_2p1pito1p1pi[z]*histoweight);
 
 					h1_xbjk_weight->Fill(x_bjk,P_2p1pito1p1pi[z]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,P_2p1pito1p1pi[z]*histoweight);
@@ -1850,6 +1854,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Etrue_Ecal->Fill(Ev,E_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
+					h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),-P_2p1pito1p0pi[z]*histoweight);
 
 					h1_xbjk_weight->Fill(x_bjk,-P_2p1pito1p0pi[z]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,-P_2p1pito1p0pi[z]*histoweight);
@@ -2039,6 +2044,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Etrue_Ecal->Fill(Ev,E_tot_2p[z],Ptot_2p[z]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot_2p[z],Ptot_2p[z]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot_2p[z],Ptot_2p[z]*histoweight);
+					h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),Ptot_2p[z]*histoweight);
 
 					h1_xbjk_weight->Fill(x_bjk,Ptot_2p[z]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,Ptot_2p[z]*histoweight);
@@ -2258,6 +2264,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_Etrue_Ecal->Fill(Ev,E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 						h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 						h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
+						h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),P_3pto2p[count][j]*histoweight);
 
 						h1_xbjk_weight->Fill(x_bjk,P_3pto2p[count][j]*histoweight);
 						h1_Q2_weight->Fill(reco_Q2,P_3pto2p[count][j]*histoweight);
@@ -2396,6 +2403,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Etrue_Ecal->Fill(Ev,E_cal[j],-P_3pto1p[j]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal[j],-P_3pto1p[j]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal[j],-P_3pto1p[j]*histoweight);
+					h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),-P_3pto1p[j]*histoweight);
 
 					h1_xbjk_weight->Fill(x_bjk,-P_3pto1p[j]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,-P_3pto1p[j]*histoweight);
@@ -2578,6 +2586,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Etrue_Ecal->Fill(Ev,E_cal[j],P_tot_3p[j]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal[j],P_tot_3p[j]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal[j],P_tot_3p[j]*histoweight);
+					h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),P_tot_3p[j]*histoweight);
 
 					h1_xbjk_weight->Fill(x_bjk,P_tot_3p[j]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,P_tot_3p[j]*histoweight);
@@ -2867,6 +2876,7 @@ void genie_analysis::Loop(Int_t choice) {
 								h2_Etrue_Ecal->Fill(Ev,E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
+								h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 
 								h1_xbjk_weight->Fill(x_bjk,-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_Q2_weight->Fill(reco_Q2,-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
@@ -3005,6 +3015,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h2_Etrue_Ecal->Fill(Ev,E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
 							h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
 							h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_43pto1p[j],P_43pto1p[j]*histoweight);
+							h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),P_43pto1p[j]*histoweight);
 
 							h1_xbjk_weight->Fill(x_bjk,P_43pto1p[j]*histoweight);
 							h1_Q2_weight->Fill(reco_Q2,P_43pto1p[j]*histoweight);
@@ -3169,6 +3180,7 @@ void genie_analysis::Loop(Int_t choice) {
 									h2_Etrue_Ecal->Fill(Ev,E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
+									h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 
 									h1_xbjk_weight->Fill(x_bjk,P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h1_Q2_weight->Fill(reco_Q2,P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
@@ -3320,6 +3332,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_Etrue_Ecal->Fill(Ev,E_cal_p4[j],-P_4pto1p[j]*histoweight);
 						h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_cal_p4[j],-P_4pto1p[j]*histoweight);
 						h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_cal_p4[j],-P_4pto1p[j]*histoweight);
+						h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),-P_4pto1p[j]*histoweight);
 
 						h1_xbjk_weight->Fill(x_bjk,-P_4pto1p[j]*histoweight);
 						h1_Q2_weight->Fill(reco_Q2,-P_4pto1p[j]*histoweight);
@@ -3907,6 +3920,7 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_Etrue_Ecal->Fill(Ev,E_tot,histoweight);
 				h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,histoweight);
 				h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,histoweight);
+				h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),histoweight);
 
 				h1_xbjk_weight->Fill(x_bjk,histoweight);
 				h1_Q2_weight->Fill(reco_Q2,histoweight);
@@ -4110,6 +4124,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Etrue_Ecal->Fill(Ev,E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
+					h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),-(N_piphot_undet/N_piphot_det)*histoweight);
 
 					h1_xbjk_weight->Fill(x_bjk,-(N_piphot_undet/N_piphot_det)*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,-(N_piphot_undet/N_piphot_det)*histoweight);
@@ -4305,6 +4320,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Etrue_Ecal->Fill(Ev,E_tot,P_1p1pi[z]*histoweight);
 					h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,P_1p1pi[z]*histoweight);
 					h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,P_1p1pi[z]*histoweight);
+					h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),P_1p1pi[z]*histoweight);
 
 					h1_xbjk_weight->Fill(x_bjk,P_1p1pi[z]*histoweight);
 					h1_Q2_weight->Fill(reco_Q2,P_1p1pi[z]*histoweight);
@@ -4438,6 +4454,7 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_Etrue_Ecal->Fill(Ev,E_tot,-P_1p0pi*histoweight);
 				h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,-P_1p0pi*histoweight);
 				h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,-P_1p0pi*histoweight);
+				h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),-P_1p0pi*histoweight);
 
 				h1_xbjk_weight->Fill(x_bjk,-P_1p0pi*histoweight);
 				h1_Q2_weight->Fill(reco_Q2,-P_1p0pi*histoweight);
@@ -4621,6 +4638,7 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_Etrue_Ecal->Fill(Ev,E_tot,P_1p3pi*histoweight);
 				h2_EqeEcalratio_Eqe->Fill(E_rec,E_rec/E_tot,P_1p3pi*histoweight);
 				h2_EqeEcaldiff_Eqe->Fill(E_rec,E_rec-E_tot,P_1p3pi*histoweight);
+				h2_el_CosTheta_E->Fill(V3_el.CosTheta(),V4_el.E(),P_1p3pi*histoweight);
 
 				h1_xbjk_weight->Fill(x_bjk,P_1p3pi*histoweight);
 				h1_Q2_weight->Fill(reco_Q2,P_1p3pi*histoweight);

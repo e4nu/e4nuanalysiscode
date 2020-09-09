@@ -405,6 +405,9 @@ void genie_analysis::Loop(Int_t choice) {
 		for (int i=0;i<=16;i++)	{ x_values[i+22]=4.2+(i+1)*0.05; x_qe[i+22] = (x_values[i+22] - en_beam[fbeam_en]) / en_beam[fbeam_en];}
 	}
 
+	TH1F *h1_EQE_FullyInclusive_IrregBins = new TH1F("h1_EQE_FullyInclusive_IrregBins","",n_bins,x_values);
+	TH1F *h1_EQE_FullyInclusive_IrregBins_NoPions = new TH1F("h1_EQE_FullyInclusive_IrregBins_NoPions","",n_bins,x_values);
+
 	// -------------------------------------------------------------------------------------------------------
 
 	//Definitions of further Histograms
@@ -478,7 +481,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH2F *h2_N_prot_pi_phot_nonrad=new TH2F("h2_N_prot_pi_phot_nonrad","",10,0,5,10,0,5);
 //	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,0,180);
 	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,10,60);
-	TH2F *h2_el_CosTheta_E = new TH2F("h2_el_CosTheta_E",";cos(#theta);E_{e'} [GeV]",200,-1,1,600,0,6);
+	TH2F *h2_el_CosTheta_E = new TH2F("h2_el_CosTheta_E",";cos(#theta_{e'});E_{e'} [GeV]",200,-1,1,600,0,6);
 	TH2F *h2_el_mom_diff = new TH2F("h2_el_mom_diff","",500,0.,1.,500,-0.1,0.1);
 
 	int NBinsNu = 300, NBinsQ2 = 300;
@@ -726,9 +729,9 @@ void genie_analysis::Loop(Int_t choice) {
 	//double MinEePrime2D = 0.5, MaxEePrime2D = 2.6;
 	double MinEePrime2D = -1, MaxEePrime2D = -1;
 
-	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) { MinEePrime2D = 0.3; MaxEePrime2D = 1.2; }
-	if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.) { MinEePrime2D = 0.; MaxEePrime2D = 2.1; }
-	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.) { MinEePrime2D = 1.6; MaxEePrime2D = 4.; }
+	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) { MinEePrime2D = 0.6; MaxEePrime2D = 1.2; }
+	if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.) { MinEePrime2D = 1.3; MaxEePrime2D = 2.2; }
+	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.) { MinEePrime2D = 2.5; MaxEePrime2D = 4.; }
 
 	double EePrimeStep2D = (MaxEePrime2D - MinEePrime2D) / EePrimeSlices2D;
 	double MinTheta2D = 15, MaxTheta2D = 60; int ThetaSlices2D = 3;	
@@ -737,6 +740,11 @@ void genie_analysis::Loop(Int_t choice) {
 
 //	double MinCosTheta2D = 0.55, MaxCosTheta2D = 1.; int CosThetaSlices2D = 3;	
 	double MinCosTheta2D = 0.87, MaxCosTheta2D = 0.99; int CosThetaSlices2D = 3;	
+
+	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) { MinEePrime2D = 0.6; MaxEePrime2D = 1.2; }
+	if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.) { MinEePrime2D = 1.3; MaxEePrime2D = 2.2; }
+	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.) { MinEePrime2D = 2.5; MaxEePrime2D = 4.; }
+
 	double CosThetaStep2D = (MaxCosTheta2D - MinCosTheta2D) / CosThetaSlices2D;
 	TH1F *h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlices2D][CosThetaSlices2D];
 
@@ -1031,6 +1039,7 @@ void genie_analysis::Loop(Int_t choice) {
 //		rotation->PrintQVector();
 
 		h1_EQE_FullyInclusive->Fill(E_rec,WeightIncl);
+		h1_EQE_FullyInclusive_IrregBins->Fill(E_rec,WeightIncl);
 
 		h1_el_mom->Fill(V4_el_uncorr.Rho(),WeightIncl);
 		h1_el_mom_ratio->Fill(V4_el.Rho()/V4_el_uncorr.Rho(),WeightIncl);
@@ -1275,6 +1284,8 @@ void genie_analysis::Loop(Int_t choice) {
 		//if (num_pipl > 0 || num_pimi > 0) {
 		//  continue;
 		//}
+
+		if (num_pipl > 0 || num_pimi > 0) { h1_EQE_FullyInclusive_IrregBins_NoPions->Fill(E_rec,WeightIncl); }
 
 		// -------------------------------------------------------------------------------------------------------------------------
 

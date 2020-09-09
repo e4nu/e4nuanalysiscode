@@ -112,7 +112,7 @@ void TwoDThetaEPrimeEcalSlicesStudy() {
 	// SuSav2 ECal in EePrime and ThetaPrime Slices 		
 
 	int CosThetaSlices2D = 3;
-	double MinCosTheta2D = 0.65, MaxCosTheta2D = 0.95;	
+	double MinCosTheta2D = 0.87, MaxCosTheta2D = 0.99;	
 	double CosThetaStep2D = (MaxCosTheta2D - MinCosTheta2D) / CosThetaSlices2D;
 
 	double MinEePrime2D = -1, MaxEePrime2D = -1;
@@ -129,19 +129,19 @@ void TwoDThetaEPrimeEcalSlicesStudy() {
 
 	// ---------------------------------------------------------------------------------------------------------------
 
-//	TString Nucleus = "4He"; TString NucleusLatex = "^{4}He";
-	TString Nucleus = "12C"; TString NucleusLatex = "^{12}C";
+	TString Nucleus = "4He"; TString NucleusLatex = "^{4}He";
+//	TString Nucleus = "12C"; TString NucleusLatex = "^{12}C";
 //	TString Nucleus = "56Fe"; TString NucleusLatex = "^{56}Fe";
 
 //	TString Energy = "1_161"; double DoubleEnergy = 1.161;
-	TString Energy = "2_261"; double DoubleEnergy = 2.261;
-//	TString Energy = "4_461"; double DoubleEnergy = 4.461;
+//	TString Energy = "2_261"; double DoubleEnergy = 2.261;
+	TString Energy = "4_461"; double DoubleEnergy = 4.461;
 
 	// ---------------------------------------------------------------------------------------------------------------
 
-	if(DoubleEnergy>1. && DoubleEnergy<2.) { MinEePrime2D = 0.45; MaxEePrime2D = 1.2; }
-	if(DoubleEnergy>2. && DoubleEnergy<3.) { MinEePrime2D = 0.; MaxEePrime2D = 2.1; }
-	if(DoubleEnergy>4. && DoubleEnergy<5.) { MinEePrime2D = 1.; MaxEePrime2D = 4.; }
+	if(DoubleEnergy>1. && DoubleEnergy<2.) { MinEePrime2D = 0.6; MaxEePrime2D = 1.2; }
+	if(DoubleEnergy>2. && DoubleEnergy<3.) { MinEePrime2D = 1.3; MaxEePrime2D = 2.2; }
+	if(DoubleEnergy>4. && DoubleEnergy<5.) { MinEePrime2D = 2.5; MaxEePrime2D = 4.; }
 
 	double EePrimeStep2D = (MaxEePrime2D - MinEePrime2D) / EePrimeSlices2D;
 

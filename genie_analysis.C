@@ -741,9 +741,8 @@ void genie_analysis::Loop(Int_t choice) {
 //	double MinCosTheta2D = 0.55, MaxCosTheta2D = 1.; int CosThetaSlices2D = 3;	
 	double MinCosTheta2D = 0.87, MaxCosTheta2D = 0.99; int CosThetaSlices2D = 3;	
 
-	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) { MinEePrime2D = 0.6; MaxEePrime2D = 1.2; }
-	if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.) { MinEePrime2D = 1.3; MaxEePrime2D = 2.2; }
-	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.) { MinEePrime2D = 2.5; MaxEePrime2D = 4.; }
+	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) { MaxCosTheta2D = 0.96; }
+	if(en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3.) { MaxCosTheta2D = 0.96; }
 
 	double CosThetaStep2D = (MaxCosTheta2D - MinCosTheta2D) / CosThetaSlices2D;
 	TH1F *h1_ECal_InEePrimeAndCosThetaSlices[EePrimeSlices2D][CosThetaSlices2D];

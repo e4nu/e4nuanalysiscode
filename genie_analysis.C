@@ -1284,7 +1284,7 @@ void genie_analysis::Loop(Int_t choice) {
 		//  continue;
 		//}
 
-		if (num_pipl > 0 || num_pimi > 0) { h1_EQE_FullyInclusive_IrregBins_NoPions->Fill(E_rec,WeightIncl); }
+		if (num_pipl == 0 && num_pimi == 0) { h1_EQE_FullyInclusive_IrregBins_NoPions->Fill(E_rec,WeightIncl); }
 
 		// -------------------------------------------------------------------------------------------------------------------------
 

@@ -481,6 +481,12 @@ void genie_analysis::Loop(Int_t choice) {
 	TH2F *h2_N_prot_pi_phot_nonrad=new TH2F("h2_N_prot_pi_phot_nonrad","",10,0,5,10,0,5);
 //	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,0,180);
 	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,10,60);
+
+	TH2F *h2_Electron_Theta_Momentum = new TH2F("h2_Electron_Theta_Momentum","",200,0,360,600,0.,6);
+	TH2F *h2_Proton_Theta_Momentum = new TH2F("h2_Proton_Theta_Momentum","",200,0,360,300,0.,3);
+	TH2F *h2_PiPlus_Theta_Momentum = new TH2F("h2_PiPlus_Theta_Momentum","",200,0,360,300,0.,3);
+	TH2F *h2_PiMinus_Theta_Momentum = new TH2F("h2_PiMinus_Theta_Momentum","",200,0,360,300,0.,3);
+
 	TH2F *h2_el_CosTheta_E = new TH2F("h2_el_CosTheta_E",";cos(#theta_{e'});E_{e'} [GeV]",200,-1,1,600,0,6);
 	TH2F *h2_el_mom_diff = new TH2F("h2_el_mom_diff","",500,0.,1.,500,-0.1,0.1);
 
@@ -1423,6 +1429,9 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_prot_mom->Fill(V3_2prot_corr[f].Mag(),-P_N_2p[f]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot_2p[f],-P_N_2p[f]*histoweight);
 
+					h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),-P_N_2p[f]*histoweight);
+					h2_Proton_Theta_Momentum->Fill(V3_2prot_corr[f].Theta()*180./TMath::Pi(),V3_2prot_corr[f].Mag(),-P_N_2p[f]*histoweight);
+
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
@@ -1615,6 +1624,9 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_prot_mom->Fill(V3_2prot_corr[z].Mag(),P_2p1pito2p0pi[z]*histoweight);
 					h1_MissMomentum->Fill(p_miss_perp_2p1pi_to2p0pi[z],P_2p1pito2p0pi[z]*histoweight);
 
+					h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),P_2p1pito2p0pi[z]*histoweight);
+					h2_Proton_Theta_Momentum->Fill(V3_2prot_corr[z].Theta()*180./TMath::Pi(),V3_2prot_corr[z].Mag(),P_2p1pito2p0pi[z]*histoweight);
+
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
@@ -1745,6 +1757,11 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_prot_mom->Fill(V3_2prot_corr[z].Mag(),P_2p1pito1p1pi[z]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],P_2p1pito1p1pi[z]*histoweight);
 
+					h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),P_2p1pito1p1pi[z]*histoweight);
+					h2_Proton_Theta_Momentum->Fill(V3_2prot_corr[z].Theta()*180./TMath::Pi(),V3_2prot_corr[z].Mag(),P_2p1pito1p1pi[z]*histoweight);
+					if (charge_pi[0] == 1) { h2_PiPlus_Theta_Momentum->Fill(V3_1pi_corr.Theta()*180./TMath::Pi(),V3_1pi_corr.Mag(),P_2p1pito1p1pi[z]*histoweight); }
+					if (charge_pi[0] == -1) { h2_PiMinus_Theta_Momentum->Fill(V3_1pi_corr.Theta()*180./TMath::Pi(),V3_1pi_corr.Mag(),P_2p1pito1p1pi[z]*histoweight); }
+
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
@@ -1873,6 +1890,11 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_el_mom_corr->Fill(V4_el.Rho(),-P_2p1pito1p0pi[z]*histoweight);
 					h1_prot_mom->Fill(V3_2prot_corr[z].Mag(),-P_2p1pito1p0pi[z]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],-P_2p1pito1p0pi[z]*histoweight);
+
+					h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),-P_2p1pito1p0pi[z]*histoweight);
+					h2_Proton_Theta_Momentum->Fill(V3_2prot_corr[z].Theta()*180./TMath::Pi(),V3_2prot_corr[z].Mag(),-P_2p1pito1p0pi[z]*histoweight);
+					if (charge_pi[0] == 1) { h2_PiPlus_Theta_Momentum->Fill(V3_1pi_corr.Theta()*180./TMath::Pi(),V3_1pi_corr.Mag(),-P_2p1pito1p0pi[z]*histoweight); }
+					if (charge_pi[0] == -1) { h2_PiMinus_Theta_Momentum->Fill(V3_1pi_corr.Theta()*180./TMath::Pi(),V3_1pi_corr.Mag(),-P_2p1pito1p0pi[z]*histoweight); }
 
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -2063,6 +2085,16 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_el_mom_corr->Fill(V4_el.Rho(),Ptot_2p[z]*histoweight);
 					h1_prot_mom->Fill(V3_2prot_corr[z].Mag(),Ptot_2p[z]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot_2p[z],Ptot_2p[z]*histoweight);
+
+					h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),Ptot_2p[z]*histoweight);
+					h2_Proton_Theta_Momentum->Fill(V3_2prot_corr[z].Theta()*180./TMath::Pi(),V3_2prot_corr[z].Mag(),Ptot_2p[z]*histoweight);
+
+					for (int i = 0; i < num_pi_phot; i++) {
+
+						if (charge_pi[i] == 1) { h2_PiPlus_Theta_Momentum->Fill(V3_2pi_corr[i].Theta()*180./TMath::Pi(),V3_2pi_corr[i].Mag(),Ptot_2p[z]*histoweight); }
+						if (charge_pi[i] == -1) { h2_PiMinus_Theta_Momentum->Fill(V3_2pi_corr[i].Theta()*180./TMath::Pi(),V3_2pi_corr[i].Mag(),Ptot_2p[z]*histoweight); }
+					
+					}
 
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -2284,6 +2316,9 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_prot_mom->Fill(V3_prot_corr[j].Mag(),P_3pto2p[count][j]*histoweight);
 						h1_MissMomentum->Fill(p_miss_perp_3pto2p[count][j],P_3pto2p[count][j]*histoweight);
 
+						h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),P_3pto2p[count][j]*histoweight);
+						h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Theta()*180./TMath::Pi(),V3_prot_corr[j].Mag(),P_3pto2p[count][j]*histoweight);
+
 						// -----------------------------------------------------------------------------------------------
 						// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
@@ -2422,6 +2457,9 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_el_mom_corr->Fill(V4_el.Rho(),-P_3pto1p[j]*histoweight);
 					h1_prot_mom->Fill(V3_prot_corr[j].Mag(),-P_3pto1p[j]*histoweight);
 					h1_MissMomentum->Fill(p_miss_perp[j],-P_3pto1p[j]*histoweight);
+
+					h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),-P_3pto1p[j]*histoweight);
+					h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Theta()*180./TMath::Pi(),V3_prot_corr[j].Mag(),-P_3pto1p[j]*histoweight);
 
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -2605,6 +2643,11 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_el_mom_corr->Fill(V4_el.Rho(),P_tot_3p[j]*histoweight);
 					h1_prot_mom->Fill(V3_prot_corr[j].Mag(),P_tot_3p[j]*histoweight);
 					h1_MissMomentum->Fill(p_miss_perp[j],P_tot_3p[j]*histoweight);
+
+					h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),P_tot_3p[j]*histoweight);
+					h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Theta()*180./TMath::Pi(),V3_prot_corr[j].Mag(),P_tot_3p[j]*histoweight);
+					if (charge_pi[0] == 1) { h2_PiPlus_Theta_Momentum->Fill(V3_pi_corr.Theta()*180./TMath::Pi(),V3_pi_corr.Mag(),P_tot_3p[j]*histoweight); }
+					if (charge_pi[0] == -1) { h2_PiMinus_Theta_Momentum->Fill(V3_pi_corr.Theta()*180./TMath::Pi(),V3_pi_corr.Mag(),P_tot_3p[j]*histoweight); }
 
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -2896,6 +2939,9 @@ void genie_analysis::Loop(Int_t choice) {
 								h1_prot_mom->Fill(V3_prot_corr[j].Mag(),-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h1_MissMomentum->Fill(p_miss_perp_4pto3p[count][j],-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 
+								h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
+								h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Theta()*180./TMath::Pi(),V3_prot_corr[j].Mag(),-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
+
 								// ----------------------------------------------------------
 								// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
@@ -3034,6 +3080,9 @@ void genie_analysis::Loop(Int_t choice) {
 							h1_el_mom_corr->Fill(V4_el.Rho(),P_43pto1p[j]*histoweight);
 							h1_prot_mom->Fill(V3_prot_corr[j].Mag(),P_43pto1p[j]*histoweight);
 							h1_MissMomentum->Fill(p_miss_perp_43pto1p[j],P_43pto1p[j]*histoweight);
+
+							h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),P_43pto1p[j]*histoweight);
+							h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Theta()*180./TMath::Pi(),V3_prot_corr[j].Mag(),P_43pto1p[j]*histoweight);
 
 							// -----------------------------------------------------------------------------------------------
 							// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -3199,6 +3248,9 @@ void genie_analysis::Loop(Int_t choice) {
 									h1_el_mom_corr->Fill(V4_el.Rho(),P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h1_prot_mom->Fill(V3p2[j].Mag(),P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h1_MissMomentum->Fill(p_miss_perp_4pto2p[j],P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
+	
+									h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
+									h2_Proton_Theta_Momentum->Fill(V3p2[j].Theta()*180./TMath::Pi(),V3p2[j].Mag(),P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 
 									// -----------------------------------------------------------------------
 									
@@ -3352,6 +3404,9 @@ void genie_analysis::Loop(Int_t choice) {
 						h1_prot_mom->Fill(V3_prot_corr[j].Mag(),-P_4pto1p[j]*histoweight);
 						h1_MissMomentum->Fill(p_miss_perp_p4[j],-P_4pto1p[j]*histoweight);
 
+						h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),-P_4pto1p[j]*histoweight);
+						h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Theta()*180./TMath::Pi(),V3_prot_corr[j].Mag(),-P_4pto1p[j]*histoweight);
+
 						// -----------------------------------------------------------------------------------------------
 						// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
@@ -3456,7 +3511,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 				} // end if N_p_four!=0
 
-			}//no pion statment ends
+			}//no pion statement ends
 
 		}//4 proton requirement (num_p == 4)
 
@@ -3940,6 +3995,9 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_prot_mom->Fill(V3_prot_corr.Mag(),histoweight);
 				h1_MissMomentum->Fill(p_perp_tot,histoweight);
 
+				h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),histoweight);
+				h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Theta()*180./TMath::Pi(),V3_prot_corr.Mag(),histoweight);
+
 				// -----------------------------------------------------------------------------------------------
 
 				// Unweighted plots for number of events
@@ -4144,6 +4202,11 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_prot_mom->Fill(V3_prot_corr.Mag(),-(N_piphot_undet/N_piphot_det)*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot,-(N_piphot_undet/N_piphot_det)*histoweight);
 
+					h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),-(N_piphot_undet/N_piphot_det)*histoweight);
+					h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Theta()*180./TMath::Pi(),V3_prot_corr.Mag(),-(N_piphot_undet/N_piphot_det)*histoweight);
+					if (charge_pi[0] == 1) { h2_PiPlus_Theta_Momentum->Fill(V3_pi_corr.Theta()*180./TMath::Pi(),V3_pi_corr.Mag(),-(N_piphot_undet/N_piphot_det)*histoweight); }
+					if (charge_pi[0] == -1) { h2_PiMinus_Theta_Momentum->Fill(V3_pi_corr.Theta()*180./TMath::Pi(),V3_pi_corr.Mag(),-(N_piphot_undet/N_piphot_det)*histoweight); }
+
 					// -----------------------------------------------------------------------------------------------
 					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
@@ -4340,6 +4403,16 @@ void genie_analysis::Loop(Int_t choice) {
 					h1_prot_mom->Fill(V3_prot_corr.Mag(),P_1p1pi[z]*histoweight);
 					h1_MissMomentum->Fill(p_perp_tot,P_1p1pi[z]*histoweight);
 
+					h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),P_1p1pi[z]*histoweight);
+					h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Theta()*180./TMath::Pi(),V3_prot_corr.Mag(),P_1p1pi[z]*histoweight);
+
+					for (int i = 0; i < num_pi_phot; i++) {
+
+						if (charge_pi[i] == 1) { h2_PiPlus_Theta_Momentum->Fill(V3_2pi_corr[i].Theta()*180./TMath::Pi(),V3_2pi_corr[i].Mag(),P_1p1pi[z]*histoweight); }
+						if (charge_pi[i] == -1) { h2_PiMinus_Theta_Momentum->Fill(V3_2pi_corr[i].Theta()*180./TMath::Pi(),V3_2pi_corr[i].Mag(),P_1p1pi[z]*histoweight); }
+					
+					}
+
 					// -----------------------------------------------------------------------------------------------
 					// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
@@ -4473,6 +4546,16 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_el_mom_corr->Fill(V4_el.Rho(),-P_1p0pi*histoweight);
 				h1_prot_mom->Fill(V3_prot_corr.Mag(),-P_1p0pi*histoweight);
 				h1_MissMomentum->Fill(p_perp_tot,-P_1p0pi*histoweight);
+
+				h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),-P_1p0pi*histoweight);
+				h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Theta()*180./TMath::Pi(),V3_prot_corr.Mag(),-P_1p0pi*histoweight);
+
+				for (int i = 0; i < num_pi_phot; i++) {
+
+					if (charge_pi[i] == 1) { h2_PiPlus_Theta_Momentum->Fill(V3_2pi_corr[i].Theta()*180./TMath::Pi(),V3_2pi_corr[i].Mag(),-P_1p0pi*histoweight); }
+					if (charge_pi[i] == -1) { h2_PiMinus_Theta_Momentum->Fill(V3_2pi_corr[i].Theta()*180./TMath::Pi(),V3_2pi_corr[i].Mag(),-P_1p0pi*histoweight); }
+					
+				}
 
 				// -----------------------------------------------------------------------------------------------
 				// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -4657,6 +4740,16 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_el_mom_corr->Fill(V4_el.Rho(),P_1p3pi*histoweight);
 				h1_prot_mom->Fill(V3_prot_corr.Mag(),P_1p3pi*histoweight);
 				h1_MissMomentum->Fill(p_perp_tot,P_1p3pi*histoweight);
+
+				h2_Electron_Theta_Momentum->Fill(V3_el.Theta()*180./TMath::Pi(),V4_el.Rho(),P_1p3pi*histoweight);
+				h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Theta()*180./TMath::Pi(),V3_prot_corr.Mag(),P_1p3pi*histoweight);
+
+				for (int i = 0; i < num_pi_phot; i++) {
+
+					if (charge_pi[i] == 1) { h2_PiPlus_Theta_Momentum->Fill(V3_3pi_corr[i].Theta()*180./TMath::Pi(),V3_3pi_corr[i].Mag(),P_1p3pi*histoweight); }
+					if (charge_pi[i] == -1) { h2_PiMinus_Theta_Momentum->Fill(V3_3pi_corr[i].Theta()*180./TMath::Pi(),V3_3pi_corr[i].Mag(),P_1p3pi*histoweight); }
+					
+				}
 
 				// -----------------------------------------------------------------------------------------------
 				// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue

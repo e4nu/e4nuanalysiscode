@@ -14,11 +14,16 @@
 #include <iostream>
 #include <vector>
 
+#include <iostream>
+#include <map>
+#include <utility>
+
+typedef std::pair<std::string,std::string> pair;
+
 using namespace std;
 
 #include  "/home/afroditi/Dropbox/PhD/Secondary_Code/CenterAxisTitle.cpp"
 #include "/home/afroditi/Dropbox/PhD/Secondary_Code/SetOffsetAndSize.cpp"
-//#include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
 #include "/home/afroditi/Dropbox/PhD/Secondary_Code/myFunctions.cpp"
 
 // ----------------------------------------------------------------------------------------------------------------
@@ -99,8 +104,8 @@ void OverlayPlots_NormalizedRates() {
 	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
 //	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
-	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
-//	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
+//	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
+	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
 //	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
@@ -163,19 +168,29 @@ void OverlayPlots_NormalizedRates() {
 
 	// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	// For now, numbers specific to carbon
+	// mC
+	std::map<std::pair<TString,TString>,double> IntegratedCharge =
+	{
+		{ std::make_pair("4He", "2_261"), 1.08 },
+		{ std::make_pair("4He", "4_461"), 0.87 },
+		{ std::make_pair("12C", "1_161"), 0.19 },
+		{ std::make_pair("12C", "2_261"), 1.79 },
+		{ std::make_pair("12C", "4_461"), 2.14 },
+		{ std::make_pair("56Fe", "2_261"), 0.22 },
+		{ std::make_pair("56Fe", "4_461"), 0.29 },
+	};
 
-	std::map<TString,double> IntegratedCharge; // mC
-
-	IntegratedCharge["1_161"]=0.19;
-	IntegratedCharge["2_261"]=1.79;
-	IntegratedCharge["4_461"]=2.14;
-
-	std::map<TString,double> TargetLength; // cm
-
-	TargetLength["1_161"]=0.1; 
-	TargetLength["2_261"]=0.1;
-	TargetLength["4_461"]=0.1;
+	// cm
+	std::map<std::pair<TString,TString>,double> TargetLength =
+	{
+		{ std::make_pair("4He", "2_261"), 4.3 }, // 3.72-4.99 // taking the average
+		{ std::make_pair("4He", "4_461"), 4.3 }, // 3.72-4.99 // taking the average
+		{ std::make_pair("12C", "1_161"), 0.1 },
+		{ std::make_pair("12C", "2_261"), 0.1 },
+		{ std::make_pair("12C", "4_461"), 0.1 },
+		{ std::make_pair("56Fe", "2_261"), 0.015 },
+		{ std::make_pair("56Fe", "4_461"), 0.015 },
+	};
 
 	// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -265,7 +280,8 @@ void OverlayPlots_NormalizedRates() {
 						// Scale to data integral after dividing by integrated charge & length
 
 						if (FSILabel[WhichFSIModel] == "Data") { 
-							Plots[WhichFSIModel]->Scale(1. / (IntegratedCharge[E[WhichEnergy]] * TargetLength[E[WhichEnergy]]) );
+
+							Plots[WhichFSIModel]->Scale(1. / (IntegratedCharge[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] * TargetLength[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])]) );
 							DataIntegral =  Plots[0]->Integral();
 						}
 

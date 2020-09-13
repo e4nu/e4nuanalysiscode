@@ -482,10 +482,10 @@ void genie_analysis::Loop(Int_t choice) {
 //	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,0,180);
 	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,10,60);
 
-	TH2F *h2_Electron_Theta_Momentum = new TH2F("h2_Electron_Theta_Momentum",";P_{e'} [GeV/c];#theta_{e'}",360,0,360,6000,0.,6);
-	TH2F *h2_Proton_Theta_Momentum = new TH2F("h2_Proton_Theta_Momentum",";P_{p} [GeV/c];#theta_{p}",360,0,360,6000,0.,6);
-	TH2F *h2_PiPlus_Theta_Momentum = new TH2F("h2_PiPlus_Theta_Momentum",";P_{#pi^{+}} [GeV/c];#theta_{#pi^{+}}",360,0,360,6000,0.,6);
-	TH2F *h2_PiMinus_Theta_Momentum = new TH2F("h2_PiMinus_Theta_Momentum",";P_{#pi^{-}} [GeV/c];#theta_{#pi^{-}}",360,0,360,6000,0.,6);
+	TH2F *h2_Electron_Theta_Momentum = new TH2F("h2_Electron_Theta_Momentum",";P_{e'} [GeV/c];#theta_{e'}",6000,0.,6,360,0,360);
+	TH2F *h2_Proton_Theta_Momentum = new TH2F("h2_Proton_Theta_Momentum",";P_{p} [GeV/c];#theta_{p}",6000,0.,6,360,0,360);
+	TH2F *h2_PiPlus_Theta_Momentum = new TH2F("h2_PiPlus_Theta_Momentum",";P_{#pi^{+}} [GeV/c];#theta_{#pi^{+}}",6000,0.,6,360,0,360);
+	TH2F *h2_PiMinus_Theta_Momentum = new TH2F("h2_PiMinus_Theta_Momentum",";P_{#pi^{-}} [GeV/c];#theta_{#pi^{-}}",6000,0.,6,360,0,360);
 
 	TH2F *h2_el_CosTheta_E = new TH2F("h2_el_CosTheta_E",";cos(#theta_{e'});E_{e'} [GeV]",200,-1,1,600,0,6);
 	TH2F *h2_el_mom_diff = new TH2F("h2_el_mom_diff","",500,0.,1.,500,-0.1,0.1);

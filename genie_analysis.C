@@ -1670,7 +1670,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 					h1_EePrime_InCosThetaEPrimeSlices[CosThetaEPrimeSlice]->Fill(V4_el.E(),LocalWeight);				
 					
-					if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10 ) {
+					if (ThetaSlice > -1 && ThetaSlice < ThetaSlices && EePrimeSlice > -1 && EePrimeSlice < EePrimeSlices && Q2Slice > -1 && Q2Slice < Q2Slices ) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);					
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
 						h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(Ecal_2p1pi_to2p0pi[z],LocalWeight);
@@ -1939,7 +1939,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 					h1_EePrime_InCosThetaEPrimeSlices[CosThetaEPrimeSlice]->Fill(V4_el.E(),LocalWeight);									
 
-					if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10 ) {
+					if (ThetaSlice > -1 && ThetaSlice < ThetaSlices && EePrimeSlice > -1 && EePrimeSlice < EePrimeSlices && Q2Slice > -1 && Q2Slice < Q2Slices ) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_tot_2p[z],LocalWeight);					
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_tot_2p[z],LocalWeight);
 						h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_tot_2p[z],LocalWeight);
@@ -2504,7 +2504,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 					h1_EePrime_InCosThetaEPrimeSlices[CosThetaEPrimeSlice]->Fill(V4_el.E(),LocalWeight);								
 
-					if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10 && Q2Slice > 0 && Q2Slice < 10 ) {
+					if (ThetaSlice > -1 && ThetaSlice < ThetaSlices && EePrimeSlice > -1 && EePrimeSlice < EePrimeSlices && Q2Slice > -1 && Q2Slice < Q2Slices ) {
 						h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal[j],LocalWeight);					
 						h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_cal[j],LocalWeight);
 						h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_cal[j],LocalWeight);
@@ -3127,7 +3127,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 							h1_EePrime_InCosThetaEPrimeSlices[CosThetaEPrimeSlice]->Fill(V4_el.E(),LocalWeight);						
 
-							if (ThetaSlice > 0 && ThetaSlice < 10 && EePrimeSlice > 0 && EePrimeSlice < 10&& Q2Slice > 0 && Q2Slice < 10) {
+							if (ThetaSlice > -1 && ThetaSlice < ThetaSlices && EePrimeSlice > -1 && EePrimeSlice < EePrimeSlices && Q2Slice > -1 && Q2Slice < Q2Slices) {
 								h1_ECal_InQ2Slices[Q2Slice]->Fill(E_cal_43pto1p[j],LocalWeight);	
 								h1_ECal_InThetaSlices[ThetaSlice]->Fill(E_cal_43pto1p[j],LocalWeight);
 								h1_ECal_InEePrimeSlices[EePrimeSlice]->Fill(E_cal_43pto1p[j],LocalWeight);

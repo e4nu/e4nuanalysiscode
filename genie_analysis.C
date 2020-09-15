@@ -675,7 +675,11 @@ void genie_analysis::Loop(Int_t choice) {
 	
 	// ---------------------------------------------------------------------------------------------------
 
-	double minQ2 = 0., maxQ2 = 2.; int Q2Slices = 10;
+	double minQ2 = 0.4, maxQ2 = 1.75; int Q2Slices = 9;
+
+	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) { minQ2 = 0.1; maxQ2 = 0.82; }
+	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.) { minQ2 = 0.8; maxQ2 = 4.4; }
+
 	double Q2Step = (maxQ2 - minQ2) / Q2Slices;
 	TH1F *h1_ECal_InQ2Slices[Q2Slices];
 

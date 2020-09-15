@@ -1068,7 +1068,7 @@ void genie_analysis::Loop(Int_t choice) {
 		h2_xB_W->Fill(W_var,x_bjk);
 		h2_Q2_W_weight->Fill(W_var,reco_Q2,WeightIncl);
 
-		int Q2Slice = reco_Q2 / Q2Step;
+		int Q2Slice = (reco_Q2 - minQ2) / Q2Step;
 		int ThetaSlice = V4_el.Theta()*180./TMath::Pi() / ThetaStep;
 		int EePrimeSlice = V4_el.E() / EePrimeStep;
 		int ThetaSlice2D = V4_el.Theta()*180./TMath::Pi() / ThetaStep2D;

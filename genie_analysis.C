@@ -377,6 +377,15 @@ void genie_analysis::Loop(Int_t choice) {
 
 	TH1F *h1_EQE_FullyInclusive = new TH1F("h1_EQE_FullyInclusive","",6000,0.,6.);
 
+	TH1F *h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice = new TH1F("h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice","",6000,0.,6.);
+	TH1F *h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice = new TH1F("h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice","",6000,0.,6.);
+
+	TH1F *h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice = new TH1F("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice","",6000,0.,6.);
+	TH1F *h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice = new TH1F("h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice","",6000,0.,6.);
+
+	TH1F *h1_EePrime_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice = new TH1F("h1_EePrime_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice","",6000,0.,6.);
+	TH1F *h1_EePrime_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice = new TH1F("h1_EePrime_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice","",6000,0.,6.);
+
 	// -------------------------------------------------------------------------------------------------------
 
 	//Binning for energy reconstruction histograms
@@ -678,7 +687,7 @@ void genie_analysis::Loop(Int_t choice) {
 	double minQ2 = 0.4, maxQ2 = 1.75; int Q2Slices = 9;
 
 	if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) { minQ2 = 0.1; maxQ2 = 0.82; }
-	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.) { minQ2 = 0.8; maxQ2 = 4.4; }
+	if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.) { minQ2 = 1.1; maxQ2 = 4.4; }
 
 	double Q2Step = (maxQ2 - minQ2) / Q2Slices;
 	TH1F *h1_ECal_InQ2Slices[Q2Slices];
@@ -1049,6 +1058,30 @@ void genie_analysis::Loop(Int_t choice) {
 
 		h1_EQE_FullyInclusive->Fill(E_rec,WeightIncl);
 		h1_EQE_FullyInclusive_IrregBins->Fill(E_rec,WeightIncl);
+
+		if (el_theta > 23 && el_theta < 27) {
+
+			// First Sector
+
+			if (el_phi_mod > 0 && el_phi_mod < 60) {
+	
+				h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice->Fill(E_rec,WeightIncl*Q4);
+				h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice->Fill(nu,WeightIncl*Q4);
+				h1_EePrime_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice->Fill(V4_el.E(),WeightIncl*Q4);
+
+			}
+
+			// Second Sector
+
+			if (el_phi_mod > 60 && el_phi_mod < 120) {
+	
+				h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice->Fill(E_rec,WeightIncl*Q4);
+				h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice->Fill(nu,WeightIncl*Q4);
+				h1_EePrime_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice->Fill(V4_el.E(),WeightIncl*Q4);
+
+			}
+
+		}
 
 		h1_el_mom->Fill(V4_el_uncorr.Rho(),WeightIncl);
 		h1_el_mom_ratio->Fill(V4_el.Rho()/V4_el_uncorr.Rho(),WeightIncl);

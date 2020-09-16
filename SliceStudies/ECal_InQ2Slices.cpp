@@ -145,7 +145,11 @@ void ECal_InQ2Slices() {
 
 			// SuSav2 ECal in EePrime and ThetaPrime Slices 		
 
-			double minQ2 = 0., maxQ2 = 2.; int Q2Slices = 10;
+			double minQ2 = 0.4, maxQ2 = 1.75; int Q2Slices = 9;
+
+			if(EnergyDouble[WhichEnergy]>1. && EnergyDouble[WhichEnergy]<2.) { minQ2 = 0.1; maxQ2 = 0.82; }
+			if(EnergyDouble[WhichEnergy]>4. && EnergyDouble[WhichEnergy]<5.) { minQ2 = 0.8; maxQ2 = 4.4; }
+
 			double Q2Step = (maxQ2 - minQ2) / Q2Slices;
 
 			// ---------------------------------------------------------------------------------------------------------------
@@ -173,59 +177,25 @@ void ECal_InQ2Slices() {
 
 			for (int WhichQ2Slice = 0 ; WhichQ2Slice < Q2Slices; WhichQ2Slice++ ) {	
 
-if (WhichQ2Slice == 0) { continue; }
-if (WhichQ2Slice == 1) { continue; }	
-
 				int MinQ2Slice = (minQ2+WhichQ2Slice*Q2Step)*1000.;
 				int MaxQ2Slice = (minQ2+(WhichQ2Slice+1)*Q2Step)*1000.;
-
-//				double DuplicateXminPad = -1., DuplicateXmaxPad = -1.;
-//				double XMinPad = Xmin + WhichQ2Slice * Xstep, XMaxPad = Xmin + ( WhichQ2Slice + 1) * Xstep;
-
-//				if (XMinPad < 1) { DuplicateXminPad = XMinPad; }
-//				else if (XMinPad >= 1 && XMinPad < 1.92) { DuplicateXminPad = XMinPad - (1-Xmin); }
-//				else if (XMinPad >= 2-Xmin) { DuplicateXminPad = XMinPad - 2*(1-Xmin); }
-//				if (XMaxPad <= 1) { DuplicateXmaxPad = XMaxPad; }
-//				else if (XMaxPad > 1 && XMaxPad < 1.92) { DuplicateXmaxPad = XMaxPad - (1-Xmin); }
-//				else if (XMaxPad >= 2-Xmin) { DuplicateXmaxPad = XMaxPad - 2*(1-Xmin); }
-
-
-//				double DuplicateYminPad = -1., DuplicateYmaxPad = -1.;
-//				double YMinPad = Ymax - ( WhichQ2Slice + 1) * Ystep, YMaxPad = Ymax - WhichQ2Slice * Ystep;
-//				double space = 0.;
-
-//				if (YMinPad > 0) { DuplicateYminPad = YMinPad; }
-//				else if (YMinPad < 0 && YMinPad > -1) { DuplicateYminPad = YMinPad + (1-Ymin); }
-//				else if (YMinPad < -1) { DuplicateYminPad = YMinPad + 2*(1-Ymin); }
-//				if (YMaxPad > 0.1) { DuplicateYmaxPad = YMaxPad; }
-//				else if (YMaxPad < 0.1 && YMaxPad > -0.8) { DuplicateYmaxPad = YMaxPad + (1-Ymin); }
-//				else if (YMaxPad < -0.8) { DuplicateYmaxPad = YMaxPad + 2*(1-Ymin); }
 
 				TPad* pad = new TPad(); 
 
 				TString TPadName = CanvasName+"_Q2Slice_"+ToString(WhichQ2Slice);
 	
 				SuSav2Canvas_ECal_Q2Slices->cd();
-				if (WhichQ2Slice == 1) { pad = new TPad(TPadName,TPadName,0.25,0.75,0.5,1, 21); }
-				if (WhichQ2Slice == 2) { pad = new TPad(TPadName,TPadName,0.5,0.75,0.75,1, 21); }
-				if (WhichQ2Slice == 3) { pad = new TPad(TPadName,TPadName,0.75,0.75,1.,1, 21); }
+				if (WhichQ2Slice == 0) { pad = new TPad(TPadName,TPadName,0.25,0.75,0.5,1, 21); }
+				if (WhichQ2Slice == 1) { pad = new TPad(TPadName,TPadName,0.5,0.75,0.75,1, 21); }
+				if (WhichQ2Slice == 2) { pad = new TPad(TPadName,TPadName,0.75,0.75,1.,1, 21); }
 
-				if (WhichQ2Slice == 4) { pad = new TPad(TPadName,TPadName,0.25,0.5,0.5,0.75,21); }
-				if (WhichQ2Slice == 5) { pad = new TPad(TPadName,TPadName,0.5,0.5,0.75,0.75,21); }
-				if (WhichQ2Slice == 6) { pad = new TPad(TPadName,TPadName,0.75,0.5,1.,0.75,21); }
+				if (WhichQ2Slice == 3) { pad = new TPad(TPadName,TPadName,0.25,0.5,0.5,0.75,21); }
+				if (WhichQ2Slice == 4) { pad = new TPad(TPadName,TPadName,0.5,0.5,0.75,0.75,21); }
+				if (WhichQ2Slice == 5) { pad = new TPad(TPadName,TPadName,0.75,0.5,1.,0.75,21); }
 
-				if (WhichQ2Slice == 7) { pad = new TPad(TPadName,TPadName,0.25,0.25,0.5,0.5,21); }
-				if (WhichQ2Slice == 8) { pad = new TPad(TPadName,TPadName,0.5,0.25,0.75,0.5,21); }
-				if (WhichQ2Slice == 9) { pad = new TPad(TPadName,TPadName,0.75,0.25,1.,0.5,21); }
-
-//				if (WhichQ2Slice == 0 || WhichQ2Slice == 3 || WhichQ2Slice == 6) 
-//					{ pad = new TPad(TPadName,TPadName,DuplicateXminPad,DuplicateYminPad,DuplicateXmaxPad,DuplicateYmaxPad, 21); }
-//				else 
-//					{ pad = new TPad(TPadName,TPadName,DuplicateXminPad,DuplicateYminPad+space,DuplicateXmaxPad,DuplicateYmaxPad+space, 21); }
-
-//cout << "Xmin = " <<  DuplicateXminPad << " Ymin = " << DuplicateYminPad << " Xmax = " << DuplicateXmaxPad << " Ymax = " << DuplicateYmaxPad << endl;
-//cout << "Xmax = " <<  XMaxPad << endl;
-//cout << "Xmax = " <<  DuplicateXmaxPad << endl << endl;
+				if (WhichQ2Slice == 6) { pad = new TPad(TPadName,TPadName,0.25,0.25,0.5,0.5,21); }
+				if (WhichQ2Slice == 7) { pad = new TPad(TPadName,TPadName,0.5,0.25,0.75,0.5,21); }
+				if (WhichQ2Slice == 8) { pad = new TPad(TPadName,TPadName,0.75,0.25,1.,0.5,21); }
 
 				pad->SetFillColor(kWhite); 
 				SuSav2Canvas_ECal_Q2Slices->cd();
@@ -233,13 +203,13 @@ if (WhichQ2Slice == 1) { continue; }
 				pad->cd();
 
 				pad->SetBottomMargin(0.0);
-				if (WhichQ2Slice > 6) { pad->SetBottomMargin(0.14); }
+				if (WhichQ2Slice > 5) { pad->SetBottomMargin(0.14); }
 				pad->SetTopMargin(0.0);
-				if (WhichQ2Slice < 4) { pad->SetTopMargin(0.01); }
+				if (WhichQ2Slice < 3) { pad->SetTopMargin(0.01); }
 				pad->SetLeftMargin(0.);
-				if (WhichQ2Slice == 1 || WhichQ2Slice == 4 || WhichQ2Slice == 7 ) { pad->SetLeftMargin(0.09); }
+				if (WhichQ2Slice == 0 || WhichQ2Slice == 3 || WhichQ2Slice == 6 ) { pad->SetLeftMargin(0.09); }
 				pad->SetRightMargin(0.0);
-				if (WhichQ2Slice == 3 || WhichQ2Slice == 6 || WhichQ2Slice == 9 ) { pad->SetRightMargin(0.03); }
+				if (WhichQ2Slice == 2 || WhichQ2Slice == 5 || WhichQ2Slice == 8 ) { pad->SetRightMargin(0.03); }
 				pad->SetFrameBorderSize(10);
 
 				TH1D* h1_ECal_G2018 = (TH1D*)file_G2018->Get(Form("h1_ECal_InQ2_%d_To_%d_Slices",MinQ2Slice,MaxQ2Slice));
@@ -293,7 +263,7 @@ if (WhichQ2Slice == 1) { continue; }
 
 				// -------------------------------------------------------------------------------------------------------------
 
-				if (WhichQ2Slice == 5) {
+				if (WhichQ2Slice == 4) {
 
 					TLegend* legSuSav2_EePrimeAndCosThetaSlices = new TLegend(0.1,0.2,0.35,0.6);
 					legSuSav2_EePrimeAndCosThetaSlices->SetBorderSize(0);

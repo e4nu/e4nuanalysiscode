@@ -491,6 +491,13 @@ void genie_analysis::Loop(Int_t choice) {
 //	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,0,180);
 	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,10,60);
 
+	TH2F *h2_Electron_Theta_Momentum_FirstSector = new TH2F("h2_Electron_Theta_Momentum_FirstSector",";P_{e'} [GeV/c];#theta_{e'}",6000,0.,6,360,0,360);
+	TH2F *h2_Electron_Theta_Momentum_SecondSector = new TH2F("h2_Electron_Theta_Momentum_SecondSector",";P_{e'} [GeV/c];#theta_{e'}",6000,0.,6,360,0,360);
+	TH2F *h2_Electron_Theta_Momentum_ThirdSector = new TH2F("h2_Electron_Theta_Momentum_ThirdSector",";P_{e'} [GeV/c];#theta_{e'}",6000,0.,6,360,0,360);
+	TH2F *h2_Electron_Theta_Momentum_FourthSector = new TH2F("h2_Electron_Theta_Momentum_FourthSector",";P_{e'} [GeV/c];#theta_{e'}",6000,0.,6,360,0,360);
+	TH2F *h2_Electron_Theta_Momentum_FifthSector = new TH2F("h2_Electron_Theta_Momentum_FifthSector",";P_{e'} [GeV/c];#theta_{e'}",6000,0.,6,360,0,360);
+	TH2F *h2_Electron_Theta_Momentum_SixthSector = new TH2F("h2_Electron_Theta_Momentum_SixthSector",";P_{e'} [GeV/c];#theta_{e'}",6000,0.,6,360,0,360);
+
 	TH2F *h2_Electron_Theta_Momentum = new TH2F("h2_Electron_Theta_Momentum",";P_{e'} [GeV/c];#theta_{e'}",6000,0.,6,360,0,360);
 	TH2F *h2_Proton_Theta_Momentum = new TH2F("h2_Proton_Theta_Momentum",";P_{p} [GeV/c];#theta_{p}",6000,0.,6,360,0,360);
 	TH2F *h2_PiPlus_Theta_Momentum = new TH2F("h2_PiPlus_Theta_Momentum",";P_{#pi^{+}} [GeV/c];#theta_{#pi^{+}}",6000,0.,6,360,0,360);
@@ -1058,6 +1065,13 @@ void genie_analysis::Loop(Int_t choice) {
 
 		h1_EQE_FullyInclusive->Fill(E_rec,WeightIncl);
 		h1_EQE_FullyInclusive_IrregBins->Fill(E_rec,WeightIncl);
+
+		if (el_phi_mod > 0 && el_phi_mod < 60) { h2_Electron_Theta_Momentum_FirstSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
+		if (el_phi_mod > 60 && el_phi_mod < 120) { h2_Electron_Theta_Momentum_SecondSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
+		if (el_phi_mod > 120 && el_phi_mod < 180) { h2_Electron_Theta_Momentum_ThirdSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
+		if (el_phi_mod > 180 && el_phi_mod < 240) { h2_Electron_Theta_Momentum_FourthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
+		if (el_phi_mod > 240 && el_phi_mod < 300) { h2_Electron_Theta_Momentum_FifthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
+		if (el_phi_mod > 300 && el_phi_mod < 360) { h2_Electron_Theta_Momentum_SixthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
 
 		if (el_theta > 23 && el_theta < 27) {
 

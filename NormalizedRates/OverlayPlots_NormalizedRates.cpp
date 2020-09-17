@@ -102,12 +102,12 @@ void OverlayPlots_NormalizedRates() {
 	std::vector<int> Style;
 
 //	nucleus.push_back("4He"); LabelsOfSamples.push_back("^{4}He"); JustNucleus.push_back("He");
-	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
-//	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
+//	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
+	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
-	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
+//	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
 //	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
-//	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
+	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
@@ -138,7 +138,7 @@ void OverlayPlots_NormalizedRates() {
 //	FSIModel.push_back("hN2018_Final_RadCorr_LFGM"); FSILabel.push_back("Genie hN2018");  DirNames.push_back("hN2018_Truth_NoRadCorr");
 
 //	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} P_{T} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
-	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
+//	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
 
 //	NameOfPlots.push_back("eRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("eRecoEnergy_slice_0"); // add it
 
@@ -148,6 +148,17 @@ void OverlayPlots_NormalizedRates() {
 
 //	NameOfPlots.push_back("h1_EQE_FullyInclusive_IrregBins"); LabelOfPlots.push_back("(e,e') E^{QE} [GeV]");  OutputPlotNames.push_back("FullyInclusiveeRecoEnergy_slice_0_IrregBins"); // PUT IT BACK!
 
+	NameOfPlots.push_back("h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice"); LabelOfPlots.push_back(" 1st sector (e,e') E^{QE} [GeV]");  OutputPlotNames.push_back("h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice");
+
+	NameOfPlots.push_back("h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice"); LabelOfPlots.push_back(" 2nd sector (e,e') E^{QE} [GeV]");  OutputPlotNames.push_back("h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice");
+
+//	NameOfPlots.push_back("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice"); LabelOfPlots.push_back(" 1st sector Energy Transfer [GeV]");  OutputPlotNames.push_back("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice");
+
+//	NameOfPlots.push_back("h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice"); LabelOfPlots.push_back(" 2nd sector Energy Transfer [GeV]");  OutputPlotNames.push_back("h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice");
+
+//	NameOfPlots.push_back("h1_EePrime_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice"); LabelOfPlots.push_back(" 1st sector E_{e'} [GeV]");  OutputPlotNames.push_back("h1_EePrime_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice");
+
+//	NameOfPlots.push_back("h1_EePrime_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice"); LabelOfPlots.push_back(" 2nd sector E_{e'} [GeV]");  OutputPlotNames.push_back("h1_EePrime_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice");
 
 //	NameOfPlots.push_back("h1_EQE_FullyInclusive_IrregBins_NoPions"); LabelOfPlots.push_back("(e,e') E^{QE} [GeV]");  OutputPlotNames.push_back("FullyInclusiveeRecoEnergy_slice_0_IrregBins_NoPions");
 //	NameOfPlots.push_back("h1_E_rec"); LabelOfPlots.push_back("(e,e') E^{QE} [GeV]");  OutputPlotNames.push_back("FullyInclusiveeRecoEnergy_slice_0");
@@ -350,7 +361,7 @@ void OverlayPlots_NormalizedRates() {
 						Plots[WhichFSIModel]->GetYaxis()->SetTickSize(0.02);
 						Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(TextSize);
 						//Plots[WhichFSIModel]->GetYaxis()->SetTitle("Weighted Events / (GeV mC cm)");
-						Plots[WhichFSIModel]->GetYaxis()->SetTitle("Cross Section [#mub]");
+						Plots[WhichFSIModel]->GetYaxis()->SetTitle("Cross Section / nucleon [#mub]");
 
 						// --------------------------------------------------------------------------------------
 
@@ -370,17 +381,17 @@ void OverlayPlots_NormalizedRates() {
 int MinBin = 0;
 int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 
-if ( OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_0") {
+//if ( OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_0") {
 
-	double perc = 0.05;
-	if (DoubleE[WhichEnergy] == 1.161) { perc = 0.1; }
-	double LowE = (1-perc)*DoubleE[WhichEnergy];
-	double HighE = (1+perc)*DoubleE[WhichEnergy];
+//	double perc = 0.05;
+//	if (DoubleE[WhichEnergy] == 1.161) { perc = 0.1; }
+//	double LowE = (1-perc)*DoubleE[WhichEnergy];
+//	double HighE = (1+perc)*DoubleE[WhichEnergy];
 
-	MinBin = Plots[WhichFSIModel]->FindBin(LowE);
-	MaxBin = Plots[WhichFSIModel]->FindBin(HighE);
+//	MinBin = Plots[WhichFSIModel]->FindBin(LowE);
+//	MaxBin = Plots[WhichFSIModel]->FindBin(HighE);
 
-}
+//}
 
 //						if (DoubleE[WhichEnergy] == 1.161) {} 
 //							{ for (int i = 0; i < 4; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,1.7); } }
@@ -403,7 +414,8 @@ if ( OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_0") {
 						if (FSILabel[WhichFSIModel] == "SuSav2") { 
 
 							ScalingFactor = SuSav2GenieXSec[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] * TMath::Power(10.,-38.) *\
-							ConversionFactorCm2ToMicroBarn / (SuSav2NumberEvents[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] * 4 * TMath::Pi() );
+							ConversionFactorCm2ToMicroBarn / (SuSav2NumberEvents[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
+							4 * TMath::Pi() ) * MassNumber[nucleus[WhichNucleus]];
 
 							Plots[WhichFSIModel]->Scale(ScalingFactor);
 							SuSav2Integral =  Plots[WhichFSIModel]->Integral(MinBin,MaxBin);
@@ -412,7 +424,8 @@ if ( OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_0") {
 						if (FSILabel[WhichFSIModel] == "G2018") { 
 
 							ScalingFactor = G2018GenieXSec[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] * TMath::Power(10.,-38.) *\
-							ConversionFactorCm2ToMicroBarn / (G2018NumberEvents[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] * 4 * TMath::Pi() );
+							ConversionFactorCm2ToMicroBarn / (G2018NumberEvents[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
+							4 * TMath::Pi() ) * MassNumber[nucleus[WhichNucleus]];
 
 							Plots[WhichFSIModel]->Scale(ScalingFactor);
 							G2018Integral =  Plots[WhichFSIModel]->Integral(MinBin,MaxBin);
@@ -424,14 +437,14 @@ if ( OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_0") {
 //						if (FSILabel[WhichFSIModel] == "SuSav2") { ScalingFactor = DataIntegral / SuSav2Integral; }
 //						if (FSILabel[WhichFSIModel] == "G2018") { ScalingFactor = DataIntegral / G2018Integral; }
 
-						double ScalingFactorIntegral = DataIntegral / Plots[WhichFSIModel]->Integral();
+//						double ScalingFactorIntegral = DataIntegral / Plots[WhichFSIModel]->Integral();
 
-						if (FSILabel[WhichFSIModel] == "SuSav2") { ScalingFactorIntegral = DataIntegral / SuSav2Integral; }
-						if (FSILabel[WhichFSIModel] == "G2018") { ScalingFactorIntegral = DataIntegral / G2018Integral; }
+//						if (FSILabel[WhichFSIModel] == "SuSav2") { ScalingFactorIntegral = DataIntegral / SuSav2Integral; }
+//						if (FSILabel[WhichFSIModel] == "G2018") { ScalingFactorIntegral = DataIntegral / G2018Integral; }
 
-if (FSILabel[WhichFSIModel] == "SuSav2" || FSILabel[WhichFSIModel] == "G2018") {
-cout << "ScalingFactorIntegral = " << ScalingFactorIntegral<< endl;
-}
+//if (FSILabel[WhichFSIModel] == "SuSav2" || FSILabel[WhichFSIModel] == "G2018") {
+//cout << "ScalingFactorIntegral = " << ScalingFactorIntegral<< endl;
+//}
 
 //						Plots[WhichFSIModel]->Scale(ScalingFactor);
 
@@ -446,14 +459,14 @@ cout << "ScalingFactorIntegral = " << ScalingFactorIntegral<< endl;
 						// Rebining & ranges
 
 
-//						if (DoubleE[WhichEnergy] == 1.161)  
-//							{ for (int i = 0; i < 4; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,1.7); } }
+						if (DoubleE[WhichEnergy] == 1.161)  
+							{ for (int i = 0; i < 5; i++) { Plots[WhichFSIModel]->Rebin(); } Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,1.7);  }
 
-//						if ( DoubleE[WhichEnergy] == 2.261) 
-//							{ for (int i = 0; i < 4; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,3.); } }
+						if ( DoubleE[WhichEnergy] == 2.261) 
+							{ for (int i = 0; i < 5; i++) { Plots[WhichFSIModel]->Rebin(); } Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.6,3.); }
 
-//						if ( DoubleE[WhichEnergy] == 4.461) 
-//							{ for (int i = 0; i < 4; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.5,6.); } }
+						if ( DoubleE[WhichEnergy] == 4.461) 
+							{ for (int i = 0; i < 6; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.5,6.); } }
 
 						// ----------------------------------------------------------------------------------
 

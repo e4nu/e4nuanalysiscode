@@ -379,12 +379,17 @@ void genie_analysis::Loop(Int_t choice) {
 
 	TH1F *h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice = new TH1F("h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice","",6000,0.,6.);
 	TH1F *h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice = new TH1F("h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice","",6000,0.,6.);
-
 	TH1F *h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice = new TH1F("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice","",6000,0.,6.);
 	TH1F *h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice = new TH1F("h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice","",6000,0.,6.);
-
 	TH1F *h1_EePrime_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice = new TH1F("h1_EePrime_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice","",6000,0.,6.);
 	TH1F *h1_EePrime_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice = new TH1F("h1_EePrime_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice","",6000,0.,6.);
+
+	TH1F *h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice_xBCut = new TH1F("h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice_xBCut","",6000,0.,6.);
+	TH1F *h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice_xBCut = new TH1F("h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice_xBCut","",6000,0.,6.);
+	TH1F *h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice_xBCut = new TH1F("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice_xBCut","",6000,0.,6.);
+	TH1F *h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice_xBCut = new TH1F("h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice_xBCut","",6000,0.,6.);
+	TH1F *h1_EePrime_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice_xBCut = new TH1F("h1_EePrime_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice_xBCut","",6000,0.,6.);
+	TH1F *h1_EePrime_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice_xBCut = new TH1F("h1_EePrime_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice_xBCut","",6000,0.,6.);
 
 	// -------------------------------------------------------------------------------------------------------
 
@@ -1073,6 +1078,7 @@ void genie_analysis::Loop(Int_t choice) {
 		if (el_phi_mod > 240 && el_phi_mod < 300) { h2_Electron_Theta_Momentum_FifthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
 		if (el_phi_mod > 300 && el_phi_mod < 360) { h2_Electron_Theta_Momentum_SixthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
 
+
 		if (el_theta > 23 && el_theta < 27) {
 
 			// First Sector
@@ -1092,6 +1098,33 @@ void genie_analysis::Loop(Int_t choice) {
 				h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice->Fill(E_rec,WeightIncl*Q4);
 				h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice->Fill(nu,WeightIncl*Q4);
 				h1_EePrime_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice->Fill(V4_el.E(),WeightIncl*Q4);
+
+			}
+
+			// xB cut
+
+
+			// First Sector
+
+			if (fabs(x_bjk - 1.) < 0.2) {
+
+				if (el_phi_mod > 0 && el_phi_mod < 60) {
+		
+					h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice_xBCut->Fill(E_rec,WeightIncl*Q4);
+					h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice_xBCut->Fill(nu,WeightIncl*Q4);
+					h1_EePrime_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice_xBCut->Fill(V4_el.E(),WeightIncl*Q4);
+
+				}
+
+				// Second Sector
+
+				if (el_phi_mod > 60 && el_phi_mod < 120) {
+		
+					h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice_xBCut->Fill(E_rec,WeightIncl*Q4);
+					h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice_xBCut->Fill(nu,WeightIncl*Q4);
+					h1_EePrime_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice_xBCut->Fill(V4_el.E(),WeightIncl*Q4);
+
+				}
 
 			}
 

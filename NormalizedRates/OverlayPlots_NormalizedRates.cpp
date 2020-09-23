@@ -105,15 +105,15 @@ void OverlayPlots_NormalizedRates() {
 	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
 //	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
-	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
-//	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
+//	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
+	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
 //	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
  
 //	Colors.push_back(kBlack); Colors.push_back(kRed); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
-	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kRed); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
+	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kRed); Colors.push_back(kBlue); Colors.push_back(kOrange + 7);
 
 //	Style.push_back(9); Style.push_back(3); Style.push_back(7); Style.push_back(5);
 //	Style.push_back(9); Style.push_back(9); Style.push_back(9); Style.push_back(9); // fancy dashed lines 
@@ -127,7 +127,9 @@ void OverlayPlots_NormalizedRates() {
 //	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2 NoRad");  DirNames.push_back("hA2018_Truth_RadCorr");
 	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
 //	FSIModel.push_back("SuSav2_02_11a_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
+
 	FSIModel.push_back("Data_Final_FilterRuns"); FSILabel.push_back("Data_FilterRuns"); DirNames.push_back("Data_FilterRuns");
+//	FSIModel.push_back("Data_Final_NewFilterRuns"); FSILabel.push_back("Data_NewFilterRuns"); DirNames.push_back("Data_NewFilterRuns");
 
 //	FSIModel.push_back("Data_Final_NoChargedPions"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 //	FSIModel.push_back("hA2018_Final_RadCorr_LFGM_NoChargedPions"); FSILabel.push_back("G2018");  DirNames.push_back("hA2018_Truth_RadCorr");
@@ -149,11 +151,11 @@ void OverlayPlots_NormalizedRates() {
 
 //	NameOfPlots.push_back("h1_EQE_FullyInclusive_IrregBins"); LabelOfPlots.push_back("(e,e') E^{QE} [GeV]");  OutputPlotNames.push_back("FullyInclusiveeRecoEnergy_slice_0_IrregBins"); // PUT IT BACK!
 
-	NameOfPlots.push_back("h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice"); LabelOfPlots.push_back(" 1st sector (e,e') E^{QE} [GeV]");  OutputPlotNames.push_back("h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice");
+//	NameOfPlots.push_back("h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice"); LabelOfPlots.push_back(" 1st sector (e,e') E^{QE} [GeV]");  OutputPlotNames.push_back("h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice");
 
 //	NameOfPlots.push_back("h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice"); LabelOfPlots.push_back(" 2nd sector (e,e') E^{QE} [GeV]");  OutputPlotNames.push_back("h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice");
 
-//	NameOfPlots.push_back("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice"); LabelOfPlots.push_back(" 1st sector Energy Transfer [GeV]");  OutputPlotNames.push_back("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice");
+	NameOfPlots.push_back("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice"); LabelOfPlots.push_back(" 1st sector Energy Transfer [GeV]");  OutputPlotNames.push_back("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice");
 
 //	NameOfPlots.push_back("h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice"); LabelOfPlots.push_back(" 2nd sector Energy Transfer [GeV]");  OutputPlotNames.push_back("h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice");
 
@@ -194,9 +196,14 @@ void OverlayPlots_NormalizedRates() {
 	// Avogadro constant: 6x10^23
 	// number of atoms in 12 grams of the isotope 12C
 	// 1 gr -> 6x10^23 / 12 = 5x10^22 atoms
-	double ConversionFactorGramToAtoms = 5*TMath::Power(10.,22);
+//	double ConversionFactorGramToAtoms = 5*TMath::Power(10.,22);
+	double AvogadroNumber = 6*TMath::Power(10.,23);
+	double OverallUnitConversionFactor = ConversionFactorChargeToElectrons * AvogadroNumber;
 
-	double OverallUnitConversionFactor = ConversionFactorChargeToElectrons * ConversionFactorGramToAtoms;
+	
+	// Clas dOmega 
+
+	double dOmega = 0.01; // sr
 
 	// Mass Numbers
 	std::map<TString,double> MassNumber =
@@ -221,11 +228,23 @@ void OverlayPlots_NormalizedRates() {
 	// mC // Filtered runs
 	std::map<std::pair<TString,TString>,double> IntegratedCharge_FilterRuns =
 	{
-		{ std::make_pair("4He", "2_261"), 0. },
+		{ std::make_pair("4He", "2_261"), 0.024727582 },
 		{ std::make_pair("4He", "4_461"), 0. },
 		{ std::make_pair("12C", "1_161"), 0.05392387 },
 		{ std::make_pair("12C", "2_261"), 0.060684561 },
 		{ std::make_pair("12C", "4_461"), 0.099557913 },
+		{ std::make_pair("56Fe", "2_261"), 0. },
+		{ std::make_pair("56Fe", "4_461"), 0.089507691 }
+	};
+
+	// mC // New Filtered runs
+	std::map<std::pair<TString,TString>,double> IntegratedCharge_NewFilterRuns =
+	{
+		{ std::make_pair("4He", "2_261"), 0. },
+		{ std::make_pair("4He", "4_461"), 0. },
+		{ std::make_pair("12C", "1_161"), 0.070707652 },
+		{ std::make_pair("12C", "2_261"), 0. },
+		{ std::make_pair("12C", "4_461"), 0. },
 		{ std::make_pair("56Fe", "2_261"), 0. },
 		{ std::make_pair("56Fe", "4_461"), 0. }
 	};
@@ -374,13 +393,13 @@ void OverlayPlots_NormalizedRates() {
 						Plots[WhichFSIModel]->GetYaxis()->SetTickSize(0.02);
 						Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(TextSize);
 						//Plots[WhichFSIModel]->GetYaxis()->SetTitle("Weighted Events / (GeV mC cm)");
-						Plots[WhichFSIModel]->GetYaxis()->SetTitle("Cross Section / nucleon [#mub]");
+						Plots[WhichFSIModel]->GetYaxis()->SetTitle("#frac{d^{2}#sigma}{d#Omega dE} [#frac{#mub}{sr GeV nucleus}]");
 
 						// --------------------------------------------------------------------------------------
 
 						Plots[WhichFSIModel]->GetYaxis()->SetTitleFont(FontStyle);
 						Plots[WhichFSIModel]->GetYaxis()->SetLabelFont(FontStyle);
-						Plots[WhichFSIModel]->GetYaxis()->SetTitleOffset(1.05); 
+						Plots[WhichFSIModel]->GetYaxis()->SetTitleOffset(0.95); 
 
 						Plots[WhichFSIModel]->SetLineWidth(LineWidth);
 
@@ -401,8 +420,24 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 //	double LowE = (1-perc)*DoubleE[WhichEnergy];
 //	double HighE = (1+perc)*DoubleE[WhichEnergy];
 
-//	MinBin = Plots[WhichFSIModel]->FindBin(LowE);
-//	MaxBin = Plots[WhichFSIModel]->FindBin(HighE);
+
+	// 1.1 GeV
+
+//	double LowE = 0.;
+//	double HighE = 0.24;
+
+	// 2.2 GeV
+	double LowE = 0.;
+	double HighE = 0.4;
+
+	// 4.4 GeV
+
+//	double LowE = 0.;
+//	double HighE = 1.2;
+
+
+	MinBin = Plots[WhichFSIModel]->FindBin(LowE);
+	MaxBin = Plots[WhichFSIModel]->FindBin(HighE);
 
 //}
 
@@ -417,10 +452,12 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 
 						if (FSILabel[WhichFSIModel] == "Data") { 
 
-							Plots[WhichFSIModel]->Scale(1. / (IntegratedCharge[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
+							Plots[WhichFSIModel]->Scale(1. / ( IntegratedCharge[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
 										    TargetLength[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
 										    TargetDensity[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
-										    OverallUnitConversionFactor ) *(MassNumber[nucleus[WhichNucleus]]/12.) * ConversionFactorCm2ToMicroBarn );
+//										    OverallUnitConversionFactor ) *(MassNumber[nucleus[WhichNucleus]]/12.) * ConversionFactorCm2ToMicroBarn );
+										    OverallUnitConversionFactor / MassNumber[nucleus[WhichNucleus]] ) * ConversionFactorCm2ToMicroBarn / dOmega );
+
 							DataIntegral =  Plots[WhichFSIModel]->Integral(MinBin,MaxBin);
 						}
 
@@ -429,15 +466,26 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 							Plots[WhichFSIModel]->Scale(1. / (IntegratedCharge_FilterRuns[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
 										    TargetLength[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
 										    TargetDensity[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
-										    OverallUnitConversionFactor ) *(MassNumber[nucleus[WhichNucleus]]/12.) * ConversionFactorCm2ToMicroBarn );
+//										    OverallUnitConversionFactor ) *(MassNumber[nucleus[WhichNucleus]]/12.) * ConversionFactorCm2ToMicroBarn );
+										    OverallUnitConversionFactor / MassNumber[nucleus[WhichNucleus]]) * ConversionFactorCm2ToMicroBarn / dOmega );
+							DataIntegral =  Plots[WhichFSIModel]->Integral(MinBin,MaxBin);
+						}
+
+						if (FSILabel[WhichFSIModel] == "Data_NewFilterRuns") { 
+
+							Plots[WhichFSIModel]->Scale(1. / (IntegratedCharge_NewFilterRuns[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
+										    TargetLength[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
+										    TargetDensity[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
+//										    OverallUnitConversionFactor ) *(MassNumber[nucleus[WhichNucleus]]/12.) * ConversionFactorCm2ToMicroBarn );
+										    OverallUnitConversionFactor / MassNumber[nucleus[WhichNucleus]]) * ConversionFactorCm2ToMicroBarn / dOmega);
 							DataIntegral =  Plots[WhichFSIModel]->Integral(MinBin,MaxBin);
 						}
 
 						if (FSILabel[WhichFSIModel] == "SuSav2") { 
 
 							ScalingFactor = SuSav2GenieXSec[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] * TMath::Power(10.,-38.) *\
-							ConversionFactorCm2ToMicroBarn / (SuSav2NumberEvents[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
-							4 * TMath::Pi() ) * MassNumber[nucleus[WhichNucleus]];
+								ConversionFactorCm2ToMicroBarn / (SuSav2NumberEvents[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
+								4 * TMath::Pi() ) / dOmega;
 
 							Plots[WhichFSIModel]->Scale(ScalingFactor);
 							SuSav2Integral =  Plots[WhichFSIModel]->Integral(MinBin,MaxBin);
@@ -446,8 +494,8 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 						if (FSILabel[WhichFSIModel] == "G2018") { 
 
 							ScalingFactor = G2018GenieXSec[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] * TMath::Power(10.,-38.) *\
-							ConversionFactorCm2ToMicroBarn / (G2018NumberEvents[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
-							4 * TMath::Pi() ) * MassNumber[nucleus[WhichNucleus]];
+								ConversionFactorCm2ToMicroBarn / (G2018NumberEvents[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
+								4 * TMath::Pi() ) / dOmega;
 
 							Plots[WhichFSIModel]->Scale(ScalingFactor);
 							G2018Integral =  Plots[WhichFSIModel]->Integral(MinBin,MaxBin);
@@ -459,14 +507,14 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 //						if (FSILabel[WhichFSIModel] == "SuSav2") { ScalingFactor = DataIntegral / SuSav2Integral; }
 //						if (FSILabel[WhichFSIModel] == "G2018") { ScalingFactor = DataIntegral / G2018Integral; }
 
-//						double ScalingFactorIntegral = DataIntegral / Plots[WhichFSIModel]->Integral();
+						double ScalingFactorIntegral = DataIntegral / Plots[WhichFSIModel]->Integral();
 
-//						if (FSILabel[WhichFSIModel] == "SuSav2") { ScalingFactorIntegral = DataIntegral / SuSav2Integral; }
-//						if (FSILabel[WhichFSIModel] == "G2018") { ScalingFactorIntegral = DataIntegral / G2018Integral; }
+						if (FSILabel[WhichFSIModel] == "SuSav2") { ScalingFactorIntegral = DataIntegral / SuSav2Integral; }
+						if (FSILabel[WhichFSIModel] == "G2018") { ScalingFactorIntegral = DataIntegral / G2018Integral; }
 
-//if (FSILabel[WhichFSIModel] == "SuSav2" || FSILabel[WhichFSIModel] == "G2018") {
-//cout << "ScalingFactorIntegral = " << ScalingFactorIntegral<< endl;
-//}
+if (FSILabel[WhichFSIModel] == "SuSav2" || FSILabel[WhichFSIModel] == "G2018") {
+cout << "ScalingFactorIntegral = " << ScalingFactorIntegral<< endl;
+}
 
 //						Plots[WhichFSIModel]->Scale(ScalingFactor);
 
@@ -481,14 +529,24 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 						// Rebining & ranges
 
 
+//						if (DoubleE[WhichEnergy] == 1.161)  
+//							{ for (int i = 0; i < 5; i++) { Plots[WhichFSIModel]->Rebin(); } Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,1.7);  }
+
+//						if ( DoubleE[WhichEnergy] == 2.261) 
+//							{ for (int i = 0; i < 5; i++) { Plots[WhichFSIModel]->Rebin(); } Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.6,3.); }
+
+//						if ( DoubleE[WhichEnergy] == 4.461) 
+//							{ for (int i = 0; i < 6; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.5,6.); } }
+
+
 						if (DoubleE[WhichEnergy] == 1.161)  
-							{ for (int i = 0; i < 5; i++) { Plots[WhichFSIModel]->Rebin(); } Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,1.7);  }
+							{ for (int i = 0; i < 5; i++) { Plots[WhichFSIModel]->Rebin(); } Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,0.7);  }
 
 						if ( DoubleE[WhichEnergy] == 2.261) 
-							{ for (int i = 0; i < 5; i++) { Plots[WhichFSIModel]->Rebin(); } Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.6,3.); }
+							{ for (int i = 0; i < 5; i++) { Plots[WhichFSIModel]->Rebin(); } Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,1.5); }
 
 						if ( DoubleE[WhichEnergy] == 4.461) 
-							{ for (int i = 0; i < 6; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.5,6.); } }
+							{ for (int i = 0; i < 6; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.5,3.); } }
 
 						// ----------------------------------------------------------------------------------
 

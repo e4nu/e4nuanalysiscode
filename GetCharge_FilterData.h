@@ -318,9 +318,14 @@ GetCharge_FilterData::GetCharge_FilterData(std::string a_target,std::string a_be
       TChain * chain = new TChain("ch","GetCharge_FilterData");
       chain->Add(Form("/work/clas/clase2/Mariana/data/e2a_%s_%s_v1/*.root/h10", ftarget.c_str(), fbeam_en.c_str()));
 
-      if (fbeam_en == "1161") chain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/hroot_18297_*_v1.root/h10", fbeam_en.c_str(), ftarget.c_str()));
-      if (fbeam_en == "2261") chain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/hroot_18105_*_v1.root/h10", fbeam_en.c_str(), ftarget.c_str()));
-      if (fbeam_en == "4461") chain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/hroot_18018_*_v1.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+      if (fbeam_en == "1161" && ftarget == "C12") chain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/hroot_18297_*_v1.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+//      if (fbeam_en == "1161" && ftarget == "C12") chain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/hroot_18334_*_v1.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+
+      if (fbeam_en == "2261" && ftarget == "C12") chain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/hroot_18105_*_v1.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+      if (fbeam_en == "4461" && ftarget == "C12") chain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/hroot_18018_*_v1.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+
+      if (fbeam_en == "2261" && ftarget == "4He") chain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/hroot_17912_*_v1.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+      if (fbeam_en == "4461" && ftarget == "56Fe") chain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/hroot_18043_*_v1.root/h10", fbeam_en.c_str(), ftarget.c_str()));
 
       //chain->Add("datafile.root/h10");
 

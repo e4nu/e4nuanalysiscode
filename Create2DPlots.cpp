@@ -34,12 +34,12 @@ void Create2DPlots() {
 
 	std::vector<TString> xBCut; std::vector<TString> nucleus; std::vector<TString> LabelsOfSamples; std::vector<TString> E;  std::vector<TString> JustNucleus;
 	std::vector<TString> LabelE; std::vector<TString> FSIModel; std::vector<TString> DirNames;
-	std::vector<TString> FSILabel; std::vector<TString> NameOfPlots; std::vector<TString> XLabelOfPlots; std::vector<TString> YLabelOfPlots;  std::vector<TString> OutputPlotNames;
+	std::vector<TString> FSILabel; std::vector<TString> NameOfPlots; std::vector<TString> XLabelOfPlots; std::vector<TString> YLabelOfPlots;  
+	std::vector<TString> OutputPlotNames; std::vector<TString> Title;
 
-////	nucleus.push_back("3He"); LabelsOfSamples.push_back("^{3}He");
 //	nucleus.push_back("4He"); LabelsOfSamples.push_back("^{4}He");  JustNucleus.push_back("He");
-//	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
-	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
+	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
+//	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
 //	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV");
 //	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV");
@@ -51,12 +51,13 @@ void Create2DPlots() {
 	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("GENIE");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2");
 
 //	FSIModel.push_back("hA2018_Truth_NoRadCorr"); FSILabel.push_back("GENIE (Truth)");  DirNames.push_back("hA2018_Truth_NoRadCorr");
 //	FSIModel.push_back("hN2018_Final_NoRadCorr"); FSILabel.push_back("GENIE hN2018");  DirNames.push_back("hN2018_Truth_NoRadCorr");
 
 //	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM_Adi"); FSILabel.push_back("NoRad");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-	FSIModel.push_back("hA2018_Final_RadCorr_LFGM_Adi"); FSILabel.push_back("Rad");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM_Adi"); FSILabel.push_back("Rad");  DirNames.push_back("hA2018_Truth_RadCorr");
 
 
 //	NameOfPlots.push_back("h2_Ecal_Eqe"); XLabelOfPlots.push_back("E^{QE} (GeV)"); YLabelOfPlots.push_back("E^{cal} (GeV)"); OutputPlotNames.push_back("ECalVsEQE2D");
@@ -66,11 +67,23 @@ void Create2DPlots() {
 
 //	NameOfPlots.push_back("EePrimeVsEgamma"); XLabelOfPlots.push_back("E_{#gamma} [GeV]"); YLabelOfPlots.push_back("E_{e'} [GeV]"); OutputPlotNames.push_back("EePrimeVsEgamma");
 
-	NameOfPlots.push_back("RadCosThetaGammaEgamma"); XLabelOfPlots.push_back("cos(#theta_{#gamma})"); YLabelOfPlots.push_back("E_{#gamma} [GeV]"); OutputPlotNames.push_back("CosThetaGammaEgamma");
+//	NameOfPlots.push_back("RadCosThetaGammaEgamma"); XLabelOfPlots.push_back("cos(#theta_{#gamma})"); YLabelOfPlots.push_back("E_{#gamma} [GeV]"); OutputPlotNames.push_back("CosThetaGammaEgamma");
 
-	NameOfPlots.push_back("RadCosDeltaThetaGammaEgamma"); XLabelOfPlots.push_back("cos(#Delta#theta_{#gamma,e'})"); YLabelOfPlots.push_back("E_{#gamma} [GeV]"); OutputPlotNames.push_back("CosDeltaThetaGammaEgamma");
+//	NameOfPlots.push_back("RadCosDeltaThetaGammaEgamma"); XLabelOfPlots.push_back("cos(#Delta#theta_{#gamma,e'})"); YLabelOfPlots.push_back("E_{#gamma} [GeV]"); OutputPlotNames.push_back("CosDeltaThetaGammaEgamma");
 
 //	NameOfPlots.push_back("h2_Etot_pperp"); XLabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); YLabelOfPlots.push_back("E^{cal} (GeV)"); OutputPlotNames.push_back("ECalVsPmiss2D");
+
+	NameOfPlots.push_back("h2_Electron_Theta_Momentum_FirstSector"); XLabelOfPlots.push_back("P_{e'} [GeV/c]"); YLabelOfPlots.push_back("#theta_{e'}"); OutputPlotNames.push_back("h2_Electron_Theta_Momentum_FirstSector"); Title.push_back(" (1st Sector)");
+
+	NameOfPlots.push_back("h2_Electron_Theta_Momentum_SecondSector"); XLabelOfPlots.push_back("P_{e'} [GeV/c]"); YLabelOfPlots.push_back("#theta_{e'}"); OutputPlotNames.push_back("h2_Electron_Theta_Momentum_SecondSector"); Title.push_back(" (2nd Sector)");
+
+	NameOfPlots.push_back("h2_Electron_Theta_Momentum_ThirdSector"); XLabelOfPlots.push_back("P_{e'} [GeV/c]"); YLabelOfPlots.push_back("#theta_{e'}"); OutputPlotNames.push_back("h2_Electron_Theta_Momentum_ThirdSector"); Title.push_back(" (3rd Sector)");
+
+	NameOfPlots.push_back("h2_Electron_Theta_Momentum_FourthSector"); XLabelOfPlots.push_back("P_{e'} [GeV/c]"); YLabelOfPlots.push_back("#theta_{e'}"); OutputPlotNames.push_back("h2_Electron_Theta_Momentum_FourthSector"); Title.push_back(" (4th Sector)");
+
+	NameOfPlots.push_back("h2_Electron_Theta_Momentum_FifthSector"); XLabelOfPlots.push_back("P_{e'} [GeV/c]"); YLabelOfPlots.push_back("#theta_{e'}"); OutputPlotNames.push_back("h2_Electron_Theta_Momentum_FifthSector"); Title.push_back(" (5th Sector)");
+
+	NameOfPlots.push_back("h2_Electron_Theta_Momentum_SixthSector"); XLabelOfPlots.push_back("P_{e'} [GeV/c]"); YLabelOfPlots.push_back("#theta_{e'}"); OutputPlotNames.push_back("h2_Electron_Theta_Momentum_SixthSector"); Title.push_back(" (6th Sector)");
 
 	int NxBCuts = xBCut.size();
 	int NNuclei = nucleus.size();
@@ -132,8 +145,8 @@ void Create2DPlots() {
 					title->SetTextFont(FontStyle); 
 					title->SetTextColor(kBlack); 
 					title->SetTextSize(0.8);
-					TString myTitle = LabelsOfSamples[WhichNucleus] + " " +LabelE[WhichEnergy];
-					title->DrawLatex(0.25,0.3,myTitle);
+					TString myTitle = LabelsOfSamples[WhichNucleus] + " " +LabelE[WhichEnergy]+Title[WhichPlot];
+					title->DrawLatex(0.2,0.3,myTitle);
 
 					// ---------------------------------------------------------------------------------------------------------------------------
 
@@ -148,7 +161,7 @@ void Create2DPlots() {
 //										 FSIModel[WhichFSIModel]+"_"+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+NameOfPlots[WhichPlot]+"_"+xBCut[WhichxBCut],
 //										 205,34,1024,768);
 
-						TString PathToFiles = "../../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[WhichFSIModel]+"/"+xBCut[WhichxBCut]+"/";
+						TString PathToFiles = "../myFiles/"+ E[WhichEnergy] + "/"+FSIModel[WhichFSIModel]+"/"+xBCut[WhichxBCut]+"/";
 						TString FileName = PathToFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+FSIModel[WhichFSIModel]+"_Plots_FSI_em.root";
 						TFile* FileSample = TFile::Open(FileName);
 
@@ -188,26 +201,29 @@ void Create2DPlots() {
 						double YMin =-99.,YMax =-99.;
 
 						if ( NameOfPlots[WhichPlot] == "h2_Ecal_Eqe" ) {
-//						PlotCanvas->SetLogz();
-						pad1->SetLogz();
-						pad2->SetLogz();
 
-						if (E[WhichEnergy] == "1_161") { 
-							for (int i = 0; i < 1; i++) { Plots->Rebin2D(); }
-							XMin = 0.4; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-							Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
-						}
+	//						PlotCanvas->SetLogz();
+							pad1->SetLogz();
+							pad2->SetLogz();
 
-						if (E[WhichEnergy] == "2_261") { 
-							for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
-							XMin = 0.5; XMax = 3.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-							Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
-						}
-					
-						if (E[WhichEnergy] == "4_461") { 
-							for (int i = 0; i < 4; i++) { Plots->Rebin2D(); }
-							XMin = 1.5; XMax = 5.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-							Plots->GetYaxis()->SetRangeUser(XMin,XMax); }
+							if (E[WhichEnergy] == "1_161") { 
+								for (int i = 0; i < 1; i++) { Plots->Rebin2D(); }
+								XMin = 0.4; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+								Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
+							}
+
+							if (E[WhichEnergy] == "2_261") { 
+								for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
+								XMin = 0.5; XMax = 3.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+								Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
+							}
+						
+							if (E[WhichEnergy] == "4_461") { 
+								for (int i = 0; i < 4; i++) { Plots->Rebin2D(); }
+								XMin = 1.5; XMax = 5.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+								Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
+
+							}
 						}
 
 
@@ -235,7 +251,7 @@ void Create2DPlots() {
 							if (E[WhichEnergy] == "2_261") { 
 								for (int i = 0; i < 0; i++) { Plots->Rebin2D(); } 
 								XMin = 0.; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-								YMin = 0.; YMax = 2.;	Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
+								//YMin = 0.; YMax = 2.;	Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
 							}
 
 						}
@@ -248,7 +264,7 @@ void Create2DPlots() {
 							if (E[WhichEnergy] == "2_261") { 
 								for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
 								XMin = 0.; XMax = 1.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-								YMin = 0.5; YMax = 2.8;	Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
+								//YMin = 0.5; YMax = 2.8;	Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
 							}
 
 						}
@@ -267,6 +283,14 @@ void Create2DPlots() {
 						Plots->GetZaxis()->SetTitleFont(FontStyle);
 						Plots->GetZaxis()->SetTitleSize(TextSize);
 
+						Plots->GetXaxis()->SetNdivisions(5);
+						Plots->GetYaxis()->SetNdivisions(5);
+						YMin = 10; YMax = 60; Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
+
+						if (E[WhichEnergy] == "1_161") { XMin = 0.3; XMax = 1.2; Plots->GetXaxis()->SetRangeUser(XMin,XMax); }
+						if (E[WhichEnergy] == "2_261") { XMin = 0.4; XMax = 2.3; Plots->GetXaxis()->SetRangeUser(XMin,XMax); }
+						if (E[WhichEnergy] == "4_461") { XMin = 1.; XMax = 4.4; Plots->GetXaxis()->SetRangeUser(XMin,XMax); }
+
 //						Plots->Draw("coltz");
 						Plots->Draw("colt");
 						PlotCanvas->Update();
@@ -279,8 +303,8 @@ void Create2DPlots() {
 						sample->SetTextFont(FontStyle); 
 						sample->SetTextColor(kBlack); 
 						sample->SetTextSize(TextSize);
-						if (FSILabel[WhichFSIModel] == "Data") { sample->DrawTextNDC(0.2,0.82,FSILabel[WhichFSIModel]); }
-						else { sample->DrawTextNDC(0.05,0.82,FSILabel[WhichFSIModel]); } 
+						if (FSILabel[WhichFSIModel] == "Data") { sample->DrawTextNDC(0.2,0.84,FSILabel[WhichFSIModel]); }
+						else { sample->DrawTextNDC(0.05,0.84,FSILabel[WhichFSIModel]); } 
 
 						if ( NameOfPlots[WhichPlot] == "h2_Q2_nu_weight" ) {
 

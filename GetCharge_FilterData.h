@@ -289,7 +289,7 @@ public :
 #endif
 #ifdef GETCHARGE_FILTERDATA_C
 
-GetCharge_FilterData::GetCharge_FilterData(std::string a_target,std::string a_beam_en, TTree *tree) : fChain(0)
+GetCharge_FilterData::GetCharge_FilterData(std::string a_target,std::string a_beam_en, TChain *tree) : fChain(0)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.

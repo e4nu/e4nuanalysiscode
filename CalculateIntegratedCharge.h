@@ -25,6 +25,7 @@ private:
 
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
+//   TChain          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
 
    // Declaration of leaf types
@@ -241,12 +242,13 @@ public :
    TBranch        *b_lec_z;   //!
    TBranch        *b_lec_c2;   //!
 
-   CalculateIntegratedCharge(std::string energy, std::string target,TTree *tree=0);
+   CalculateIntegratedCharge(std::string energy, std::string target,TChain *tree=0);
    virtual ~CalculateIntegratedCharge();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
-   virtual void     Init(TTree *tree);
+//   virtual void     Init(TTree *tree);
+   virtual void     Init(TChain *tree);
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
@@ -255,17 +257,16 @@ public :
 #endif
 
 #ifdef CalculateIntegratedCharge_cxx
-CalculateIntegratedCharge::CalculateIntegratedCharge(std::string energy, std::string target,TTree *tree) : fChain(0) 
+CalculateIntegratedCharge::CalculateIntegratedCharge(std::string energy, std::string target,TChain *tree) : fChain(0) 
 {
 	fEnergy = energy;
 	fTarget = target;
 
-	TChain* fmyLocalChain = new TChain("myChain");
+	TChain* fmyLocalChain = new TChain("myChain","myChain");
 
 	fmyLocalChain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/*.root/h10",fEnergy.c_str(),fTarget.c_str()) );
 
-	tree = fmyLocalChain;
-	Init(tree);
+	Init(fmyLocalChain);
 		
 /*
    if (tree == 0) {
@@ -306,7 +307,8 @@ Long64_t CalculateIntegratedCharge::LoadTree(Long64_t entry)
    return centry;
 }
 
-void CalculateIntegratedCharge::Init(TTree *tree)
+//void CalculateIntegratedCharge::Init(TTree *tree)
+void CalculateIntegratedCharge::Init(TChain *tree)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch

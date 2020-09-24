@@ -248,7 +248,7 @@ public :
    TBranch        *b_lec_z;   //!
    TBranch        *b_lec_c2;   //!
 
-   GetCharge_FilterData(std::string a_target,std::string a_beam_en, TTree *tree=0);
+   GetCharge_FilterData(std::string a_target,std::string a_beam_en, TChain *tree=0);
    virtual ~GetCharge_FilterData();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);

@@ -20,8 +20,8 @@ class CalculateIntegratedCharge {
 
 private:
 
-	TString fEnergy;
-	TString fTarget;
+	std::string fEnergy;
+	std::string fTarget;
 
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -241,7 +241,7 @@ public :
    TBranch        *b_lec_z;   //!
    TBranch        *b_lec_c2;   //!
 
-   CalculateIntegratedCharge(TString energy, TString target,TTree *tree=0);
+   CalculateIntegratedCharge(std::string energy, std::string target,TTree *tree=0);
    virtual ~CalculateIntegratedCharge();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -255,16 +255,14 @@ public :
 #endif
 
 #ifdef CalculateIntegratedCharge_cxx
-CalculateIntegratedCharge::CalculateIntegratedCharge(TString energy, TString target,TTree *tree) : fChain(0) 
+CalculateIntegratedCharge::CalculateIntegratedCharge(std::string energy, std::string target,TTree *tree) : fChain(0) 
 {
 	fEnergy = energy;
 	fTarget = target;
 
-	TString Path = "/cache/clas/e2a/production/pass2/v1/"+fEnergy+"/"+fTarget+"/HROOT/";
-
 	TChain* fmyLocalChain = new TChain("myChain");
 
-	fmyLocalChain->Add(Path+"*.root");
+	fmyLocalChain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/*.root/h10",fEnergy.c_str(),fTarget.c_str()) );
 
 	tree = fmyLocalChain;
 	Init(tree);

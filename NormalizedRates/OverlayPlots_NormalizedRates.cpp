@@ -101,8 +101,8 @@ void OverlayPlots_NormalizedRates() {
 	std::vector<int> Colors;
 	std::vector<int> Style;
 
-//	nucleus.push_back("4He"); LabelsOfSamples.push_back("^{4}He"); JustNucleus.push_back("He");
-	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
+	nucleus.push_back("4He"); LabelsOfSamples.push_back("^{4}He"); JustNucleus.push_back("He");
+//	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
 //	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
 //	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
@@ -188,10 +188,10 @@ void OverlayPlots_NormalizedRates() {
 	double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.);
 
 	// 1e -> 1.6x10^-19 C
-	// 1C -> 6x10^18 e
-	// 1mC -> 6x10^15 e
+	// 1C -> 6.25x10^18 e
+	// 1mC -> 6.25x10^15 e
 	// Thus the numbers above have to be multiplied by this number to make sure that we refer to electrons and not charge
-	double ConversionFactorChargeToElectrons = 6*TMath::Power(10.,15.);
+	double ConversionFactorChargeToElectrons = 6.25*TMath::Power(10.,15.);
 
 	// Avogadro constant: 6x10^23
 	// number of atoms in 12 grams of the isotope 12C
@@ -427,8 +427,8 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 //	double HighE = 0.24;
 
 	// 2.2 GeV
-	double LowE = 0.;
-	double HighE = 0.4;
+//	double LowE = 0.;
+//	double HighE = 0.4;
 
 	// 4.4 GeV
 
@@ -436,8 +436,8 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 //	double HighE = 1.2;
 
 
-	MinBin = Plots[WhichFSIModel]->FindBin(LowE);
-	MaxBin = Plots[WhichFSIModel]->FindBin(HighE);
+//	MinBin = Plots[WhichFSIModel]->FindBin(LowE);
+//	MaxBin = Plots[WhichFSIModel]->FindBin(HighE);
 
 //}
 
@@ -483,9 +483,9 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 
 						if (FSILabel[WhichFSIModel] == "SuSav2") { 
 
-							ScalingFactor = SuSav2GenieXSec[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] * TMath::Power(10.,-38.) *\
+							ScalingFactor = (SuSav2GenieXSec[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] * TMath::Power(10.,-38.) *\
 								ConversionFactorCm2ToMicroBarn / (SuSav2NumberEvents[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
-								4 * TMath::Pi() ) / dOmega;
+								dOmega) ) ;
 
 							Plots[WhichFSIModel]->Scale(ScalingFactor);
 							SuSav2Integral =  Plots[WhichFSIModel]->Integral(MinBin,MaxBin);
@@ -493,9 +493,9 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 
 						if (FSILabel[WhichFSIModel] == "G2018") { 
 
-							ScalingFactor = G2018GenieXSec[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] * TMath::Power(10.,-38.) *\
+							ScalingFactor = ( G2018GenieXSec[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] * TMath::Power(10.,-38.) *\
 								ConversionFactorCm2ToMicroBarn / (G2018NumberEvents[std::make_pair(nucleus[WhichNucleus], E[WhichEnergy])] *\
-								4 * TMath::Pi() ) / dOmega;
+								dOmega) );
 
 							Plots[WhichFSIModel]->Scale(ScalingFactor);
 							G2018Integral =  Plots[WhichFSIModel]->Integral(MinBin,MaxBin);
@@ -507,14 +507,14 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 //						if (FSILabel[WhichFSIModel] == "SuSav2") { ScalingFactor = DataIntegral / SuSav2Integral; }
 //						if (FSILabel[WhichFSIModel] == "G2018") { ScalingFactor = DataIntegral / G2018Integral; }
 
-						double ScalingFactorIntegral = DataIntegral / Plots[WhichFSIModel]->Integral();
+//						double ScalingFactorIntegral = DataIntegral / Plots[WhichFSIModel]->Integral();
 
-						if (FSILabel[WhichFSIModel] == "SuSav2") { ScalingFactorIntegral = DataIntegral / SuSav2Integral; }
-						if (FSILabel[WhichFSIModel] == "G2018") { ScalingFactorIntegral = DataIntegral / G2018Integral; }
+//						if (FSILabel[WhichFSIModel] == "SuSav2") { ScalingFactorIntegral = DataIntegral / SuSav2Integral; }
+//						if (FSILabel[WhichFSIModel] == "G2018") { ScalingFactorIntegral = DataIntegral / G2018Integral; }
 
-if (FSILabel[WhichFSIModel] == "SuSav2" || FSILabel[WhichFSIModel] == "G2018") {
-cout << "ScalingFactorIntegral = " << ScalingFactorIntegral<< endl;
-}
+//if (FSILabel[WhichFSIModel] == "SuSav2" || FSILabel[WhichFSIModel] == "G2018") {
+//cout << "ScalingFactorIntegral = " << ScalingFactorIntegral<< endl;
+//}
 
 //						Plots[WhichFSIModel]->Scale(ScalingFactor);
 

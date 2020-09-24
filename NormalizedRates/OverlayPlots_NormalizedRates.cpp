@@ -101,13 +101,13 @@ void OverlayPlots_NormalizedRates() {
 	std::vector<int> Colors;
 	std::vector<int> Style;
 
-	nucleus.push_back("4He"); LabelsOfSamples.push_back("^{4}He"); JustNucleus.push_back("He");
-//	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
+//	nucleus.push_back("4He"); LabelsOfSamples.push_back("^{4}He"); JustNucleus.push_back("He");
+	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
 //	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
 //	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
-	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
-//	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
+//	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
+	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
@@ -128,7 +128,7 @@ void OverlayPlots_NormalizedRates() {
 	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
 //	FSIModel.push_back("SuSav2_02_11a_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
 
-	FSIModel.push_back("Data_Final_FilterRuns"); FSILabel.push_back("Data_FilterRuns"); DirNames.push_back("Data_FilterRuns");
+//	FSIModel.push_back("Data_Final_FilterRuns"); FSILabel.push_back("Data_FilterRuns"); DirNames.push_back("Data_FilterRuns");
 //	FSIModel.push_back("Data_Final_NewFilterRuns"); FSILabel.push_back("Data_NewFilterRuns"); DirNames.push_back("Data_NewFilterRuns");
 
 //	FSIModel.push_back("Data_Final_NoChargedPions"); FSILabel.push_back("Data"); DirNames.push_back("Data");
@@ -155,7 +155,7 @@ void OverlayPlots_NormalizedRates() {
 
 //	NameOfPlots.push_back("h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice"); LabelOfPlots.push_back(" 2nd sector (e,e') E^{QE} [GeV]");  OutputPlotNames.push_back("h1_EQE_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice");
 
-	NameOfPlots.push_back("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice"); LabelOfPlots.push_back(" 1st sector Energy Transfer [GeV]");  OutputPlotNames.push_back("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice");
+	NameOfPlots.push_back("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice_xBCut"); LabelOfPlots.push_back(" 1st sector Energy Transfer [GeV]");  OutputPlotNames.push_back("h1_Omega_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice_xBCut");
 
 //	NameOfPlots.push_back("h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice"); LabelOfPlots.push_back(" 2nd sector Energy Transfer [GeV]");  OutputPlotNames.push_back("h1_Omega_FullyInclusive_NoQ4Weight_SecondSector_Theta_Slice");
 

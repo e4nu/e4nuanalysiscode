@@ -412,6 +412,7 @@ void GetCharge_FilterData::Loop()
 	TTree* mytree = new TTree("gst","gst");
 
 	Double_t           genie_q_l;
+	Int_t           genie_RunNumber;
 
 	Int_t           genie_iev;
 	Int_t           genie_neu;
@@ -510,6 +511,7 @@ void GetCharge_FilterData::Loop()
 	Double_t        genie_calresp0;
 
 	mytree->Branch("q_l", &genie_q_l, "q_l/D");
+	mytree->Branch("RunNumber", &genie_RunNumber, "RunNumber/I");
 
 	mytree->Branch("iev", &genie_iev, "iev/I");
 	mytree->Branch("neu", &genie_neu, "neu/I");
@@ -1257,6 +1259,7 @@ void GetCharge_FilterData::Loop()
 
 		genie_q_l = q_l;
 
+		genie_RunNumber = runnb;
 		genie_iev = NEventsTotal;
 		NEventsTotal++;
 

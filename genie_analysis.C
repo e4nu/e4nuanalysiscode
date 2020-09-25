@@ -1268,7 +1268,7 @@ void genie_analysis::Loop(Int_t choice) {
 					ProtonWeight = acceptance_c(ProtonMag,ProtonCosTheta, phi_prot, 2212,file_acceptance_p);
 					if ( fabs(ProtonWeight) != ProtonWeight ) { continue; }
 
-					ProtonPhi_Deg = V3_prot_corr.Phi() * 180. / TMath::Pi(); 
+					ProtonPhi_Deg = V3_prot_corr.Phi() * 180. / TMath::Pi()  + 180.; 
 					ProtonTheta_Deg = V3_prot_corr.Theta() * 180. / TMath::Pi(); 
 
 				}
@@ -1280,7 +1280,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 					TVector3 V3_prot_corr(pxf[i+60],pyf[i+60],pzf[i+60]);
 
-					ProtonPhi_Deg = V3_prot_corr.Phi() * 180. / TMath::Pi(); 
+					ProtonPhi_Deg = V3_prot_corr.Phi() * 180. / TMath::Pi() + 180.; 
 					ProtonTheta_Deg = V3_prot_corr.Theta() * 180. / TMath::Pi(); 
 					ProtonMag = V3_prot_corr.Mag(); 
 
@@ -1339,7 +1339,7 @@ void genie_analysis::Loop(Int_t choice) {
 					PiMinusWeight = acceptance_c(PiMinusMag,PiMinusCosTheta, phi_pion, -211,file_acceptance);
 					if ( fabs(PiMinusWeight) != PiMinusWeight ) { continue; }
 
-					PiMinusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi(); 
+					PiMinusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi()  + 180.; 
 					PiMinusTheta_Deg = V3_pi_corr.Theta() * 180. / TMath::Pi();
 
 				}
@@ -1356,7 +1356,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 					TVector3 V3_pi_corr(pxf[i+60],pyf[i+60],pzf[i+60]);
 
-					PiMinusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi(); 
+					PiMinusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi()  + 180.; 
 					PiMinusTheta_Deg = V3_pi_corr.Theta() * 180. / TMath::Pi(); 
 					PiMinusMag = V3_pi_corr.Mag(); 
 
@@ -1414,7 +1414,7 @@ void genie_analysis::Loop(Int_t choice) {
 					PiPlusWeight = acceptance_c(PiPlusMag,PiPlusCosTheta, phi_pion, 211,file_acceptance_pip);
 					if ( fabs(PiPlusWeight) != PiPlusWeight ) { continue; }
 
-					PiPlusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi(); 
+					PiPlusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi()  + 180.; 
 					PiPlusTheta_Deg = V3_pi_corr.Theta() * 180. / TMath::Pi();
 
 				}
@@ -1431,7 +1431,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 					TVector3 V3_pi_corr(pxf[i+60],pyf[i+60],pzf[i+60]);
 
-					PiPlusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi(); 
+					PiPlusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi() + 180.; 
 					PiPlusTheta_Deg = V3_pi_corr.Theta() * 180. / TMath::Pi(); 
 					PiPlusMag = V3_pi_corr.Mag(); 
 

@@ -18,6 +18,9 @@ GENIEPath=/genie/app/users/apapadop/e4nu
 GENIEOnlineExtension=SuSav2
 GENIELocalExtension=SuSav2_RadCorr_LFGM
 
+#GENIEOnlineExtension=SuSav2
+#GENIELocalExtension=SuSav2_RadCorr_LFGM_NoAccMaps
+
 ##### Genie Samples
 
 echo "$LocalPath/1_161/${GENIELocalExtension}/$xB/12C_1_161_${GENIELocalExtension}_Plots_FSI_em.root"

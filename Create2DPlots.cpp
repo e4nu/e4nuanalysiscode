@@ -103,21 +103,31 @@ void Create2DPlots() {
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-//	NameOfPlots.push_back("h2_PiPlus_Theta_Momentum_FirstSector"); XLabelOfPlots.push_back("P_{#pi^{+}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{+}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_FirstSector"); Title.push_back(" (1st Sector)");
+	NameOfPlots.push_back("h2_PiPlus_Theta_Momentum_FirstSector"); XLabelOfPlots.push_back("P_{#pi^{+}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{+}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_FirstSector"); Title.push_back(" (1st Sector)");
 
 //	NameOfPlots.push_back("h2_PiPlus_Theta_Momentum_SecondSector"); XLabelOfPlots.push_back("P_{#pi^{+}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{+}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_SecondSector"); Title.push_back(" (2nd Sector)");
 
 //	NameOfPlots.push_back("h2_PiPlus_Theta_Momentum_ThirdSector"); XLabelOfPlots.push_back("P_{#pi^{+}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{+}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_ThirdSector"); Title.push_back(" (3rd Sector)");
 
+	NameOfPlots.push_back("h2_PiPlus_Theta_Momentum_FourthSector"); XLabelOfPlots.push_back("P_{#pi^{+}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{+}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_FourthSector"); Title.push_back(" (4th Sector)");
+
+//	NameOfPlots.push_back("h2_PiPlus_Theta_Momentum_FifthSector"); XLabelOfPlots.push_back("P_{#pi^{+}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{+}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_FifthSector"); Title.push_back(" (5th Sector)");
+
+//	NameOfPlots.push_back("h2_PiPlus_Theta_Momentum_SixthSector"); XLabelOfPlots.push_back("P_{#pi^{+}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{+}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_SixthSector"); Title.push_back(" (6th Sector)");
+
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_FirstSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_FirstSector"); Title.push_back(" (1st Sector)");
+//	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_FirstSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_FirstSector"); Title.push_back(" (1st Sector)");
 
-	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_SecondSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_SecondSector"); Title.push_back(" (2nd Sector)");
+//	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_SecondSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_SecondSector"); Title.push_back(" (2nd Sector)");
 
-	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_ThirdSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_ThirdSector"); Title.push_back(" (3rd Sector)");
+//	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_ThirdSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_ThirdSector"); Title.push_back(" (3rd Sector)");
 
 //	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_FourthSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_FourthSector"); Title.push_back(" (4th Sector)");
+
+//	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_FifthSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiMinus_Theta_Momentum_FifthSector"); Title.push_back(" (5th Sector)");
+
+//	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_SixthSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiMinus_Theta_Momentum_SixthSector"); Title.push_back(" (6th Sector)");
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------
 

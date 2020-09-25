@@ -375,6 +375,11 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_Q2Cal_weight = new TH1F("h1_Q2Cal_weight","",400,0,6);
 	TH1F *h1_nuCal_weight = new TH1F("h1_nuCal_weight","",400,0,3);
 
+	TH1F *h1_Electron_AccMapWeights = new TH1F("h1_Electron_AccMapWeights","",200,0.,2.);
+	TH1F *h1_Proton_AccMapWeights = new TH1F("h1_Proton_AccMapWeights","",200,0.,2.);
+	TH1F *h1_PiPlus_AccMapWeights = new TH1F("h1_PiPlus_AccMapWeights","",200,0.,2.);
+	TH1F *h1_PiMinus_AccMapWeights = new TH1F("h1_PiMinus_AccMapWeights","",200,0.,2.);
+
 	TH1F *h1_EQE_FullyInclusive = new TH1F("h1_EQE_FullyInclusive","",6000,0.,6.);
 
 	TH1F *h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice = new TH1F("h1_EQE_FullyInclusive_NoQ4Weight_FirstSector_Theta_Slice","",6000,0.,6.);
@@ -1020,6 +1025,8 @@ void genie_analysis::Loop(Int_t choice) {
 
 		}
 
+		h1_Electron_AccMapWeights->Fill(e_acc_ratio);
+
 		// Explicit cuts on electron momentum
 		if (fbeam_en=="1161" && el_momentum < 0.4) { continue; }
 		if (fbeam_en=="2261" && el_momentum < 0.55) { continue; }
@@ -1433,7 +1440,8 @@ void genie_analysis::Loop(Int_t choice) {
 		h2_N_prot_pi_phot_nonrad->Fill(num_pi_phot_nonrad,num_p);
 		h2_N_pi_phot[num_p]->Fill(ec_num_n,num_pi);
 
-		//Events with exactly 2 protons
+		// Events with exactly 2 protons
+
 		if(num_p == 2) {
 
 			//LorentzVectors for protons without momentum smearing or corrections
@@ -1476,6 +1484,9 @@ void genie_analysis::Loop(Int_t choice) {
 				if ( fabs(p_acc_ratio2) != p_acc_ratio2 ) { continue; }
 
 			}
+
+			h1_Proton_AccMapWeights->Fill(p_acc_ratio1);
+			h1_Proton_AccMapWeights->Fill(p_acc_ratio2);
 
 			//Total proton weight
 			double weight_protons = p_acc_ratio1 * p_acc_ratio2;
@@ -1695,6 +1706,9 @@ void genie_analysis::Loop(Int_t choice) {
 					}
 					else { std::cout << "WARNING: 2proton and 1 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;	continue; }
 				}
+
+				if (charge_pi[0] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio); }
+				if (charge_pi[0] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio); }
 
 				double P_2p1pito2p0pi[2] = {0};
 				double P_2p1pito1p1pi[2] = {0};
@@ -2257,6 +2271,10 @@ void genie_analysis::Loop(Int_t choice) {
 						else { std::cout << "WARNING: 2proton and 2 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;	continue;
 						}
 					}
+
+					if (charge_pi[i] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio[i]); }
+					if (charge_pi[i] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio[i]); }
+
 				}
 
 				rotation->prot2_pi2_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_2pi_corr,charge_pi, V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
@@ -2457,7 +2475,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			}//2pi requirement
 
-		} //2prot requirement
+		} // End of the 2-proton case
 
 		// -------------------------------------------------------------------------------------------------------------------------------------
 
@@ -2517,6 +2535,8 @@ void genie_analysis::Loop(Int_t choice) {
 				V4_prot_el[i] = V4_p_corr[i] + V4_el;
 				E_cal[i] = V4_el.E()+ V4_p_corr[i].E() - m_prot + bind_en[ftarget] + offset;
 				p_miss_perp[i] = TMath::Sqrt(V4_prot_el[i].Px()*V4_prot_el[i].Px() + V4_prot_el[i].Py()*V4_prot_el[i].Py());
+
+				h1_Proton_AccMapWeights->Fill(p_acc_ratio[i]);
 
 			} //end loop over N_3p
 
@@ -2889,6 +2909,9 @@ void genie_analysis::Loop(Int_t choice) {
 
 				}
 
+				if (charge_pi[0] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio); }
+				if (charge_pi[0] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio); }
+
 				rotation->prot3_pi1_rot_func(V3_prot_corr,V3_prot_uncorr, V3_pi_corr, charge_pi[0] , V4_el,	Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
 
 				//for CLAS data is histoweight = 1/Mott_cross_sec
@@ -3081,13 +3104,13 @@ void genie_analysis::Loop(Int_t choice) {
 
 			} // 1 pi requirement ends
 
-		} //end if num_p == 3  3proton requirement
+		} //end of 3-proton case
 
 		// -------------------------------------------------------------------------------------------------------------------------------------
 
 		//Events with exactly 4 protons
 
-	 	if(num_p==4) {
+	 	if (num_p == 4) {
 
 			const int N_p4=4;
 			TLorentzVector V4_p4_uncorr[N_p4], V4_p4_corr[N_p4],V4_prot4_el[N_p4];
@@ -3140,6 +3163,8 @@ void genie_analysis::Loop(Int_t choice) {
 				V4_prot4_el[i] = V4_p4_corr[i] + V4_el;
 				E_cal_p4[i] = V4_el.E() + V4_p4_corr[i].E() - m_prot + bind_en[ftarget] + offset;
 				p_miss_perp_p4[i] = TMath::Sqrt(V4_prot4_el[i].Px()*V4_prot4_el[i].Px() + V4_prot4_el[i].Py()*V4_prot4_el[i].Py());
+
+				h1_Proton_AccMapWeights->Fill(p_acc_ratio[i]);
 	
 			} //end loop over N_p4
 
@@ -3891,7 +3916,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			}//no pion statement ends
 
-		}//4 proton requirement (num_p == 4)
+		} // End of 4-proton case
 
 		//We are not looking for 4 Proton and 1 Pion events!
 
@@ -3950,6 +3975,9 @@ void genie_analysis::Loop(Int_t choice) {
 
 			}
 
+			if (charge_pi[0] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio); }
+			if (charge_pi[0] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio); }
+
 			rotation->pi1_rot_func( V3_pi_corr, charge_pi[0], &P_undet);
 
 			//histoweight is 1/Mott_cross_sec for CLAS data
@@ -4007,6 +4035,10 @@ void genie_analysis::Loop(Int_t choice) {
 					}
 					else { std::cout << "WARNING: 2 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;	continue; }
 				}
+
+				if (charge_pi[i] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio[i]); }
+				if (charge_pi[i] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio[i]); }
+
 			} //end loop over num_pi_phot
 
 			rotation->pi2_rot_func(V3_2pi_corr, charge_pi, &P_0pi,P_1pi);
@@ -4087,6 +4119,9 @@ void genie_analysis::Loop(Int_t choice) {
 					else { std::cout << "WARNING: 3 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
 				}
+
+				if (charge_pi[i] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio[i]); }
+				if (charge_pi[i] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio[i]); }
 
 			} //end loop over num_pi_phot
 
@@ -4196,6 +4231,9 @@ void genie_analysis::Loop(Int_t choice) {
 						else { std::cout << "WARNING: 4 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 				}
 
+				if (charge_pi[i] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio[i]); }
+				if (charge_pi[i] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio[i]); }
+
 			} //end loop over num_pi_phot
 
 			rotation->pi4_rot_func(V3_4pi_corr, charge_pi, &P_0pi,&P_410pi,&P_420pi,&P_4210pi,&P_430pi,&P_4310pi,&P_4320pi,&P_43210pi);
@@ -4287,6 +4325,8 @@ void genie_analysis::Loop(Int_t choice) {
 				if ( fabs(p_acc_ratio) != p_acc_ratio ) { continue; }
 
 			}
+
+			h1_Proton_AccMapWeights->Fill(p_acc_ratio);
 
 			TLorentzVector V4_prot_el_tot = V4_prot_corr + V4_el;
 
@@ -4554,6 +4594,9 @@ void genie_analysis::Loop(Int_t choice) {
 
 				}
 
+				if (charge_pi[0] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio); }
+				if (charge_pi[0] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio); }
+
 				rotation->prot1_pi1_rot_func(V3_prot_uncorr,V3_pi_corr, charge_pi[0], &N_piphot_det,&N_piphot_undet);
 
 				//histoweight is 1/Mott_cross_sec for CLAS data
@@ -4794,6 +4837,9 @@ void genie_analysis::Loop(Int_t choice) {
 						}
 						else { std::cout << "WARNING: 1 Proton 2 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 					}
+
+					if (charge_pi[i] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio[i]); }
+					if (charge_pi[i] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio[i]); }
 
 				} //end loop over num_pi_phot
 
@@ -5223,6 +5269,9 @@ void genie_analysis::Loop(Int_t choice) {
 						else { std::cout << "WARNING: 3 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 					}
 
+					if (charge_pi[i] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio[i]); }
+					if (charge_pi[i] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio[i]); }
+
 				} //end loop over num_pi_phot
 
 				rotation->prot1_pi3_rot_func(V3_prot_uncorr, V3_3pi_corr, charge_pi, &P_1p3pi);
@@ -5418,7 +5467,7 @@ void genie_analysis::Loop(Int_t choice) {
 		
 			}//end of 1p 3pi requirement
 
-		} // 1proton ends
+		} // End of 1-proton case
 
 	} //end of event loop (jentry)
 

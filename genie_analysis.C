@@ -1099,12 +1099,12 @@ void genie_analysis::Loop(Int_t choice) {
 		h1_EQE_FullyInclusive->Fill(E_rec,WeightIncl);
 		h1_EQE_FullyInclusive_IrregBins->Fill(E_rec,WeightIncl);
 
-		if (el_phi_mod > 0 && el_phi_mod < 60) { h2_Electron_Theta_Momentum_FirstSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
-		if (el_phi_mod > 60 && el_phi_mod < 120) { h2_Electron_Theta_Momentum_SecondSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
-		if (el_phi_mod > 120 && el_phi_mod < 180) { h2_Electron_Theta_Momentum_ThirdSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
-		if (el_phi_mod > 180 && el_phi_mod < 240) { h2_Electron_Theta_Momentum_FourthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
-		if (el_phi_mod > 240 && el_phi_mod < 300) { h2_Electron_Theta_Momentum_FifthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
-		if (el_phi_mod > 300 && el_phi_mod < 360) { h2_Electron_Theta_Momentum_SixthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),WeightIncl); } 
+		if (el_phi_mod > 0 && el_phi_mod < 60) { h2_Electron_Theta_Momentum_FirstSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),1.); } 
+		if (el_phi_mod > 60 && el_phi_mod < 120) { h2_Electron_Theta_Momentum_SecondSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),1.); } 
+		if (el_phi_mod > 120 && el_phi_mod < 180) { h2_Electron_Theta_Momentum_ThirdSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),1.); } 
+		if (el_phi_mod > 180 && el_phi_mod < 240) { h2_Electron_Theta_Momentum_FourthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),1.); } 
+		if (el_phi_mod > 240 && el_phi_mod < 300) { h2_Electron_Theta_Momentum_FifthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),1.); } 
+		if (el_phi_mod > 300 && el_phi_mod < 360) { h2_Electron_Theta_Momentum_SixthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),1.); } 
 
 
 		if (el_theta > 23 && el_theta < 27) {
@@ -1554,12 +1554,12 @@ void genie_analysis::Loop(Int_t choice) {
 					double ProtonTheta_Deg = V3_2prot_corr[f].Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_2prot_corr[f].Mag();
 
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
+					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
 
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -1764,12 +1764,12 @@ void genie_analysis::Loop(Int_t choice) {
 					double ProtonTheta_Deg = V3_2prot_corr[z].Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_2prot_corr[z].Mag();
 
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -1905,12 +1905,12 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),P_2p1pito1p1pi[z]*histoweight);
 					h2_Proton_Theta_Momentum->Fill(V3_2prot_corr[z].Mag(),V3_2prot_corr[z].Theta()*180./TMath::Pi(),P_2p1pito1p1pi[z]*histoweight);
 
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 					double PionPhi_Deg = V3_1pi_corr.Phi() *180. / TMath::Pi();
 					double PionTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
@@ -1924,12 +1924,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double PionPlusTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
 						double PionPlusMag = V3_1pi_corr.Mag();
 
-						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); }
+						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
 
 					}
 
@@ -1941,12 +1941,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double PionMinusTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
 						double PionMinusMag = V3_1pi_corr.Mag();
 
-						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); }
+						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 					}
 
@@ -2084,12 +2084,12 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),-P_2p1pito1p0pi[z]*histoweight);
 					h2_Proton_Theta_Momentum->Fill(V3_2prot_corr[z].Mag(),V3_2prot_corr[z].Theta()*180./TMath::Pi(),-P_2p1pito1p0pi[z]*histoweight);
 
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 					if (charge_pi[0] == 1) { 
 					
@@ -2099,12 +2099,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double PionPlusTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
 						double PionPlusMag = V3_1pi_corr.Mag();
 
-						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); }
+						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
 
 					}
 					if (charge_pi[0] == -1) { 
@@ -2116,12 +2116,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double PionMinusMag = V3_1pi_corr.Mag();
 
 
-						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); }
+						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 					}
 
@@ -2328,12 +2328,12 @@ void genie_analysis::Loop(Int_t choice) {
 					double ProtonTheta_Deg = V3_2prot_corr[z].Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_2prot_corr[z].Mag();
 
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 					for (int i = 0; i < num_pi_phot; i++) {
 
@@ -2345,12 +2345,12 @@ void genie_analysis::Loop(Int_t choice) {
 							double PionPlusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
 							double PionPlusMag = V3_2pi_corr[i].Mag();
 
-							if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-							if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-							if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-							if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-							if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-							if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); }
+							if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+							if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+							if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+							if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+							if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+							if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
 
 						}
 
@@ -2362,12 +2362,12 @@ void genie_analysis::Loop(Int_t choice) {
 							double PionMinusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
 							double PionMinusMag = V3_2pi_corr[i].Mag();
 
-							if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-							if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-							if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-							if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-							if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-							if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); }
+							if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+							if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+							if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+							if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+							if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+							if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 
 						}
@@ -2605,12 +2605,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
 						double ProtonMag = V3_prot_corr[j].Mag();
 
-						if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-						if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-						if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-						if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-						if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-						if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+						if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+						if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+						if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+						if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+						if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+						if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 						// -----------------------------------------------------------------------------------------------
 						// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -2759,12 +2759,12 @@ void genie_analysis::Loop(Int_t choice) {
 					double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_prot_corr[j].Mag();
 
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -2960,12 +2960,12 @@ void genie_analysis::Loop(Int_t choice) {
 					double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_prot_corr[j].Mag();
 
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 					if (charge_pi[0] == 1) { 
 
@@ -2975,12 +2975,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double PionPlusTheta_Deg = V3_pi_corr.Theta() *180. / TMath::Pi();
 						double PionPlusMag = V3_pi_corr.Mag();
 
-						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); }
+						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
 
 					}
 
@@ -2993,12 +2993,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double PionMinusMag = V3_pi_corr.Mag();
 
 
-						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); }
+						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 					}
 
@@ -3302,12 +3302,12 @@ void genie_analysis::Loop(Int_t choice) {
 								double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
 								double ProtonMag = V3_prot_corr[j].Mag();
 
-								if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-								if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-								if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-								if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-								if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-								if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+								if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+								if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+								if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+								if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+								if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+								if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 								// ----------------------------------------------------------
 								// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -3456,12 +3456,12 @@ void genie_analysis::Loop(Int_t choice) {
 							double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
 							double ProtonMag = V3_prot_corr[j].Mag();
 
-							if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-							if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-							if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-							if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-							if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-							if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+							if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+							if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+							if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+							if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+							if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+							if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 							// -----------------------------------------------------------------------------------------------
 							// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -3636,12 +3636,12 @@ void genie_analysis::Loop(Int_t choice) {
 									double ProtonTheta_Deg = V3p2[j].Theta() *180. / TMath::Pi();
 									double ProtonMag = V3p2[j].Mag();
 
-									if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-									if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-									if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-									if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-									if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-									if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+									if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+									if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+									if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+									if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+									if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+									if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 									// -----------------------------------------------------------------------
 									
@@ -3804,12 +3804,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
 						double ProtonMag = V3_prot_corr[j].Mag();
 
-						if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-						if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-						if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-						if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-						if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-						if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+						if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+						if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+						if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+						if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+						if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+						if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 						// -----------------------------------------------------------------------------------------------
 						// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -4422,12 +4422,12 @@ void genie_analysis::Loop(Int_t choice) {
 				double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
 				double ProtonMag = V3_prot_corr.Mag();
 
-				if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+				if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 				// -----------------------------------------------------------------------------------------------
 
@@ -4645,12 +4645,12 @@ void genie_analysis::Loop(Int_t choice) {
 					double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_prot_corr.Mag();
 
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 					if (charge_pi[0] == 1) { 
 
@@ -4660,12 +4660,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double PionPlusTheta_Deg = V3_pi_corr.Theta() *180. / TMath::Pi();
 						double PionPlusMag = V3_pi_corr.Mag();
 
-						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); }
+						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
 
 					}
 
@@ -4677,12 +4677,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double PionMinusTheta_Deg = V3_pi_corr.Theta() *180. / TMath::Pi();
 						double PionMinusMag = V3_pi_corr.Mag();
 
-						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); }
+						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 					}
 
@@ -4894,12 +4894,12 @@ void genie_analysis::Loop(Int_t choice) {
 					double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_prot_corr.Mag();
 
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 					for (int i = 0; i < num_pi_phot; i++) {
 
@@ -4911,12 +4911,12 @@ void genie_analysis::Loop(Int_t choice) {
 							double PionPlusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
 							double PionPlusMag = V3_2pi_corr[i].Mag();
 
-							if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-							if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-							if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-							if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-							if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-							if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); }
+							if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+							if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+							if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+							if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+							if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+							if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
 
 						}
 
@@ -4928,12 +4928,12 @@ void genie_analysis::Loop(Int_t choice) {
 							double PionMinusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
 							double PionMinusMag = V3_2pi_corr[i].Mag();
 
-							if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-							if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-							if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-							if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-							if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-							if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); }
+							if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+							if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+							if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+							if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+							if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+							if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 						}
 					
@@ -5082,12 +5082,12 @@ void genie_analysis::Loop(Int_t choice) {
 				double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
 				double ProtonMag = V3_prot_corr.Mag();
 
-				if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+				if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 
 				for (int i = 0; i < num_pi_phot; i++) {
@@ -5100,12 +5100,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double PionPlusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
 						double PionPlusMag = V3_2pi_corr[i].Mag();
 
-						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); }
+						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
 
 					}
 
@@ -5117,12 +5117,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double PionMinusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
 						double PionMinusMag = V3_2pi_corr[i].Mag();
 
-						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); }
+						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 					}
 					
@@ -5323,12 +5323,12 @@ void genie_analysis::Loop(Int_t choice) {
 				double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
 				double ProtonMag = V3_prot_corr.Mag();
 
-				if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); } 
-				if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,LocalWeight); }
+				if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
+				if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 				for (int i = 0; i < num_pi_phot; i++) {
 
@@ -5340,12 +5340,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double PionPlusTheta_Deg = V3_3pi_corr[i].Theta() *180. / TMath::Pi();
 						double PionPlusMag = V3_3pi_corr[i].Mag();
 
-						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); } 
-						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,LocalWeight); }
+						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
+						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
 
 					}
 
@@ -5357,12 +5357,12 @@ void genie_analysis::Loop(Int_t choice) {
 						double PionMinusTheta_Deg = V3_3pi_corr[i].Theta() *180. / TMath::Pi();
 						double PionMinusMag = V3_3pi_corr[i].Mag();
 
-						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); } 
-						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,LocalWeight); }
+						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
+						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 					}
 					

@@ -42,8 +42,8 @@ void Create2DPlots() {
 //	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
 
 //	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV");
-	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV");
-//	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");
+//	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV");
+	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");
 
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
@@ -89,11 +89,35 @@ void Create2DPlots() {
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-	NameOfPlots.push_back("h2_Proton_Theta_Momentum_FirstSector"); XLabelOfPlots.push_back("P_{p} [GeV/c]"); YLabelOfPlots.push_back("#theta_{p}"); OutputPlotNames.push_back("h2_Proton_Theta_Momentum_FirstSector"); Title.push_back(" (1st Sector)");
+//	NameOfPlots.push_back("h2_Proton_Theta_Momentum_FirstSector"); XLabelOfPlots.push_back("P_{p} [GeV/c]"); YLabelOfPlots.push_back("#theta_{p}"); OutputPlotNames.push_back("h2_Proton_Theta_Momentum_FirstSector"); Title.push_back(" (1st Sector)");
+
+//	NameOfPlots.push_back("h2_Proton_Theta_Momentum_SecondSector"); XLabelOfPlots.push_back("P_{p} [GeV/c]"); YLabelOfPlots.push_back("#theta_{p}"); OutputPlotNames.push_back("h2_Proton_Theta_Momentum_SecondSector"); Title.push_back(" (2nd Sector)");
+
+//	NameOfPlots.push_back("h2_Proton_Theta_Momentum_ThirdSector"); XLabelOfPlots.push_back("P_{p} [GeV/c]"); YLabelOfPlots.push_back("#theta_{p}"); OutputPlotNames.push_back("h2_Proton_Theta_Momentum_ThirdSector"); Title.push_back(" (3rd Sector)");
+
+//	NameOfPlots.push_back("h2_Proton_Theta_Momentum_FourthSector"); XLabelOfPlots.push_back("P_{p} [GeV/c]"); YLabelOfPlots.push_back("#theta_{p}"); OutputPlotNames.push_back("h2_Proton_Theta_Momentum_FourthSector"); Title.push_back(" (4th Sector)");
+
+//	NameOfPlots.push_back("h2_Proton_Theta_Momentum_FifthSector"); XLabelOfPlots.push_back("P_{p} [GeV/c]"); YLabelOfPlots.push_back("#theta_{p}"); OutputPlotNames.push_back("h2_Proton_Theta_Momentum_FifthSector"); Title.push_back(" (5th Sector)");
+
+//	NameOfPlots.push_back("h2_Proton_Theta_Momentum_SixthSector"); XLabelOfPlots.push_back("P_{p} [GeV/c]"); YLabelOfPlots.push_back("#theta_{p}"); OutputPlotNames.push_back("h2_Proton_Theta_Momentum_SixthSector"); Title.push_back(" (6th Sector)");
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-	NameOfPlots.push_back("h2_PiPlus_Theta_Momentum_FirstSector"); XLabelOfPlots.push_back("P_{#pi^{+}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{+}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_FirstSector"); Title.push_back(" (1st Sector)");
+//	NameOfPlots.push_back("h2_PiPlus_Theta_Momentum_FirstSector"); XLabelOfPlots.push_back("P_{#pi^{+}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{+}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_FirstSector"); Title.push_back(" (1st Sector)");
+
+//	NameOfPlots.push_back("h2_PiPlus_Theta_Momentum_SecondSector"); XLabelOfPlots.push_back("P_{#pi^{+}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{+}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_SecondSector"); Title.push_back(" (2nd Sector)");
+
+//	NameOfPlots.push_back("h2_PiPlus_Theta_Momentum_ThirdSector"); XLabelOfPlots.push_back("P_{#pi^{+}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{+}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_ThirdSector"); Title.push_back(" (3rd Sector)");
+
+	// ---------------------------------------------------------------------------------------------------------------------------------------------------
+
+	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_FirstSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_FirstSector"); Title.push_back(" (1st Sector)");
+
+	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_SecondSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_SecondSector"); Title.push_back(" (2nd Sector)");
+
+	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_ThirdSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_ThirdSector"); Title.push_back(" (3rd Sector)");
+
+//	NameOfPlots.push_back("h2_PiMinus_Theta_Momentum_FourthSector"); XLabelOfPlots.push_back("P_{#pi^{-}} [GeV/c]"); YLabelOfPlots.push_back("#theta_{#pi^{-}}"); OutputPlotNames.push_back("h2_PiPlus_Theta_Momentum_FourthSector"); Title.push_back(" (4th Sector)");
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -213,82 +237,82 @@ void Create2DPlots() {
 						double XMin =-99.,XMax =-99.;
 						double YMin =-99.,YMax =-99.;
 
-						if ( NameOfPlots[WhichPlot] == "h2_Ecal_Eqe" ) {
+//						if ( NameOfPlots[WhichPlot] == "h2_Ecal_Eqe" ) {
 
-	//						PlotCanvas->SetLogz();
-							pad1->SetLogz();
-							pad2->SetLogz();
-
-							if (E[WhichEnergy] == "1_161") { 
-								for (int i = 0; i < 1; i++) { Plots->Rebin2D(); }
-								XMin = 0.4; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-								Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
-							}
-
-							if (E[WhichEnergy] == "2_261") { 
-								for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
-								XMin = 0.5; XMax = 3.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-								Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
-							}
-						
-							if (E[WhichEnergy] == "4_461") { 
-								for (int i = 0; i < 4; i++) { Plots->Rebin2D(); }
-								XMin = 1.5; XMax = 5.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-								Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
-
-							}
-						}
-
-
-						if ( string(NameOfPlots[WhichPlot]).find("h2_Q2_nu_weight") != std::string::npos ) {
-
-							if (E[WhichEnergy] == "1_161") { 
-								for (int i = 0; i < 1; i++) { Plots->Rebin2D(); } /*PlotCanvas->SetLogz();*/ XMin = 0.; XMax = 0.8; 
-								Plots->GetXaxis()->SetRangeUser(XMin,XMax); Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
-							}
-
-							if (E[WhichEnergy] == "2_261") { 
-								for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } XMin = 0.; XMax = 2.; 
-								Plots->GetXaxis()->SetRangeUser(XMin,XMax); Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
-							}
-
-							if (E[WhichEnergy] == "4_461") { 
-								for (int i = 0; i < 3; i++) { Plots->Rebin2D(); }
-								XMin = 0.; XMax = 6.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-								Plots->GetYaxis()->SetRangeUser(XMin,XMax); }
-
-						}
-
-						if ( NameOfPlots[WhichPlot] == "h2_Q2_nu_weight_FirstSector" ) {
-
-							if (E[WhichEnergy] == "2_261") { 
-								for (int i = 0; i < 0; i++) { Plots->Rebin2D(); } 
-								XMin = 0.; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-								//YMin = 0.; YMax = 2.;	Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
-							}
-
-						}
-
-						if ( NameOfPlots[WhichPlot] == "h2_Etot_pperp" ) {
-
+//	//						PlotCanvas->SetLogz();
 //							pad1->SetLogz();
 //							pad2->SetLogz();
 
-							if (E[WhichEnergy] == "2_261") { 
-								for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
-								XMin = 0.; XMax = 1.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
-								//YMin = 0.5; YMax = 2.8;	Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
-							}
+//							if (E[WhichEnergy] == "1_161") { 
+//								for (int i = 0; i < 1; i++) { Plots->Rebin2D(); }
+//								XMin = 0.4; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+//								Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
+//							}
 
-						}
+//							if (E[WhichEnergy] == "2_261") { 
+//								for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
+//								XMin = 0.5; XMax = 3.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+//								Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
+//							}
+//						
+//							if (E[WhichEnergy] == "4_461") { 
+//								for (int i = 0; i < 4; i++) { Plots->Rebin2D(); }
+//								XMin = 1.5; XMax = 5.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+//								Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
+
+//							}
+//						}
+
+
+//						if ( string(NameOfPlots[WhichPlot]).find("h2_Q2_nu_weight") != std::string::npos ) {
+
+//							if (E[WhichEnergy] == "1_161") { 
+//								for (int i = 0; i < 1; i++) { Plots->Rebin2D(); } /*PlotCanvas->SetLogz();*/ XMin = 0.; XMax = 0.8; 
+//								Plots->GetXaxis()->SetRangeUser(XMin,XMax); Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
+//							}
+
+//							if (E[WhichEnergy] == "2_261") { 
+//								for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } XMin = 0.; XMax = 2.; 
+//								Plots->GetXaxis()->SetRangeUser(XMin,XMax); Plots->GetYaxis()->SetRangeUser(XMin,XMax); 
+//							}
+
+//							if (E[WhichEnergy] == "4_461") { 
+//								for (int i = 0; i < 3; i++) { Plots->Rebin2D(); }
+//								XMin = 0.; XMax = 6.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+//								Plots->GetYaxis()->SetRangeUser(XMin,XMax); }
+
+//						}
+
+//						if ( NameOfPlots[WhichPlot] == "h2_Q2_nu_weight_FirstSector" ) {
+
+//							if (E[WhichEnergy] == "2_261") { 
+//								for (int i = 0; i < 0; i++) { Plots->Rebin2D(); } 
+//								XMin = 0.; XMax = 1.8; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+//								//YMin = 0.; YMax = 2.;	Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
+//							}
+
+//						}
+
+//						if ( NameOfPlots[WhichPlot] == "h2_Etot_pperp" ) {
+
+////							pad1->SetLogz();
+////							pad2->SetLogz();
+
+//							if (E[WhichEnergy] == "2_261") { 
+//								for (int i = 0; i < 2; i++) { Plots->Rebin2D(); } 
+//								XMin = 0.; XMax = 1.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); 
+//								//YMin = 0.5; YMax = 2.8;	Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
+//							}
+
+//						}
 
 						// -----------------------------------------------------------------------------------------------------------------------------
 
 						double ScalingFactor = TMath::Power(10.,6.) / Plots->GetMaximum();
-						Plots->Scale(ScalingFactor);
+//						Plots->Scale(ScalingFactor);
 //						Plots->GetZaxis()->SetRangeUser(1.,Plots->GetMaximum());
-						if ( NameOfPlots[WhichPlot] == "h2_Ecal_Eqe" ) { Plots->GetZaxis()->SetRangeUser(Plots->GetMaximum()*1E-2,Plots->GetMaximum()); }
-						else { Plots->GetZaxis()->SetRangeUser(1.,Plots->GetMaximum()); }
+						//if ( NameOfPlots[WhichPlot] == "h2_Ecal_Eqe" ) { Plots->GetZaxis()->SetRangeUser(Plots->GetMaximum()*1E-2,Plots->GetMaximum()); }
+						//else { Plots->GetZaxis()->SetRangeUser(1.,Plots->GetMaximum()); }
 						Plots->GetZaxis()->SetLabelSize(TextSize);
 						Plots->GetZaxis()->SetLabelFont(FontStyle);
 						Plots->GetZaxis()->SetTitle("Weighted Events");
@@ -298,11 +322,34 @@ void Create2DPlots() {
 
 						Plots->GetXaxis()->SetNdivisions(5);
 						Plots->GetYaxis()->SetNdivisions(5);
-						YMin = 10; YMax = 60; Plots->GetYaxis()->SetRangeUser(YMin,YMax); 
 
-						if (E[WhichEnergy] == "1_161") { XMin = 0.3; XMax = 1.2; Plots->GetXaxis()->SetRangeUser(XMin,XMax); }
-						if (E[WhichEnergy] == "2_261") { XMin = 0.4; XMax = 2.3; Plots->GetXaxis()->SetRangeUser(XMin,XMax); }
-						if (E[WhichEnergy] == "4_461") { XMin = 1.; XMax = 4.4; Plots->GetXaxis()->SetRangeUser(XMin,XMax); }
+						// Electron P vs theta 2D Plots
+
+						if (string(NameOfPlots[WhichPlot]).find("Electron_Theta_Momentum") != std::string::npos) {
+
+							YMin = 10; YMax = 60; Plots->GetYaxis()->SetRangeUser(YMin,YMax);
+
+							if (E[WhichEnergy] == "1_161") { XMin = 0.3; XMax = 1.2; Plots->GetXaxis()->SetRangeUser(XMin,XMax); }
+							if (E[WhichEnergy] == "2_261") { XMin = 0.4; XMax = 2.3; Plots->GetXaxis()->SetRangeUser(XMin,XMax); }
+							if (E[WhichEnergy] == "4_461") { XMin = 1.; XMax = 4.4; Plots->GetXaxis()->SetRangeUser(XMin,XMax); }
+
+						}
+
+
+						// Proton P vs theta 2D Plots
+
+						if (string(NameOfPlots[WhichPlot]).find("Proton_Theta_Momentum") != std::string::npos || string(NameOfPlots[WhichPlot]).find("PiMinus_Theta_Momentum") != std::string::npos || string(NameOfPlots[WhichPlot]).find("PiPlus_Theta_Momentum") != std::string::npos) {
+
+							for (int i = 0; i < 1; i ++) { Plots->Rebin2D(); }
+							//for (int i = 0; i < 1; i ++) { Plots->RebinY(); }
+							//for (int i = 0; i < 2; i ++) { Plots->RebinX(); }
+							YMin = 5; YMax = 140; Plots->GetYaxis()->SetRangeUser(YMin,YMax);
+
+							if (E[WhichEnergy] == "1_161") { XMin = 0.3; XMax = 1.; Plots->GetXaxis()->SetRangeUser(XMin,XMax); }
+							if (E[WhichEnergy] == "2_261") { XMin = 0.; XMax = 2.5; Plots->GetXaxis()->SetRangeUser(XMin,XMax); }
+							if (E[WhichEnergy] == "4_461") { XMin = 0.; XMax = 4.4; Plots->GetXaxis()->SetRangeUser(XMin,XMax); }
+
+						}
 
 //						Plots->Draw("coltz");
 						Plots->Draw("colt");
@@ -310,73 +357,73 @@ void Create2DPlots() {
 
 						// ----------------------------------------------------------------------------------------------------------------
 
-						// TLines & TLatex
+//						// TLines & TLatex
 
-						TLatex *sample = new TLatex(); 
-						sample->SetTextFont(FontStyle); 
-						sample->SetTextColor(kBlack); 
-						sample->SetTextSize(TextSize);
-						if (FSILabel[WhichFSIModel] == "Data") { sample->DrawTextNDC(0.2,0.84,FSILabel[WhichFSIModel]); }
-						else { sample->DrawTextNDC(0.05,0.84,FSILabel[WhichFSIModel]); } 
+//						TLatex *sample = new TLatex(); 
+//						sample->SetTextFont(FontStyle); 
+//						sample->SetTextColor(kBlack); 
+//						sample->SetTextSize(TextSize);
+//						if (FSILabel[WhichFSIModel] == "Data") { sample->DrawTextNDC(0.2,0.84,FSILabel[WhichFSIModel]); }
+//						else { sample->DrawTextNDC(0.05,0.84,FSILabel[WhichFSIModel]); } 
 
-						if ( NameOfPlots[WhichPlot] == "h2_Q2_nu_weight" ) {
+//						if ( NameOfPlots[WhichPlot] == "h2_Q2_nu_weight" ) {
 
-							TF1 *f1, *f2; f1 = new TF1("f1","1.5*x",0.,5); f2 = new TF1("f2","2.25*x",0.,5);
-							f1->SetLineWidth(10); f2->SetLineWidth(10);
-							f1->SetLineColor(6); f2->SetLineColor(6); 
+//							TF1 *f1, *f2; f1 = new TF1("f1","1.5*x",0.,5); f2 = new TF1("f2","2.25*x",0.,5);
+//							f1->SetLineWidth(10); f2->SetLineWidth(10);
+//							f1->SetLineColor(6); f2->SetLineColor(6); 
 
-							TLatex *lat1 = new TLatex(); lat1->SetTextColor(6); lat1->SetNDC(kTRUE);
-							TLatex *lat2 = new TLatex(); lat2->SetTextColor(6); lat2->SetNDC(kTRUE);
+//							TLatex *lat1 = new TLatex(); lat1->SetTextColor(6); lat1->SetNDC(kTRUE);
+//							TLatex *lat2 = new TLatex(); lat2->SetTextColor(6); lat2->SetNDC(kTRUE);
 
-							f1->Draw("same"); f2->Draw("same"); 
-							lat1->DrawLatex(0.2,0.8,"x_{B} = 1.2"); lat2->DrawLatex(0.6,0.4,"x_{B} = 0.8"); 
-						}
+//							f1->Draw("same"); f2->Draw("same"); 
+//							lat1->DrawLatex(0.2,0.8,"x_{B} = 1.2"); lat2->DrawLatex(0.6,0.4,"x_{B} = 0.8"); 
+//						}
 
 
-						if ( string(NameOfPlots[WhichPlot]).find("h2_Ecal_Eqe") != std::string::npos ) {
+//						if ( string(NameOfPlots[WhichPlot]).find("h2_Ecal_Eqe") != std::string::npos ) {
 
-							TF1 *f1; f1 = new TF1("f1","x",0.,6.);
-							f1->SetLineWidth(2);
-							f1->SetLineColor(kBlack); 
-							TLatex *lat1 = new TLatex(); lat1->SetTextColor(6); lat1->SetNDC(kTRUE);
-							f1->Draw("same");
+//							TF1 *f1; f1 = new TF1("f1","x",0.,6.);
+//							f1->SetLineWidth(2);
+//							f1->SetLineColor(kBlack); 
+//							TLatex *lat1 = new TLatex(); lat1->SetTextColor(6); lat1->SetNDC(kTRUE);
+//							f1->Draw("same");
 
-							if (FSILabel[WhichFSIModel] == "Genie" ) { Plots->GetYaxis()->SetTitle(); Plots->GetYaxis()->SetLabelSize(0.); }
+//							if (FSILabel[WhichFSIModel] == "Genie" ) { Plots->GetYaxis()->SetTitle(); Plots->GetYaxis()->SetLabelSize(0.); }
 
-							Plots->GetXaxis()->SetNdivisions(Ndivisions);
-							Plots->GetYaxis()->SetNdivisions(Ndivisions);
-						}
+//							Plots->GetXaxis()->SetNdivisions(Ndivisions);
+//							Plots->GetYaxis()->SetNdivisions(Ndivisions);
+//						}
 
-						if ( NameOfPlots[WhichPlot] == "h2_Q2_nu_weight_FirstSector" ) {
+//						if ( NameOfPlots[WhichPlot] == "h2_Q2_nu_weight_FirstSector" ) {
 
-							TF1 *f1; f1 = new TF1("f1","1.876*x",0.,1.8);
-							f1->SetLineWidth(2);
-							f1->SetLineColor(kBlack);
+//							TF1 *f1; f1 = new TF1("f1","1.876*x",0.,1.8);
+//							f1->SetLineWidth(2);
+//							f1->SetLineColor(kBlack);
 
-							TLatex *lat1 = new TLatex(); lat1->SetTextColor(1);
+//							TLatex *lat1 = new TLatex(); lat1->SetTextColor(1);
 
-							f1->Draw("same");
-							lat1->SetTextFont(132);
-							lat1->SetTextSize(TextSize);
-							lat1->DrawLatex(1.22,1.85,"x_{B} = 1"); 
+//							f1->Draw("same");
+//							lat1->SetTextFont(132);
+//							lat1->SetTextSize(TextSize);
+//							lat1->DrawLatex(1.22,1.85,"x_{B} = 1"); 
 
-//							Plots->GetXaxis()->SetTitle();
-							if (FSILabel[WhichFSIModel] == "Genie" ) { Plots->GetYaxis()->SetTitle(); Plots->GetYaxis()->SetLabelSize(0.); }
+////							Plots->GetXaxis()->SetTitle();
+//							if (FSILabel[WhichFSIModel] == "Genie" ) { Plots->GetYaxis()->SetTitle(); Plots->GetYaxis()->SetLabelSize(0.); }
 
-							Plots->GetXaxis()->SetNdivisions(Ndivisions);
-							Plots->GetYaxis()->SetNdivisions(Ndivisions);
+//							Plots->GetXaxis()->SetNdivisions(Ndivisions);
+//							Plots->GetYaxis()->SetNdivisions(Ndivisions);
 
-						}
+//						}
 
-						if ( NameOfPlots[WhichPlot] == "h2_Etot_pperp" ) {
+//						if ( NameOfPlots[WhichPlot] == "h2_Etot_pperp" ) {
 
-//							Plots->GetXaxis()->SetTitle();
-							if (FSILabel[WhichFSIModel] == "Genie" ) { Plots->GetYaxis()->SetTitle(); Plots->GetYaxis()->SetLabelSize(0.); }
+////							Plots->GetXaxis()->SetTitle();
+//							if (FSILabel[WhichFSIModel] == "Genie" ) { Plots->GetYaxis()->SetTitle(); Plots->GetYaxis()->SetLabelSize(0.); }
 
-							Plots->GetXaxis()->SetNdivisions(5);
-							Plots->GetYaxis()->SetNdivisions(Ndivisions);
+//							Plots->GetXaxis()->SetNdivisions(5);
+//							Plots->GetYaxis()->SetNdivisions(Ndivisions);
 
-						}
+//						}
 
 						// --------------------------------------------------------------------------------------------------
 

@@ -1099,12 +1099,12 @@ void genie_analysis::Loop(Int_t choice) {
 		h1_EQE_FullyInclusive->Fill(E_rec,WeightIncl);
 		h1_EQE_FullyInclusive_IrregBins->Fill(E_rec,WeightIncl);
 
-		if (el_phi_mod > 0 && el_phi_mod < 60) { h2_Electron_Theta_Momentum_FirstSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),1.); } 
-		if (el_phi_mod > 60 && el_phi_mod < 120) { h2_Electron_Theta_Momentum_SecondSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),1.); } 
-		if (el_phi_mod > 120 && el_phi_mod < 180) { h2_Electron_Theta_Momentum_ThirdSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),1.); } 
-		if (el_phi_mod > 180 && el_phi_mod < 240) { h2_Electron_Theta_Momentum_FourthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),1.); } 
-		if (el_phi_mod > 240 && el_phi_mod < 300) { h2_Electron_Theta_Momentum_FifthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),1.); } 
-		if (el_phi_mod > 300 && el_phi_mod < 360) { h2_Electron_Theta_Momentum_SixthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),1.); } 
+		if (el_phi_mod > 0 && el_phi_mod < 60) { h2_Electron_Theta_Momentum_FirstSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),e_acc_ratio); } 
+		if (el_phi_mod > 60 && el_phi_mod < 120) { h2_Electron_Theta_Momentum_SecondSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),e_acc_ratio); } 
+		if (el_phi_mod > 120 && el_phi_mod < 180) { h2_Electron_Theta_Momentum_ThirdSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),e_acc_ratio); } 
+		if (el_phi_mod > 180 && el_phi_mod < 240) { h2_Electron_Theta_Momentum_FourthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),e_acc_ratio); } 
+		if (el_phi_mod > 240 && el_phi_mod < 300) { h2_Electron_Theta_Momentum_FifthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),e_acc_ratio); } 
+		if (el_phi_mod > 300 && el_phi_mod < 360) { h2_Electron_Theta_Momentum_SixthSector->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),e_acc_ratio); } 
 
 
 		if (el_theta > 23 && el_theta < 27) {
@@ -1237,6 +1237,12 @@ void genie_analysis::Loop(Int_t choice) {
 			//Start of proton selection
 			if (pdgf[i] == 2212  && pf[i] > 0.3) {
 
+				double ProtonWeight = 1.;
+				double ProtonPhi_Deg = -999.;
+				double ProtonTheta_Deg = -999.;
+				double ProtonCosTheta = -999.;
+				double ProtonMag = -999.;
+
 				if ( choice > 0 ) { //GENIE data
 
 					//Smearing of proton
@@ -1253,18 +1259,53 @@ void genie_analysis::Loop(Int_t choice) {
 					ProtonID.push_back(i);
 					Smeared_Pp[num_p - 1] = temp_smear_P;
 					Smeared_Ep[num_p - 1] = temp_smear_E;
+
+					phi_prot += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+					ProtonCosTheta = V3_prot_corr.CosTheta(); 
+					ProtonMag = V3_prot_corr.Mag(); 
+
+					//acceptance_c takes phi in radians and here unmodified by 30 degree.
+					ProtonWeight = acceptance_c(ProtonMag,ProtonCosTheta, phi_prot, 2212,file_acceptance_p);
+					if ( fabs(ProtonWeight) != ProtonWeight ) { continue; }
+
+					ProtonPhi_Deg = V3_prot_corr.Phi() * 180. / TMath::Pi(); 
+					ProtonTheta_Deg = V3_prot_corr.Theta() * 180. / TMath::Pi(); 
+
 				}
 				else { //CLAS data does not need Fiducial Cut again
 
-						num_p = num_p + 1;
-						index_p[num_p - 1] = i;
-						ProtonID.push_back(i);
+					num_p = num_p + 1;
+					index_p[num_p - 1] = i;
+					ProtonID.push_back(i);
+
+					TVector3 V3_prot_corr(pxf[i+60],pyf[i+60],pzf[i+60]);
+
+					ProtonPhi_Deg = V3_prot_corr.Phi() * 180. / TMath::Pi(); 
+					ProtonTheta_Deg = V3_prot_corr.Theta() * 180. / TMath::Pi(); 
+					ProtonMag = V3_prot_corr.Mag(); 
+
 				}
+
+				if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,ProtonWeight); } 
+				if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,ProtonWeight); } 
+				if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,ProtonWeight); } 
+				if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,ProtonWeight); } 
+				if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,ProtonWeight); } 
+				if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,ProtonWeight); }
+
+				h1_Proton_AccMapWeights->Fill(ProtonWeight);
+
 			}
 
 			// -------------------------------------------------------------------------------------------------------------------
 
 			if (pdgf[i] == -211  && pf[i] > 0.15)  { //PI minus
+
+				double PiMinusWeight = 1.;
+				double PiMinusPhi_Deg = -999.;
+				double PiMinusTheta_Deg = -999.;
+				double PiMinusCosTheta = -999.;
+				double PiMinusMag = -999.;
 
 				if ( choice > 0) { //GENIE data
 
@@ -1289,6 +1330,18 @@ void genie_analysis::Loop(Int_t choice) {
 					charge_pi[num_pi_phot - 1] = -1;
 					Smeared_Ppi[num_pi_phot - 1] = temp_smear_P;
 					Smeared_Epi[num_pi_phot - 1] = temp_smear_E;
+
+					phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+					PiMinusCosTheta = V3_pi_corr.CosTheta(); 
+					PiMinusMag = V3_pi_corr.Mag(); 
+
+					//acceptance_c takes phi in radians and here unmodified by 30 degree.
+					PiMinusWeight = acceptance_c(PiMinusMag,PiMinusCosTheta, phi_pion, -211,file_acceptance);
+					if ( fabs(PiMinusWeight) != PiMinusWeight ) { continue; }
+
+					PiMinusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi(); 
+					PiMinusTheta_Deg = V3_pi_corr.Theta() * 180. / TMath::Pi();
+
 				}
 				else { //CLAS data does not need Fiducial Cut again
 					num_pimi = num_pimi + 1;
@@ -1300,12 +1353,35 @@ void genie_analysis::Loop(Int_t choice) {
 					ind_pi_phot[num_pi_phot - 1] = i;
 					PiMinusID.push_back(i);
 					charge_pi[num_pi_phot - 1] = -1;
+
+					TVector3 V3_pi_corr(pxf[i+60],pyf[i+60],pzf[i+60]);
+
+					PiMinusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi(); 
+					PiMinusTheta_Deg = V3_pi_corr.Theta() * 180. / TMath::Pi(); 
+					PiMinusMag = V3_pi_corr.Mag(); 
+
 				}
+
+				if (PiMinusPhi_Deg > 0 && PiMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PiMinusMag,PiMinusTheta_Deg,PiMinusWeight); } 
+				if (PiMinusPhi_Deg > 60 && PiMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PiMinusMag,PiMinusTheta_Deg,PiMinusWeight); } 
+				if (PiMinusPhi_Deg > 120 && PiMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PiMinusMag,PiMinusTheta_Deg,PiMinusWeight); } 
+				if (PiMinusPhi_Deg > 180 && PiMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PiMinusMag,PiMinusTheta_Deg,PiMinusWeight); } 
+				if (PiMinusPhi_Deg > 240 && PiMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PiMinusMag,PiMinusTheta_Deg,PiMinusWeight); } 
+				if (PiMinusPhi_Deg > 300 && PiMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PiMinusMag,PiMinusTheta_Deg,PiMinusWeight); }
+
+				h1_PiMinus_AccMapWeights->Fill(PiMinusWeight);
+
 			}
 
 			// -------------------------------------------------------------------------------------------------------------------
 
 			if ( pdgf[i] == 211  && pf[i] > 0.15)  {
+
+				double PiPlusWeight = 1.;
+				double PiPlusPhi_Deg = -999.;
+				double PiPlusTheta_Deg = -999.;
+				double PiPlusCosTheta = -999.;
+				double PiPlusMag = -999.;
 
 				if ( choice > 0) { //GENIE data
 					//Smearing of pi plus
@@ -1329,6 +1405,18 @@ void genie_analysis::Loop(Int_t choice) {
 					charge_pi[num_pi_phot - 1] = 1;
 					Smeared_Ppi[num_pi_phot - 1] = temp_smear_P;
 					Smeared_Epi[num_pi_phot - 1] = temp_smear_E;
+
+					phi_pion += TMath::Pi(); // GENIE coordinate system flipped with respect to CLAS
+					PiPlusCosTheta = V3_pi_corr.CosTheta(); 
+					PiPlusMag = V3_pi_corr.Mag(); 
+
+					//acceptance_c takes phi in radians and here unmodified by 30 degree.
+					PiPlusWeight = acceptance_c(PiPlusMag,PiPlusCosTheta, phi_pion, 211,file_acceptance_pip);
+					if ( fabs(PiPlusWeight) != PiPlusWeight ) { continue; }
+
+					PiPlusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi(); 
+					PiPlusTheta_Deg = V3_pi_corr.Theta() * 180. / TMath::Pi();
+
 				}
 				else { //CLAS data does not need Fiducial Cut again
 					num_pipl = num_pipl + 1;
@@ -1340,7 +1428,24 @@ void genie_analysis::Loop(Int_t choice) {
 					ind_pi_phot[num_pi_phot - 1] = i;
 					PiPlusID.push_back(i);
 					charge_pi[num_pi_phot - 1] = 1;
+
+					TVector3 V3_pi_corr(pxf[i+60],pyf[i+60],pzf[i+60]);
+
+					PiPlusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi(); 
+					PiPlusTheta_Deg = V3_pi_corr.Theta() * 180. / TMath::Pi(); 
+					PiPlusMag = V3_pi_corr.Mag(); 
+
 				}
+
+				if (PiPlusPhi_Deg > 0 && PiPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PiPlusMag,PiPlusTheta_Deg,PiPlusWeight); } 
+				if (PiPlusPhi_Deg > 60 && PiPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PiPlusMag,PiPlusTheta_Deg,PiPlusWeight); } 
+				if (PiPlusPhi_Deg > 120 && PiPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PiPlusMag,PiPlusTheta_Deg,PiPlusWeight); } 
+				if (PiPlusPhi_Deg > 180 && PiPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PiPlusMag,PiPlusTheta_Deg,PiPlusWeight); } 
+				if (PiPlusPhi_Deg > 240 && PiPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PiPlusMag,PiPlusTheta_Deg,PiPlusWeight); } 
+				if (PiPlusPhi_Deg > 300 && PiPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PiPlusMag,PiPlusTheta_Deg,PiPlusWeight); }
+
+				h1_PiPlus_AccMapWeights->Fill(PiPlusWeight);
+
 			}
 
 			// ---------------------------------------------------------------------------------------------------------------------------
@@ -1485,9 +1590,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 			}
 
-			h1_Proton_AccMapWeights->Fill(p_acc_ratio1);
-			h1_Proton_AccMapWeights->Fill(p_acc_ratio2);
-
 			//Total proton weight
 			double weight_protons = p_acc_ratio1 * p_acc_ratio2;
 
@@ -1553,13 +1655,6 @@ void genie_analysis::Loop(Int_t choice) {
 					double ProtonPhi_Deg = V3_2prot_corr[f].Phi() *180. / TMath::Pi() + 180.;
 					double ProtonTheta_Deg = V3_2prot_corr[f].Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_2prot_corr[f].Mag();
-
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
 
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -1707,9 +1802,6 @@ void genie_analysis::Loop(Int_t choice) {
 					else { std::cout << "WARNING: 2proton and 1 Pion loop. pion_acc_ratio is still 0. Continue with next event " << std::endl;	continue; }
 				}
 
-				if (charge_pi[0] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio); }
-				if (charge_pi[0] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio); }
-
 				double P_2p1pito2p0pi[2] = {0};
 				double P_2p1pito1p1pi[2] = {0};
 				double P_2p1pito1p0pi[2] = {0};
@@ -1763,13 +1855,6 @@ void genie_analysis::Loop(Int_t choice) {
 					double ProtonPhi_Deg = V3_2prot_corr[z].Phi() *180. / TMath::Pi() + 180.;
 					double ProtonTheta_Deg = V3_2prot_corr[z].Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_2prot_corr[z].Mag();
-
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -1905,44 +1990,17 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),P_2p1pito1p1pi[z]*histoweight);
 					h2_Proton_Theta_Momentum->Fill(V3_2prot_corr[z].Mag(),V3_2prot_corr[z].Theta()*180./TMath::Pi(),P_2p1pito1p1pi[z]*histoweight);
 
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
+					double PionWeight = pion_acc_ratio;
 
 					if (charge_pi[0] == 1) { 
 
 						h2_PiPlus_Theta_Momentum->Fill(V3_1pi_corr.Mag(),V3_1pi_corr.Theta()*180./TMath::Pi(),P_2p1pito1p1pi[z]*histoweight); 
-
-						double PionPlusPhi_Deg = V3_1pi_corr.Phi() *180. / TMath::Pi() + 180.;
-						double PionPlusTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
-						double PionPlusMag = V3_1pi_corr.Mag();
-
-						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
 
 					}
 
 					if (charge_pi[0] == -1) { 
 
 						h2_PiMinus_Theta_Momentum->Fill(V3_1pi_corr.Mag(),V3_1pi_corr.Theta()*180./TMath::Pi(),P_2p1pito1p1pi[z]*histoweight); 
-
-						double PionMinusPhi_Deg = V3_1pi_corr.Phi() *180. / TMath::Pi() + 180.;
-						double PionMinusTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
-						double PionMinusMag = V3_1pi_corr.Mag();
-
-						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 					}
 
@@ -2080,44 +2138,15 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),-P_2p1pito1p0pi[z]*histoweight);
 					h2_Proton_Theta_Momentum->Fill(V3_2prot_corr[z].Mag(),V3_2prot_corr[z].Theta()*180./TMath::Pi(),-P_2p1pito1p0pi[z]*histoweight);
 
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
-
 					if (charge_pi[0] == 1) { 
 					
 						h2_PiPlus_Theta_Momentum->Fill(V3_1pi_corr.Mag(),V3_1pi_corr.Theta()*180./TMath::Pi(),-P_2p1pito1p0pi[z]*histoweight); 
-
-						double PionPlusPhi_Deg = V3_1pi_corr.Phi() *180. / TMath::Pi() + 180.;
-						double PionPlusTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
-						double PionPlusMag = V3_1pi_corr.Mag();
-
-						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
 
 					}
 					if (charge_pi[0] == -1) { 
 
 						h2_PiMinus_Theta_Momentum->Fill(V3_1pi_corr.Mag(),V3_1pi_corr.Theta()*180./TMath::Pi(),-P_2p1pito1p0pi[z]*histoweight); 
 
-						double PionMinusPhi_Deg = V3_1pi_corr.Phi() *180. / TMath::Pi() + 180.;
-						double PionMinusTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
-						double PionMinusMag = V3_1pi_corr.Mag();
-
-
-						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 					}
 
@@ -2268,9 +2297,6 @@ void genie_analysis::Loop(Int_t choice) {
 						}
 					}
 
-					if (charge_pi[i] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio[i]); }
-					if (charge_pi[i] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio[i]); }
-
 				}
 
 				rotation->prot2_pi2_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_2pi_corr,charge_pi, V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
@@ -2320,51 +2346,17 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),Ptot_2p[z]*histoweight);
 					h2_Proton_Theta_Momentum->Fill(V3_2prot_corr[z].Mag(),V3_2prot_corr[z].Theta()*180./TMath::Pi(),Ptot_2p[z]*histoweight);
 
-					double ProtonPhi_Deg = V3_2prot_corr[z].Phi() *180. / TMath::Pi() + 180.;
-					double ProtonTheta_Deg = V3_2prot_corr[z].Theta() *180. / TMath::Pi();
-					double ProtonMag = V3_2prot_corr[z].Mag();
-
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
-
 					for (int i = 0; i < num_pi_phot; i++) {
 
 						if (charge_pi[i] == 1) { 
 
 							h2_PiPlus_Theta_Momentum->Fill(V3_2pi_corr[i].Mag(),V3_2pi_corr[i].Theta()*180./TMath::Pi(),Ptot_2p[z]*histoweight); 
 
-							double PionPlusPhi_Deg = V3_2pi_corr[i].Phi() *180. / TMath::Pi() + 180.;
-							double PionPlusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
-							double PionPlusMag = V3_2pi_corr[i].Mag();
-
-							if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-							if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-							if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-							if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-							if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-							if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
-
 						}
 
 						if (charge_pi[i] == -1) { 
 
 							h2_PiMinus_Theta_Momentum->Fill(V3_2pi_corr[i].Mag(),V3_2pi_corr[i].Theta()*180./TMath::Pi(),Ptot_2p[z]*histoweight); 
-
-							double PionMinusPhi_Deg = V3_2pi_corr[i].Phi() *180. / TMath::Pi() + 180.;
-							double PionMinusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
-							double PionMinusMag = V3_2pi_corr[i].Mag();
-
-							if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-							if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-							if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-							if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-							if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-							if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
-
 
 						}
 					
@@ -2532,8 +2524,6 @@ void genie_analysis::Loop(Int_t choice) {
 				E_cal[i] = V4_el.E()+ V4_p_corr[i].E() - m_prot + bind_en[ftarget] + offset;
 				p_miss_perp[i] = TMath::Sqrt(V4_prot_el[i].Px()*V4_prot_el[i].Px() + V4_prot_el[i].Py()*V4_prot_el[i].Py());
 
-				h1_Proton_AccMapWeights->Fill(p_acc_ratio[i]);
-
 			} //end loop over N_3p
 
 			V3_prot_el[0][0]=V4_el.Vect()+V3_prot_uncorr[0];
@@ -2596,17 +2586,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 						h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),P_3pto2p[count][j]*histoweight);
 						h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Mag(),V3_prot_corr[j].Theta()*180./TMath::Pi(),P_3pto2p[count][j]*histoweight);
-
-						double ProtonPhi_Deg = V3_prot_corr[j].Phi() *180. / TMath::Pi() + 180.;
-						double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
-						double ProtonMag = V3_prot_corr[j].Mag();
-
-						if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-						if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-						if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-						if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-						if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-						if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 						// -----------------------------------------------------------------------------------------------
 						// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -2751,17 +2730,6 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),-P_3pto1p[j]*histoweight);
 					h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Mag(),V3_prot_corr[j].Theta()*180./TMath::Pi(),-P_3pto1p[j]*histoweight);
 
-					double ProtonPhi_Deg = V3_prot_corr[j].Phi() *180. / TMath::Pi() + 180.;
-					double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
-					double ProtonMag = V3_prot_corr[j].Mag();
-
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
-
 					// -----------------------------------------------------------------------------------------------
 					// Reconstruct xB, W, Q2 using Ecal instead of Etrue
 
@@ -2905,9 +2873,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 				}
 
-				if (charge_pi[0] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio); }
-				if (charge_pi[0] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio); }
-
 				rotation->prot3_pi1_rot_func(V3_prot_corr,V3_prot_uncorr, V3_pi_corr, charge_pi[0] , V4_el,	Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
 
 				//for CLAS data is histoweight = 1/Mott_cross_sec
@@ -2952,49 +2917,15 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),P_tot_3p[j]*histoweight);
 					h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Mag(),V3_prot_corr[j].Theta()*180./TMath::Pi(),P_tot_3p[j]*histoweight);
 
-					double ProtonPhi_Deg = V3_prot_corr[j].Phi() *180. / TMath::Pi() + 180.;
-					double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
-					double ProtonMag = V3_prot_corr[j].Mag();
-
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
-
 					if (charge_pi[0] == 1) { 
 
 						h2_PiPlus_Theta_Momentum->Fill(V3_pi_corr.Mag(),V3_pi_corr.Theta()*180./TMath::Pi(),P_tot_3p[j]*histoweight); 
-
-						double PionPlusPhi_Deg = V3_pi_corr.Phi() *180. / TMath::Pi() + 180.;
-						double PionPlusTheta_Deg = V3_pi_corr.Theta() *180. / TMath::Pi();
-						double PionPlusMag = V3_pi_corr.Mag();
-
-						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
 
 					}
 
 					if (charge_pi[0] == -1) { 
 
 						h2_PiMinus_Theta_Momentum->Fill(V3_pi_corr.Mag(),V3_pi_corr.Theta()*180./TMath::Pi(),P_tot_3p[j]*histoweight); 
-
-						double PionMinusPhi_Deg = V3_pi_corr.Phi() *180. / TMath::Pi() + 180.;
-						double PionMinusTheta_Deg = V3_pi_corr.Theta() *180. / TMath::Pi();
-						double PionMinusMag = V3_pi_corr.Mag();
-
-
-						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 					}
 
@@ -3159,8 +3090,6 @@ void genie_analysis::Loop(Int_t choice) {
 				V4_prot4_el[i] = V4_p4_corr[i] + V4_el;
 				E_cal_p4[i] = V4_el.E() + V4_p4_corr[i].E() - m_prot + bind_en[ftarget] + offset;
 				p_miss_perp_p4[i] = TMath::Sqrt(V4_prot4_el[i].Px()*V4_prot4_el[i].Px() + V4_prot4_el[i].Py()*V4_prot4_el[i].Py());
-
-				h1_Proton_AccMapWeights->Fill(p_acc_ratio[i]);
 	
 			} //end loop over N_p4
 
@@ -3293,17 +3222,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 								h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 								h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Mag(),V3_prot_corr[j].Theta()*180./TMath::Pi(),-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
-
-								double ProtonPhi_Deg = V3_prot_corr[j].Phi() *180. / TMath::Pi() + 180.;
-								double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
-								double ProtonMag = V3_prot_corr[j].Mag();
-
-								if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-								if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-								if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-								if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-								if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-								if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 								// ----------------------------------------------------------
 								// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -3447,17 +3365,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 							h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),P_43pto1p[j]*histoweight);
 							h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Mag(),V3_prot_corr[j].Theta()*180./TMath::Pi(),P_43pto1p[j]*histoweight);
-
-							double ProtonPhi_Deg = V3_prot_corr[j].Phi() *180. / TMath::Pi() + 180.;
-							double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
-							double ProtonMag = V3_prot_corr[j].Mag();
-
-							if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-							if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-							if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-							if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-							if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-							if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 							// -----------------------------------------------------------------------------------------------
 							// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -3628,17 +3535,6 @@ void genie_analysis::Loop(Int_t choice) {
 									h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 									h2_Proton_Theta_Momentum->Fill(V3p2[j].Mag(),V3p2[j].Theta()*180./TMath::Pi(),P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 
-									double ProtonPhi_Deg = V3p2[j].Phi() *180. / TMath::Pi() + 180.;
-									double ProtonTheta_Deg = V3p2[j].Theta() *180. / TMath::Pi();
-									double ProtonMag = V3p2[j].Mag();
-
-									if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-									if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-									if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-									if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-									if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-									if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
-
 									// -----------------------------------------------------------------------
 									
 									// Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -3795,17 +3691,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 						h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),-P_4pto1p[j]*histoweight);
 						h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Mag(),V3_prot_corr[j].Theta()*180./TMath::Pi(),-P_4pto1p[j]*histoweight);
-
-						double ProtonPhi_Deg = V3_prot_corr[j].Phi() *180. / TMath::Pi() + 180.;
-						double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
-						double ProtonMag = V3_prot_corr[j].Mag();
-
-						if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-						if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-						if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-						if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-						if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-						if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 						// -----------------------------------------------------------------------------------------------
 						// apapadop: Reconstruct xB, W, Q2 using Ecal instead of Etrue
@@ -3971,9 +3856,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 			}
 
-			if (charge_pi[0] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio); }
-			if (charge_pi[0] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio); }
-
 			rotation->pi1_rot_func( V3_pi_corr, charge_pi[0], &P_undet);
 
 			//histoweight is 1/Mott_cross_sec for CLAS data
@@ -4031,9 +3913,6 @@ void genie_analysis::Loop(Int_t choice) {
 					}
 					else { std::cout << "WARNING: 2 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;	continue; }
 				}
-
-				if (charge_pi[i] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio[i]); }
-				if (charge_pi[i] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio[i]); }
 
 			} //end loop over num_pi_phot
 
@@ -4115,9 +3994,6 @@ void genie_analysis::Loop(Int_t choice) {
 					else { std::cout << "WARNING: 3 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 
 				}
-
-				if (charge_pi[i] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio[i]); }
-				if (charge_pi[i] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio[i]); }
 
 			} //end loop over num_pi_phot
 
@@ -4227,9 +4103,6 @@ void genie_analysis::Loop(Int_t choice) {
 						else { std::cout << "WARNING: 4 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 				}
 
-				if (charge_pi[i] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio[i]); }
-				if (charge_pi[i] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio[i]); }
-
 			} //end loop over num_pi_phot
 
 			rotation->pi4_rot_func(V3_4pi_corr, charge_pi, &P_0pi,&P_410pi,&P_420pi,&P_4210pi,&P_430pi,&P_4310pi,&P_4320pi,&P_43210pi);
@@ -4322,8 +4195,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 			}
 
-			h1_Proton_AccMapWeights->Fill(p_acc_ratio);
-
 			TLorentzVector V4_prot_el_tot = V4_prot_corr + V4_el;
 
 			double p_perp_tot = TMath::Sqrt(V4_prot_el_tot.Px()*V4_prot_el_tot.Px() + V4_prot_el_tot.Py()*V4_prot_el_tot.Py());
@@ -4413,17 +4284,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 				h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),histoweight);
 				h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Mag(),V3_prot_corr.Theta()*180./TMath::Pi(),histoweight);
-
-				double ProtonPhi_Deg = V3_prot_corr.Phi() *180. / TMath::Pi() + 180.;
-				double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
-				double ProtonMag = V3_prot_corr.Mag();
-
-				if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
 				// -----------------------------------------------------------------------------------------------
 
@@ -4590,9 +4450,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 				}
 
-				if (charge_pi[0] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio); }
-				if (charge_pi[0] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio); }
-
 				rotation->prot1_pi1_rot_func(V3_prot_uncorr,V3_pi_corr, charge_pi[0], &N_piphot_det,&N_piphot_undet);
 
 				//histoweight is 1/Mott_cross_sec for CLAS data
@@ -4637,48 +4494,15 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),-(N_piphot_undet/N_piphot_det)*histoweight);
 					h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Mag(),V3_prot_corr.Theta()*180./TMath::Pi(),-(N_piphot_undet/N_piphot_det)*histoweight);
 
-					double ProtonPhi_Deg = V3_prot_corr.Phi() *180. / TMath::Pi() + 180.;
-					double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
-					double ProtonMag = V3_prot_corr.Mag();
-
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
-
 					if (charge_pi[0] == 1) { 
 
 						h2_PiPlus_Theta_Momentum->Fill(V3_pi_corr.Mag(),V3_pi_corr.Theta()*180./TMath::Pi(),-(N_piphot_undet/N_piphot_det)*histoweight); 
-
-						double PionPlusPhi_Deg = V3_pi_corr.Phi() *180. / TMath::Pi() + 180.;
-						double PionPlusTheta_Deg = V3_pi_corr.Theta() *180. / TMath::Pi();
-						double PionPlusMag = V3_pi_corr.Mag();
-
-						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
 
 					}
 
 					if (charge_pi[0] == -1) { 
 
 						h2_PiMinus_Theta_Momentum->Fill(V3_pi_corr.Mag(),V3_pi_corr.Theta()*180./TMath::Pi(),-(N_piphot_undet/N_piphot_det)*histoweight); 
-
-						double PionMinusPhi_Deg = V3_pi_corr.Phi() *180. / TMath::Pi() + 180.;
-						double PionMinusTheta_Deg = V3_pi_corr.Theta() *180. / TMath::Pi();
-						double PionMinusMag = V3_pi_corr.Mag();
-
-						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 					}
 
@@ -4834,9 +4658,6 @@ void genie_analysis::Loop(Int_t choice) {
 						else { std::cout << "WARNING: 1 Proton 2 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 					}
 
-					if (charge_pi[i] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio[i]); }
-					if (charge_pi[i] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio[i]); }
-
 				} //end loop over num_pi_phot
 
 				rotation->prot1_pi2_rot_func(V3_prot_uncorr,V3_2pi_corr,charge_pi,&P_1p0pi,P_1p1pi);
@@ -4886,50 +4707,17 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),P_1p1pi[z]*histoweight);
 					h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Mag(),V3_prot_corr.Theta()*180./TMath::Pi(),P_1p1pi[z]*histoweight);
 
-					double ProtonPhi_Deg = V3_prot_corr.Phi() *180. / TMath::Pi() + 180.;
-					double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
-					double ProtonMag = V3_prot_corr.Mag();
-
-					if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
-
 					for (int i = 0; i < num_pi_phot; i++) {
 
 						if (charge_pi[i] == 1) { 
 
 							h2_PiPlus_Theta_Momentum->Fill(V3_2pi_corr[i].Mag(),V3_2pi_corr[i].Theta()*180./TMath::Pi(),P_1p1pi[z]*histoweight); 
 
-							double PionPlusPhi_Deg = V3_2pi_corr[i].Phi() *180. / TMath::Pi() + 180.;
-							double PionPlusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
-							double PionPlusMag = V3_2pi_corr[i].Mag();
-
-							if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-							if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-							if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-							if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-							if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-							if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
-
 						}
 
 						if (charge_pi[i] == -1) { 
 
 							h2_PiMinus_Theta_Momentum->Fill(V3_2pi_corr[i].Mag(),V3_2pi_corr[i].Theta()*180./TMath::Pi(),P_1p1pi[z]*histoweight); 
-
-							double PionMinusPhi_Deg = V3_2pi_corr[i].Phi() *180. / TMath::Pi() + 180.;
-							double PionMinusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
-							double PionMinusMag = V3_2pi_corr[i].Mag();
-
-							if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-							if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-							if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-							if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-							if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-							if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 						}
 					
@@ -5074,51 +4862,17 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),-P_1p0pi*histoweight);
 				h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Mag(),V3_prot_corr.Theta()*180./TMath::Pi(),-P_1p0pi*histoweight);
 
-				double ProtonPhi_Deg = V3_prot_corr.Phi() *180. / TMath::Pi() + 180.;
-				double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
-				double ProtonMag = V3_prot_corr.Mag();
-
-				if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
-
-
 				for (int i = 0; i < num_pi_phot; i++) {
 
 					if (charge_pi[i] == 1) { 
 
 						h2_PiPlus_Theta_Momentum->Fill(V3_2pi_corr[i].Mag(),V3_2pi_corr[i].Theta()*180./TMath::Pi(),-P_1p0pi*histoweight); 
 
-						double PionPlusPhi_Deg = V3_2pi_corr[i].Phi() *180. / TMath::Pi() + 180.;
-						double PionPlusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
-						double PionPlusMag = V3_2pi_corr[i].Mag();
-
-						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
-
 					}
 
 					if (charge_pi[i] == -1) { 
 
 						h2_PiMinus_Theta_Momentum->Fill(V3_2pi_corr[i].Mag(),V3_2pi_corr[i].Theta()*180./TMath::Pi(),-P_1p0pi*histoweight); 
-
-						double PionMinusPhi_Deg = V3_2pi_corr[i].Phi() *180. / TMath::Pi() + 180.;
-						double PionMinusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
-						double PionMinusMag = V3_2pi_corr[i].Mag();
-
-						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 					}
 					
@@ -5265,9 +5019,6 @@ void genie_analysis::Loop(Int_t choice) {
 						else { std::cout << "WARNING: 3 Pion Events. pion_acc_ratio is still 0. Continue with next event " << std::endl;  continue; }
 					}
 
-					if (charge_pi[i] == 1) { h1_PiPlus_AccMapWeights->Fill(pion_acc_ratio[i]); }
-					if (charge_pi[i] == -1) { h1_PiMinus_AccMapWeights->Fill(pion_acc_ratio[i]); }
-
 				} //end loop over num_pi_phot
 
 				rotation->prot1_pi3_rot_func(V3_prot_uncorr, V3_3pi_corr, charge_pi, &P_1p3pi);
@@ -5315,50 +5066,17 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_Electron_Theta_Momentum->Fill(V4_el.Rho(),V3_el.Theta()*180./TMath::Pi(),P_1p3pi*histoweight);
 				h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Mag(),V3_prot_corr.Theta()*180./TMath::Pi(),P_1p3pi*histoweight);
 
-				double ProtonPhi_Deg = V3_prot_corr.Phi() *180. / TMath::Pi() + 180.;
-				double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
-				double ProtonMag = V3_prot_corr.Mag();
-
-				if (ProtonPhi_Deg > 0 && ProtonPhi_Deg < 60) { h2_Proton_Theta_Momentum_FirstSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 60 && ProtonPhi_Deg < 120) { h2_Proton_Theta_Momentum_SecondSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 120 && ProtonPhi_Deg < 180) { h2_Proton_Theta_Momentum_ThirdSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 180 && ProtonPhi_Deg < 240) { h2_Proton_Theta_Momentum_FourthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
-				if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
-
 				for (int i = 0; i < num_pi_phot; i++) {
 
 					if (charge_pi[i] == 1) { 
 
 						h2_PiPlus_Theta_Momentum->Fill(V3_3pi_corr[i].Mag(),V3_3pi_corr[i].Theta()*180./TMath::Pi(),P_1p3pi*histoweight); 
 
-						double PionPlusPhi_Deg = V3_3pi_corr[i].Phi() *180. / TMath::Pi() + 180.;
-						double PionPlusTheta_Deg = V3_3pi_corr[i].Theta() *180. / TMath::Pi();
-						double PionPlusMag = V3_3pi_corr[i].Mag();
-
-						if (PionPlusPhi_Deg > 0 && PionPlusPhi_Deg < 60) { h2_PiPlus_Theta_Momentum_FirstSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 60 && PionPlusPhi_Deg < 120) { h2_PiPlus_Theta_Momentum_SecondSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 120 && PionPlusPhi_Deg < 180) { h2_PiPlus_Theta_Momentum_ThirdSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 180 && PionPlusPhi_Deg < 240) { h2_PiPlus_Theta_Momentum_FourthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 240 && PionPlusPhi_Deg < 300) { h2_PiPlus_Theta_Momentum_FifthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); } 
-						if (PionPlusPhi_Deg > 300 && PionPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PionPlusMag,PionPlusTheta_Deg,1.); }
-
 					}
 
 					if (charge_pi[i] == -1) { 
 
 						h2_PiMinus_Theta_Momentum->Fill(V3_3pi_corr[i].Mag(),V3_3pi_corr[i].Theta()*180./TMath::Pi(),P_1p3pi*histoweight); 
-
-						double PionMinusPhi_Deg = V3_3pi_corr[i].Phi() *180. / TMath::Pi() + 180.;
-						double PionMinusTheta_Deg = V3_3pi_corr[i].Theta() *180. / TMath::Pi();
-						double PionMinusMag = V3_3pi_corr[i].Mag();
-
-						if (PionMinusPhi_Deg > 0 && PionMinusPhi_Deg < 60) { h2_PiMinus_Theta_Momentum_FirstSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 60 && PionMinusPhi_Deg < 120) { h2_PiMinus_Theta_Momentum_SecondSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 120 && PionMinusPhi_Deg < 180) { h2_PiMinus_Theta_Momentum_ThirdSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 180 && PionMinusPhi_Deg < 240) { h2_PiMinus_Theta_Momentum_FourthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 240 && PionMinusPhi_Deg < 300) { h2_PiMinus_Theta_Momentum_FifthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); } 
-						if (PionMinusPhi_Deg > 300 && PionMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PionMinusMag,PionMinusTheta_Deg,1.); }
 
 					}
 					

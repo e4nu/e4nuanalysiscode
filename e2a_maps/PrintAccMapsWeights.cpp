@@ -25,12 +25,12 @@ void PrintAccMapsWeights() {
 	gStyle->SetOptStat(0);	
 
 //	TString Energy = "1_161";
-	TString Energy = "2_261";
-//	TString Energy = "4_461";
+//	TString Energy = "2_261";
+	TString Energy = "4_461";
 
 //	TString Nucleus = "4He";
-	TString Nucleus = "12C";
-//	TString Nucleus = "56Fe";
+//	TString Nucleus = "12C";
+	TString Nucleus = "56Fe";
 
 	TString PathToFiles = "../../myFiles/"+ Energy + "/SuSav2_RadCorr_LFGM/NoxBCut/";
 	TString FileName = PathToFiles + Nucleus+"_" + Energy + "_SuSav2_RadCorr_LFGM_Plots_FSI_em.root";

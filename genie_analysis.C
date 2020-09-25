@@ -1551,6 +1551,7 @@ void genie_analysis::Loop(Int_t choice) {
 					LocalWeight = -P_N_2p[f]*histoweight;
 
 					double ProtonPhi_Deg = V3_2prot_corr[f].Phi() *180. / TMath::Pi();
+					if (choice == 0) { ProtonPhi_Deg += 180; }
 					double ProtonTheta_Deg = V3_2prot_corr[f].Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_2prot_corr[f].Mag();
 
@@ -1761,6 +1762,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Proton_Theta_Momentum->Fill(V3_2prot_corr[z].Mag(),V3_2prot_corr[z].Theta()*180./TMath::Pi(),P_2p1pito2p0pi[z]*histoweight);
 
 					double ProtonPhi_Deg = V3_2prot_corr[z].Phi() *180. / TMath::Pi();
+					if (choice == 0) { ProtonPhi_Deg += 180; }
 					double ProtonTheta_Deg = V3_2prot_corr[z].Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_2prot_corr[z].Mag();
 
@@ -1912,15 +1914,12 @@ void genie_analysis::Loop(Int_t choice) {
 					if (ProtonPhi_Deg > 240 && ProtonPhi_Deg < 300) { h2_Proton_Theta_Momentum_FifthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); } 
 					if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,1.); }
 
-					double PionPhi_Deg = V3_1pi_corr.Phi() *180. / TMath::Pi();
-					double PionTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
-					double PionMag = V3_1pi_corr.Mag();
-
 					if (charge_pi[0] == 1) { 
 
 						h2_PiPlus_Theta_Momentum->Fill(V3_1pi_corr.Mag(),V3_1pi_corr.Theta()*180./TMath::Pi(),P_2p1pito1p1pi[z]*histoweight); 
 
 						double PionPlusPhi_Deg = V3_1pi_corr.Phi() *180. / TMath::Pi();
+						if (choice == 0) { PionPlusPhi_Deg += 180.; }
 						double PionPlusTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
 						double PionPlusMag = V3_1pi_corr.Mag();
 
@@ -1938,6 +1937,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_PiMinus_Theta_Momentum->Fill(V3_1pi_corr.Mag(),V3_1pi_corr.Theta()*180./TMath::Pi(),P_2p1pito1p1pi[z]*histoweight); 
 
 						double PionMinusPhi_Deg = V3_1pi_corr.Phi() *180. / TMath::Pi();
+						if (choice == 0) { PionMinusPhi_Deg += 180.; }
 						double PionMinusTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
 						double PionMinusMag = V3_1pi_corr.Mag();
 
@@ -2096,6 +2096,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_PiPlus_Theta_Momentum->Fill(V3_1pi_corr.Mag(),V3_1pi_corr.Theta()*180./TMath::Pi(),-P_2p1pito1p0pi[z]*histoweight); 
 
 						double PionPlusPhi_Deg = V3_1pi_corr.Phi() *180. / TMath::Pi();
+						if (choice == 0) { PionPlusPhi_Deg += 180.; }
 						double PionPlusTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
 						double PionPlusMag = V3_1pi_corr.Mag();
 
@@ -2112,6 +2113,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_PiMinus_Theta_Momentum->Fill(V3_1pi_corr.Mag(),V3_1pi_corr.Theta()*180./TMath::Pi(),-P_2p1pito1p0pi[z]*histoweight); 
 
 						double PionMinusPhi_Deg = V3_1pi_corr.Phi() *180. / TMath::Pi();
+						if (choice == 0) { PionMinusPhi_Deg += 180.; }
 						double PionMinusTheta_Deg = V3_1pi_corr.Theta() *180. / TMath::Pi();
 						double PionMinusMag = V3_1pi_corr.Mag();
 
@@ -2325,6 +2327,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Proton_Theta_Momentum->Fill(V3_2prot_corr[z].Mag(),V3_2prot_corr[z].Theta()*180./TMath::Pi(),Ptot_2p[z]*histoweight);
 
 					double ProtonPhi_Deg = V3_2prot_corr[z].Phi() *180. / TMath::Pi();
+					if (choice == 0) { ProtonPhi_Deg += 180; }
 					double ProtonTheta_Deg = V3_2prot_corr[z].Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_2prot_corr[z].Mag();
 
@@ -2342,6 +2345,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h2_PiPlus_Theta_Momentum->Fill(V3_2pi_corr[i].Mag(),V3_2pi_corr[i].Theta()*180./TMath::Pi(),Ptot_2p[z]*histoweight); 
 
 							double PionPlusPhi_Deg = V3_2pi_corr[i].Phi() *180. / TMath::Pi();
+							if (choice == 0) { PionPlusPhi_Deg += 180.; }
 							double PionPlusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
 							double PionPlusMag = V3_2pi_corr[i].Mag();
 
@@ -2359,6 +2363,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h2_PiMinus_Theta_Momentum->Fill(V3_2pi_corr[i].Mag(),V3_2pi_corr[i].Theta()*180./TMath::Pi(),Ptot_2p[z]*histoweight); 
 
 							double PionMinusPhi_Deg = V3_2pi_corr[i].Phi() *180. / TMath::Pi();
+							if (choice == 0) { PionMinusPhi_Deg += 180.; }
 							double PionMinusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
 							double PionMinusMag = V3_2pi_corr[i].Mag();
 
@@ -2602,6 +2607,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Mag(),V3_prot_corr[j].Theta()*180./TMath::Pi(),P_3pto2p[count][j]*histoweight);
 
 						double ProtonPhi_Deg = V3_prot_corr[j].Phi() *180. / TMath::Pi();
+						if (choice == 0) { ProtonPhi_Deg += 180; }
 						double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
 						double ProtonMag = V3_prot_corr[j].Mag();
 
@@ -2756,6 +2762,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Mag(),V3_prot_corr[j].Theta()*180./TMath::Pi(),-P_3pto1p[j]*histoweight);
 
 					double ProtonPhi_Deg = V3_prot_corr[j].Phi() *180. / TMath::Pi();
+					if (choice == 0) { ProtonPhi_Deg += 180; }
 					double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_prot_corr[j].Mag();
 
@@ -2957,6 +2964,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Mag(),V3_prot_corr[j].Theta()*180./TMath::Pi(),P_tot_3p[j]*histoweight);
 
 					double ProtonPhi_Deg = V3_prot_corr[j].Phi() *180. / TMath::Pi();
+					if (choice == 0) { ProtonPhi_Deg += 180; }
 					double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_prot_corr[j].Mag();
 
@@ -2972,6 +2980,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_PiPlus_Theta_Momentum->Fill(V3_pi_corr.Mag(),V3_pi_corr.Theta()*180./TMath::Pi(),P_tot_3p[j]*histoweight); 
 
 						double PionPlusPhi_Deg = V3_pi_corr.Phi() *180. / TMath::Pi();
+						if (choice == 0) { PionPlusPhi_Deg += 180.; }
 						double PionPlusTheta_Deg = V3_pi_corr.Theta() *180. / TMath::Pi();
 						double PionPlusMag = V3_pi_corr.Mag();
 
@@ -2989,6 +2998,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_PiMinus_Theta_Momentum->Fill(V3_pi_corr.Mag(),V3_pi_corr.Theta()*180./TMath::Pi(),P_tot_3p[j]*histoweight); 
 
 						double PionMinusPhi_Deg = V3_pi_corr.Phi() *180. / TMath::Pi();
+						if (choice == 0) { PionMinusPhi_Deg += 180.; }
 						double PionMinusTheta_Deg = V3_pi_corr.Theta() *180. / TMath::Pi();
 						double PionMinusMag = V3_pi_corr.Mag();
 
@@ -3299,6 +3309,7 @@ void genie_analysis::Loop(Int_t choice) {
 								h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Mag(),V3_prot_corr[j].Theta()*180./TMath::Pi(),-P_4pto3p[count][j]*(N_p4_p3[g]/N_p_four)*histoweight);
 
 								double ProtonPhi_Deg = V3_prot_corr[j].Phi() *180. / TMath::Pi();
+								if (choice == 0) { ProtonPhi_Deg += 180; }
 								double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
 								double ProtonMag = V3_prot_corr[j].Mag();
 
@@ -3453,6 +3464,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Mag(),V3_prot_corr[j].Theta()*180./TMath::Pi(),P_43pto1p[j]*histoweight);
 
 							double ProtonPhi_Deg = V3_prot_corr[j].Phi() *180. / TMath::Pi();
+							if (choice == 0) { ProtonPhi_Deg += 180; }
 							double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
 							double ProtonMag = V3_prot_corr[j].Mag();
 
@@ -3633,6 +3645,7 @@ void genie_analysis::Loop(Int_t choice) {
 									h2_Proton_Theta_Momentum->Fill(V3p2[j].Mag(),V3p2[j].Theta()*180./TMath::Pi(),P_4pto2p[j]*(N_p4_p2[N_4to2]/N_p_four)*histoweight);
 
 									double ProtonPhi_Deg = V3p2[j].Phi() *180. / TMath::Pi();
+									if (choice == 0) { ProtonPhi_Deg += 180; }
 									double ProtonTheta_Deg = V3p2[j].Theta() *180. / TMath::Pi();
 									double ProtonMag = V3p2[j].Mag();
 
@@ -3801,6 +3814,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_Proton_Theta_Momentum->Fill(V3_prot_corr[j].Mag(),V3_prot_corr[j].Theta()*180./TMath::Pi(),-P_4pto1p[j]*histoweight);
 
 						double ProtonPhi_Deg = V3_prot_corr[j].Phi() *180. / TMath::Pi();
+						if (choice == 0) { ProtonPhi_Deg += 180; }
 						double ProtonTheta_Deg = V3_prot_corr[j].Theta() *180. / TMath::Pi();
 						double ProtonMag = V3_prot_corr[j].Mag();
 
@@ -4419,6 +4433,7 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Mag(),V3_prot_corr.Theta()*180./TMath::Pi(),histoweight);
 
 				double ProtonPhi_Deg = V3_prot_corr.Phi() *180. / TMath::Pi();
+				if (choice == 0) { ProtonPhi_Deg += 180; }
 				double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
 				double ProtonMag = V3_prot_corr.Mag();
 
@@ -4642,6 +4657,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Mag(),V3_prot_corr.Theta()*180./TMath::Pi(),-(N_piphot_undet/N_piphot_det)*histoweight);
 
 					double ProtonPhi_Deg = V3_prot_corr.Phi() *180. / TMath::Pi();
+					if (choice == 0) { ProtonPhi_Deg += 180; }
 					double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_prot_corr.Mag();
 
@@ -4657,6 +4673,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_PiPlus_Theta_Momentum->Fill(V3_pi_corr.Mag(),V3_pi_corr.Theta()*180./TMath::Pi(),-(N_piphot_undet/N_piphot_det)*histoweight); 
 
 						double PionPlusPhi_Deg = V3_pi_corr.Phi() *180. / TMath::Pi();
+						if (choice == 0) { PionPlusPhi_Deg += 180.; }
 						double PionPlusTheta_Deg = V3_pi_corr.Theta() *180. / TMath::Pi();
 						double PionPlusMag = V3_pi_corr.Mag();
 
@@ -4674,6 +4691,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_PiMinus_Theta_Momentum->Fill(V3_pi_corr.Mag(),V3_pi_corr.Theta()*180./TMath::Pi(),-(N_piphot_undet/N_piphot_det)*histoweight); 
 
 						double PionMinusPhi_Deg = V3_pi_corr.Phi() *180. / TMath::Pi();
+						if (choice == 0) { PionMinusPhi_Deg += 180.; }
 						double PionMinusTheta_Deg = V3_pi_corr.Theta() *180. / TMath::Pi();
 						double PionMinusMag = V3_pi_corr.Mag();
 
@@ -4891,6 +4909,7 @@ void genie_analysis::Loop(Int_t choice) {
 					h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Mag(),V3_prot_corr.Theta()*180./TMath::Pi(),P_1p1pi[z]*histoweight);
 
 					double ProtonPhi_Deg = V3_prot_corr.Phi() *180. / TMath::Pi();
+					if (choice == 0) { ProtonPhi_Deg += 180; }
 					double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
 					double ProtonMag = V3_prot_corr.Mag();
 
@@ -4908,6 +4927,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h2_PiPlus_Theta_Momentum->Fill(V3_2pi_corr[i].Mag(),V3_2pi_corr[i].Theta()*180./TMath::Pi(),P_1p1pi[z]*histoweight); 
 
 							double PionPlusPhi_Deg = V3_2pi_corr[i].Phi() *180. / TMath::Pi();
+							if (choice == 0) { PionPlusPhi_Deg += 180.; }
 							double PionPlusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
 							double PionPlusMag = V3_2pi_corr[i].Mag();
 
@@ -4925,6 +4945,7 @@ void genie_analysis::Loop(Int_t choice) {
 							h2_PiMinus_Theta_Momentum->Fill(V3_2pi_corr[i].Mag(),V3_2pi_corr[i].Theta()*180./TMath::Pi(),P_1p1pi[z]*histoweight); 
 
 							double PionMinusPhi_Deg = V3_2pi_corr[i].Phi() *180. / TMath::Pi();
+							if (choice == 0) { PionMinusPhi_Deg += 180.; }
 							double PionMinusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
 							double PionMinusMag = V3_2pi_corr[i].Mag();
 
@@ -5079,6 +5100,7 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Mag(),V3_prot_corr.Theta()*180./TMath::Pi(),-P_1p0pi*histoweight);
 
 				double ProtonPhi_Deg = V3_prot_corr.Phi() *180. / TMath::Pi();
+				if (choice == 0) { ProtonPhi_Deg += 180; }
 				double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
 				double ProtonMag = V3_prot_corr.Mag();
 
@@ -5097,6 +5119,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_PiPlus_Theta_Momentum->Fill(V3_2pi_corr[i].Mag(),V3_2pi_corr[i].Theta()*180./TMath::Pi(),-P_1p0pi*histoweight); 
 
 						double PionPlusPhi_Deg = V3_2pi_corr[i].Phi() *180. / TMath::Pi();
+						if (choice == 0) { PionPlusPhi_Deg += 180.; }
 						double PionPlusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
 						double PionPlusMag = V3_2pi_corr[i].Mag();
 
@@ -5114,6 +5137,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_PiMinus_Theta_Momentum->Fill(V3_2pi_corr[i].Mag(),V3_2pi_corr[i].Theta()*180./TMath::Pi(),-P_1p0pi*histoweight); 
 
 						double PionMinusPhi_Deg = V3_2pi_corr[i].Phi() *180. / TMath::Pi();
+						if (choice == 0) { PionMinusPhi_Deg += 180.; }
 						double PionMinusTheta_Deg = V3_2pi_corr[i].Theta() *180. / TMath::Pi();
 						double PionMinusMag = V3_2pi_corr[i].Mag();
 
@@ -5320,6 +5344,7 @@ void genie_analysis::Loop(Int_t choice) {
 				h2_Proton_Theta_Momentum->Fill(V3_prot_corr.Mag(),V3_prot_corr.Theta()*180./TMath::Pi(),P_1p3pi*histoweight);
 
 				double ProtonPhi_Deg = V3_prot_corr.Phi() *180. / TMath::Pi();
+				if (choice == 0) { ProtonPhi_Deg += 180; }
 				double ProtonTheta_Deg = V3_prot_corr.Theta() *180. / TMath::Pi();
 				double ProtonMag = V3_prot_corr.Mag();
 
@@ -5337,6 +5362,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_PiPlus_Theta_Momentum->Fill(V3_3pi_corr[i].Mag(),V3_3pi_corr[i].Theta()*180./TMath::Pi(),P_1p3pi*histoweight); 
 
 						double PionPlusPhi_Deg = V3_3pi_corr[i].Phi() *180. / TMath::Pi();
+						if (choice == 0) { PionPlusPhi_Deg += 180.; }
 						double PionPlusTheta_Deg = V3_3pi_corr[i].Theta() *180. / TMath::Pi();
 						double PionPlusMag = V3_3pi_corr[i].Mag();
 
@@ -5354,6 +5380,7 @@ void genie_analysis::Loop(Int_t choice) {
 						h2_PiMinus_Theta_Momentum->Fill(V3_3pi_corr[i].Mag(),V3_3pi_corr[i].Theta()*180./TMath::Pi(),P_1p3pi*histoweight); 
 
 						double PionMinusPhi_Deg = V3_3pi_corr[i].Phi() *180. / TMath::Pi();
+						if (choice == 0) { PionMinusPhi_Deg += 180.; }
 						double PionMinusTheta_Deg = V3_3pi_corr[i].Theta() *180. / TMath::Pi();
 						double PionMinusMag = V3_3pi_corr[i].Mag();
 

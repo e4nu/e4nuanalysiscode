@@ -1354,7 +1354,7 @@ void genie_analysis::Loop(Int_t choice) {
 					PiMinusID.push_back(i);
 					charge_pi[num_pi_phot - 1] = -1;
 
-					TVector3 V3_pi_corr(pxf[i+60],pyf[i+60],pzf[i+60]);
+					TVector3 V3_pi_corr(pxf[i],pyf[i],pzf[i]);
 
 					PiMinusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi()  + 180.; 
 					PiMinusTheta_Deg = V3_pi_corr.Theta() * 180. / TMath::Pi(); 
@@ -1429,7 +1429,7 @@ void genie_analysis::Loop(Int_t choice) {
 					PiPlusID.push_back(i);
 					charge_pi[num_pi_phot - 1] = 1;
 
-					TVector3 V3_pi_corr(pxf[i+60],pyf[i+60],pzf[i+60]);
+					TVector3 V3_pi_corr(pxf[i],pyf[i],pzf[i]);
 
 					PiPlusPhi_Deg = V3_pi_corr.Phi() * 180. / TMath::Pi() + 180.; 
 					PiPlusTheta_Deg = V3_pi_corr.Theta() * 180. / TMath::Pi(); 

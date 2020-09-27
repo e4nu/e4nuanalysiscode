@@ -15,8 +15,8 @@ GENIEPath=/genie/app/users/apapadop/e4nu
 #GENIEOnlineExtension=G18_10a_02_11a
 #GENIELocalExtension=hA2018_Final_RadCorr_LFGM
 
-GENIEOnlineExtension=SuSav2
-GENIELocalExtension=SuSav2_RadCorr_LFGM
+#GENIEOnlineExtension=SuSav2
+#GENIELocalExtension=SuSav2_RadCorr_LFGM
 
 #GENIEOnlineExtension=SuSav2
 #GENIELocalExtension=SuSav2_RadCorr_LFGM_NoAccMaps

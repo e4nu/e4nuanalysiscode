@@ -501,6 +501,11 @@ void genie_analysis::Loop(Int_t choice) {
 //	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,0,180);
 	TH2F *h2_el_theta_phi = new TH2F("h2_el_theta_phi","",200,0,360,200,10,60);
 
+	TH1F *h1_Electron_Momentum = new TH1F("h1_Electron_Momentum",";P_{e'} [GeV/c]",6000,0.,6);
+	TH1F *h1_Proton_Momentum = new TH1F("h1_Proton_Momentum",";P_{p} [GeV/c]",6000,0.,6);
+	TH1F *h1_PiPlus_Momentum = new TH1F("h1_PiPlus_Momentum",";P_{#pi^{+}} [GeV/c]",6000,0.,6);
+	TH1F *h1_PiMinus_Momentum = new TH1F("h1_PiMinus_Momentum",";P_{#pi^{-}} [GeV/c]",6000,0.,6);
+
 	TH2F *h2_Electron_Theta_Momentum_FirstSector = new TH2F("h2_Electron_Theta_Momentum_FirstSector",";P_{e'} [GeV/c];#theta_{e'}",6000,0.,6,360,0,360);
 	TH2F *h2_Electron_Theta_Momentum_SecondSector = new TH2F("h2_Electron_Theta_Momentum_SecondSector",";P_{e'} [GeV/c];#theta_{e'}",6000,0.,6,360,0,360);
 	TH2F *h2_Electron_Theta_Momentum_ThirdSector = new TH2F("h2_Electron_Theta_Momentum_ThirdSector",";P_{e'} [GeV/c];#theta_{e'}",6000,0.,6,360,0,360);
@@ -1026,6 +1031,7 @@ void genie_analysis::Loop(Int_t choice) {
 		}
 
 		h1_Electron_AccMapWeights->Fill(e_acc_ratio);
+		h1_Electron_Momentum->Fill(el_momentum,e_acc_ratio);
 
 		// Explicit cuts on electron momentum
 		if (fbeam_en=="1161" && el_momentum < 0.4) { continue; }
@@ -1294,6 +1300,7 @@ void genie_analysis::Loop(Int_t choice) {
 				if (ProtonPhi_Deg > 300 && ProtonPhi_Deg < 360) { h2_Proton_Theta_Momentum_SixthSector->Fill(ProtonMag,ProtonTheta_Deg,ProtonWeight); }
 
 				h1_Proton_AccMapWeights->Fill(ProtonWeight);
+				h1_Proton_Momentum->Fill(ProtonMag,ProtonWeight);
 
 			}
 
@@ -1370,6 +1377,7 @@ void genie_analysis::Loop(Int_t choice) {
 				if (PiMinusPhi_Deg > 300 && PiMinusPhi_Deg < 360) { h2_PiMinus_Theta_Momentum_SixthSector->Fill(PiMinusMag,PiMinusTheta_Deg,PiMinusWeight); }
 
 				h1_PiMinus_AccMapWeights->Fill(PiMinusWeight);
+				h1_PiMinus_Momentum->Fill(PiMinusMag,PiMinusWeight);
 
 			}
 
@@ -1445,6 +1453,7 @@ void genie_analysis::Loop(Int_t choice) {
 				if (PiPlusPhi_Deg > 300 && PiPlusPhi_Deg < 360) { h2_PiPlus_Theta_Momentum_SixthSector->Fill(PiPlusMag,PiPlusTheta_Deg,PiPlusWeight); }
 
 				h1_PiPlus_AccMapWeights->Fill(PiPlusWeight);
+				h1_PiPlus_Momentum->Fill(PiPlusMag,PiPlusWeight);
 
 			}
 

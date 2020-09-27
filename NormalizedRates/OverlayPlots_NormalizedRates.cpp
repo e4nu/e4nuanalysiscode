@@ -113,7 +113,7 @@ void OverlayPlots_NormalizedRates() {
 //	xBCut.push_back("xBCut");
  
 //	Colors.push_back(kBlack); Colors.push_back(kRed); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
-	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kRed); Colors.push_back(kGreen+3); Colors.push_back(kOrange + 7);  Colors.push_back(kMagenta);
+	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kRed); Colors.push_back(kGreen+3); Colors.push_back(kBlue);  Colors.push_back(610);
 
 //	Style.push_back(9); Style.push_back(3); Style.push_back(7); Style.push_back(5);
 //	Style.push_back(9); Style.push_back(9); Style.push_back(9); Style.push_back(9); // fancy dashed lines 
@@ -126,7 +126,7 @@ void OverlayPlots_NormalizedRates() {
 	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("G2018");  DirNames.push_back("hA2018_Truth_RadCorr");
 //	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2 NoRad");  DirNames.push_back("hA2018_Truth_RadCorr");
 
-//	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
+	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
 
 //	FSIModel.push_back("SuSav2_02_11a_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
 
@@ -650,7 +650,7 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 
 						Plots[WhichFSIModel]->GetXaxis()->SetNdivisions(Ndivisions);
 						Plots[WhichFSIModel]->GetYaxis()->SetNdivisions(Ndivisions);
-
+//Plots[WhichFSIModel]->Divide(Plots[0]);
 						// --------------------------------------------------------------------------------------------------
 
 						if (string(FSILabel[WhichFSIModel]).find("Data") != std::string::npos) { 
@@ -719,6 +719,16 @@ int MaxBin = Plots[WhichFSIModel]->GetXaxis()->GetNbins()+1;
 
 
 				} // End of the loop over the plots
+
+
+//				TCanvas* RatioCanvas = new TCanvas("Ratio","Ratio",205,34,1024,768);
+
+//				for (int i = 2; i < NFSIModels-1; i++) {
+
+//					Plots[i+1]->Divide(Plots[0]);
+//					Plots[i+1]->Draw("e same");
+
+//				}
 
 			} // End of the loop over the nuclei
 

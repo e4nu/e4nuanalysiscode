@@ -2116,44 +2116,70 @@ Bool_t Fiducial::PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 
   //using two GeV pimi fiducial cuts for both 2 and 4 GeV analysis
 
+//PimiFiducialCut - Fiducial cuts function for e2a analysis
+//                  Two step process: 1) Cut on phi fiducial edges
+//                                    2) Remove bad TOF paddles
+//                  Uses 2 GeV pimi fiducial cuts for both 2 and 4 GeV analysis, from electron cuts plus low momentum extension
+//                  October 19th, 2020 - New theta gap parameters at 1 GeV (750A), and 2/4 GeV (2250A), an initial fix
+//                                       Replaces reuse of electron ones, which are too messy to reuse accurately and account for CC cuts inappropriate to pions
 Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup){
-    // Electron fiducial cut, return kTRUE if pass or kFALSE if not
-    std::string fbeam_en = beam_en;
-    Bool_t status = kTRUE;
+  // Electron fiducial cut, return kTRUE if pass or kFALSE if not
+  //--------------------------------------------------------------
+  //Preamble, set up common variables
+  std::string fbeam_en = beam_en;  //duplicate beam energy variable, to avoid overwriting
 
-    if(en_beam[fbeam_en]>1. &&  en_beam[fbeam_en]<2.) {
+  Bool_t status = kTRUE;  //set initial return status true, logic below will decide if that changes
+
+  //Variables used by the cuts
+  TVector3 mom = momentum;
+  double phi = mom.Phi();
+  if (phi < -M_PI/6.) phi+= 2.*M_PI;
+  int sector = (phi+M_PI/6.)/(M_PI/3.);
+  sector = sector%6;
+
+  int tsector = sector + 1;   //temporary variable for counting sector number, given arrays start at 0
+
+  double phi_deg = phi * 180./M_PI;
+  phi_deg -= sector*60;  //fiducial cuts defined using individual sector distributions, redrawn to be centred on 0 degrees in phi. This angle allows those cut definitions to be applied
+  
+  double theta = mom.Theta();
+  double theta_deg = theta * 180./M_PI;
+
+  double mom_pi = mom.Mag();
+
+  Float_t p_theta = mom_pi, thetamax = 0;
+  //--------------------------------------------------------------
 
 
-    TVector3 mom = momentum;
-    double phi = mom.Phi();
-    if (phi < -M_PI/6.) phi+= 2.*M_PI;
-    int sector = (phi+M_PI/6.)/(M_PI/3.);
-    sector = sector%6;
-    double phi_deg = phi * 180./M_PI;
-    phi_deg -= sector*60;
-
-    double theta = mom.Theta();
-    double theta_deg = theta * 180./M_PI;
-    double mom_e = mom.Mag();
-
-
+  //--------------------------------------------------------------
+  //1.1GeV - uses electron fiducial cuts
+  if(en_beam[fbeam_en]>1. &&  en_beam[fbeam_en]<2.) {
+    
+    Double_t phipars[5]={0,0,0,0,0};
+    Double_t phicutoff;
+    
+    status = true;
+    //piminus cuts at 1 GeV only valid in momentum range 150 MeV - 1.1 GeV
+    //There's no data outside this momentum range at 1 GeV, it's an excessive condition, but does no harm
+    if (mom_pi < .15){
+      mom_pi = .15;
+    }
+    if (mom_pi > 1.1){
+      mom_pi = 1.1;
+    }
+    
+    //Torus setting of 1500 A
+    //Not used in Mariana's analysis, so are these still valid?
     if( fTorusCurrent>1490 && fTorusCurrent<1510){
-
-      Double_t phipars[5]={0,0,0,0,0};
-      status = true;
-      if (mom_e < .15)
-        mom_e = .15;
-      if (mom_e > 1.1)
-        mom_e = 1.1;
-
+      
       for(Int_t mompar=0;mompar<6;mompar++) {
         for(Int_t phipar=0;phipar<5;phipar++) {
-          phipars[phipar]+=fgPar_1gev_1500_Pimfid[sector][phipar][mompar]*pow(mom_e,mompar);
+          phipars[phipar]+=fgPar_1gev_1500_Pimfid[sector][phipar][mompar]*pow(mom_pi,mompar);
           //std::cout << mom_e << " " << mompar << " " << phipar << " " << phipars[1] << " " << phipars[2] << " " << phipars[3] << " " << phipars[4] << " " << phipars[5] << std::endl;
         }
       }
-
-      Double_t phicutoff;
+      
+      //cut on phi fiducial edges
       if(phi_deg<=0) {
         phicutoff = phipars[1]*(1.-(1./((theta_deg-phipars[4])/phipars[3]+1.)));
         status = ((phi_deg>phicutoff) && (theta_deg>phipars[4]));
@@ -2162,19 +2188,26 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
         phicutoff = phipars[0]*(1.-(1./((theta_deg-phipars[4])/phipars[2]+1.)));
         status = ((phi_deg<phicutoff) && (theta_deg>phipars[4]));
       }
-      if (mom_e >= .3)
+
+      //////////////////////////////////Remove bad TOF paddles ///////////////////////////////////
+      //This takes the form of a momentum-dependent cut on theta, defined from stored parameters//
+      //There are two sets of gap arameters - above and below 300 MeV momentum. Clearly an      //
+      //attempt has been made to extend electron cuts at this field setting too                 //
+      ////////////////////////////////////////////////////////////////////////////////////////////
+      if (mom_pi >= .3) //the electron cuts which are reused for pi minus are only defined from 300 MeV
         {
           bool SCpdcut = true;
           if (SCpdcut){  // if the SCpdCut bit is set, take off the bad SC paddle by strictly cutting off a theta gap.
             if (status){
-              int tsector = sector + 1;
               // sector 3 has two bad paddles
               if (tsector == 3){
                 float badpar3[4];            // 4 parameters to determine the positions of the two theta gaps
                 for (int i=0; i<4; i++){
                   badpar3[i] = 0;
                   // calculate the parameters using pol7
-                  for (int d=7; d>=0; d--){badpar3[i] = badpar3[i]*mom_e + fgPar_1gev_1500_Pimfid_Theta_S3[i][d];}
+                  for (int d=7; d>=0; d--){
+		    badpar3[i] = badpar3[i]*mom_pi + fgPar_1gev_1500_Pimfid_Theta_S3[i][d];
+		  }
                 }
                 for(int ipar=0;ipar<2;ipar++)
                   status = status && !(theta_deg>badpar3[2*ipar] && theta_deg<badpar3[2*ipar+1]);
@@ -2185,7 +2218,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
                 for (int i=0; i<2; i++){
                   badpar4[i] = 0;
                   // calculate the parameters using pol7
-                  for (int d=7; d>=0; d--){badpar4[i] = badpar4[i]*mom_e + fgPar_1gev_1500_Pimfid_Theta_S4[i][d];}
+                  for (int d=7; d>=0; d--){badpar4[i] = badpar4[i]*mom_pi + fgPar_1gev_1500_Pimfid_Theta_S4[i][d];}
                 }
                 status = !(theta_deg>badpar4[0] && theta_deg<badpar4[1]);
               }
@@ -2195,10 +2228,10 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
                 for (Int_t i=0; i<8; i++){
                   badpar5[i] = 0;
                   // calculate the parameters using pol7
-                  for (Int_t d=7; d>=0; d--){badpar5[i] = badpar5[i]*mom_e + fgPar_1gev_1500_Pimfid_Theta_S5[i][d];}
+                  for (Int_t d=7; d>=0; d--){badpar5[i] = badpar5[i]*mom_pi + fgPar_1gev_1500_Pimfid_Theta_S5[i][d];}
                 }
-                if (mom_e<1.25) badpar5[0] = 23.4*1500/2250;
-                if (mom_e<1.27) badpar5[1] = 24.0*1500/2250; // some dummy constants. see fiducial cuts webpage.
+                if (mom_pi<1.25) badpar5[0] = 23.4*1500/2250;
+                if (mom_pi<1.27) badpar5[1] = 24.0*1500/2250; // some dummy constants. see fiducial cuts webpage.
                 for(Int_t ipar=0;ipar<4;ipar++)
                   status = status && !(theta_deg>badpar5[2*ipar] && theta_deg<badpar5[2*ipar+1]);
               }
@@ -2206,18 +2239,17 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
           }
           return status;
         }
-      else{
+      else{     //momentum below 300 MeV
         bool SCpdcut = true;
         if (SCpdcut){  // if the SCpdCut bit is set, take off the bad SC paddle by strictly cutting off a theta gap.
           if (status){
-            int tsector = sector + 1;
             // sector 3 has two bad paddles
             if (tsector == 3){
               float badpar3[4];            // 4 parameters to determine the positions of the two theta gaps
               for (int i=0; i<4; i++){
                 badpar3[i] = 0;
                 // calculate the parameters using 1/p
-                badpar3[i] = fgPar_1gev_1500_Pimfid_Theta_S3_extra[i][0] + fgPar_1gev_1500_Pimfid_Theta_S3_extra[i][1]/mom_e + fgPar_1gev_1500_Pimfid_Theta_S3_extra[i][2]/(mom_e*mom_e) + fgPar_1gev_1500_Pimfid_Theta_S3_extra[i][3]/(mom_e*mom_e*mom_e);
+                badpar3[i] = fgPar_1gev_1500_Pimfid_Theta_S3_extra[i][0] + fgPar_1gev_1500_Pimfid_Theta_S3_extra[i][1]/mom_pi + fgPar_1gev_1500_Pimfid_Theta_S3_extra[i][2]/(mom_pi*mom_pi) + fgPar_1gev_1500_Pimfid_Theta_S3_extra[i][3]/(mom_pi*mom_pi*mom_pi);
               }
               for(int ipar=0;ipar<2;ipar++)
                 status = status && !(theta_deg>badpar3[2*ipar] && theta_deg<badpar3[2*ipar+1]);
@@ -2228,7 +2260,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
               for (int i=0; i<2; i++){
                 badpar4[i] = 0;
                 // calculate the parameters using 1/p
-                badpar4[i] = fgPar_1gev_1500_Pimfid_Theta_S4_extra[i][0] + fgPar_1gev_1500_Pimfid_Theta_S4_extra[i][1]/mom_e + fgPar_1gev_1500_Pimfid_Theta_S4_extra[i][2]/(mom_e*mom_e) + fgPar_1gev_1500_Pimfid_Theta_S4_extra[i][3]/(mom_e*mom_e*mom_e);
+                badpar4[i] = fgPar_1gev_1500_Pimfid_Theta_S4_extra[i][0] + fgPar_1gev_1500_Pimfid_Theta_S4_extra[i][1]/mom_pi + fgPar_1gev_1500_Pimfid_Theta_S4_extra[i][2]/(mom_pi*mom_pi) + fgPar_1gev_1500_Pimfid_Theta_S4_extra[i][3]/(mom_pi*mom_pi*mom_pi);
               }
               status = !(theta_deg>badpar4[0] && theta_deg<badpar4[1]);
             }
@@ -2238,10 +2270,10 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
               for (Int_t i=0; i<8; i++){
                 badpar5[i] = 0;
                 // calculate the parameters using 1/p
-                badpar5[i] = fgPar_1gev_1500_Pimfid_Theta_S5_extra[i][0] + fgPar_1gev_1500_Pimfid_Theta_S5_extra[i][1]/mom_e + fgPar_1gev_1500_Pimfid_Theta_S5_extra[i][2]/(mom_e*mom_e) + fgPar_1gev_1500_Pimfid_Theta_S5_extra[i][3]/(mom_e*mom_e*mom_e);
+                badpar5[i] = fgPar_1gev_1500_Pimfid_Theta_S5_extra[i][0] + fgPar_1gev_1500_Pimfid_Theta_S5_extra[i][1]/mom_pi + fgPar_1gev_1500_Pimfid_Theta_S5_extra[i][2]/(mom_pi*mom_pi) + fgPar_1gev_1500_Pimfid_Theta_S5_extra[i][3]/(mom_pi*mom_pi*mom_pi);
               }
-              if (mom_e<1.25) badpar5[0] = 23.4*1500/2250;
-              if (mom_e<1.27) badpar5[1] = 24.0*1500/2250; // some dummy constants. see fiducial cuts webpage.
+              if (mom_pi<1.25) badpar5[0] = 23.4*1500/2250;
+              if (mom_pi<1.27) badpar5[1] = 24.0*1500/2250; // some dummy constants. see fiducial cuts webpage.
               for(Int_t ipar=0;ipar<4;ipar++)
                 status = status && !(theta_deg>badpar5[2*ipar] && theta_deg<badpar5[2*ipar+1]);
             }
@@ -2250,26 +2282,30 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
         return (status);
       }
     }
+    //------------------------------
+    //Torus current setting of 750 A
+    //------------------------------
     if ( fTorusCurrent>740 && fTorusCurrent<760){
-      Double_t phipars[5]={0,0,0,0,0};
-      status = true;
-      if (mom_e < .15)
-        mom_e = .15;
-      if (mom_e > 1.1)
-        mom_e = 1.1;
-      //    std::cout << mom_e << std::endl;
+
       for(Int_t mompar=0;mompar<6;mompar++) {
         for(Int_t phipar=0;phipar<5;phipar++) {
-          phipars[phipar]+=fgPar_1gev_750_Pimfid[sector][phipar][mompar]*pow(mom_e,mompar);
+          phipars[phipar]+=fgPar_1gev_750_Pimfid[sector][phipar][mompar]*pow(mom_pi,mompar);
           //std::cout << p << " " << mompar << " " << phipar << " " << phipars[1] << " " << phipars[2] << " " << phipars[3] << " " << phipars[4] << " " << phipars[5] << std::endl;
         }
       }
 
-      Double_t phicutoff;
-      Float_t p_theta = mom_e, thetamax = 0 ;
+      //Temporary momentum parameter to define a maximum limit on theta in the range 0.1-0.7 GeV pion momentum
+      //Very few events 700 MeV at 1.1 GeV beam energy, and the momentum threshold for pion detection is 150 MeV
+      //All this does is remove some insignificant scruff
       if (p_theta>0.7)  p_theta = 0.7;
       else if(p_theta<0.1)   p_theta = 0.1;
-      for(int i=4;i>=0;i--)thetamax = thetamax*p_theta+pimi_thetamax1[i];
+
+      //Calculate theta limit from stored parameters
+      for(int i=4;i>=0;i--){
+	thetamax = thetamax*p_theta+pimi_thetamax1[i];
+      }
+
+      //cut on phi fiducial edges
       if(phi_deg<=0) {
         phicutoff = phipars[1]*(1.-(1./((theta_deg-phipars[4])/phipars[3]+1.)));
         status = ((phi_deg>phicutoff) && (theta_deg>phipars[4]) && theta_deg<=thetamax);
@@ -2279,54 +2315,69 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
         status = ((phi_deg<phicutoff) && (theta_deg>phipars[4]) && theta_deg<=thetamax);
       }
 
+      ///////////////////////////////////Remove bad TOF paddles //////////////////////////////////
+      //This takes the form of a momentum-dependent cut on theta, defined from stored parameters//
+      ////////////////////////////////////////////////////////////////////////////////////////////
       bool SCpdcut = true;
       if (SCpdcut){  // if the SCpdCut bit is set, take off the bad SC paddle by strictly cutting off a theta gap.
         if (status){
-          int tsector = sector + 1;
-          mom_e = mom.Mag();
-          //Reset ignores mom_e > 1.1 cut from above. Is this okay? F.H. 10/31/19
+          mom_pi = mom.Mag();
+          //Reset ignores mom_e > 1.1 cut from above. Is this okay? F.H. 10/31/19  - Yes, as it applies the theta cut functions at all momenta SF 10/11/20
 
-          //sector 2 has one gap
-          if(tsector == 2){
-            double parsec2_l,parsec2_h;
-            if(mom_e<0.4)mom_e=0.4;
-            parsec2_l= fid_1gev_750_efid_S2[0][0]+fid_1gev_750_efid_S2[0][1]/mom_e +fid_1gev_750_efid_S2[0][2]/(mom_e*mom_e) +fid_1gev_750_efid_S2[0][3]/(mom_e*mom_e*mom_e);
-            parsec2_h= fid_1gev_750_efid_S2[1][0]+fid_1gev_750_efid_S2[1][1]/mom_e +fid_1gev_750_efid_S2[1][2]/(mom_e*mom_e) +fid_1gev_750_efid_S2[1][3]/(mom_e*mom_e*mom_e);
-            status = status && !(theta_deg>parsec2_l && theta_deg<parsec2_h);
+	  //could probably replace parsec[1,6]_{l/h} with
+	  //double thetaCutLo, thetaCutHi;
+	  //and eventually propagate to all theta gap determinations
+
+	  //Using a set of fid_1gev_750_pimifid_S[1,6] parameters, hard coded in Fiducial.h, to avoid confusion with electron, althoug some parameters are the same
+          //sector 1 has one gap
+          if(tsector == 1){
+            double parsec1_l,parsec1_h;
+	    //Evaluate theta gap boundaries from saved parameters
+            parsec1_l= fid_1gev_750_pimifid_S1[0][0]+fid_1gev_750_pimifid_S1[0][1]/mom_pi +fid_1gev_750_pimifid_S1[0][2]/(mom_pi*mom_pi) +fid_1gev_750_pimifid_S1[0][3]/(mom_pi*mom_pi*mom_pi);
+            parsec1_h= fid_1gev_750_pimifid_S1[1][0]+fid_1gev_750_pimifid_S1[1][1]/mom_pi +fid_1gev_750_pimifid_S1[1][2]/(mom_pi*mom_pi) +fid_1gev_750_pimifid_S1[1][3]/(mom_pi*mom_pi*mom_pi);
+
+            status = status && !(theta_deg>parsec1_l && theta_deg<parsec1_h);
           }
-          //sector 3 has four gaps, first gap is due to CC so should be applied only on pimi
+          // //sector 2 has one gap, however, it doesn't seem to be present in pi minus, it may be a CC gap and only applicable to electrons
+//           if(tsector == 2){
+//             double parsec2_l,parsec2_h;
+//             if(mom_pi<0.4) mom_pi=0.4;
+// 	    //Evaluate theta gap boundaries from saved parameters
+//             parsec2_l= fid_1gev_750_pimifid_S2[0][0]+fid_1gev_750_pimifid_S2[0][1]/mom_pi +fid_1gev_750_pimifid_S2[0][2]/(mom_pi*mom_pi) +fid_1gev_750_pimifid_S2[0][3]/(mom_pi*mom_pi*mom_pi);
+//             parsec2_h= fid_1gev_750_pimifid_S2[1][0]+fid_1gev_750_pimifid_S2[1][1]/mom_pi +fid_1gev_750_pimifid_S2[1][2]/(mom_pi*mom_pi) +fid_1gev_750_pimifid_S2[1][3]/(mom_pi*mom_pi*mom_pi);
+
+//             status = status && !(theta_deg>parsec2_l && theta_deg<parsec2_h);
+//           }
+          //sector 3 has three gaps, removing CC gap from electron parameters
           else if(tsector == 3){
-            double parsec3_l[4],parsec3_h[4];
-            for(int d=1;d<4;d++){    //first gap is due to CC so should be applied only on pimi
-              mom_e = mom.Mag();
-              if(d>1 && mom_e>0.3 )mom_e=0.3;
-              else if(d<2 && mom_e<0.45 )mom_e=0.45;
-              parsec3_l[d]= fid_1gev_750_efid_S3[d][0][0]+fid_1gev_750_efid_S3[d][0][1]/mom_e +fid_1gev_750_efid_S3[d][0][2]/(mom_e*mom_e) +fid_1gev_750_efid_S3[d][0][3]/(mom_e*mom_e*mom_e);
-              parsec3_h[d]= fid_1gev_750_efid_S3[d][1][0]+fid_1gev_750_efid_S3[d][1][1]/mom_e +fid_1gev_750_efid_S3[d][1][2]/(mom_e*mom_e) +fid_1gev_750_efid_S3[d][1][3]/(mom_e*mom_e*mom_e);
-              status = status && !(theta_deg>parsec3_l[d] && theta_deg<parsec3_h[d]);
+            double parsec3_l[3],parsec3_h[3]; //do these really need to be arrays?
+            for(int d=0;d<3;d++){
+	      //Evaluate theta gap boundaries from saved parameters
+              parsec3_l[d]= fid_1gev_750_pimifid_S3[d][0][0]+fid_1gev_750_pimifid_S3[d][0][1]/mom_pi +fid_1gev_750_pimifid_S3[d][0][2]/(mom_pi*mom_pi) +fid_1gev_750_pimifid_S3[d][0][3]/(mom_pi*mom_pi*mom_pi);
+              parsec3_h[d]= fid_1gev_750_pimifid_S3[d][1][0]+fid_1gev_750_pimifid_S3[d][1][1]/mom_pi +fid_1gev_750_pimifid_S3[d][1][2]/(mom_pi*mom_pi) +fid_1gev_750_pimifid_S3[d][1][3]/(mom_pi*mom_pi*mom_pi);
+
+	      status = status && !(theta_deg>parsec3_l[d] && theta_deg<parsec3_h[d]);
             }
           }
-          //sector 4 has two gaps
+          //sector 4 has two gaps, however, the first gap is probably a CC gap, and not applicable to the pi minus, an additional TOF gap replaces this
           else if(tsector == 4){
             double parsec4_l[2],parsec4_h[2];
             for(int d=0;d<2;d++){
-              mom_e = mom.Mag();
-              if(d==1 && mom_e>0.25 )mom_e=0.25;
-              else if(d==0 && mom_e<0.775 )mom_e=0.775;
-              parsec4_l[d]= fid_1gev_750_efid_S4[d][0][0]+fid_1gev_750_efid_S4[d][0][1]/mom_e +fid_1gev_750_efid_S4[d][0][2]/(mom_e*mom_e) +fid_1gev_750_efid_S4[d][0][3]/(mom_e*mom_e*mom_e);
-              parsec4_h[d]= fid_1gev_750_efid_S4[d][1][0]+fid_1gev_750_efid_S4[d][1][1]/mom_e +fid_1gev_750_efid_S4[d][1][2]/(mom_e*mom_e) +fid_1gev_750_efid_S4[d][1][3]/(mom_e*mom_e*mom_e);
+	      //Evaluate theta gap boundaries from saved parameters
+              parsec4_l[d]= fid_1gev_750_pimifid_S4[d][0][0]+fid_1gev_750_pimifid_S4[d][0][1]/mom_pi +fid_1gev_750_pimifid_S4[d][0][2]/(mom_pi*mom_pi) +fid_1gev_750_pimifid_S4[d][0][3]/(mom_pi*mom_pi*mom_pi);
+              parsec4_h[d]= fid_1gev_750_pimifid_S4[d][1][0]+fid_1gev_750_pimifid_S4[d][1][1]/mom_pi +fid_1gev_750_pimifid_S4[d][1][2]/(mom_pi*mom_pi) +fid_1gev_750_pimifid_S4[d][1][3]/(mom_pi*mom_pi*mom_pi);
+
               status = status && !(theta_deg>parsec4_l[d] && theta_deg<parsec4_h[d]);
             }
           }
-          //sector 5 has three gaps
+          //sector 5 has two gaps, omitting the CC gaps from electrons and adding a new pi minus gap
           else if(tsector == 5){
-            double parsec5_l[3],parsec5_h[3];
-            for(int d=0;d<3;d++){
-              mom_e = mom.Mag();
-              if(d==0 && mom_e>0.3)mom_e=0.3;
-              if(d>0 && mom_e<0.5)mom_e=0.5;
-              parsec5_l[d]= fid_1gev_750_efid_S5[d][0][0]+fid_1gev_750_efid_S5[d][0][1]/mom_e +fid_1gev_750_efid_S5[d][0][2]/(mom_e*mom_e) +fid_1gev_750_efid_S5[d][0][3]/(mom_e*mom_e*mom_e);
-              parsec5_h[d]= fid_1gev_750_efid_S5[d][1][0]+fid_1gev_750_efid_S5[d][1][1]/mom_e +fid_1gev_750_efid_S5[d][1][2]/(mom_e*mom_e) +fid_1gev_750_efid_S5[d][1][3]/(mom_e*mom_e*mom_e);
+            double parsec5_l[2],parsec5_h[2];
+            for(int d=0;d<2;d++){
+	      //Evaluate theta gap boundaries from saved parameters
+              parsec5_l[d]= fid_1gev_750_pimifid_S5[d][0][0]+fid_1gev_750_pimifid_S5[d][0][1]/mom_pi +fid_1gev_750_pimifid_S5[d][0][2]/(mom_pi*mom_pi) +fid_1gev_750_pimifid_S5[d][0][3]/(mom_pi*mom_pi*mom_pi);
+              parsec5_h[d]= fid_1gev_750_pimifid_S5[d][1][0]+fid_1gev_750_pimifid_S5[d][1][1]/mom_pi +fid_1gev_750_pimifid_S5[d][1][2]/(mom_pi*mom_pi) +fid_1gev_750_pimifid_S5[d][1][3]/(mom_pi*mom_pi*mom_pi);
+
               status = status && !(theta_deg>parsec5_l[d] && theta_deg<parsec5_h[d]);
             }
           }
@@ -2336,189 +2387,234 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
     }
    }
 
+
+  //--------------------------------------------------------------
+  //2.2 and 4.4 GeV - uses 2.2 GeV electron cuts, plus a weird fudge at pion momenta below 350 MeV //This MUST be replaced by bespoke cuts
+  //--------------------------------------------------------------
    if ( en_beam[fbeam_en]>2. &&  en_beam[fbeam_en]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){
 
-      Float_t phi=momentum.Phi()*180./TMath::Pi();
-      if(phi<-30.) phi+=360.;
-      Int_t sector = (Int_t)((phi+30.)/60.);
-      if(sector<0)sector=0;
-      if(sector>5) sector=5;
-      phi -= sector*60;
-      Float_t theta = momentum.Theta()*180./TMath::Pi();
-      Float_t mom = momentum.Mag();
       Float_t phimin, phimax;
 
-      Float_t p_theta = mom, thetamax = 0;
-      if (p_theta>2.075)  p_theta = 2.075;
-      else if(p_theta<0.1)   p_theta = 0.1;
-      for(int i=4;i>=0;i--)thetamax = thetamax*p_theta+pimi_thetamax2and4[i]; //upper theta limit for pi- at different p
+//        Float_t par[6];               // six parameters to determine the outline of Theta vs Phi  //why six parameters? it's five everywhere else...
 
-      if(mom > 0.35){   //theta vs phi outline for high p region obtained by Bin
+      //theta maximum limit functions only defined in the momentum range 0.1 - 2.075 //is this an appropriate maximum at 4 GeV?
+      if (p_theta>2.075){
+	p_theta = 2.075;
+      }
+      else if(p_theta<0.1){
+	p_theta = 0.1;
+      }
 
-        if(mom > 2.) mom = 2.; //to extrapolate the cut to higher momenta for pimi
-        Float_t par[6];               // six parameters to determine the outline of Theta vs Phi
+      //calculate theta limit from loaded parameters (is this thetamax[0] + mom*thetamax[1] + mom^2*thetamax[2] + mom^3*thetamax[3] + mom^4*thetamax[4]?)
+      for(int i=4;i>=0;i--){
+	thetamax = thetamax*p_theta + pimi_thetamax2and4[i]; //upper theta limit for pi- at different momentum
+      }
+
+      //---These are the reused electron parameters
+      if(mom_pi > 0.35){   //theta vs phi outline for high p region obtained by Bin
+
+        if(mom_pi > 2.){
+	  mom_pi = 2.; //to extrapolate the cut to higher momenta for pimi //(to badly extrapolate) S.F. October 2020
+	}
+
+        Float_t par[6];               // six parameters to determine the outline of Theta vs Phi  //why six parameters? it's five everywhere else...
+
         for (Int_t i=0; i<6; i++){
           par[i] = 0;
           for (Int_t d=8; d>=0; d--){
-            par[i] = par[i]*mom +  fgPar_2GeV_2250_Efid[sector][i][d];
+            par[i] = par[i]*mom_pi +  fgPar_2GeV_2250_Efid[sector][i][d];
           }                          // calculate the parameters using pol8
         }
-        if (phi < 0) {
-          Float_t tmptheta = par[0] - par[3]/par[2] + par[3]/(par[2]+phi);
-          phimin =  par[3]/((theta-par[0])+par[3]/par[2])-par[2];
-          phimax =  par[2]-par[3]/((theta-par[0])+par[3]/par[2]);
+
+        if (phi_deg < 0) {
+          Float_t tmptheta = par[0] - par[3]/par[2] + par[3]/(par[2]+phi_deg);
+          phimin =  par[3]/((theta_deg-par[0])+par[3]/par[2])-par[2];
+          phimax =  par[2]-par[3]/((theta_deg-par[0])+par[3]/par[2]);
           *pimi_philow = phimin;
           *pimi_phiup = phimax;
-          status = (theta>tmptheta && tmptheta>=par[0] && theta<par[1]);
+          status = (theta_deg>tmptheta && tmptheta>=par[0] && theta_deg<par[1]);
         }
         else {
-          Float_t tmptheta = par[0] - par[5]/par[4] + par[5]/(par[4]-phi);
-          phimin =  par[5]/((theta-par[0])+par[5]/par[4])-par[4];
-          phimax =  par[4]-par[5]/((theta-par[0])+par[5]/par[4]);
+          Float_t tmptheta = par[0] - par[5]/par[4] + par[5]/(par[4]-phi_deg);
+          phimin =  par[5]/((theta_deg-par[0])+par[5]/par[4])-par[4];
+          phimax =  par[4]-par[5]/((theta_deg-par[0])+par[5]/par[4]);
           *pimi_philow = phimin;
           *pimi_phiup = phimax;
-          status = (theta>tmptheta && tmptheta>=par[0] && theta<par[1]);
+          status = (theta_deg>tmptheta && tmptheta>=par[0] && theta_deg<par[1]);
         }
       }//end of high momentum cut
 
-      if(mom<=0.35){     //theta vs phi outline for low p obtained by Mariana
-
-        if(mom>0.325)mom=0.325;
-        else if (mom<0.125)mom=0.125;
-
-        Float_t params[6];               // six parameters to determine the outline of Theta vs Phi
+      //---The pi- parameters obtained only at low momentum
+      else if(mom_pi<=0.35){     //theta vs phi outline for low p obtained by Mariana
+	
+	//valid only in the range 0.125 - 0.325 GeV
+        if(mom_pi>0.325)mom_pi=0.325;
+        else if (mom_pi<0.125)mom_pi=0.125;
+	
+        Float_t params[6];               // six parameters to determine the outline of Theta vs Phi, like the higher momentum region above.  Can change to par[6] and share declaration with above
         for (Int_t i=0; i<6; i++){
           params[i] = 0;
           for (Int_t d=4; d>=0; d--){
-            params[i] = params[i]*mom + fid_2gev_2250_pimifid_outline[sector][i][d];
+            params[i] = params[i]*mom_pi + fid_2gev_2250_pimifid_outline[sector][i][d];
           }                          // calculate the parameters using pol4
         }
-        if (phi < 0) {
-          phimin =  params[3]/((theta-params[0])+params[3]/params[1])-params[1];
-          status = (phi>phimin && theta>params[0] && theta<=thetamax);
+        if (phi_deg < 0) {
+          phimin =  params[3]/((theta_deg-params[0])+params[3]/params[1])-params[1];  //why is phimin calculated differently in the low momwntum?
+	  //where's phimax?
+          status = (phi_deg>phimin && theta_deg>params[0] && theta_deg<=thetamax);
         }
         else {
-          phimax = params[2]-params[4]/((theta-params[0])+params[4]/params[2]);
-          status = (phi<phimax && theta>params[0]  && theta<=thetamax);
-       }
-     }//end of low momentum cut
+	  //where's phimin?
+          phimax = params[2]-params[4]/((theta_deg-params[0])+params[4]/params[2]);   //why is phimax calculated differently in the low momentum?
+          status = (phi_deg<phimax && theta_deg>params[0]  && theta_deg<=thetamax);
+	}
+      }//end of low momentum cut
 
-     ////////////////////////////////Remove bad TOF paddles //////////////////////////////////
+      else{ std::cout << "pi- fiducial outline not determined" << std::endl;}
+
+      ////////////////////////////////Remove bad TOF paddles ///////////////////////////////////
+      //There is a mix of 7th and 3rd order polynomials used to define theta gaps, an artefact//
+      //of reusing electron parameters and new gaps found for the pion//////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////
 
      bool SCpdcut=true;
-     Int_t tsector = sector + 1;
 
      // by now, we have checked if the electron is within the outline of theta vs phi plot
      if (SCpdcut){  // if the kESCpdCut bit is set, take off the bad SC paddle by strictly cutting off a theta gap.
-       if (status){
-      //gaps obtained with e-
-          mom=momentum.Mag();
-          if(mom>2.)  mom = 2.; //to extrapolate the cut to higher momenta for pimi
-          if(mom<0.35)mom = 0.35; //to extrapolate the cut to higher momenta for pimi
+       if (status){ //if event not already rejected
 
-          if (tsector == 3){               // sector 3 has two bad paddles
-            Float_t badpar3[4];            // 4 parameters to determine the positions of the two theta gaps
-            for (Int_t i=0; i<4; i++){
-              badpar3[i] = 0;
-              for (Int_t d=7; d>=0; d--){
-                badpar3[i] = badpar3[i]*mom +  fgPar_2GeV_2250_EfidTheta_S3[i][d];
-              }                           // calculate the parameters using pol7
-            }
-            for(Int_t ipar=0;ipar<2;ipar++) {
-              //I dont get the logic here, F.H. 10/31/19. Is this correct?
-              if(!(ipar==1 && momentum.Mag()<0.35))  status = status && !(theta>badpar3[2*ipar] && theta<badpar3[2*ipar+1]);
-            }
-          }
-          else if (tsector == 4){         // sector 4 has one bad paddle
-            Float_t badpar4[2];           // 2 parameters to determine the position of the theta gap
-            for (Int_t i=0; i<2; i++){
-              badpar4[i] = 0;
-              for (Int_t d=7; d>=0; d--){
-              badpar4[i] = badpar4[i]*mom +  fgPar_2GeV_2250_EfidTheta_S4[i][d];
-              }                           // calculate the parameters using pol7
-            }
-            status = !(theta>badpar4[0] && theta<badpar4[1]);
-          }
-          else if (tsector == 5){         // sector 5 has four bad paddles
-            Float_t badpar5[8];           // 8 parameters to determine the positions of the four theta gaps
-            for (Int_t i=0; i<8; i++){
-              badpar5[i] = 0;
-              for (Int_t d=7; d>=0; d--){
-                badpar5[i] = badpar5[i]*mom +  fgPar_2GeV_2250_EfidTheta_S5[i][d];
-              }                           // calculate the parameters using pol7
-            }
-            if (mom<1.25) badpar5[0] = 23.4;
-            if (mom<1.27) badpar5[1] = 24.0; // some dummy constants. see fiducial cuts webpage.
-            for(Int_t ipar=0;ipar<4;ipar++) {
-              status = status && !(theta>badpar5[2*ipar] && theta<badpar5[2*ipar+1]);
-            }
-          }
+	 //---Original gaps obtained with electron---
+	 mom_pi=momentum.Mag();
+	 if(mom_pi>2.)  mom_pi = 2.; //to extrapolate the cut to higher momenta for pimi
+	 if(mom_pi<0.35) mom_pi = 0.35; //to extrapolate the cut to higher momenta for pimi  //I don't know if this fudge works, S.F. 09/10/20
+	 
+	 if (tsector == 3){               // sector 3 has two bad paddles
+	   Float_t badpar3[4];            // 4 parameters to determine the positions of the two theta gaps
+	   for (Int_t i=0; i<4; i++){
+	     badpar3[i] = 0;
+	     for (Int_t d=7; d>=0; d--){
+	       badpar3[i] = badpar3[i]*mom_pi +  fgPar_2GeV_2250_EfidTheta_S3[i][d];
+	     }                           // calculate the parameters using pol7
+	   }
+	   for(Int_t ipar=0;ipar<2;ipar++) {
+	     //I dont get the logic here, F.H. 10/31/19. Is this correct?
+	     if(!(ipar==1 && momentum.Mag()<0.35)){
+	       status = status && !(theta_deg>badpar3[2*ipar] && theta_deg<badpar3[2*ipar+1]);
+	     }
+	   }
+	 }
+	 else if (tsector == 4){         // sector 4 has one bad paddle
+	   Float_t badpar4[2];           // 2 parameters to determine the position of the theta gap
+	   for (Int_t i=0; i<2; i++){
+	     badpar4[i] = 0;
+	     for (Int_t d=7; d>=0; d--){
+	       badpar4[i] = badpar4[i]*mom_pi +  fgPar_2GeV_2250_EfidTheta_S4[i][d];
+	     }                           // calculate the parameters using pol7
+	   }
+	   status = !(theta_deg>badpar4[0] && theta_deg<badpar4[1]);
+	 }
+	 else if (tsector == 5){         // sector 5 has four bad paddles
+	   Float_t badpar5[8];           // 8 parameters to determine the positions of the four theta gaps
+	   for (Int_t i=0; i<8; i++){
+	     badpar5[i] = 0;
+	     for (Int_t d=7; d>=0; d--){
+	       badpar5[i] = badpar5[i]*mom_pi +  fgPar_2GeV_2250_EfidTheta_S5[i][d];
+	     }                           // calculate the parameters using pol7
+	   }
+	   if (mom_pi<1.25) badpar5[0] = 23.4;
+	   if (mom_pi<1.27) badpar5[1] = 24.0; // some dummy constants. see fiducial cuts webpage.
+	   for(Int_t ipar=0;ipar<4;ipar++) {
+	     status = status && !(theta_deg>badpar5[2*ipar] && theta_deg<badpar5[2*ipar+1]);
+	   }
+	 }
+	 
+	 //---Further gaps obtained with pi- ------
+	 //gaps obtained with pi-. Is this really pi- and not electron? F.H. 10/31/19  //looks like pi-
+	 mom_pi = momentum.Mag();  //reset momentum to event value, just in case the electron paddle nonsense causes problems
+	 //sector 1 has two gaps
+	 if(tsector == 1){
+	   double parsec1_l[2],parsec1_h[2];   //theta gap paramaters 
+	   for(int d=0;d<2;d++){
+	     //-----Define theta limits from stored parameters
+	     parsec1_l[d]= fid_2gev_2250_pimifid_S1[d][0][0]+fid_2gev_2250_pimifid_S1[d][0][1]/mom_pi +fid_2gev_2250_pimifid_S1[d][0][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S1[d][0][3]/(mom_pi*mom_pi*mom_pi);
+	     parsec1_h[d]= fid_2gev_2250_pimifid_S1[d][1][0]+fid_2gev_2250_pimifid_S1[d][1][1]/mom_pi +fid_2gev_2250_pimifid_S1[d][1][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S1[d][1][3]/(mom_pi*mom_pi*mom_pi);
+	     status=status && !(theta_deg>parsec1_l[d] && theta_deg<parsec1_h[d]);
+	   }
+	 }
+	 //sector 3 has 2 gaps
+	 else if(tsector == 3){
+	   double parsec3_l[2],parsec3_h[2];
+	   for(int d=0;d<2;d++){
+	     //-----Define theta limits from stored parameters
+	     parsec3_l[d]= fid_2gev_2250_pimifid_S3[d][0][0]+fid_2gev_2250_pimifid_S3[d][0][1]/mom_pi +fid_2gev_2250_pimifid_S3[d][0][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S3[d][0][3]/(mom_pi*mom_pi*mom_pi);
+	     parsec3_h[d]= fid_2gev_2250_pimifid_S3[d][1][0]+fid_2gev_2250_pimifid_S3[d][1][1]/mom_pi +fid_2gev_2250_pimifid_S3[d][1][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S3[d][1][3]/(mom_pi*mom_pi*mom_pi);
 
-          //gaps obtained with pi-. Is this really pi- and not electron? F.H. 10/31/19
-          double mom_e = momentum.Mag();
-          //sector 1 has two gaps
-          if(tsector == 1){
-            double parsec1_l[2],parsec1_h[2];
-            for(int d=0;d<2;d++){
-              mom_e = momentum.Mag();
-              if(mom_e<0.1 )mom_e=0.1;
-              else if(mom_e>0.3)mom_e=0.3;
-              parsec1_l[d]= fid_2gev_2250_efid_S1[d][0][0]+fid_2gev_2250_efid_S1[d][0][1]/mom_e +fid_2gev_2250_efid_S1[d][0][2]/(mom_e*mom_e) +fid_2gev_2250_efid_S1[d][0][3]/(mom_e*mom_e*mom_e);
-              parsec1_h[d]= fid_2gev_2250_efid_S1[d][1][0]+fid_2gev_2250_efid_S1[d][1][1]/mom_e +fid_2gev_2250_efid_S1[d][1][2]/(mom_e*mom_e) +fid_2gev_2250_efid_S1[d][1][3]/(mom_e*mom_e*mom_e);
-              status=status && !(theta>parsec1_l[d] && theta<parsec1_h[d]);
-            }
-          }
-          //sector 3 has 2 gaps
-          else if(tsector == 3){
-            double parsec3_l[2],parsec3_h[2];
-            for(int d=0;d<2;d++){    //first gap is due to CC so should be applied only on pimi
-              mom_e = momentum.Mag();
-              if(mom_e<0.15 )mom_e=0.15;
-              else if(d==0 && mom_e>0.55 )mom_e=0.55;
-              else if(d==1 && mom_e<0.25 )mom_e=0.25;
-              parsec3_l[d]= fid_2gev_2250_efid_S3[d][0][0]+fid_2gev_2250_efid_S3[d][0][1]/mom_e +fid_2gev_2250_efid_S3[d][0][2]/(mom_e*mom_e) +fid_2gev_2250_efid_S3[d][0][3]/(mom_e*mom_e*mom_e);
-              parsec3_h[d]= fid_2gev_2250_efid_S3[d][1][0]+fid_2gev_2250_efid_S3[d][1][1]/mom_e +fid_2gev_2250_efid_S3[d][1][2]/(mom_e*mom_e) +fid_2gev_2250_efid_S3[d][1][3]/(mom_e*mom_e*mom_e);
-              if(!(d==1 && mom_e>0.35))status=status && !(theta>parsec3_l[d] && theta<parsec3_h[d]);
-            }
-          }
-          //sector 4 has one gap
-          else if(tsector == 4){
-            double parsec4_l,parsec4_h;
-            if(mom_e<0.15)mom_e=0.15;
-            else if(mom_e>0.5)mom_e=0.5;
-            parsec4_l= fid_2gev_2250_efid_S4[0][0]+fid_2gev_2250_efid_S4[0][1]/mom_e +fid_2gev_2250_efid_S4[0][2]/(mom_e*mom_e) +fid_2gev_2250_efid_S4[0][3]/(mom_e*mom_e*mom_e);
-            parsec4_h= fid_2gev_2250_efid_S4[1][0]+fid_2gev_2250_efid_S4[1][1]/mom_e +fid_2gev_2250_efid_S4[1][2]/(mom_e*mom_e) +fid_2gev_2250_efid_S4[1][3]/(mom_e*mom_e*mom_e);
-            status=status && !(theta>parsec4_l && theta<parsec4_h);
-          }
-          //sector 5 has two gaps
-          else if(tsector == 5){
-            double parsec5_l[2],parsec5_h[2];
-            for(int d=0;d<2;d++){
-              mom_e = momentum.Mag();
-              if( mom_e<0.275)mom_e=0.275;
-              else if(d==0 && mom_e>0.425)mom_e=0.425;
-              else if(d==1 && mom_e>0.475)mom_e=0.475;
-              parsec5_l[d]= fid_2gev_2250_efid_S5[d][0][0]+fid_2gev_2250_efid_S5[d][0][1]/mom_e +fid_2gev_2250_efid_S5[d][0][2]/(mom_e*mom_e) +fid_2gev_2250_efid_S5[d][0][3]/(mom_e*mom_e*mom_e);
-              parsec5_h[d]= fid_2gev_2250_efid_S5[d][1][0]+fid_2gev_2250_efid_S5[d][1][1]/mom_e +fid_2gev_2250_efid_S5[d][1][2]/(mom_e*mom_e) +fid_2gev_2250_efid_S5[d][1][3]/(mom_e*mom_e*mom_e);
-              status=status && !(theta>parsec5_l[d] && theta<parsec5_h[d]);
-            }
-          }
-          //sector 6 has one gap
-          if(tsector == 6){
-            double parsec6_l,parsec6_h;
-            mom_e = momentum.Mag();
-            if(mom_e<0.175)mom_e=0.175;
-            else if(mom_e>0.275)mom_e=0.275;
-            parsec6_l= fid_2gev_2250_efid_S6[0][0]+fid_2gev_2250_efid_S6[0][1]/mom_e +fid_2gev_2250_efid_S6[0][2]/(mom_e*mom_e) +fid_2gev_2250_efid_S6[0][3]/(mom_e*mom_e*mom_e);
-            parsec6_h= fid_2gev_2250_efid_S6[1][0]+fid_2gev_2250_efid_S6[1][1]/mom_e +fid_2gev_2250_efid_S6[1][2]/(mom_e*mom_e) +fid_2gev_2250_efid_S6[1][3]/(mom_e*mom_e*mom_e);
-            status=status && !(theta>parsec6_l && theta<parsec6_h);
-          }
-          ///end of gaps with pi-
-        }
-      }
-    } //end of 2 and 4GEV fiducial
-    return status;
+	     status=status && !(theta_deg>parsec3_l[d] && theta_deg<parsec3_h[d]);
+	   }
+	 }
+	 //sector 4 has one gap
+	 else if(tsector == 4){
+	   double parsec4_l,parsec4_h;
+	   if(mom_pi<0.15)mom_pi=0.15;     //not really needed, below pion detection threshold
+	   else if(mom_pi>0.5)mom_pi=0.5;  //not really needed, very little data here
+	     //------------------------------------
+	     //-----Define theta limits from stored parameters
+	   parsec4_l= fid_2gev_2250_pimifid_S4[0][0]+fid_2gev_2250_pimifid_S4[0][1]/mom_pi +fid_2gev_2250_pimifid_S4[0][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S4[0][3]/(mom_pi*mom_pi*mom_pi);
+	   parsec4_h= fid_2gev_2250_pimifid_S4[1][0]+fid_2gev_2250_pimifid_S4[1][1]/mom_pi +fid_2gev_2250_pimifid_S4[1][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S4[1][3]/(mom_pi*mom_pi*mom_pi);
+	   status=status && !(theta_deg>parsec4_l && theta_deg<parsec4_h);
+	 }
+	 //sector 5 has two gaps
+	 else if(tsector == 5){
+	   double parsec5_l[2],parsec5_h[2];
+	   for(int d=0;d<2;d++){
+	     //-----Define theta limits from stored parameters
+	     parsec5_l[d]= fid_2gev_2250_pimifid_S5[d][0][0]+fid_2gev_2250_pimifid_S5[d][0][1]/mom_pi +fid_2gev_2250_pimifid_S5[d][0][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S5[d][0][3]/(mom_pi*mom_pi*mom_pi);
+	     parsec5_h[d]= fid_2gev_2250_pimifid_S5[d][1][0]+fid_2gev_2250_pimifid_S5[d][1][1]/mom_pi +fid_2gev_2250_pimifid_S5[d][1][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S5[d][1][3]/(mom_pi*mom_pi*mom_pi);
+	     status=status && !(theta_deg>parsec5_l[d] && theta_deg<parsec5_h[d]);
+	   }
+	 }
+	 //sector 6 has one gap, a gap that could be replaced by a box cut between 58 and 65 degrees to some momentum limit (probably a DC region failure)
+	 if(tsector == 6){
+	   double parsec6_l,parsec6_h;
+	   if(mom_pi<0.175)mom_pi=0.175;
+	   else if(mom_pi>0.275)mom_pi=0.275;
+	   parsec6_l= fid_2gev_2250_pimifid_S6[0][0]+fid_2gev_2250_pimifid_S6[0][1]/mom_pi +fid_2gev_2250_pimifid_S6[0][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S6[0][3]/(mom_pi*mom_pi*mom_pi);
+	   parsec6_h= fid_2gev_2250_pimifid_S6[1][0]+fid_2gev_2250_pimifid_S6[1][1]/mom_pi +fid_2gev_2250_pimifid_S6[1][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S6[1][3]/(mom_pi*mom_pi*mom_pi);
+	   status=status && !(theta_deg>parsec6_l && theta_deg<parsec6_h);
+	 }
+	 ////end of gaps with pi-
+       }
+     }
+   } //end of 2 and 4GEV pi minus fiducial
+   return status;
+}
+
+
+bool Fiducial::Phot_fid(TVector3 V3_phot){
+
+    bool status = true;
+    //  double costheta=V3_phot.Pz();
+    double costheta=V3_phot.CosTheta();
+    //double theta_deg=TMath::ACos(V3_phot.Pz())*TMath::RadToDeg(); //extraneous variable
+    double phi_deg=TMath::ATan2(V3_phot.Py(),V3_phot.Px())*TMath::RadToDeg()+30;
+    if(phi_deg<0)phi_deg=phi_deg+360;
+    bool hot_spot=(phi_deg>185 && phi_deg<191 && costheta<0.71 && costheta>0.67) || (phi_deg>221 && phi_deg<236 && costheta<0.73 && costheta>0.67); // used to kill the two hot spots in sector 4
+
+
+    if((costheta>low_lim1_ec->Eval(phi_deg) && costheta<up_lim1_ec->Eval(phi_deg) && costheta<rightside_lim1_ec->Eval(phi_deg) && costheta<leftside_lim1_ec->Eval(phi_deg))  ||
+       (costheta>low_lim2_ec->Eval(phi_deg) && costheta<up_lim2_ec->Eval(phi_deg) && costheta<rightside_lim2_ec->Eval(phi_deg) && costheta<leftside_lim2_ec->Eval(phi_deg))       ||
+       (costheta>low_lim3_ec->Eval(phi_deg) && costheta<up_lim3_ec->Eval(phi_deg) && costheta<rightside_lim3_ec->Eval(phi_deg) && costheta<leftside_lim3_ec->Eval(phi_deg))       ||
+       (costheta>low_lim4_ec->Eval(phi_deg) && costheta<up_lim4_ec->Eval(phi_deg) && costheta<rightside_lim4_ec->Eval(phi_deg) && costheta<leftside_lim4_ec->Eval(phi_deg) && !hot_spot)       ||
+       (costheta>low_lim5_ec->Eval(phi_deg) && costheta<up_lim5_ec->Eval(phi_deg) && costheta<rightside_lim5_ec->Eval(phi_deg) && costheta<leftside_lim5_ec->Eval(phi_deg))       ||
+       (costheta>low_lim6_ec->Eval(phi_deg) && costheta<up_lim6_ec->Eval(phi_deg) && costheta<rightside_lim6_ec->Eval(phi_deg) && costheta<leftside_lim6_ec->Eval(phi_deg))
+   ){ //EC only
+        status=true;}
+      else {
+        status=false;}
+
+       return status;
   }
+
 
 
 bool Fiducial::Phot_fid(TVector3 V3_phot){

@@ -2616,33 +2616,6 @@ bool Fiducial::Phot_fid(TVector3 V3_phot){
   }
 
 
-
-bool Fiducial::Phot_fid(TVector3 V3_phot){
-
-    bool status = true;
-    //  double costheta=V3_phot.Pz();
-    double costheta=V3_phot.CosTheta();
-    double theta_deg=TMath::ACos(V3_phot.Pz())*TMath::RadToDeg();
-    double phi_deg=TMath::ATan2(V3_phot.Py(),V3_phot.Px())*TMath::RadToDeg()+30;
-    if(phi_deg<0)phi_deg=phi_deg+360;
-    bool hot_spot=(phi_deg>185 && phi_deg<191 && costheta<0.71 && costheta>0.67) || (phi_deg>221 && phi_deg<236 && costheta<0.73 && costheta>0.67); // used to kill the two hot spots in sector 4
-
-
-    if((costheta>low_lim1_ec->Eval(phi_deg) && costheta<up_lim1_ec->Eval(phi_deg) && costheta<rightside_lim1_ec->Eval(phi_deg) && costheta<leftside_lim1_ec->Eval(phi_deg))  ||
-       (costheta>low_lim2_ec->Eval(phi_deg) && costheta<up_lim2_ec->Eval(phi_deg) && costheta<rightside_lim2_ec->Eval(phi_deg) && costheta<leftside_lim2_ec->Eval(phi_deg))       ||
-       (costheta>low_lim3_ec->Eval(phi_deg) && costheta<up_lim3_ec->Eval(phi_deg) && costheta<rightside_lim3_ec->Eval(phi_deg) && costheta<leftside_lim3_ec->Eval(phi_deg))       ||
-       (costheta>low_lim4_ec->Eval(phi_deg) && costheta<up_lim4_ec->Eval(phi_deg) && costheta<rightside_lim4_ec->Eval(phi_deg) && costheta<leftside_lim4_ec->Eval(phi_deg) && !hot_spot)       ||
-       (costheta>low_lim5_ec->Eval(phi_deg) && costheta<up_lim5_ec->Eval(phi_deg) && costheta<rightside_lim5_ec->Eval(phi_deg) && costheta<leftside_lim5_ec->Eval(phi_deg))       ||
-       (costheta>low_lim6_ec->Eval(phi_deg) && costheta<up_lim6_ec->Eval(phi_deg) && costheta<rightside_lim6_ec->Eval(phi_deg) && costheta<leftside_lim6_ec->Eval(phi_deg))
-   ){ //EC only
-        status=true;}
-      else {
-        status=false;}
-
-       return status;
-  }
-
-
 bool Fiducial::Pi_phot_fid_united(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot){
 
     bool status = false;

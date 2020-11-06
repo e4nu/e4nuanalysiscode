@@ -2120,8 +2120,12 @@ Bool_t Fiducial::PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 //                  Two step process: 1) Cut on phi fiducial edges
 //                                    2) Remove bad TOF paddles
 //                  Uses 2 GeV pimi fiducial cuts for both 2 and 4 GeV analysis, from electron cuts plus low momentum extension
-//                  October 19th, 2020 - New theta gap parameters at 1 GeV (750A), and 2/4 GeV (2250A), an initial fix
-//                                       Replaces reuse of electron ones, which are too messy to reuse accurately and account for CC cuts inappropriate to pions
+//                  October 27th, 2020 - Theta gap parameters at 1 GeV (750A), and 2/4 GeV (2250A) updated to replace reuse of
+//                                       electron gap functions, which are too messy to reuse accurately and account for CC cuts inappropriate to pions
+//                                       This update also includes Florian's update to loosen the constraint on upper limit of theta, which at high
+//                                       momentum is still much too tight
+//                                       A future update will implement new phi fiducial cuts at all momenta, but the current bug fixes are considered
+//                                       adequate for the zero pion analyses
 Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup){
   // Electron fiducial cut, return kTRUE if pass or kFALSE if not
   //--------------------------------------------------------------
@@ -2141,7 +2145,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 
   double phi_deg = phi * 180./M_PI;
   phi_deg -= sector*60;  //fiducial cuts defined using individual sector distributions, redrawn to be centred on 0 degrees in phi. This angle allows those cut definitions to be applied
-  
+
   double theta = mom.Theta();
   double theta_deg = theta * 180./M_PI;
 
@@ -2154,10 +2158,10 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
   //--------------------------------------------------------------
   //1.1GeV - uses electron fiducial cuts
   if(en_beam[fbeam_en]>1. &&  en_beam[fbeam_en]<2.) {
-    
+
     Double_t phipars[5]={0,0,0,0,0};
     Double_t phicutoff;
-    
+
     status = true;
     //piminus cuts at 1 GeV only valid in momentum range 150 MeV - 1.1 GeV
     //There's no data outside this momentum range at 1 GeV, it's an excessive condition, but does no harm
@@ -2167,18 +2171,18 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
     if (mom_pi > 1.1){
       mom_pi = 1.1;
     }
-    
+
     //Torus setting of 1500 A
     //Not used in Mariana's analysis, so are these still valid?
     if( fTorusCurrent>1490 && fTorusCurrent<1510){
-      
+
       for(Int_t mompar=0;mompar<6;mompar++) {
         for(Int_t phipar=0;phipar<5;phipar++) {
           phipars[phipar]+=fgPar_1gev_1500_Pimfid[sector][phipar][mompar]*pow(mom_pi,mompar);
           //std::cout << mom_e << " " << mompar << " " << phipar << " " << phipars[1] << " " << phipars[2] << " " << phipars[3] << " " << phipars[4] << " " << phipars[5] << std::endl;
         }
       }
-      
+
       //cut on phi fiducial edges
       if(phi_deg<=0) {
         phicutoff = phipars[1]*(1.-(1./((theta_deg-phipars[4])/phipars[3]+1.)));
@@ -2206,7 +2210,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
                   badpar3[i] = 0;
                   // calculate the parameters using pol7
                   for (int d=7; d>=0; d--){
-		    badpar3[i] = badpar3[i]*mom_pi + fgPar_1gev_1500_Pimfid_Theta_S3[i][d];
+		                  badpar3[i] = badpar3[i]*mom_pi + fgPar_1gev_1500_Pimfid_Theta_S3[i][d];
 		  }
                 }
                 for(int ipar=0;ipar<2;ipar++)
@@ -2302,7 +2306,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 
       //Calculate theta limit from stored parameters
       for(int i=4;i>=0;i--){
-	thetamax = thetamax*p_theta+pimi_thetamax1[i];
+	       thetamax = thetamax*p_theta+pimi_thetamax1[i];
       }
 
       //cut on phi fiducial edges
@@ -2396,26 +2400,26 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
       Float_t phimin, phimax;
 
 //        Float_t par[6];               // six parameters to determine the outline of Theta vs Phi  //why six parameters? it's five everywhere else...
-
+      //p_theta == mom_pi
       //theta maximum limit functions only defined in the momentum range 0.1 - 2.075 //is this an appropriate maximum at 4 GeV?
       if (p_theta>2.075){
-	p_theta = 2.075;
+	       p_theta = 2.075;
       }
       else if(p_theta<0.1){
-	p_theta = 0.1;
+	       p_theta = 0.1;
       }
 
       //calculate theta limit from loaded parameters (is this thetamax[0] + mom*thetamax[1] + mom^2*thetamax[2] + mom^3*thetamax[3] + mom^4*thetamax[4]?)
       for(int i=4;i>=0;i--){
-	thetamax = thetamax*p_theta + pimi_thetamax2and4[i]; //upper theta limit for pi- at different momentum
+	       thetamax = thetamax*p_theta + pimi_thetamax2and4[i]; //upper theta limit for pi- at different momentum
       }
-
+      //std::cout << "pion minus: mom " << p_theta << " , phi " << phi << " , phi_deg " << phi_deg << " , sector " << sector << " , thetamax " << thetamax << std::endl;
       //---These are the reused electron parameters
       if(mom_pi > 0.35){   //theta vs phi outline for high p region obtained by Bin
 
         if(mom_pi > 2.){
-	  mom_pi = 2.; //to extrapolate the cut to higher momenta for pimi //(to badly extrapolate) S.F. October 2020
-	}
+          mom_pi = 2.; //to extrapolate the cut to higher momenta for pimi //(to badly extrapolate) S.F. October 2020
+        }
 
         Float_t par[6];               // six parameters to determine the outline of Theta vs Phi  //why six parameters? it's five everywhere else...
 
@@ -2425,14 +2429,22 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
             par[i] = par[i]*mom_pi +  fgPar_2GeV_2250_Efid[sector][i][d];
           }                          // calculate the parameters using pol8
         }
+        double phi_min_limit = par[3]/((50.0-par[0])+par[3]/par[2])-par[2]; //calculation of phi limit from theta at 50 degree
+        double phi_max_limit = par[2]-par[3]/((50.0-par[0])+par[3]/par[2]); //calculation of phi limit from theta at 50 degree
 
+      //  std::cout << "par[0] " << par[0] << " , par[1] " << par[1] <<  std::endl;
         if (phi_deg < 0) {
           Float_t tmptheta = par[0] - par[3]/par[2] + par[3]/(par[2]+phi_deg);
           phimin =  par[3]/((theta_deg-par[0])+par[3]/par[2])-par[2];
           phimax =  par[2]-par[3]/((theta_deg-par[0])+par[3]/par[2]);
           *pimi_philow = phimin;
           *pimi_phiup = phimax;
-          status = (theta_deg>tmptheta && tmptheta>=par[0] && theta_deg<par[1]);
+          //Modification by F.H. 10/20/20
+          //theta range was limited previously by a cut  on theta_deg<par[1]
+          //cut is removed and a cut on phi to phi_limit is added similar to piplus at 2.2 where limits are hardcoded
+          //also a cut for thetamax is added
+          status = (theta_deg>tmptheta && tmptheta>=par[0] && phi_deg>=phi_min_limit && theta_deg<=thetamax);
+        //  std::cout << "status " << status << " , theta_deg " << theta_deg << ", tmptheta " << tmptheta << " , phimin " << phimin << " , phimax " << phimax << " , phi_deg " << phi_deg << " , sector " << sector << " , thetamax " << thetamax << std::endl;
         }
         else {
           Float_t tmptheta = par[0] - par[5]/par[4] + par[5]/(par[4]-phi_deg);
@@ -2440,17 +2452,21 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
           phimax =  par[4]-par[5]/((theta_deg-par[0])+par[5]/par[4]);
           *pimi_philow = phimin;
           *pimi_phiup = phimax;
-          status = (theta_deg>tmptheta && tmptheta>=par[0] && theta_deg<par[1]);
+          //Modification by F.H. 10/20/20
+          //theta range was limited previously by a cut  on theta_deg<par[1]
+          //cut is removed and a cut on phi to phi_limit is added similar to piplus at 2.2 where limits are hardcoded
+          //also a cut for thetamax is added
+          status = (theta_deg>tmptheta && tmptheta>=par[0] && phi_deg<=phi_max_limit && theta_deg<=thetamax);
         }
       }//end of high momentum cut
 
       //---The pi- parameters obtained only at low momentum
       else if(mom_pi<=0.35){     //theta vs phi outline for low p obtained by Mariana
-	
+
 	//valid only in the range 0.125 - 0.325 GeV
-        if(mom_pi>0.325)mom_pi=0.325;
-        else if (mom_pi<0.125)mom_pi=0.125;
-	
+        if(mom_pi>0.325)mom_pi=0.325; //This causes the notch at the lower theta limit between 325 and 350 MeV
+        else if (mom_pi<0.125)mom_pi=0.125;//This shouldn't do anything at all, as pions are selected from 150 MeV
+
         Float_t params[6];               // six parameters to determine the outline of Theta vs Phi, like the higher momentum region above.  Can change to par[6] and share declaration with above
         for (Int_t i=0; i<6; i++){
           params[i] = 0;
@@ -2459,7 +2475,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
           }                          // calculate the parameters using pol4
         }
         if (phi_deg < 0) {
-          phimin =  params[3]/((theta_deg-params[0])+params[3]/params[1])-params[1];  //why is phimin calculated differently in the low momwntum?
+          phimin =  params[3]/((theta_deg-params[0])+params[3]/params[1])-params[1];  //why is phimin calculated differently in the low momentum?
 	  //where's phimax?
           status = (phi_deg>phimin && theta_deg>params[0] && theta_deg<=thetamax);
         }
@@ -2467,15 +2483,15 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 	  //where's phimin?
           phimax = params[2]-params[4]/((theta_deg-params[0])+params[4]/params[2]);   //why is phimax calculated differently in the low momentum?
           status = (phi_deg<phimax && theta_deg>params[0]  && theta_deg<=thetamax);
-	}
+	       }
       }//end of low momentum cut
 
       else{ std::cout << "pi- fiducial outline not determined" << std::endl;}
 
-      ////////////////////////////////Remove bad TOF paddles ///////////////////////////////////
-      //There is a mix of 7th and 3rd order polynomials used to define theta gaps, an artefact//
-      //of reusing electron parameters and new gaps found for the pion//////////////////////////
-      //////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////Remove bad TOF paddles ///////////////////////////////////
+      //This takes the form of a momentum-dependent cut on theta, defined from stored parameters//
+      ////////////////////////////////////////////////////////////////////////////////////////////
 
      bool SCpdcut=true;
 
@@ -2483,57 +2499,12 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
      if (SCpdcut){  // if the kESCpdCut bit is set, take off the bad SC paddle by strictly cutting off a theta gap.
        if (status){ //if event not already rejected
 
-	 //---Original gaps obtained with electron---
-	 mom_pi=momentum.Mag();
-	 if(mom_pi>2.)  mom_pi = 2.; //to extrapolate the cut to higher momenta for pimi
-	 if(mom_pi<0.35) mom_pi = 0.35; //to extrapolate the cut to higher momenta for pimi  //I don't know if this fudge works, S.F. 09/10/20
-	 
-	 if (tsector == 3){               // sector 3 has two bad paddles
-	   Float_t badpar3[4];            // 4 parameters to determine the positions of the two theta gaps
-	   for (Int_t i=0; i<4; i++){
-	     badpar3[i] = 0;
-	     for (Int_t d=7; d>=0; d--){
-	       badpar3[i] = badpar3[i]*mom_pi +  fgPar_2GeV_2250_EfidTheta_S3[i][d];
-	     }                           // calculate the parameters using pol7
-	   }
-	   for(Int_t ipar=0;ipar<2;ipar++) {
-	     //I dont get the logic here, F.H. 10/31/19. Is this correct?
-	     if(!(ipar==1 && momentum.Mag()<0.35)){
-	       status = status && !(theta_deg>badpar3[2*ipar] && theta_deg<badpar3[2*ipar+1]);
-	     }
-	   }
-	 }
-	 else if (tsector == 4){         // sector 4 has one bad paddle
-	   Float_t badpar4[2];           // 2 parameters to determine the position of the theta gap
-	   for (Int_t i=0; i<2; i++){
-	     badpar4[i] = 0;
-	     for (Int_t d=7; d>=0; d--){
-	       badpar4[i] = badpar4[i]*mom_pi +  fgPar_2GeV_2250_EfidTheta_S4[i][d];
-	     }                           // calculate the parameters using pol7
-	   }
-	   status = !(theta_deg>badpar4[0] && theta_deg<badpar4[1]);
-	 }
-	 else if (tsector == 5){         // sector 5 has four bad paddles
-	   Float_t badpar5[8];           // 8 parameters to determine the positions of the four theta gaps
-	   for (Int_t i=0; i<8; i++){
-	     badpar5[i] = 0;
-	     for (Int_t d=7; d>=0; d--){
-	       badpar5[i] = badpar5[i]*mom_pi +  fgPar_2GeV_2250_EfidTheta_S5[i][d];
-	     }                           // calculate the parameters using pol7
-	   }
-	   if (mom_pi<1.25) badpar5[0] = 23.4;
-	   if (mom_pi<1.27) badpar5[1] = 24.0; // some dummy constants. see fiducial cuts webpage.
-	   for(Int_t ipar=0;ipar<4;ipar++) {
-	     status = status && !(theta_deg>badpar5[2*ipar] && theta_deg<badpar5[2*ipar+1]);
-	   }
-	 }
-	 
 	 //---Further gaps obtained with pi- ------
-	 //gaps obtained with pi-. Is this really pi- and not electron? F.H. 10/31/19  //looks like pi-
+	 //Gaps obtained with pi-. Includes redefined versions of some electron gaps from fgPar_2GeV_2250_EfidThets_S{1-6}. S.F Oct 26, 2020
 	 mom_pi = momentum.Mag();  //reset momentum to event value, just in case the electron paddle nonsense causes problems
 	 //sector 1 has two gaps
 	 if(tsector == 1){
-	   double parsec1_l[2],parsec1_h[2];   //theta gap paramaters 
+	   double parsec1_l[2],parsec1_h[2];   //theta gap paramaters
 	   for(int d=0;d<2;d++){
 	     //-----Define theta limits from stored parameters
 	     parsec1_l[d]= fid_2gev_2250_pimifid_S1[d][0][0]+fid_2gev_2250_pimifid_S1[d][0][1]/mom_pi +fid_2gev_2250_pimifid_S1[d][0][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S1[d][0][3]/(mom_pi*mom_pi*mom_pi);
@@ -2541,10 +2512,10 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 	     status=status && !(theta_deg>parsec1_l[d] && theta_deg<parsec1_h[d]);
 	   }
 	 }
-	 //sector 3 has 2 gaps
+	 //sector 3 has 3 gaps
 	 else if(tsector == 3){
-	   double parsec3_l[2],parsec3_h[2];
-	   for(int d=0;d<2;d++){
+	   double parsec3_l[3],parsec3_h[3];
+	   for(int d=0;d<3;d++){
 	     //-----Define theta limits from stored parameters
 	     parsec3_l[d]= fid_2gev_2250_pimifid_S3[d][0][0]+fid_2gev_2250_pimifid_S3[d][0][1]/mom_pi +fid_2gev_2250_pimifid_S3[d][0][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S3[d][0][3]/(mom_pi*mom_pi*mom_pi);
 	     parsec3_h[d]= fid_2gev_2250_pimifid_S3[d][1][0]+fid_2gev_2250_pimifid_S3[d][1][1]/mom_pi +fid_2gev_2250_pimifid_S3[d][1][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S3[d][1][3]/(mom_pi*mom_pi*mom_pi);
@@ -2552,21 +2523,24 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 	     status=status && !(theta_deg>parsec3_l[d] && theta_deg<parsec3_h[d]);
 	   }
 	 }
-	 //sector 4 has one gap
+	 //sector 4 has two gaps, one defined on pi minus, one reimplemented from electron
 	 else if(tsector == 4){
-	   double parsec4_l,parsec4_h;
-	   if(mom_pi<0.15)mom_pi=0.15;     //not really needed, below pion detection threshold
-	   else if(mom_pi>0.5)mom_pi=0.5;  //not really needed, very little data here
-	     //------------------------------------
-	     //-----Define theta limits from stored parameters
-	   parsec4_l= fid_2gev_2250_pimifid_S4[0][0]+fid_2gev_2250_pimifid_S4[0][1]/mom_pi +fid_2gev_2250_pimifid_S4[0][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S4[0][3]/(mom_pi*mom_pi*mom_pi);
-	   parsec4_h= fid_2gev_2250_pimifid_S4[1][0]+fid_2gev_2250_pimifid_S4[1][1]/mom_pi +fid_2gev_2250_pimifid_S4[1][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S4[1][3]/(mom_pi*mom_pi*mom_pi);
-	   status=status && !(theta_deg>parsec4_l && theta_deg<parsec4_h);
-	 }
-	 //sector 5 has two gaps
-	 else if(tsector == 5){
-	   double parsec5_l[2],parsec5_h[2];
+	   double parsec4_l[2],parsec4_h[2];
 	   for(int d=0;d<2;d++){
+	     if(d==0){
+	       if(mom_pi<0.15)mom_pi=0.15;     //not really needed, below pion detection threshold
+	       else if(mom_pi>0.5)mom_pi=0.5;  //not really needed, very little data here
+	     }
+	     //-----Define theta limits from stored parameters
+	   parsec4_l[d]= fid_2gev_2250_pimifid_S4[d][0][0]+fid_2gev_2250_pimifid_S4[d][0][1]/mom_pi +fid_2gev_2250_pimifid_S4[d][0][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S4[d][0][3]/(mom_pi*mom_pi*mom_pi);
+	   parsec4_h[d]= fid_2gev_2250_pimifid_S4[d][1][0]+fid_2gev_2250_pimifid_S4[d][1][1]/mom_pi +fid_2gev_2250_pimifid_S4[d][1][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S4[d][1][3]/(mom_pi*mom_pi*mom_pi);
+	   status=status && !(theta_deg>parsec4_l[d] && theta_deg<parsec4_h[d]);
+	   }
+	 }
+	 //sector 5 has two gaps, plus two moved from electron gaps
+	 else if(tsector == 5){
+	   double parsec5_l[3],parsec5_h[3];
+	   for(int d=0;d<4;d++){
 	     //-----Define theta limits from stored parameters
 	     parsec5_l[d]= fid_2gev_2250_pimifid_S5[d][0][0]+fid_2gev_2250_pimifid_S5[d][0][1]/mom_pi +fid_2gev_2250_pimifid_S5[d][0][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S5[d][0][3]/(mom_pi*mom_pi*mom_pi);
 	     parsec5_h[d]= fid_2gev_2250_pimifid_S5[d][1][0]+fid_2gev_2250_pimifid_S5[d][1][1]/mom_pi +fid_2gev_2250_pimifid_S5[d][1][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S5[d][1][3]/(mom_pi*mom_pi*mom_pi);

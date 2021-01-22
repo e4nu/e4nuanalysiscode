@@ -2539,7 +2539,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 	 }
 	 //sector 5 has two gaps, plus two moved from electron gaps
 	 else if(tsector == 5){
-	   double parsec5_l[3],parsec5_h[3];
+	   double parsec5_l[4],parsec5_h[4];
 	   for(int d=0;d<4;d++){
 	     //-----Define theta limits from stored parameters
 	     parsec5_l[d]= fid_2gev_2250_pimifid_S5[d][0][0]+fid_2gev_2250_pimifid_S5[d][0][1]/mom_pi +fid_2gev_2250_pimifid_S5[d][0][2]/(mom_pi*mom_pi) +fid_2gev_2250_pimifid_S5[d][0][3]/(mom_pi*mom_pi*mom_pi);

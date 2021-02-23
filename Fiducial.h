@@ -14,8 +14,11 @@
 #include <vector>
 #include <map>
 
+#include "Constants.h"
+
 struct Fiducial {
 
+  void InitPiMinusFit(std::string beam_en);
   void InitEClimits();
   void SetConstants(int in_TorusCurrent, std::string in_target_name, std::map<std::string,double> in_en_beam);
   void SetFiducialCutParameters(std::string beam_en);
@@ -27,9 +30,30 @@ struct Fiducial {
   bool Phot_fid(TVector3 V3_phot);
   bool Pi_phot_fid_united(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot);
 
+  // --------------------------------------------------------------------------
+
+  // apapadop // Nov 11 2020 // Narrow band 30 deg in phi and either accepting ALL theta or theta_pos > 12 deg (piplus & protons) and theta_pi- > 30
+
+  double GetPhi(TVector3 momentum);
+  double GetTheta(TVector3 momentum);
+
+  // -------------------------------------------------------------------------- 
+
+  // apapadop // Nov 23 2020 // Narrow band 30 deg in phi and either accepting ALL theta or theta_pos > 12 deg (piplus & protons) and theta_pi- > 30
+
+  Bool_t PFiducialCutExtra(std::string beam_en, TVector3 momentum);
+  Bool_t PiplFiducialCutExtra(std::string beam_en, TVector3 momentum);
+  Bool_t PimiFiducialCutExtra(std::string beam_en, TVector3 momentum);
+  bool Phot_fidExtra(TVector3 V3_phot);
+  bool Pi_phot_fid_unitedExtra(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot);
+
+  // -------------------------------------------------------------------------- 
+
   int fTorusCurrent;
   std::string target_name;
   std::map<std::string,double> en_beam;
+
+  TF1* myPiMinusFit;
 
   TF1 *up_lim1_ec, *up_lim2_ec,*up_lim3_ec,*up_lim4_ec, *up_lim5_ec,*up_lim6_ec,*low_lim1_ec,*low_lim2_ec,*low_lim3_ec, *low_lim4_ec,*low_lim5_ec,*low_lim6_ec;
 	TF1 *leftside_lim1_ec, *leftside_lim2_ec,*leftside_lim3_ec, *leftside_lim4_ec,*leftside_lim5_ec, *leftside_lim6_ec,*rightside_lim1_ec, *rightside_lim2_ec,*rightside_lim3_ec, *rightside_lim4_ec,*rightside_lim5_ec, *rightside_lim6_ec;
@@ -499,6 +523,5 @@ struct Fiducial {
   Float_t pipl_thetamax1[5]={143.52 , -114.506 , 409.901 , -461.16 , 97.7215};
   Float_t el_thetamax1[5]={105.51 , -262.424 , 469.016 , -365.019 , 102.453};
   
-
 };
 #endif

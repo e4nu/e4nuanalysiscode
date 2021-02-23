@@ -15,12 +15,26 @@
 #include <TRandom3.h>
 #include <TF1.h>
 #include <TGraph.h>
+#include <TString.h>
 
 #include <fstream>
 #include <exception>
 #include <iostream>
 #include <map>
 #include <string>
+#include <iomanip>
+#include <sstream>
+#include <vector>
+#include <utility>
+
+TString ToString(int num) {
+
+	std::ostringstream start;
+	start << num;
+	std::string start1 = start.str();
+	return start1;
+
+}
 
 // Also used by e2a_ep_neutrino6_united4_radphot.{C,h}
 
@@ -56,8 +70,6 @@ extern Double_t FSub_pipl(Double_t *x,Double_t *par);
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-int GetCharge_CounterEvents = 0;
-
 void GetCharge_FilterData::Loop()
 {
 
@@ -83,6 +95,7 @@ void GetCharge_FilterData::Loop()
 
 	if (ftarget=="3He") { TargetPdgCode = 1000020030; TargetZ = 2; TargetA = 3; }
 	if (ftarget=="4He") { TargetPdgCode = 1000020040; TargetZ = 2; TargetA = 4; }
+	if (ftarget=="CH2") { TargetPdgCode = 1000080140; TargetZ = 8; TargetA = 14; }
 	if (ftarget=="C12") { TargetPdgCode = 1000060120; TargetZ = 6; TargetA = 12; }
 	if (ftarget=="56Fe") { TargetPdgCode = 1000260560; TargetZ = 26; TargetA = 56; }
 
@@ -101,6 +114,15 @@ void GetCharge_FilterData::Loop()
 	en_beam_Eqe["4461"]=4.461;
 
 	if (fChain == 0) return;
+
+	int GetCharge_CounterEvents = 0;
+	int EC_CounterEvents = 0;
+	int SC_CounterEvents = 0;
+	int ElectronFid_Counter = 0;
+	int CutUVW_Counter = 0;
+	int EC_SC_CC_Q_Counter = 0;
+	int EnergyDep_Counter = 0;
+	int Vertex_Counter = 0;
 
 	Long64_t nentries = fChain->GetEntriesFast();
 	//	nentries = 8000000;
@@ -161,12 +183,39 @@ void GetCharge_FilterData::Loop()
 		Ecal_lowlim[5]=0.;
 		Ecal_uplim[5]=1.35;
 
+		// ------------------------------------
+
+		// Mariana's fitting
+
+//		vert_min["3He"]=-3.05;
+//		vert_min["C12"]=4.95;
+//		vert_min["CH2"]=4.85;
+
+//		vert_max["3He"]=-0.18;
+//		vert_max["C12"]=5.76;
+//		vert_max["CH2"]=5.62;
+
+		// apapadop's fitting // Nov 9 2020
+
+//		vert_min["3He"]=-3.05;
+//		vert_min["C12"]=4.43;
+//		vert_min["CH2"]=4.64;
+
+//		vert_max["3He"]=-0.18;
+//		vert_max["C12"]=6.16;
+//		vert_max["CH2"]=5.82;
+
+		// Or's eyeballing // Nov 10 2020
+
 		vert_min["3He"]=-3.05;
-		vert_min["C12"]=4.95;
-		vert_min["CH2"]=4.85;
+		vert_min["C12"]=4.3;
+		vert_min["CH2"]=4.3;
+
 		vert_max["3He"]=-0.18;
-		vert_max["C12"]=5.76;
-		vert_max["CH2"]=5.62;
+		vert_max["C12"]=6.5;
+		vert_max["CH2"]=6.5;
+
+		// ------------------------------------
 
 		vertdiff_min["3He"]=-1.;
 		vertdiff_min["C12"]=-1.;
@@ -229,33 +278,68 @@ void GetCharge_FilterData::Loop()
 		Ecal_lowlim[5]=0.;
 		Ecal_uplim[5]=2.;
 
+		// -----------------------------------------
+
+		// Mariana's fitting
+
+//		vert_min["3He"]=-3.29;
+//		vert_min["4He"]=-2.53;
+//		vert_min["C12"]=4.8;
+//		vert_min["56Fe"]=4.6;
+
+//		vert_max["3He"]=-0.23;
+//		vert_max["4He"]=1.73;
+//		vert_max["C12"]=5.5;
+//		vert_max["56Fe"]=5.3;
+
+		// apapadop's fitting // Nov 9 2020
+
+//		vert_min["3He"]=-3.29;
+//		vert_min["4He"]=-2.53;
+//		vert_min["C12"]=4.58;
+//		vert_min["56Fe"]=4.46;
+
+//		vert_max["3He"]=-0.23;
+//		vert_max["4He"]=1.73;
+//		vert_max["C12"]=5.6;
+//		vert_max["56Fe"]=5.47;
+
+		// Or's eyeballing // Nov 10 2020
+
 		vert_min["3He"]=-3.29;
 		vert_min["4He"]=-2.53;
-		vert_min["C12"]=4.8;
-		vert_min["56Fe"]=4.6;
+		vert_min["C12"]=4.3;
+		vert_min["56Fe"]=4.3;
+
 		vert_max["3He"]=-0.23;
 		vert_max["4He"]=1.73;
-		vert_max["C12"]=5.5;
-		vert_max["56Fe"]=5.3;
+		vert_max["C12"]=6.5;
+		vert_max["56Fe"]=6.5;
+
+		// -----------------------------------------
 
 		vertdiff_min["3He"]=-1.;
 		vertdiff_min["4He"]=-1.;
 		vertdiff_min["C12"]=-1.;
+		vertdiff_min["CH2"]=-1.;
 		vertdiff_min["56Fe"]=-1.;
 
 		vertdiff_max["3He"]=1.;
 		vertdiff_max["4He"]=1.;
 		vertdiff_max["C12"]=1.;
+		vertdiff_max["CH2"]=1.;
 		vertdiff_max["56Fe"]=1.;
 
 		EC_photon_beta["3He"]=0.93;
 		EC_photon_beta["4He"]=0.92;
 		EC_photon_beta["C12"]=0.92;
+		EC_photon_beta["CH2"]=0.92;
 		EC_photon_beta["56Fe"]=0.90;
 
 		LEC_photon_beta["3He"]=0.96;
 		LEC_photon_beta["4He"]=0.94;
 		LEC_photon_beta["C12"]=0.94;
+		LEC_photon_beta["CH2"]=0.94;
 		LEC_photon_beta["56Fe"]=0.95;
 
 		EC_time_offset[std::make_pair("3He",1)]=-1.37;  EC_time_offset[std::make_pair("3He",2)]=-1.42; EC_time_offset[std::make_pair("3He",3)]=-1.55;
@@ -266,6 +350,9 @@ void GetCharge_FilterData::Loop()
 
 		EC_time_offset[std::make_pair("C12",1)]=0.50;  EC_time_offset[std::make_pair("C12",2)]=0.39; EC_time_offset[std::make_pair("C12",3)]=0.29;
 		EC_time_offset[std::make_pair("C12",4)]=0.29;  EC_time_offset[std::make_pair("C12",5)]=0.32; EC_time_offset[std::make_pair("C12",6)]=0.33;
+
+		EC_time_offset[std::make_pair("CH2",1)]=0.50;  EC_time_offset[std::make_pair("CH2",2)]=0.39; EC_time_offset[std::make_pair("CH2",3)]=0.29;
+		EC_time_offset[std::make_pair("CH2",4)]=0.29;  EC_time_offset[std::make_pair("CH2",5)]=0.32; EC_time_offset[std::make_pair("CH2",6)]=0.33;
 
 		EC_time_offset[std::make_pair("56Fe",1)]=0.75;  EC_time_offset[std::make_pair("56Fe",2)]=0.49; EC_time_offset[std::make_pair("56Fe",3)]=0.37;
 		EC_time_offset[std::make_pair("56Fe",4)]=0.39;  EC_time_offset[std::make_pair("56Fe",5)]=0.43; EC_time_offset[std::make_pair("56Fe",6)]=0.44;
@@ -306,33 +393,68 @@ void GetCharge_FilterData::Loop()
 		Ecal_lowlim[5]=0.;
 		Ecal_uplim[5]=4.;
 
+		// -----------------------------------------
+
+		// Mariana's fitting
+
+//		vert_min["3He"]=-3.27;
+//		vert_min["4He"]=-2.51;
+//		vert_min["C12"]=4.7;
+//		vert_min["56Fe"]=4.6;
+
+//		vert_max["3He"]=0.07;
+//		vert_max["4He"]=1.71;
+//		vert_max["C12"]=5.3;
+//		vert_max["56Fe"]=5.4;
+
+		// apapadop's fitting // Nov 9 2020
+
+//		vert_min["3He"]=-3.27;
+//		vert_min["4He"]=-2.51;
+//		vert_min["C12"]=4.44;
+//		vert_min["56Fe"]=4.41;
+
+//		vert_max["3He"]=0.07;
+//		vert_max["4He"]=1.71;
+//		vert_max["C12"]=5.56;
+//		vert_max["56Fe"]=5.46;
+
+		// Or's eyeballing // Nov 10 2020
+
 		vert_min["3He"]=-3.27;
 		vert_min["4He"]=-2.51;
-		vert_min["C12"]=4.7;
-		vert_min["56Fe"]=4.6;
+		vert_min["C12"]=4.3;
+		vert_min["56Fe"]=4.3;
+
 		vert_max["3He"]=0.07;
 		vert_max["4He"]=1.71;
-		vert_max["C12"]=5.3;
-		vert_max["56Fe"]=5.4;
+		vert_max["C12"]=6.5;
+		vert_max["56Fe"]=6.5;
+
+		// -----------------------------------------
 
 		vertdiff_min["3He"]=-1.;
 		vertdiff_min["4He"]=-1;
 		vertdiff_min["C12"]=-1;
+		vertdiff_min["CH2"]=-1;
 		vertdiff_min["56Fe"]=-1;
 
 		vertdiff_max["3He"]=1.;
 		vertdiff_max["4He"]=1.;
 		vertdiff_max["C12"]=1;
+		vertdiff_max["CH2"]=1;
 		vertdiff_max["56Fe"]=1;
 
 		EC_photon_beta["3He"]=0.92;
 		EC_photon_beta["4He"]=0.91;
 		EC_photon_beta["C12"]=0.92;
+		EC_photon_beta["CH2"]=0.92;
 		EC_photon_beta["56Fe"]=0.91;
 
 		LEC_photon_beta["3He"]=0.97;
 		LEC_photon_beta["4He"]=0.97;
 		LEC_photon_beta["C12"]=0.95;
+		LEC_photon_beta["CH2"]=0.95;
 		LEC_photon_beta["56Fe"]=0.96;
 
 		EC_time_offset[std::make_pair("3He",1)]=-0.15;  EC_time_offset[std::make_pair("3He",2)]=-0.26; EC_time_offset[std::make_pair("3He",3)]=-0.41;
@@ -343,6 +465,9 @@ void GetCharge_FilterData::Loop()
 
 		EC_time_offset[std::make_pair("C12",1)]=-0.01;  EC_time_offset[std::make_pair("C12",2)]=-0.11; EC_time_offset[std::make_pair("C12",3)]=-0.23;
 		EC_time_offset[std::make_pair("C12",4)]=-0.27;  EC_time_offset[std::make_pair("C12",5)]=-0.21; EC_time_offset[std::make_pair("C12",6)]=-0.08;
+
+		EC_time_offset[std::make_pair("CH2",1)]=-0.01;  EC_time_offset[std::make_pair("CH2",2)]=-0.11; EC_time_offset[std::make_pair("CH2",3)]=-0.23;
+		EC_time_offset[std::make_pair("CH2",4)]=-0.27;  EC_time_offset[std::make_pair("CH2",5)]=-0.21; EC_time_offset[std::make_pair("CH2",6)]=-0.08;
 
 		EC_time_offset[std::make_pair("56Fe",1)]=-0.49;  EC_time_offset[std::make_pair("56Fe",2)]=-0.14; EC_time_offset[std::make_pair("56Fe",3)]=-0.32;
 		EC_time_offset[std::make_pair("56Fe",4)]=-0.25;  EC_time_offset[std::make_pair("56Fe",5)]=-0.17; EC_time_offset[std::make_pair("56Fe",6)]=-0.35;
@@ -404,14 +529,23 @@ void GetCharge_FilterData::Loop()
 	}
 
 	//Output file definition
-	TFile *file_out = new TFile(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_%s_%s_neutrino6_united4_radphot_test_100M.root",ftarget.c_str(),fbeam_en.c_str()), "Recreate");
+
+	// e4v analysis files
+//	TString FileName = Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_%s_%s_neutrino6_united4_radphot_test_100M.root",ftarget.c_str(),fbeam_en.c_str());
+
+	// e4v workshop files
+	TString FileName = Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/e4vWorkshop_%s_%s.root",ftarget.c_str(),fbeam_en.c_str());
+
+	std::cout << "File " << FileName << " to be  created" << std::endl;
+
+	TFile *file_out = new TFile(FileName, "Recreate");
 
 	// -------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	// apapadop
 	TTree* mytree = new TTree("gst","gst");
 
-	Double_t           genie_q_l;
+	Double_t        genie_q_l;
 	Int_t           genie_RunNumber;
 
 	Int_t           genie_iev;
@@ -466,6 +600,9 @@ void GetCharge_FilterData::Loop()
 	Double_t        genie_pzl;
 	Double_t        genie_pl;
 	Double_t        genie_cthl;
+	Double_t        genie_thetal;
+	Double_t        genie_phil;
+
 	Int_t           genie_nfp;
 	Int_t           genie_nfn;
 	Int_t           genie_nfpip;
@@ -503,6 +640,9 @@ void GetCharge_FilterData::Loop()
 	Double_t        genie_pzf[FinalStateParticles];   //[nf]
 	Double_t        genie_pf[FinalStateParticles];   //[nf]
 	Double_t        genie_cthf[FinalStateParticles];   //[nf]
+	Double_t        genie_thetaf[FinalStateParticles];   //[nf]
+	Double_t        genie_phif[FinalStateParticles];   //[nf]
+
 	Double_t        genie_vtxx;
 	Double_t        genie_vtxy;
 	Double_t        genie_vtxz;
@@ -565,6 +705,9 @@ void GetCharge_FilterData::Loop()
 	mytree->Branch("pzl", &genie_pzl, "pzl/D");
 	mytree->Branch("pl", &genie_pl, "pl/D");
 	mytree->Branch("cthl", &genie_cthl, "cthl/D");
+	mytree->Branch("thetal", &genie_thetal, "thetal/D");
+	mytree->Branch("phil", &genie_phil, "phil/D");
+
 	mytree->Branch("nfp", &genie_nfp, "nfp/I");
 	mytree->Branch("nfn", &genie_nfn, "nfn/I");
 	mytree->Branch("nfpip", &genie_nfpip, "nfpip/I");
@@ -601,6 +744,9 @@ void GetCharge_FilterData::Loop()
 	mytree->Branch("pzf", &genie_pzf, "pzf[120]/D");
 	mytree->Branch("pf", &genie_pf, "pf[120]/D");
 	mytree->Branch("cthf", &genie_cthf, "cthf[120]/D");
+	mytree->Branch("thetaf", &genie_thetaf, "thetaf[120]/D");
+	mytree->Branch("phif", &genie_phif, "phif[120]/D");
+
 	mytree->Branch("vtxx", &genie_vtxx, "vtxx/D");
 	mytree->Branch("vtxy", &genie_vtxy, "vtxy/D");
 	mytree->Branch("vtxz", &genie_vtxz, "vtxz/D");
@@ -664,17 +810,59 @@ void GetCharge_FilterData::Loop()
 	fsum_e = new TF1("fsum_e",FSum_e,0.,5.,2);
 	fsub_e = new TF1("fsub_e",FSub_e,0.,5.,2);
 
+	fiducialcut->InitPiMinusFit(fbeam_en);
+
 	//initialize Fiducial functions for EC limits
 
 	fiducialcut->InitEClimits();
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
 
+	// Histo declaration
+
+	TH2D* h2_Electron_UncorrectedVertex_Phi = new TH2D("h2_Electron_UncorrectedVertex_Phi",";Uncorrected Vertex [cm];#phi_{e'} [deg]",2000,-10,10,360,0,360);
+	TH2D* h2_Electron_CorrectedVertex_Phi = new TH2D("h2_Electron_CorrectedVertex_Phi",";Corrected Vertex [cm];#phi_{e'} [deg]",2000,-10,10,360,0,360);
+
+	TH1D* h1_el_timediff = new TH1D("h1_el_timediff",";el_timediff",100,-50,50);
+	TH1D* h1_cc_c2 = new TH1D("h1_cc_c2",";cc_c2",2000,0,20);
+	TH1D* h1_ece = new TH1D("h1_ece",";ece",2000,0,20);
+	TH1D* h1_eceOverP = new TH1D("h1_eceOverP",";ece/p",200,0,2);
+	TH1D* h1_ec_ei = new TH1D("h1_ec_ei",";ec_ei",700,0,0.7);
+
+	TH1D* h1_el_timediff_Sector[6]; 
+
+	for (int i = 0; i < 6; i++) {
+
+		h1_el_timediff_Sector[i] = new TH1D("h1_el_timediff_Sector_"+ToString(i),";el_timediff",100,-50,50);
+
+	}
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------------
+
+	std::cout << "Initial number of events = " << fChain->GetEntries() << std::endl;
+
+	// ---------------------------------------------------------------------------------------------------------------
+
+	// Justification for the parameter choice
+	// https://docs.google.com/presentation/d/1ghG08JfCYXRXh6O8hcXKrhJOFxkAs_9i5ZfoIkiiEHU/edit?usp=sharing
+
+	TF1 *myElectronFit = new TF1("myElectronFit","[0]+[1]/x",0.,5.);
+
+	if (en_beam[fbeam_en] == 1.161) { myElectronFit->SetParameters(17,7); }
+	if (en_beam[fbeam_en] == 2.261) { myElectronFit->SetParameters(16,10.5); }
+	if (en_beam[fbeam_en] == 4.461) { myElectronFit->SetParameters(13.5,15); }
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------------
+
+	// Starting the loop
+
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
 
 		Long64_t ientry = LoadTree(jentry);
 		int nb = GetEntry(jentry);
 		if (ientry < 0) break;
+
+		if (jentry%1000 == 0) {std::cout << jentry/1000 << " k " << std::setprecision(3) << double(jentry)/fChain->GetEntries()*100. << " %"<< std::endl;}
 
 		if( jentry%200000 == 0 )
 		{
@@ -701,11 +889,23 @@ void GetCharge_FilterData::Loop()
 		}
 
 		if((runnb>18283 && runnb<18289) || (runnb>18300 && runnb<18304) || (runnb>18317 && runnb<18329)) fTorusCurrent=750; //setting appropriate torrus magnet current
-		else if ((runnb>18293 && runnb<18301) || (runnb>18305 && runnb<18317) || (runnb>18328 && runnb<18336))  fTorusCurrent=1500;
+		else if ( 
+			(runnb>18293 && runnb<18301) || (runnb>18305 && runnb<18317) || (runnb>18328 && runnb<18336) 
+			|| runnb == 18334 /*CH2*/
+			)  
+			{ fTorusCurrent = 1500; }
 		else fTorusCurrent=2250;
 
-		//if (fbeam_en == "1161" && fTorusCurrent > 760) { continue; }                                                              
+		// apapadop, CH2 only run @ 1.1 GeV with 1500 torus current, but we don't have fiducials there, thus using the 750 torus current
+		if (runnb == 18334) { fTorusCurrent = 750; } 
+
+		// apapadop, we want only the 750 results for the main e4v paper
+		// 1500 to be used only for the hydrogen study
+		if (fbeam_en == "1161" && fTorusCurrent > 760) { continue; }  
+	
+		// For the 1500 (high torus current runs) on 12C @ 1.1 GeV, comment in the lines below                                                            
                 //if (fbeam_en == "1161" && fTorusCurrent < 760) { continue; }
+		//fTorusCurrent = 750;
 
 		if(jentry == 0){ //was n_evt == 1 before but jentry = n_evnt - 1
 			//SetMomCorrParameters(); Functions is missing F.H. 08/01/19
@@ -719,10 +919,15 @@ void GetCharge_FilterData::Loop()
 //			std::cout << "Possible problem with making electron ec vector. EC index below/equal Zero: ec[ind_em] =  " << ec[ind_em] << std::endl;
 			continue;
 		}
+
+		EC_CounterEvents++;
+
 		if (sc[ind_em] <=0) {
 //			std::cout << "Possible problem with making electron ec vector. SC index below/equal zero: sc[ind_em] =  " << sc[ind_em] << std::endl;
 			continue;
 		}
+
+		SC_CounterEvents++;
 
 		// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -810,12 +1015,14 @@ void GetCharge_FilterData::Loop()
 			genie_pzf[WhichFinalStateParticle] = -99.;
 			genie_pf[WhichFinalStateParticle] = -99.;
 			genie_cthf[WhichFinalStateParticle] = -99.;
+			genie_thetaf[WhichFinalStateParticle] = -99.;
+			genie_phif[WhichFinalStateParticle] = -99.;
 
 		}
 
 		// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-		//Define electron vectors, angles amd other Information
+		//Define electron vectors, angles and other Information
 
 		TVector3 e_ec_xyz1(ech_x[ec[ind_em]-1],ech_y[ec[ind_em]-1],ech_z[ec[ind_em]-1]);
 		TVector3 el_mom1(p[ind_em]*cx[ind_em],p[ind_em]*cy[ind_em] ,p[ind_em]*cz[ind_em]);
@@ -833,7 +1040,11 @@ void GetCharge_FilterData::Loop()
 		int el_ec_sector = ec_sect[ec[ind_em] - 1];
 		double el_vert_corr = el_vert+vz_corr(vz_corr_func,el_phi_mod,el_theta);
 
-		//Variables for electron cuts
+		h2_Electron_UncorrectedVertex_Phi->Fill(el_vert,el_phi_mod);
+		h2_Electron_CorrectedVertex_Phi->Fill(el_vert_corr,el_phi_mod);
+
+		// Variables for electron cuts
+
 		double ece = TMath::Max( ec_ei[ec[ind_em] - 1] + ec_eo[ec[ind_em] - 1],   etot[ec[ind_em] - 1]);
 		el_segment = int((cc_segm[cc[ind_em]-1]-int(cc_segm[cc[ind_em]-1]/1000)*1000)/10); //does this work in all cases?? F.H. 08/07/19
 		el_cc_sector = cc_sect[cc[ind_em]-1];
@@ -841,21 +1052,45 @@ void GetCharge_FilterData::Loop()
 		el_cc_nphe = nphe[cc[ind_em]-1]/10.;
 		double ec_SC_timediff_uncorr = ec_t[ec[ind_em]-1]-sc_t[sc[ind_em]-1]-(ec_r[ec[ind_em]-1]-sc_r[sc[ind_em]-1])/(c*ns_to_s);
 
-		//fsum_e and fsub_p are TF1 Functions for electron E/p cuts
+		// fsum_e and fsub_p are TF1 Functions for electron E/p cuts
+
 		fsum_e->SetParameters(epratio_sig_cutrange, max_mom);
 		fsub_e->SetParameters(epratio_sig_cutrange, max_mom);
 
-		//Main Fiducial Cut for Electron
+		// Main Fiducial Cut for Electron
+
 		if( !EFiducialCut(fbeam_en, el_mom1) ) continue;//theta, phi cuts
+
+		// Extra layer of fiducials for electrons
+
+		double theta_min = myElectronFit->Eval(el_mom1.Mag());
+		if (el_theta < theta_min) { continue; }
+
+		ElectronFid_Counter++;
+
 		if( !CutUVW(e_ec_xyz1) ) continue; //u>60, v<360, w<400
 
-		//General cut on EC, SC, CC hit and q (charge) for all events
-		if( ec[ind_em] < 0.5 ||  sc[ind_em] < 0.5 ||  cc[ind_em] < 0.5 || q[ind_em] >=0)
-		{
-		  continue;
+		CutUVW_Counter++;
+
+		// General cut on EC, SC, CC hit and q (charge) for all events
+
+		if( ec[ind_em] < 0.5 ||  sc[ind_em] < 0.5 ||  cc[ind_em] < 0.5 || q[ind_em] >= 0) {
+		  
+			continue;
+
 		}
 
-		//Cut on 1.1 GeV events (E/p, energy deposit, TOF and cherenkov)
+		EC_SC_CC_Q_Counter++;
+
+		h1_el_timediff->Fill(el_sccc_timediff);
+		h1_cc_c2->Fill(cc_c2[cc[ind_em]-1]);
+		h1_ec_ei->Fill(ec_ei[ec[ind_em] - 1]);
+		h1_ece->Fill(ece);
+		h1_eceOverP->Fill(ece/p[ind_em]);
+		h1_el_timediff_Sector[(int)(el_phi_mod/60.)]->Fill(el_sccc_timediff);
+
+		// Cut on 1.1 GeV events (E/p, energy deposit, TOF and cherenkov)
+
 		if(en_beam[fbeam_en] > 1. && en_beam[fbeam_en] <2. &&
 		  ( ec_ei[ec[ind_em] - 1] < 0.03 || ece/p[ind_em] < fsub_e->Eval(p[ind_em]) || ece/p[ind_em] > fsum_e->Eval(p[ind_em]) ||
 				p[ind_em] < min_good_mom || el_sccc_timediff < sc_cc_delt_cut_sect[el_cc_sector-1] ||   cc_c2[cc[ind_em]-1] > 0.1 ) )
@@ -863,7 +1098,8 @@ void GetCharge_FilterData::Loop()
 				continue;
 		}
 
-		//Cut on 2.2 GeV events (E/p, energy deposit, TOF and cherenkov)
+		// Cut on 2.2 GeV events (E/p, energy deposit, TOF and cherenkov)
+
 		if(en_beam[fbeam_en] < 3.  && en_beam[fbeam_en] > 2 &&
 		  ( ec_ei[ec[ind_em] - 1] < 0.06 || ece/p[ind_em] < fsub_e->Eval(p[ind_em]) || ece/p[ind_em] > fsum_e->Eval(p[ind_em]) ||
 				p[ind_em] < min_good_mom || cc_c2[cc[ind_em]-1] >= 0.1 || el_sccc_timediff < sc_cc_delt_cut_sect[el_cc_sector-1] ||
@@ -881,12 +1117,16 @@ void GetCharge_FilterData::Loop()
 				continue;
 		}
 
+		EnergyDep_Counter++;
+
 		// --------------------------------------------------------------------------------------------
 
 		// apapadop
 
 		//Electron vertex cut
 		if( !(el_vert_corr < vert_max[ftarget] && el_vert_corr > vert_min[ftarget]) ) continue;
+
+		Vertex_Counter++;
 
 		// --------------------------------------------------------------------------------------------
 
@@ -921,9 +1161,16 @@ void GetCharge_FilterData::Loop()
 		genie_pzl = V4_el.Pz();
 		genie_pl = V4_el.Rho();
 		genie_cthl = cos(V4_el.Theta());
+		genie_thetal = V4_el.Theta()*180./TMath::Pi();
+
+		double ElectronPhi = V4_el.Phi()*180./TMath::Pi()+30;
+		if (ElectronPhi < 0) { ElectronPhi += 360.; }
+		if (ElectronPhi >360) { ElectronPhi -= 360.; }
+		genie_phil = ElectronPhi;
+
 		genie_vtxx = 0;
 		genie_vtxy = 0;
-		genie_vtxz = 0;
+		genie_vtxz = el_vert_corr;
 
 		// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1007,7 +1254,9 @@ void GetCharge_FilterData::Loop()
 					TLorentzVector V4_uncorrprot(p[ind_p]*cx[ind_p],p[ind_p]*cy[ind_p],p[ind_p]*cz[ind_p],TMath::Sqrt(p[ind_p]*p[ind_p]+ m_prot*m_prot ) );
 					p_vert_corr = vz[ind_p]+vz_corr(vz_corr_func,prot_phi_mod,prot_theta);
 
-					if(PFiducialCut(fbeam_en, V4_uncorrprot.Vect())) { //proton fiducial cuts
+					// Proton fiducial cuts & extra outline
+
+					if(PFiducialCut(fbeam_en, V4_uncorrprot.Vect()) && PFiducialCutExtra(fbeam_en,V4_uncorrprot.Vect()) ) {
 
 						//main vertex cut for protons
 						if( (el_vert_corr-p_vert_corr) > vertdiff_min[ftarget] && (el_vert_corr-p_vert_corr) < vertdiff_max[ftarget] ) {
@@ -1026,6 +1275,12 @@ void GetCharge_FilterData::Loop()
 							genie_pzf[IndexInFinalStateParticleArray] = V4_uncorrprot.Pz();
 							genie_pf[IndexInFinalStateParticleArray] = V4_uncorrprot.Rho();
 							genie_cthf[IndexInFinalStateParticleArray] = V4_uncorrprot.CosTheta();
+							genie_thetaf[IndexInFinalStateParticleArray] = V4_uncorrprot.Theta()*180./TMath::Pi();
+
+							double UncorrPhi = V4_uncorrprot.Phi()*180./TMath::Pi()+30;
+							if (UncorrPhi < 0) { UncorrPhi += 360.; }
+							if (UncorrPhi > 360) { UncorrPhi -= 360.; }
+							genie_phif[IndexInFinalStateParticleArray] = UncorrPhi;
 
 							double CorrectedProtonMomentum = ProtonMomCorrection_He3_4Cell(ftarget,V4_uncorrprot,p_vert_corr);
 							V4_uncorrprot.SetRho(CorrectedProtonMomentum);
@@ -1039,6 +1294,13 @@ void GetCharge_FilterData::Loop()
 							genie_pzf[IndexInFinalStateParticleArray+shift] = V4_uncorrprot.Pz();
 							genie_pf[IndexInFinalStateParticleArray+shift] = V4_uncorrprot.Rho();
 							genie_cthf[IndexInFinalStateParticleArray+shift] = V4_uncorrprot.CosTheta();
+							genie_thetaf[IndexInFinalStateParticleArray+shift] = V4_uncorrprot.Theta()*180./TMath::Pi();
+
+							double ShiftUncorrPhi = V4_uncorrprot.Phi()*180./TMath::Pi()+30;
+							if (ShiftUncorrPhi < 0) { ShiftUncorrPhi += 360.; }
+							if (ShiftUncorrPhi > 360) { ShiftUncorrPhi -= 360.; }
+							genie_phif[IndexInFinalStateParticleArray+shift] = ShiftUncorrPhi;
+
 							IndexInFinalStateParticleArray++;
 
 							// ---------------------------------------------------------------------------------------------------------------------------------
@@ -1078,7 +1340,9 @@ void GetCharge_FilterData::Loop()
 					pimi_theta = TMath::ACos(cz[i])*TMath::RadToDeg();
 					pimi_vert_corr = pimi_vert+vz_corr(vz_corr_func, pimi_phi_mod,pimi_theta);
 
-					if(PimiFiducialCut(fbeam_en, V3_pimi, &pimi_phimin, &pimi_phimax)) {  //Pi minus fiducial cuts
+					// Pi minus fiducial cuts & extra outline 
+
+					if (PimiFiducialCut(fbeam_en, V3_pimi, &pimi_phimin, &pimi_phimax) && PimiFiducialCutExtra(fbeam_en, V3_pimi) ) {  
 
 						//main vertex cut for pi minus
 						if(fabs(el_vert_corr-pimi_vert_corr) < pimi_vertcut) {
@@ -1105,6 +1369,14 @@ void GetCharge_FilterData::Loop()
 							genie_pzf[IndexInFinalStateParticleArray] = V3_pimi.Z();
 							genie_pf[IndexInFinalStateParticleArray] = PiMinusP;
 							genie_cthf[IndexInFinalStateParticleArray] = V3_pimi.CosTheta();
+							genie_thetaf[IndexInFinalStateParticleArray] = V3_pimi.Theta()*180./TMath::Pi();
+
+							double CorrPhi = V3_pimi.Phi()*180./TMath::Pi() + 30;
+							if (CorrPhi < 0) { CorrPhi += 360.; }
+							if (CorrPhi > 360) { CorrPhi -= 360.; }
+
+							genie_phif[IndexInFinalStateParticleArray] = CorrPhi;
+
 							IndexInFinalStateParticleArray++;
 
 							// ----------------------------------------------------------------------------------------------------------------------------------------
@@ -1143,7 +1415,9 @@ void GetCharge_FilterData::Loop()
 					pipl_theta = TMath::ACos(cz[i])*TMath::RadToDeg();
 					pipl_vert_corr = pipl_vert + vz_corr(vz_corr_func,pipl_phi_mod,pipl_theta);
 
-					if (PiplFiducialCut(fbeam_en, V3_pipl, &pipl_phimin, &pipl_phimax)){ //Pi Plus fiducial cut
+					// Pi Plus fiducial cut & extra outline
+
+					if ( PiplFiducialCut(fbeam_en, V3_pipl, &pipl_phimin, &pipl_phimax) && PiplFiducialCutExtra(fbeam_en, V3_pipl)){
 
 						if (fabs(el_vert_corr-pipl_vert_corr) < pipl_vertcut) { //pi plus vertex cut
 							num_pipl = num_pipl + 1;
@@ -1168,6 +1442,14 @@ void GetCharge_FilterData::Loop()
 							genie_pzf[IndexInFinalStateParticleArray] = V3_pipl.Z();
 							genie_pf[IndexInFinalStateParticleArray] = PiPlusP;
 							genie_cthf[IndexInFinalStateParticleArray] = V3_pipl.CosTheta();
+							genie_thetaf[IndexInFinalStateParticleArray] = V3_pipl.Theta()*180./TMath::Pi();
+
+							double CorrPhi = V3_pipl.Phi()*180./TMath::Pi()+30;
+							if (CorrPhi < 0) { CorrPhi += 360.; }
+							if (CorrPhi > 360) { CorrPhi -= 360.; }
+
+							genie_phif[IndexInFinalStateParticleArray] = CorrPhi;
+
 							IndexInFinalStateParticleArray++;
 
 							// -----------------------------------------------------------------------------------------------------------------------------------
@@ -1208,7 +1490,9 @@ void GetCharge_FilterData::Loop()
 
 				if(neut_beta_corr > EC_photon_beta[ftarget]){   //photon identification
 
-					if(Phot_fid(V3_phot_angles)){ //photon fiducial function
+					// Photon fiducial function
+
+					if ( Phot_fid(V3_phot_angles) && Phot_fidExtra(V3_phot_angles) ) {
 
 						ec_num_n = ec_num_n + 1;
 						ec_index_n[ec_num_n - 1] = i;
@@ -1226,6 +1510,14 @@ void GetCharge_FilterData::Loop()
 						genie_pzf[IndexInFinalStateParticleArray] = V3_phot_angles.Z();
 						genie_pf[IndexInFinalStateParticleArray] = V3_phot_angles.Mag();
 						genie_cthf[IndexInFinalStateParticleArray] = V3_phot_angles.CosTheta();
+						genie_thetaf[IndexInFinalStateParticleArray] = V3_phot_angles.Theta()*180./TMath::Pi();
+
+						double CorrPhi = V3_phot_angles.Phi()*180./TMath::Pi()+30;
+						if (CorrPhi < 0) { CorrPhi += 360.; }
+						if (CorrPhi > 180) { CorrPhi -= 360.; }
+
+						genie_phif[IndexInFinalStateParticleArray] = CorrPhi;
+
 						IndexInFinalStateParticleArray++;
 
 						// -----------------------------------------------------------------------------------------------------------------------------
@@ -1277,10 +1569,38 @@ void GetCharge_FilterData::Loop()
 
 	} //end of event loop (jentry)
 
+	std::cout << std::endl << "File " << FileName << " has been created" << std::endl << std::endl;
+
+	std::cout << "Initial number of events = " << fChain->GetEntries() << std::endl;
+
+	std::cout << "EC_CounterEvents = " << EC_CounterEvents << std::endl;
+	std::cout << "SC_CounterEvents = " << SC_CounterEvents << std::endl;
+	std::cout << "ElectronFid_Counter = " << ElectronFid_Counter << std::endl;
+	std::cout << "CutUVW_Counter = " << CutUVW_Counter << std::endl;
+	std::cout << "EC_SC_CC_Q_Counter = " << EC_SC_CC_Q_Counter << std::endl;
+	std::cout << "EnergyDep_Counter = " << EnergyDep_Counter << std::endl;
+	std::cout << "Vertex_Counter = " << Vertex_Counter << std::endl;
+
 	std::cout << "GetCharge_CounterEvents = " << GetCharge_CounterEvents << std::endl;
 
 	gStyle->SetOptFit(1);
 	gDirectory->Write("hist_Files", TObject::kOverwrite);
+
+	// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	// Store number of initial / selected events
+
+	TH1D* InitialNEvents = new TH1D("InitialNEvents","",1,0,1);
+	InitialNEvents->SetBinContent(1,fChain->GetEntries());
+	file_out->cd();
+	InitialNEvents->Write();
+
+	TH1D* SelectedNEvents = new TH1D("SelectedNEvents","",1,0,1);
+	SelectedNEvents->SetBinContent(1,fChain->GetEntries());
+	file_out->cd();
+	SelectedNEvents->Write();
+
+	// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 } //End Loop function
 

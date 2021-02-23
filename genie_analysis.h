@@ -6,6 +6,7 @@
 #include <TFile.h>
 #include <TVector3.h>
 #include <TLorentzVector.h>
+
 #include "Fiducial.h"
 #include "Subtraction.h"
 
@@ -231,6 +232,38 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 
+	// ------------------------------------------------------------------------------------------
+
+	// apapadop // Nov 23 2020: adding extra fiducials with lower theta bounds for protons, pi pluses & pi minuses
+	// Protons & Pi pluses are easy, just a min angle
+	// Pi minuses are a functional form theta = A + B / P
+
+	Bool_t PFiducialCutExtra(std::string beam_en, TVector3 momentum) {
+	
+		return fiducialcut->PFiducialCutExtra(beam_en, momentum);
+	
+	}
+
+	Bool_t PiplFiducialCutExtra(std::string beam_en, TVector3 momentum) {
+     
+		return fiducialcut->PiplFiducialCutExtra(beam_en, momentum);
+	
+	}
+
+	Bool_t PimiFiducialCutExtra(std::string beam_en, TVector3 momentum) {
+     
+		return fiducialcut->PimiFiducialCutExtra(beam_en, momentum);
+	
+	}
+
+	Bool_t Phot_fidExtra(TVector3 momentum) {
+     
+		return fiducialcut->Phot_fidExtra(momentum);
+	
+	}
+
+	// ------------------------------------------------------------------------------------------
+
    void SetFiducialCutParameters(std::string beam_en) {
      fiducialcut->SetFiducialCutParameters(beam_en);
    }
@@ -267,7 +300,7 @@ public :
    void pi2_rot_func(std::string beam_en, TVector3 V3_pi[2], int q_pi[2],bool radstat[2], TVector3 V3_q,double *P_0pi,double P_1pi[2]);
    void pi3_rot_func(std::string beam_en, TVector3 V3_pi[3], int q_pi[3],bool radstat[3], TVector3 V3_q,double *P_0pi,double P_1pi[3],double P_320[3],double P_3210[][2]);
    void pi4_rot_func(std::string beam_en, TVector3 V3_pi[4], int q_pi[4],bool radstat[4], TVector3 V3_q,double *P_0pi,double *P_410,double *P_420,double *P_4210,double *P_430,double *P_4310,double *P_4320,double *P_43210);
-   double acceptance_c(double p, double cost, double phi, int id,TFile* file_acceptance);
+   double acceptance_c(double p, double cost, double phi, int id,TFile* file_acceptance, bool ApplyAccWeights);
 
 };
 
@@ -306,29 +339,42 @@ genie_analysis::genie_analysis(std::string a_target,std::string a_beam_en, int n
       // of trees.
       TChain * chain = new TChain("gst","genie_analysis");
       if (fchoice == 1) { 
-      
-      		// Radiative G2018
-		//chain->Add(Form("/pnfs/genie/persistent/users/apapadop/Rad-R-3_0_6/%s_%sGeV/apapadop_G18_10a_02_11a_%s_%sGeV.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));
-		
+      		
       		// Non radiative SuSav2
-		//chain->Add(Form("/pnfs/genie/persistent/users/apapadop/SuSav2/Exclusive/electrons/%s_%sGeV/apapadop_SuSav2_%s_%sGeV.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));
+
+		chain->Add(Form("/pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/%s_%sGeV/apapadop_SuSav2_%s_%sGeV_master*.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));
 		
-      		// Radiative SuSav2
-		chain->Add(Form("/pnfs/genie/persistent/users/apapadop/SuSav2/Exclusive/electrons/%s_%sGeV/apapadop_Rad_SuSav2_%s_%sGeV.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));  
-		    
-		//chain->Add(Form("/pnfs/uboone/persistent/users/apapadop/GenieProduction/R-3_0_6/Rad-R-3_0_6_Clas_%sGeV/G18_10a_02_11a/%s/eresmaid_%s_%s_R-3_0_6-G18_10a_02_11a_RadCorr_*M.root", fbeam_en.c_str(), ftarget.c_str(), ftarget.c_str(), fbeam_en.c_str())); 
+      		// Ext Radiation SuSav2
+
+//		chain->Add(Form("/pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/%s_%sGeV/apapadop_Rad_SuSav2_%s_%sGeV.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));  
+
+      		// Ext_Int Radiation SuSav2
 		
-		//chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/numaid_%s_%s_hA2018_LFG_FSI_NoRadCorr_3M.root", ftarget.c_str(), fbeam_en.c_str()));
+		//chain->Add(Form("/pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/%s_%sGeV/apapadop_UpdatedSchwingerRad_SuSav2_%s_%sGeV.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));  		   
+		
 	}
 
       if (fchoice == 2) { 
       
-      		// Radiative G2018
-		chain->Add(Form("/pnfs/genie/persistent/users/apapadop/Rad-R-3_0_6/%s_%sGeV/apapadop_G18_10a_02_11a_%s_%sGeV.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));
+      		// Non Radiative G2018
+
+		chain->Add(Form("/pnfs/genie/persistent/users/apapadop/e4v_G2018/Exclusive/electrons/%s_%sGeV/apapadop_G2018_%s_%sGeV_master*.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));
+
+      		// Ext Radiation G2018
+
+//		chain->Add(Form("/pnfs/genie/persistent/users/apapadop/e4v_G2018/Exclusive/electrons/%s_%sGeV/apapadop_Rad_G2018_%s_%sGeV.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));
+
+      		// Ext+Int Radiation G2018
+
+		//chain->Add(Form("/pnfs/genie/persistent/users/apapadop/e4v_G2018/Exclusive/electrons/%s_%sGeV/apapadop_UpdatedSchwingerRad_G2018_%s_%sGeV.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));
 
 	}
 
-      if (fchoice == 0) { chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/genie_filtered_data_e2a_ep_%s_%s_neutrino6_united4_radphot_test_100M.root",ftarget.c_str(), fbeam_en.c_str())); }
+      if (fchoice == 0) { 
+
+		chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_%s_%s_neutrino6_united4_radphot_test_100M.root",ftarget.c_str(), fbeam_en.c_str())); 
+
+	}
 
       tree = chain;
 #endif // SINGLE_TREE

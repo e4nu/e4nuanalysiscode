@@ -284,6 +284,38 @@ public :
      return fiducialcut->GetEPhiLimits(beam_en, momentum, theta, sector, EPhiMin, EPhiMax);
    }
 
+	// ------------------------------------------------------------------------------------------
+
+	// apapadop // Nov 23 2020: adding extra fiducials with lower theta bounds for protons, pi pluses & pi minuses
+	// Protons & Pi pluses are easy, just a min angle
+	// Pi minuses are a functional form theta = A + B / P
+
+	Bool_t PFiducialCutExtra(std::string beam_en, TVector3 momentum) {
+	
+		return fiducialcut->PFiducialCutExtra(beam_en, momentum);
+	
+	}
+
+	Bool_t PiplFiducialCutExtra(std::string beam_en, TVector3 momentum) {
+     
+		return fiducialcut->PiplFiducialCutExtra(beam_en, momentum);
+	
+	}
+
+	Bool_t PimiFiducialCutExtra(std::string beam_en, TVector3 momentum) {
+     
+		return fiducialcut->PimiFiducialCutExtra(beam_en, momentum);
+	
+	}
+
+	Bool_t Phot_fidExtra(TVector3 momentum) {
+     
+		return fiducialcut->Phot_fidExtra(momentum);
+	
+	}
+
+	// ------------------------------------------------------------------------------------------
+
 };
 
 #endif
@@ -317,7 +349,19 @@ GetCharge_FilterData::GetCharge_FilterData(std::string a_target,std::string a_be
       // of trees.
       TChain * chain = new TChain("ch","GetCharge_FilterData");
 //      chain->Add(Form("/work/clas/clase2/Mariana/data/e2a_%s_%s_v1/*.root/h10", ftarget.c_str(), fbeam_en.c_str()));
-      chain->Add(Form("/lustre19/expphy/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/*.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+      if (ftarget == "4He") { chain->Add(Form("/lustre19/expphy/cache/clas/e2a/production/pass2/v1/%s/%s_full/HROOT/*.root/h10", fbeam_en.c_str(), ftarget.c_str())); }
+      else { chain->Add(Form("/lustre19/expphy/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/*.root/h10", fbeam_en.c_str(), ftarget.c_str())); }
+
+/*
+      //12C @ 1.1 GeV & 1500 high torus current
+      chain->Add(Form("/lustre19/expphy/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/*18294*.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+      chain->Add(Form("/lustre19/expphy/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/*18297*.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+      chain->Add(Form("/lustre19/expphy/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/*18298*.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+      chain->Add(Form("/lustre19/expphy/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/*18306*.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+      chain->Add(Form("/lustre19/expphy/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/*18307*.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+      chain->Add(Form("/lustre19/expphy/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/*18335*.root/h10", fbeam_en.c_str(), ftarget.c_str()));
+*/
+
 
 /*      if (fbeam_en == "1161" && ftarget == "C12") chain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/hroot_18297_*_v1.root/h10", fbeam_en.c_str(), ftarget.c_str()));*/
 /*//      if (fbeam_en == "1161" && ftarget == "C12") chain->Add(Form("/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/hroot_18298_*_v1.root/h10", fbeam_en.c_str(), ftarget.c_str())); // high current*/

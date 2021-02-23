@@ -161,12 +161,39 @@ void FilterData::Loop()
 		Ecal_lowlim[5]=0.;
 		Ecal_uplim[5]=1.35;
 
+		// -----------------------------------------
+
+		// Mariana's fitting
+
+//		vert_min["3He"]=-3.05;
+//		vert_min["C12"]=4.95;
+//		vert_min["CH2"]=4.85;
+
+//		vert_max["3He"]=-0.18;
+//		vert_max["C12"]=5.76;
+//		vert_max["CH2"]=5.62;
+
+		// apapadop's fitting // Nov 9 2020
+
+//		vert_min["3He"]=-3.05;
+//		vert_min["C12"]=4.43;
+//		vert_min["CH2"]=4.64;
+
+//		vert_max["3He"]=-0.18;
+//		vert_max["C12"]=6.16;
+//		vert_max["CH2"]=5.82;
+
+		// Or's eyeballing // Nov 10 2020
+
 		vert_min["3He"]=-3.05;
-		vert_min["C12"]=4.95;
-		vert_min["CH2"]=4.85;
+		vert_min["C12"]=4.3;
+		vert_min["CH2"]=4.3;
+
 		vert_max["3He"]=-0.18;
-		vert_max["C12"]=5.76;
-		vert_max["CH2"]=5.62;
+		vert_max["C12"]=6.5;
+		vert_max["CH2"]=6.5;
+
+		// -----------------------------------------
 
 		vertdiff_min["3He"]=-1.;
 		vertdiff_min["C12"]=-1.;
@@ -229,14 +256,45 @@ void FilterData::Loop()
 		Ecal_lowlim[5]=0.;
 		Ecal_uplim[5]=2.;
 
+		// -----------------------------------------
+
+		// Mariana's fitting
+
+//		vert_min["3He"]=-3.29;
+//		vert_min["4He"]=-2.53;
+//		vert_min["C12"]=4.8;
+//		vert_min["56Fe"]=4.6;
+
+//		vert_max["3He"]=-0.23;
+//		vert_max["4He"]=1.73;
+//		vert_max["C12"]=5.5;
+//		vert_max["56Fe"]=5.3;
+
+//		// apapadop's fitting // Nov 9 2020
+
+//		vert_min["3He"]=-3.29;
+//		vert_min["4He"]=-2.53;
+//		vert_min["C12"]=4.58;
+//		vert_min["56Fe"]=4.46;
+
+//		vert_max["3He"]=-0.23;
+//		vert_max["4He"]=1.73;
+//		vert_max["C12"]=5.6;
+//		vert_max["56Fe"]=5.47;
+
+		// Or's eyeballing // Nov 10 2020
+
 		vert_min["3He"]=-3.29;
 		vert_min["4He"]=-2.53;
-		vert_min["C12"]=4.8;
-		vert_min["56Fe"]=4.6;
+		vert_min["C12"]=4.3;
+		vert_min["56Fe"]=4.3;
+
 		vert_max["3He"]=-0.23;
 		vert_max["4He"]=1.73;
-		vert_max["C12"]=5.5;
-		vert_max["56Fe"]=5.3;
+		vert_max["C12"]=6.5;
+		vert_max["56Fe"]=6.5;
+
+		// -----------------------------------------
 
 		vertdiff_min["3He"]=-1.;
 		vertdiff_min["4He"]=-1.;
@@ -306,14 +364,45 @@ void FilterData::Loop()
 		Ecal_lowlim[5]=0.;
 		Ecal_uplim[5]=4.;
 
+		// -----------------------------------------
+
+		// Mariana's fitting
+
+//		vert_min["3He"]=-3.27;
+//		vert_min["4He"]=-2.51;
+//		vert_min["C12"]=4.7;
+//		vert_min["56Fe"]=4.6;
+
+//		vert_max["3He"]=0.07;
+//		vert_max["4He"]=1.71;
+//		vert_max["C12"]=5.3;
+//		vert_max["56Fe"]=5.4;
+
+		// apapadop's fitting // Nov 9 2020
+
+//		vert_min["3He"]=-3.27;
+//		vert_min["4He"]=-2.51;
+//		vert_min["C12"]=4.44;
+//		vert_min["56Fe"]=4.41;
+
+//		vert_max["3He"]=0.07;
+//		vert_max["4He"]=1.71;
+//		vert_max["C12"]=5.56;
+//		vert_max["56Fe"]=5.46;
+
+		// Or's eyeballing // Nov 10 2020
+
 		vert_min["3He"]=-3.27;
 		vert_min["4He"]=-2.51;
-		vert_min["C12"]=4.7;
-		vert_min["56Fe"]=4.6;
+		vert_min["C12"]=4.3;
+		vert_min["56Fe"]=4.3;
+
 		vert_max["3He"]=0.07;
 		vert_max["4He"]=1.71;
-		vert_max["C12"]=5.3;
-		vert_max["56Fe"]=5.4;
+		vert_max["C12"]=6.5;
+		vert_max["56Fe"]=6.5;
+
+		// -----------------------------------------
 
 		vertdiff_min["3He"]=-1.;
 		vertdiff_min["4He"]=-1;
@@ -658,11 +747,22 @@ void FilterData::Loop()
 	fsum_e = new TF1("fsum_e",FSum_e,0.,5.,2);
 	fsub_e = new TF1("fsub_e",FSub_e,0.,5.,2);
 
+	fiducialcut->InitPiMinusFit(fbeam_en);
+
 	//initialize Fiducial functions for EC limits
 
 	fiducialcut->InitEClimits();
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
+
+	// Histo declaration
+
+	TH2D* h2_Electron_UncorrectedVertex_Phi = new TH2D("h2_Electron_UncorrectedVertex_Phi",";Uncorrected Vertex [cm];#phi_{e'} [deg]",2000,-10,10,360,0,360);
+	TH2D* h2_Electron_CorrectedVertex_Phi = new TH2D("h2_Electron_CorrectedVertex_Phi",";Corrected Vertex [cm];#phi_{e'} [deg]",2000,-10,10,360,0,360);
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------------
+
+	// Start of the loop
 
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
 
@@ -697,6 +797,8 @@ void FilterData::Loop()
 		if((runnb>18283 && runnb<18289) || (runnb>18300 && runnb<18304) || (runnb>18317 && runnb<18329)) fTorusCurrent=750; //setting appropriate torrus magnet current
 		else if ((runnb>18293 && runnb<18301) || (runnb>18305 && runnb<18317) || (runnb>18328 && runnb<18336))  fTorusCurrent=1500;
 		else fTorusCurrent=2250;
+
+		if (fbeam_en == "1161" && fTorusCurrent > 760) { continue; }                                                              
 
 		if(jentry == 0){ //was n_evt == 1 before but jentry = n_evnt - 1
 			//SetMomCorrParameters(); Functions is missing F.H. 08/01/19
@@ -824,6 +926,9 @@ void FilterData::Loop()
 		int el_ec_sector = ec_sect[ec[ind_em] - 1];
 		double el_vert_corr = el_vert+vz_corr(vz_corr_func,el_phi_mod,el_theta);
 
+		h2_Electron_UncorrectedVertex_Phi->Fill(el_vert,el_phi_mod);
+		h2_Electron_CorrectedVertex_Phi->Fill(el_vert_corr,el_phi_mod);
+
 		//Variables for electron cuts
 		double ece = TMath::Max( ec_ei[ec[ind_em] - 1] + ec_eo[ec[ind_em] - 1],   etot[ec[ind_em] - 1]);
 		el_segment = int((cc_segm[cc[ind_em]-1]-int(cc_segm[cc[ind_em]-1]/1000)*1000)/10); //does this work in all cases?? F.H. 08/07/19
@@ -914,7 +1019,7 @@ void FilterData::Loop()
 		genie_cthl = cos(V4_el.Theta());
 		genie_vtxx = 0;
 		genie_vtxy = 0;
-		genie_vtxz = 0;
+		genie_vtxz = el_vert_corr;
 
 		// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

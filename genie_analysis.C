@@ -112,7 +112,7 @@ void genie_analysis::Loop(Int_t choice) {
 	int NDeltaAlphaTBins = 36; double DeltaAlphaTMin = 0.; double DeltaAlphaTMax = 180.;
 	int NDeltaPhiTBins = 36; double DeltaPhiTMin = 0.; double DeltaPhiTMax = 180.;
 
-	const int NInt = 6; // All Interactions = 0, QE = 1, MEC = 2, RES = 3, DIS = 4
+	const int NInt = 6; // All Interactions = 0, QE = 1, MEC = 2, RES = 3, DIS = 4, COH = 5
 
 	// ---------------------------------------------------------------------------------------------------------------
 
@@ -385,7 +385,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TFile *file_out;
 	TString FileName = ""; 
 
-	if (choice == 0) { FileName = Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/e4v_Workshop/data_e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()); }
+	if (choice == 0) { FileName = Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/data_e2a_ep_%s_%s_neutrino6_united4_radphot_test.root",ftarget.c_str(),fbeam_en.c_str()); }
 	if (choice == 1){ FileName = Form("genie_e2a_ep_%s_%s_neutrino6_united4_radphot_test_SuSav2.root",ftarget.c_str(),fbeam_en.c_str()); }
 	if (choice == 2) { FileName = Form("genie_e2a_ep_%s_%s_neutrino6_united4_radphot_test_G18_10a_02_11a.root",ftarget.c_str(),fbeam_en.c_str()); }
 	if (choice == 3) { FileName = Form("genie_e2a_ep_%s_%s_neutrino6_united4_radphot_test_SuSav2_Rad.root",ftarget.c_str(),fbeam_en.c_str()); }
@@ -442,6 +442,7 @@ void genie_analysis::Loop(Int_t choice) {
 	TH1F *h1_EQE_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[NSectors];
 	TH1F *h1_EQE_FullyInclusive_NoQ4Weight_xBCut_Theta_Slice_InSector[NSectors];
 	TH1F *h1_Omega_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[NSectors];
+	TH1F *h1_InteractionBreakDown_Omega_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[NInt][NSectors];
 	TH1F *h1_Omega_FullyInclusive_NoQ4Weight_xBCut_Theta_Slice_InSector[NSectors];
 	TH1F *h1_EePrime_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[NSectors];
 	TH1F *h1_EePrime_FullyInclusive_NoQ4Weight_xBCut_Theta_Slice_InSector[NSectors];
@@ -459,6 +460,12 @@ void genie_analysis::Loop(Int_t choice) {
 		h1_EQE_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[WhichSector]  = new TH1F("h1_EQE_FullyInclusive_NoQ4Weight_Theta_Slice_InSector_"+TString(std::to_string(WhichSector)),"",6000,0.,6.);
 
 		h1_Omega_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[WhichSector]  = new TH1F("h1_Omega_FullyInclusive_NoQ4Weight_Theta_Slice_InSector_"+TString(std::to_string(WhichSector)),"",6000,0.,6.);
+
+		for (int WhichInt = 1; WhichInt < NInt; WhichInt++) {
+
+			h1_InteractionBreakDown_Omega_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[WhichInt][WhichSector]  = new TH1F("h1_"+TString(std::to_string(WhichInt))+"_Omega_FullyInclusive_NoQ4Weight_Theta_Slice_InSector_"+TString(std::to_string(WhichSector)),"",6000,0.,6.);
+
+		}
 
 		TProf_Omega_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[WhichSector]  = new TProfile("TProf_Omega_FullyInclusive_NoQ4Weight_Theta_Slice_InSector_"+TString(std::to_string(WhichSector)),"",6000,0.,6.);
 
@@ -1166,6 +1173,21 @@ void genie_analysis::Loop(Int_t choice) {
 		std::string StoreEnergy = fbeam_en;
 		if (UsePhiThetaBand) { StoreEnergy = ""; }
 
+		// -------------------------------------------------------------------------------------------------------------------------
+
+		// For GENIE samples, identify the interaction type
+
+		int Interaction = -1;
+
+		if (choice > 0) {
+
+			if (qel) { Interaction = 1; }
+			if (mec) { Interaction = 2; }
+			if (res) { Interaction = 3; }
+			if (dis) { Interaction = 4; }
+
+		}
+
 		// ---------------------------------------------------------------------------------------------------------------
 
 		if(jentry == 0){ //first entry to initialize TorusCurrent, Fiducials and Subtraction classes
@@ -1409,6 +1431,7 @@ void genie_analysis::Loop(Int_t choice) {
 
 			h1_EQE_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[ElectronSector]->Fill(E_rec,WeightIncl/Q4);
 			h1_Omega_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[ElectronSector]->Fill(nu,WeightIncl/Q4);
+			if (Interaction > -1) { h1_InteractionBreakDown_Omega_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[Interaction][ElectronSector]->Fill(nu,WeightIncl/Q4); }
 			h1_EePrime_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[ElectronSector]->Fill(V4_el.E(),WeightIncl/Q4);
 
 			TProf_Omega_FullyInclusive_NoQ4Weight_Theta_Slice_InSector[ElectronSector]->Fill(nu,nu);
@@ -1558,7 +1581,7 @@ void genie_analysis::Loop(Int_t choice) {
 					index_p[num_p - 1] = i;
 					ProtonID.push_back(i);
 
-					TVector3 V3_prot_corr(pxf[i],pyf[i],pzf[i]);
+					TVector3 V3_prot_corr(pxf[i+60],pyf[i+60],pzf[i+60]);
 
 					ProtonPhi_Deg = V3_prot_corr.Phi() * 180. / TMath::Pi() + 180. + 30.; 
 					if (ProtonPhi_Deg > 360.) { ProtonPhi_Deg -= 360.; } 
@@ -1892,21 +1915,6 @@ void genie_analysis::Loop(Int_t choice) {
 
 		if (num_pipl == 0 && num_pimi == 0) { h1_EQE_FullyInclusive_IrregBins_NoPions->Fill(E_rec,WeightIncl); }
 
-		// -------------------------------------------------------------------------------------------------------------------------
-
-		// For GENIE samples, identify the interaction type
-
-		int Interaction = -1;
-
-		if (choice > 0) {
-
-			if (qel) { Interaction = 1; }
-			if (mec) { Interaction = 2; }
-			if (res) { Interaction = 3; }
-			if (dis) { Interaction = 4; }
-
-		}
-
 		// -----------------------------------------------------------------------------------------------------------------------------
 
 
@@ -1961,8 +1969,8 @@ void genie_analysis::Loop(Int_t choice) {
 			double p_acc_ratio2 = 1; //will be 1 for CLAS data
 
 			if (choice == 0) { //CLAS data
-				V3_prot_corr1.SetXYZ(pxf[index_p[0]],pyf[index_p[0]],pzf[index_p[0]]);
-				V3_prot_corr2.SetXYZ(pxf[index_p[1]],pyf[index_p[1]],pzf[index_p[1]]);
+				V3_prot_corr1.SetXYZ(pxf[index_p[0]+60],pyf[index_p[0]+60],pzf[index_p[0]+60]);
+				V3_prot_corr2.SetXYZ(pxf[index_p[1]+60],pyf[index_p[1]+60],pzf[index_p[1]+60]);
 			}
 
 			if (choice > 0) { //GENIE data, fiducials are done in hadron loop
@@ -3055,8 +3063,8 @@ void genie_analysis::Loop(Int_t choice) {
 
 				if (choice == 0) { //CLAS data
 
-					V3_prot_corr[i].SetXYZ(pxf[index_p[i]], pyf[index_p[i]], pzf[index_p[i]]);
-					V4_p_corr[i].SetPxPyPzE(pxf[index_p[i]], pyf[index_p[i]], pzf[index_p[i]],TMath::Sqrt(m_prot*m_prot+pf[index_p[i]]*pf[index_p[i]]));
+					V3_prot_corr[i].SetXYZ(pxf[index_p[i]+60], pyf[index_p[i]+60], pzf[index_p[i]+60]);
+					V4_p_corr[i].SetPxPyPzE(pxf[index_p[i]+60], pyf[index_p[i]+60], pzf[index_p[i]+60],TMath::Sqrt(m_prot*m_prot+pf[index_p[i]+60]*pf[index_p[i]+60]));
 					p_acc_ratio[i] = 1; //Acceptance is 1 for CLAS datafile
 				}
 
@@ -3733,8 +3741,8 @@ void genie_analysis::Loop(Int_t choice) {
 
 				if (choice == 0) { // CLAS data
 
-					V3_prot4_corr[i].SetXYZ(pxf[index_p[i]], pyf[index_p[i]], pzf[index_p[i]]);
-					V4_p4_corr[i].SetPxPyPzE(pxf[index_p[i]], pyf[index_p[i]], pzf[index_p[i]], TMath::Sqrt(m_prot*m_prot+pf[index_p[i]]*pf[index_p[i]]));
+					V3_prot4_corr[i].SetXYZ(pxf[index_p[i]+60], pyf[index_p[i]+60], pzf[index_p[i]+60]);
+					V4_p4_corr[i].SetPxPyPzE(pxf[index_p[i]+60], pyf[index_p[i]+60], pzf[index_p[i]+60], TMath::Sqrt(m_prot*m_prot+pf[index_p[i]+60]*pf[index_p[i]+60]));
 					p_acc_ratio[i] = 1; //Acceptance is 1 for CLAS data
 				}
 
@@ -5137,8 +5145,8 @@ void genie_analysis::Loop(Int_t choice) {
 			double p_acc_ratio = 1; //acceptance is 1 for CLAS data
 
 			if (choice == 0) { //CLAS data
-				V3_prot_corr.SetXYZ(pxf[index_p[0]], pyf[index_p[0]], pzf[index_p[0]]);
-				V4_prot_corr.SetPxPyPzE(pxf[index_p[0]], pyf[index_p[0]], pzf[index_p[0]],TMath::Sqrt(m_prot*m_prot+pf[index_p[0]]*pf[index_p[0]]));
+				V3_prot_corr.SetXYZ(pxf[index_p[0]+60], pyf[index_p[0]+60], pzf[index_p[0]+60]);
+				V4_prot_corr.SetPxPyPzE(pxf[index_p[0]+60], pyf[index_p[0]+60], pzf[index_p[0]+60],TMath::Sqrt(m_prot*m_prot+pf[index_p[0]+60]*pf[index_p[0]+60]));
 			}
 			if (choice > 0) { //GENIE data
 				p_acc_ratio = 0; //Reset just to be sure

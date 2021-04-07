@@ -20,27 +20,30 @@ using namespace std;
 #include "/home/afroditi/Dropbox/PhD/Secondary_Code/SetOffsetAndSize.cpp"
 #include "/home/afroditi/Dropbox/PhD/Secondary_Code/ToString.cpp"
 
+#include "AfroConstants.h"
+#include "myFunctions.cpp"
+
 // ----------------------------------------------------------------------------------------------------------------
 
 // Accounting for the fact that the bin width is not constant
 
-void ReweightPlots(TH1D* h) {
+//void ReweightPlots(TH1D* h) {
 
-	double NBins = h->GetNbinsX(); 
-				
-	for (int i = 1; i <= NBins; i++) { 
-					
-		double content = h->GetBinContent(i);
-		double error = h->GetBinError(i);
-		double width = h->GetBinWidth(i);
-		double newcontent = content / width;
-		double newerror = error / width;				
-		h->SetBinContent(i,newcontent);
-		h->SetBinError(i,newerror);
+//	double NBins = h->GetNbinsX(); 
+//				
+//	for (int i = 1; i <= NBins; i++) { 
+//					
+//		double content = h->GetBinContent(i);
+//		double error = h->GetBinError(i);
+//		double width = h->GetBinWidth(i);
+//		double newcontent = content / width;
+//		double newerror = error / width;				
+//		h->SetBinContent(i,newcontent);
+//		h->SetBinError(i,newerror);
 
-	}
+//	}
 
-}
+//}
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -100,31 +103,92 @@ void OverlayPlots() {
 	std::vector<int> Style;
 
 //	nucleus.push_back("4He"); LabelsOfSamples.push_back("^{4}He"); JustNucleus.push_back("He");
-//	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
-	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
+	nucleus.push_back("12C"); LabelsOfSamples.push_back("^{12}C"); JustNucleus.push_back("C");
+//	nucleus.push_back("56Fe"); LabelsOfSamples.push_back("^{56}Fe");  JustNucleus.push_back("Fe");
+//	nucleus.push_back("CH2"); LabelsOfSamples.push_back("CH2"); JustNucleus.push_back("CH2");
 
-//	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
+	E.push_back("1_161"); LabelE.push_back(" @ E = 1.161 GeV"); DoubleE.push_back(1.161);
 //	E.push_back("2_261"); LabelE.push_back(" @ E = 2.261 GeV"); DoubleE.push_back(2.261);	
-	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
+//	E.push_back("4_461"); LabelE.push_back(" @ E = 4.461 GeV");  DoubleE.push_back(4.461);
 
 	xBCut.push_back("NoxBCut");
 //	xBCut.push_back("xBCut");
  
 //	Colors.push_back(kBlack); Colors.push_back(kRed); Colors.push_back(kBlue); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
-	Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kMagenta); Colors.push_back(kGreen); Colors.push_back(kOrange + 7);
+	Colors.push_back(kBlack); Colors.push_back(kRed); Colors.push_back(kBlue); Colors.push_back(kGreen+1); Colors.push_back(kOrange+1); Colors.push_back(kMagenta);
 
 //	Style.push_back(9); Style.push_back(3); Style.push_back(7); Style.push_back(5);
 //	Style.push_back(9); Style.push_back(9); Style.push_back(9); Style.push_back(9); // fancy dashed lines 
-	Style.push_back(1); Style.push_back(kDashed); Style.push_back(1); Style.push_back(1);
+	Style.push_back(1); Style.push_back(1); Style.push_back(1); Style.push_back(1);
 
-	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen); BreakDownColors.push_back(kMagenta);
+	BreakDownColors.push_back(kBlue); BreakDownColors.push_back(kCyan); BreakDownColors.push_back(kGreen+1); BreakDownColors.push_back(kMagenta);
 
-	FSIModel.push_back("Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
-//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("Genie");  DirNames.push_back("hA2018_Truth_NoRadCorr");
-//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("G2018");  DirNames.push_back("hA2018_Truth_RadCorr");
-//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2 NoRad");  DirNames.push_back("hA2018_Truth_RadCorr");
-	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
-	FSIModel.push_back("SuSav2_RadCorr_LFGM_NoAccMaps"); FSILabel.push_back("SuSav2 (No Maps)");  DirNames.push_back("hA2018_Truth_RadCorr");
+	FSIModel.push_back("Pinned_Data_Final"); FSILabel.push_back("Data"); DirNames.push_back("Data");
+//	FSIModel.push_back("Pinned_Data_Final_XSec"); FSILabel.push_back("Data"); DirNames.push_back("Data");
+//	FSIModel.push_back("MikhailCook_Data"); FSILabel.push_back("Data (Mikhail)"); DirNames.push_back("Data");
+
+//	FSIModel.push_back("Pinned_Data_Final"); FSILabel.push_back("Data (failure)"); DirNames.push_back("Data");
+//	FSIModel.push_back("Pinned_Data_Final_SixSectors"); FSILabel.push_back("Data (Florian's rethrow)"); DirNames.push_back("Data");
+//	FSIModel.push_back("Pinned_Data_NewFiducials_SixSectors"); FSILabel.push_back("Data (New map)"); DirNames.push_back("Data_New_Fiducials");
+
+//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM_Playground"); FSILabel.push_back("Genie Playground");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM_Offset"); FSILabel.push_back("G2018");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM_Truth_WithoutFidAcc_NoThetaCut"); FSILabel.push_back("G2018 (default)");  DirNames.push_back("hA2018_Truth_RadCorr");
+
+//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM_Truth_WithoutFidAcc"); FSILabel.push_back("G2018 (master)");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("G2018_MasterNoRad_Truth_WithoutFidAcc"); FSILabel.push_back("G2018 (adi)");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM_Truth_WithoutFidAcc"); FSILabel.push_back("SuSav2 (Truth NoRad)");  DirNames.push_back("hA2018_Truth_RadCorr");
+
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_Schwinger"); FSILabel.push_back("SuSav2 (Ext+Int Rad v1)");  DirNames.push_back("SuSav2_Truth_RadCorr");
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM_Truth0pi_WithFidAcc_Test"); FSILabel.push_back("SuSav2 Reco 0pi / No Maps");  DirNames.push_back("SuSav2_Reco_0pi");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM_Truth0pi_WithFidAcc"); FSILabel.push_back("SuSav2 Reco 0pi");  DirNames.push_back("SuSav2_Reco_0pi");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM_Truth0pi_WithoutFidAcc"); FSILabel.push_back("SuSav2 True 0pi");  DirNames.push_back("SuSav2_True_0pi");
+
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2 (No Rad master)");  DirNames.push_back("hA2018_Truth_RadCorr");
+	FSIModel.push_back("SuSav2_NoRadCorr_LFGM_Truth_WithFidAcc"); FSILabel.push_back("SuSav2 (No Rad)");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM_Truth_WithoutFidAcc_XSec"); FSILabel.push_back("SuSav2 (No Rad)");  DirNames.push_back("hA2018_Truth_RadCorr");
+
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM_Truth_WithoutFidAcc"); FSILabel.push_back("SuSav2 (Default)");  DirNames.push_back("SuSav2_Truth_NoRadCorr");
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM_Truth_WithoutFidAcc_Test"); FSILabel.push_back("SuSav2 (Test)");  DirNames.push_back("SuSav2_Truth_NoRadCorr_Test");
+
+//	FSIModel.push_back("SuSav2_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2 (e4v No Rad master)");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM"); FSILabel.push_back("SuSav2 (Ext Rad)");  DirNames.push_back("SuSav2_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_UpdatedSchwinger"); FSILabel.push_back("SuSav2 (Rad adi_radcorr)");  DirNames.push_back("SuSav2_Truth_RadCorr");
+	FSIModel.push_back("SuSav2_RadCorr_LFGM_Truth_WithFidAcc_UpdatedSchwinger"); FSILabel.push_back("SuSav2 (Rad)");  DirNames.push_back("SuSav2_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_Truth_WithFidAcc_UpdatedSchwinger_XSec"); FSILabel.push_back("SuSav2 (Rad)");  DirNames.push_back("SuSav2_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_UpdatedSchwinger"); FSILabel.push_back("SuSav2 (Rad adi)");  DirNames.push_back("SuSav2_Truth_RadCorr");
+
+//	FSIModel.push_back("SuSav2_MasterRad_Truth_WithFidAcc"); FSILabel.push_back("SuSav2 (Rad master)");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_MasterNoRad_Truth_WithFidAcc"); FSILabel.push_back("SuSav2 (No Rad adi_radcorr)");  DirNames.push_back("hA2018_Truth_RadCorr");
+
+//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM"); FSILabel.push_back("G2018 (No Rad master)");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("G2018_MasterNoRad"); FSILabel.push_back("G2018 (No Rad master+adi_radcorr)");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM_Truth_WithFidAcc"); FSILabel.push_back("G2018 (1p0pi No Rad)");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+//	FSIModel.push_back("hA2018_Final_NoRadCorr_LFGM_Truth_WithoutFidAcc_XSec"); FSILabel.push_back("G2018 (1p0pi No Rad)");  DirNames.push_back("hA2018_Truth_NoRadCorr");
+////	FSIModel.push_back("hA2018_Final_RadCorr_LFGM"); FSILabel.push_back("G2018 (Ext Rad)");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("hA2018_Final_RadCorr_LFGM_UpdatedSchwinger"); FSILabel.push_back("G2018 (Rad adi_radcorr)");  DirNames.push_back("hA2018_Truth_RadCorr");
+
+//	FSIModel.push_back("G2018_MasterRad"); FSILabel.push_back("G2018 (Rad master+adi_radcorr)");  DirNames.push_back("hA2018_Truth_RadCorr");
+
+//	FSIModel.push_back("G2018_MasterRad_QEOnly"); FSILabel.push_back("G2018 (QE Only)");  DirNames.push_back("hA2018_Truth_RadCorr");
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_UpdatedSchwinger"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_UpdatedSchwinger_Test"); FSILabel.push_back("SuSav2 (Old map)");  DirNames.push_back("SuSav2_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_Truth_WithFidAcc_UpdatedSchwinger"); FSILabel.push_back("SuSav2 Truth W/ Fid & Acc");  DirNames.push_back("SuSav2_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_Truth_WithoutFidAcc"); FSILabel.push_back("SuSav2 (Truth Rad)");  DirNames.push_back("SuSav2_Truth_RadCorr");
+
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_Filtered"); FSILabel.push_back("SuSav2");  DirNames.push_back("SuSav2_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_Truth_WithFidAcc_Filtered"); FSILabel.push_back("SuSav2 Truth W/ Fid & Acc");  DirNames.push_back("SuSav2_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_Truth_WithoutFidAcc_Filtered"); FSILabel.push_back("SuSav2 (Truth Rad)");  DirNames.push_back("SuSav2_Truth_RadCorr");
+
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_NoAccMaps"); FSILabel.push_back("SuSav2 (No Maps)");  DirNames.push_back("hA2018_Truth_RadCorr");
+//	FSIModel.push_back("SuSav2_RadCorr_LFGM_NewFiducials"); FSILabel.push_back("SuSav2 (New Fiducials)");  DirNames.push_back("SuSav2_New_Fiducials");
+
 //	FSIModel.push_back("SuSav2_02_11a_NoRadCorr_LFGM"); FSILabel.push_back("SuSav2");  DirNames.push_back("hA2018_Truth_RadCorr");
 //	FSIModel.push_back("SuSav2_RadCorr_LFGM_NoWeightsBelow_0_7"); FSILabel.push_back("SuSav2 w>0.7");  DirNames.push_back("hA2018_Truth_RadCorr_NoWeights_Below_0_7");
 
@@ -139,7 +203,14 @@ void OverlayPlots() {
 
 //	NameOfPlots.push_back("MissMomentum"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} P_{T} [GeV/c]"); OutputPlotNames.push_back("MissMomentum");
 //	NameOfPlots.push_back("MissMomentum_NoWeight"); LabelOfPlots.push_back("P_{miss}^{#perp} [GeV/c]"); OutputPlotNames.push_back("MissMomentum_NoWeight");
+
+//	NameOfPlots.push_back("DeltaAlphaT_Int_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} P_{T} [GeV/c]"); OutputPlotNames.push_back("DeltaAlphaT_Int_0");
 	NameOfPlots.push_back("epRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
+//	NameOfPlots.push_back("ECal_Int_1"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("ECal_Int_1");
+//	NameOfPlots.push_back("ECal_Int_2"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("ECal_Int_2");
+//	NameOfPlots.push_back("ECal_Int_3"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("ECal_Int_3");
+//	NameOfPlots.push_back("ECal_Int_4"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("ECal_Int_4");
+
 //	NameOfPlots.push_back("eRecoEnergy_slice_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("eRecoEnergy_slice_0");
 //	NameOfPlots.push_back("h1_Etot_p_bkgd_slice_sub2p1pi_1p0pi_1"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]");  OutputPlotNames.push_back("epRecoEnergy_slice_1");
 //	NameOfPlots.push_back("h1_Erec_p_bkgd_slice_sub2p1pi_2p_1"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("eRecoEnergy_slice_1");
@@ -152,6 +223,7 @@ void OverlayPlots() {
 //	NameOfPlots.push_back("h1_el_mom_corr");  LabelOfPlots.push_back("P_{e} (GeV / c)"); OutputPlotNames.push_back("Pmu");
 //	NameOfPlots.push_back("h1_prot_mom"); LabelOfPlots.push_back("P_{p} (GeV / c)"); OutputPlotNames.push_back("Pp");
 //	NameOfPlots.push_back("h1_theta0"); LabelOfPlots.push_back("#theta_{0} (beam-reco angle) (degrees)"); OutputPlotNames.push_back("theta0");
+//	NameOfPlots.push_back("h1_el_theta"); LabelOfPlots.push_back("#theta_{e'} [deg]"); OutputPlotNames.push_back("theta_el");
 //	NameOfPlots.push_back("h1_Npi"); LabelOfPlots.push_back("#pi^{+/-} Multiplicity"); OutputPlotNames.push_back("PionMultiPlot");
 //	NameOfPlots.push_back("h1_Nprot"); LabelOfPlots.push_back("Proton Multiplicity"); OutputPlotNames.push_back("Nproton");
 //	NameOfPlots.push_back("h1_Nphot"); LabelOfPlots.push_back("N_{#gamma}"); OutputPlotNames.push_back("Ngamma");
@@ -166,10 +238,25 @@ void OverlayPlots() {
 //	NameOfPlots.push_back("h1_WvarCal_weight"); LabelOfPlots.push_back("Reconstructed W [GeV / c^{2})]"); OutputPlotNames.push_back("WCal");
 //	NameOfPlots.push_back("h_Erec_subtruct_piplpimi_noprot_3pi"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{QE} [GeV]");  OutputPlotNames.push_back("InclusiveeRecoEnergy_slice_0");
 //	NameOfPlots.push_back("h1_EQE_FullyInclusive"); LabelOfPlots.push_back("(e,e') E^{QE} [GeV]");  OutputPlotNames.push_back("FullyInclusiveeRecoEnergy_slice_0");
+//	NameOfPlots.push_back("h1_W_weight_ThetaSlice_InSector_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} W [GeV]");  OutputPlotNames.push_back("h1_Wvar_weight");
 //	NameOfPlots.push_back("h1_E_rec"); LabelOfPlots.push_back("(e,e') E^{QE} [GeV]");  OutputPlotNames.push_back("FullyInclusiveeRecoEnergy_slice_0");
 //	NameOfPlots.push_back("CosDeltaThetaElectronPhotonAboveThreshold"); LabelOfPlots.push_back("cos(#Delta#theta_{e',#gamma})");  OutputPlotNames.push_back("CosDeltaThetaElectronPhotonAboveThreshold");
 //	NameOfPlots.push_back("CosDeltaPhiElectronPhotonAboveThreshold"); LabelOfPlots.push_back("cos(#Delta#phi_{e',#gamma})");  OutputPlotNames.push_back("CosDeltaPhiElectronPhotonAboveThreshold");
 //	NameOfPlots.push_back("h1_E_tot_cut2"); LabelOfPlots.push_back("(e,e')_{0#pi} E^{Cal} Before Subtraction [GeV]");  OutputPlotNames.push_back("h1_E_tot_cut2");
+//	NameOfPlots.push_back("h1_PiPlus_Momentum"); LabelOfPlots.push_back("P_{#pi^{+}} [GeV/c]"); OutputPlotNames.push_back("PiPlus_Momentum");
+//	NameOfPlots.push_back("h1_Omega_FullyInclusive_NoQ4Weight_Theta_Slice_InSector_0"); LabelOfPlots.push_back("(e,e') #omega [GeV]"); OutputPlotNames.push_back("Omega_Inclusive");
+
+
+//	NameOfPlots.push_back("h1_ECal_InSector_0"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("h1_ECal_InSector_0");
+//	NameOfPlots.push_back("h1_ECal_InSector_1"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("h1_ECal_InSector_1");
+//	NameOfPlots.push_back("h1_ECal_InSector_2"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("h1_ECal_InSector_2");
+//	NameOfPlots.push_back("h1_ECal_InSector_3"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("h1_ECal_InSector_3");
+//	NameOfPlots.push_back("h1_ECal_InSector_4"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("h1_ECal_InSector_4");
+//	NameOfPlots.push_back("h1_ECal_InSector_5"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("h1_ECal_InSector_5");
+
+//	NameOfPlots.push_back("h1_E_tot_p_bkgd"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
+//	NameOfPlots.push_back("h1_E_tot_3pto1p"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
+//	NameOfPlots.push_back("h1_E_tot_undetfactor"); LabelOfPlots.push_back("(e,e'p)_{1p0#pi} E^{cal} [GeV]"); OutputPlotNames.push_back("epRecoEnergy_slice_0");
 
 	std::vector<TH1D*> Plots;
 	std::vector<TH1D*> Plots_Clones;
@@ -208,7 +295,6 @@ void OverlayPlots() {
 					TCanvas* PlotCanvas = new TCanvas(nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+NameOfPlots[WhichPlot]+"_"+xBCut[WhichxBCut],
 									 nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+NameOfPlots[WhichPlot]+"_"+xBCut[WhichxBCut],
 									 205,34,1024,768);
-//									 205,34,768,768);
 
 					// -------------------------------------------------------------
 
@@ -217,24 +303,24 @@ void OverlayPlots() {
 					double XMinPadOne = -99., XMaxPadOne = -99., YMinPadOne = -99., YMaxPadOne = -99.;
 					double XMinPadTwo = -99., XMaxPadTwo = -99., YMinPadTwo = -99., YMaxPadTwo = -99.;
 
-					if (
-						string(OutputPlotNames[WhichPlot]).find("RecoEnergy_slice") != std::string::npos || 
-						string(NameOfPlots[WhichPlot]).find("MissMomentum") != std::string::npos ||
-						NameOfPlots[WhichPlot] == "h1_Q2_weight"||
-						NameOfPlots[WhichPlot] == "h1_nu_weight" ||
-						NameOfPlots[WhichPlot] == "h1_Nphot" || 
-						NameOfPlots[WhichPlot] == "h1_Nprot" ||
-						NameOfPlots[WhichPlot] == "h1_Npi" ||
-						NameOfPlots[WhichPlot] == "h_Etot_subtruct_piplpimi_factor_fracfeed" ||
-						NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed"
-					   ) {
+//					if (
+//						string(OutputPlotNames[WhichPlot]).find("RecoEnergy_slice") != std::string::npos || 
+//						string(NameOfPlots[WhichPlot]).find("MissMomentum") != std::string::npos ||
+//						NameOfPlots[WhichPlot] == "h1_Q2_weight"||
+//						NameOfPlots[WhichPlot] == "h1_nu_weight" ||
+//						NameOfPlots[WhichPlot] == "h1_Nphot" || 
+//						NameOfPlots[WhichPlot] == "h1_Nprot" ||
+//						NameOfPlots[WhichPlot] == "h1_Npi" ||
+//						NameOfPlots[WhichPlot] == "h_Etot_subtruct_piplpimi_factor_fracfeed" ||
+//						NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed"
+//					   ) {
 
 						XMinPadOne = 0., XMaxPadOne = 1., YMinPadOne = 0.0, YMaxPadOne = 1.;
 						XMinPadTwo = 0., XMaxPadTwo = 1., YMinPadTwo = 0.0, YMaxPadTwo = 0.01;
-					} else {
-						XMinPadOne = 0., XMaxPadOne = 1., YMinPadOne = 0.2, YMaxPadOne = 1.;
-						XMinPadTwo = 0., XMaxPadTwo = 1., YMinPadTwo = 0., YMaxPadTwo = 0.2;
-					}
+//					} else {
+//						XMinPadOne = 0., XMaxPadOne = 1., YMinPadOne = 0.2, YMaxPadOne = 1.;
+//						XMinPadTwo = 0., XMaxPadTwo = 1., YMinPadTwo = 0., YMaxPadTwo = 0.2;
+//					}
 
 					// ----------------------------------------------------------------------------------------
 
@@ -273,7 +359,7 @@ void OverlayPlots() {
 					Plots.clear();
 
 //					TLegend* leg = new TLegend(0.17,0.92,0.9,0.99);
-					TLegend* leg = new TLegend(0.2,0.7,0.5,0.89);
+					TLegend* leg = new TLegend(0.15,0.57,0.45,0.87);
 					leg->SetNColumns(1);
 //					leg->SetNColumns(2);
 
@@ -286,7 +372,7 @@ void OverlayPlots() {
 					TLegend* legGenie = new TLegend(LegXmin,LegYmin,LegXmin+0.15,LegYmin+YSpread);
 					legGenie->SetNColumns(1);
 
-					TLegend* legGenieBlackLine = new TLegend(LegXmin,0.68,LegXmin+0.15,0.82);
+					TLegend* legGenieBlackLine = new TLegend(LegXmin,0.63,LegXmin+0.15,0.82);
 					legGenieBlackLine->SetNColumns(1);
 
 					TLegend* legGenieBreak = new TLegend(LegXmin,0.55,0.4,0.68);
@@ -365,11 +451,11 @@ void OverlayPlots() {
 
 						// Y-axis label
 
-						Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(0.);
+						/*Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(0.);
 						if (
 							NameOfPlots[WhichPlot] == "h1_Nphot" || 
 							NameOfPlots[WhichPlot] == "h1_Nprot" || 
-							/*NameOfPlots[WhichPlot] == "h1_Npi" ||*/
+							//NameOfPlots[WhichPlot] == "h1_Npi" ||
 							OutputPlotNames[WhichPlot] =="InclusiveeRecoEnergy_slice_0" ||
 							OutputPlotNames[WhichPlot] =="FullyInclusiveeRecoEnergy_slice_0" ||
 							OutputPlotNames[WhichPlot] =="MissMomentum" ||
@@ -383,8 +469,9 @@ void OverlayPlots() {
 
 						if (string(OutputPlotNames[WhichPlot]).find("_NoWeight") != std::string::npos) 
 							{ Plots[WhichFSIModel]->GetYaxis()->SetTitle("Unweighted Events / GeV"); }
-						else if ( (NameOfPlots[WhichPlot] == "h1_Nphot" || NameOfPlots[WhichPlot] == "h1_Nprot" /*|| 
-							NameOfPlots[WhichPlot] == "h1_Npi"*/) ) 
+						else if ( (NameOfPlots[WhichPlot] == "h1_Nphot" || NameOfPlots[WhichPlot] == "h1_Nprot" 
+							//||NameOfPlots[WhichPlot] == "h1_Npi"
+) ) 
 							{ Plots[WhichFSIModel]->GetYaxis()->SetTitle("Weighted Events"); }
 						else if (OutputPlotNames[WhichPlot] =="InclusiveeRecoEnergy_slice_0" || 
 						         OutputPlotNames[WhichPlot] =="FullyInclusiveeRecoEnergy_slice_0" || 
@@ -392,16 +479,17 @@ void OverlayPlots() {
 							 OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_1" ||
 							   OutputPlotNames[WhichPlot] =="epRecoEnergy_slice_0" ||
 							   OutputPlotNames[WhichPlot] =="eRecoEnergy_slice_0" ||
-							 OutputPlotNames[WhichPlot] == "nu"
+							 OutputPlotNames[WhichPlot] == "nu" 
 						) 
 							{ Plots[WhichFSIModel]->GetYaxis()->SetTitle("Weighted Events / GeV");  }
 						else if (
 							NameOfPlots[WhichPlot] == "h1_Nphot" || 
 							NameOfPlots[WhichPlot] == "h1_Nprot" ||
-							/*NameOfPlots[WhichPlot] == "h1_Npi" ||*/
+							//NameOfPlots[WhichPlot] == "h1_Npi" ||
 							NameOfPlots[WhichPlot] == "h_Etot_subtruct_piplpimi_factor_fracfeed" ||
 							NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed"
-						) { Plots[WhichFSIModel]->GetYaxis()->SetTitle("Weighted Events"); }
+						) {*/ Plots[WhichFSIModel]->GetYaxis()->SetTitle("Normalized Yield"); //}
+						Plots[WhichFSIModel]->GetYaxis()->SetLabelSize(TextSize);
 
 
 						// --------------------------------------------------------------------------------------
@@ -421,7 +509,7 @@ void OverlayPlots() {
 						else { Plots[WhichFSIModel]->GetYaxis()->SetTitleOffset(0.6); }
 						Plots[WhichFSIModel]->SetLineWidth(LineWidth);
 
-						if (FSILabel[WhichFSIModel] == "Data" 
+						if (string(FSILabel[WhichFSIModel]).find("Data") != std::string::npos 
 							&& !(NameOfPlots[WhichPlot] == "h1_Nphot" || NameOfPlots[WhichPlot] == "h1_Nprot" || NameOfPlots[WhichPlot] == "h1_Npi")) 
 							{ leg->AddEntry(Plots[WhichFSIModel],FSILabel[WhichFSIModel], "lep");}
 						else { leg->AddEntry(Plots[WhichFSIModel],FSILabel[WhichFSIModel], "l"); }
@@ -620,90 +708,95 @@ void OverlayPlots() {
 //						double ScalingFactor = Plots[0]->GetMaximum() / Plots[WhichFSIModel]->GetMaximum();
 //						double ScalingFactor = 18E8 / Plots[WhichFSIModel]->GetMaximum();
 //						double ScalingFactor = 1.;
-						Plots[WhichFSIModel]->Scale(ScalingFactor);
+						//Plots[WhichFSIModel]->Scale(ScalingFactor);
+cout << "FSIModelsToLabels[FSIModel[WhichFSIModel]] = " << FSIModelsToLabels[FSIModel[WhichFSIModel]] << endl;
+						UniversalE4vFunction(Plots[WhichFSIModel],FSIModelsToLabels[FSIModel[WhichFSIModel]],nucleus[WhichNucleus],E[WhichEnergy],NameOfPlots[WhichPlot]);
 
 						// -----------------------------------------------------------------------------------
 
 						// Accounting for the fact that the bin width might not be constant
 
-						if ( !(
-							NameOfPlots[WhichPlot] == "h1_Nphot" || 
-							NameOfPlots[WhichPlot] == "h1_Nprot" ||
-							NameOfPlots[WhichPlot] == "h1_Npi") ) { ReweightPlots(Plots[WhichFSIModel]); }
+//						if ( !(
+//							NameOfPlots[WhichPlot] == "h1_Nphot" || 
+//							NameOfPlots[WhichPlot] == "h1_Nprot" ||
+//							NameOfPlots[WhichPlot] == "h1_Npi") ) { ReweightPlots(Plots[WhichFSIModel]); }
 
 						// --------------------------------------------------------------------------------------
 
 						// Rebining & ranges
 
-//						if (string(OutputPlotNames[WhichPlot]).find("epRecoEnergy_slice") != std::string::npos) 
-//							{ for (int i = 0; i < NECalRebin; i++) { Plots[WhichFSIModel]->Rebin(); } }
+////						if (string(OutputPlotNames[WhichPlot]).find("epRecoEnergy_slice") != std::string::npos) 
+////							{ for (int i = 0; i < NECalRebin; i++) { Plots[WhichFSIModel]->Rebin(); } }
 
-						if ( NameOfPlots[WhichPlot] == "h1_EQE_FullyInclusive" && DoubleE[WhichEnergy] == 1.161) 
-							{ for (int i = 0; i < 4; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,1.7); } }
+//						if ( NameOfPlots[WhichPlot] == "h1_EQE_FullyInclusive" && DoubleE[WhichEnergy] == 1.161) 
+//							{ for (int i = 0; i < 4; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,1.7); } }
 
-						if ( NameOfPlots[WhichPlot] == "h1_EQE_FullyInclusive" && DoubleE[WhichEnergy] == 2.261) 
-							{ for (int i = 0; i < 4; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,3.); } }
+//						if ( NameOfPlots[WhichPlot] == "h1_EQE_FullyInclusive" && DoubleE[WhichEnergy] == 2.261) 
+//							{ for (int i = 0; i < 4; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,3.); } }
 
-						if ( NameOfPlots[WhichPlot] == "h1_EQE_FullyInclusive" && DoubleE[WhichEnergy] == 4.461) 
-							{ for (int i = 0; i < 5; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.5,6.); } }
+//						if ( NameOfPlots[WhichPlot] == "h1_EQE_FullyInclusive" && DoubleE[WhichEnergy] == 4.461) 
+//							{ for (int i = 0; i < 5; i++) { Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.5,6.); } }
 
-						if (string(OutputPlotNames[WhichPlot]).find("epRecoEnergy_slice") != std::string::npos && nucleus[WhichNucleus] == "12C" 
-							&& DoubleE[WhichEnergy] == 2.261) 
-							{ Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.6,2.5); }
+//						if (string(OutputPlotNames[WhichPlot]).find("epRecoEnergy_slice") != std::string::npos && nucleus[WhichNucleus] == "12C" 
+//							&& DoubleE[WhichEnergy] == 2.261) 
+//							{ Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.6,2.5); }
 
-						if (string(OutputPlotNames[WhichPlot]).find("epRecoEnergy_slice") != std::string::npos && nucleus[WhichNucleus] == "56Fe" 
-							&& DoubleE[WhichEnergy] == 4.461) 
-							{ Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.,5.); }
+//						if (string(OutputPlotNames[WhichPlot]).find("epRecoEnergy_slice") != std::string::npos && nucleus[WhichNucleus] == "56Fe" 
+//							&& DoubleE[WhichEnergy] == 4.461) 
+//							{ Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.,5.); }
 
-						if (string(OutputPlotNames[WhichPlot]).find("eRecoEnergy_slice") != std::string::npos) 
-							{ for (int i = 0; i < 0; i++) { Plots[WhichFSIModel]->Rebin(); } }
+//						if (string(OutputPlotNames[WhichPlot]).find("eRecoEnergy_slice") != std::string::npos) 
+//							{ for (int i = 0; i < 0; i++) { Plots[WhichFSIModel]->Rebin(); } }
+
+////						if (NameOfPlots[WhichPlot] == "h_Etot_subtruct_piplpimi_factor_fracfeed") 
+////							{ for (int i = 0; i < 1; i++) { Plots[WhichFSIModel]->Rebin(); } }
+
+//						if (NameOfPlots[WhichPlot] == "h1_el_mom_corr") { for (int i = 0; i < 1; i++) 
+//							{ Plots[WhichFSIModel]->Rebin(); } }
+
+//						if (NameOfPlots[WhichPlot] == "h1_prot_mom") 
+//							{ for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin(); } }
+
+//						if (NameOfPlots[WhichPlot] == "h1_Wvar_weight" || NameOfPlots[WhichPlot] == "h1_WvarCal_weight") 
+//							{ for (int i = 0; i < 3; i++) { Plots[WhichFSIModel]->Rebin(); } }
+
+//						if (NameOfPlots[WhichPlot] == "h1_xbjk_weight" || NameOfPlots[WhichPlot] == "h1_xbjkCal_weight") 
+//							{ for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin(); } Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,2.);}
+
+//						if (NameOfPlots[WhichPlot] == "h1_Q2_weight" || NameOfPlots[WhichPlot] == "h1_Q2Cal_weight") {
+//							for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin();} 
+//							Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,2.);
+//							if (DoubleE[WhichEnergy] == 4.461) { 
+//								for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin(); } 
+//								Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.,4.);  }
+//						}
+
+//						if ( (NameOfPlots[WhichPlot] == "h1_Q2_weight" || NameOfPlots[WhichPlot] == "h1_Q2Cal_weight") && xBCut[WhichxBCut] == "xBCut") 
+//							{ Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,2.5); }
+
+//						if (NameOfPlots[WhichPlot] == "h1_theta0") 
+//							{ Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,60.); }
+
+//						if (NameOfPlots[WhichPlot] == "h1_nu_weight" || NameOfPlots[WhichPlot] == "h1_nuCal_weight") 
+//							{ for (int i = 0; i < 3; i++) {Plots[WhichFSIModel]->Rebin();} Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,1.7); }
+
+//						if ( (NameOfPlots[WhichPlot] == "h1_nu_weight" || NameOfPlots[WhichPlot] == "h1_nuCal_weight") && xBCut[WhichxBCut] == "xBCut") 
+//							{ Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.2,1.2); }
+
+//						if (string(NameOfPlots[WhichPlot]).find("MissMomentum") != std::string::npos) { for (int i = 0; i < 2; i++) 
+//							{ Plots[WhichFSIModel]->Rebin();} }
 
 //						if (NameOfPlots[WhichPlot] == "h_Etot_subtruct_piplpimi_factor_fracfeed") 
-//							{ for (int i = 0; i < 1; i++) { Plots[WhichFSIModel]->Rebin(); } }
+//							{ for (int i = 0; i < 0; i++) {Plots[WhichFSIModel]->Rebin();} Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(-0.7,0.1); }
 
-						if (NameOfPlots[WhichPlot] == "h1_el_mom_corr") { for (int i = 0; i < 1; i++) 
-							{ Plots[WhichFSIModel]->Rebin(); } }
+//						if (NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed" && xBCut[WhichxBCut] == "NoxBCut") 
+//							{ for (int i = 0; i < 0; i++) {Plots[WhichFSIModel]->Rebin();} Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(-0.8,0.3); }
 
-						if (NameOfPlots[WhichPlot] == "h1_prot_mom") 
-							{ for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin(); } }
+//						if (NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed" && xBCut[WhichxBCut] == "xBCut") 
+//							{ for (int i = 0; i < 0; i++) {Plots[WhichFSIModel]->Rebin();} Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(-0.2,0.2); }
 
-						if (NameOfPlots[WhichPlot] == "h1_Wvar_weight" || NameOfPlots[WhichPlot] == "h1_WvarCal_weight") 
-							{ for (int i = 0; i < 3; i++) { Plots[WhichFSIModel]->Rebin(); } }
-
-						if (NameOfPlots[WhichPlot] == "h1_xbjk_weight" || NameOfPlots[WhichPlot] == "h1_xbjkCal_weight") 
-							{ for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin(); } Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,2.);}
-
-						if (NameOfPlots[WhichPlot] == "h1_Q2_weight" || NameOfPlots[WhichPlot] == "h1_Q2Cal_weight") {
-							for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin();} 
-							Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,2.);
-							if (DoubleE[WhichEnergy] == 4.461) { 
-								for (int i = 0; i < 2; i++) { Plots[WhichFSIModel]->Rebin(); } 
-								Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(1.,4.);  }
-						}
-
-						if ( (NameOfPlots[WhichPlot] == "h1_Q2_weight" || NameOfPlots[WhichPlot] == "h1_Q2Cal_weight") && xBCut[WhichxBCut] == "xBCut") 
-							{ Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.4,2.5); }
-
-						if (NameOfPlots[WhichPlot] == "h1_theta0") 
-							{ Plots[WhichFSIModel]->Rebin(); Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,60.); }
-
-						if (NameOfPlots[WhichPlot] == "h1_nu_weight" || NameOfPlots[WhichPlot] == "h1_nuCal_weight") 
-							{ for (int i = 0; i < 3; i++) {Plots[WhichFSIModel]->Rebin();} Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,1.7); }
-
-						if ( (NameOfPlots[WhichPlot] == "h1_nu_weight" || NameOfPlots[WhichPlot] == "h1_nuCal_weight") && xBCut[WhichxBCut] == "xBCut") 
-							{ Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.2,1.2); }
-
-						if (string(NameOfPlots[WhichPlot]).find("MissMomentum") != std::string::npos) { for (int i = 0; i < 2; i++) 
-							{ Plots[WhichFSIModel]->Rebin();} }
-
-						if (NameOfPlots[WhichPlot] == "h_Etot_subtruct_piplpimi_factor_fracfeed") 
-							{ for (int i = 0; i < 0; i++) {Plots[WhichFSIModel]->Rebin();} Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(-0.7,0.1); }
-
-						if (NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed" && xBCut[WhichxBCut] == "NoxBCut") 
-							{ for (int i = 0; i < 0; i++) {Plots[WhichFSIModel]->Rebin();} Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(-0.8,0.3); }
-
-						if (NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed" && xBCut[WhichxBCut] == "xBCut") 
-							{ for (int i = 0; i < 0; i++) {Plots[WhichFSIModel]->Rebin();} Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(-0.2,0.2); }
+//						if (NameOfPlots[WhichPlot] == "h1_PiPlus_Momentum")
+//							{ for (int i = 0; i < 4; i++) {Plots[WhichFSIModel]->Rebin();} Plots[WhichFSIModel]->GetXaxis()->SetRangeUser(0.,2.); }
 
 //						// --------------------------------------------------------------------------------------
 
@@ -916,7 +1009,7 @@ void OverlayPlots() {
 							Plots[WhichFSIModel]->GetYaxis()->SetLabelOffset(-0.004);
 							Plots[WhichFSIModel]->Rebin();
 							Plots[0]->GetYaxis()->SetRangeUser(0.5*min,2.*max); pad1->SetLogy();
-							if (FSILabel[WhichFSIModel] == "Data") { 
+							if (string(FSILabel[WhichFSIModel]).find("Data") != std::string::npos) { 
 						 
 								Plots[WhichFSIModel]->SetMarkerSize(3.); 
 								if (NameOfPlots[WhichPlot] == "h1_Nprot") { 
@@ -942,11 +1035,11 @@ void OverlayPlots() {
 
 						else { 
 						//	Plots[WhichFSIModel]->Draw("C hist same"); 
-							if (FSILabel[WhichFSIModel] == "Data") { 
+							if (string(FSILabel[WhichFSIModel]).find("Data") != std::string::npos) { 
 
 								Plots[WhichFSIModel]->SetMarkerStyle(20); 
 								Plots[WhichFSIModel]->SetMarkerSize(2.); 
-								Plots[WhichFSIModel]->SetMarkerColor(kBlack); 
+								Plots[WhichFSIModel]->SetMarkerColor(Colors[WhichFSIModel]); 
 
 								if ( OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_1" 
 									|| OutputPlotNames[WhichPlot] == "epRecoEnergy_slice_2"
@@ -954,9 +1047,9 @@ void OverlayPlots() {
 								gStyle->SetErrorX(0); // Removing the horizontal errors
 								Plots[WhichFSIModel]->Draw("e same"); 
 							} else { 
-//								Plots[WhichFSIModel]->Draw("hist same"); // draw them as histos
 								Plots[WhichFSIModel]->SetLineStyle(Style[WhichFSIModel]); 
-								Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
+								Plots[WhichFSIModel]->Draw("hist same"); // draw them as histos
+//								Plots[WhichFSIModel]->Draw("C hist same");  // draw them as lines
 								Plots[0]->Draw("e same"); 
 							}
 						}
@@ -1128,7 +1221,7 @@ void OverlayPlots() {
 							&& DoubleE[WhichEnergy] == 2.261 && nucleus[WhichNucleus] == "12C" ) {
  
 							latexScale.SetTextSize(TextSize); 
-							latexScale.DrawLatexNDC(0.86,0.47,"x1/3"); 
+							latexScale.DrawLatexNDC(0.89,0.91,"x1/3"); 
 //							if (FSILabel[WhichFSIModel] == "Data") {
 //								latexData.DrawLatexNDC(0.4,0.43+0.3*WhichFSIModel,FSILabel[WhichFSIModel]);
 //							}
@@ -1234,7 +1327,7 @@ void OverlayPlots() {
 					) { 
 					
 						legGenie->SetTextSize(TextSize-0.02);
-						legGenie->Draw(); 
+						//legGenie->Draw(); 
 					}
 
 					TLatex latex;
@@ -1297,17 +1390,19 @@ void OverlayPlots() {
 						}
 											}
 
-					if (
-						string(OutputPlotNames[WhichPlot]).find("RecoEnergy_slice") != std::string::npos || 
-						string(NameOfPlots[WhichPlot]).find("MissMomentum") != std::string::npos ||
-                                                NameOfPlots[WhichPlot] == "h1_Q2_weight" ||
-						NameOfPlots[WhichPlot] == "h1_nu_weight" ||
-						NameOfPlots[WhichPlot] == "h1_Nphot" || 
-						NameOfPlots[WhichPlot] == "h1_Nprot" ||
-						NameOfPlots[WhichPlot] == "h1_Npi" ||
-						NameOfPlots[WhichPlot] == "h_Etot_subtruct_piplpimi_factor_fracfeed" ||
-						NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed"
-					   ) { delete pad2; }
+//					if (
+//						string(OutputPlotNames[WhichPlot]).find("RecoEnergy_slice") != std::string::npos || 
+//						string(NameOfPlots[WhichPlot]).find("MissMomentum") != std::string::npos ||
+//                                                NameOfPlots[WhichPlot] == "h1_Q2_weight" ||
+//						NameOfPlots[WhichPlot] == "h1_nu_weight" ||
+//						NameOfPlots[WhichPlot] == "h1_Nphot" || 
+//						NameOfPlots[WhichPlot] == "h1_Nprot" ||
+//						NameOfPlots[WhichPlot] == "h1_Npi" ||
+//						NameOfPlots[WhichPlot] == "h_Etot_subtruct_piplpimi_factor_fracfeed" ||
+//						NameOfPlots[WhichPlot] == "h_Erec_subtruct_piplpimi_factor_fracfeed"
+//					   ) { 
+					delete pad2;
+					//}
 
 					// -----------------------------------------------------------------------------------------------------------------------------------------
 

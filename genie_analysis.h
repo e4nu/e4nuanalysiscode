@@ -338,6 +338,13 @@ genie_analysis::genie_analysis(std::string a_target,std::string a_beam_en, int n
       // The following code should be used if you want this class to access a chain
       // of trees.
       TChain * chain = new TChain("gst","genie_analysis");
+
+	if (fchoice == 0) { 
+
+		chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/e4v_Workshop/e4vWorkshop_%s_%s.root",ftarget.c_str(), fbeam_en.c_str())); 
+
+	}
+
       if (fchoice == 1) { 
       		
       		// Non radiative SuSav2
@@ -370,11 +377,21 @@ genie_analysis::genie_analysis(std::string a_target,std::string a_beam_en, int n
 
 	}
 
-      if (fchoice == 0) { 
+	if (fchoice == 3) { 
 
-		chain->Add(Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_%s_%s_neutrino6_united4_radphot_test_100M.root",ftarget.c_str(), fbeam_en.c_str())); 
+      		// Ext_Int Radiation SuSav2
+		
+		chain->Add(Form("/pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/%s_%sGeV/apapadop_UpdatedSchwingerRad_SuSav2_%s_%sGeV.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));  	
 
 	}
+
+	if (fchoice == 4) {
+
+      		// Ext+Int Radiation G2018
+
+		chain->Add(Form("/pnfs/genie/persistent/users/apapadop/e4v_G2018/Exclusive/electrons/%s_%sGeV/apapadop_UpdatedSchwingerRad_G2018_%s_%sGeV.root", ftarget.c_str(),fbeam_en.c_str(),ftarget.c_str(),fbeam_en.c_str()));
+
+	} 
 
       tree = chain;
 #endif // SINGLE_TREE

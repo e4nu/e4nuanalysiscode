@@ -8,7 +8,7 @@
 #define _PARTICLE_UTILS_H_
 
 namespace e4nu { 
-  namespace ParticleUtils
+  namespace utils
     {
       unsigned double GetParticleResolucion( int particle_pdg, bool apply_resolution = true ) ; 
      }

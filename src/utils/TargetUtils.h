@@ -8,7 +8,7 @@
 #define _TARGET_UTILS_H_
 
 namespace e4nu { 
-  namespace TargetUtils 
+  namespace utils
     {
       unsigned double GetECalOffset( const unsigned int target_pdg ) ;
       unsigned double GetBindingEnergy( const unsigned int target_pdg ) ; 

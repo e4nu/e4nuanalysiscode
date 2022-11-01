@@ -8,7 +8,7 @@
 
 using namespace e4nu ; 
 
-unsigned double ParticleUtils::GetParticleResolucion( int particle_pdg, double Ebeam, bool apply_resolution = true ) {
+unsigned double utils::GetParticleResolucion( int particle_pdg, double Ebeam, bool apply_resolution = true ) {
   double resolution = 0 ; 
   if ( !apply_resolution ) return resolution ; 
 

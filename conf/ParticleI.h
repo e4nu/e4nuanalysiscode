@@ -12,8 +12,8 @@ namespace e4nu {
     // Pdg codes 
     const int kPdgProton = 2212 ;
     const int kPdgNeutron = 2112 ;
-    const int kPdgPiM = 211 ; 
-    const int kPdgPim = -211 ; 
+    const int kPdgPiP = 211 ; 
+    const int kPdgPiM = -211 ; 
     const int kPdgPi0 = 111 ; 
     const int kPdgElectron = 11 ; 
     const int kPdgPositron = -11 ; 
@@ -27,9 +27,9 @@ namespace e4nu {
     const double kMassElectron = 0.000510998 ; 
 
     // Detector resolution for each particle 
-    const unsigned double kProtonRes = 0.01 ; 
-    const unsigned double kElectronRes = 0.005 ; 
-    const unsigned double kPionRes = 0.007 ; 
+    const double kProtonRes = 0.01 ; 
+    const double kElectronRes = 0.005 ; 
+    const double kPionRes = 0.007 ; 
   }
 }
-#endif _PARTICLE_I_H_
+#endif 

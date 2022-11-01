@@ -21,12 +21,13 @@ namespace e4nu {
       
     //    if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) { minQ2 = 0.1; maxQ2 = 0.82; }
     // if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.) { minQ2 = 1.1; maxQ2 = 4.4; }
+
     const double GetMinMomentumCut( const int particle_pdg, const double EBeam ) { 
-      min_p = 0 ;
+      double min_p = 0 ;
       if( particle_pdg == ParticleI::kPdgElectron ) {
-	if( E == 1.161 /*GeV*/ ) min_p = 0.4 ; 
-	else if ( E == 0.55 /*GeV*/ ) min_p = 0.55 ;
-	else if ( E == 4.461 /*GeV*/ ) min_p = 1.1 ; 
+	if( EBeam == 1.161 /*GeV*/ ) min_p = 0.4 ; 
+	else if ( EBeam == 0.55 /*GeV*/ ) min_p = 0.55 ;
+	else if ( EBeam == 4.461 /*GeV*/ ) min_p = 1.1 ; 
       }
       return min_p ; 
     }
@@ -52,4 +53,4 @@ namespace e4nu {
   }
 }
 
-#endif _DETECTOR_I_H_
+#endif

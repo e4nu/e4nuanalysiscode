@@ -9,7 +9,7 @@ MAKEFILE = Makefile
 include $(E4NUANALYSIS)/src/make/Make.include
 
 PACKAGE           = E4nuConf
-DICTIONARY        = _ROOT_DICT_E4NuConf
+DICTIONARY        = _ROOT_DICT_E4nuConf
 LIBNAME           = libE4nuConf
 EXTRA_EXT_LIBS    =
 
@@ -18,6 +18,6 @@ install : install-inc install-lib
 
 # Include standard package makefile targets
 #
-include $(E4NUANALYSIS)/src/make/Make.targets
+include ${E4NUANALYSIS}/src/make/Make.targets
 
 FORCE:

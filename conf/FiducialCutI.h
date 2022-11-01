@@ -9,12 +9,12 @@
 
 namespace e4nu {
   namespace FiducialCutI {
-    const unsigned int GetTorusCurrent( const unsigned double E ) {
+    const unsigned int GetTorusCurrent( const double E ) {
       if ( E < 2 ) return 750 ;
-      else ( E > 2 and E < 5 ) return 2250 ;
+      else if ( E > 2 && E < 5 ) return 2250 ;
       return 0 ; 
     }
   }
 }
 
-#endif _FIDUCIALCUT_I_H
+#endif

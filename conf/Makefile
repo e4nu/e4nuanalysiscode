@@ -6,18 +6,29 @@ SHELL = /bin/sh
 NAME = all
 MAKEFILE = Makefile
 
-include $(E4NUANALYSIS)/src/make/Make.include
+ROOTCFLAGS  := $(shell root-config --cflags)
+ROOTLDFLAGS := $(shell root-config --ldflags)
+ROOTLIBS    := $(shell root-config --libs) -lEG
+ROOTGLIBS   := $(shell root-config --glibs)
+
+INCLUDES    := -I../include
+
+CXX       := g++
+CXXFLAGS  += -std=c++11 -Wall -Wshadow -Warray-bounds -Wmissing-field-initializers -fPIC $(ROOTCFLAGS)
+LD        := g++
+LDFLAGS   := $(ROOTLDFLAGS)
 
 PACKAGE           = E4nuConf
 DICTIONARY        = _ROOT_DICT_E4nuConf
 LIBNAME           = libE4nuConf
 EXTRA_EXT_LIBS    =
 
-all     : rootcint lib lib-link
-install : install-inc install-lib
+all     : E4nuConf
 
-# Include standard package makefile targets
-#
-include ${E4NUANALYSIS}/src/make/Make.targets
-
+OBJ := ParticleI.o TargetI.o AnalysisCuts.o FiducialCuts.o AcceptanceMaps.o
+E4nuConf: $(OBJ)
+	$(CXX) -o E4nuConf $(OBJ) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
 FORCE:
+
+%.o: %.h	
+	$(CXX) -c $< -O2 $(CXXFLAGS) $(INCLUDES)

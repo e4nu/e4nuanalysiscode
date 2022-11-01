@@ -10,12 +10,7 @@ SHELL = /bin/sh
 NAME = all
 MAKEFILE = Makefile
 
-include $(E4NUANALYSIS)/src/make/Make.include
-
-# define composite targets
-
-BUILD_TARGETS = print-make-info \
-		make-bin-lib-dir \
+BUILD_TARGETS = make-bin-lib-dir \
 		configuration \
 		utilities 
 # ...
@@ -28,18 +23,6 @@ INSTALL_TARGETS =  print-makeinstall-info \
 
 all:     $(BUILD_TARGETS)
 install: $(INSTALL_TARGETS)
-
-print-make-info: FORCE
-	@echo " "
-	@echo " "
-	@echo "***** Building E4NUANALYSIS from source tree at: $(E4NUANALYSIS)"
-	@echo " "
-
-print-makeinstall-info: FORCE
-	@echo " "
-	@echo " "
-	@echo "***** Installing E4NUANALYSIS at $(E4NUANALYSIS_INSTALLATION_PATH)"
-	@echo " "
 
 make-bin-lib-dir: FORCE
 	@echo " "

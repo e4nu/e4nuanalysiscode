@@ -52,8 +52,9 @@ configuration: FORCE
 	@echo " "
 	@echo "** Building Configuration..."
 	cd ${E4NUANALYSIS}/conf && \
-	cd make && \
+	make && \
 	cd ${E4NUANALYSIS}
+	@echo " Done."
 
 utilities: FORCE
 	@echo " "

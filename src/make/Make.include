@@ -3,7 +3,14 @@
 #
 # Julia Tena Vidal, jtenavidal \at tauex.tau.ac.il
 #
+## Ideally one should read it from a generated file... FIX
+E4NUANALYSIS_INSTALLATION_PATH = /genie/app/users/jtenavid/e4v/Build
 
+ARCH      = $(shell root-config --arch)
+ARCH_OK   =
+IS_MACOSX =
+
+# E4NU paths
 E4NUANALYSIS_LIB_PATH := $(E4NUANALYSIS)/lib
 E4NUANALYSIS_BIN_PATH := $(E4NUANALYSIS)/bin
 E4NUANALYSIS_SRC_PATH := $(E4NUANALYSIS)/src
@@ -12,7 +19,147 @@ E4NUANALYSIS_LIB_INSTALLATION_PATH := $(E4NUANALYSIS_INSTALLATION_PATH)/lib
 E4NUANALYSIS_BIN_INSTALLATION_PATH := $(E4NUANALYSIS_INSTALLATION_PATH)/bin
 E4NUANALYSIS_SRC_INSTALLATION_PATH := $(E4NUANALYSIS_INSTALLATION_PATH)/src
 
+# Header files base dir
 E4NUANALYSIS_INCLUDES := -I$(E4NUANALYSIS)/src
+
+# XML lib & include directories
+
+ifdef GOPT_WITH_LIBXML2_INC
+XML_INC_DIR = $(GOPT_WITH_LIBXML2_INC)
+else
+XML_INC_DIR = /usr/include/libxml2
+endif
+
+ifdef GOPT_WITH_LIBXML2_LIB
+XML_LIB_DIR = $(GOPT_WITH_LIBXML2_LIB)
+else
+XML_LIB_DIR = /usr/lib
+endif
+
+# XML libraries and headers
+
+XML_INCLUDES  := -I$(XML_INC_DIR)
+XML_LIBRARIES := -L$(XML_LIB_DIR) -lxml2
+
+# log4cpp lib & include directory
+
+ifdef GOPT_WITH_LOG4CPP_INC
+LOG_INC_DIR = $(GOPT_WITH_LOG4CPP_INC)
+else
+LOG_INC_DIR = /usr/local/src/log4cpp/include
+endif
+
+ifdef GOPT_WITH_LOG4CPP_LIB
+LOG_LIB_DIR = $(GOPT_WITH_LOG4CPP_LIB)
+else
+LOG_LIB_DIR = /usr/local/lib
+endif
+
+# log4cpp libraries and headers
+
+LOG_INCLUDES  := -I$(LOG_INC_DIR)
+LOG_LIBRARIES := -L$(LOG_LIB_DIR) -llog4cpp
+
+# gsl libraries and headers
+
+GSL_INCLUDES  := $(shell gsl-config --cflags)
+GSL_LIBRARIES := $(shell gsl-config --libs)
+
+MAKE   := make
+RM      = rm -f
+MKDIR   = mkdir -p
+CAT     = cat
+SYMLINK = ln -sf
+COPY    = cp
+INSTALL = @INSTALL@
+
+# AR, ARFLAGS and RANLIB are for manipulating an archive
+AR        = ar
+ARFLAGS   = rv
+RANLIB    = ranlib
+
+ifeq ($(GOPT_WITH_COMPILER),$(filter $(GOPT_WITH_COMPILER),clang clang++))
+  # --clang
+  CXX           = clang++
+  CC            = clang
+  LD            = clang++
+else
+  ifeq ($(GOPT_WITH_COMPILER),$(filter $(GOPT_WITH_COMPILER),gcc g++))
+    # -- gcc
+    CXX = g++
+    CC  = gcc
+    LD  = g++
+  else
+    $(error GOPT_WITH_COMPILER not set correctly!)
+  endif
+endif
+#check if we're using clang (complicated because g++ is sometimes a clang alias...)
+APPLE_CLANG := $(shell $(CXX) -v 2>&1 | sed -n "s/.*clang//p" | cut -d . -f 1)
+ifneq ($(APPLE_CLANG),)
+USING_CLANG  = YES
+endif
+
+
+
+# includes and libraries needed to compile programs.
+
+CPP_INCLUDES := \
+    $(LINUX_SYS_INCLUDES) \
+    $(XML_INCLUDES) \
+    $(LOG_INCLUDES) \
+    $(ROOT_INCLUDES) \
+    $(LHAPDF_INCLUDES) \
+    $(APFEL_INCLUDES) \
+    $(GSL_INCLUDES) 
+
+ROOT_DICT_GEN_INCLUDES := \
+    $(LINUX_SYS_INCLUDES) \
+    $(XML_INCLUDES) \
+    $(LOG_INCLUDES) \
+    $(ROOT_INCLUDES)
+
+LIBRARIES := $(SYSLIBS) \
+             $(FORT_LIBRARIES) \
+             $(ROOT_LIBRARIES) \
+             $(PYTHIA6_LIBRARIES) \
+             $(LHAPDF_LIBRARIES) \
+             $(APFEL_LIBRARIES) \
+             $(XML_LIBRARIES) \
+             $(LOG_LIBRARIES) \
+             $(GSL_LIBRARIES) \
+             $(GPROF_LIBRARIES) \
+             $(EXTRALIBS)
+
+
+.SUFFIXES : .inc .cxx
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) $(CCFLAGS) $<
+
+.cxx.o:
+	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $<
+
+.C.o:	
+	$(CXX) -c -o $@ $(CXXFLAGS) $(CPPFLAGS) $<
+
+.c.o:
+	$(CC) -c -o $@ $(CXXFLAGS) $(CPPFLAGS) $<
+
+.F.o : $(FORT) $(FORTOPTS) -o $@ $<
+     
+.f.o : $(FORT) $(FORTOPTS) -o $@ $<
+
+.F.a : $(FORT) $(FORTOPTS) -o $*.o $< \
+       $(AR) $(ARFLAGS) $@ $*.o \
+       $(RANLIB) $@ \
+       $(RM) $*.o \
+
+.f.a : $(FORT) $(FORTOPTS) -o $*.o $< \
+       $(AR) $(ARFLAGS) $@ $*.o \
+       $(RANLIB) $@ \
+       $(RM) $*.o \
+
+print-%  : ; @echo $* = $($*)
 
 
 # includes and libraries needed to compile programs. 

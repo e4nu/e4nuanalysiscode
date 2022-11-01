@@ -1,8 +1,6 @@
 #
 # Make.targets for GENIE/Comparisons
 #
-# Author: Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
-#
 
 #
 #
@@ -24,7 +22,7 @@ PACKAGE_OBJECTS               = $(addsuffix .$(ObjSuf), $(basename $(PACKAGE_SOU
 PACKAGE_PCM               := _ROOT_DICT_$(PACKAGE)_rdict.pcm
 PACKAGE_PCM_WITH_PATH     := $(E4NUANALYSIS_LIB_PATH)/$(PACKAGE_PCM)
 PACKAGE_ROOTMAP           :=  _ROOT_DICT_$(PACKAGE).rootmap
-PACKAGE_ROOTMAP_WITH_PATH := $(E4NUANALYSISS_LIB_PATH)/$(PACKAGE_ROOTMAP)
+PACKAGE_ROOTMAP_WITH_PATH := $(E4NUANALYSIS_LIB_PATH)/$(PACKAGE_ROOTMAP)
 
 LIB_DEPEND=
 ifeq ($(strip $(DICTIONARY)),undefined)
@@ -33,8 +31,6 @@ else
   LIB_DEPEND = $(PACKAGE_ALL_OBJECTS)
 endif
 
-#
-#
 rootcint: $(DICTIONARY).o
 
 $(DICTIONARY).cc: LinkDef.h $(DICTGEN_OBJECTS)
@@ -88,16 +84,16 @@ install-inc: FORCE
 #
 #
 purge: FORCE
-       $(RM) $(PACKAGE_OBJECTS) *~ core a.out Makefile.temp
+#       $(RM) $(PACKAGE_OBJECTS) *~ core a.out Makefile.temp
  
 
 #
 #
 clean: FORCE   
-       $(RM) *.o *.d *~ core a.out $(E4NUANALYSIS_LIB_PATH)/$(LIBNAME)* $(DICTIONARY)* Makefile.temp
+#       $(RM) *.o *.d *~ core a.out $(E4NUANALYSIS_LIB_PATH)/$(LIBNAME)* $(DICTIONARY)* Makefile.temp
 
 
 #
 #
 distclean: FORCE
-	   $(RM) $(E4NUANALYSIS_LIB_INSTALLATION_PATH)/$(LIBNAME)*
+#	   $(RM) $(E4NUANALYSIS_LIB_INSTALLATION_PATH)/$(LIBNAME)*

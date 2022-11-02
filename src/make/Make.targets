@@ -1,0 +1,42 @@
+B1;95;0cPACKAGE_LIB                   = $(LIBNAME).$(DllSuf)
+PACKAGE_LIB_WITH_PATH         = $(E4NUANALYSIS_LIB_PATH)/$(LIBNAME).$(DllSuf)
+
+
+PACKAGE_ALL_SOURCES          := $(wildcard *.cxx)
+DICTGEN_HEADERS              := $(addsuffix .h, $(basename $(PACKAGE_ALL_SOURCES)))
+DICTGEN_OBJECTS              := $(addsuffix .$(ObjSuf), $(basename $(DICTGEN_HEADERS)))
+PACKAGE_ALL_SOURCES          := $(PACKAGE_ALL_SOURCES) $(DICTIONARY).cc $(wildcard *.cpp)
+PACKAGE_ALL_OBJECTS           = $(addsuffix .$(ObjSuf), $(basename $(PACKAGE_ALL_SOURCES)))
+PACKAGE_SOURCES              := $(wildcard *.cxx)
+PACKAGE_OBJECTS               = $(addsuffix .$(ObjSuf), $(basename $(PACKAGE_SOURCES)))
+
+SUBDIR_HEADERS_H              = $(wildcard *.h)
+SUBDIR_HEADERS_ICC            = $(wildcard *.icc)
+SUBDIR_HEADERS                = $(SUBDIR_HEADERS_H) $(SUBDIR_HEADERS_ICC)
+
+rootcint: $(DICTIONARY).o
+
+$(DICTIONARY).cc: LinkDef.h $(DICTGEN_OBJECTS)
+		  $(RM) $(DICTIONARY).*
+		  @echo "[package: $(PACKAGE)] Generating ROOT dictionary ..."
+		  rootcint -f $(DICTIONARY).cc -c $(DICTGEN_HEADERS) LinkDef.h
+#		  rootcint -f $(DICTIONARY).cc -c $(ROOT_DICT_GEN_INCLUDES) $(DICTGEN_HEADERS) LinkDef.h
+
+$(PACKAGE_LIB_WITH_PATH): $(LIB_DEPEND)
+			  @echo "[package: $(PACKAGE)] Generating shared library ..dictionary=.$(DICTIONARY)"
+ifeq ($(strip $(DICTIONARY)),undefined)
+     $(SOCMD) $(SOFLAGS) $(SOMINF) $(PACKAGE_OBJECTS) $(EXTRA_EXT_LIBS) $(OutPutOpt) $(PACKAGE_LIB_WITH_PATH)
+else
+	$(SOCMD) $(SOFLAGS) $(SOMINF) $(PACKAGE_ALL_OBJECTS) $(EXTRA_EXT_LIBS) $(OutPutOpt) $(PACKAGE_LIB_WITH_PATH)
+	[ ! -f $(PACKAGE_PCM) ] || $(COPY) $(PACKAGE_PCM) $(E4NUANALYSIS_LIB_PATH)
+	[ ! -f $(PACKAGE_ROOTMAP) ] || $(COPY) $(PACKAGE_ROOTMAP) $(E4NUANALYSIS_LIB_PATH)
+endif
+
+lib: $(PACKAGE_LIB_WITH_PATH)
+
+$(PACKAGE_LIBMACLINK_WITH_PATH): $(PACKAGE_LIB_WITH_PATH)
+
+$(PACKAGE_LIBNOVRS_WITH_PATH): $(PACKAGE_LIB_WITH_PATH)
+			       @echo "[package: $(PACKAGE)] Creating symbolic link to shared library ..."
+
+lib-link: $(PACKAGE_LIBNOVRS_WITH_PATH) $(PACKAGE_LIBMACLINK_WITH_PATH)

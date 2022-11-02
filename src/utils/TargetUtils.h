@@ -10,13 +10,13 @@
 namespace e4nu { 
   namespace utils
     {
-      unsigned double GetECalOffset( const unsigned int target_pdg ) ;
-      unsigned double GetBindingEnergy( const unsigned int target_pdg ) ; 
-      unsigned double GetTargetMass( const unsigned int target_pdg ) ; 
-      unsigned double GetResidualTargetMass( const unsigned int target_pdg ) ; 
+      double GetECalOffset( const unsigned int target_pdg ) ;
+      double GetBindingEnergy( const unsigned int target_pdg ) ; 
+      double GetTargetMass( const unsigned int target_pdg ) ; 
+      double GetResidualTargetMass( const unsigned int target_pdg ) ; 
       unsigned int GetTargetNProtons( const unsigned int target_pdg ); 
-      unsigned int GetTargetNProtons( const unsigned int target_pdg );
+      unsigned int GetTargetNNeutrons( const unsigned int target_pdg );
     }
 }
 
-#endif _TARGET_UTILS_H_
+#endif

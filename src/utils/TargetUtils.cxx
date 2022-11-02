@@ -9,60 +9,58 @@
 
 using namespace e4nu ; 
 
-unsigned double utils::GetECalOffset( const unsigned int target_pdg ) {
+double utils::GetECalOffset( const unsigned int target_pdg ) {
   double ECalOffset = 0 ; 
-  if ( target_pdg == kPdgHe3 ) ECalOffset = ParticleI::kECalOffsetHe3; 
-  else if ( target_pdg == kPdgHe4 || target_pdg == kPdgC12 ) ECalOffset = ParticleI::kECalOffsetC12 ;
-  else if ( target_pdg == kPdgFe56 ) ECalOffset = ParticleI::kECalOffsetFe56 ;
+  if ( target_pdg == conf::kPdgHe3 ) ECalOffset = conf::kECalOffsetHe3; 
+  else if ( target_pdg == conf::kPdgHe4 || target_pdg == conf::kPdgC12 ) ECalOffset = conf::kECalOffsetC12 ;
+  else if ( target_pdg == conf::kPdgFe56 ) ECalOffset = conf::kECalOffsetFe56 ;
   return ECalOffset ; 
 }
 
-unsigned double utils::GetBindingEnergy( const unsigned int target_pdg ) {
+double utils::GetBindingEnergy( const unsigned int target_pdg ) {
   double binding_energy = 0. ; 
-  if ( target_pdg == kPdgHe3 ) binding_energy = TargetI::kBEHe3 - TargetI::kBED2 + utils::GetECalOffset( target_pdg ) ;
-  else if ( target_pdg == kPdgHe4 ) binding_energy = TargetI::kBEHe4 - TargetI::kBEHe3 + utils::GetECalOffset( target_pdg ) ;
-  else if ( target_pdg == kPdgC12 ) binding_energy = TargetI::kBEC12 - TargetI::kBEB + utils::GetECalOffset( target_pdg ) ;
-  else if ( target_pdg == kPdgFe56 ) binding_energy = TargetI::kBEFe54 - TargetI::kBEMn + utils::GetECalOffset( target_pdg ) ;
-  else if ( target_pdg == kPdgCH2 ) binding_energy = TargetI::kBEC12 - TargetI::kBEB ;
+  if ( target_pdg == conf::kPdgHe3 ) binding_energy = conf::kBEHe3 - conf::kBED2 + utils::GetECalOffset( target_pdg ) ;
+  else if ( target_pdg == conf::kPdgHe4 ) binding_energy = conf::kBEHe4 - conf::kBEHe3 + utils::GetECalOffset( target_pdg ) ;
+  else if ( target_pdg == conf::kPdgC12 ) binding_energy = conf::kBEC12 - conf::kBEB + utils::GetECalOffset( target_pdg ) ;
+  else if ( target_pdg == conf::kPdgFe56 ) binding_energy = conf::kBEFe56 - conf::kBEMn + utils::GetECalOffset( target_pdg ) ;
+  //else if ( target_pdg == conf::kPdgCH2 ) binding_energy = conf::kBEC12 - conf::kBEB ;
   return binding_energy;
 }
 
 unsigned int utils::GetTargetNProtons( const unsigned int target_pdg ) {
-  
-  if ( target_pdg == kPdgHe3 || target_pdg == kPdgHe4 ) return 2 ; 
-  else if ( target_pdg == kPdgC12 || target_pdg == kPdgCH2 ) return 6 ; 
-  else if ( target_pdg == kPdgFe56) return 26 ; 
+  if ( target_pdg == conf::kPdgHe3 || target_pdg == conf::kPdgHe4 ) return 2 ; 
+  else if ( target_pdg == conf::kPdgC12 ) return 6 ; 
+  else if ( target_pdg == conf::kPdgFe56) return 26 ; 
   return 0;
 }
 
 unsigned int utils::GetTargetNNeutrons( const unsigned int target_pdg ) { 
-  if ( target_pdg == kPdgHe3 ) return 1 ; 
-  if ( target_pdg == kPdgHe4 ) return 2 ; 
-  else if ( target_pdg == kPdgC12 || target_pdg == kPdgCH2 ) return 6 ; 
-  else if ( target_pdg == kPdgFe56) return 30 ; 
+  if ( target_pdg == conf::kPdgHe3 ) return 1 ; 
+  if ( target_pdg == conf::kPdgHe4 ) return 2 ; 
+  else if ( target_pdg == conf::kPdgC12 ) return 6 ; 
+  else if ( target_pdg == conf::kPdgFe56 ) return 30 ; 
   return 0;
 }
 
-unsigned double utils::GetTargetMass( const unsigned int target_pdg ) {
+double utils::GetTargetMass( const unsigned int target_pdg ) {
   double mass = 0 ; 
-  int n_protons = utils::GetTargetNProtons( target_mass ) ; 
-  int n_neutrons = utils::GetTargetNNeutrons( target_mass ) ; 
+  int n_protons = utils::GetTargetNProtons( target_pdg ) ; 
+  int n_neutrons = utils::GetTargetNNeutrons( target_pdg ) ; 
   double BE = utils::GetBindingEnergy( target_pdg ) ; 
 
-  if ( target_pdg == kPdgCH2 ){ BE = utils::GetBindingEnergy( kPdgC12 ) ; } // IS THIS CORRECT ? 
+  //if ( target_pdg == TargetI::kPdgCH2 ){ BE = utils::GetBindingEnergy( kPdgC12 ) ; } // IS THIS CORRECT ? 
  
-  mass = n_protons * ParticleI::kMassProton + n_neutrons * ParticleI::kMassNeutron - BE ; 
+  mass = n_protons * conf::kMassProton + n_neutrons * conf::kMassNeutron - BE ; 
   return mass ;
 }
 
-unsigned double utils::GetResidualTargetMass( const unsigned int target_pdg ) {
+double utils::GetResidualTargetMass( const unsigned int target_pdg ) {
   double mass =0 ;
 
-  if ( target_pdg == kPdgHe3 ) mass = ParticleI::kMassProton + ParticleI::kMassNeutron - TargetI::KBED2 ; 
-  else if ( target_pdg == kPdgHe4 ) mass = ParticleI::kMassProton + 2*ParticleI::kMassNeutron - TargetI::KBEHe3 ;
-  else if ( target_pdg == kPdgC12 ) mass = 5*ParticleI::kMassProton + 6*ParticleI::kMassNeutron - TargetI::KBEB ;
-  else if ( target_pdg == kPdgFe56 ) mass = 25*ParticleI::kMassProton + 30*ParticleI::kMassNeutron - TargetI::KBEMn ;
-  else if ( target_pdg == kPdgCH2 ) mass = 25*ParticleI::kMassProton + 30*ParticleI::kMassNeutron - TargetI::KBEMn ;                                                                                                                            
+  if ( target_pdg == conf::kPdgHe3 ) mass = conf::kMassProton + conf::kMassNeutron - conf::kBED2 ; 
+  else if ( target_pdg == conf::kPdgHe4 ) mass = conf::kMassProton + 2*conf::kMassNeutron - conf::kBEHe3 ;
+  else if ( target_pdg == conf::kPdgC12 ) mass = 5*conf::kMassProton + 6*conf::kMassNeutron - conf::kBEB ;
+  else if ( target_pdg == conf::kPdgFe56 ) mass = 25*conf::kMassProton + 30*conf::kMassNeutron - conf::kBEMn ;
   return mass ;
 }
 

@@ -8,13 +8,13 @@
 
 using namespace e4nu ; 
 
-unsigned double utils::GetParticleResolucion( int particle_pdg, double Ebeam, bool apply_resolution = true ) {
+double utils::GetParticleResolucion( const int particle_pdg, const double Ebeam, const bool apply_resolution ) {
   double resolution = 0 ; 
   if ( !apply_resolution ) return resolution ; 
 
-  if ( particle_pdg == kPdgProton ) resolution = ParticleI::kProtonRes ; 
-  else if ( particle_pdg == kPdgElectron ) resolution = ParticleI::kElectronRes ; 
-  else if ( particle_pdg == kPdgPiM || particle_pdg == kPdgPim || particle_pdg == kPdgPi0 ) resolution = ParticleI::kPionRes ; // also pi0?
+  if ( particle_pdg == conf::kPdgProton ) resolution = conf::kProtonRes ; 
+  else if ( particle_pdg == conf::kPdgElectron ) resolution = conf::kElectronRes ; 
+  else if ( particle_pdg == conf::kPdgPiP || particle_pdg == conf::kPdgPiM || particle_pdg == conf::kPdgPi0 ) resolution = conf::kPionRes ; // also pi0?
 
   if ( Ebeam == 1.161 ) resolution *= 3; // Is it only this value or beam_E>1.1 GeV ? 
   return resolution ; 

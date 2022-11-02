@@ -10,8 +10,8 @@
 namespace e4nu { 
   namespace utils
     {
-      unsigned double GetParticleResolucion( int particle_pdg, bool apply_resolution = true ) ; 
+      double GetParticleResolucion( const int particle_pdg, const double EBeam, const bool apply_resolution = true ) ; 
      }
 }
 
-#endif _PARTICLE_UTILS_H_
+#endif 

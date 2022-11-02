@@ -8,9 +8,9 @@ MAKEFILE = Makefile
 
 include $(E4NUANALYSIS)/src/make/Make.include
 
-PACKAGE           = E4nuUtils
+PACKAGE           = E4NuUtils
 DICTIONARY        = _ROOT_DICT_E4NuUtils
-LIBNAME           = libE4nuUtils
+LIBNAME           = libE4NuUtils
 EXTRA_EXT_LIBS    =
 
 all     : rootcint lib lib-link

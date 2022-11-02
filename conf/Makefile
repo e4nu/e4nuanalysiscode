@@ -1,34 +1,20 @@
-#
-# Makefile for configuration files
-#
-
+#                                                                                                                                                                                                                    # Makefile for Utilities                                                                                                                                                                                             #                                                                                                                                                                                                                    
 SHELL = /bin/sh
 NAME = all
 MAKEFILE = Makefile
 
-ROOTCFLAGS  := $(shell root-config --cflags)
-ROOTLDFLAGS := $(shell root-config --ldflags)
-ROOTLIBS    := $(shell root-config --libs) -lEG
-ROOTGLIBS   := $(shell root-config --glibs)
+include $(E4NUANALYSIS)/src/make/Make.include
 
-INCLUDES    := -I../include
-
-CXX       := g++
-CXXFLAGS  += -std=c++11 -Wall -Wshadow -Warray-bounds -Wmissing-field-initializers -fPIC $(ROOTCFLAGS)
-LD        := g++
-LDFLAGS   := $(ROOTLDFLAGS)
-
-PACKAGE           = E4nuConf
-DICTIONARY        = _ROOT_DICT_E4nuConf
-LIBNAME           = libE4nuConf
+PACKAGE           = E4NuConf
+DICTIONARY        = _ROOT_DICT_E4NuUtils
+LIBNAME           = libE4NuUtils
 EXTRA_EXT_LIBS    =
 
-all     : E4nuConf
+all     : rootcint lib lib-link
+install : install-inc install-lib
 
-OBJ := ParticleI.o TargetI.o AnalysisCuts.o FiducialCuts.o AcceptanceMaps.o
-E4nuConf: $(OBJ)
-	$(CXX) -o E4nuConf $(OBJ) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
+# Include standard package makefile targets                                                                                                                                                                           
+#                                                                                                                                                                                                                     
+include $(E4NUANALYSIS)/src/make/Make.targets
+
 FORCE:
-
-%.o: %.h	
-	$(CXX) -c $< -O2 $(CXXFLAGS) $(INCLUDES)

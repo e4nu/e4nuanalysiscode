@@ -2,12 +2,11 @@
  * \info This script contains general information on particle properties
  **/
 
-
 #ifndef _PARTICLE_I_H_
 #define _PARTICLE_I_H_
 
 namespace e4nu {
-  namespace ParticleI { 
+  namespace conf { 
    
     // Pdg codes 
     const int kPdgProton = 2212 ;

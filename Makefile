@@ -43,7 +43,7 @@ utilities: FORCE
 	@echo " "
 	@echo "** Building Utilities..."
 	cd ${E4NUANALYSIS}/src/utils && \
-	cd make & \
+	make & \
 	cd ${E4NUANALYSIS}
 
 make-install-dirs: FORCE

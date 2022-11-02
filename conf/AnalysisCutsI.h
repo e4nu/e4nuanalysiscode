@@ -14,7 +14,7 @@ namespace e4nu {
     bool ValidPhiOpeningAngle( double phi /*rad*/, const bool apply = true ) ;
     bool GoodSectorPhiSlice( double phi /*rad*/, const bool apply = true ) ;
     bool GetQ2Cut( double & Q2cut, const double Ebeam, const bool apply_Q2cut = true ) ;
-    double GetWCut( const double Ebeam ) ;
+    bool GetWCut( double & WCut, const double Ebeam ) ;
   }
 }
 

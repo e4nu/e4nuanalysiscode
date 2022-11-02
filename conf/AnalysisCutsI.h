@@ -10,15 +10,9 @@
 namespace e4nu { 
   namespace conf {
 
-    // Phase space limits
-    const double kQ2Max = 1.75 ; 
-    const double kQ2Min = 0.4 ; 
-    const double kMinTheta = 10 ;
-    const double kMaxTheta = 60 ;
-    const double kMinEePrime = 0.5 ; 
-    const double kMaxEePrime = 2.5 ;
-      
     double GetMinMomentumCut( const int particle_pdg, const double EBeam ) ; 
+    bool ValidPhiOpeningAngle( double phi /*rad*/, const bool apply = true ) ;
+    bool GoodSectorPhiSlice( double phi /*rad*/, const bool apply = true ) ;
     bool GetQ2Cut( double & Q2cut, const double Ebeam, const bool apply_Q2cut = true ) ;
     double GetWCut( const double Ebeam ) ;
   }

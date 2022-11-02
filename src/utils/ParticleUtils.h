@@ -11,7 +11,9 @@ namespace e4nu {
   namespace utils
     {
       double GetParticleResolucion( const int particle_pdg, const double EBeam, const bool apply_resolution = true ) ; 
-     }
+      bool GetParticleResolution( double & resolution, const int pdg ) ;
+      bool GetParticleMass( double & mass, const int pdg ) ; 
+    }
 }
 
 #endif 

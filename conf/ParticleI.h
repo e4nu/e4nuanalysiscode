@@ -18,12 +18,12 @@ namespace e4nu {
     const int kPdgPositron = -11 ; 
 
     // Mass
-    const double kMassProton = 0.9382720813 ; 
-    const double kMassNeutron = 0.939565 ; 
-    const double kMassPiM = 0.13957 ; 
-    const double kMassPim = 0.139570 ; 
-    const double kMassPi0 = 0.139570 ;
-    const double kMassElectron = 0.000510998 ; 
+    const double kProtonMass = 0.9382720813 ; 
+    const double kNeutronMass = 0.939565 ; 
+    const double kPiPMass = 0.13957 ; 
+    const double kPiMMass = 0.139570 ; 
+    const double kPi0Mass = 0.139570 ;
+    const double kElectronMass = 0.000510998 ; 
 
     // Detector resolution for each particle 
     const double kProtonRes = 0.01 ; 

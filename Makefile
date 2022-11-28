@@ -14,6 +14,7 @@ BUILD_TARGETS = configuration \
 		physics \
 		analysis \
 		apps \
+
 # ...
 # here add main targets to build
 

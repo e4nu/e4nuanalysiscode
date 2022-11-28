@@ -20,6 +20,7 @@ namespace e4nu {
     double DeltaAlphaT( const TVector3 p1 , const TVector3 p2, const double EBeam ) ;
     TVector3 DeltaPT( const TVector3 p1 , const TVector3 p2, const double EBeam ) ;
     double DeltaPhiT( const TVector3 p1 , const TVector3 p2, const double EBeam ) ;
+    
   }
 }
 

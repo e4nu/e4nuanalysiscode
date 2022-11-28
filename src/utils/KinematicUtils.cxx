@@ -9,10 +9,8 @@
 #include "src/utils/TargetUtils.h"
 
 using namespace e4nu ;
-using namespace e4nu::utils;
 
-
-double GetQELRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) {
+double e4nu::utils::GetQELRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) {
   double Ereco = 0 ; 
   double E = leptonf.E();
   double P = leptonf.P();
@@ -26,27 +24,27 @@ double GetQELRecoEnu( const TLorentzVector & leptonf, const unsigned int target_
   return Ereco ; 
 } 
 
-double GetEnergyTransfer( const TLorentzVector & leptonf, const double Ebeam ) {
+double e4nu::utils::GetEnergyTransfer( const TLorentzVector & leptonf, const double Ebeam ) {
   return Ebeam - leptonf.E() ; 
 }
 
-TVector3 GetRecoq3( const TLorentzVector & leptonf, const double EBeam ) {
+TVector3 e4nu::utils::GetRecoq3( const TLorentzVector & leptonf, const double EBeam ) {
   TLorentzVector beam ( 0,0,EBeam,EBeam) ;
   return ( leptonf - beam ).Vect() ;
 }
 
-double GetRecoQ2( const TLorentzVector & leptonf, const double EBeam ) {
+double e4nu::utils::GetRecoQ2( const TLorentzVector & leptonf, const double EBeam ) {
   TLorentzVector beam ( 0,0,EBeam,EBeam) ;
   return -( leptonf - beam ).Mag2() ; 
 }
 
-double GetRecoXBJK( const TLorentzVector & leptonf, const double EBeam ) {
+double e4nu::utils::GetRecoXBJK( const TLorentzVector & leptonf, const double EBeam ) {
   double nu = utils::GetEnergyTransfer( leptonf, EBeam ) ; 
   double Q2 = utils::GetRecoQ2( leptonf, EBeam ) ; 
   return Q2 / ( 2 * conf::kProtonMass * nu ) ;
 }
 
-double GetRecoW( const TLorentzVector & leptonf, const double EBeam ) {
+double e4nu::utils::GetRecoW( const TLorentzVector & leptonf, const double EBeam ) {
   double mp = conf::kProtonMass ; 
   double nu = utils::GetEnergyTransfer( leptonf, EBeam ) ; 
   TVector3 q3 = utils::GetRecoq3( leptonf, EBeam ) ; 
@@ -55,7 +53,7 @@ double GetRecoW( const TLorentzVector & leptonf, const double EBeam ) {
   return TMath::Sqrt( W2 ) ; 
 } 
 
-double GetXSecScale( const TLorentzVector & leptonf, const double EBeam, const bool is_electron ) {
+double e4nu::utils::GetXSecScale( const TLorentzVector & leptonf, const double EBeam, const bool is_electron ) {
   double scale = 1 ; 
   if ( is_electron ) {
     double reco_Q2 = utils::GetRecoQ2( leptonf, EBeam ) ;
@@ -65,7 +63,7 @@ double GetXSecScale( const TLorentzVector & leptonf, const double EBeam, const b
   return scale ; 
 }
 
-TVector3 GetPT( const TVector3 p, const double EBeam ) {
+TVector3 e4nu::utils::GetPT( const TVector3 p, const double EBeam ) {
   TLorentzVector beam ( 0,0,EBeam,EBeam) ;
   TVector3 beam_dir = beam.Vect().Unit();
   double vect_parallel = p.Dot(beam_dir);
@@ -75,14 +73,14 @@ TVector3 GetPT( const TVector3 p, const double EBeam ) {
   return vect_T ; 
 }
 
-double DeltaAlphaT( const TVector3 p1 , const TVector3 p2, const double EBeam ) {
+double e4nu::utils::DeltaAlphaT( const TVector3 p1 , const TVector3 p2, const double EBeam ) {
   TVector3 P1T_dir = utils::GetPT(p1,EBeam).Unit();
   TVector3 DeltaPT_dir = utils::DeltaPT(p1, p2, EBeam).Unit();
 
   return acos(-P1T_dir.Dot(DeltaPT_dir));
 }
 
-TVector3 DeltaPT( const TVector3 p1 , const TVector3 p2, const double EBeam ) {
+TVector3 e4nu::utils::DeltaPT( const TVector3 p1 , const TVector3 p2, const double EBeam ) {
   TVector3 P1_T = utils::GetPT(p1, EBeam);
   TVector3 P2_T = utils::GetPT(p2, EBeam);
 
@@ -94,7 +92,6 @@ double DeltaPhiT( const TVector3 p1 , const TVector3 p2, const double EBeam ) {
   TVector3 P2T_dir = utils::GetPT(p2, EBeam).Unit();
   return acos(-P1T_dir.Dot(P2T_dir)); 
 }
-
 
 
 

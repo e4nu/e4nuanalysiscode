@@ -19,9 +19,11 @@ unsigned int GetSector( double phi ) {
 
 bool IsValidSector( const double phi, const double EBeam, const bool use_all ) {
   if( use_all ) return true ; 
+  return true ; 
 
   unsigned int sector = utils::GetSector( phi ) ; 
   if ( ( sector == 2 || sector == 4 ) && EBeam == 1.161 ) return false ; 
   else if ( ( sector == 2 || sector == 3 || sector == 4 ) && EBeam == 2.261 ) return false ; 
   return true ; 
+
 }

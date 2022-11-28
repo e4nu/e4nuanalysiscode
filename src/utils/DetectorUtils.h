@@ -10,7 +10,7 @@
 namespace e4nu {
   namespace utils
   {
-    double GetSector( double phi ) ;
+    unsigned int GetSector( double phi ) ;
     bool IsValidSector( const double phi, const double EBeam, const bool use_all ) ;
   }
 }

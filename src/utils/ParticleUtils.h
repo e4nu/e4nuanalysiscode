@@ -6,6 +6,7 @@
 
 #ifndef _PARTICLE_UTILS_H_
 #define _PARTICLE_UTILS_H_
+#include <iostream> 
 
 namespace e4nu { 
   namespace utils

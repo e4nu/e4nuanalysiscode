@@ -5,8 +5,6 @@
 
 #include "src/utils/ParticleUtils.h"
 #include "conf/ParticleI.h"
-#include <iostream>
-#include "conf/ParticleI.h"
 
 using namespace e4nu ; 
 
@@ -29,6 +27,7 @@ bool utils::GetParticleResolution( double & resolution, const int pdg ) {
   else return false ; 
   return true; 
 }
+
 bool utils::GetParticleMass( double & mass, const int pdg ) {
   if( pdg == conf::kPdgProton ) mass = conf::kProtonMass ; 
   else if ( pdg == conf::kPdgElectron ) mass = conf::kElectronMass ; 
@@ -38,4 +37,5 @@ bool utils::GetParticleMass( double & mass, const int pdg ) {
   else return false ; 
   return true ; 
 }
+
 

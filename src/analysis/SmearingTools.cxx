@@ -4,7 +4,7 @@
  */
 
 #include "src/analysis/SmearingTools.h"
-#include "src/utils/ParticleUtils.h"
+//#include "src/utils/ParticleUtils.h"
 
 #include <iostream>
 #include <cmath>
@@ -15,7 +15,7 @@ using namespace e4nu::analysis ;
 
 bool ApplySmearing( TLorentzVector & particle, const int pdg, const bool is_MC ) {
   if( !is_MC ) return false ;  
-  
+  /*
   double resolution ;
   if( ! utils::GetParticleResolution( resolution, pdg ) ) return false ; 
 
@@ -31,6 +31,6 @@ bool ApplySmearing( TLorentzVector & particle, const int pdg, const bool is_MC )
   particle.SetPxPyPzE( smear_mom/mom * particle.Px(), smear_mom / mom * particle.Py(), smear_mom / mom * particle.Pz(), smear_E ) ; 
 
   particle.SetPhi( particle.Phi() + TMath::Pi() ) ; // Vec.Phi() is between (-180,180), GENIE coordinate system flipped with respect to CLAS  
- 
+  */
   return true; 
 }

@@ -13,8 +13,8 @@ DICTIONARY        = _ROOT_DICT_E4NuAnalysisTools
 LIBNAME           = libE4NuAnalysisTools
 EXTRA_EXT_LIBS    =
 
-all     : rootcint lib lib-link
-install : install-inc install-lib
+all     : rootcint lib
+install : install-lib
 
 # Include standard package makefile targets
 #

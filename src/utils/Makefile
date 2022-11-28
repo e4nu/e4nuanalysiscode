@@ -13,8 +13,8 @@ DICTIONARY        = _ROOT_DICT_E4NuUtils
 LIBNAME           = libE4NuUtils
 EXTRA_EXT_LIBS    =
 
-all     : rootcint lib lib-link
-install : install-inc install-lib
+all     : rootcint lib
+install : install-lib
 
 # Include standard package makefile targets
 #

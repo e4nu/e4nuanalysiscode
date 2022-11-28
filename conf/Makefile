@@ -1,4 +1,3 @@
-#                                                                                                                                                                                                                    # Makefile for Utilities                                                                                                                                                                                             #                                                                                                                                                                                                                    
 SHELL = /bin/sh
 NAME = all
 MAKEFILE = Makefile
@@ -6,15 +5,13 @@ MAKEFILE = Makefile
 include $(E4NUANALYSIS)/src/make/Make.include
 
 PACKAGE           = E4NuConf
-DICTIONARY        = _ROOT_DICT_E4NuUtils
-LIBNAME           = libE4NuUtils
+DICTIONARY        = _ROOT_DICT_E4NuConf
+LIBNAME           = libE4NuConf
 EXTRA_EXT_LIBS    =
 
-all     : rootcint lib lib-link
-install : install-inc install-lib
+all     : rootcint lib
+install : install-lib
 
-# Include standard package makefile targets                                                                                                                                                                           
-#                                                                                                                                                                                                                     
 include $(E4NUANALYSIS)/src/make/Make.targets
 
 FORCE:

@@ -50,17 +50,17 @@ double utils::GetTargetMass( const unsigned int target_pdg ) {
 
   //if ( target_pdg == TargetI::kPdgCH2 ){ BE = utils::GetBindingEnergy( kPdgC12 ) ; } // IS THIS CORRECT ? 
  
-  mass = n_protons * conf::kMassProton + n_neutrons * conf::kMassNeutron - BE ; 
+  mass = n_protons * conf::kProtonMass + n_neutrons * conf::kNeutronMass - BE ; 
   return mass ;
 }
 
 double utils::GetResidualTargetMass( const unsigned int target_pdg ) {
   double mass =0 ;
 
-  if ( target_pdg == conf::kPdgHe3 ) mass = conf::kMassProton + conf::kMassNeutron - conf::kBED2 ; 
-  else if ( target_pdg == conf::kPdgHe4 ) mass = conf::kMassProton + 2*conf::kMassNeutron - conf::kBEHe3 ;
-  else if ( target_pdg == conf::kPdgC12 ) mass = 5*conf::kMassProton + 6*conf::kMassNeutron - conf::kBEB ;
-  else if ( target_pdg == conf::kPdgFe56 ) mass = 25*conf::kMassProton + 30*conf::kMassNeutron - conf::kBEMn ;
+  if ( target_pdg == conf::kPdgHe3 ) mass = conf::kProtonMass + conf::kNeutronMass - conf::kBED2 ; 
+  else if ( target_pdg == conf::kPdgHe4 ) mass = conf::kProtonMass + 2*conf::kNeutronMass - conf::kBEHe3 ;
+  else if ( target_pdg == conf::kPdgC12 ) mass = 5*conf::kProtonMass + 6*conf::kNeutronMass - conf::kBEB ;
+  else if ( target_pdg == conf::kPdgFe56 ) mass = 25*conf::kProtonMass + 30*conf::kNeutronMass - conf::kBEMn ;
   return mass ;
 }
 

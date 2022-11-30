@@ -3,7 +3,7 @@
  * Julia Tena Vidal jtenavidal \at tauex.tau.ac.il 
  */
 
-#include "src/utils/TargetUtils.h"
+#include "utils/TargetUtils.h"
 #include "conf/ParticleI.h"
 #include "conf/TargetI.h"
 

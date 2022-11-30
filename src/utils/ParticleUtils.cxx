@@ -3,7 +3,7 @@
  * Julia Tena Vidal jtenavidal \at tauex.tau.ac.il 
  */
 
-#include "src/utils/ParticleUtils.h"
+#include "utils/ParticleUtils.h"
 #include "conf/ParticleI.h"
 
 using namespace e4nu ; 

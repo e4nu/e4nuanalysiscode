@@ -27,7 +27,7 @@ install: $(INSTALL_TARGETS)
 configuration: FORCE
 	@echo " "
 	@echo "** Building Configuration..."
-	cd ${E4NUANALYSIS}/conf && \
+	cd ${E4NUANALYSIS}/src/conf && \
 	make && \
 	cd ${E4NUANALYSIS}
 	@echo " Done."
@@ -89,7 +89,7 @@ copy-install-files: FORCE
 clean: FORCE
 	@echo " "
 	@echo "** Cleaning ..."
-	cd ${E4NUANALYSIS}/conf &&  rm -f *.o *~ _*  && \
+	cd ${E4NUANALYSIS}/src/conf &&  rm -f *.o *~ _*  && \
 	cd ${E4NUANALYSIS}/src/utils && rm -f *.o *~ _* && \
 	cd ${E4NUANALYSIS}/src/apps && rm -f *.o *~ _* && \
 	cd ${E4NUANALYSIS}/src/analysis && rm -f *.o *~ _* && \

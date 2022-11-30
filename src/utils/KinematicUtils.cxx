@@ -4,9 +4,9 @@
 #include "TVector3.h"
 #include "TLorentzVector.h"
 
-#include "src/utils/KinematicUtils.h"
+#include "utils/KinematicUtils.h"
 #include "conf/ParticleI.h"
-#include "src/utils/TargetUtils.h"
+#include "utils/TargetUtils.h"
 
 using namespace e4nu ;
 

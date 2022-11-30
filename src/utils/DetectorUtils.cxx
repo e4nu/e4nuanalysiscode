@@ -3,7 +3,7 @@
  * \author Julia Tena Vidal \at Tel Aviv University                                                                                                                                                                 
  * \date October 2022                                                                                                                                                                                              
  **/
-#include "src/utils/DetectorUtils.h"
+#include "utils/DetectorUtils.h"
 #include "TMath.h"
 
 using namespace e4nu;

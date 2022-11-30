@@ -1,0 +1,131 @@
+ROOTCFLAGS  := $(shell root-config --cflags)
+ROOTLDFLAGS := $(shell root-config --ldflags)
+ROOTLIBS    := $(shell root-config --libs) -lEG
+ROOTGLIBS   := $(shell root-config --glibs)
+ROOTARCH := $(shell root-config --arch)
+ROOT_INCLUDES  = -I$(shell root-config --incdir)
+ROOT_VERSION = $(shell root-config --version )
+ROOT_MAJOR   = $(shell root-config --version | cut -d. -f1 )
+
+
+E4NUANALYSIS_LIB_PATH    := $(E4NUANALYSIS)/lib
+E4NUANALYSIS_BIN_PATH    := $(E4NUANALYSIS)/bin
+E4NUANALYSIS_SRC_PATH    := $(E4NUANALYSIS)/src
+E4NUANALYSIS_CONFIG_PATH := $(E4NUANALYSIS)/config
+
+# The $E4NUANALYSIS_INSTALLATION_PATH is determined from ./configure --prefix=...
+#
+E4NUANALYSIS_LIB_INSTALLATION_PATH     := $(E4NUANALYSIS_INSTALLATION_PATH)/lib
+E4NUANALYSIS_BIN_INSTALLATION_PATH     := $(E4NUANALYSIS_INSTALLATION_PATH)/bin
+E4NUANALYSIS_INCBASE_INSTALLATION_PATH := $(E4NUANALYSIS_INSTALLATION_PATH)/include
+E4NUANALYSIS_INC_INSTALLATION_PATH     := $(E4NUANALYSIS_INCBASE_INSTALLATION_PATH)/E4NUANALYSIS
+
+E4NUANALYSIS_INCLUDES := -I$(E4NUANALYSIS)/
+
+CXXFLAGS      = -W -Wall -fPIC -Wshadow \
+$(ROOTCFLAGS) \
+$(ROOTLDFLAGS) \
+$(ROOTLIBS) \
+$(GOPT_WITH_CXX_DEBUG_FLAG) \
+$(GOPT_WITH_CXX_OPTIMIZ_FLAG) \
+$(GOPT_WITH_CXX_USERDEF_FLAGS)
+
+GSL_INCLUDES  := $(shell gsl-config --cflags)
+GSL_LIBRARIES := $(shell gsl-config --libs)
+
+ifeq ($(strip $(GCC_GE_8_0_0)), YES)
+# -ffriend-injection is deprecated, soon to go away
+CXXFLAGS += -Wno-strict-aliasing
+else
+ifeq ($(strip $(GCC_GE_4_1_0)), YES)
+CXXFLAGS += -Wno-strict-aliasing -ffriend-injection
+endif
+endif
+
+LDFLAGS       = -g -Wl,--no-as-needed -Wl,--no-undefined
+SOFLAGS       = -shared
+DllSuf       := so
+DllLinkSuf   :=
+StaticLibSuf := a
+ObjSuf       := o
+SrcSuf       := cxx
+FORT         := g77
+FORTOPTS     := $(FFLAGS) -g -c -O -DLINUX $(F77INCS) -fno-second-underscore
+RANLIB       := ranlib
+SOCMD         = $(LD)
+OutPutOpt     = -o
+SOMINF        =
+EXTRALIBS     = -lnsl
+
+
+MAKE   := make
+RM      = rm -f
+MKDIR   = mkdir -p
+CAT     = cat
+SYMLINK = ln -sf
+COPY    = cp
+INSTALL = @INSTALL@
+AR        = ar
+ARFLAGS   = rv
+RANLIB    = ranlib
+
+
+# includes and libraries needed to compile programs.
+
+CPP_INCLUDES := \
+$(LINUX_SYS_INCLUDES) \
+$(ROOT_INCLUDES) \
+$(GSL_INCLUDES) \
+$(E4NUANALYSIS_INCLUDES)
+
+ROOT_DICT_GEN_INCLUDES := \
+$(LINUX_SYS_INCLUDES) \
+$(ROOT_INCLUDES) \
+$(E4NUANALYSIS_INCLUDES)
+
+LIBRARIES := $(SYSLIBS) \
+$(ROOT_LIBRARIES) \
+$(GSL_LIBRARIES) \
+$(EXTRALIBS)
+
+# Default compiler and preprocessor flags
+
+CXXFLAGS := $(ENV_CXXFLAGS) $(CXXFLAGS)
+CPPFLAGS  = $(CPP_INCLUDES)
+CCFLAGS   = $(ROOT_DICT_GEN_INCLUDES)
+CFLAGS    = -g
+
+
+CXX = g++
+CC  = gcc
+LD  = g++
+
+.SUFFIXES : .inc .cxx
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) $(CCFLAGS) $<
+
+.cxx.o:
+	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $<
+
+.C.o:
+	$(CXX) -c -o $@ $(CXXFLAGS) $(CPPFLAGS) $<
+
+.c.o:
+	$(CC) -c -o $@ $(CXXFLAGS) $(CPPFLAGS) $<
+
+.F.o : $(FORT) $(FORTOPTS) -o $@ $<
+
+.f.o : $(FORT) $(FORTOPTS) -o $@ $<
+
+.F.a : $(FORT) $(FORTOPTS) -o $*.o $< \
+     $(AR) $(ARFLAGS) $@ $*.o	   \
+     $(RANLIB) $@ \
+     $(RM) $*.o \
+
+.f.a : $(FORT) $(FORTOPTS) -o $*.o $< \
+     $(AR) $(ARFLAGS) $@ $*.o \
+     $(RANLIB) $@ \
+     $(RM) $*.o \
+
+print-%  : ; @echo $* = $($*)

@@ -15,30 +15,28 @@
 
 namespace e4nu {
   class EventHolderI {
-  public: 
+  public : 
+    virtual ~EventHolderI();
+
+  protected : 
     EventHolderI(); 
     EventHolderI( const std::string root_file ) ; 
     EventHolderI( const std::vector<std::string> root_file_list ) ; 
-    ~EventHolderI();
 
-  protected : 
     bool LoadMembers( const std::string file ) ; // returns tree number in TChain
-    
-    TChain * fEventHolderChain ; // Can contain more than one tree
 
-    // Declaration of leaf types
-    Int_t           iev;
-        
-    // List of branches
-    TBranch        *b_iev; 
-    
-  private : 
-    void Initialize(void) ;
-    void Clear(void); 
-    bool InitChain(void);
+    virtual bool LoadEvents(void) = 0 ; 
+
+    TChain * fEventHolderChain ; // Can contain more than one tree
 
     // Members
     bool fIsConfigured ; 
+
+  private :
+ 
+    void Initialize(void) ;
+    void Clear(void); 
+
   };
 }
 

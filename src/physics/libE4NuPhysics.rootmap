@@ -1,9 +1,0 @@
-{ decls }
-namespace e4nu {  }
-
-[ libE4NuPhysics_rdict.pcm ]
-# List of selected classes
-class e4nu::EventHolderI
-header EventHolderI.h
-# List of selected namespaces
-namespace e4nu

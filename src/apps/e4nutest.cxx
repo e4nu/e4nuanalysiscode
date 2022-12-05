@@ -8,16 +8,18 @@
 #include <sstream>
 #include <iomanip>
 #include "TH1D.h"
-#include "../physics/EventHolderI.h"
+#include "../physics/MCEventHolder.h"
+#include "../conf/ConfigurablesI.h"
 
 using namespace std; 
 using namespace e4nu;
 
 int main( void ) {
   std::cout << "Test ongoing..." << std::endl;
-  std::string file_name = "/pnfs/genie/scratch/users/jtenavid/TestScripts/G18_02a_EM/master-routine_validation_01-eScattering/e_on_1000060120_2000MeV_0.gst.root";
-  
-  EventHolderI * events = new EventHolderI(file_name.c_str());
+  std::string file_name = "/pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_2261GeV/apapadop_SuSav2_C12_2261GeV_master.root";
+
+  ConfigurablesI conf() ; 
+  MCEventHolder * mc_events = new MCEventHolder(file_name.c_str(), 10);
    //EventHolderI * events = new EventHolderI( file_name.c_str() );
 
   return 0 ; 

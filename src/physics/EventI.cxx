@@ -26,10 +26,40 @@ void EventI::SetInLeptonKinematics( const double E, const double px, const doubl
   return ; 
 } 
 
-void EventI::Initialize() { 
+void EventI::SetFinalParticle( const int pdg, const double E, const double px, const double py, const double pz ) {
+  TLorentzVector mom;
+  mom.SetPxPyPzE( px, py, pz, E ) ; 
+						
+  if( fFinalParticles.find(pdg) == fFinalParticles.end() ) {
+    std::vector<TLorentzVector> vct ;
+    vct.push_back(mom); 
+    fFinalParticles.insert( std::pair<int,std::vector<TLorentzVector>>(pdg, vct) ) ; 
+  } else {
+    fFinalParticles[pdg].push_back( mom ) ; 
+  }
+}
 
+void EventI::Initialize() { 
+  fIsMC = false ; 
+  fWeight = 0 ; 
+  fEventID = 0 ; 
+  fTargetPdg = 0 ; 
+  fInLeptPdg = 11 ; 
+  fOutLeptPdg = 11 ; 
+  fNP = 0 ; 
+  fNN = 0 ; 
+  fNPiP = 0 ; 
+  fNPiM = 0 ; 
+  fNPi0 = 0 ; 
+  fNKM = 0 ; 
+  fNKP = 0 ; 
+  fNK0 = 0 ; 
+  fNEM = 0 ; 
+  fNOther = 0 ;
 }
 
 void EventI::Clear() { 
+
+  fFinalParticles.clear() ; 
 
 }

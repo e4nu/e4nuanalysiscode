@@ -12,6 +12,7 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include "physics/EventI.h"
 
 namespace e4nu {
   class EventHolderI {
@@ -21,9 +22,11 @@ namespace e4nu {
   protected : 
     EventHolderI(); 
     EventHolderI( const std::string root_file ) ; 
+    EventHolderI( const std::string root_file, const int nmaxevents ) ; 
     EventHolderI( const std::vector<std::string> root_file_list ) ; 
 
     bool LoadMembers( const std::string file ) ; // returns tree number in TChain
+    const std::vector<e4nu::EventI*> GetEvents(void) const { return fEvents; } 
 
     virtual bool LoadEvents(void) = 0 ; 
 
@@ -31,9 +34,11 @@ namespace e4nu {
 
     // Members
     bool fIsConfigured ; 
+    int fMaxEvents ; 
 
   private :
- 
+    std::vector<e4nu::EventI*> fEvents ; 
+
     void Initialize(void) ;
     void Clear(void); 
 

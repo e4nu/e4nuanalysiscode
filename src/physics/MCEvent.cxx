@@ -17,17 +17,23 @@ MCEvent::~MCEvent() {
 }
 
 void MCEvent::SetOutLeptonKinematics( const double E, const double px, const double py, const double pz ) {
+  
   EventI::SetOutLeptonKinematics(E,px,py,pz);
+
   TLorentzVector temp = GetOutLepton4Mom() ;
-  // FLIP 
+  double phi = temp.Phi() + TMath::Pi() ; // The GENIE Coordinate system is flipped with respect to CLAS
+  temp.SetPhi( phi ) ; 
   EventI::SetOutLeptonKinematics( temp ) ; 
+
   return ; 
 }
 
 void MCEvent::SetInLeptonKinematics( const double E, const double px, const double py, const double pz ) {
   EventI::SetInLeptonKinematics(E,px,py,pz);
+  
   TLorentzVector temp = GetInLepton4Mom() ;
-  // FLIP 
+  double phi = temp.Phi() + TMath::Pi() ; // The GENIE Coordinate system is flipped with respect to CLAS
+  temp.SetPhi( phi ) ; 
   EventI::SetInLeptonKinematics( temp ) ; 
 
   return ; 

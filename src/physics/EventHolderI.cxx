@@ -10,7 +10,6 @@ using namespace e4nu ;
 
 EventHolderI::EventHolderI() { 
   this->Initialize() ;
-  std::cout << "Initialized member" << std::endl;
 }
 
 EventHolderI::~EventHolderI() {
@@ -20,6 +19,13 @@ EventHolderI::~EventHolderI() {
 EventHolderI::EventHolderI( const std::string file ) { 
   this->Initialize() ; 
   std::cout<< "Loading "<< file << " ... \n" ;
+  if( this->LoadMembers( file ) ) fIsConfigured = true ; 
+}
+
+EventHolderI::EventHolderI( const std::string file, const int nmaxevents ) { 
+  this->Initialize() ; 
+  fMaxEvents = nmaxevents ; 
+  std::cout<< "Loading "<< fMaxEvents << " from " << file << " ... \n" ;
   if( this->LoadMembers( file ) ) fIsConfigured = true ; 
 }
 
@@ -38,8 +44,15 @@ bool EventHolderI::LoadMembers( const std::string file ) {
 void EventHolderI::Initialize() { 
   fEventHolderChain = new TChain("gst","e4nu_analysis") ; 
   fIsConfigured = true ; 
+  fMaxEvents = -1 ; 
 }
 
 void EventHolderI::Clear() { 
   fEventHolderChain = nullptr ;
+  for ( unsigned int i = 0 ; i < fEvents.size() ; ++i ) {
+    delete fEvents[i] ;
+  }
+  fEvents.clear() ; 
+  fMaxEvents = -1 ;
+
 }

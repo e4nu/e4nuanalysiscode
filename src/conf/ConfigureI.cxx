@@ -7,14 +7,15 @@
 #include <string>
 #include <fstream>
 #include <vector>
-#include "conf/ConfigurablesI.h"
+#include "conf/ConfigureI.h"
 
 namespace e4nu { 
 
   namespace conf {
 
-    e4nuConfigurationI::e4nuConfigurationI( ) {;}
-    e4nuConfigurationI::e4nuConfigurationI( std::string input_file ) {
+    ConfigureI::ConfigureI( ) { PrintConfiguration();}
+
+    ConfigureI::ConfigureI( std::string input_file ) {
       std::ifstream file (input_file.c_str()) ;
       
       std::vector<std::string> param, value ; 
@@ -43,7 +44,24 @@ namespace e4nu {
 	else if ( param[i] == "IsData" ) kIsData = true ; 
 
       }
-
+      PrintConfiguration() ;
     }
+
+    void ConfigureI::PrintConfiguration(void) const { 
+      std::cout << "*********************************************************************" << std::endl;
+      std::cout << "*                         E4NU ANALYSIS CONF                       **" << std::endl;
+      std::cout << "*********************************************************************" << std::endl;
+      std::cout << "UseAllSectors:" << kUseAllSectors << std::endl;
+      std::cout << "ApplyFiducial:" << kApplyFiducial << std::endl;
+      std::cout << "ApplyReso:" << kApplyReso << std::endl;
+      std::cout << "ApplyPhiOpeningAngle:" << kApplyPhiOpeningAngle << std::endl;
+      std::cout << "UsePhiThetaBand:"<< kUsePhiThetaBand << std::endl;
+      std::cout << "ApplyThetaSlice:"<< kApplyThetaSlice << std::endl;
+      std::cout << "ApplyGoodSectorPhiSlice:"<<kApplyGoodSectorPhiSlice<<std::endl;
+      std::cout << "EBeam: " << kEBeam << " GeV " << std::endl;
+      std::cout << "Target Pdg : " << kTargetPdg << std::endl;
+      std::cout << "*********************************************************************" << std::endl;
+    }
+
   }
 }

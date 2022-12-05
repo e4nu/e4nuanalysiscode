@@ -31,9 +31,8 @@ rootcint: $(DICTIONARY).o
 $(DICTIONARY).cc: LinkDef.h $(DICTGEN_OBJECTS)
 		  rm -f $(DICTIONARY).*
 		  @echo "[package: $(PACKAGE)] Generating ROOT dictionary ..."
-		  #		  rootcint -f $(DICTIONARY).cc -c $(ROOT_INCLUDES) $(E4NUANALYSIS_INCLUDES) $(DICTGEN_HEADERS) LinkDef.h
 		  ROOT_INCLUDE_PATH=$(E4NUANALYSIS_LIB_PATH):$(E4NUANALYSIS)/src:$(E4NUANALYSIS)/src/$(PACKAGE) 
-		  rootcint -f $(DICTIONARY).cc -c $(ROOT_INCLUDES) $(E4NUANALYSIS_INCLUDES) -I../include -inLineInputHeader -s $(PACKAGE_LIB) -rml $(PACKAGE_PCM) -rmf $(PACKAGE_ROOTMAP) $(ROOT_DICT_GEN_INCLUDES) $(DICTGEN_HEADERS) LinkDef.h
+		  rootcint -f $(DICTIONARY).cc -c $(ROOT_INCLUDES) $(E4NUANALYSIS_INCLUDES) -I../include -s $(PACKAGE_LIB) -rml $(PACKAGE_PCM) -rmf $(PACKAGE_ROOTMAP) $(ROOT_DICT_GEN_INCLUDES) $(DICTGEN_HEADERS) LinkDef.h
 
 $(PACKAGE_LIB_WITH_PATH): $(LIB_DEPEND)
 			  @echo "[package: $(PACKAGE)] Generating shared library ..dictionary=.$(DICTIONARY)"

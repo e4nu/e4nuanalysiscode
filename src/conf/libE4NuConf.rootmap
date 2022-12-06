@@ -1,4 +1,0 @@
-[ libE4NuConf_rdict.pcm ]
-# List of selected namespaces
-namespace e4nu
-namespace e4nu::conf

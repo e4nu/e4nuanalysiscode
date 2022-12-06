@@ -38,7 +38,6 @@ utilities: FORCE
 	cd ${E4NUANALYSIS}/src/utils && \
 	make && \
 	cd ${E4NUANALYSIS}
-
 physics : FORCE
 	@echo " "
 	@echo "** Building Physics..."
@@ -51,7 +50,7 @@ analysis : FORCE
 	@echo "** Building Analysis..."
 	cd ${E4NUANALYSIS}/src/analysis && \
 	make && \
-	cd ${E4NUAnalysis}
+	cd ${E4NUANALYSIS}
 
 apps : FORCE
 	@echo " "
@@ -75,25 +74,14 @@ make-install-dirs: FORCE
 	mkdir ${E4NUANALYSIS_INC_INSTALLATION_PATH}/src/analysis
 	mkdir ${E4NUANALYSIS_INC_INSTALLATION_PATH}/src/apps
 
-copy-install-files: FORCE	
-	@echo " "
-	@echo "** Copying libraries/binaries/headers to installation location..."
-	cp ${E4NUANALYSIS_BIN_PATH}/* ${E4NUANALYSIS_BIN_INSTALLATION_PATH} && \
-	cd ${E4NUANALYSIS}/conf && make install && cd .. \
-	cd ${E4NUANALYSIS}/src/utils && make install && cd ../.. \
-	cd ${E4NUANALYSIS}/src/analysis && make install && cd ../.. \
-	cd ${E4NUANALYSIS}/src/physics && make install && cd ../.. \
-	cd ${E4NUANALYSIS}/src/apps && make install && cd ../.. \
-	cd ${E4NUANALYSIS}
-
 clean: FORCE
 	@echo " "
 	@echo "** Cleaning ..."
 	cd ${E4NUANALYSIS}/src/conf &&  rm -f *.o *~ _*  && \
 	cd ${E4NUANALYSIS}/src/utils && rm -f *.o *~ _* && \
 	cd ${E4NUANALYSIS}/src/apps && rm -f *.o *~ _* && \
-	cd ${E4NUANALYSIS}/src/analysis && rm -f *.o *~ _* && \
 	cd ${E4NUANALYSIS}/src/physics &&  rm -f *.o *~ _* && \
+	cd ${E4NUANALYSIS}/src/analysis &&  rm -f *.o *~ _* && \
 	cd ${E4NUANALYSIS} && rm -f e4nutest && \
 	cd ${E4NUANALYSIS}/lib && rm -f *.so &&\
 	cd ${E4NUANALYSIS}

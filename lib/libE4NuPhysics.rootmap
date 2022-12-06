@@ -1,0 +1,15 @@
+{ decls }
+namespace e4nu {  }
+
+[ libE4NuPhysics_rdict.pcm ]
+# List of selected classes
+class e4nu::EventHolderI
+class e4nu::EventI
+class e4nu::MCEvent
+class e4nu::MCEventHolder
+header EventHolderI.h
+header EventI.h
+header MCEvent.h
+header MCEventHolder.h
+# List of selected namespaces
+namespace e4nu

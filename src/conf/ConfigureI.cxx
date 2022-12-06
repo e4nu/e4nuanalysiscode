@@ -13,9 +13,16 @@ namespace e4nu {
 
   namespace conf {
 
-    ConfigureI::ConfigureI( ) { PrintConfiguration();}
+    ConfigureI::ConfigureI( ) {;}
 
-    ConfigureI::ConfigureI( std::string input_file ) {
+    ConfigureI::ConfigureI( const double EBeam, const unsigned int TargetPdg ) { 
+      kEBeam = EBeam ; 
+      kTargetPdg = TargetPdg ;
+      PrintConfiguration();
+    }
+    
+    ConfigureI::ConfigureI( const std::string input_file ) {
+      std::cout << " Configuring analysis from " << input_file << " ..." << std::endl;
       std::ifstream file (input_file.c_str()) ;
       
       std::vector<std::string> param, value ; 
@@ -30,18 +37,37 @@ namespace e4nu {
       }
       
       for ( unsigned int i = 0 ; i < param.size(); ++i ) {
-	if ( param[i] == "UseAllSectors" && value[i] == "true" ) kUseAllSectors = true ; 
-	else if ( param[i] == "ApplyFiducial" && value[i] == "false" ) kApplyFiducial = false ; 
-	else if ( param[i] == "ApplyAccWeights" && value[i] == "false" ) kApplyAccWeights = false ; 
-	else if ( param[i] == "ApplyReso" && value[i] == "false" ) kApplyReso = false ;
-	else if ( param[i] == "ApplyPhiOpeningAngle" && value[i] == "true" ) kApplyPhiOpeningAngle = true ; 
-	else if ( param[i] == "UsePhiThetaBand" && value[i] == "true" ) kUsePhiThetaBand = true ;
-	else if ( param[i] == "ApplyThetaSlice" && value[i] == "true" ) kApplyThetaSlice = true ; 
-	else if ( param[i] == "ApplyGoodSectorPhiSlice" && value[i] == "true" ) kApplyGoodSectorPhiSlice = true ; 
-	else if ( param[i] == "offset" ) koffset = std::stod( value[i] ) ; 
+	if ( param[i] == "UseAllSectors" ) {
+	  if( value[i] == "true" ) kUseAllSectors = true ; 
+	  else kUseAllSectors = false ; 
+	} else if ( param[i] == "ApplyFiducial" ){
+	  if( value[i] == "false" ) kApplyFiducial = false ; 
+	  else kApplyFiducial = true ; 
+	} else if ( param[i] == "ApplyAccWeights" ){
+	  if ( value[i] == "false" ) kApplyAccWeights = false ; 
+	  else kApplyAccWeights = true ; 
+	} else if ( param[i] == "ApplyReso" ) {
+	  if ( value[i] == "false" ) kApplyReso = false ;
+	  else kApplyReso = true ; 
+	} else if ( param[i] == "ApplyPhiOpeningAngle" ) {
+	  if( value[i] == "true" ) kApplyPhiOpeningAngle = true ; 
+	  else kApplyPhiOpeningAngle = false ; 
+	} else if ( param[i] == "UsePhiThetaBand" ) {
+	  if( value[i] == "true" ) kUsePhiThetaBand = true ;
+	  else kUsePhiThetaBand = false ; 
+	} else if ( param[i] == "ApplyThetaSlice" ) {
+	  if ( value[i] == "true" ) kApplyThetaSlice = true ; 
+	  else kApplyThetaSlice = false ; 
+	} else if ( param[i] == "ApplyGoodSectorPhiSlice" ) { 
+	  if ( value[i] == "true" ) kApplyGoodSectorPhiSlice = true ; 
+	  else kApplyGoodSectorPhiSlice = false ;
+	} else if ( param[i] == "IsData" ) {
+	  if( value[i] == "true" ) kIsData = true ; 
+	  else kIsData = false ; 
+	} else if ( param[i] == "offset" ) koffset = std::stod( value[i] ) ; 
 	else if ( param[i] == "EBeam" ) kEBeam = std::stod( value[i] ) ; 
 	else if ( param[i] == "TargetPdg" ) kTargetPdg = (unsigned int) std::stoi( value[i] ) ; 
-	else if ( param[i] == "IsData" ) kIsData = true ; 
+
 
       }
       PrintConfiguration() ;
@@ -60,6 +86,8 @@ namespace e4nu {
       std::cout << "ApplyGoodSectorPhiSlice:"<<kApplyGoodSectorPhiSlice<<std::endl;
       std::cout << "EBeam: " << kEBeam << " GeV " << std::endl;
       std::cout << "Target Pdg : " << kTargetPdg << std::endl;
+      if ( kIsData ) std::cout << "\nIsData" << std::endl;
+      else std::cout << " Is MC Data " << std::endl;
       std::cout << "*********************************************************************" << std::endl;
     }
 

@@ -5,6 +5,8 @@
  */
 #include <iostream>
 #include "physics/EventI.h"
+#include "conf/ParticleI.h"
+#include "utils/ParticleUtils.h"
 
 using namespace e4nu ; 
 

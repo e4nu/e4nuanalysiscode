@@ -1,0 +1,12 @@
+UseAllSectors	true
+ApplyFiducial 	true
+ApplyAccWeights	true
+ApplyReso	true
+ApplyPhiOpeningAngle	true
+UsePhiThetaBand		true
+ApplyThetaSlice		true
+ApplyGoodSectorPhiSlice	true
+offset			0
+EBeam			1.10
+TargetPdg		1000060120
+IsData			true

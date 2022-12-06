@@ -15,12 +15,10 @@ MCEventHolder::~MCEventHolder() {
 
 MCEventHolder::MCEventHolder( const std::string file ): EventHolderI( file ) { 
   this->Initialize() ; 
-  LoadEvents();
 }
 
 MCEventHolder::MCEventHolder( const std::string file, const int nmaxevents ): EventHolderI( file, nmaxevents ) { 
   this->Initialize() ; 
-  LoadEvents();
 }
 
 MCEventHolder::MCEventHolder( const std::vector<std::string> files ): EventHolderI( files ) { 
@@ -28,7 +26,7 @@ MCEventHolder::MCEventHolder( const std::vector<std::string> files ): EventHolde
 }
 
 
-bool MCEventHolder::LoadEvents(void) {
+bool MCEventHolder::LoadBranch(void) {
   if( !fEventHolderChain ) return false ; 
 
   fEventHolderChain->SetBranchAddress("iev", &iev, &b_iev);
@@ -124,54 +122,69 @@ bool MCEventHolder::LoadEvents(void) {
   fEventHolderChain->SetBranchAddress("vtxt", &vtxt, &b_vtxt);
   fEventHolderChain->SetBranchAddress("sumKEf", &sumKEf, &b_sumKEf);
   fEventHolderChain->SetBranchAddress("calresp0", &calresp0, &b_calresp0);
+  return true ;
+}
 
-  unsigned int nevents = fEventHolderChain->GetEntries();
+unsigned int MCEventHolder::GetNEventsChain(void) { 
+  if(!fEventHolderChain) return false ; 
+ 
+  return fEventHolderChain->GetEntries();
+}
 
+bool MCEventHolder::LoadEvent( const unsigned int event_id ) {
+  unsigned int maxevents = GetNEventsChain() ; 
+  if ( event_id > maxevents ) return false ; 
+
+  MCEvent * event = new MCEvent() ; 
+  fEventHolderChain->GetEntry( event_id ) ; 
+  
+  event -> SetEventID( iev ) ;
+  event -> SetWeight( wght ) ;   
+  event -> SetIsQEL( qel ) ; 
+  event -> SetIsRES( res ) ; 
+  event -> SetIsDIS( dis ) ; 
+  event -> SetIsMEC( mec ) ; 
+  event -> SetTargetPdg( tgt ) ; 
+  event -> SetInLeptPdg( 11 ) ;
+  event -> SetOutLeptPdg( 11 ) ; 
+  
+  event -> SetInLeptonKinematics( Ev, pxv, pyv, pzv ) ; 
+  event -> SetOutLeptonKinematics( El, pxl, pyl, pzl ) ; 
+  
+  event -> SetNProtons( nfp ) ; 
+  event -> SetNNeutrons( nfn ) ; 
+  event -> SetNPiP( nfpip ) ; 
+  event -> SetNPiM( nfpim ) ; 
+  event -> SetNPi0( nfpi0 ) ; 
+  event -> SetNKP( nfkp ) ;
+  event -> SetNKM( nfkm ) ; 
+  event -> SetNK0( nfk0 ) ; 
+  event -> SetNEM( nfem ) ; 
+  event -> SetNOther( nfother ) ; 
+  
+  event -> SetVertex( vtxx, vtxy, vtxz, vtxt ) ; 
+  
+  // Set final state particle kinematics
+  for ( unsigned int p = 0 ; p < (unsigned int) nf ; ++p ) {
+    event -> SetFinalParticle( pdgf[p], Ef[p], pxf[p], pyf[p], pzf[p] ) ; 
+  }
+  return true ; 
+}
+
+bool MCEventHolder::LoadAllEvents(void) {
+  unsigned int nevents = GetNEventsChain() ; 
   if( fMaxEvents > (int) nevents || fMaxEvents < 0 ) fMaxEvents = nevents ; // run all
 
   std::cout << "Loading "<< fMaxEvents <<" events ..." <<std::endl;
 
   for( unsigned int i = 0 ; i < (unsigned int) fMaxEvents ; ++i ) { 
-    MCEvent * event = new MCEvent() ; 
-    fEventHolderChain->GetEntry( i ) ; 
-    std::cout<< " event " << i << std::endl;
-    event -> SetEventID( iev ) ;
-    event -> SetWeight( wght ) ;   
-    event -> SetIsQEL( qel ) ; 
-    event -> SetIsRES( res ) ; 
-    event -> SetIsDIS( dis ) ; 
-    event -> SetIsMEC( mec ) ; 
-    event -> SetTargetPdg( tgt ) ; 
-    //event -> SetInLeptPdg( ) ;
-    //event -> SetOutLeptPdg( ) ; 
-
-    event -> SetInLeptonKinematics( Ev, pxv, pyv, pzv ) ; 
-    event -> SetOutLeptonKinematics( El, pxl, pyl, pzl ) ; 
-
-    event -> SetNProtons( nfp ) ; 
-    event -> SetNNeutrons( nfn ) ; 
-    event -> SetNPiP( nfpip ) ; 
-    event -> SetNPiM( nfpim ) ; 
-    event -> SetNPi0( nfpi0 ) ; 
-    event -> SetNKP( nfkp ) ;
-    event -> SetNKM( nfkm ) ; 
-    event -> SetNK0( nfk0 ) ; 
-    event -> SetNEM( nfem ) ; 
-    event -> SetNOther( nfother ) ; 
-
-    event -> SetVertex( vtxx, vtxy, vtxz, vtxt ) ; 
-
-    // Set final state particle kinematics
-    for ( unsigned int p = 0 ; p < (unsigned int) nf ; ++p ) {
-      event -> SetFinalParticle( pdgf[p], Ef[p], pxf[p], pyf[p], pzf[p] ) ; 
-    }
-
+    LoadEvent( i ) ; 
   }  
   return true ; 
 }
 
 void MCEventHolder::Initialize() { 
-  
+  this->LoadBranch();
 }
 
 void MCEventHolder::Clear() { 

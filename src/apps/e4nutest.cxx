@@ -8,8 +8,7 @@
 #include <sstream>
 #include <iomanip>
 #include "TH1D.h"
-#include "../physics/MCEventHolder.h"
-#include "../conf/ConfigurablesI.h"
+#include "analysis/E4NuAnalysis.h"
 
 using namespace std; 
 using namespace e4nu;
@@ -18,9 +17,11 @@ int main( void ) {
   std::cout << "Test ongoing..." << std::endl;
   std::string file_name = "/pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_2261GeV/apapadop_SuSav2_C12_2261GeV_master.root";
 
-  ConfigurablesI conf() ; 
-  MCEventHolder * mc_events = new MCEventHolder(file_name.c_str(), 10);
-   //EventHolderI * events = new EventHolderI( file_name.c_str() );
+  E4NuAnalysis * analysis = new E4NuAnalysis("/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vmaster/data/ConfFiles/example_configuration.txt") ;
+  analysis -> LoadData( file_name.c_str(), 10 ) ; 
+  for ( unsigned i = 0 ; i < 10 ; ++i ) {
+    analysis -> GetEvent(i) ;
+  }
 
   return 0 ; 
 }

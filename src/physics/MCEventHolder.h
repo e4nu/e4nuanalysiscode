@@ -21,8 +21,11 @@ namespace e4nu {
     MCEventHolder( const std::string root_file, const int maxevents ) ; 
     MCEventHolder( const std::vector<std::string> root_file_list ) ; 
     
-    bool LoadEvents(void) ;
-
+    bool LoadBranch(void) ;
+    bool LoadAllEvents(void) ;
+    bool LoadEvent( const unsigned int event_id ) ;
+    unsigned int GetNEventsChain(void) ;
+    
     ~MCEventHolder();
 
   private : 

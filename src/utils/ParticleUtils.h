@@ -7,13 +7,15 @@
 #ifndef _PARTICLE_UTILS_H_
 #define _PARTICLE_UTILS_H_
 #include <iostream> 
+#include "TLorentzVector.h"
 
 namespace e4nu { 
   namespace utils
     {
-      double GetParticleResolucion( const int particle_pdg, const double EBeam, const bool apply_resolution = true ) ; 
+      void ApplyResolution( const int pdg, TLorentzVector & mom, const double EBeam ) ; 
+      double GetParticleResolucion( const int particle_pdg, const double EBeam ) ; 
       bool GetParticleResolution( double & resolution, const int pdg ) ;
-      bool GetParticleMass( double & mass, const int pdg ) ; 
+      double GetParticleMass( const int pdg ) ; 
     }
 }
 

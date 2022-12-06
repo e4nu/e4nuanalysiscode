@@ -5,12 +5,13 @@
 
 #include "utils/ParticleUtils.h"
 #include "conf/ParticleI.h"
+#include <TMath.h>
+#include <TRandom3.h>
 
 using namespace e4nu ; 
 
-double utils::GetParticleResolucion( const int particle_pdg, const double Ebeam, const bool apply_resolution ) {
+double utils::GetParticleResolucion( const int particle_pdg, const double Ebeam ) {
   double resolution = 0 ; 
-  if ( !apply_resolution ) return resolution ; 
 
   if ( particle_pdg == conf::kPdgProton ) resolution = conf::kProtonRes ; 
   else if ( particle_pdg == conf::kPdgElectron ) resolution = conf::kElectronRes ; 
@@ -28,14 +29,27 @@ bool utils::GetParticleResolution( double & resolution, const int pdg ) {
   return true; 
 }
 
-bool utils::GetParticleMass( double & mass, const int pdg ) {
+double utils::GetParticleMass( const int pdg ) {
+  double mass = 0 ; 
   if( pdg == conf::kPdgProton ) mass = conf::kProtonMass ; 
   else if ( pdg == conf::kPdgElectron ) mass = conf::kElectronMass ; 
   else if ( pdg == conf::kPdgPiP ) mass = conf::kPiPMass ; 
   else if ( pdg == conf::kPdgPiM ) mass = conf::kPiMMass ; 
   else if ( pdg == conf::kPdgNeutron ) mass = conf::kNeutronMass ;
-  else return false ; 
-  return true ; 
+
+  return mass ; 
 }
 
+void utils::ApplyResolution( const int pdg, TLorentzVector & mom, const double EBeam ) {
+  double res = utils::GetParticleResolucion( pdg, EBeam ) ;
+  double p = mom.P() ;
+  double M = GetParticleMass( pdg ) ;
 
+  gRandom = new TRandom3() ; 
+  gRandom->SetSeed(10);
+
+  double SmearedPe = gRandom->Gaus(p,res*p);
+  double SmearedE = sqrt( pow( SmearedPe,2 ) + pow( M,2 ) ) ; 
+
+  mom.SetPxPyPzE( SmearedPe/p * mom.Px(), SmearedPe/p *mom.Py(), SmearedPe/p *mom.Pz(), SmearedE ) ; 
+}

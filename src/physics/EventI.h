@@ -69,9 +69,11 @@ namespace e4nu {
 
     void SetFinalParticle( const int pdg, const double E, const double px, const double py, const double pz ) ; 
 
+    
     // Common funtionalities which depend on MC or data 
     bool fIsMC ;
-
+    
+    
   private :
 
     double fWeight ; 

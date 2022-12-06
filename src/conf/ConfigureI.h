@@ -17,12 +17,8 @@ namespace e4nu {
       ConfigureI() ;
 
       // Configure with input file 
-      ConfigureI( std::string input_file ) ;
-      ConfigureI( const double EBeam, const unsigned int TargetPdg ) { 
-	kEBeam = EBeam ; 
-	kTargetPdg = TargetPdg ;
-	PrintConfiguration();
-      }
+      ConfigureI( const std::string input_file ) ;
+      ConfigureI( const double EBeam, const unsigned int TargetPdg ) ;
       
       void PrintConfiguration(void) const ; 
 

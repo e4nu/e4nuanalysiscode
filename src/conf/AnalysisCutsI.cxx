@@ -9,19 +9,18 @@
 #include "TMath.h"
 
 using namespace e4nu ;
-using namespace e4nu::conf ;  
 
-double GetMinMomentumCut( const int particle_pdg, const double EBeam ) { 
+double conf::GetMinMomentumCut( const int particle_pdg, const double EBeam ) { 
   double min_p = 0 ;
   if( particle_pdg == kPdgElectron ) {
-    if( EBeam == 1.161 /*GeV*/ ) min_p = 0.4 ; 
-    else if ( EBeam == 2.261 /*GeV*/ ) min_p = 0.55 ;
-    else if ( EBeam == 4.461 /*GeV*/ ) min_p = 1.1 ; 
+    if( EBeam == 1.161 ) min_p = 0.4 ; 
+    else if ( EBeam == 2.261 ) min_p = 0.55 ;
+    else if ( EBeam == 4.461 ) min_p = 1.1 ; 
   }
   return min_p ; 
 }
 
-bool ValidPhiOpeningAngle( double phi /*rad*/, const bool apply ) {
+bool conf::ValidPhiOpeningAngle( double phi /*rad*/, const bool apply ) {
   if( !apply ) return true ;
   //Definition as for data. It is also correct for GENIE simulation data since V3_el is rotated above by 180 degree in phi
   phi *= TMath::RadToDeg() ; 
@@ -37,7 +36,7 @@ bool ValidPhiOpeningAngle( double phi /*rad*/, const bool apply ) {
   return true ; 
 }
 
-bool GoodSectorPhiSlice( double phi /*rad*/, const bool apply = true ) {
+bool conf::GoodSectorPhiSlice( double phi /*rad*/, const bool apply ) {
   if ( !apply ) return true ; 
 
   phi *= TMath::RadToDeg() ; 
@@ -49,7 +48,7 @@ bool GoodSectorPhiSlice( double phi /*rad*/, const bool apply = true ) {
   return true ; 
 } 
 
-bool GetQ2Cut( double & Q2cut, const double Ebeam, const bool apply_Q2cut = true ) {
+bool conf::GetQ2Cut( double & Q2cut, const double Ebeam, const bool apply_Q2cut ) {
   if( !apply_Q2cut ) return false ; 
 
   if ( Ebeam >= 1. && Ebeam < 2. ) {
@@ -66,7 +65,7 @@ bool GetQ2Cut( double & Q2cut, const double Ebeam, const bool apply_Q2cut = true
   return false ;
 }
 
-bool GetWCut( double & WCut, const double Ebeam ) {
+bool conf::GetWCut( double & WCut, const double Ebeam ) {
   if ( Ebeam < 2 /*GeV*/ ) {
     WCut = 2 ; 
     return true ;

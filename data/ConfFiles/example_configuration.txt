@@ -7,6 +7,6 @@ UsePhiThetaBand		true
 ApplyThetaSlice		true
 ApplyGoodSectorPhiSlice	true
 offset			0
-EBeam			1.10
+EBeam			2.261
 TargetPdg		1000060120
 IsData			false

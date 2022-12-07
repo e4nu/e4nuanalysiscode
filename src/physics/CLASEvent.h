@@ -12,7 +12,7 @@
 #include "physics/CLASEventHolder.h"
 
 namespace e4nu {
-  class CLASEvent : EventI {
+  class CLASEvent : public EventI {
   public : 
     CLASEvent(); 
     virtual ~CLASEvent();

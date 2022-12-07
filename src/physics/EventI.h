@@ -21,7 +21,8 @@ namespace e4nu {
     unsigned int GetEventID(void) const { return fEventID ; } 
     TLorentzVector GetInLepton4Mom(void) const { return fInLepton ; }
     TLorentzVector GetOutLepton4Mom(void) const { return fOutLepton ; }
-
+    std::map<int,std::vector<TLorentzVector>> GetFinalParticles4Mom(void) const { return fFinalParticles ; }
+ 
     int GetTargetPdg(void) const { return fTargetPdg ; }
     int GetInLeptPdg(void) const { return fInLeptPdg ; }
     int GetOutLeptPdg(void) const { return fOutLeptPdg ; }
@@ -40,6 +41,10 @@ namespace e4nu {
     void SetWeight(const double w) { fWeight = w ; }
     void AddWeight(const double w) { fWeight *= w ; }
     double GetWeight(void) const { return fWeight ; }
+
+    void SetOutLeptonKinematics( const TLorentzVector tlvect ) { fOutLepton = tlvect ; }
+    void SetInLeptonKinematics( const TLorentzVector tlvect ) { fInLepton = tlvect ; }
+    void SetFinalParticlesKinematics( const std::map<int,std::vector<TLorentzVector>> part_map ) { fFinalParticles = part_map ; }
 
   protected : 
     EventI(); 
@@ -64,15 +69,14 @@ namespace e4nu {
     void SetOutLeptonKinematics( const double energy, const double px, const double py, const double pz ) ;
     void SetInLeptonKinematics( const double energy, const double px, const double py, const double pz ) ; 
 
-    void SetOutLeptonKinematics( const TLorentzVector tlvect ) { fOutLepton = tlvect ; }
-    void SetInLeptonKinematics( const TLorentzVector tlvect ) { fInLepton = tlvect ; }
-
     void SetFinalParticle( const int pdg, const double E, const double px, const double py, const double pz ) ; 
 
     
     // Common funtionalities which depend on MC or data 
     bool fIsMC ;
-    
+    TLorentzVector fInLepton ; 
+    TLorentzVector fOutLepton ; 
+    std::map<int,std::vector<TLorentzVector>> fFinalParticles ; 
     
   private :
 
@@ -83,9 +87,6 @@ namespace e4nu {
     int fOutLeptPdg ; 
 
     unsigned int fNP, fNN, fNPiP, fNPiM, fNPi0, fNKP, fNKM, fNK0, fNEM, fNOther ; 
-    TLorentzVector fInLepton ; 
-    TLorentzVector fOutLepton ; 
-    std::map<int,std::vector<TLorentzVector>> fFinalParticles ; 
 
     void Initialize(void) ;
     void Clear(void); 

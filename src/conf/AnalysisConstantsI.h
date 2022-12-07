@@ -21,8 +21,8 @@ namespace e4nu {
     const double kMinThetaPiMinus = 0.;
     const double kMinThetaGamma = 8.;
 
-    const double kMinThetaSlice = 36 ;
-    const double kMaxThetaSlice = 39 ; 
+    const double kMinEThetaSlice = 36 ;
+    const double kMaxEThetaSlice = 39 ; 
 
     const double kCenterFirstSector = 30;
     const double kCenterSecondSector = 90;

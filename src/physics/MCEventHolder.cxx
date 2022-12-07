@@ -4,6 +4,7 @@
  */
 
 #include "physics/MCEventHolder.h"
+#include "physics/MCEvent.h"
 
 using namespace e4nu ; 
 
@@ -125,21 +126,18 @@ bool MCEventHolder::LoadBranch(void) {
   return true ;
 }
 
-unsigned int MCEventHolder::GetNEventsChain(void) { 
-  if(!fEventHolderChain) return false ; 
- 
-  return fEventHolderChain->GetEntries();
-}
+EventI * MCEventHolder::GetEvent(const unsigned int event_id) {
 
-bool MCEventHolder::LoadEvent( const unsigned int event_id ) {
-  unsigned int maxevents = GetNEventsChain() ; 
-  if ( event_id > maxevents ) return false ; 
+  if ( event_id > (unsigned int) fMaxEvents ) return nullptr ; 
 
   MCEvent * event = new MCEvent() ; 
   fEventHolderChain->GetEntry( event_id ) ; 
   
   event -> SetEventID( iev ) ;
-  event -> SetWeight( wght ) ;   
+  event -> SetWeight( wght ) ;
+  event -> SetIsEM( em ) ;   
+  event -> SetIsCC( cc ) ; 
+  event -> SetIsNC( nc ) ; 
   event -> SetIsQEL( qel ) ; 
   event -> SetIsRES( res ) ; 
   event -> SetIsDIS( dis ) ; 
@@ -163,24 +161,21 @@ bool MCEventHolder::LoadEvent( const unsigned int event_id ) {
   event -> SetNOther( nfother ) ; 
   
   event -> SetVertex( vtxx, vtxy, vtxz, vtxt ) ; 
-  
+  event -> SetHitNuclPdg( hitnuc ) ; 
+  event -> SetTrueQ2s( Q2s ) ; 
+  event -> SetTrueWs( Ws ) ;
+  event -> SetTruexs( xs ) ; 
+  event -> SetTrueys( ys ) ; 
+  event -> SetTrueQ2( Q2 ) ; 
+  event -> SetTrueW( W ) ;
+  event -> SetTruex( x ) ; 
+  event -> SetTruey( y ) ; 
+
   // Set final state particle kinematics
   for ( unsigned int p = 0 ; p < (unsigned int) nf ; ++p ) {
     event -> SetFinalParticle( pdgf[p], Ef[p], pxf[p], pyf[p], pzf[p] ) ; 
   }
-  return true ; 
-}
-
-bool MCEventHolder::LoadAllEvents(void) {
-  unsigned int nevents = GetNEventsChain() ; 
-  if( fMaxEvents > (int) nevents || fMaxEvents < 0 ) fMaxEvents = nevents ; // run all
-
-  std::cout << "Loading "<< fMaxEvents <<" events ..." <<std::endl;
-
-  for( unsigned int i = 0 ; i < (unsigned int) fMaxEvents ; ++i ) { 
-    LoadEvent( i ) ; 
-  }  
-  return true ; 
+  return event ; 
 }
 
 void MCEventHolder::Initialize() { 
@@ -188,5 +183,5 @@ void MCEventHolder::Initialize() {
 }
 
 void MCEventHolder::Clear() { 
-  //  b_iev = nullptr ;   
+   //  b_iev = nullptr ;   
 }

@@ -14,31 +14,38 @@ MCEvent::MCEvent(): EventI() {
   fIsMC = true ; 
 }
 
-MCEvent::~MCEvent() {
-
-}
+MCEvent::~MCEvent() {;}
 
 void MCEvent::SetOutLeptonKinematics( const double E, const double px, const double py, const double pz ) {
-  
-  EventI::SetOutLeptonKinematics(E,px,py,pz);
-  TLorentzVector temp = GetOutLepton4Mom() ;
+  fOutLepton.SetPxPyPzE( px, py, pz, E ) ; 
 
-  double phi = temp.Phi() + TMath::Pi() ; // The GENIE Coordinate system is flipped with respect to CLAS
-  temp.SetPhi( phi ) ; 
-  EventI::SetOutLeptonKinematics( temp ) ; 
-
+  double phi = fOutLepton.Phi() + TMath::Pi() ; // The GENIE Coordinate system is flipped with respect to CLAS
+  fOutLepton.SetPhi( phi ) ; 
 
   return ; 
 }
 
 void MCEvent::SetInLeptonKinematics( const double E, const double px, const double py, const double pz ) {
-  EventI::SetInLeptonKinematics(E,px,py,pz);
-  
-  TLorentzVector temp = GetInLepton4Mom() ;
-
-  double phi = temp.Phi() + TMath::Pi() ; // The GENIE Coordinate system is flipped with respect to CLAS
-  temp.SetPhi( phi ) ; 
-  EventI::SetInLeptonKinematics( temp ) ; 
+  fInLepton.SetPxPyPzE( px, py, pz, E ) ; 
+  double phi = fInLepton.Phi() + TMath::Pi() ; // The GENIE Coordinate system is flipped with respect to CLAS
+  fInLepton.SetPhi( phi ) ; 
 
   return ; 
 } 
+
+void MCEvent::SetFinalParticle( const int pdg, const double E, const double px, const double py, const double pz ) {
+  TLorentzVector mom;
+  mom.SetPxPyPzE( px, py, pz, E ) ; 
+
+  double phi = mom.Phi() + TMath::Pi() ; // The GENIE Coordinate system is flipped with respect to CLAS                                                                                                           
+  mom.SetPhi( phi ) ;
+						
+  if( fFinalParticles.find(pdg) == fFinalParticles.end() ) {
+    std::vector<TLorentzVector> vct ;
+    vct.push_back(mom); 
+    fFinalParticles.insert( std::pair<int,std::vector<TLorentzVector>>(pdg, vct) ) ; 
+  } else {
+    fFinalParticles[pdg].push_back( mom ) ; 
+  }
+}
+

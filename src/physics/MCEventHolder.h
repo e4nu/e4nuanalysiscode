@@ -8,12 +8,9 @@
 #define _MC_EVENT_HOLDER_H_
 
 #include "physics/EventHolderI.h"
-#include "physics/MCEvent.h"
-#include "physics/EventI.h"
-
 
 namespace e4nu {
-  class MCEventHolder : EventHolderI {
+  class MCEventHolder : public EventHolderI {
   public: 
 
     MCEventHolder(); 
@@ -22,10 +19,9 @@ namespace e4nu {
     MCEventHolder( const std::vector<std::string> root_file_list ) ; 
     
     bool LoadBranch(void) ;
-    bool LoadAllEvents(void) ;
-    bool LoadEvent( const unsigned int event_id ) ;
-    unsigned int GetNEventsChain(void) ;
     
+    e4nu::EventI * GetEvent(const unsigned int event_id) ;
+
     ~MCEventHolder();
 
   private : 

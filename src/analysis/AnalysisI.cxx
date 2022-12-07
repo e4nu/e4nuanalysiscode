@@ -19,11 +19,6 @@ AnalysisI::AnalysisI( const double EBeam, const unsigned int TargetPdg ) : Confi
 
 AnalysisI::~AnalysisI() { ; } 
 
-bool AnalysisI::Analyse(void) const {
-
-  return true ; 
-}
-
 void AnalysisI::Initialize() { 
   fIsDataLoaded = false ;
 }

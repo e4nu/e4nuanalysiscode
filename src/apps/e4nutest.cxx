@@ -19,9 +19,7 @@ int main( void ) {
 
   E4NuAnalysis * analysis = new E4NuAnalysis("/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vmaster/data/ConfFiles/example_configuration.txt") ;
   analysis -> LoadData( file_name.c_str(), 10 ) ; 
-  for ( unsigned i = 0 ; i < 10 ; ++i ) {
-    analysis -> GetEvent(i) ;
-  }
+  analysis -> Analyse() ; 
 
   return 0 ; 
 }

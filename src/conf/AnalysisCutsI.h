@@ -4,8 +4,8 @@
  * \date October 2022
  **/
 
-#ifndef _ANALYSIS_I_H_
-#define _ANALYSIS_I_H_
+#ifndef _ANALYSISCUTS_I_H_
+#define _ANALYSISCUTS_I_H_
 
 namespace e4nu { 
   namespace conf {

@@ -20,19 +20,28 @@ EventHolderI::EventHolderI( const std::string file ) {
   this->Initialize() ; 
   std::cout<< "Loading "<< file << " ... \n" ;
   if( this->LoadMembers( file ) ) fIsConfigured = true ; 
+  fMaxEvents = fEventHolderChain ->GetEntries() ;
 }
 
 EventHolderI::EventHolderI( const std::string file, const int nmaxevents ) { 
   this->Initialize() ; 
-  fMaxEvents = nmaxevents ; 
-  std::cout<< "Loading "<< fMaxEvents << " from " << file << " ... \n" ;
-  if( this->LoadMembers( file ) ) fIsConfigured = true ; 
+  if( this->LoadMembers( file ) ) { 
+    fIsConfigured = true ; 
+    if( nmaxevents > fEventHolderChain -> GetEntries() || nmaxevents < 0 ) fMaxEvents = fEventHolderChain ->GetEntries() ;
+    else fMaxEvents = nmaxevents ; 
+
+    std::cout<< "Loading "<< fMaxEvents << " from " << file << " ... \n" ;
+  }
+  else fIsConfigured = false ; 
 }
 
 EventHolderI::EventHolderI( const std::vector<std::string> files ) { 
   this->Initialize() ; 
   for ( unsigned int file_id = 0 ; file_id < files.size() ; ++file_id ) {
     fIsConfigured *= this->LoadMembers( files[file_id] ) ; 
+  }
+  if( fIsConfigured ) { 
+    fMaxEvents = fEventHolderChain -> GetEntries() ; 
   }
 }
 
@@ -49,10 +58,6 @@ void EventHolderI::Initialize() {
 
 void EventHolderI::Clear() { 
   fEventHolderChain = nullptr ;
-  for ( unsigned int i = 0 ; i < fEvents.size() ; ++i ) {
-    delete fEvents[i] ;
-  }
-  fEvents.clear() ; 
   fMaxEvents = -1 ;
 
 }

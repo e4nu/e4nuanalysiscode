@@ -12,6 +12,7 @@
 using namespace e4nu ; 
     
 std::string conf::GetAcceptanceFile( const int particle, const unsigned int target, const double E, const std::string local_path ) {
+  std::cout << " HEREEEEEEEE" << std::endl;
   std::string base_dir = local_path + "data/AcceptanceMaps/CLAS6/";
   std::string file = base_dir + "e2a_maps_" ;
   if( target == conf::kPdgHe3 )file += "3He_" ;

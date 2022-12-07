@@ -9,10 +9,9 @@
 
 #include <iostream>
 #include "physics/EventI.h"
-#include "physics/MCEventHolder.h"
 
 namespace e4nu {
-  class MCEvent : EventI {
+  class MCEvent : public EventI {
   public : 
     MCEvent(); 
     virtual ~MCEvent();
@@ -65,8 +64,7 @@ namespace e4nu {
     // GENIE Coordinate system is flipped with respect to class
     void SetOutLeptonKinematics( const double energy, const double px, const double py, const double pz ) ;
     void SetInLeptonKinematics( const double energy, const double px, const double py, const double pz ) ; 
- 
-    // Common funtionalities which depend on MC or data = definition 
+    void SetFinalParticle( const int pdg, const double E, const double px, const double py, const double pz ); 
 
   private :
     bool fIsEM ; 
@@ -89,6 +87,7 @@ namespace e4nu {
     double fTruey ; 
 
     TLorentzVector fVertex ; 
+
   };
 }
 

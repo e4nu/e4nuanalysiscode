@@ -5,6 +5,5 @@
 #pragma link off all functions;
 
 #pragma link C++ namespace e4nu;
-#pragma link C++ namespace e4nu::analysis;
 
 #endif

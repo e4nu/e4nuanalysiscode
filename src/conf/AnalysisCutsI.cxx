@@ -15,7 +15,7 @@ double GetMinMomentumCut( const int particle_pdg, const double EBeam ) {
   double min_p = 0 ;
   if( particle_pdg == kPdgElectron ) {
     if( EBeam == 1.161 /*GeV*/ ) min_p = 0.4 ; 
-    else if ( EBeam == 0.55 /*GeV*/ ) min_p = 0.55 ;
+    else if ( EBeam == 2.261 /*GeV*/ ) min_p = 0.55 ;
     else if ( EBeam == 4.461 /*GeV*/ ) min_p = 1.1 ; 
   }
   return min_p ; 

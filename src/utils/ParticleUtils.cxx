@@ -18,15 +18,8 @@ double utils::GetParticleResolucion( const int particle_pdg, const double Ebeam 
   else if ( particle_pdg == conf::kPdgPiP || particle_pdg == conf::kPdgPiM || particle_pdg == conf::kPdgPi0 ) resolution = conf::kPionRes ; // also pi0?
 
   if ( Ebeam == 1.161 ) resolution *= 3; // Is it only this value or beam_E>1.1 GeV ? 
-  return resolution ; 
-}
 
-bool utils::GetParticleResolution( double & resolution, const int pdg ) {
-  if( pdg == conf::kPdgProton ) resolution = conf::kProtonRes ; 
-  else if ( pdg == conf::kPdgElectron ) resolution = conf::kElectronRes ; 
-  else if ( pdg == conf::kPdgPiP || pdg == conf::kPdgPiM ) resolution = conf::kPionRes ; 
-  else return false ; 
-  return true; 
+  return resolution ; 
 }
 
 double utils::GetParticleMass( const int pdg ) {

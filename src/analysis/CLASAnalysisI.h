@@ -19,7 +19,8 @@ namespace e4nu {
 
     bool LoadData( const std::string file ) ; 
     bool LoadData( const std::string file, const unsigned int nmax ) ; 
-    void GetEvent( const unsigned int event_id ) const ;
+    e4nu::EventI * GetEvent( const unsigned int event_id ) ;
+    virtual unsigned int GetNEvents( void ) const ;
 
     // Load Data from root file:
     virtual ~CLASAnalysisI();

@@ -13,21 +13,24 @@
 using namespace e4nu::conf ; 
 
 namespace e4nu {
-  class E4NuAnalysis : public MCAnalysisI, public CLASAnalysisI {
+  class E4NuAnalysis : public MCAnalysisI, public CLASAnalysisI { 
   public : 
     E4NuAnalysis(); 
     E4NuAnalysis( const std::string conf_file ) ;
-    E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) ; 
+    E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) ;
 
     bool LoadData( const std::string file ) ; 
     bool LoadData( const std::string file, const unsigned int nmax ) ; 
-    void GetEvent( const unsigned int event_id ) const ;
 
-    // Load Data from root file:
+    // Main Analyse function
+    bool Analyse(void) ; 
+
+  private : 
+    e4nu::EventI * GetValidEvent( const unsigned int event_id ) ;
+    unsigned int GetNEvents( void ) const ;
+    
     virtual ~E4NuAnalysis();
-
-  private :
-
+    
   };
 }
 

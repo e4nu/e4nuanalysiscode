@@ -20,8 +20,7 @@ double conf::GetMinMomentumCut( const int particle_pdg, const double EBeam ) {
   return min_p ; 
 }
 
-bool conf::ValidPhiOpeningAngle( double phi /*rad*/, const bool apply ) {
-  if( !apply ) return true ;
+bool conf::ValidPhiOpeningAngle( double phi /*rad*/ ) {
   //Definition as for data. It is also correct for GENIE simulation data since V3_el is rotated above by 180 degree in phi
   phi *= TMath::RadToDeg() ; 
   phi += 30 ; //Add 30 degree for plotting and photon phi cut
@@ -36,8 +35,7 @@ bool conf::ValidPhiOpeningAngle( double phi /*rad*/, const bool apply ) {
   return true ; 
 }
 
-bool conf::GoodSectorPhiSlice( double phi /*rad*/, const bool apply ) {
-  if ( !apply ) return true ; 
+bool conf::GoodSectorPhiSlice( double phi /*rad*/ ) {
 
   phi *= TMath::RadToDeg() ; 
   phi += 30 ; //Add 30 degree for plotting and photon phi cut
@@ -48,9 +46,7 @@ bool conf::GoodSectorPhiSlice( double phi /*rad*/, const bool apply ) {
   return true ; 
 } 
 
-bool conf::GetQ2Cut( double & Q2cut, const double Ebeam, const bool apply_Q2cut ) {
-  if( !apply_Q2cut ) return false ; 
-
+bool conf::GetQ2Cut( double & Q2cut, const double Ebeam ) {
   if ( Ebeam >= 1. && Ebeam < 2. ) {
     Q2cut = 0.1;
     return true ;

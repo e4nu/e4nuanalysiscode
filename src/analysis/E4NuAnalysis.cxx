@@ -52,18 +52,23 @@ bool E4NuAnalysis::Analyse(void) {
 
     TLorentzVector in_mom = event -> GetInLepton4Mom() ;
     TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
+    double EBeam = in_mom.E() ; 
 
-    std::cout << conf::GetAcceptanceFile( 11, GetConfiguredTarget(), in_mom.E(), "/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vmaster" ) ; 
-    std::cout << conf::kPdgElectron << std::endl;
-
-    if( in_mom.E() < conf::GetMinMomentumCut( conf::kPdgElectron, in_mom.E() ) ) continue ; 
-
+    if( out_mom.E() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) continue ; 
+    
     if( ApplyThetaSlice() ) {
-      if( in_mom.Theta() < conf::kMinEThetaSlice * 180./TMath::Pi() ) continue ; 
-      if( in_mom.Theta() > conf::kMaxEThetaSlice * 180./TMath::Pi() ) continue ; 
+      if( out_mom.Theta() < conf::kMinEThetaSlice * 180./TMath::Pi() ) continue ; 
+      if( out_mom.Theta() > conf::kMaxEThetaSlice * 180./TMath::Pi() ) continue ; 
     }
 
-    
+    if( ApplyPhiOpeningAngle() ) {
+      if ( ! conf::ValidPhiOpeningAngle( out_mom.Phi() ) ) continue ;  
+    }
+
+    if( ApplyGoodSectorPhiSlice() ) {
+      if ( ! conf::GoodSectorPhiSlice( out_mom.Phi() ) ) continue ; 
+    }
+
 
     //    conf::ValidPhiOpeningAngle( 10. , true ) ; 
     /*

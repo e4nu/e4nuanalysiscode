@@ -1,4 +1,4 @@
-/**
+/** 
  * \info These parameters are configurable 
  * the default values are set here
  **/
@@ -21,6 +21,11 @@ namespace e4nu {
       PrintConfiguration();
     }
     
+    ConfigureI::~ConfigureI() {
+      kTopology_map.clear() ; 
+    }
+
+
     ConfigureI::ConfigureI( const std::string input_file ) {
       std::cout << " Configuring analysis from " << input_file << " ..." << std::endl;
       std::ifstream file (input_file.c_str()) ;
@@ -64,11 +69,35 @@ namespace e4nu {
 	} else if ( param[i] == "IsData" ) {
 	  if( value[i] == "true" ) kIsData = true ; 
 	  else kIsData = false ; 
-	} else if ( param[i] == "offset" ) koffset = std::stod( value[i] ) ; 
+	} else if( param[i] == "ApplyQ2Cut" ) { 
+	  if( value[i] == "true" ) kQ2Cut = true ; 
+	  else kQ2Cut = false ; 
+	} else if( param[i] == "ApplyWCut" ) { 
+	  if( value[i] == "true" ) kWCut = true ; 
+	  else kWCut = false ; 	
+	} else if( param[i] == "IsElectronData" ) { 
+	  if( value[i] == "true" ) kIsElectron = true ; 
+	  else kIsElectron = false ; 
+	}else if ( param[i] == "offset" ) koffset = std::stod( value[i] ) ; 
 	else if ( param[i] == "EBeam" ) kEBeam = std::stod( value[i] ) ; 
 	else if ( param[i] == "TargetPdg" ) kTargetPdg = (unsigned int) std::stoi( value[i] ) ; 
-
-
+	else if ( param[i] == "Toplogy") {
+	  std::string delimeter = ":" ;
+	  std::string separator = "," ;
+	  std::string element, m_element ;
+	  std::istringstream particle_list( value[i] ) ;
+	  while( getline( particle_list, element, ',' ) ) {
+	      std::istringstream part_list_mult ( element ) ;
+	      std::vector<std::string> temp ; 
+	      while ( getline( part_list_mult, m_element, ':' ) ) {
+		temp.push_back( m_element ) ; 
+	      }
+	      if( temp.size() == 2 ) {
+		std::pair<int, unsigned int> pair ( std::stoi( temp[0]), (unsigned int) std::stoi( temp[1] ) ) ; // Pdg, multiplicity
+		kTopology_map.insert( pair ) ;
+	      }
+	  }
+	}
       }
       PrintConfiguration() ;
     }
@@ -80,6 +109,8 @@ namespace e4nu {
       std::cout << "UseAllSectors:" << kUseAllSectors << std::endl;
       std::cout << "ApplyFiducial:" << kApplyFiducial << std::endl;
       std::cout << "ApplyReso:" << kApplyReso << std::endl;
+      std::cout << "ApplyQ2Cut: " << kQ2Cut << std::endl;
+      std::cout << "ApplyWCut: " << kWCut << std::endl;
       std::cout << "ApplyPhiOpeningAngle:" << kApplyPhiOpeningAngle << std::endl;
       std::cout << "UsePhiThetaBand:"<< kUsePhiThetaBand << std::endl;
       std::cout << "ApplyThetaSlice:"<< kApplyThetaSlice << std::endl;
@@ -87,7 +118,12 @@ namespace e4nu {
       std::cout << "EBeam: " << kEBeam << " GeV " << std::endl;
       std::cout << "Target Pdg : " << kTargetPdg << std::endl;
       if ( kIsData ) std::cout << "\nIsData" << std::endl;
-      else std::cout << " Is MC Data " << std::endl;
+      else std::cout << "Is MC Data " << std::endl;
+      if( kIsElectron) std::cout << " Electron scattering data" <<std::endl;
+      std::cout << "Topology: \n " << std::endl;
+      for ( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) { 
+	std::cout << "    " << it->first << ", multiplicity " << it->second << std::endl;
+      }
       std::cout << "*********************************************************************" << std::endl;
     }
 

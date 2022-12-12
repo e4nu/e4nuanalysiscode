@@ -9,7 +9,7 @@
 #include "conf/AnalysisConstantsI.h"
 #include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
-
+#include "utils/KinematicUtils.h"
 
 using namespace e4nu ; 
 
@@ -56,6 +56,23 @@ bool E4NuAnalysis::Analyse(void) {
 
     if( out_mom.E() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) continue ; 
     
+    double reco_Q2 = utils::GetRecoQ2( out_mom, EBeam ) ; 
+    double W_var = utils::GetRecoW( out_mom, EBeam ) ;
+
+    if( ApplyQ2Cut() ) {
+      double MaxQ2 = 0 ; 
+      if( conf::GetQ2Cut( MaxQ2, EBeam ) ) {
+	if( reco_Q2 < MaxQ2 ) continue ; 
+      }
+    }
+
+    if( ApplyWCut() ) {
+      double MinW = 0 ; 
+      if( conf::GetWCut( MinW, EBeam ) ) {
+	if( W_var > MinW ) continue ; 
+      }
+    }
+
     if( ApplyThetaSlice() ) {
       if( out_mom.Theta() < conf::kMinEThetaSlice * 180./TMath::Pi() ) continue ; 
       if( out_mom.Theta() > conf::kMaxEThetaSlice * 180./TMath::Pi() ) continue ; 

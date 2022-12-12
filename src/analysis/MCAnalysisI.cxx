@@ -6,7 +6,9 @@
 #include <iostream>
 #include "analysis/MCAnalysisI.h"
 #include "utils/ParticleUtils.h"
+#include "utils/KinematicUtils.h"
 #include "conf/ParticleI.h"
+#include "utils/DetectorUtils.h"
 
 using namespace e4nu ; 
 
@@ -55,6 +57,48 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     this -> SmearParticles( event ) ; 
   }
 
+  // Get Topology Definition
+  std::map<int,unsigned int> Topology = GetTopology(); 
+  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
+
+  double wght = event->GetWeight() ; 
+ 
+  // Signal event
+  bool is_signal = false ; 
+  double acc_wght = 1 ; 
+  for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
+    if( it->first == conf::kPdgElectron ) {
+      // Apply acceptance for electrons
+      acc_wght *= utils::GetAcceptanceMapWeight( it->first, out_mom, GetConfiguredTarget(), EBeam, "/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vmaster/" ) ;
+      if( fabs( acc_wght) != acc_wght ) return nullptr ; 
+      is_signal = true ; 
+    } else {
+      // If we have an exclusive event, apply acceptance weight as well for signal event
+      if( part_map.count( it->first ) && part_map[it->first].size() == it->second ) {
+	is_signal = true ; 
+	for( unsigned int i = 0 ; i < it->second ; ++i ) {
+	  acc_wght *= utils::GetAcceptanceMapWeight( it->first, part_map[it->first][i], GetConfiguredTarget(), EBeam, "/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vmaster/" ) ;
+	  if( fabs( acc_wght) != acc_wght ) return nullptr ; 
+	} 
+      } else {
+	is_signal = false ; 
+      }
+    }
+    if( is_signal ) wght *= acc_wght ; 
+
+    // Background event
+    // BACKGROUND SUBSTRACTION METHOD HERE
+  }
+   
+  // Apply Mottxsec weight
+  //
+  if( IsElectronData() ) {
+    wght *= utils::GetXSecScale(out_mom, EBeam, true ) ; 
+  }
+  std::cout << wght << std::endl;
+  // Set Final weight
+  event->SetWeight( wght ) ; 
+  
   return event ; 
 }
 

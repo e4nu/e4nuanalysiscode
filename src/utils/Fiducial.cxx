@@ -94,8 +94,8 @@ bool Fiducial::SetFiducialCutParameters(double beam_en){
   if(beam_en>4. && beam_en<5.){    //
     // reads FC parameters for 4.4GeV , e- and p fiducial cut parameters at 4GeV
     //
-    std::ifstream param_file2(Form("./FiducialsCorrections/PFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));//reading the proton fiducial cut parameters at 4GeV
-    std::ifstream param_file(Form("./FiducialsCorrections/FCP_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
+    std::ifstream param_file2(Form("./data/FiducialsCorrections/CLAS6/PFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));//reading the proton fiducial cut parameters at 4GeV
+    std::ifstream param_file(Form("./data/FiducialsCorrections/CLAS6/FCP_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
 
     //	std::ifstream param_file("./FCP_4461_2250.dat");
     int param_type, sector;

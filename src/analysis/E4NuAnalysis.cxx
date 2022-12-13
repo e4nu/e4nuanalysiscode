@@ -10,6 +10,7 @@
 #include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
 #include "utils/KinematicUtils.h"
+#include "utils/Utils.h"
 
 using namespace e4nu ; 
 
@@ -42,14 +43,16 @@ unsigned int E4NuAnalysis::GetNEvents( void ) const {
 }
 
 bool E4NuAnalysis::Analyse(void) {
-
-  
+  unsigned int total_nevents = GetNEvents() ;
   // Loop over events
-  for( unsigned int i = 0 ; i < GetNEvents() ; ++i ) {
-    std::cout << i << std::endl;
-    EventI * event = (EventI*) MCAnalysisI::GetValidEvent(i) ; 
-    if( ! event ) continue ; 
-    
+  for( unsigned int i = 0 ; i < total_nevents ; ++i ) {
+    //Print percentage
+    double progress = i / (double) total_nevents ; 
+    if( i==0 || i % 1000000 == 0 ) utils::PrintProgressBar(progress);
+
+    std::unique_ptr<EventI> event = std::unique_ptr<EventI>((EventI*) MCAnalysisI::GetValidEvent(i) ); 
+    if( ! event ) continue ;
+
     TLorentzVector in_mom = event -> GetInLepton4Mom() ;
     TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
     double EBeam = in_mom.E() ; 

@@ -27,30 +27,30 @@ void Fiducial::InitPiMinusFit( const double EBeam )
 
 void Fiducial::InitEClimits()
 {
-  up_lim1_ec =new TF1("up_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  up_lim2_ec =new TF1("up_lim2_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  up_lim3_ec =new TF1("up_lim3_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  up_lim4_ec =new TF1("up_lim4_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  up_lim5_ec =new TF1("up_lim5_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  up_lim6_ec =new TF1("up_lim6_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  low_lim1_ec=new TF1("low_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  low_lim2_ec=new TF1("low_lim2_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  low_lim3_ec=new TF1("low_lim3_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  low_lim4_ec=new TF1("low_lim4_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  low_lim5_ec=new TF1("low_lim5_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  low_lim6_ec=new TF1("low_lim6_ec","[0]+(x-[1])*(x-[1])*[2]",0,360);
-  rightside_lim1_ec=new TF1("rightside_lim1_ec","[0]*(x+[1])+[2]",0,360);
-  leftside_lim1_ec=new TF1("leftside_lim1_ec","[0]*(x+[1])+[2]",0,360);
-  rightside_lim2_ec=new TF1("rightside_lim2_ec","[0]*(x+[1])+[2]",0,360);
-  leftside_lim2_ec=new TF1("leftside_lim2_ec","[0]*(x+[1])+[2]",0,360);
-  rightside_lim3_ec=new TF1("rightside_lim3_ec","[0]*(x+[1])+[2]",0,360);
-  leftside_lim3_ec=new TF1("leftside_lim3_ec","[0]*(x+[1])+[2]",0,360);
-  rightside_lim4_ec=new TF1("rightside_lim4_ec","[0]*(x+[1])+[2]",0,360);
-  leftside_lim4_ec=new TF1("leftside_lim4_ec","[0]*(x+[1])+[2]",0,360);
-  rightside_lim5_ec=new TF1("rightside_lim5_ec","[0]*(x+[1])+[2]",0,360);
-  leftside_lim5_ec=new TF1("leftside_lim5_ec","[0]*(x+[1])+[2]",0,360);
-  rightside_lim6_ec=new TF1("rightside_lim6_ec","[0]*(x+[1])+[2]",0,360);
-  leftside_lim6_ec=new TF1("leftside_lim6_ec","[0]*(x+[1])+[2]",0,360);
+  up_lim1_ec =std::unique_ptr<TF1>(new TF1("up_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360));
+  up_lim2_ec =std::unique_ptr<TF1>(new TF1("up_lim2_ec","[0]+(x-[1])*(x-[1])*[2]",0,360));
+  up_lim3_ec =std::unique_ptr<TF1>(new TF1("up_lim3_ec","[0]+(x-[1])*(x-[1])*[2]",0,360));
+  up_lim4_ec =std::unique_ptr<TF1>(new TF1("up_lim4_ec","[0]+(x-[1])*(x-[1])*[2]",0,360));
+  up_lim5_ec =std::unique_ptr<TF1>(new TF1("up_lim5_ec","[0]+(x-[1])*(x-[1])*[2]",0,360));
+  up_lim6_ec =std::unique_ptr<TF1>(new TF1("up_lim6_ec","[0]+(x-[1])*(x-[1])*[2]",0,360));
+  low_lim1_ec=std::unique_ptr<TF1>(new TF1("low_lim1_ec","[0]+(x-[1])*(x-[1])*[2]",0,360));
+  low_lim2_ec=std::unique_ptr<TF1>(new TF1("low_lim2_ec","[0]+(x-[1])*(x-[1])*[2]",0,360));
+  low_lim3_ec=std::unique_ptr<TF1>(new TF1("low_lim3_ec","[0]+(x-[1])*(x-[1])*[2]",0,360));
+  low_lim4_ec=std::unique_ptr<TF1>(new TF1("low_lim4_ec","[0]+(x-[1])*(x-[1])*[2]",0,360));
+  low_lim5_ec=std::unique_ptr<TF1>(new TF1("low_lim5_ec","[0]+(x-[1])*(x-[1])*[2]",0,360));
+  low_lim6_ec=std::unique_ptr<TF1>(new TF1("low_lim6_ec","[0]+(x-[1])*(x-[1])*[2]",0,360));
+  rightside_lim1_ec=std::unique_ptr<TF1>(new TF1("rightside_lim1_ec","[0]*(x+[1])+[2]",0,360));
+  leftside_lim1_ec=std::unique_ptr<TF1>(new TF1("leftside_lim1_ec","[0]*(x+[1])+[2]",0,360));
+  rightside_lim2_ec=std::unique_ptr<TF1>(new TF1("rightside_lim2_ec","[0]*(x+[1])+[2]",0,360));
+  leftside_lim2_ec=std::unique_ptr<TF1>(new TF1("leftside_lim2_ec","[0]*(x+[1])+[2]",0,360));
+  rightside_lim3_ec=std::unique_ptr<TF1>(new TF1("rightside_lim3_ec","[0]*(x+[1])+[2]",0,360));
+  leftside_lim3_ec=std::unique_ptr<TF1>(new TF1("leftside_lim3_ec","[0]*(x+[1])+[2]",0,360));
+  rightside_lim4_ec=std::unique_ptr<TF1>(new TF1("rightside_lim4_ec","[0]*(x+[1])+[2]",0,360));
+  leftside_lim4_ec=std::unique_ptr<TF1>(new TF1("leftside_lim4_ec","[0]*(x+[1])+[2]",0,360));
+  rightside_lim5_ec=std::unique_ptr<TF1>(new TF1("rightside_lim5_ec","[0]*(x+[1])+[2]",0,360));
+  leftside_lim5_ec=std::unique_ptr<TF1>(new TF1("leftside_lim5_ec","[0]*(x+[1])+[2]",0,360));
+  rightside_lim6_ec=std::unique_ptr<TF1>(new TF1("rightside_lim6_ec","[0]*(x+[1])+[2]",0,360));
+  leftside_lim6_ec=std::unique_ptr<TF1>(new TF1("leftside_lim6_ec","[0]*(x+[1])+[2]",0,360));
 
 
   up_lim1_ec->SetParameters(0.995,30,-0.0001);

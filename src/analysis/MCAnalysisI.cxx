@@ -10,6 +10,7 @@
 #include "conf/ParticleI.h"
 #include "utils/DetectorUtils.h"
 #include "conf/FiducialCutI.h"
+#include "conf/AccpetanceMapsI.h"
 
 using namespace e4nu ; 
 
@@ -18,7 +19,14 @@ MCAnalysisI::MCAnalysisI() {
 }
 
 MCAnalysisI::~MCAnalysisI() {
-  delete fData;}
+  delete fData;
+  for( auto it = kAccMap.begin() ; it != kAccMap.end() ; ++it ) {
+    delete kAccMap[it->first] ; 
+    delete kGenMap[it->first] ; 
+  }
+  kAccMap.clear();
+  kGenMap.clear();
+}
 
 bool MCAnalysisI::LoadData( const std::string file ) {
   if( ! fIsDataLoaded ) fData = new MCEventHolder(file);
@@ -47,7 +55,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   MCEvent * event = (MCEvent*) fData -> GetEvent(event_id) ; 
   if( !event ) return nullptr ; 
-
   ++fEventsBeforeCuts ;
 
   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
@@ -61,13 +68,13 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Check weight is physical
   double wght = event->GetWeight() ; 
   if ( wght < 0 || wght > 10 ) return nullptr ; 
-  
+
   // Apply Fiducial volume cuts
   if( ApplyFiducial() ) {
     if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) return nullptr ; 
     ++fNEventsAfterFiducial ;
   }
-
+    
   // Apply smaring to particles
   if( ApplyReso() ) {
     this -> SmearParticles( event ) ; 
@@ -84,21 +91,22 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) {
       // Apply acceptance for electrons
-      acc_wght *= utils::GetAcceptanceMapWeight( it->first, out_mom, GetConfiguredTarget(), EBeam ) ; 
+      acc_wght *= utils::GetAcceptanceMapWeight( kAccMap[it->first], kGenMap[it->first], out_mom ) ; 
       if( fabs( acc_wght ) != acc_wght ) return nullptr ; 
       is_signal = true ; 
     } else if( part_map.count( it->first ) && part_map[it->first].size() == it->second ) {
       // If we have an exclusive event, apply acceptance weight as well for signal event
       is_signal = true ; 
       for( unsigned int i = 0 ; i < it->second ; ++i ) {
-	acc_wght *= utils::GetAcceptanceMapWeight( it->first, part_map[it->first][i], GetConfiguredTarget(), EBeam ) ; 
+	// Do I need particle id ? 
+	acc_wght *= utils::GetAcceptanceMapWeight( kAccMap[it->first], kGenMap[it->first], part_map[it->first][i] );
 	if( fabs( acc_wght) != acc_wght ) return nullptr ; 
       } 
     } else {
       is_signal = false ; 
     }
 
-    if( is_signal ) wght *= acc_wght ; 
+    if( is_signal && ApplyAccWeights() ) wght *= acc_wght ; 
       
     // Background event
     // BACKGROUND SUBSTRACTION METHOD HERE
@@ -146,6 +154,7 @@ unsigned int MCAnalysisI::GetNEvents( void ) const {
   return (unsigned int) fData ->GetNEvents() ; 
 }
 void MCAnalysisI::Initialize() { 
+
   // Initialize fiducial for this run
   kFiducialCut = std::unique_ptr<Fiducial>( new Fiducial()) ;
   double EBeam = GetConfiguredEBeam() ; 
@@ -157,6 +166,22 @@ void MCAnalysisI::Initialize() {
     kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), GetConfiguredTarget() , EBeam ) ;
     kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
  }
+
+  if( ApplyAccWeights() ) { 
+    std::map<int,TFile*> AcceptanceMap = conf::GetAcceptanceFileMap( GetConfiguredTarget(), EBeam ) ; 
+
+    kAccMap[conf::kPdgElectron] = (TH3D*) AcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ;
+    kAccMap[conf::kPdgProton] = (TH3D*) AcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ;
+    kAccMap[conf::kPdgPiP] = (TH3D*) AcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ;
+    kAccMap[conf::kPdgPiM] = (TH3D*) AcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ;
+    
+    kGenMap[conf::kPdgElectron] = (TH3D*) AcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ;
+    kGenMap[conf::kPdgProton] = (TH3D*) AcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ;
+    kGenMap[conf::kPdgPiP] = (TH3D*) AcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ;
+    kGenMap[conf::kPdgPiM] = (TH3D*) AcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ;
+
+  }  
+
 }
 
 bool MCAnalysisI::Finalise( const std::string out_file ) {

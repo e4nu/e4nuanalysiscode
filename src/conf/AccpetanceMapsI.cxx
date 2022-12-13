@@ -33,3 +33,11 @@ std::string conf::GetAcceptanceFile( const int particle, const unsigned int targ
   return file ; 
 }
 
+std::map<int,TFile*> conf::GetAcceptanceFileMap( const unsigned int target, const double EBeam ) {
+  std::map<int,TFile*> acc_map ; 
+  acc_map[conf::kPdgProton] = TFile::Open( conf::GetAcceptanceFile( conf::kPdgProton, target, EBeam ).c_str(), "READ" ) ;
+  acc_map[conf::kPdgPiP] = TFile::Open( conf::GetAcceptanceFile( conf::kPdgPiP, target, EBeam ).c_str(), "READ" ) ;
+  acc_map[conf::kPdgPiM] = TFile::Open( conf::GetAcceptanceFile( conf::kPdgPiM, target, EBeam ).c_str(), "READ" ) ;
+  acc_map[conf::kPdgElectron] = TFile::Open( conf::GetAcceptanceFile( conf::kPdgElectron, target, EBeam ).c_str(), "READ" ) ; 
+  return acc_map ; 
+}

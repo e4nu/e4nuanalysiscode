@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <map>
+#include "TH3D.h"
 #include "utils/Fiducial.h"
 #include "analysis/AnalysisI.h"
 #include "physics/MCEventHolder.h"
@@ -36,12 +37,15 @@ namespace e4nu {
     e4nu::EventI * GetEvent( const unsigned int event_id ) ;
 
     MCEventHolder * fData ; 
+
+    std::map<int,TH3D*> kAccMap ; 
+    std::map<int,TH3D*> kGenMap ; 
     std::unique_ptr<Fiducial> kFiducialCut ;
 
 
     // Store Statistics after cuts
-    unsigned int fEventsBeforeCuts = 0 ; 
-    unsigned int fNEventsAfterFiducial = 0 ; 
+    long int fEventsBeforeCuts = 0 ; 
+    long int fNEventsAfterFiducial = 0 ; 
 
     void Initialize(void) ;
     void Clear(void); 

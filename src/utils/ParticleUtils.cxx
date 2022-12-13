@@ -45,4 +45,5 @@ void utils::ApplyResolution( const int pdg, TLorentzVector & mom, const double E
   double SmearedE = sqrt( pow( SmearedPe,2 ) + pow( M,2 ) ) ; 
 
   mom.SetPxPyPzE( SmearedPe/p * mom.Px(), SmearedPe/p *mom.Py(), SmearedPe/p *mom.Pz(), SmearedE ) ; 
+  delete gRandom ; 
 }

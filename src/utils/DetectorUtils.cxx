@@ -7,17 +7,12 @@
 #include "utils/DetectorUtils.h"
 #include "conf/AccpetanceMapsI.h"
 #include "TMath.h"
-#include "TH3D.h"
 #include "TFile.h"
 
 using namespace e4nu;
 
-double utils::GetAcceptanceMapWeight( const int pdg, const TLorentzVector p4mom, const int target, const double EBeam ) {
-  static std::unique_ptr<TFile> file_acceptance ( TFile::Open( conf::GetAcceptanceFile( pdg, target, EBeam ).c_str(), "READ" ) ); 
-  if( !file_acceptance ) return 1. ;
- 
-  static std::unique_ptr<TH3D> acc ((TH3D*) file_acceptance -> Get("Accepted Particles"));
-  static std::unique_ptr<TH3D> gen ((TH3D*) file_acceptance -> Get("Generated Particles"));
+//double utils::GetAcceptanceMapWeight( TFile * acc_file, const int pdg, const TLorentzVector p4mom, const int target, const double EBeam ) {
+double utils::GetAcceptanceMapWeight( TH3D * acc, TH3D * gen, const TLorentzVector p4mom ){
   if( !acc || !gen ) return 1. ;
 
   double phi = p4mom.Phi() ; 

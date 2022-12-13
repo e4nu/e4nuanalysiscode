@@ -47,9 +47,6 @@ bool E4NuAnalysis::Analyse(void) {
     EventI * event = MCAnalysisI::GetValidEvent(i) ; 
     if( ! event ) continue ; 
     
-    double weight = event->GetWeight() ; 
-    if ( weight < 0 || weight > 10 ) continue ; 
-
     TLorentzVector in_mom = event -> GetInLepton4Mom() ;
     TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
     double EBeam = in_mom.E() ; 

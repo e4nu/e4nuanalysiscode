@@ -12,7 +12,7 @@
 namespace e4nu {
   namespace utils
   {
-    double GetAcceptanceMapWeight( const int pdg, const TLorentzVector p4mom, const int target, const double EBeam, const std::string local_path ) ; 
+    double GetAcceptanceMapWeight( const int pdg, const TLorentzVector p4mom, const int target, const double EBeam ) ; 
     unsigned int GetSector( double phi ) ;
     bool IsValidSector( const double phi, const double EBeam, const bool use_all ) ;
   }

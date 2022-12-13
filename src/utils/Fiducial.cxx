@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iomanip>
 #include <vector>
+#include <string>
 #include <TVectorT.h>
 #include <TVector3.h>
 #include <TF1.h>
@@ -15,12 +16,12 @@
 
 using namespace e4nu ; 
 
-void Fiducial::InitPiMinusFit(std::string beam_en)
+void Fiducial::InitPiMinusFit( const double EBeam ) 
 {
 
-  if (beam_en == "1161") { myPiMinusFit = new TF1("myPiMinusFit","17.+4./TMath::Power(x,1.)",0,5.); }
-  if (beam_en == "2261") { myPiMinusFit = new TF1("myPiMinusFit","(x<0.35)*(25.+7./TMath::Power(x,1.)) + (x>0.35)*(16.+10/TMath::Power(x,1.))",0,5.); }
-  if (beam_en == "4461") { myPiMinusFit = new TF1("myPiMinusFit","(x<0.35)*(25.+7./TMath::Power(x,1.)) + (x>0.35)*(16.+10/TMath::Power(x,1.))",0,5.); }
+  if (EBeam == 1.161) { myPiMinusFit = new TF1("myPiMinusFit","17.+4./TMath::Power(x,1.)",0,5.); }
+  if (EBeam == 2.261) { myPiMinusFit = new TF1("myPiMinusFit","(x<0.35)*(25.+7./TMath::Power(x,1.)) + (x>0.35)*(16.+10/TMath::Power(x,1.))",0,5.); }
+  if (EBeam == 4.461) { myPiMinusFit = new TF1("myPiMinusFit","(x<0.35)*(25.+7./TMath::Power(x,1.)) + (x>0.35)*(16.+10/TMath::Power(x,1.))",0,5.); }
 
 }
 
@@ -78,19 +79,19 @@ void Fiducial::InitEClimits()
   rightside_lim6_ec->SetParameters(-0.11,-360,0.03);
 }
 
-void Fiducial::SetConstants(int in_TorusCurrent, std::string in_target_name, std::map<std::string,double> in_en_beam) {
+void Fiducial::SetConstants(int in_TorusCurrent, int target_pdg, double in_en_beam) {
   fTorusCurrent = in_TorusCurrent;
-  target_name = in_target_name;
+  ftarget_pdg = target_pdg;
   en_beam = in_en_beam;
 }
 
-void Fiducial::SetFiducialCutParameters(std::string beam_en){
+bool Fiducial::SetFiducialCutParameters(double beam_en){
   // reads from a file the parameters of the fiducial cut functions
   // Please refer to <A HREF="http://einstein.unh.edu/protopop/FiducialCuts/fc4E2.html">Fiducial Cuts</A> -- D.Protopopescu(UNH)
-  std::string fbeam_en = beam_en;
+  std::string fbeam_en = std::to_string((int)beam_en*1000);
+  bool fiducial_set = true ; 
 
-
-  if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5.){    //
+  if(beam_en>4. && beam_en<5.){    //
     // reads FC parameters for 4.4GeV , e- and p fiducial cut parameters at 4GeV
     //
     std::ifstream param_file2(Form("./FiducialsCorrections/PFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));//reading the proton fiducial cut parameters at 4GeV
@@ -127,6 +128,7 @@ void Fiducial::SetFiducialCutParameters(std::string beam_en){
 	    break;
 	  default:
 	    printf("Error in Efid parameter file!\nReceived parameter type %d, which is not found.\nAborting!\n\n\n",param_type);
+	    fiducial_set = false ; 
 	    break;
 	  }
       } // Done reading in Fiducial Region Parameters
@@ -227,14 +229,11 @@ void Fiducial::SetFiducialCutParameters(std::string beam_en){
       }
     }
 
-
+    fiducial_set = true ; 
 
   }
 
-
-
-
-  else if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.){
+  else if(beam_en>1. && beam_en<2.){
 
     std::ifstream param_file2(Form("./FiducialsCorrections/PFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));//reading the proton fiducial cut parameters at 4GeV
     std::ifstream param_file(Form("./FiducialsCorrections/FCP_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
@@ -388,16 +387,9 @@ void Fiducial::SetFiducialCutParameters(std::string beam_en){
 	}
       }
 
-
     param_file2.close();
 
-
-
     //reads pimi fiducial cut parameters at 1GeV
-
-
-
-
     if (fTorusCurrent< 1510 && fTorusCurrent > 1490)
       {
 	for(Int_t sector=0;sector<6;sector++)
@@ -576,18 +568,20 @@ void Fiducial::SetFiducialCutParameters(std::string beam_en){
 
       }
     param_file3.close();
-
+    fiducial_set = true ; 
 
 
   }
-  else printf("There are no fiducial cut parameters to be read at %3.1f GeV!\n", en_beam[fbeam_en]);
-  //	param_file2.close();
+  else {
+    printf("There are no fiducial cut parameters to be read at %3.1f GeV!\n", beam_en);
+    fiducial_set = false ; 
+  }
 
-
+  return fiducial_set ;
 
 }
 
-Bool_t Fiducial::GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t sector,Float_t *EPhiMin, Float_t *EPhiMax){
+Bool_t Fiducial::GetEPhiLimits(double beam_en, Float_t momentum, Float_t theta, Int_t sector,Float_t *EPhiMin, Float_t *EPhiMax){
   //Begin_Html
   /*</pre>
     Information for electron fiducial cut,
@@ -606,10 +600,11 @@ Bool_t Fiducial::GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t th
     <pre>
   */
   //End_Html
-  std::string fbeam_en = beam_en;
+  std::string fbeam_en = std::to_string((int)(beam_en*1000));
+
   if (sector < 0 || sector > 5) return kFALSE;    // bad input
 
-  if(en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){// 4.4GeV fiducial cuts by protopop@jlab.org
+  if(beam_en>4. && beam_en<5. && fTorusCurrent>2240 && fTorusCurrent<2260){// 4.4GeV fiducial cuts by protopop@jlab.org
     if ((theta < 15.) || (momentum < 0.9)) return kFALSE;         // out of range
     Float_t t0, t1, b[2], a[2];
 
@@ -653,17 +648,18 @@ Bool_t Fiducial::GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t th
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Bool_t Fiducial::EFiducialCut(std::string beam_en, TVector3 momentum) {
+Bool_t Fiducial::EFiducialCut(double beam_en, TVector3 momentum) {
 
   // Electron fiducial cut, return kTRUE if pass or kFALSE if not
 
   Bool_t status = kTRUE;
-  std::string fbeam_en = beam_en;
+  std::string fbeam_en = std::to_string((int)(beam_en*1000));
+
   bool SCpdcut = true;
 
   // 1.1 GeV electron fiducials & 750 torus field
 
-  if ( en_beam[fbeam_en] > 1. && en_beam[fbeam_en] < 2. && fTorusCurrent > 740 && fTorusCurrent < 1510) {
+  if ( beam_en > 1. && beam_en < 2. && fTorusCurrent > 740 && fTorusCurrent < 1510) {
 
     Float_t mom = momentum.Mag();
     Float_t phi = momentum.Phi() * 180. / TMath::Pi();
@@ -886,7 +882,7 @@ Bool_t Fiducial::EFiducialCut(std::string beam_en, TVector3 momentum) {
 
   // 2GeV fiducials
 
-  if ( en_beam[fbeam_en] > 2. &&  en_beam[fbeam_en] < 3. && fTorusCurrent > 2240 && fTorusCurrent < 2260) {
+  if ( beam_en > 2. &&  beam_en < 3. && fTorusCurrent > 2240 && fTorusCurrent < 2260) {
 
     Float_t phi = momentum.Phi() * 180. / TMath::Pi();
     if ( phi < -30. ) { phi += 360.; }
@@ -1003,7 +999,7 @@ Bool_t Fiducial::EFiducialCut(std::string beam_en, TVector3 momentum) {
 
   // 4GeV electron fiducials
 
-  if ( en_beam[fbeam_en] > 4. && en_beam[fbeam_en] < 5. && fTorusCurrent > 2240 && fTorusCurrent < 2260) {
+  if ( beam_en > 4. && beam_en < 5. && fTorusCurrent > 2240 && fTorusCurrent < 2260) {
 
     //		//Begin_Html
     //		</pre>
@@ -1028,7 +1024,7 @@ Bool_t Fiducial::EFiducialCut(std::string beam_en, TVector3 momentum) {
     if(sector > 5) sector = 5; // to match array index
     // all the work is now done in GetEPhiLimits
 
-    status = GetEPhiLimits(fbeam_en,mom, theta, sector, &phiMin, &phiMax);
+    status = GetEPhiLimits(beam_en,mom, theta, sector, &phiMin, &phiMax);
 
     if (status) {
       status = status && (phi > phiMin) && (phi < phiMax);
@@ -1230,11 +1226,11 @@ double Fiducial::GetTheta(TVector3 momentum) {
 // ------------------------------------------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------------------------------------------
 
-Bool_t Fiducial::PFiducialCut(std::string beam_en, TVector3 momentum){
+Bool_t Fiducial::PFiducialCut(double beam_en, TVector3 momentum){
   //Positive Hadron Fiducial Cut
   //Please refer to <A HREF="http://www.jlab.org/Hall-B/secure/e2/bzh/pfiducialcut.html">Electron Fiducial Cuts</A> -- Bin Zhang (MIT).
   bool SCpdcut = true ; 
-  if (beam_en == "") {
+  if (beam_en == 0) {
 
     bool status = true;
 
@@ -1250,9 +1246,9 @@ Bool_t Fiducial::PFiducialCut(std::string beam_en, TVector3 momentum){
   } else {
 
     Bool_t status = kTRUE;
-    std::string fbeam_en = beam_en;
+    std::string fbeam_en = std::to_string((int)(beam_en*1000));
 
-    if (en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.) {
+    if (beam_en>1. && beam_en<2.) {
 
       Float_t theta = momentum.Theta()*180/M_PI;
       Float_t phi = momentum.Phi()  *180/M_PI;
@@ -1370,7 +1366,7 @@ Bool_t Fiducial::PFiducialCut(std::string beam_en, TVector3 momentum){
 	// ---------------------------------------------------------------------------------------------
 
 	// apapadop: Nov 23 2020, adding a lower theta bound of 12 deg for the protons
-	if (!PFiducialCutExtra(fbeam_en, momentum)) { status = false; } 
+	if (!PFiducialCutExtra(beam_en, momentum)) { status = false; } 
 
 	// ---------------------------------------------------------------------------------------------
 
@@ -1491,7 +1487,7 @@ Bool_t Fiducial::PFiducialCut(std::string beam_en, TVector3 momentum){
 	// ---------------------------------------------------------------------------------------------
 
 	// apapadop: Nov 23 2020, adding a lower theta bound of 12 deg for the protons
-	if (!PFiducialCutExtra(fbeam_en, momentum)) { status = false; } 
+	if (!PFiducialCutExtra(beam_en, momentum)) { status = false; } 
 
 	// ---------------------------------------------------------------------------------------------
 
@@ -1501,7 +1497,7 @@ Bool_t Fiducial::PFiducialCut(std::string beam_en, TVector3 momentum){
     }
 
 
-    if (en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3. && fTorusCurrent>2240 && fTorusCurrent<2260){
+    if (beam_en>2. && beam_en<3. && fTorusCurrent>2240 && fTorusCurrent<2260){
       SCpdcut = true;
       Float_t phi=momentum.Phi()*180/TMath::Pi(); if(phi<-30) phi+=360;
       Int_t sector = (phi+30)/60; if(sector<0)sector=0; if(sector>5) sector=5;
@@ -1592,7 +1588,7 @@ Bool_t Fiducial::PFiducialCut(std::string beam_en, TVector3 momentum){
       }
     }
 
-    if (en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){//4 GeV Fiducial Cut Rustam Niyazov
+    if (beam_en>4. && beam_en<5. && fTorusCurrent>2240 && fTorusCurrent<2260){//4 GeV Fiducial Cut Rustam Niyazov
 
       Float_t phi=momentum.Phi()*180/TMath::Pi(); if(phi<-30) phi+=360;
       Int_t sector = Int_t ((phi+30)/60); if(sector<0)sector=0; if(sector>5) sector=5;
@@ -1840,7 +1836,7 @@ Bool_t Fiducial::PFiducialCut(std::string beam_en, TVector3 momentum){
     // ---------------------------------------------------------------------------------------------
 
     // apapadop: Nov 23 2020, adding a lower theta bound of 12 deg for the protons
-    if (!PFiducialCutExtra(fbeam_en, momentum)) { status = false; } 
+    if (!PFiducialCutExtra(beam_en, momentum)) { status = false; } 
 
     // ---------------------------------------------------------------------------------------------
 
@@ -1852,11 +1848,11 @@ Bool_t Fiducial::PFiducialCut(std::string beam_en, TVector3 momentum){
 
 // ---------------------------------------------------------------------------------------------
 
-Bool_t Fiducial::PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t *philow, Float_t *phiup){
+Bool_t Fiducial::PiplFiducialCut(double beam_en, TVector3 momentum, Float_t *philow, Float_t *phiup){
   //Positive Hadron Fiducial Cut
   //Please refer to <A HREF="http://www.jlab.org/Hall-B/secure/e2/bzh/pfiducialcut.html">Electron Fiducial Cuts</A> -- Bin Zhang (MIT).
   bool SCpdcut = true ; 
-  if (beam_en == "") {
+  if (beam_en == 0) {
 
     bool status = true;
 
@@ -1871,10 +1867,10 @@ Bool_t Fiducial::PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 
   } else {
 
-    std::string fbeam_en = beam_en;
+    std::string fbeam_en = std::to_string((int)(beam_en*1000));
     Bool_t status = kTRUE;
 
-    if(en_beam[fbeam_en]>1. && en_beam[fbeam_en]<2.){
+    if(beam_en>1. && beam_en<2.){
 
       Float_t theta = momentum.Theta()*180/M_PI;
       Float_t phi   = momentum.Phi()  *180/M_PI;
@@ -1970,7 +1966,7 @@ Bool_t Fiducial::PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 	// ---------------------------------------------------------------------------------------------
 
 	// apapadop: Nov 23 2020, adding a lower theta bound of 12 deg for the pi plus
-	if (!PiplFiducialCutExtra(fbeam_en, momentum)) { status = false; } 
+	if (!PiplFiducialCutExtra(beam_en, momentum)) { status = false; } 
 
 	// ---------------------------------------------------------------------------------------------
 
@@ -2083,7 +2079,7 @@ Bool_t Fiducial::PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 	// ---------------------------------------------------------------------------------------------
 
 	// apapadop: Nov 23 2020, adding a lower theta bound of 12 deg for the pi plus
-	if (!PiplFiducialCutExtra(fbeam_en, momentum)) { status = false; } 
+	if (!PiplFiducialCutExtra(beam_en, momentum)) { status = false; } 
 
 	// ---------------------------------------------------------------------------------------------
 
@@ -2091,7 +2087,7 @@ Bool_t Fiducial::PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t
       }
     }
 
-    if (en_beam[fbeam_en]>2. && en_beam[fbeam_en]<3. && fTorusCurrent>2240 && fTorusCurrent<2260){
+    if (beam_en>2. && beam_en<3. && fTorusCurrent>2240 && fTorusCurrent<2260){
       SCpdcut = true;
       Float_t phi=momentum.Phi()*180/TMath::Pi(); if(phi<-30) phi+=360;
       Int_t sector = (phi+30)/60; if(sector<0)sector=0; if(sector>5) sector=5;
@@ -2192,7 +2188,7 @@ Bool_t Fiducial::PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 
     }
 
-    if (en_beam[fbeam_en]>4. && en_beam[fbeam_en]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){//4 GeV Fiducial Cut Rustam Niyazov
+    if (beam_en>4. && beam_en<5. && fTorusCurrent>2240 && fTorusCurrent<2260){//4 GeV Fiducial Cut Rustam Niyazov
 
       Float_t phi=momentum.Phi()*180/TMath::Pi(); if(phi<-30) phi+=360;
       Int_t sector = Int_t ((phi+30)/60); if(sector<0)sector=0; if(sector>5) sector=5;
@@ -2440,7 +2436,7 @@ Bool_t Fiducial::PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t
     // ---------------------------------------------------------------------------------------------
 
     // apapadop: Nov 23 2020, adding a lower theta bound of 12 deg for the pi plus
-    if (!PiplFiducialCutExtra(fbeam_en, momentum)) { status = false; } 
+    if (!PiplFiducialCutExtra(beam_en, momentum)) { status = false; } 
 
     // ---------------------------------------------------------------------------------------------
 
@@ -2452,7 +2448,7 @@ Bool_t Fiducial::PiplFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 
-Bool_t Fiducial::PFiducialCutExtra(std::string beam_en, TVector3 momentum) {
+Bool_t Fiducial::PFiducialCutExtra(double beam_en, TVector3 momentum) {
 
   bool status = true;
 
@@ -2466,7 +2462,7 @@ Bool_t Fiducial::PFiducialCutExtra(std::string beam_en, TVector3 momentum) {
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 
-Bool_t Fiducial::PiplFiducialCutExtra(std::string beam_en, TVector3 momentum) {
+Bool_t Fiducial::PiplFiducialCutExtra(double beam_en, TVector3 momentum) {
 
   bool status = true;
 
@@ -2494,7 +2490,7 @@ Bool_t Fiducial::Phot_fidExtra(TVector3 momentum) {
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 
-Bool_t Fiducial::PimiFiducialCutExtra(std::string beam_en, TVector3 momentum) {
+Bool_t Fiducial::PimiFiducialCutExtra(double beam_en, TVector3 momentum) {
 
   bool status = true;
 
@@ -2523,9 +2519,9 @@ Bool_t Fiducial::PimiFiducialCutExtra(std::string beam_en, TVector3 momentum) {
 //                                       A future update will implement new phi fiducial cuts at all momenta, but the current bug fixes are considered
 //                                       adequate for the zero pion analyses
 
-Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup){
+Bool_t Fiducial::PimiFiducialCut(double beam_en, TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup){
   bool SCpdcut = true ; 
-  if (beam_en == "") {
+  if (beam_en == 0) {
 
     bool status = true;
 
@@ -2543,7 +2539,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
     // Electron fiducial cut, return kTRUE if pass or kFALSE if not
     //--------------------------------------------------------------
     //Preamble, set up common variables
-    std::string fbeam_en = beam_en;  //duplicate beam energy variable, to avoid overwriting
+    std::string fbeam_en = std::to_string((int)(beam_en*1000));  //duplicate beam energy variable, to avoid overwriting
 
     Bool_t status = kTRUE;  //set initial return status true, logic below will decide if that changes
 
@@ -2570,7 +2566,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 
     //--------------------------------------------------------------
     //1.1GeV - uses electron fiducial cuts
-    if(en_beam[fbeam_en]>1. &&  en_beam[fbeam_en]<2.) {
+    if(beam_en>1. &&  beam_en<2.) {
 
       Double_t phipars[5]={0,0,0,0,0};
       Double_t phicutoff;
@@ -2658,7 +2654,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 	    // ---------------------------------------------------------------------------------------------
 
 	    // apapadop: Nov 23 2020, adding a lower theta bound of A + B/P for the pi minus
-	    if (!PimiFiducialCutExtra(fbeam_en, momentum)) { status = false; } 
+	    if (!PimiFiducialCutExtra(beam_en, momentum)) { status = false; } 
 
 	    // ---------------------------------------------------------------------------------------------
 
@@ -2708,7 +2704,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 	  // ---------------------------------------------------------------------------------------------
 
 	  // apapadop: Nov 23 2020, adding a lower theta bound of A + B/P for the pi minus
-	  if (!PimiFiducialCutExtra(fbeam_en, momentum)) { status = false; } 
+	  if (!PimiFiducialCutExtra(beam_en, momentum)) { status = false; } 
 
 	  // ---------------------------------------------------------------------------------------------
 
@@ -2820,7 +2816,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
 	// ---------------------------------------------------------------------------------------------
 
 	// apapadop: Nov 23 2020, adding a lower theta bound of A + B/P for the pi minus
-	if (!PimiFiducialCutExtra(fbeam_en, momentum)) { status = false; } 
+	if (!PimiFiducialCutExtra(beam_en, momentum)) { status = false; } 
 
 	// ---------------------------------------------------------------------------------------------
 
@@ -2832,7 +2828,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
     //--------------------------------------------------------------
     //2.2 and 4.4 GeV - uses 2.2 GeV electron cuts, plus a weird fudge at pion momenta below 350 MeV //This MUST be replaced by bespoke cuts
     //--------------------------------------------------------------
-    if ( en_beam[fbeam_en]>2. &&  en_beam[fbeam_en]<5. && fTorusCurrent>2240 && fTorusCurrent<2260){
+    if ( beam_en>2. &&  beam_en<5. && fTorusCurrent>2240 && fTorusCurrent<2260){
 
       Float_t phimin, phimax;
 
@@ -3001,7 +2997,7 @@ Bool_t Fiducial::PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t
     // ---------------------------------------------------------------------------------------------
 
     // apapadop: Nov 23 2020, adding a lower theta bound of A + B/P for the pi minus
-    if (!PimiFiducialCutExtra(fbeam_en, momentum)) { status = false; } 
+    if (!PimiFiducialCutExtra(beam_en, momentum)) { status = false; } 
 
     // ---------------------------------------------------------------------------------------------
 
@@ -3041,29 +3037,29 @@ bool Fiducial::Phot_fid(TVector3 V3_phot){
 
 // ----------------------------------------------------------------------------------------------------
 
-bool Fiducial::Pi_phot_fid_united(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot){
+bool Fiducial::Pi_phot_fid_united(double beam_en, TVector3 V3_pi_phot, int q_pi_phot){
 
   bool status = false;
-  std::string fbeam_en = beam_en;
+  std::string fbeam_en = std::to_string((int)(beam_en*1000));
   Float_t pi_cphil=0,pi_cphir=0,pi_phimin=0,pi_phimax=0;
 
   if(q_pi_phot==0) status=Phot_fid(V3_pi_phot);
-  if(q_pi_phot>0) status=PiplFiducialCut(fbeam_en, V3_pi_phot, &pi_cphil, &pi_cphir);
-  if(q_pi_phot<0) status=PimiFiducialCut(fbeam_en, V3_pi_phot, &pi_phimin, &pi_phimax);
+  if(q_pi_phot>0) status=PiplFiducialCut(beam_en, V3_pi_phot, &pi_cphil, &pi_cphir);
+  if(q_pi_phot<0) status=PimiFiducialCut(beam_en, V3_pi_phot, &pi_phimin, &pi_phimax);
   return status;
 
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool Fiducial::Pi_phot_fid_unitedExtra(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot){
+bool Fiducial::Pi_phot_fid_unitedExtra(double beam_en, TVector3 V3_pi_phot, int q_pi_phot){
 
   bool status = true;
-  std::string fbeam_en = beam_en;
+  std::string fbeam_en = std::to_string((int)(beam_en*1000));
 
   if(q_pi_phot==0) status=Phot_fidExtra(V3_pi_phot);
-  if(q_pi_phot>0) status=PiplFiducialCutExtra(fbeam_en, V3_pi_phot);
-  if(q_pi_phot<0) status=PimiFiducialCutExtra(fbeam_en, V3_pi_phot);
+  if(q_pi_phot>0) status=PiplFiducialCutExtra(beam_en, V3_pi_phot);
+  if(q_pi_phot<0) status=PimiFiducialCutExtra(beam_en, V3_pi_phot);
   return status;
 
 }

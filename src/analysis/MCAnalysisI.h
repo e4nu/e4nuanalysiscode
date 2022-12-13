@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <map>
+#include "utils/Fiducial.h"
 #include "analysis/AnalysisI.h"
 #include "physics/MCEventHolder.h"
 #include "physics/MCEvent.h"
@@ -34,7 +35,7 @@ namespace e4nu {
     e4nu::EventI * GetEvent( const unsigned int event_id ) ;
 
     MCEventHolder * fData ; 
-
+    Fiducial * kFiducialCut ; 
     void Initialize(void) ;
     void Clear(void); 
 

@@ -12,8 +12,8 @@
 
 using namespace e4nu;
 
-double utils::GetAcceptanceMapWeight( const int pdg, const TLorentzVector p4mom, const int target, const double EBeam, const std::string local_path ) {
-  TFile * file_acceptance = TFile::Open( conf::GetAcceptanceFile( pdg, target, EBeam, local_path ).c_str() ) ; 
+double utils::GetAcceptanceMapWeight( const int pdg, const TLorentzVector p4mom, const int target, const double EBeam ) {
+  TFile * file_acceptance = TFile::Open( conf::GetAcceptanceFile( pdg, target, EBeam ).c_str() ) ; 
   if( !file_acceptance ) return 1. ;
  
   TH3D * acc = (TH3D*) file_acceptance -> Get("Accepted Particles");

@@ -18,17 +18,17 @@ namespace e4nu {
 
   struct Fiducial {
 
-    void InitPiMinusFit(std::string beam_en);
+    void InitPiMinusFit(const double EBeam ) ; 
     void InitEClimits();
-    void SetConstants(int in_TorusCurrent, std::string in_target_name, std::map<std::string,double> in_en_beam);
-    void SetFiducialCutParameters(std::string beam_en);
-    Bool_t GetEPhiLimits(std::string beam_en, Float_t momentum, Float_t theta, Int_t sector,Float_t *EPhiMin, Float_t *EPhiMax);
-    Bool_t EFiducialCut(std::string beam_en, TVector3 momentum);
-    Bool_t PFiducialCut(std::string beam_en, TVector3 momentum);
-    Bool_t PiplFiducialCut(std::string beam_en, TVector3 momentum,Float_t *philow,Float_t *phiup);
-    Bool_t PimiFiducialCut(std::string beam_en, TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup);
+    void SetConstants(int in_TorusCurrent, int target_pdg, double in_en_beam);
+    bool SetFiducialCutParameters(double beam_en);
+    Bool_t GetEPhiLimits(double beam_en, Float_t momentum, Float_t theta, Int_t sector,Float_t *EPhiMin, Float_t *EPhiMax);
+    Bool_t EFiducialCut(double beam_en, TVector3 momentum);
+    Bool_t PFiducialCut(double beam_en, TVector3 momentum);
+    Bool_t PiplFiducialCut(double beam_en, TVector3 momentum,Float_t *philow,Float_t *phiup);
+    Bool_t PimiFiducialCut(double beam_en, TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup);
     bool Phot_fid(TVector3 V3_phot);
-    bool Pi_phot_fid_united(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot);
+    bool Pi_phot_fid_united(double beam_en, TVector3 V3_pi_phot, int q_pi_phot);
 
     // --------------------------------------------------------------------------
 
@@ -41,17 +41,17 @@ namespace e4nu {
 
     // apapadop // Nov 23 2020 // Narrow band 30 deg in phi and either accepting ALL theta or theta_pos > 12 deg (piplus & protons) and theta_pi- > 30
 
-    Bool_t PFiducialCutExtra(std::string beam_en, TVector3 momentum);
-    Bool_t PiplFiducialCutExtra(std::string beam_en, TVector3 momentum);
-    Bool_t PimiFiducialCutExtra(std::string beam_en, TVector3 momentum);
+    Bool_t PFiducialCutExtra(double beam_en, TVector3 momentum);
+    Bool_t PiplFiducialCutExtra(double beam_en, TVector3 momentum);
+    Bool_t PimiFiducialCutExtra(double beam_en, TVector3 momentum);
     bool Phot_fidExtra(TVector3 V3_phot);
-    bool Pi_phot_fid_unitedExtra(std::string beam_en, TVector3 V3_pi_phot, int q_pi_phot);
+    bool Pi_phot_fid_unitedExtra(double beam_en, TVector3 V3_pi_phot, int q_pi_phot);
 
     // -------------------------------------------------------------------------- 
 
     int fTorusCurrent;
-    std::string target_name;
-    std::map<std::string,double> en_beam;
+    std::string ftarget_pdg;
+    double en_beam;
 
     TF1* myPiMinusFit;
 

@@ -9,6 +9,7 @@
 #include "utils/KinematicUtils.h"
 #include "conf/ParticleI.h"
 #include "utils/DetectorUtils.h"
+#include "conf/FiducialCutI.h"
 
 using namespace e4nu ; 
 
@@ -44,15 +45,26 @@ EventI * MCAnalysisI::GetEvent( const unsigned int event_id ) {
 EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   MCEvent * event = (MCEvent*) fData -> GetEvent(event_id) ; 
-
-  if ( event -> GetTargetPdg() != GetConfiguredTarget() ) return nullptr ; 
+  if( !event ) return nullptr ; 
 
   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
 
+  // Check run is correct
   double EBeam = GetConfiguredEBeam() ; 
   if ( in_mom.E() != EBeam ) return nullptr ; 
+  if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) return nullptr ; 
 
+  // Check weight is physical
+  double wght = event->GetWeight() ; 
+  if ( wght < 0 || wght > 10 ) return nullptr ; 
+  
+  // Apply Fiducial volume cuts
+  if( ApplyFiducial() ) {
+    if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) return nullptr ;
+  }
+
+  // Apply smaring to particles
   if( ApplyReso() ) {
     this -> SmearParticles( event ) ; 
   }
@@ -61,15 +73,14 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   std::map<int,unsigned int> Topology = GetTopology(); 
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
 
-  double wght = event->GetWeight() ; 
- 
   // Signal event
   bool is_signal = false ; 
   double acc_wght = 1 ; 
+
   for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) {
       // Apply acceptance for electrons
-      acc_wght *= utils::GetAcceptanceMapWeight( it->first, out_mom, GetConfiguredTarget(), EBeam, "/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vmaster/" ) ;
+      acc_wght *= utils::GetAcceptanceMapWeight( it->first, out_mom, GetConfiguredTarget(), EBeam ) ; 
       if( fabs( acc_wght) != acc_wght ) return nullptr ; 
       is_signal = true ; 
     } else {
@@ -77,7 +88,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       if( part_map.count( it->first ) && part_map[it->first].size() == it->second ) {
 	is_signal = true ; 
 	for( unsigned int i = 0 ; i < it->second ; ++i ) {
-	  acc_wght *= utils::GetAcceptanceMapWeight( it->first, part_map[it->first][i], GetConfiguredTarget(), EBeam, "/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vmaster/" ) ;
+	  acc_wght *= utils::GetAcceptanceMapWeight( it->first, part_map[it->first][i], GetConfiguredTarget(), EBeam ) ; 
 	  if( fabs( acc_wght) != acc_wght ) return nullptr ; 
 	} 
       } else {
@@ -95,7 +106,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   if( IsElectronData() ) {
     wght *= utils::GetXSecScale(out_mom, EBeam, true ) ; 
   }
-  std::cout << wght << std::endl;
+
   // Set Final weight
   event->SetWeight( wght ) ; 
   
@@ -117,8 +128,6 @@ void MCAnalysisI::SmearParticles( MCEvent * event ) {
   event -> EventI::SetOutLeptonKinematics( out_mom ) ; 
 
   for( std::map<int,std::vector<TLorentzVector>>::iterator it = part_map.begin() ; it != part_map.end() ; ++it ) {
-    std::cout << it->first << std::endl;
-
     std::vector<TLorentzVector> vtemp ; 
     for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
       TLorentzVector temp = (it->second)[i] ; 
@@ -134,5 +143,17 @@ unsigned int MCAnalysisI::GetNEvents( void ) const {
   return (unsigned int) fData ->GetNEvents() ; 
 }
 void MCAnalysisI::Initialize() { 
+  // Initialize fiducial for this run
+  kFiducialCut = new Fiducial() ;
+  double EBeam = GetConfiguredEBeam() ; 
 
+  if( ApplyFiducial() ) {
+    kFiducialCut -> InitPiMinusFit( EBeam ) ; 
+    kFiducialCut -> InitEClimits(); 
+    kFiducialCut -> up_lim1_ec -> Eval(60) ;
+    kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), GetConfiguredTarget() , EBeam ) ;
+    SetFiducial( kFiducialCut -> SetFiducialCutParameters( EBeam ) ) ;
+    if( ApplyFiducial() ) std::cout << " Succesfully setup Fiducial volume parameters " << std::endl;
+    else std::cout << " Turning off fiducial volume cut for this run " << std::endl;
+ }
 }

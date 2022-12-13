@@ -8,7 +8,7 @@
 namespace e4nu {
   namespace conf { 
     
-    std::string GetAcceptanceFile( const int particle, const unsigned int target, const double E, const std::string local_path ) ;
+    std::string GetAcceptanceFile( const int particle, const unsigned int target, const double E ) ;
     
   }
 }

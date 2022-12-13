@@ -42,6 +42,8 @@ namespace e4nu {
       bool ApplyWCut(void) const{ return kWCut ; }
       bool IsElectronData(void) const { return kIsElectron ; }
 
+      void SetFiducial( bool b ) { kApplyFiducial = b ; }
+
       virtual ~ConfigureI();
       
     protected: 
@@ -63,8 +65,9 @@ namespace e4nu {
       // Physics 
       double kEBeam = 1.161 ; 
       unsigned int kTargetPdg = 1000060120 ;
-
+      
       std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity
+
     };
   }
 }

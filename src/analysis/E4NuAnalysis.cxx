@@ -97,3 +97,8 @@ bool E4NuAnalysis::Analyse(void) {
 
   return true ; 
 }
+
+bool E4NuAnalysis::Finalise( const std::string out_file ) {
+  //if( IsData() )
+  return MCAnalysisI::Finalise( out_file ) ; 
+}

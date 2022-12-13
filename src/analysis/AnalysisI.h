@@ -20,7 +20,7 @@ namespace e4nu {
     bool StoreAnalysis( const std::string out_file ) { ; }
 
     // Create histograms and store in file 
-    bool Finalize( const std::string out_file ) { ; }
+    virtual bool Finalise( const std::string out_file ) = 0 ;
 
     virtual ~AnalysisI();
 

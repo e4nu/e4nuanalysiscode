@@ -29,13 +29,21 @@ namespace e4nu {
     virtual unsigned int GetNEvents( void ) const ;
     e4nu::EventI * GetValidEvent( const unsigned int event_id ) ;
     void SmearParticles( MCEvent * event ) ;
+    bool Finalise( const std::string out_file ) ;
 
   private :
 
     e4nu::EventI * GetEvent( const unsigned int event_id ) ;
 
     MCEventHolder * fData ; 
-    Fiducial * kFiducialCut ; 
+    Fiducial * kFiducialCut ;
+
+
+    // Store Statistics after cuts
+    unsigned int fEventsBeforeCuts = 0 ; 
+    unsigned int fNEventsAfterFiducial = 0 ; 
+    unsigned int fNEventsAfterEMomCut = 0 ; 
+
     void Initialize(void) ;
     void Clear(void); 
 

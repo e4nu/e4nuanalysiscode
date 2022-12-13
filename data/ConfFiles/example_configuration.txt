@@ -7,7 +7,7 @@ UsePhiThetaBand		true
 ApplyThetaSlice		true
 ApplyGoodSectorPhiSlice	true
 offset			0
-EBeam			2.261
+EBeam			1.161
 TargetPdg		1000060120
 IsData			false
 Toplogy 		11:1,2212:1,211:0,-211:0,111:0

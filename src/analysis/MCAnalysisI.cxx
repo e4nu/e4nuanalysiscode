@@ -47,13 +47,16 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   MCEvent * event = (MCEvent*) fData -> GetEvent(event_id) ; 
   if( !event ) return nullptr ; 
 
+  ++fEventsBeforeCuts ;
+
   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
 
   // Check run is correct
   double EBeam = GetConfiguredEBeam() ; 
-  if ( in_mom.E() != EBeam ) return nullptr ; 
+  if ( in_mom.E() != EBeam ) return nullptr ;  
   if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) return nullptr ; 
+  ++fNEventsAfterEMomCut ; 
 
   // Check weight is physical
   double wght = event->GetWeight() ; 
@@ -61,9 +64,10 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   
   // Apply Fiducial volume cuts
   if( ApplyFiducial() ) {
-    if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) return nullptr ;
+    if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) return nullptr ; 
+    ++fNEventsAfterFiducial ;
   }
-
+  
   // Apply smaring to particles
   if( ApplyReso() ) {
     this -> SmearParticles( event ) ; 
@@ -156,4 +160,13 @@ void MCAnalysisI::Initialize() {
     if( ApplyFiducial() ) std::cout << " Succesfully setup Fiducial volume parameters " << std::endl;
     else std::cout << " Turning off fiducial volume cut for this run " << std::endl;
  }
+}
+
+bool MCAnalysisI::Finalise( const std::string out_file ) {
+
+  std::cout << " Total Number of Events Processed = " << fEventsBeforeCuts << std::endl;
+  std::cout << " Events after electron momentum cut = " << fNEventsAfterEMomCut << std::endl;
+  std::cout << " Events after fiducial cuts = " << fNEventsAfterFiducial << std::endl;
+
+  return true ; 
 }

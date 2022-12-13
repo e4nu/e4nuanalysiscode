@@ -88,14 +88,15 @@ void Fiducial::SetConstants(int in_TorusCurrent, int target_pdg, double in_en_be
 bool Fiducial::SetFiducialCutParameters(double beam_en){
   // reads from a file the parameters of the fiducial cut functions
   // Please refer to <A HREF="http://einstein.unh.edu/protopop/FiducialCuts/fc4E2.html">Fiducial Cuts</A> -- D.Protopopescu(UNH)
-  std::string fbeam_en = std::to_string((int)beam_en*1000);
+  std::string local_dir = std::getenv("E4NUANALYSIS");
+  std::string fbeam_en = std::to_string((int)(beam_en*1000));
   bool fiducial_set = true ; 
-
+  
   if(beam_en>4. && beam_en<5.){    //
     // reads FC parameters for 4.4GeV , e- and p fiducial cut parameters at 4GeV
     //
-    std::ifstream param_file2(Form("./data/FiducialsCorrections/CLAS6/PFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));//reading the proton fiducial cut parameters at 4GeV
-    std::ifstream param_file(Form("./data/FiducialsCorrections/CLAS6/FCP_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
+    std::ifstream param_file((local_dir+"/data/FiducialsCorrections/CLAS6/PFID_"+fbeam_en+"_"+std::to_string(fTorusCurrent)+".dat").c_str());
+    std::ifstream param_file2((local_dir+"/data/FiducialsCorrections/CLAS6/FCP_"+fbeam_en+"_"+std::to_string(fTorusCurrent)+".dat").c_str());
 
     //	std::ifstream param_file("./FCP_4461_2250.dat");
     int param_type, sector;
@@ -105,7 +106,7 @@ bool Fiducial::SetFiducialCutParameters(double beam_en){
 	param_file >> param_type;
 	param_file >> sector >> data[0] >> data[1] >> data[2] >> data[3] >> data[4] >> data[5];
 	// Test the type of parameter and assign it to the proper data array
-	//  std::cout << param_type << " " << sector << std::endl;
+	
 	switch (param_type)
 	  {
 	  case  0:
@@ -235,10 +236,15 @@ bool Fiducial::SetFiducialCutParameters(double beam_en){
 
   else if(beam_en>1. && beam_en<2.){
 
-    std::ifstream param_file2(Form("./FiducialsCorrections/PFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));//reading the proton fiducial cut parameters at 4GeV
-    std::ifstream param_file(Form("./FiducialsCorrections/FCP_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
-    std::ifstream param_file3(Form("./FiducialsCorrections/PIPFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
-    std::ifstream param_file4(Form("./FiducialsCorrections/PIMFID_%s_%d.dat",fbeam_en.c_str(),fTorusCurrent));
+    std::ifstream param_file((local_dir+"/data/FiducialsCorrections/CLAS6/PFID_"+fbeam_en+"_"+std::to_string(fTorusCurrent)+".dat").c_str());
+    std::ifstream param_file2((local_dir+"/data/FiducialsCorrections/CLAS6/FCP_"+fbeam_en+"_"+std::to_string(fTorusCurrent)+".dat").c_str());
+    std::ifstream param_file3((local_dir+"/data/FiducialsCorrections/CLAS6/PIPFID_"+fbeam_en+"_"+std::to_string(fTorusCurrent)+".dat").c_str());
+    std::ifstream param_file4((local_dir+"/data/FiducialsCorrections/CLAS6/PIMFID_"+fbeam_en+"_"+std::to_string(fTorusCurrent)+".dat").c_str());
+
+
+    if( param_file.fail() || param_file2.fail() || param_file3.fail() || param_file4.fail() ) {
+      fiducial_set = false ;
+    }
     //
     // reads FC parameters for 1.1GeV , e- fiducial cut parameters at 1GeV
     //
@@ -325,8 +331,6 @@ bool Fiducial::SetFiducialCutParameters(double beam_en){
 		for(Int_t mompar=0;mompar<6;mompar++)
 		  {
 		    param_file2 >> fgPar_1gev_1500_Pfid[sector][phipar][mompar];
-		    //std::cout << "PFID " << fgPar_1gev_Pfid[sector][phipar][mompar] << std::endl;
-		    //std::cout << "EFID " << fgPar_1gev_Efid[sector][phipar][mompar] << std::endl;
 		  }
 	      }
 	  }
@@ -360,8 +364,6 @@ bool Fiducial::SetFiducialCutParameters(double beam_en){
 		for(Int_t mompar=0;mompar<6;mompar++)
 		  {
 		    param_file2 >> fgPar_1gev_750_Pfid[sector][phipar][mompar];
-		    //std::cout << "PFID " << fgPar_1gev_Pfid[sector][phipar][mompar] << std::endl;
-		    //std::cout << "EFID " << fgPar_1gev_Efid[sector][phipar][mompar] << std::endl;
 		  }
 	      }
 	  }
@@ -479,7 +481,6 @@ bool Fiducial::SetFiducialCutParameters(double beam_en){
 	for(int i = 0 ; i < 8 ; i++){
 	  for(int j = 0 ; j < 4 ; j++){
 	    param_file4 >> fgPar_1gev_750_Pimfid_Theta_S5_extra[i][j];
-	    //	  std::cout << fgPar_1gev_750_Pimfid_Theta_S5_extra[i][j] << std::endl;
 	  }
 	}
       }
@@ -497,7 +498,6 @@ bool Fiducial::SetFiducialCutParameters(double beam_en){
 		for(Int_t mompar=0;mompar<6;mompar++)
 		  {
 		    param_file3 >> fgPar_1gev_1500_Piplfid[sector][phipar][mompar];
-		    //  std::cout << "PFID " << fgPar_1gev_1500_Pfid[sector][phipar][mompar]  << std::endl;
 		  }
 	      }
 	  }
@@ -537,7 +537,6 @@ bool Fiducial::SetFiducialCutParameters(double beam_en){
 		for(Int_t mompar=0;mompar<6;mompar++)
 		  {
 		    param_file3 >> fgPar_1gev_750_Piplfid[sector][phipar][mompar];
-		    //  std::cout << "PFID " << fgPar_1gev_750_Pfid[sector][phipar][mompar]  << std::endl;
 		  }
 	      }
 	  }
@@ -631,7 +630,6 @@ Bool_t Fiducial::GetEPhiLimits(double beam_en, Float_t momentum, Float_t theta, 
 
       *EPhiMin = 60.*sector - b[0]*(1. - 1/((theta - t0)/(b[0]/a[0]) + 1.));
       *EPhiMax = 60.*sector + b[1]*(1. - 1/((theta - t0)/(b[1]/a[1]) + 1.));
-      // if(momentum<1.65 && momentum>1.60)cout<<sector<<"  "<<a[0]<<"    "<<a[1]<<"    "<<a[2]<<endl;
     }
     else {
       *EPhiMin = 60.*sector;
@@ -1268,15 +1266,9 @@ Bool_t Fiducial::PFiducialCut(double beam_en, TVector3 momentum){
 	if (p > 1) { p = 1; }
 
 	for (Int_t mompar=0;mompar<6;mompar++) {
-
 	  for(Int_t phipar=0;phipar<5;phipar++) {
-
 	    phipars[phipar]+=fgPar_1gev_1500_Pfid[sector][phipar][mompar]*pow(p,mompar);
-	    //std::cout << p << " " << mompar << " " << phipar << " " << phipars[1] << " " << phipars[2] << std::endl;
-	    //std::cout << " " << phipars[3] << " " << phipars[4] << " " << phipars[5] << std::endl;
-
 	  }
-
 	}
 
 	Double_t phicutoff;
@@ -1284,13 +1276,11 @@ Bool_t Fiducial::PFiducialCut(double beam_en, TVector3 momentum){
 	if (phi<=0) {
 
 	  phicutoff = phipars[1]*(1.-(1./((theta-phipars[4])/phipars[3]+1.)));
-	  //std::cout << "bottom " << theta << std::endl;
 	  status = ((phi>phicutoff) && (theta>phipars[4]));
 
 	} else {
 
 	  phicutoff = phipars[0]*(1.-(1./((theta-phipars[4])/phipars[2]+1.)));
-	  //std::cout << "top " << phicutoff << std::endl;
 	  status = ((phi<phicutoff) && (theta>phipars[4]));
 
 	}
@@ -1383,7 +1373,6 @@ Bool_t Fiducial::PFiducialCut(double beam_en, TVector3 momentum){
 	for(Int_t mompar=0;mompar<6;mompar++) {
 	  for(Int_t phipar=0;phipar<5;phipar++) {
 	    phipars[phipar]+=fgPar_1gev_750_Pfid[sector][phipar][mompar]*pow(p,mompar);
-	    //std::cout << p << " " << mompar << " " << phipar << " " << phipars[1] << " " << phipars[2] << " " << phipars[3] << " " << phipars[4] << " " << phipars[5] << std::endl;
 	  }
 	}
 
@@ -1395,12 +1384,10 @@ Bool_t Fiducial::PFiducialCut(double beam_en, TVector3 momentum){
 
 	if(phi<=0) {
 	  phicutoff = phipars[1]*(1.-(1./((theta-phipars[4])/phipars[3]+1.)));
-	  //std::cout << "bottom " << theta << std::endl;
 	  status = ((phi>phicutoff) && (theta>phipars[4]) && theta<=thetamax_p);
 	}
 	else {
 	  phicutoff = phipars[0]*(1.-(1./((theta-phipars[4])/phipars[2]+1.)));
-	  //std::cout << "top " << phicutoff << std::endl;
 	  status = ((phi<phicutoff) && (theta>phipars[4]) && theta<=thetamax_p);
 	}
 	if(status && SCpdcut){ // cut bad scintillator paddles
@@ -1892,19 +1879,16 @@ Bool_t Fiducial::PiplFiducialCut(double beam_en, TVector3 momentum, Float_t *phi
 	for(Int_t mompar=0;mompar<6;mompar++) {
 	  for(Int_t phipar=0;phipar<5;phipar++) {
 	    phipars[phipar]+=fgPar_1gev_1500_Pfid[sector][phipar][mompar]*pow(p,mompar);
-	    //std::cout << p << " " << mompar << " " << phipar << " " << phipars[1] << " " << phipars[2] << " " << phipars[3] << " " << phipars[4] << " " << phipars[5] << std::endl;
 	  }
 	}
 
 	Double_t phicutoff;
 	if(phi<=0) {
 	  phicutoff = phipars[1]*(1.-(1./((theta-phipars[4])/phipars[3]+1.)));
-	  //std::cout << "bottom " << theta << std::endl;
 	  status = ((phi>phicutoff) && (theta>phipars[4]));
 	}
 	else {
 	  phicutoff = phipars[0]*(1.-(1./((theta-phipars[4])/phipars[2]+1.)));
-	  //std::cout << "top " << phicutoff << std::endl;
 	  status = ((phi<phicutoff) && (theta>phipars[4]));
 	}
 	if(status && SCpdcut){ // cut bad scintillator paddles
@@ -1982,7 +1966,6 @@ Bool_t Fiducial::PiplFiducialCut(double beam_en, TVector3 momentum, Float_t *phi
 	for(Int_t mompar=0;mompar<6;mompar++) {
 	  for(Int_t phipar=0;phipar<5;phipar++) {
 	    phipars[phipar]+=fgPar_1gev_750_Pfid[sector][phipar][mompar]*pow(p,mompar);
-	    //std::cout << p << " " << mompar << " " << phipar << " " << phipars[1] << " " << phipars[2] << " " << phipars[3] << " " << phipars[4] << " " << phipars[5] << std::endl;
 	  }
 	}
 
@@ -1994,12 +1977,10 @@ Bool_t Fiducial::PiplFiducialCut(double beam_en, TVector3 momentum, Float_t *phi
 
 	if(phi<=0) {
 	  phicutoff = phipars[1]*(1.-(1./((theta-phipars[4])/phipars[3]+1.)));
-	  //std::cout << "bottom " << theta << std::endl;
 	  status = ((phi>phicutoff) && (theta>phipars[4]) && theta<=thetamax_p);
 	}
 	else {
 	  phicutoff = phipars[0]*(1.-(1./((theta-phipars[4])/phipars[2]+1.)));
-	  //std::cout << "top " << phicutoff << std::endl;
 	  status = ((phi<phicutoff) && (theta>phipars[4]) && theta<=thetamax_p);
 	}
 	if(status && SCpdcut){ // cut bad scintillator paddles
@@ -2588,7 +2569,6 @@ Bool_t Fiducial::PimiFiducialCut(double beam_en, TVector3 momentum, Float_t *pim
 	for(Int_t mompar=0;mompar<6;mompar++) {
 	  for(Int_t phipar=0;phipar<5;phipar++) {
 	    phipars[phipar]+=fgPar_1gev_1500_Pimfid[sector][phipar][mompar]*pow(mom_pi,mompar);
-	    //std::cout << mom_e << " " << mompar << " " << phipar << " " << phipars[1] << " " << phipars[2] << " " << phipars[3] << " " << phipars[4] << " " << phipars[5] << std::endl;
 	  }
 	}
 
@@ -2719,7 +2699,6 @@ Bool_t Fiducial::PimiFiducialCut(double beam_en, TVector3 momentum, Float_t *pim
 	for(Int_t mompar=0;mompar<6;mompar++) {
 	  for(Int_t phipar=0;phipar<5;phipar++) {
 	    phipars[phipar]+=fgPar_1gev_750_Pimfid[sector][phipar][mompar]*pow(mom_pi,mompar);
-	    //std::cout << p << " " << mompar << " " << phipar << " " << phipars[1] << " " << phipars[2] << " " << phipars[3] << " " << phipars[4] << " " << phipars[5] << std::endl;
 	  }
 	}
 
@@ -2846,7 +2825,6 @@ Bool_t Fiducial::PimiFiducialCut(double beam_en, TVector3 momentum, Float_t *pim
       for(int i=4;i>=0;i--){
 	thetamax = thetamax*p_theta + pimi_thetamax2and4[i]; //upper theta limit for pi- at different momentum
       }
-      //std::cout << "pion minus: mom " << p_theta << " , phi " << phi << " , phi_deg " << phi_deg << " , sector " << sector << " , thetamax " << thetamax << std::endl;
       //---These are the reused electron parameters
       if(mom_pi > 0.35){   //theta vs phi outline for high p region obtained by Bin
 
@@ -2865,7 +2843,6 @@ Bool_t Fiducial::PimiFiducialCut(double beam_en, TVector3 momentum, Float_t *pim
 	double phi_min_limit = par[3]/((50.0-par[0])+par[3]/par[2])-par[2]; //calculation of phi limit from theta at 50 degree
 	double phi_max_limit = par[2]-par[3]/((50.0-par[0])+par[3]/par[2]); //calculation of phi limit from theta at 50 degree
 
-	//  std::cout << "par[0] " << par[0] << " , par[1] " << par[1] <<  std::endl;
 	if (phi_deg < 0) {
 	  Float_t tmptheta = par[0] - par[3]/par[2] + par[3]/(par[2]+phi_deg);
 	  phimin =  par[3]/((theta_deg-par[0])+par[3]/par[2])-par[2];
@@ -2877,7 +2854,7 @@ Bool_t Fiducial::PimiFiducialCut(double beam_en, TVector3 momentum, Float_t *pim
 	  //cut is removed and a cut on phi to phi_limit is added similar to piplus at 2.2 where limits are hardcoded
 	  //also a cut for thetamax is added
 	  status = (theta_deg>tmptheta && tmptheta>=par[0] && phi_deg>=phi_min_limit && theta_deg<=thetamax);
-	  //  std::cout << "status " << status << " , theta_deg " << theta_deg << ", tmptheta " << tmptheta << " , phimin " << phimin << " , phimax " << phimax << " , phi_deg " << phi_deg << " , sector " << sector << " , thetamax " << thetamax << std::endl;
+	  
 	}
 	else {
 	  Float_t tmptheta = par[0] - par[5]/par[4] + par[5]/(par[4]-phi_deg);

@@ -21,6 +21,7 @@ namespace e4nu {
 
     bool LoadData( const std::string file ) ; 
     bool LoadData( const std::string file, const unsigned int nmax ) ; 
+    bool Finalise( const std::string out_file ) ;
 
     // Main Analyse function
     bool Analyse(void) ; 

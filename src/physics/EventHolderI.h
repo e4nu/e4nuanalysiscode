@@ -33,7 +33,7 @@ namespace e4nu {
     virtual bool LoadBranch(void) = 0 ; 
     virtual e4nu::EventI * GetEvent(const unsigned int event_id) = 0 ;
 
-    TChain * fEventHolderChain ; // Can contain more than one tree
+    std::unique_ptr<TChain> fEventHolderChain ; // Can contain more than one tree
 
     // Members
     bool fIsConfigured ; 

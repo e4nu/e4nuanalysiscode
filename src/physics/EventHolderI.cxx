@@ -51,7 +51,7 @@ bool EventHolderI::LoadMembers( const std::string file ) {
 } 
 
 void EventHolderI::Initialize() { 
-  fEventHolderChain = new TChain("gst","e4nu_analysis") ; 
+  fEventHolderChain = std::unique_ptr<TChain>(new TChain("gst","e4nu_analysis")); 
   fIsConfigured = true ; 
   fMaxEvents = -1 ; 
 }

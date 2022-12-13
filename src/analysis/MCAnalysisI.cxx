@@ -17,7 +17,8 @@ MCAnalysisI::MCAnalysisI() {
   this->Initialize() ;
 }
 
-MCAnalysisI::~MCAnalysisI() {;}
+MCAnalysisI::~MCAnalysisI() {
+  delete fData;}
 
 bool MCAnalysisI::LoadData( const std::string file ) {
   if( ! fIsDataLoaded ) fData = new MCEventHolder(file);
@@ -56,7 +57,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   double EBeam = GetConfiguredEBeam() ; 
   if ( in_mom.E() != EBeam ) return nullptr ;  
   if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) return nullptr ; 
-  ++fNEventsAfterEMomCut ; 
 
   // Check weight is physical
   double wght = event->GetWeight() ; 
@@ -67,7 +67,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) return nullptr ; 
     ++fNEventsAfterFiducial ;
   }
-  
+
   // Apply smaring to particles
   if( ApplyReso() ) {
     this -> SmearParticles( event ) ; 
@@ -85,26 +85,25 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     if( it->first == conf::kPdgElectron ) {
       // Apply acceptance for electrons
       acc_wght *= utils::GetAcceptanceMapWeight( it->first, out_mom, GetConfiguredTarget(), EBeam ) ; 
-      if( fabs( acc_wght) != acc_wght ) return nullptr ; 
+      if( fabs( acc_wght ) != acc_wght ) return nullptr ; 
       is_signal = true ; 
-    } else {
+    } else if( part_map.count( it->first ) && part_map[it->first].size() == it->second ) {
       // If we have an exclusive event, apply acceptance weight as well for signal event
-      if( part_map.count( it->first ) && part_map[it->first].size() == it->second ) {
-	is_signal = true ; 
-	for( unsigned int i = 0 ; i < it->second ; ++i ) {
-	  acc_wght *= utils::GetAcceptanceMapWeight( it->first, part_map[it->first][i], GetConfiguredTarget(), EBeam ) ; 
-	  if( fabs( acc_wght) != acc_wght ) return nullptr ; 
-	} 
-      } else {
-	is_signal = false ; 
-      }
+      is_signal = true ; 
+      for( unsigned int i = 0 ; i < it->second ; ++i ) {
+	acc_wght *= utils::GetAcceptanceMapWeight( it->first, part_map[it->first][i], GetConfiguredTarget(), EBeam ) ; 
+	if( fabs( acc_wght) != acc_wght ) return nullptr ; 
+      } 
+    } else {
+      is_signal = false ; 
     }
-    if( is_signal ) wght *= acc_wght ; 
 
+    if( is_signal ) wght *= acc_wght ; 
+      
     // Background event
     // BACKGROUND SUBSTRACTION METHOD HERE
   }
-   
+
   // Apply Mottxsec weight
   //
   if( IsElectronData() ) {
@@ -113,7 +112,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   // Set Final weight
   event->SetWeight( wght ) ; 
-  
+
   return event ; 
 }
 
@@ -148,7 +147,7 @@ unsigned int MCAnalysisI::GetNEvents( void ) const {
 }
 void MCAnalysisI::Initialize() { 
   // Initialize fiducial for this run
-  kFiducialCut = new Fiducial() ;
+  kFiducialCut = std::unique_ptr<Fiducial>( new Fiducial()) ;
   double EBeam = GetConfiguredEBeam() ; 
 
   if( ApplyFiducial() ) {
@@ -156,16 +155,13 @@ void MCAnalysisI::Initialize() {
     kFiducialCut -> InitEClimits(); 
     kFiducialCut -> up_lim1_ec -> Eval(60) ;
     kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), GetConfiguredTarget() , EBeam ) ;
-    SetFiducial( kFiducialCut -> SetFiducialCutParameters( EBeam ) ) ;
-    if( ApplyFiducial() ) std::cout << " Succesfully setup Fiducial volume parameters " << std::endl;
-    else std::cout << " Turning off fiducial volume cut for this run " << std::endl;
+    kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
  }
 }
 
 bool MCAnalysisI::Finalise( const std::string out_file ) {
 
   std::cout << " Total Number of Events Processed = " << fEventsBeforeCuts << std::endl;
-  std::cout << " Events after electron momentum cut = " << fNEventsAfterEMomCut << std::endl;
   std::cout << " Events after fiducial cuts = " << fNEventsAfterFiducial << std::endl;
 
   return true ; 

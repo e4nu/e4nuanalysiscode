@@ -29,7 +29,14 @@ namespace e4nu {
   private : 
     e4nu::EventI * GetValidEvent( const unsigned int event_id ) ;
     unsigned int GetNEvents( void ) const ;
-    
+
+    unsigned int fNEventsAfterEMomCut = 0 ; 
+    unsigned int fNEventsAfterPhiCut = 0 ; 
+    unsigned int fNEventsAfterQ2Cut = 0 ; 
+    unsigned int fNEventsAfterWCut = 0 ; 
+    unsigned int fNEventsAfterPhiOpeningAngleCut = 0 ; 
+    unsigned int fNEventsAfterThetaCut = 0 ;     
+
     virtual ~E4NuAnalysis();
     
   };

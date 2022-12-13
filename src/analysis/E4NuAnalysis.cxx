@@ -42,16 +42,20 @@ unsigned int E4NuAnalysis::GetNEvents( void ) const {
 }
 
 bool E4NuAnalysis::Analyse(void) {
+
+  
   // Loop over events
   for( unsigned int i = 0 ; i < GetNEvents() ; ++i ) {
-    EventI * event = MCAnalysisI::GetValidEvent(i) ; 
+    std::cout << i << std::endl;
+    EventI * event = (EventI*) MCAnalysisI::GetValidEvent(i) ; 
     if( ! event ) continue ; 
     
     TLorentzVector in_mom = event -> GetInLepton4Mom() ;
     TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
     double EBeam = in_mom.E() ; 
 
-    if( out_mom.E() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) continue ; 
+    if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) continue ; 
+    ++fNEventsAfterEMomCut ;     
     
     double reco_Q2 = utils::GetRecoQ2( out_mom, EBeam ) ; 
     double W_var = utils::GetRecoW( out_mom, EBeam ) ;
@@ -61,6 +65,7 @@ bool E4NuAnalysis::Analyse(void) {
       if( conf::GetQ2Cut( MaxQ2, EBeam ) ) {
 	if( reco_Q2 < MaxQ2 ) continue ; 
       }
+      ++fNEventsAfterQ2Cut ; 
     }
 
     if( ApplyWCut() ) {
@@ -68,31 +73,25 @@ bool E4NuAnalysis::Analyse(void) {
       if( conf::GetWCut( MinW, EBeam ) ) {
 	if( W_var > MinW ) continue ; 
       }
+      ++fNEventsAfterWCut ; 
     }
 
     if( ApplyThetaSlice() ) {
-      if( out_mom.Theta() < conf::kMinEThetaSlice * 180./TMath::Pi() ) continue ; 
-      if( out_mom.Theta() > conf::kMaxEThetaSlice * 180./TMath::Pi() ) continue ; 
+      if( out_mom.Theta() * 180./TMath::Pi() < conf::kMinEThetaSlice ) continue ; 
+      if( out_mom.Theta() * 180./TMath::Pi() > conf::kMaxEThetaSlice ) continue ; 
+      ++fNEventsAfterThetaCut ; 
     }
 
     if( ApplyPhiOpeningAngle() ) {
       if ( ! conf::ValidPhiOpeningAngle( out_mom.Phi() ) ) continue ;  
+      ++fNEventsAfterPhiOpeningAngleCut ; 
     }
 
     if( ApplyGoodSectorPhiSlice() ) {
       if ( ! conf::GoodSectorPhiSlice( out_mom.Phi() ) ) continue ; 
+      ++fNEventsAfterPhiCut ; 
     }
 
-
-    //    conf::ValidPhiOpeningAngle( 10. , true ) ; 
-    /*
-      double GetMinMomentumCut( const int particle_pdg, const double EBeam ) ;
-      bool ValidPhiOpeningAngle( double, const bool apply = true ) ;
-  bool GoodSectorPhiSlice( double phi , const bool apply = true ) ;
-  bool GetQ2Cut( double & Q2cut, const double Ebeam, const bool apply_Q2cut = true ) ;
-  bool GetWCut( double & WCut, const double Ebeam ) ;
-
-     */
   }
 
   return true ; 
@@ -100,5 +99,14 @@ bool E4NuAnalysis::Analyse(void) {
 
 bool E4NuAnalysis::Finalise( const std::string out_file ) {
   //if( IsData() )
-  return MCAnalysisI::Finalise( out_file ) ; 
+  bool is_ok = MCAnalysisI::Finalise( out_file ) ; 
+
+  std::cout << " Events after electron momentum cut = " << fNEventsAfterEMomCut << std::endl;
+  if( ApplyQ2Cut() ) std::cout << " Events after Q2 cut = " << fNEventsAfterQ2Cut << std::endl;
+  if( ApplyWCut() ) std::cout << " Events after W cut = "<< fNEventsAfterWCut <<std::endl;
+  if( ApplyThetaSlice() ) std::cout << " Events after theta cut = " << fNEventsAfterThetaCut << std::endl;
+  if( ApplyPhiOpeningAngle() ) std::cout << " Events after phi opening angle cut = " << fNEventsAfterPhiOpeningAngleCut << std::endl;
+  if( ApplyGoodSectorPhiSlice() ) std::cout << " Events after phi cut = " << fNEventsAfterPhiCut << std::endl;
+
+  return is_ok ; 
 }

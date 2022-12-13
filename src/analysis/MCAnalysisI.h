@@ -36,13 +36,12 @@ namespace e4nu {
     e4nu::EventI * GetEvent( const unsigned int event_id ) ;
 
     MCEventHolder * fData ; 
-    Fiducial * kFiducialCut ;
+    std::unique_ptr<Fiducial> kFiducialCut ;
 
 
     // Store Statistics after cuts
     unsigned int fEventsBeforeCuts = 0 ; 
     unsigned int fNEventsAfterFiducial = 0 ; 
-    unsigned int fNEventsAfterEMomCut = 0 ; 
 
     void Initialize(void) ;
     void Clear(void); 

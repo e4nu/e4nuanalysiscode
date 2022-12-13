@@ -18,9 +18,10 @@ EventHolderI::~EventHolderI() {
 
 EventHolderI::EventHolderI( const std::string file ) { 
   this->Initialize() ; 
-  std::cout<< "Loading "<< file << " ... \n" ;
+
   if( this->LoadMembers( file ) ) fIsConfigured = true ; 
   fMaxEvents = fEventHolderChain ->GetEntries() ;
+  std::cout<< "Loading "<< file << " with " << fMaxEvents << " events... \n" ;
 }
 
 EventHolderI::EventHolderI( const std::string file, const int nmaxevents ) { 

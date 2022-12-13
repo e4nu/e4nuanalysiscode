@@ -18,10 +18,8 @@ MCEvent::~MCEvent() {;}
 
 void MCEvent::SetOutLeptonKinematics( const double E, const double px, const double py, const double pz ) {
   fOutLepton.SetPxPyPzE( px, py, pz, E ) ; 
-
   double phi = fOutLepton.Phi() + TMath::Pi() ; // The GENIE Coordinate system is flipped with respect to CLAS
   fOutLepton.SetPhi( phi ) ; 
-
   return ; 
 }
 

@@ -53,7 +53,7 @@ namespace e4nu {
     std::string ftarget_pdg;
     double en_beam;
 
-    TF1* myPiMinusFit;
+    std::unique_ptr<TF1> myPiMinusFit;
 
     TF1 *up_lim1_ec, *up_lim2_ec,*up_lim3_ec,*up_lim4_ec, *up_lim5_ec,*up_lim6_ec,*low_lim1_ec,*low_lim2_ec,*low_lim3_ec, *low_lim4_ec,*low_lim5_ec,*low_lim6_ec;
     TF1 *leftside_lim1_ec, *leftside_lim2_ec,*leftside_lim3_ec, *leftside_lim4_ec,*leftside_lim5_ec, *leftside_lim6_ec,*rightside_lim1_ec, *rightside_lim2_ec,*rightside_lim3_ec, *rightside_lim4_ec,*rightside_lim5_ec, *rightside_lim6_ec;

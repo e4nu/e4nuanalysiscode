@@ -19,9 +19,9 @@ using namespace e4nu ;
 void Fiducial::InitPiMinusFit( const double EBeam ) 
 {
 
-  if (EBeam == 1.161) { myPiMinusFit = new TF1("myPiMinusFit","17.+4./TMath::Power(x,1.)",0,5.); }
-  if (EBeam == 2.261) { myPiMinusFit = new TF1("myPiMinusFit","(x<0.35)*(25.+7./TMath::Power(x,1.)) + (x>0.35)*(16.+10/TMath::Power(x,1.))",0,5.); }
-  if (EBeam == 4.461) { myPiMinusFit = new TF1("myPiMinusFit","(x<0.35)*(25.+7./TMath::Power(x,1.)) + (x>0.35)*(16.+10/TMath::Power(x,1.))",0,5.); }
+  if (EBeam == 1.161) { myPiMinusFit = std::unique_ptr<TF1>(new TF1("myPiMinusFit","17.+4./TMath::Power(x,1.)",0,5.)); }
+  if (EBeam == 2.261) { myPiMinusFit = std::unique_ptr<TF1>(new TF1("myPiMinusFit","(x<0.35)*(25.+7./TMath::Power(x,1.)) + (x>0.35)*(16.+10/TMath::Power(x,1.))",0,5.)); }
+  if (EBeam == 4.461) { myPiMinusFit = std::unique_ptr<TF1>(new TF1("myPiMinusFit","(x<0.35)*(25.+7./TMath::Power(x,1.)) + (x>0.35)*(16.+10/TMath::Power(x,1.))",0,5.)); }
 
 }
 

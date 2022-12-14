@@ -11,8 +11,8 @@
 
 using namespace e4nu;
 
-double utils::GetAcceptanceMapWeight( TH3D * acc, TH3D * gen, const TLorentzVector p4mom ){
-  if( !acc || !gen ) return 1. ;
+double utils::GetAcceptanceMapWeight( TH3D & acc, TH3D & gen, const TLorentzVector p4mom ){
+  //  if( !acc || !gen ) return 1. ;
 
   double phi = p4mom.Phi() ; 
   //map 330 till 360 to [-30:0] for the acceptance map histogram
@@ -23,15 +23,15 @@ double utils::GetAcceptanceMapWeight( TH3D * acc, TH3D * gen, const TLorentzVect
   phi += 30 ; 
   if( phi < 0 ) phi+= 360 ; 
 
-  double pbin_gen = gen->GetXaxis()->FindBin(p4mom.P());
-  double tbin_gen = gen->GetYaxis()->FindBin(p4mom.CosTheta());
-  double phibin_gen = gen->GetZaxis()->FindBin(phi);
-  double num_gen = gen->GetBinContent(pbin_gen, tbin_gen, phibin_gen);
+  double pbin_gen = gen.GetXaxis()->FindBin(p4mom.P());
+  double tbin_gen = gen.GetYaxis()->FindBin(p4mom.CosTheta());
+  double phibin_gen = gen.GetZaxis()->FindBin(phi);
+  double num_gen = gen.GetBinContent(pbin_gen, tbin_gen, phibin_gen);
 
-  double pbin_acc = acc->GetXaxis()->FindBin(p4mom.P());
-  double tbin_acc = acc->GetYaxis()->FindBin(p4mom.CosTheta());
-  double phibin_acc = acc->GetZaxis()->FindBin(phi);
-  double num_acc = acc->GetBinContent(pbin_acc, tbin_acc, phibin_acc);
+  double pbin_acc = acc.GetXaxis()->FindBin(p4mom.P());
+  double tbin_acc = acc.GetYaxis()->FindBin(p4mom.CosTheta());
+  double phibin_acc = acc.GetZaxis()->FindBin(phi);
+  double num_acc = acc.GetBinContent(pbin_acc, tbin_acc, phibin_acc);
 
   return num_acc / num_gen;
 } 

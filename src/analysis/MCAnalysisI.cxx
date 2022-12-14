@@ -24,16 +24,6 @@ MCAnalysisI::MCAnalysisI() {
 MCAnalysisI::~MCAnalysisI() {
   delete fData;
 
-  for( auto it = kAccMap.begin() ; it != kAccMap.end() ; ++it ) {
-    delete kAccMap[it->first] ; 
-    delete kGenMap[it->first] ; 
-  }
-
-  for( auto it=kAcceptanceMap.begin(); it != kAcceptanceMap.end() ; ++it ) {
-    kAcceptanceMap[it->first]->Close();
-    delete kAcceptanceMap[it->first];
-  }
-  
   kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
@@ -98,12 +88,12 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Signal event
   bool is_signal = false ; 
   double acc_wght = 1 ; 
-  
+
   for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) {
       // Apply acceptance for electron
       if( ApplyAccWeights() ) {
-	acc_wght *= utils::GetAcceptanceMapWeight( kAccMap[it->first], kGenMap[it->first], out_mom ) ; 
+	if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], out_mom ) ; 
 	if( fabs( acc_wght ) != acc_wght ) return nullptr ; 
       }
       is_signal = true ; 
@@ -113,7 +103,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       for( unsigned int i = 0 ; i < it->second ; ++i ) {
 	if( ApplyAccWeights() ) {
 	  // Do I need particle id ? 
-	  acc_wght *= utils::GetAcceptanceMapWeight( kAccMap[it->first], kGenMap[it->first], part_map[it->first][i] );
+	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ; 
 	  if( fabs( acc_wght) != acc_wght ) return nullptr ; 
 	}
       } 
@@ -189,19 +179,23 @@ void MCAnalysisI::Initialize() {
 
   // Initialize acceptance map histograms from file
   if( ApplyAccWeights() ) { 
-    kAcceptanceMap = conf::GetAcceptanceFileMap( Target, EBeam ) ; 
+    kAcceptanceMap = conf::GetAcceptanceFileMap2( Target, EBeam ) ; 
 
     // THESE ONE BELOW CAUSE A SMALL MEMORY LEAK - INVESTIGATE
-    kAccMap[conf::kPdgElectron] = (TH3D*) kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ;
-    kAccMap[conf::kPdgProton] = (TH3D*) kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ;
-    kAccMap[conf::kPdgPiP] = (TH3D*) kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ;
-    kAccMap[conf::kPdgPiM] = (TH3D*) kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ;
+    kAccMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ) ) ;
+    kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ) );
+    kAccMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ) );
+    kAccMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ) );
 
-    kGenMap[conf::kPdgElectron] = (TH3D*) kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ;
-    kGenMap[conf::kPdgProton] = (TH3D*) kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ;
-    kGenMap[conf::kPdgPiP] = (TH3D*) kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ;
-    kGenMap[conf::kPdgPiM] = (TH3D*) kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ;
-
+    kGenMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ) );
+    kGenMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ) ) ;
+    kGenMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ) ) ;
+    kGenMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ) ) ;
+    
+    for( auto it = kAccMap.begin() ; it != kAccMap.end(); ++it ) {
+      kAccMap[it->first]->SetDirectory(nullptr);
+      kGenMap[it->first]->SetDirectory(nullptr);
+    }
   }  
 
 }

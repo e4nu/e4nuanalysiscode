@@ -10,16 +10,16 @@
 #include <map>
 #include "TH3D.h"
 #include "utils/Fiducial.h"
-#include "analysis/AnalysisI.h"
+#include "analysis/ConfigureI.h"
 #include "physics/MCEventHolder.h"
 #include "physics/MCEvent.h"
 
 using namespace e4nu::conf ; 
 
 namespace e4nu {
-  class MCAnalysisI: virtual public AnalysisI {
+  class MCAnalysisI: virtual public ConfigureI {
   public : 
-    ~MCAnalysisI();
+    virtual ~MCAnalysisI();
 
   protected :
  
@@ -38,9 +38,9 @@ namespace e4nu {
 
     MCEventHolder * fData = nullptr ; 
 
-    std::map<int,TFile*> kAcceptanceMap;
-    std::map<int,TH3D*> kAccMap ; 
-    std::map<int,TH3D*> kGenMap ; 
+    std::map<int,std::unique_ptr<TFile>> kAcceptanceMap;
+    std::map<int,std::unique_ptr<TH3D>> kAccMap ; 
+    std::map<int,std::unique_ptr<TH3D>> kGenMap ; 
     std::unique_ptr<Fiducial> kFiducialCut ;
 
     // Store Statistics after cuts

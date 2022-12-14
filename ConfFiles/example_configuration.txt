@@ -1,5 +1,5 @@
 UseAllSectors	true
-ApplyFiducial 	true
+ApplyFiducial 	false
 ApplyAccWeights true
 ApplyReso	true
 ApplyPhiOpeningAngle	true

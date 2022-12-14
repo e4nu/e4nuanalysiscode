@@ -14,7 +14,7 @@
 namespace e4nu {
   namespace utils
   {
-    double GetAcceptanceMapWeight( TH3D * h_acc, TH3D * h_gen, const TLorentzVector p4mom );
+    double GetAcceptanceMapWeight( TH3D & h_acc, TH3D & h_gen, const TLorentzVector p4mom );
     unsigned int GetSector( double phi ) ;
     bool IsValidSector( const double phi, const double EBeam, const bool use_all ) ;
   }

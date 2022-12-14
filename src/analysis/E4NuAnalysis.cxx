@@ -16,9 +16,9 @@ using namespace e4nu ;
 
 E4NuAnalysis::E4NuAnalysis() {;}
 
-E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCAnalysisI(), CLASAnalysisI() {;}
+E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : ConfigureI(conf_file), MCAnalysisI(), CLASAnalysisI() {;}
 
-E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCAnalysisI(), CLASAnalysisI() {;}
+E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : ConfigureI(EBeam, TargetPdg), MCAnalysisI(), CLASAnalysisI() {;}
 
 E4NuAnalysis::~E4NuAnalysis() {;}
 

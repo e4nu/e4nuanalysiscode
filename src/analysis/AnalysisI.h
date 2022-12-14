@@ -19,7 +19,7 @@ namespace e4nu {
     // Store events on root file for further analysis
     bool StoreAnalysis( const std::string out_file ) { ; }
 
-    virtual ~AnalysisI();
+    ~AnalysisI();
 
   protected : 
     AnalysisI(); 

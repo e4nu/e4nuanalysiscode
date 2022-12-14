@@ -15,11 +15,15 @@
 using namespace e4nu ; 
 
 MCAnalysisI::MCAnalysisI() {
+  kAcceptanceMap.clear();
+  kAccMap.clear();
+  kGenMap.clear();
   this->Initialize() ;
 }
 
 MCAnalysisI::~MCAnalysisI() {
   delete fData;
+
   for( auto it = kAccMap.begin() ; it != kAccMap.end() ; ++it ) {
     delete kAccMap[it->first] ; 
     delete kGenMap[it->first] ; 
@@ -29,27 +33,27 @@ MCAnalysisI::~MCAnalysisI() {
     kAcceptanceMap[it->first]->Close();
     delete kAcceptanceMap[it->first];
   }
+  
   kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
 }
 
 bool MCAnalysisI::LoadData( const std::string file ) {
-  if( ! fIsDataLoaded ) fData = new MCEventHolder(file);
-  else return fIsDataLoaded ; 
-
-  fIsDataLoaded = true ;
+  if( ! fIsDataLoaded ) {
+    fData = new MCEventHolder(file);
+    fIsDataLoaded = true ;
+  }
 
   return fIsDataLoaded ; 
 }
 
 bool MCAnalysisI::LoadData( const std::string file, const unsigned int nmax ) {
 
-  if( ! fIsDataLoaded ) fData = new MCEventHolder( file, nmax ) ;
-  else return fIsDataLoaded ; 
-
-  fIsDataLoaded = true ;
-
+  if( ! fIsDataLoaded ) { 
+    fData = new MCEventHolder( file, nmax ) ;
+    fIsDataLoaded = true ;
+  }
   return fIsDataLoaded ; 
 }
 
@@ -58,7 +62,7 @@ EventI * MCAnalysisI::GetEvent( const unsigned int event_id ) {
 }
 
 EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
-
+  
   MCEvent * event = (MCEvent*) fData -> GetEvent(event_id) ; 
   if( !event ) return nullptr ; 
 
@@ -66,8 +70,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
-
-  //  std::cout << "out_mom.P() = " << out_mom.P() << std::endl;
 
   // Check run is correct
   double EBeam = GetConfiguredEBeam() ; 
@@ -96,20 +98,24 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Signal event
   bool is_signal = false ; 
   double acc_wght = 1 ; 
-
+  
   for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) {
-      // Apply acceptance for electrons
-      acc_wght *= utils::GetAcceptanceMapWeight( kAccMap[it->first], kGenMap[it->first], out_mom ) ; 
-      if( fabs( acc_wght ) != acc_wght ) return nullptr ; 
+      // Apply acceptance for electron
+      if( ApplyAccWeights() ) {
+	acc_wght *= utils::GetAcceptanceMapWeight( kAccMap[it->first], kGenMap[it->first], out_mom ) ; 
+	if( fabs( acc_wght ) != acc_wght ) return nullptr ; 
+      }
       is_signal = true ; 
     } else if( part_map.count( it->first ) && part_map[it->first].size() == it->second ) {
       // If we have an exclusive event, apply acceptance weight as well for signal event
       is_signal = true ; 
       for( unsigned int i = 0 ; i < it->second ; ++i ) {
-	// Do I need particle id ? 
-	acc_wght *= utils::GetAcceptanceMapWeight( kAccMap[it->first], kGenMap[it->first], part_map[it->first][i] );
-	if( fabs( acc_wght) != acc_wght ) return nullptr ; 
+	if( ApplyAccWeights() ) {
+	  // Do I need particle id ? 
+	  acc_wght *= utils::GetAcceptanceMapWeight( kAccMap[it->first], kGenMap[it->first], part_map[it->first][i] );
+	  if( fabs( acc_wght) != acc_wght ) return nullptr ; 
+	}
       } 
     } else {
       is_signal = false ; 
@@ -162,33 +168,40 @@ void MCAnalysisI::SmearParticles( MCEvent * event ) {
 unsigned int MCAnalysisI::GetNEvents( void ) const {
   return (unsigned int) fData ->GetNEvents() ; 
 }
+
 void MCAnalysisI::Initialize() { 
 
-  // Initialize fiducial for this run
-  kFiducialCut = std::unique_ptr<Fiducial>( new Fiducial()) ;
+  fData = nullptr ; 
+
+  // Get run configurables
   double EBeam = GetConfiguredEBeam() ; 
+  unsigned int Target = GetConfiguredTarget() ;
 
   if( ApplyFiducial() ) {
+    // Initialize fiducial for this run
+    kFiducialCut = std::unique_ptr<Fiducial>( new Fiducial() ) ; 
     kFiducialCut -> InitPiMinusFit( EBeam ) ; 
     kFiducialCut -> InitEClimits(); 
     kFiducialCut -> up_lim1_ec -> Eval(60) ;
-    kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), GetConfiguredTarget() , EBeam ) ;
+    kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), Target , EBeam ) ;
     kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
  }
 
   // Initialize acceptance map histograms from file
   if( ApplyAccWeights() ) { 
-    kAcceptanceMap = conf::GetAcceptanceFileMap( GetConfiguredTarget(), EBeam ) ; 
+    kAcceptanceMap = conf::GetAcceptanceFileMap( Target, EBeam ) ; 
 
+    // THESE ONE BELOW CAUSE A SMALL MEMORY LEAK - INVESTIGATE
     kAccMap[conf::kPdgElectron] = (TH3D*) kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ;
     kAccMap[conf::kPdgProton] = (TH3D*) kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ;
     kAccMap[conf::kPdgPiP] = (TH3D*) kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ;
     kAccMap[conf::kPdgPiM] = (TH3D*) kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ;
-    
+
     kGenMap[conf::kPdgElectron] = (TH3D*) kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ;
     kGenMap[conf::kPdgProton] = (TH3D*) kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ;
     kGenMap[conf::kPdgPiP] = (TH3D*) kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ;
     kGenMap[conf::kPdgPiM] = (TH3D*) kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ;
+
   }  
 
 }

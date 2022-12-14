@@ -23,8 +23,6 @@ namespace e4nu {
     bool IsRES(void) const { return fIsRES; } 
     bool IsMEC(void) const { return fIsMEC; }
     
-    int GetHitNuclPdg(void) const { return fHitNuclPdg ; }
-    
     double GetTrueQ2s(void) const { return fTrueQ2s ; }
     double GetTrueWs(void) const { return fTrueWs; }
     double GetTruexs(void) const { return fTruexs ; }
@@ -46,8 +44,6 @@ namespace e4nu {
     void SetIsRES( const bool res ) { fIsRES = res ; } 
     void SetIsMEC( const bool mec ) { fIsMEC = mec ; }
     void SetIsDIS( const bool dis ) { fIsDIS = dis ; } 
-
-    void SetHitNuclPdg( const int pdg ) { fHitNuclPdg = pdg ; }
 
     void SetTrueQ2s( const double Q2s ) { fTrueQ2s = Q2s ; }
     void SetTrueWs( const double Ws ) { fTrueWs = Ws ; }
@@ -75,8 +71,6 @@ namespace e4nu {
     bool fIsMEC ; 
     bool fIsDIS ;
     
-    int fHitNuclPdg ; 
-
     double fTrueQ2s ; 
     double fTrueWs ; 
     double fTruexs ; 

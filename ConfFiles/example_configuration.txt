@@ -1,6 +1,6 @@
 UseAllSectors	true
 ApplyFiducial 	true
-ApplyAccWeights	true
+ApplyAccWeights true
 ApplyReso	true
 ApplyPhiOpeningAngle	true
 UsePhiThetaBand		true

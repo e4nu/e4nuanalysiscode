@@ -42,7 +42,9 @@ void EventI::SetFinalParticle( const int pdg, const double E, const double px, c
 }
 
 void EventI::Initialize() { 
+  fFinalParticles.clear() ; 
   fIsMC = false ; 
+  fEventID = 0 ; 
   fWeight = 0 ; 
   fEventID = 0 ; 
   fTargetPdg = 0 ; 
@@ -58,6 +60,10 @@ void EventI::Initialize() {
   fNK0 = 0 ; 
   fNEM = 0 ; 
   fNOther = 0 ;
+
+  fInLepton.SetPxPyPzE( 0,0,0,0 ) ;
+  fOutLepton.SetPxPyPzE( 0,0,0,0 ) ;
+
 }
 
 void EventI::Clear() { 

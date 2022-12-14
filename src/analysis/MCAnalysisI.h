@@ -19,7 +19,7 @@ using namespace e4nu::conf ;
 namespace e4nu {
   class MCAnalysisI: virtual public AnalysisI {
   public : 
-    virtual ~MCAnalysisI();
+    ~MCAnalysisI();
 
   protected :
  
@@ -36,13 +36,12 @@ namespace e4nu {
 
     e4nu::EventI * GetEvent( const unsigned int event_id ) ;
 
-    MCEventHolder * fData ; 
+    MCEventHolder * fData = nullptr ; 
 
     std::map<int,TFile*> kAcceptanceMap;
     std::map<int,TH3D*> kAccMap ; 
     std::map<int,TH3D*> kGenMap ; 
     std::unique_ptr<Fiducial> kFiducialCut ;
-
 
     // Store Statistics after cuts
     long int fEventsBeforeCuts = 0 ; 

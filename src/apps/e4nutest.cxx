@@ -20,10 +20,12 @@ int main( void ) {
 
   E4NuAnalysis * analysis = new E4NuAnalysis("/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/ConfFiles/example_configuration.txt") ;
   //  analysis -> LoadData( file_name.c_str() ) ; 
-  analysis -> LoadData( file_name.c_str(), 10000000 ) ; 
-  analysis -> Analyse() ; 
-  analysis -> Finalise("/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output.txt") ; 
+  analysis -> LoadData( file_name.c_str(), 10 ) ; 
 
+  analysis -> Analyse() ; 
+/*
+  analysis -> Finalise("/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output.txt") ; 
+  */
   delete analysis ;
 
   return 0 ; 

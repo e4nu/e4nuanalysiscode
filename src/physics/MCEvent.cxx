@@ -12,6 +12,22 @@ using namespace e4nu ;
 
 MCEvent::MCEvent(): EventI() { 
   fIsMC = true ; 
+  fIsEM = false ; 
+  fIsCC = false ; 
+  fIsNC = false ; 
+  fIsQEL = false ;
+  fIsRES = false ; 
+  fIsMEC = false ; 
+  fIsDIS = false ;
+  
+  fTrueQ2s = 0 ; 
+  fTrueWs = 0 ; 
+  fTruexs = 0 ; 
+  fTrueys = 0 ; 
+  fTrueQ2 = 0 ; 
+  fTrueW = 0 ; 
+  fTruex = 0 ; 
+  fTruey = 0 ; 
 }
 
 MCEvent::~MCEvent() {;}
@@ -39,7 +55,7 @@ void MCEvent::SetFinalParticle( const int pdg, const double E, const double px, 
   mom.SetPhi( phi ) ;
 						
   if( fFinalParticles.find(pdg) == fFinalParticles.end() ) {
-    std::vector<TLorentzVector> vct ;
+    std::vector<TLorentzVector> vct (0);
     vct.push_back(mom); 
     fFinalParticles.insert( std::pair<int,std::vector<TLorentzVector>>(pdg, vct) ) ; 
   } else {

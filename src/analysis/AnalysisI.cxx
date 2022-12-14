@@ -17,7 +17,7 @@ AnalysisI::AnalysisI( const std::string conf_file ) : ConfigureI( conf_file ) { 
 
 AnalysisI::AnalysisI( const double EBeam, const unsigned int TargetPdg ) : ConfigureI( EBeam, TargetPdg) { this->Initialize() ; }
 
-AnalysisI::~AnalysisI() { ; } 
+AnalysisI::~AnalysisI() { ; }
 
 void AnalysisI::Initialize() { 
   fIsDataLoaded = false ;

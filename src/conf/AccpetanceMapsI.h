@@ -6,7 +6,6 @@
 #define _ACCEPTANCEMAPS_I_H_
 
 #include <iostream>
-#include <vector>
 #include <TFile.h>
 #include <map>
 

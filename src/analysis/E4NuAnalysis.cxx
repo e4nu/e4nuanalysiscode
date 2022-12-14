@@ -28,7 +28,6 @@ bool E4NuAnalysis::LoadData( const std::string file ) {
 }
 
 bool E4NuAnalysis::LoadData( const std::string file, const unsigned int nmax ) {
-
   //if( IsData() ) return CLASAnalysisI::LoadData(file,nmax);
   return MCAnalysisI::LoadData( file, nmax ) ; 
 }
@@ -94,7 +93,6 @@ bool E4NuAnalysis::Analyse(void) {
       if ( ! conf::GoodSectorPhiSlice( out_mom.Phi() ) ) continue ; 
       ++fNEventsAfterPhiCut ; 
     }
-
   }
 
   return true ; 

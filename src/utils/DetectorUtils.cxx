@@ -11,7 +11,6 @@
 
 using namespace e4nu;
 
-//double utils::GetAcceptanceMapWeight( TFile * acc_file, const int pdg, const TLorentzVector p4mom, const int target, const double EBeam ) {
 double utils::GetAcceptanceMapWeight( TH3D * acc, TH3D * gen, const TLorentzVector p4mom ){
   if( !acc || !gen ) return 1. ;
 

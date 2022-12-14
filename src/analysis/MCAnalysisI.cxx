@@ -24,6 +24,12 @@ MCAnalysisI::~MCAnalysisI() {
     delete kAccMap[it->first] ; 
     delete kGenMap[it->first] ; 
   }
+
+  for( auto it=kAcceptanceMap.begin(); it != kAcceptanceMap.end() ; ++it ) {
+    kAcceptanceMap[it->first]->Close();
+    delete kAcceptanceMap[it->first];
+  }
+  kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
 }
@@ -55,10 +61,13 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   MCEvent * event = (MCEvent*) fData -> GetEvent(event_id) ; 
   if( !event ) return nullptr ; 
+
   ++fEventsBeforeCuts ;
 
   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
+
+  //  std::cout << "out_mom.P() = " << out_mom.P() << std::endl;
 
   // Check run is correct
   double EBeam = GetConfiguredEBeam() ; 
@@ -167,19 +176,19 @@ void MCAnalysisI::Initialize() {
     kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
  }
 
+  // Initialize acceptance map histograms from file
   if( ApplyAccWeights() ) { 
-    std::map<int,TFile*> AcceptanceMap = conf::GetAcceptanceFileMap( GetConfiguredTarget(), EBeam ) ; 
+    kAcceptanceMap = conf::GetAcceptanceFileMap( GetConfiguredTarget(), EBeam ) ; 
 
-    kAccMap[conf::kPdgElectron] = (TH3D*) AcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ;
-    kAccMap[conf::kPdgProton] = (TH3D*) AcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ;
-    kAccMap[conf::kPdgPiP] = (TH3D*) AcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ;
-    kAccMap[conf::kPdgPiM] = (TH3D*) AcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ;
+    kAccMap[conf::kPdgElectron] = (TH3D*) kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ;
+    kAccMap[conf::kPdgProton] = (TH3D*) kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ;
+    kAccMap[conf::kPdgPiP] = (TH3D*) kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ;
+    kAccMap[conf::kPdgPiM] = (TH3D*) kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ;
     
-    kGenMap[conf::kPdgElectron] = (TH3D*) AcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ;
-    kGenMap[conf::kPdgProton] = (TH3D*) AcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ;
-    kGenMap[conf::kPdgPiP] = (TH3D*) AcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ;
-    kGenMap[conf::kPdgPiM] = (TH3D*) AcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ;
-
+    kGenMap[conf::kPdgElectron] = (TH3D*) kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ;
+    kGenMap[conf::kPdgProton] = (TH3D*) kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ;
+    kGenMap[conf::kPdgPiP] = (TH3D*) kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ;
+    kGenMap[conf::kPdgPiM] = (TH3D*) kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ;
   }  
 
 }

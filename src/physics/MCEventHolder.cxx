@@ -130,6 +130,7 @@ EventI * MCEventHolder::GetEvent(const unsigned int event_id) {
 
   if ( event_id > (unsigned int) fMaxEvents ) return nullptr ; 
 
+  //  static 
   MCEvent * event = new MCEvent() ; 
   fEventHolderChain->GetEntry( event_id ) ; 
   

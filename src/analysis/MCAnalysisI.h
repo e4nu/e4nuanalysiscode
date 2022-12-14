@@ -17,7 +17,7 @@
 using namespace e4nu::conf ; 
 
 namespace e4nu {
-  class MCAnalysisI : virtual public AnalysisI {
+  class MCAnalysisI: virtual public AnalysisI {
   public : 
     virtual ~MCAnalysisI();
 
@@ -27,7 +27,7 @@ namespace e4nu {
  
     bool LoadData( const std::string file ) ; 
     bool LoadData( const std::string file, const unsigned int nmax ) ; 
-    virtual unsigned int GetNEvents( void ) const ;
+    unsigned int GetNEvents( void ) const ;
     e4nu::EventI * GetValidEvent( const unsigned int event_id ) ;
     void SmearParticles( MCEvent * event ) ;
     bool Finalise( const std::string out_file ) ;
@@ -38,6 +38,7 @@ namespace e4nu {
 
     MCEventHolder * fData ; 
 
+    std::map<int,TFile*> kAcceptanceMap;
     std::map<int,TH3D*> kAccMap ; 
     std::map<int,TH3D*> kGenMap ; 
     std::unique_ptr<Fiducial> kFiducialCut ;

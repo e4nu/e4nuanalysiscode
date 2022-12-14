@@ -18,6 +18,7 @@ namespace e4nu {
     E4NuAnalysis(); 
     E4NuAnalysis( const std::string conf_file ) ;
     E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) ;
+    virtual ~E4NuAnalysis();
 
     bool LoadData( const std::string file ) ; 
     bool LoadData( const std::string file, const unsigned int nmax ) ; 
@@ -36,8 +37,6 @@ namespace e4nu {
     long int fNEventsAfterWCut = 0 ; 
     long int fNEventsAfterPhiOpeningAngleCut = 0 ; 
     long int fNEventsAfterThetaCut = 0 ;     
-
-    virtual ~E4NuAnalysis();
     
   };
 }

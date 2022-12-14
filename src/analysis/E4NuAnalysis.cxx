@@ -48,7 +48,7 @@ bool E4NuAnalysis::Analyse(void) {
   for( unsigned int i = 0 ; i < total_nevents ; ++i ) {
     //Print percentage
     double progress = i / (double) total_nevents ; 
-    if( i==0 || i % 1000000 == 0 ) utils::PrintProgressBar(progress);
+    if( i==0 || i % 100000 == 0 ) utils::PrintProgressBar(progress);
 
     std::unique_ptr<EventI> event = std::unique_ptr<EventI>((EventI*) MCAnalysisI::GetValidEvent(i) ); 
     if( ! event ) continue ;

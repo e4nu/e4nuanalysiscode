@@ -4,7 +4,7 @@
 namespace e4nu {
   namespace utils
   {
-    void PrintProgressBar( const double progress ) ;
+    void PrintProgressBar( const unsigned int curr_event, const unsigned int total_events ) ;
   }
 }
 

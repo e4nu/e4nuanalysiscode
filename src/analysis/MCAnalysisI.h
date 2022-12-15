@@ -45,6 +45,8 @@ namespace e4nu {
     // Store Statistics after cuts
     long int fEventsBeforeCuts = 0 ; 
     long int fNEventsAfterFiducial = 0 ; 
+    long int fNEventsAfterTopologyCut = 0 ; 
+    long int fNBkgEvents = 0 ; 
 
     void Initialize(void) ;
     void Clear(void); 

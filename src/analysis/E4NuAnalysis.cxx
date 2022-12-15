@@ -14,16 +14,24 @@
 
 using namespace e4nu ; 
 
-E4NuAnalysis::E4NuAnalysis() {;}
+E4NuAnalysis::E4NuAnalysis() {this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : ConfigureI(conf_file), MCAnalysisI(), CLASAnalysisI() {;}
+E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : ConfigureI(conf_file), MCAnalysisI(), CLASAnalysisI() { this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : ConfigureI(EBeam, TargetPdg), MCAnalysisI(), CLASAnalysisI() {;}
+E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : ConfigureI(EBeam, TargetPdg), MCAnalysisI(), CLASAnalysisI() { this->Initialize();}
 
-E4NuAnalysis::~E4NuAnalysis() {;}
+E4NuAnalysis::~E4NuAnalysis() {
+  //delete hist;
+  //  koutfile->Close();
+  // delete koutfile ; 
+}
 
 bool E4NuAnalysis::LoadData( const std::string file ) {
-  //  if( IsData() ) return CLASAnalysisI::LoadData(file);
+  if( !IsConfigured() ) {
+    std::cout << "ERROR: Configuration failed" <<std::endl;
+    return false ;
+  }
+//  if( IsData() ) return CLASAnalysisI::LoadData(file);
   return MCAnalysisI::LoadData(file) ; 
 }
 
@@ -37,16 +45,23 @@ unsigned int E4NuAnalysis::GetNEvents( void ) const {
 }
 
 bool E4NuAnalysis::Analyse(void) {
+  std::unique_ptr<TFile> koutfile = std::unique_ptr<TFile>( new TFile( "/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output.root","RECREATE") );
+ 
+  std::vector<TH1D*> histograms ; 
+  for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
+    histograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), GetNBins()[i], GetRange()[i][0], GetRange()[i][1] ) ) ; 
+  }
+
   unsigned int total_nevents = GetNEvents() ;
   // Loop over events
   for( unsigned int i = 0 ; i < total_nevents ; ++i ) {
     //Print percentage
-    double progress = i / (double) total_nevents ; 
-    if( i==0 || i % 100000 == 0 ) utils::PrintProgressBar(progress);
-
+    if( i==0 || i % 100000 == 0 ) utils::PrintProgressBar(i, total_nevents);
+  
     std::unique_ptr<EventI> event = std::unique_ptr<EventI>((EventI*) MCAnalysisI::GetValidEvent(i) ); 
     if( ! event ) continue ;
-
+  
+    
     TLorentzVector in_mom = event -> GetInLepton4Mom() ;
     TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
     double EBeam = in_mom.E() ; 
@@ -88,7 +103,17 @@ bool E4NuAnalysis::Analyse(void) {
       if ( ! conf::GoodSectorPhiSlice( out_mom.Phi() ) ) continue ; 
       ++fNEventsAfterPhiCut ; 
     }
+    
+    for( unsigned int j = 0 ; j < histograms.size() ; ++j ) {
+      histograms[j]-> Fill( event-> GetObservable( GetObservablesTag()[j] ) , event->GetWeight() ) ;
+    }
   }
+  
+  for( unsigned int i = 0 ; i < histograms.size() ; ++i ) {
+    histograms[i]->Write() ; 
+  }
+
+  koutfile->Close() ;
 
   return true ; 
 }
@@ -105,4 +130,9 @@ bool E4NuAnalysis::Finalise( const std::string out_file ) {
   if( ApplyGoodSectorPhiSlice() ) std::cout << " Events after phi cut = " << fNEventsAfterPhiCut << std::endl;
 
   return is_ok ; 
+}
+
+void E4NuAnalysis::Initialize(void) {
+
+  //  hist->SetDirectory(0);
 }

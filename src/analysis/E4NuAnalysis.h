@@ -10,6 +10,8 @@
 #include "analysis/MCAnalysisI.h"
 #include "analysis/CLASAnalysisI.h"
 
+#include "TH1D.h"
+
 using namespace e4nu::conf ; 
 
 namespace e4nu {
@@ -36,7 +38,8 @@ namespace e4nu {
     long int fNEventsAfterWCut = 0 ; 
     long int fNEventsAfterPhiOpeningAngleCut = 0 ; 
     long int fNEventsAfterThetaCut = 0 ;     
-    
+
+    void Initialize(void) ; 
   };
 }
 

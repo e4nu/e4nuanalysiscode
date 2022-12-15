@@ -1,7 +1,7 @@
 #Analysis Cuts
 UseAllSectors	true
 ApplyFiducial 	false
-ApplyAccWeights true
+ApplyAccWeights false
 ApplyReso	true
 ApplyPhiOpeningAngle	true
 UsePhiThetaBand		true
@@ -12,7 +12,7 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			100
+NEvents			1000000
 FirstEvent		0
 
 #Topology definition
@@ -21,6 +21,7 @@ Toplogy 		11:1,2212:1,211:0,-211:0,111:0
 MaxBacgkroundMultiplicity 4
 
 #histogram definition
-Range 	   0:2
-Observable ECal
-NBins      30
+
+RangeList 0:2,0:2
+ObservableList ECal,EFMom
+NBinsList 80,80

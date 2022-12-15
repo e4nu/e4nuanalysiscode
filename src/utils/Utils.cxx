@@ -8,7 +8,9 @@
 
 using namespace e4nu;
 
-void utils::PrintProgressBar( const double progress ) {
+void utils::PrintProgressBar( const unsigned int curr_event, const unsigned int total_events ) {
+
+  double progress = (double) curr_event / (double) total_events ; 
   if( progress > 1 ) return ; 
 
   int barWidth = 70;
@@ -19,7 +21,7 @@ void utils::PrintProgressBar( const double progress ) {
     else if (i == pos) std::cout << ">";
     else std::cout << " ";
   }
-  std::cout << "] " << int(progress * 100.0) << " %\r";
+  std::cout << "] Event: " << curr_event << " Percentage = " << int(progress * 100.0) << " %\r";
   std::cout.flush();
 
   std::cout << std::endl;

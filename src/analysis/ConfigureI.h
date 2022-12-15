@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <map>
+#include "physics/EventI.h"
 
 namespace e4nu { 
 
@@ -23,7 +24,9 @@ namespace e4nu {
       ConfigureI( const std::string input_file ) ;
       ConfigureI( const double EBeam, const unsigned int TargetPdg ) ;
       
+      bool IsConfigured(void) const { return kIsConfigured ; }
       void PrintConfiguration(void) const ; 
+
       std::map<int,unsigned int> GetTopology(void) const{ return kTopology_map ; } 
 
       double GetConfiguredEBeam(void) const { return kEBeam ; }
@@ -48,9 +51,9 @@ namespace e4nu {
       unsigned int GetBkgMult(void) const { return kMaxBkgMult ; }
 
       // Histogram Configurables
-      std::string GetObservableTag(void) const { return kObservable ; }
-      unsigned int GetNBins(void) const { return kNBins ; }
-      std::vector<double> GetRange(void) const { return kRange ; } 
+      std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }
+      std::vector<unsigned int> GetNBins(void) const { return kNBins ; }
+      std::vector<std::vector<double>> GetRange(void) const { return kRanges ; } 
 
       virtual ~ConfigureI();
       
@@ -79,15 +82,16 @@ namespace e4nu {
       unsigned int kFirstEvent = 0 ; 
 
       // Histogram configurables
-      std::string kObservable = "";
-      unsigned int kNBins = 100 ;
-      std::vector<double> kRange ; 
+      std::vector< std::string > kObservables ;
+      std::vector< unsigned int > kNBins ;
+      std::vector<std::vector<double>> kRanges ; 
 
       // Topology
       std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity
       unsigned int kMaxBkgMult = 2 ; 
 
-      bool fIsDataLoaded = false ;
+      bool kIsDataLoaded = false ;
+      bool kIsConfigured = true ; 
     };
   }
 }

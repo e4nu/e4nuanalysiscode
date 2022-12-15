@@ -16,12 +16,12 @@ CLASAnalysisI::~CLASAnalysisI() {;}
 
 bool CLASAnalysisI::LoadData( const std::string file ) {
 
-  return fIsDataLoaded ; 
+  return kIsDataLoaded ; 
 }
 
 bool CLASAnalysisI::LoadData( const std::string file, const unsigned int nmax ) {
 
-  return fIsDataLoaded ; 
+  return kIsDataLoaded ; 
 }
 
 EventI * CLASAnalysisI::GetEvent( const unsigned int event_id ) {

@@ -46,6 +46,8 @@ namespace e4nu {
     void SetInLeptonKinematics( const TLorentzVector tlvect ) { fInLepton = tlvect ; }
     void SetFinalParticlesKinematics( const std::map<int,std::vector<TLorentzVector>> part_map ) { fFinalParticles = part_map ; }
 
+    double GetObservable( std::string observable ) ;
+
   protected : 
     EventI(); 
 

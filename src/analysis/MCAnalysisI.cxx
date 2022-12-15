@@ -33,11 +33,11 @@ bool MCAnalysisI::LoadData( const std::string file ) {
   double nevents = GetNEventsToRun() ; 
   double first_event = GetFirstEventToRun() ; 
 
-  if( ! fIsDataLoaded ) { 
+  if( ! kIsDataLoaded ) { 
     fData = new MCEventHolder( file, first_event, nevents ) ;
-    fIsDataLoaded = true ;
+    kIsDataLoaded = true ;
   }
-  return fIsDataLoaded ; 
+  return kIsDataLoaded ; 
 }
 
 EventI * MCAnalysisI::GetEvent( const unsigned int event_id ) {
@@ -81,35 +81,41 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Signal event
   bool is_signal = false ; 
   double acc_wght = 1 ; 
-
+  //Topology ID
   for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) {
-      // Apply acceptance for electron
-      if( ApplyAccWeights() ) {
-	if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], out_mom ) ; 
-	if( fabs( acc_wght ) != acc_wght ) return nullptr ; 
-      }
       is_signal = true ; 
     } else if( part_map.count( it->first ) && part_map[it->first].size() == it->second ) {
-      // If we have an exclusive event, apply acceptance weight as well for signal event
       is_signal = true ; 
-      for( unsigned int i = 0 ; i < it->second ; ++i ) {
-	if( ApplyAccWeights() ) {
-	  // Do I need particle id ? 
-	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ; 
-	  if( fabs( acc_wght) != acc_wght ) return nullptr ; 
-	}
-      } 
     } else {
       is_signal = false ; 
     }
-
-    if( is_signal && ApplyAccWeights() ) wght *= acc_wght ; 
-      
-    // Background event
-    // BACKGROUND SUBSTRACTION METHOD HERE
   }
 
+  // Apply acceptance to signal
+  if( is_signal ) {
+    ++fNEventsAfterTopologyCut ;
+    if( ApplyAccWeights() ) {
+      for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
+	if( it->first == conf::kPdgElectron ) {
+	  // Apply acceptance for electron
+	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], out_mom ) ; 
+	  if( fabs( acc_wght ) != acc_wght ) return nullptr ; 
+	} else { 
+	  for( unsigned int i = 0 ; i < it->second ; ++i ) {
+	    if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
+	    if( fabs( acc_wght) != acc_wght ) return nullptr ;
+	  }
+	}
+      }
+    }
+    wght *= acc_wght ;
+  } else { 
+    // BACKGROUND 
+    ++fNBkgEvents ;
+    // For now simply remove
+    wght = 0 ; 
+  }
   // Apply Mottxsec weight
   //
   if( IsElectronData() ) {
@@ -196,6 +202,7 @@ void MCAnalysisI::Initialize() {
 bool MCAnalysisI::Finalise( const std::string out_file ) {
 
   std::cout << " Total Number of Events Processed = " << fEventsBeforeCuts << std::endl;
+  std::cout << " Total number of true signal events = " << fNEventsAfterTopologyCut << std::endl;
   std::cout << " Events after fiducial cuts = " << fNEventsAfterFiducial << std::endl;
 
   return true ; 

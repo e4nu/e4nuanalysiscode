@@ -14,9 +14,8 @@ namespace e4nu {
   public: 
 
     MCEventHolder(); 
-    MCEventHolder( const std::string root_file ) ; 
-    MCEventHolder( const std::string root_file, const int maxevents ) ; 
-    MCEventHolder( const std::vector<std::string> root_file_list ) ; 
+    MCEventHolder( const std::string root_file, const unsigned int first_event, const unsigned int maxevents ) ; 
+    MCEventHolder( const std::vector<std::string> root_file_list ) ; // add first and last 
     
     bool LoadBranch(void) ;
     

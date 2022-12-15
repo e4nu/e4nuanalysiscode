@@ -6,7 +6,6 @@
 #include <sstream>
 #include <string>
 #include <fstream>
-#include <vector>
 #include "analysis/ConfigureI.h"
 
 namespace e4nu { 
@@ -24,6 +23,7 @@ namespace e4nu {
     
     ConfigureI::~ConfigureI() {
       kTopology_map.clear() ; 
+      kRange.clear();
     }
 
 
@@ -35,6 +35,7 @@ namespace e4nu {
       std::string parameter_name, line, parameter_value ; 
       if( file.is_open() ) { 
 	while ( getline (file,line) ) {
+	  if(line.find("#", 0) != std::string::npos ) continue;
 	  std::istringstream line_as_stream( line ) ; 
 	  line_as_stream >> parameter_name >> parameter_value ; 
 	  param.push_back(parameter_name) ; 
@@ -82,9 +83,9 @@ namespace e4nu {
 	}else if ( param[i] == "offset" ) koffset = std::stod( value[i] ) ; 
 	else if ( param[i] == "EBeam" ) kEBeam = std::stod( value[i] ) ; 
 	else if ( param[i] == "TargetPdg" ) kTargetPdg = (unsigned int) std::stoi( value[i] ) ; 
+	else if ( param[i] == "NEvents" ) kNEvents = (unsigned int) std::stoi( value[i] ) ;
+	else if ( param[i] == "FirstEvent" ) kFirstEvent = (unsigned int) std::stoi( value[i] ) ;
 	else if ( param[i] == "Toplogy") {
-	  std::string delimeter = ":" ;
-	  std::string separator = "," ;
 	  std::string element, m_element ;
 	  std::istringstream particle_list( value[i] ) ;
 	  while( getline( particle_list, element, ',' ) ) {
@@ -98,11 +99,20 @@ namespace e4nu {
 		kTopology_map.insert( pair ) ;
 	      }
 	  }
+	} else if ( param[i] == "MaxBackgroundMultiplicity" ) kMaxBkgMult = (unsigned int) std::stoi( value[i] ) ;
+	else if ( param[i] == "Observable" ) kObservable = value[i] ;
+	else if ( param[i] == "NBins" ) kNBins = (unsigned int) std::stoi( value[i] ) ;
+	else if ( param[i] == "Range" ) {
+	  std::istringstream range_list( value[i] ) ;
+	  std::string m_element ;
+	  while ( getline( range_list, m_element, ':' ) ) {
+	    kRange.push_back( std::stod(m_element) ) ; 
+	  }
 	}
       }
       PrintConfiguration() ;
     }
-
+      
     void ConfigureI::PrintConfiguration(void) const { 
       std::cout << "*********************************************************************" << std::endl;
       std::cout << "*                         E4NU ANALYSIS CONF                       **" << std::endl;
@@ -115,16 +125,22 @@ namespace e4nu {
       std::cout << "ApplyPhiOpeningAngle:" << kApplyPhiOpeningAngle << std::endl;
       std::cout << "UsePhiThetaBand:"<< kUsePhiThetaBand << std::endl;
       std::cout << "ApplyThetaSlice:"<< kApplyThetaSlice << std::endl;
-      std::cout << "ApplyGoodSectorPhiSlice:"<<kApplyGoodSectorPhiSlice<<std::endl;
+      std::cout << "ApplyGoodSectorPhiSlice:"<<kApplyGoodSectorPhiSlice << "\n"<<std::endl;
       std::cout << "EBeam: " << kEBeam << " GeV " << std::endl;
-      std::cout << "Target Pdg : " << kTargetPdg << std::endl;
+      std::cout << "Target Pdg : " << kTargetPdg << "\n" <<std::endl;
       if ( kIsData ) std::cout << "\nIsData" << std::endl;
       else std::cout << "Is MC Data " << std::endl;
-      if( kIsElectron) std::cout << " Electron scattering data" <<std::endl;
-      std::cout << "Topology: \n " << std::endl;
+      if( kIsElectron) std::cout << " Electron scattering data \n" <<std::endl;
+      std::cout << "Topology: " << std::endl;
       for ( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) { 
 	std::cout << "    " << it->first << ", multiplicity " << it->second << std::endl;
       }
+      std::cout << "Maximum Background Multiplicity: "<< kMaxBkgMult << "\n" << std::endl;
+      std::cout << "Observable " << kObservable << std::endl;
+      std::cout << "Number of bins = " << kNBins << std::endl;
+      std::cout << "Range = {"<<kRange[0]<<","<<kRange[1]<<"}\n"<<std::endl;
+      std::cout << "Analizing " << kNEvents << " ... " <<std::endl;
+      if( kFirstEvent != 0 ) std::cout << " startint from event " << kFirstEvent << std::endl;
       std::cout << "*********************************************************************" << std::endl;
     }
 

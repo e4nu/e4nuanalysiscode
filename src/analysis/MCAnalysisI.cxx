@@ -30,18 +30,11 @@ MCAnalysisI::~MCAnalysisI() {
 }
 
 bool MCAnalysisI::LoadData( const std::string file ) {
-  if( ! fIsDataLoaded ) {
-    fData = new MCEventHolder(file);
-    fIsDataLoaded = true ;
-  }
-
-  return fIsDataLoaded ; 
-}
-
-bool MCAnalysisI::LoadData( const std::string file, const unsigned int nmax ) {
+  double nevents = GetNEventsToRun() ; 
+  double first_event = GetFirstEventToRun() ; 
 
   if( ! fIsDataLoaded ) { 
-    fData = new MCEventHolder( file, nmax ) ;
+    fData = new MCEventHolder( file, first_event, nevents ) ;
     fIsDataLoaded = true ;
   }
   return fIsDataLoaded ; 

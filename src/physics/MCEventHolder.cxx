@@ -14,11 +14,7 @@ MCEventHolder::~MCEventHolder() {
   //  this->Clear();
 }
 
-MCEventHolder::MCEventHolder( const std::string file ): EventHolderI( file ) { 
-  this->Initialize() ; 
-}
-
-MCEventHolder::MCEventHolder( const std::string file, const int nmaxevents ): EventHolderI( file, nmaxevents ) { 
+MCEventHolder::MCEventHolder( const std::string file, const unsigned first_event, const unsigned int nmaxevents ): EventHolderI( file, first_event , nmaxevents ) { 
   this->Initialize() ; 
 }
 

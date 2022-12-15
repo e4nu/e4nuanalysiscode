@@ -13,11 +13,7 @@ CLASEventHolder::~CLASEventHolder() {
   this->Clear();
 }
 
-CLASEventHolder::CLASEventHolder( const std::string file ): EventHolderI( file ) { 
-  this->Initialize() ; 
-}
-
-CLASEventHolder::CLASEventHolder( const std::string file, const int nmaxevents ): EventHolderI( file, nmaxevents ) { 
+CLASEventHolder::CLASEventHolder( const std::string file, const int first_event, const int nmaxevents ): EventHolderI( file, first_event, nmaxevents ) { 
   this->Initialize() ; 
 }
 

@@ -24,8 +24,7 @@ namespace e4nu {
 
   protected : 
     EventHolderI(); 
-    EventHolderI( const std::string root_file ) ; 
-    EventHolderI( const std::string root_file, const int nmaxevents ) ; 
+    EventHolderI( const std::string root_file, const unsigned int first_event, const unsigned int nmaxevents ) ; 
     EventHolderI( const std::vector<std::string> root_file_list ) ; 
     
     bool LoadMembers( const std::string file ) ; // returns tree number in TChain
@@ -38,7 +37,8 @@ namespace e4nu {
 
     // Members
     bool fIsConfigured ; 
-    int fMaxEvents ; 
+    unsigned int fMaxEvents ; 
+    unsigned int fFirstEvent ; 
 
   private :
 

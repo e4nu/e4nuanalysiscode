@@ -6,6 +6,7 @@
 #ifndef _CONFIGURABLES_I_H_
 #define _CONFIGURABLES_I_H_
 
+#include <vector>
 #include <map>
 
 namespace e4nu { 
@@ -42,7 +43,14 @@ namespace e4nu {
       bool ApplyWCut(void) const{ return kWCut ; }
       bool IsElectronData(void) const { return kIsElectron ; }
 
-      void SetFiducial( bool b ) { kApplyFiducial = b ; }
+      unsigned int GetNEventsToRun(void) const { return kNEvents ; } 
+      unsigned int GetFirstEventToRun(void) const { return kFirstEvent ; } 
+      unsigned int GetBkgMult(void) const { return kMaxBkgMult ; }
+
+      // Histogram Configurables
+      std::string GetObservableTag(void) const { return kObservable ; }
+      unsigned int GetNBins(void) const { return kNBins ; }
+      std::vector<double> GetRange(void) const { return kRange ; } 
 
       virtual ~ConfigureI();
       
@@ -65,10 +73,21 @@ namespace e4nu {
       // Physics 
       double kEBeam = 1.161 ; 
       unsigned int kTargetPdg = 1000060120 ;
-      
-      std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity
 
-      bool fIsDataLoaded ;
+      // Number of events
+      unsigned int kNEvents = 0;
+      unsigned int kFirstEvent = 0 ; 
+
+      // Histogram configurables
+      std::string kObservable = "";
+      unsigned int kNBins = 100 ;
+      std::vector<double> kRange ; 
+
+      // Topology
+      std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity
+      unsigned int kMaxBkgMult = 2 ; 
+
+      bool fIsDataLoaded = false ;
     };
   }
 }

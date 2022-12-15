@@ -27,11 +27,6 @@ bool E4NuAnalysis::LoadData( const std::string file ) {
   return MCAnalysisI::LoadData(file) ; 
 }
 
-bool E4NuAnalysis::LoadData( const std::string file, const unsigned int nmax ) {
-  //if( IsData() ) return CLASAnalysisI::LoadData(file,nmax);
-  return MCAnalysisI::LoadData( file, nmax ) ; 
-}
-
 EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
   //if( IsData() ) CLASAnalysisI::GetEvent( event_id ) ; 
   return MCAnalysisI::GetValidEvent( event_id ) ; 

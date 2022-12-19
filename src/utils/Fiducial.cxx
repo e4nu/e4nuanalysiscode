@@ -693,7 +693,7 @@ Bool_t Fiducial::EFiducialCut(double beam_en, TVector3 momentum) {
       }
 
     }
-
+    return status ; 
     Int_t uplow;
     Double_t thetacutoff;
     Float_t p_thetae = mom, thetamax_e = 0;
@@ -717,6 +717,7 @@ Bool_t Fiducial::EFiducialCut(double beam_en, TVector3 momentum) {
     }
 
     status = (theta>thetacutoff) && (thetacutoff>=thetapars[0]) && (elmom>300) && (elmom<=1100)  && theta<=thetamax_e;
+    return status ; 
 
     if (SCpdcut && (fTorusCurrent>1490) && (fTorusCurrent<1510) ) {  // if the SCpdCut bit is set, take off the bad SC paddle by strictly cutting off a theta gap.
 

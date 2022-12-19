@@ -44,6 +44,8 @@ namespace e4nu {
       bool GetOffSet(void) const { return koffset ; } 
       bool ApplyQ2Cut(void) const{ return kQ2Cut ; }
       bool ApplyWCut(void) const{ return kWCut ; }
+      bool ApplyOutElectronCut(void) const { return fOutMomCut ; }
+      
       bool IsElectronData(void) const { return kIsElectron ; }
 
       unsigned int GetNEventsToRun(void) const { return kNEvents ; } 
@@ -69,6 +71,7 @@ namespace e4nu {
       bool kIsData = false ; 
       bool kQ2Cut = true ; 
       bool kWCut = true ; 
+      bool fOutMomCut = true ;
       bool kIsElectron = true ; 
       // ofset for oscillation studies
       double koffset = 0 ; 

@@ -66,7 +66,7 @@ bool E4NuAnalysis::Analyse(void) {
     TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
     double EBeam = in_mom.E() ; 
 
-    if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) continue ; 
+    if( ApplyOutElectronCut() && out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) continue ; 
     ++fNEventsAfterEMomCut ;     
     
     double reco_Q2 = utils::GetRecoQ2( out_mom, EBeam ) ; 

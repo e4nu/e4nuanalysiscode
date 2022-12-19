@@ -42,8 +42,8 @@ namespace e4nu {
     void AddWeight(const double w) { fWeight *= w ; }
     double GetWeight(void) const { return fWeight ; }
 
-    void SetOutLeptonKinematics( const TLorentzVector tlvect ) { fOutLepton = tlvect ; }
-    void SetInLeptonKinematics( const TLorentzVector tlvect ) { fInLepton = tlvect ; }
+    void SetOutLeptonKinematics( const TLorentzVector & tlvect ) { fOutLepton = tlvect ; }
+    void SetInLeptonKinematics( const TLorentzVector & tlvect ) { fInLepton = tlvect ; }
     void SetFinalParticlesKinematics( const std::map<int,std::vector<TLorentzVector>> part_map ) { fFinalParticles = part_map ; }
 
     double GetObservable( std::string observable ) ;

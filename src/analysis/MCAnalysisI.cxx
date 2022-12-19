@@ -63,12 +63,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   double wght = event->GetWeight() ; 
   if ( wght < 0 || wght > 10 ) return nullptr ; 
 
-  // Apply Fiducial volume cuts
-  if( ApplyFiducial() ) {
-    if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) return nullptr ; 
-    ++fNEventsAfterFiducial ;
-  }
-    
   // Apply smaring to particles
   if( ApplyReso() ) {
     this -> SmearParticles( event ) ; 
@@ -90,6 +84,12 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     } else {
       is_signal = false ; 
     }
+  }
+
+  // Apply Fiducial volume cuts
+  if( ApplyFiducial() ) {
+    if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) return nullptr ; 
+    ++fNEventsAfterFiducial ;
   }
 
   // Apply acceptance to signal
@@ -119,7 +119,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Apply Mottxsec weight
   //
   if( IsElectronData() ) {
-    wght *= utils::GetXSecScale(out_mom, EBeam, true ) ; 
+    wght /= utils::GetXSecScale(out_mom, EBeam, true ) ; 
   }
 
   // Set Final weight

@@ -32,7 +32,6 @@ void EventI::SetInLeptonKinematics( const double E, const double px, const doubl
 void EventI::SetFinalParticle( const int pdg, const double E, const double px, const double py, const double pz ) {
   TLorentzVector mom;
   mom.SetPxPyPzE( px, py, pz, E ) ; 
-						
   if( fFinalParticles.find(pdg) == fFinalParticles.end() ) {
     std::vector<TLorentzVector> vct ;
     vct.push_back(mom); 
@@ -48,11 +47,12 @@ double EventI::GetObservable( std::string observable ) {
   TLorentzVector ef4mom = GetOutLepton4Mom() ;
   TLorentzVector p4mom ; 
   bool event_wproton = false ; 
+  
   if( fFinalParticles.find( conf::kPdgProton ) != fFinalParticles.end() ) { 
     event_wproton = true ;
     double max_mom = 0 ; 
     for ( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgProton].size() ; ++i ) {
-      if( p4mom.P() > max_mom ) p4mom = fFinalParticles[conf::kPdgProton][i] ;
+      if( fFinalParticles[conf::kPdgProton][i].P() > max_mom ) p4mom = fFinalParticles[conf::kPdgProton][i] ;
     }
   }
 
@@ -69,14 +69,19 @@ double EventI::GetObservable( std::string observable ) {
     return utils::GetRecoXBJK( ef4mom, EBeam ) ;
   } else if ( observable == "RecoW" ) {
     return utils::GetRecoW(ef4mom,EBeam ); 
+  } else if ( observable == "DeltaPT" ) {
+    if ( event_wproton == false ) return 0; 
+    return utils::DeltaPT( ef4mom.Vect(), p4mom.Vect() ).Mag() ;
   } else if ( observable == "DeltaAlphaT" ) {
     if ( event_wproton == false ) return 0; 
-    return utils::DeltaAlphaT( ef4mom.Vect(), p4mom.Vect() , EBeam ) ; 
+    return utils::DeltaAlphaT( ef4mom.Vect(), p4mom.Vect() ) ; 
   } else if ( observable == "DeltaPhiT" ) {
     if ( event_wproton == false ) return 0; 
-    return utils::DeltaPhiT( ef4mom.Vect(), p4mom.Vect() , EBeam ) ;
+    return utils::DeltaPhiT( ef4mom.Vect(), p4mom.Vect() ) ;
   } else if ( observable == "EFMom" ) { 
     return ef4mom.P() ;
+  } else if ( observable == "LeadingPMom" ) {
+    return p4mom.Mag() ; 
   }
   std::cout << observable << " is NOT defined " << std::endl;
   return 0 ; 

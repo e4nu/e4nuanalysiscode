@@ -1,18 +1,21 @@
 #Analysis Cuts
 UseAllSectors	true
 ApplyFiducial 	false
-ApplyAccWeights false
+ApplyAccWeights true
 ApplyReso	true
 ApplyPhiOpeningAngle	true
 UsePhiThetaBand		true
-ApplyThetaSlice		true
-ApplyGoodSectorPhiSlice	true
+ApplyThetaSlice		false
+ApplyGoodSectorPhiSlice	false
+ApplyOutMomCut		true
+ApplyQ2Cut		true
+ApplyWCut		true
 offset			0
 
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			1000000
+NEvents			13200000
 FirstEvent		0
 
 #Topology definition
@@ -22,6 +25,6 @@ MaxBacgkroundMultiplicity 4
 
 #histogram definition
 
-RangeList 0:2,0:2
-ObservableList ECal,EFMom
-NBinsList 80,80
+RangeList 0:2,0:2,0:2,0:2,0:2,0:2,0:180,0:2
+ObservableList ECal,EFMom,RecoQ2,RecoW,QELRecoEnu,DeltaPT,DeltaAlphaT,DeltaPhiT
+NBinsList 150,80,80,80,80,80,80,80

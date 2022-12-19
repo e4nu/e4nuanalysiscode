@@ -73,9 +73,8 @@ double utils::GetXSecScale( const TLorentzVector & leptonf, const double EBeam, 
   return scale ; 
 }
 
-TVector3 utils::GetPT( const TVector3 p, const double EBeam ) {
-  TLorentzVector beam ( 0,0,EBeam,EBeam) ;
-  TVector3 beam_dir = beam.Vect().Unit();
+TVector3 utils::GetPT( const TVector3 p ) {
+  TVector3 beam_dir (0,0,1);
   double vect_parallel = p.Dot(beam_dir);
 
   // Calculate transverse vector:
@@ -83,24 +82,24 @@ TVector3 utils::GetPT( const TVector3 p, const double EBeam ) {
   return vect_T ; 
 }
 
-double utils::DeltaAlphaT( const TVector3 p1 , const TVector3 p2, const double EBeam ) {
-  TVector3 P1T_dir = utils::GetPT(p1,EBeam).Unit();
-  TVector3 DeltaPT_dir = utils::DeltaPT(p1, p2, EBeam).Unit();
+double utils::DeltaAlphaT( const TVector3 p1 /*out electron*/, const TVector3 p2/*proton*/ ) {
+  TVector3 P1T_dir = utils::GetPT(p1).Unit();
+  TVector3 DeltaPT_dir = utils::DeltaPT(p1, p2).Unit();
 
-  return acos(-P1T_dir.Dot(DeltaPT_dir));
+  return acos(-P1T_dir.Dot(DeltaPT_dir)) * 180. / TMath::Pi();
 }
 
-TVector3 utils::DeltaPT( const TVector3 p1 , const TVector3 p2, const double EBeam ) {
-  TVector3 P1_T = utils::GetPT(p1, EBeam);
-  TVector3 P2_T = utils::GetPT(p2, EBeam);
+TVector3 utils::DeltaPT( const TVector3 p1 , const TVector3 p2 ) {
+  TVector3 P1_T = utils::GetPT(p1);
+  TVector3 P2_T = utils::GetPT(p2);
 
   return P1_T + P2_T;
 }
 
-double utils::DeltaPhiT( const TVector3 p1 , const TVector3 p2, const double EBeam ) {
-  TVector3 P1T_dir = utils::GetPT(p1, EBeam).Unit();
-  TVector3 P2T_dir = utils::GetPT(p2, EBeam).Unit();
-  return acos(-P1T_dir.Dot(P2T_dir)); 
+double utils::DeltaPhiT( const TVector3 p1 , const TVector3 p2 ) {
+  TVector3 P1T_dir = utils::GetPT(p1).Unit();
+  TVector3 P2T_dir = utils::GetPT(p2).Unit();
+  return acos(-P1T_dir.Dot(P2T_dir)) * 180. / TMath::Pi() ; 
 }
 
 

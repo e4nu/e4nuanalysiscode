@@ -80,7 +80,10 @@ namespace e4nu {
 	} else if( param[i] == "ApplyWCut" ) { 
 	  if( value[i] == "true" ) kWCut = true ; 
 	  else kWCut = false ; 	
-	} else if( param[i] == "IsElectronData" ) { 
+	} else if ( param[i] == "ApplyOutMomCut" ) {
+	  if( value[i] == "true" ) fOutMomCut = true ; 
+	  else fOutMomCut = false ; 
+	}else if( param[i] == "IsElectronData" ) { 
 	  if( value[i] == "true" ) kIsElectron = true ; 
 	  else kIsElectron = false ; 
 	}else if ( param[i] == "offset" ) koffset = std::stod( value[i] ) ; 
@@ -146,8 +149,12 @@ namespace e4nu {
       std::cout << "*********************************************************************" << std::endl;
       std::cout << "*                         E4NU ANALYSIS CONF                       **" << std::endl;
       std::cout << "*********************************************************************" << std::endl;
-      std::cout << "UseAllSectors:" << kUseAllSectors << std::endl;
+      std::cout << "UseAllSectors: " << kUseAllSectors << std::endl;
+      std::cout << "ApplyOutMomCut: " <<fOutMomCut << std::endl;
+      std::cout << "ApplyQ2Cut: "<<kQ2Cut<< std::endl;
+      std::cout << "ApplyWCut: "<<kWCut<< std::endl;
       std::cout << "ApplyFiducial:" << kApplyFiducial << std::endl;
+      std::cout << "ApplyAccWeights: " << kApplyAccWeights << std::endl;
       std::cout << "ApplyReso:" << kApplyReso << std::endl;
       std::cout << "ApplyQ2Cut: " << kQ2Cut << std::endl;
       std::cout << "ApplyWCut: " << kWCut << std::endl;

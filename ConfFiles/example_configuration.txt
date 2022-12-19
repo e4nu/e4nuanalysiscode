@@ -21,8 +21,7 @@ FirstEvent		0
 
 #Topology definition
 IsData			false
-#Toplogy 		11:1,2212:1,211:0,-211:0,111:0
-Toplogy 		11:1,2212:2,211:0,-211:0,111:0
+Toplogy 		11:1,2212:1,211:0,-211:0,111:0
 MaxBackgroundMultiplicity 4
 
 #histogram definition

@@ -58,10 +58,11 @@ bool E4NuAnalysis::Analyse(void) {
     //Print percentage
     if( i==0 || i % 100000 == 0 ) utils::PrintProgressBar(i, total_nevents);
   
-    std::unique_ptr<EventI> event = std::unique_ptr<EventI>((EventI*) MCAnalysisI::GetValidEvent(i) ); 
-    if( ! event ) continue ;
-  
-    
+    std::unique_ptr<EventI> event = std::unique_ptr<EventI>( (EventI*) MCAnalysisI::GetValidEvent(i) ); 
+    if( ! event ) {
+      continue ;
+    }
+
     TLorentzVector in_mom = event -> GetInLepton4Mom() ;
     TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
     double EBeam = in_mom.E() ; 

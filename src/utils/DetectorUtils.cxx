@@ -20,8 +20,8 @@ double utils::GetAcceptanceMapWeight( TH3D & acc, TH3D & gen, const TLorentzVect
   phi *= 180/TMath::Pi() ;
 
   // TO DOUBLE CHECK
-  phi += 30 ; 
-  if( phi < 0 ) phi+= 360 ; 
+  //  phi += 30 ; 
+  // if( phi < 0 ) phi+= 360 ; 
 
   double pbin_gen = gen.GetXaxis()->FindBin(p4mom.P());
   double tbin_gen = gen.GetYaxis()->FindBin(p4mom.CosTheta());

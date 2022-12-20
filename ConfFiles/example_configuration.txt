@@ -1,22 +1,21 @@
 #Analysis Cuts
-UseAllSectors	false
-ApplyFiducial 	false
+UseAllSectors	true
+ApplyFiducial 	true
 ApplyAccWeights false
 ApplyReso	true
-ApplyPhiOpeningAngle	false
-UsePhiThetaBand		false
-ApplyThetaSlice		false
-ApplyGoodSectorPhiSlice	false
-ApplyOutMomCut		false
-ApplyQ2Cut		false
-ApplyWCut		false
+ApplyPhiOpeningAngle	true
+UsePhiThetaBand		true
+ApplyThetaSlice		true
+ApplyGoodSectorPhiSlice	true
+ApplyOutMomCut		true
+ApplyQ2Cut		true
+ApplyWCut		true
 offset			0
 
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-#NEvents			13200000
-NEvents			1000000
+NEvents			100000000
 FirstEvent		0
 
 #Topology definition

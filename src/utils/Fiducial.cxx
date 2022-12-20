@@ -609,7 +609,6 @@ Bool_t Fiducial::GetEPhiLimits(double beam_en, Float_t momentum, Float_t theta, 
 
     if (momentum > 3.7) momentum = 3.7; // don't extrapolate past the data
 
-
     // uncomment this if you want 100MeV energy bins
     //Enrgy = 0.100*int(Enrgy/0.100);
 
@@ -654,162 +653,106 @@ Bool_t Fiducial::EFiducialCut(double beam_en, TVector3 momentum) {
   std::string fbeam_en = std::to_string((int)(beam_en*1000));
 
   bool SCpdcut = true;
-
   // 1.1 GeV electron fiducials & 750 torus field
 
-  if ( beam_en > 1. && beam_en < 2. && fTorusCurrent > 740 && fTorusCurrent < 1510) {
-
+  if ( beam_en > 1. && beam_en < 2. && fTorusCurrent > 740 && fTorusCurrent < 1510) {    
     Float_t mom = momentum.Mag();
     Float_t phi = momentum.Phi() * 180. / TMath::Pi();
     if (phi < -30.) phi += 360.;
     Float_t theta = momentum.Theta() * 180. / TMath::Pi();
-    Int_t sector = (Int_t)((phi+30.)/60.);
-    if(sector < 0) sector = 0;
+    Int_t sector = (Int_t)((phi+30.)/60.);if(sector < 0) sector = 0;
     if(sector > 5) sector = 5; // to match array index
-
+    
     phi -= sector * 60;
     Double_t elmom = (momentum.Mag())*1000;
     Double_t thetapars[5]={0,0,0,0,0};
-
+    
     for ( Int_t mompar = 0; mompar < 6; mompar++) {
-
       for (Int_t thetapar = 0; thetapar < 5; thetapar++) {
-
 	if ( (fTorusCurrent > 1490) && (fTorusCurrent < 1510) ) {
-
 	  // 1500A torus current
-
 	  thetapars[thetapar]+=fgPar_1gev_1500_Efid[sector][thetapar][mompar]*pow(elmom,mompar);
-	}
-
-	if ( (fTorusCurrent > 740) && (fTorusCurrent < 760) ) {
-
+	} else if ( (fTorusCurrent > 740) && (fTorusCurrent < 760) ) {
 	  // 750A torus current
-
 	  thetapars[thetapar]+=fgPar_1gev_750_Efid[sector][thetapar][mompar]*pow(elmom,mompar);
-
-	}
-
+	} 
       }
 
     }
-    return status ; 
+    
     Int_t uplow;
     Double_t thetacutoff;
     Float_t p_thetae = mom, thetamax_e = 0;
 
     if (p_thetae > 1.05) { p_thetae = 1.05; }
     else if (p_thetae < 0.4)  { p_thetae = 0.4; }
-
+    
     for (int i = 4; i >= 0;i--) { thetamax_e = thetamax_e*p_thetae + el_thetamax1[i]; }
-
+    
     if (phi <= 0) {
-
       uplow = 1;
       thetacutoff = ((phi*(thetapars[0]-(thetapars[1]/thetapars[2])))+
 		     (double(uplow)*thetapars[2]*thetapars[0]))/(phi+(double(uplow)*thetapars[2]));
-
     } else {
-
       uplow = -1;
       thetacutoff = ( (phi*(thetapars[0]-(thetapars[3]/thetapars[4]))) + (double(uplow)*thetapars[4]*thetapars[0]))/(phi+(double(uplow)*thetapars[4]) );
-
     }
-
+    
+   
     status = (theta>thetacutoff) && (thetacutoff>=thetapars[0]) && (elmom>300) && (elmom<=1100)  && theta<=thetamax_e;
-    return status ; 
-
+    
     if (SCpdcut && (fTorusCurrent>1490) && (fTorusCurrent<1510) ) {  // if the SCpdCut bit is set, take off the bad SC paddle by strictly cutting off a theta gap.
-
       if (status) {
-
 	int tsector = sector + 1;
-
 	// sector 3 has two bad paddles
-
 	if (tsector == 3) {
-
 	  float badpar3[4]; // 4 parameters to determine the positions of the two theta gaps
-
 	  for (int i = 0; i < 4; i++) {
-
 	    badpar3[i] = 0;
-
 	    // calculate the parameters using pol7
-
 	    for (int d=7; d>=0; d--) { badpar3[i] = badpar3[i]*mom + fgPar_1gev_1500_Efid_Theta_S3[i][d]; }
-
 	  }
-
 	  for (int ipar = 0; ipar < 2;ipar++) { status = status && !(theta>badpar3[2*ipar] && theta<badpar3[2*ipar+1]); }
-
 	}
-
 	// sector 4 has one bad paddle
-
 	else if (tsector == 4) {
-
 	  float badpar4[2]; // 2 parameters to determine the position of the theta gap
-
 	  for (int i = 0; i < 2; i++) {
-
 	    badpar4[i] = 0;
-
 	    // calculate the parameters using pol7
-
 	    for (int d=7; d>=0; d--) { badpar4[i] = badpar4[i]*mom + fgPar_1gev_1500_Efid_Theta_S4[i][d]; }
-
 	  }
-
 	  status = !(theta>badpar4[0] && theta<badpar4[1]);
-
 	}
 
 	// sector 5 has four bad paddles
-
 	else if (tsector == 5) {
-
 	  Float_t badpar5[8]; // 8 parameters to determine the positions of the four theta gaps
-
 	  for (Int_t i = 0; i < 8; i++) {
-
 	    badpar5[i] = 0;
-
 	    // calculate the parameters using pol7
-
 	    for (Int_t d = 7; d >= 0; d--) { badpar5[i] = badpar5[i]*mom + fgPar_1gev_1500_Efid_Theta_S5[i][d]; }
-
 	  }
-
 	  if (mom < 1.25) { badpar5[0] = 23.4 * 1500 / 2250; }
-
 	  if (mom < 1.27) { badpar5[1] = 24.0 * 1500 / 2250; } // some dummy constants. see fiducial cuts webpage.
-
 	  for (Int_t ip = 0; ip < 4; ip++) { status = status && !(theta>badpar5[2*ip] && theta<badpar5[2*ip+1]); }
-
 	}
-
       }
-
     }
-
+    
     if (SCpdcut && (fTorusCurrent>740) && (fTorusCurrent<760) ) {  // if the SCpdCut bit is set, take off the bad SC paddle by strictly cutting off a theta gap.
-
+      
       if (status) {
-
+	
 	int tsector = sector + 1;
-	mom = momentum.Mag();
-
 	//sector 2 has one gap
 
 	if (tsector == 2) {
-
 	  double parsec2_l, parsec2_h;
 	  if (mom < 0.4) mom = 0.4;
 	  parsec2_l = fid_1gev_750_efid_S2[0][0]+fid_1gev_750_efid_S2[0][1]/mom +fid_1gev_750_efid_S2[0][2]/(mom*mom) +fid_1gev_750_efid_S2[0][3]/(mom*mom*mom);
 	  parsec2_h = fid_1gev_750_efid_S2[1][0]+fid_1gev_750_efid_S2[1][1]/mom +fid_1gev_750_efid_S2[1][2]/(mom*mom) +fid_1gev_750_efid_S2[1][3]/(mom*mom*mom);
 	  status=status && !(theta>parsec2_l && theta<parsec2_h);
-
 	}
 
 	// sector 3 has four gaps, the last two appear only at low momenta (p<0.3) and affect only pimi
@@ -819,14 +762,12 @@ Bool_t Fiducial::EFiducialCut(double beam_en, TVector3 momentum) {
 	  double parsec3_l[4],parsec3_h[4];
 
 	  for (int d = 0; d < 4; d++) {
-
 	    mom = momentum.Mag();
 	    if ( (d==2 || d==3) && mom>0.3 ) { mom = 0.3; }
 	    else if ( d < 2 && mom < 0.4) { mom = 0.4; }
 	    parsec3_l[d] = fid_1gev_750_efid_S3[d][0][0]+fid_1gev_750_efid_S3[d][0][1]/mom +fid_1gev_750_efid_S3[d][0][2]/(mom*mom) +fid_1gev_750_efid_S3[d][0][3]/(mom*mom*mom);
 	    parsec3_h[d]= fid_1gev_750_efid_S3[d][1][0]+fid_1gev_750_efid_S3[d][1][1]/mom +fid_1gev_750_efid_S3[d][1][2]/(mom*mom) +fid_1gev_750_efid_S3[d][1][3]/(mom*mom*mom);
 	    status=status && !(theta>parsec3_l[d] && theta<parsec3_h[d]);
-
 	  }
 
 	}
@@ -866,17 +807,11 @@ Bool_t Fiducial::EFiducialCut(double beam_en, TVector3 momentum) {
 	    status=status && !(theta>parsec5_l[d] && theta<parsec5_h[d]);
 
 	  }
-
 	}
-
-      }
-
+      } 
     }
-
-    return status;
-
-  }
-
+  }  
+   
   // -------------------------------------------------------------------------------------------------
 
   // 2GeV fiducials

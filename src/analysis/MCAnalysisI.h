@@ -27,7 +27,7 @@ namespace e4nu {
  
     bool LoadData( const std::string file ) ; 
     unsigned int GetNEvents( void ) const ;
-    e4nu::EventI * GetValidEvent( const unsigned int event_id ) ;
+    EventI * GetValidEvent( const unsigned int event_id ) ;
     void SmearParticles( MCEvent * event ) ;
     bool Finalise( const std::string out_file ) ;
 

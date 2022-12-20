@@ -56,12 +56,24 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   // Check run is correct
   double EBeam = GetConfiguredEBeam() ; 
-  if ( in_mom.E() != EBeam ) return nullptr ;  
-  if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) return nullptr ; 
+  if ( in_mom.E() != EBeam ) {
+    std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
+    delete event ;
+    exit(11); 
+  }
+
+  if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) {
+    std::cout << "Target is " << event -> GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
+    delete event ;
+    exit(11); 
+  }
 
   // Check weight is physical
   double wght = event->GetWeight() ; 
-  if ( wght < 0 || wght > 10 ) return nullptr ; 
+  if ( wght < 0 || wght > 10 || wght == 0 ) {
+    delete event ;
+    return nullptr ; 
+  }
 
   // Apply smaring to particles
   if( ApplyReso() ) {
@@ -88,7 +100,10 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   // Apply Fiducial volume cuts
   if( ApplyFiducial() ) {
-    if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) return nullptr ; 
+    if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) {
+      delete event;
+      return nullptr ; 
+    }
     ++fNEventsAfterFiducial ;
   }
 
@@ -100,11 +115,17 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 	if( it->first == conf::kPdgElectron ) {
 	  // Apply acceptance for electron
 	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], out_mom ) ; 
-	  if( fabs( acc_wght ) != acc_wght ) return nullptr ; 
+	  if( fabs( acc_wght ) != acc_wght ) {
+	    delete event ; 
+	    return nullptr ; 
+	  }
 	} else { 
 	  for( unsigned int i = 0 ; i < it->second ; ++i ) {
 	    if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
-	    if( fabs( acc_wght) != acc_wght ) return nullptr ;
+	    if( fabs( acc_wght) != acc_wght ) {
+	      delete event ; 
+	      return nullptr ; 
+	    }
 	  }
 	}
       }

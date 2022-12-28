@@ -11,6 +11,7 @@
 #include "utils/DetectorUtils.h"
 #include "conf/FiducialCutI.h"
 #include "conf/AccpetanceMapsI.h"
+#include "conf/AnalysisCutsI.h"
 
 using namespace e4nu ; 
 
@@ -83,6 +84,16 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Get Topology Definition
   std::map<int,unsigned int> Topology = GetTopology(); 
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
+
+  // Remove particles bellow threshold
+  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
+    std::vector<TLorentzVector> visible_part ; 
+    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
+      // Only store particles above threshold
+      if( part_map[it->first][i].P() > conf::GetMinMomentumCut( it->first, EBeam ) ) visible_part.push_back( part_map[it->first][i] ) ; 
+    }
+    part_map[it->first] = visible_part ; 
+  }
 
   // Signal event
   bool is_signal = false ; 

@@ -100,9 +100,34 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   // Apply Fiducial volume cuts
   if( ApplyFiducial() ) {
-    if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) {
-      delete event;
-      return nullptr ; 
+    for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
+	if( it->first == conf::kPdgElectron ) {
+	  if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) {
+	    delete event;
+	    return nullptr ; 
+	  }
+	} else if ( it->first == conf::kPdgProton ) { 
+	  for( unsigned int i = 0; i < part_map[it->first].size() ; ++i ) {
+	    if( ! kFiducialCut -> PFiducialCut( EBeam, part_map[it->first][i].Vect() ) ) {
+	      delete event;
+	      return nullptr ;
+	    }
+	  }
+	} else if ( it->first == conf::kPdgPiP ) {
+          for( unsigned int i = 0; i < part_map[it->first].size() ; ++i ) {
+            if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 1 ) ) {
+              delete event;
+              return nullptr ;
+            }
+          }
+	} else if ( it->first == conf::kPdgPhoton ) {
+          for( unsigned int i = 0; i < part_map[it->first].size() ; ++i ) {
+            if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 0 ) ) {
+              delete event;
+              return nullptr ;
+            }
+	  }
+	}
     }
     ++fNEventsAfterFiducial ;
   }

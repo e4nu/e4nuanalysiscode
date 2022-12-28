@@ -31,12 +31,13 @@ namespace e4nu {
     static const double kPionRes = 0.007 ; 
 
     // Particle charge
+    static const int kElectronCharge = -1 ; 
     static const int kProtonCharge = 1 ;
     static const int kPiPCharge = 1 ;
     static const int kPiMCharge = - 1 ; 
-    static const int kNetronCharge = 0 ; 
-    static const int kPhotonCharge = 0 ; 
     static const int kPi0Charge = 0 ;
+    static const int kNeutronCharge = 0 ; 
+    static const int kPhotonCharge = 0 ; 
   }
 }
 #endif 

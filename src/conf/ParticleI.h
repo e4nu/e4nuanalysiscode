@@ -16,7 +16,7 @@ namespace e4nu {
     static const int kPdgPi0 = 111 ; 
     static const int kPdgElectron = 11 ; 
     static const int kPdgPositron = -11 ; 
-
+    static const int kPdgPhoton = 22 ; 
     // Mass
     static const double kProtonMass = 0.9382720813 ; 
     static const double kNeutronMass = 0.939565 ; 
@@ -29,6 +29,14 @@ namespace e4nu {
     static const double kProtonRes = 0.01 ; 
     static const double kElectronRes = 0.005 ; 
     static const double kPionRes = 0.007 ; 
+
+    // Particle charge
+    static const int kProtonCharge = 1 ;
+    static const int kPiPCharge = 1 ;
+    static const int kPiMCharge = - 1 ; 
+    static const int kNetronCharge = 0 ; 
+    static const int kPhotonCharge = 0 ; 
+    static const int kPi0Charge = 0 ;
   }
 }
 #endif 

@@ -34,6 +34,8 @@ MCAnalysisI::~MCAnalysisI() {
 }
 
 bool MCAnalysisI::LoadData( void ) {
+  if( ! IsConfigured() ) return false ; 
+
   std::string file = GetInputFile() ; 
   double nevents = GetNEventsToRun() ; 
   double first_event = GetFirstEventToRun() ; 

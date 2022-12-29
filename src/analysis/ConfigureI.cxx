@@ -148,7 +148,7 @@ namespace e4nu {
 	std::cout << " ERROR : Ranges don't match !! " << std::endl;
 	kIsConfigured = false ; 
       }
-      if( kIsConfigured ) PrintConfiguration() ;
+
       if( kInputFile == "" ) {
 	std::cout << " ERROR : Input file not specified " << std::endl;
 	kIsConfigured = false ; 
@@ -161,6 +161,8 @@ namespace e4nu {
 	std::cout << " ERROR : XSec file not specified " << std::endl;
 	kIsConfigured = false ; 
       }
+
+      if( kIsConfigured ) PrintConfiguration() ;
     }
       
     void ConfigureI::PrintConfiguration(void) const { 
@@ -195,6 +197,7 @@ namespace e4nu {
 	std::cout << "Number of bins = " << kNBins[i] << std::endl;
 	std::cout << "Range = {"<<kRanges[i][0]<<","<<kRanges[i][1]<<"}\n"<<std::endl;
       }
+      std::cout << "\nXSecFile " << kXSecFile << std::endl;
       std::cout << "\nStoring output in " << kOutputFile << std::endl;
       std::cout << "Analizing " << kNEvents << " ... " <<std::endl;
       if( kFirstEvent != 0 ) std::cout << " startint from event " << kFirstEvent << std::endl;

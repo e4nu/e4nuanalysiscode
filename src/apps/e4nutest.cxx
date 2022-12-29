@@ -16,7 +16,8 @@ using namespace e4nu;
 int main( void ) {
   std::cout << "Test ongoing..." << std::endl;
   E4NuAnalysis * analysis = new E4NuAnalysis("/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/ConfFiles/example_configuration.txt") ;
-
+  if( ! analysis ) return 0 ; 
+  
   if( ! analysis -> LoadData() ) return 0 ;  
 
   analysis -> Analyse() ; 

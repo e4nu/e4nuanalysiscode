@@ -94,6 +94,8 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     }
     part_map[it->first] = visible_part ; 
   }
+  // Store changes in event
+  event -> SetFinalParticlesKinematics( part_map ) ; 
 
   // Signal event
   bool is_signal = false ; 

@@ -280,6 +280,8 @@ bool MCAnalysisI::Finalise( void ) {
 
   // Normalize
   double domega = 0.01; // sr
+  double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.); // cm^2 to μbarn
+
   for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
     double NBins = kHistograms[j]->GetNbinsX(); 
     
@@ -292,7 +294,8 @@ bool MCAnalysisI::Finalise( void ) {
       kHistograms[j]->SetBinContent(k,newcontent);
       kHistograms[j]->SetBinError(k,newerror);
     }
-    kHistograms[j]->Scale(1./(GetNEventsToRun()*domega));
+
+    kHistograms[j]->Scale( ConversionFactorCm2ToMicroBarn/(GetNEventsToRun()*domega) );
   }
 
   std::cout << " Total Number of Events Processed = " << fEventsBeforeCuts << std::endl;

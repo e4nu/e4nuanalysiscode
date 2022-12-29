@@ -291,23 +291,26 @@ void MCAnalysisI::Initialize() {
   std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>( new TFile( ( GetXSecFile() ).c_str(),"READ") );
   if( !xsec_file ) {
     std::cout << " ERROR: Xsec file does not exist: " << GetXSecFile() << std::endl;
-    //    return false ; 
+    kIsConfigured = false ; 
+    return ; 
   }
   
   TDirectoryFile * xsec_dir = (TDirectoryFile *) xsec_file -> Get(target_tag.c_str());
   if( !xsec_dir ) {
     std::cout << " ERROR: Xsec dir does not exist: " << target_tag << std::endl;
-    //return false ; 
+    kIsConfigured = false ; 
+    return ; 
   }
     
   TGraph * gxsec  = (TGraph*) xsec_dir  -> Get("tot_em");
   if( !gxsec ) {
     std::cout << " ERROR: Cannot create graph for " << "tot_em" << std::endl;
-    //return false ; 
+    kIsConfigured = false; 
+    return ; 
   }
 
   fXSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
-  std::cout<< " XSec = " << fXSec << std::endl;
+
   xsec_file->Close();
 
 }
@@ -334,7 +337,7 @@ bool MCAnalysisI::Finalise( void ) {
       kHistograms[j]->SetBinError(k,newerror);
     }
 
-    kHistograms[j]->Scale( fXSec * ConversionFactorCm2ToMicroBarn / ( GetNEventsToRun() * domega ) );
+    kHistograms[j]->Scale( fXSec * ConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / ( GetNEventsToRun() * domega ) );
   }
 
   std::cout << " Total Number of Events Processed = " << fEventsBeforeCuts << std::endl;

@@ -24,9 +24,9 @@ Toplogy 		11:1,2212:1,211:0,-211:0,111:0
 MaxBackgroundMultiplicity 4
 
 #histogram definition
-
 RangeList 0:2,0:2,0:2,0:2,0:2,0:2,0:180,0:2
 ObservableList ECal,EFMom,RecoQ2,RecoW,QELRecoEnu,DeltaPT,DeltaAlphaT,DeltaPhiT
 NBinsList 150,80,80,80,80,80,80,80
 
-OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output
+InputFile /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master.root
+OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output_test

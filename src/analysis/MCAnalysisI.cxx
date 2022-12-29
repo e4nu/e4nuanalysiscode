@@ -172,7 +172,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       }
     }
     wght *= acc_wght ;
-    std::cout << " IS SIGNAL"<<std::endl;
   } else { 
     // BACKGROUND 
     ++fNBkgEvents ;

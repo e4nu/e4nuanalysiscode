@@ -95,6 +95,10 @@ namespace e4nu {
 
       bool kIsDataLoaded = false ;
       bool kIsConfigured = true ; 
+
+      // Background definition
+      std::map<int,std::vector<e4nu::EventI*>> fBkg;
+
     };
   }
 }

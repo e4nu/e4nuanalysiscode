@@ -328,7 +328,7 @@ bool MCAnalysisI::Finalise( void ) {
       kHistograms[j]->SetBinError(k,newerror);
     }
 
-    kHistograms[j]->Scale( ConversionFactorCm2ToMicroBarn/(GetNEventsToRun()*domega) );
+    kHistograms[j]->Scale( XSec * ConversionFactorCm2ToMicroBarn / ( GetNEventsToRun()*domega ) );
   }
 
   std::cout << " Total Number of Events Processed = " << fEventsBeforeCuts << std::endl;

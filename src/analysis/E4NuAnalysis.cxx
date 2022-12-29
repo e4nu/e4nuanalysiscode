@@ -140,7 +140,7 @@ bool E4NuAnalysis::Finalise( const std::string out_file ) {
 }
 
 void E4NuAnalysis::Initialize(void) {
-  kOutFile = std::unique_ptr<TFile>( new TFile( "/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output.root","RECREATE") );
+  kOutFile = std::unique_ptr<TFile>( new TFile( (GetOutputFile()+".root").c_str(),"RECREATE") );
  
   for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
     kHistograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), GetNBins()[i], GetRange()[i][0], GetRange()[i][1] ) ) ; 

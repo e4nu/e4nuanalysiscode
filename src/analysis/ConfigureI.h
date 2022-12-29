@@ -57,6 +57,7 @@ namespace e4nu {
       std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }
       std::vector<unsigned int> GetNBins(void) const { return kNBins ; }
       std::vector<std::vector<double>> GetRange(void) const { return kRanges ; } 
+      std::string GetOutputFile(void) const { return kOutputFile ; }
 
       virtual ~ConfigureI();
       
@@ -92,7 +93,7 @@ namespace e4nu {
       std::vector< std::string > kObservables ;
       std::vector< unsigned int > kNBins ;
       std::vector<std::vector<double>> kRanges ; 
-
+      std::string kOutputFile = "";
       // Topology
       std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity
       unsigned int kMaxBkgMult = 2 ; 

@@ -39,6 +39,7 @@ namespace e4nu {
       if( file.is_open() ) { 
 	while ( getline (file,line) ) {
 	  if(line.find("#", 0) != std::string::npos ) continue;
+	  if(line == "" ) continue;
 	  std::istringstream line_as_stream( line ) ; 
 	  line_as_stream >> parameter_name >> parameter_value ; 
 	  param.push_back(parameter_name) ; 
@@ -105,22 +106,21 @@ namespace e4nu {
 		kTopology_map.insert( pair ) ;
 	      }
 	  }
-	} else if ( param[i] == "MaxBackgroundMultiplicity" ) kMaxBkgMult = (unsigned int) std::stoi( value[i] ) ;
-	else if ( param[i] == "ObservableList" ) {
+	} else if ( param[i] == "MaxBackgroundMultiplicity" ) { kMaxBkgMult = (unsigned int) std::stoi( value[i] ) ;
+	} else if ( param[i] == "ObservableList" ) {
 	  std::string obs ; 
 	  std::istringstream obs_list( value[i] ) ; 
 	  while( getline( obs_list, obs, ',' ) ) { 
 	    kObservables.push_back(obs) ; 
 	  }
-	}
-	else if ( param[i] == "NBinsList" ) {
+	} else if ( param[i] == "NBinsList" ) {
 	  std::string nb ;
 	  std::istringstream nbs_list( value[i] ) ;
           while( getline( nbs_list, nb, ',' ) ) {
             kNBins.push_back((unsigned int) std::stoi(nb)) ;
+	    std::cout << nb << std::endl;
           }
-	}
-	else if ( param[i] == "RangeList" ) {
+	} else if ( param[i] == "RangeList" ) {
 	  std::istringstream ranges_list( value[i] ) ;
 	  std::string m_element,range ;
 	  while ( getline( ranges_list, range, ',' ) ) {
@@ -136,13 +136,20 @@ namespace e4nu {
 	    }
 	    kRanges.push_back( myrange ) ; 
 	  }
+	} else if ( param[i] == "OutputFile" ) {
+	  kOutputFile = value[i] ;
 	}
       }
+
       if( kObservables.size() != kRanges.size() || kObservables.size() != kNBins.size() || kRanges.size()!= kNBins.size() ){
-	std::cout << " Ranges don't match !! " << std::endl;
+	std::cout << " ERROR : Ranges don't match !! " << std::endl;
 	kIsConfigured = false ; 
       }
       if( kIsConfigured ) PrintConfiguration() ;
+      if( kOutputFile == "" ) {
+	std::cout << " ERROR : Output file not specified " << std::endl;
+	kIsConfigured = false ; 
+      }
     }
       
     void ConfigureI::PrintConfiguration(void) const { 
@@ -177,6 +184,7 @@ namespace e4nu {
 	std::cout << "Number of bins = " << kNBins[i] << std::endl;
 	std::cout << "Range = {"<<kRanges[i][0]<<","<<kRanges[i][1]<<"}\n"<<std::endl;
       }
+      std::cout << "\nStoring output in " << kOutputFile << std::endl;
       std::cout << "Analizing " << kNEvents << " ... " <<std::endl;
       if( kFirstEvent != 0 ) std::cout << " startint from event " << kFirstEvent << std::endl;
       std::cout << "*********************************************************************" << std::endl;

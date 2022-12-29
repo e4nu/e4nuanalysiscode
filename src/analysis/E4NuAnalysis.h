@@ -43,6 +43,10 @@ namespace e4nu {
     long int fNEventsAfterThetaCut = 0 ;     
 
     void Initialize(void) ; 
+
+    // Histograms
+    std::unique_ptr<TFile> kOutFile ;
+    std::vector<TH1D*> kHistograms ; 
   };
 }
 

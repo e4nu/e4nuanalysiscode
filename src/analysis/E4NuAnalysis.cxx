@@ -21,9 +21,7 @@ E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : ConfigureI(conf_file
 E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : ConfigureI(EBeam, TargetPdg), MCAnalysisI(), CLASAnalysisI() { this->Initialize();}
 
 E4NuAnalysis::~E4NuAnalysis() {
-  //delete hist;
-  //  koutfile->Close();
-  // delete koutfile ; 
+
 }
 
 bool E4NuAnalysis::LoadData( const std::string file ) {
@@ -45,13 +43,6 @@ unsigned int E4NuAnalysis::GetNEvents( void ) const {
 }
 
 bool E4NuAnalysis::Analyse(void) {
-  std::unique_ptr<TFile> koutfile = std::unique_ptr<TFile>( new TFile( "/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output.root","RECREATE") );
- 
-  std::vector<TH1D*> histograms ; 
-  for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
-    histograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), GetNBins()[i], GetRange()[i][0], GetRange()[i][1] ) ) ; 
-  }
-
   unsigned int total_nevents = GetNEvents() ;
   // Loop over events
   for( unsigned int i = 0 ; i < total_nevents ; ++i ) {
@@ -105,17 +96,11 @@ bool E4NuAnalysis::Analyse(void) {
       ++fNEventsAfterPhiCut ; 
     }
     
-    for( unsigned int j = 0 ; j < histograms.size() ; ++j ) {
-      histograms[j]-> Fill( event-> GetObservable( GetObservablesTag()[j] ) , event->GetWeight() ) ;
+    for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
+      kHistograms[j]-> Fill( event-> GetObservable( GetObservablesTag()[j] ) , event->GetWeight() ) ;
     }
   }
   
-  for( unsigned int i = 0 ; i < histograms.size() ; ++i ) {
-    histograms[i]->Write() ; 
-  }
-
-  koutfile->Close() ;
-
   return true ; 
 }
 
@@ -136,7 +121,12 @@ bool E4NuAnalysis::SubstractBackground(void) {
 
 
 bool E4NuAnalysis::Finalise( const std::string out_file ) {
-  //if( IsData() )
+  for( unsigned int i = 0 ; i < kHistograms.size() ; ++i ) {
+    kHistograms[i]->Write() ; 
+  }
+
+  kOutFile->Close() ;
+
   bool is_ok = MCAnalysisI::Finalise( out_file ) ; 
 
   std::cout << " Events after electron momentum cut = " << fNEventsAfterEMomCut << std::endl;
@@ -150,6 +140,10 @@ bool E4NuAnalysis::Finalise( const std::string out_file ) {
 }
 
 void E4NuAnalysis::Initialize(void) {
+  kOutFile = std::unique_ptr<TFile>( new TFile( "/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output.root","RECREATE") );
+ 
+  for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
+    kHistograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), GetNBins()[i], GetRange()[i][0], GetRange()[i][1] ) ) ; 
+  }
 
-  //  hist->SetDirectory(0);
 }

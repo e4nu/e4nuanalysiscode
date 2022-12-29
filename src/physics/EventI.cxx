@@ -41,7 +41,41 @@ void EventI::SetFinalParticle( const int pdg, const double E, const double px, c
   }
 }
 
-double EventI::GetObservable( std::string observable ) {
+unsigned int EventI::GetEventMultiplicity( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) {
+  // return number of charged particles in event
+  unsigned int multiplicity = 0 ; 
+  for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
+    multiplicity += std::abs( utils::GetParticleCharge( it->first ) ); 
+  }
+  return multiplicity ; 
+}
+
+unsigned int EventI::GetNVisibleParticles( const std::map<int,std::vector<TLorentzVector>> hadronic_system, const int pdg ) {
+  unsigned int N_particle = 0 ;
+  for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
+    if ( it->first == pdg ) ++N_particle ; 
+  }
+  return N_particle ;
+}
+
+unsigned int EventI::GetNSignalParticles( const std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) {
+  unsigned int N_signal = 0 ;
+  for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
+    if ( topology.find(it->first) != topology.end() ) ++N_signal ;
+  }
+  return N_signal ;
+}
+
+int EventI::GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) {
+  // return number of charged particles in event
+  unsigned int charge = 0 ; 
+  for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
+    charge += utils::GetParticleCharge( it->first ) ; 
+  }
+  return charge ; 
+}
+
+double EventI::GetObservable( const std::string observable ) {
   unsigned int target = fTargetPdg ; 
   double EBeam = GetInLepton4Mom().E();
   TLorentzVector ef4mom = GetOutLepton4Mom() ;

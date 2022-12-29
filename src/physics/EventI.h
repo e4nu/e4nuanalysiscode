@@ -46,7 +46,12 @@ namespace e4nu {
     void SetInLeptonKinematics( const TLorentzVector & tlvect ) { fInLepton = tlvect ; }
     void SetFinalParticlesKinematics( const std::map<int,std::vector<TLorentzVector>> part_map ) { fFinalParticles = part_map ; }
 
-    double GetObservable( std::string observable ) ;
+    double GetObservable( const std::string observable ) ;
+
+    unsigned int GetEventMultiplicity( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) ;
+    unsigned int GetNVisibleParticles( const std::map<int,std::vector<TLorentzVector>> hadronic_system, const int pdg ) ;
+    unsigned int GetNSignalParticles( const std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) ;
+    int GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) ;
 
   protected : 
     EventI(); 

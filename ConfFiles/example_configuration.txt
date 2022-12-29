@@ -30,3 +30,4 @@ NBinsList 150,80,80,80,80,80,80,80
 
 InputFile /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master.root
 OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output_test
+XSecFile /pnfs/genie/persistent/users/apapadop/mySplines/master_Q2_0_4/v3_00_06_WithSuSav2/xsec_hydrogen1_spline_EMPlusMEC_G18_10a_02_11a_Q2_0_4.root

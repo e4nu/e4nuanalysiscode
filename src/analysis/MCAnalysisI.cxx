@@ -279,6 +279,37 @@ void MCAnalysisI::Initialize() {
     }
   }  
 
+  // Get xsec from cross section spline
+  std::string target_tag = "" ;
+  if( GetConfiguredTarget() == conf::kPdgC12 ) target_tag = "e-_C12" ; 
+  if( GetConfiguredTarget() == conf::kPdgHe3 ) target_tag = "e-_He3" ;
+  if( GetConfiguredTarget() == conf::kPdgHe4 ) target_tag = "e-_He4" ;
+  if( GetConfiguredTarget() == conf::kPdgFe56 ) target_tag = "e-_Fe56" ;
+  if( GetConfiguredTarget() == conf::kPdgO16 ) target_tag = "e-_O16" ;
+  target_tag = "e-_H1" ; 
+
+  std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>( new TFile( ( GetXSecFile() ).c_str(),"READ") );
+  if( !xsec_file ) {
+    std::cout << " ERROR: Xsec file does not exist: " << GetXSecFile() << std::endl;
+    //    return false ; 
+  }
+  
+  TDirectoryFile * xsec_dir = (TDirectoryFile *) xsec_file -> Get(target_tag.c_str());
+  if( !xsec_dir ) {
+    std::cout << " ERROR: Xsec dir does not exist: " << target_tag << std::endl;
+    //return false ; 
+  }
+    
+  TGraph * gxsec  = (TGraph*) xsec_dir  -> Get("tot_em");
+  if( !gxsec ) {
+    std::cout << " ERROR: Cannot create graph for " << "tot_em" << std::endl;
+    //return false ; 
+  }
+
+  fXSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
+  std::cout<< " XSec = " << fXSec << std::endl;
+  xsec_file->Close();
+
 }
 
 bool MCAnalysisI::Finalise( void ) {
@@ -287,35 +318,8 @@ bool MCAnalysisI::Finalise( void ) {
   double domega = 0.01; // sr
   double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.); // cm^2 to μbarn
 
-  // Get xsec from cross section spline
-  std::string target_tag = "" ;
-  if( GetConfiguredTarget() == conf::kPdgC12 ) target_tag = "e_C12" ; 
-  if( GetConfiguredTarget() == conf::kPdgHe3 ) target_tag = "e_He3" ;
-  if( GetConfiguredTarget() == conf::kPdgHe4 ) target_tag = "e_He4" ;
-  if( GetConfiguredTarget() == conf::kPdgFe56 ) target_tag = "e_Fe56" ;
-  if( GetConfiguredTarget() == conf::kPdgO16 ) target_tag = "e_O16" ;
-
-  std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>( new TFile( ( GetXSecFile() ).c_str(),"READ") );
-  if( !xsec_file ) {
-    std::cout << " ERROR: Xsec file does not exist: " << GetXSecFile() << std::endl;
-    return false ; 
-  }
-  
-  TDirectoryFile * xsec_dir = (TDirectoryFile *) xsec_file -> Get(target_tag.c_str());
-  if( !xsec_dir ) {
-    std::cout << " ERROR: Xsec dir does not exist: " << target_tag << std::endl;
-    return false ; 
-  }
-    
-  TGraph * gxsec  = (TGraph*) xsec_dir  -> Get("tot_em");
-  if( !gxsec ) {
-    std::cout << " ERROR: Cannot create graph for " << "tot_em" << std::endl;
-    return false ; 
-  }
-
-  double XSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
-
-  xsec_file -> Close() ; 
+  // HARCODED FOR NOW
+  fXSec = 1.28967e+09 ; //  https://github.com/adishka/e4nu/blob/2362c75f98a79914a26288842962a37c87a3674f/NormalizedRates/OverlayPlots_NormalizedRates.cpp#L323 
 
   for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
     double NBins = kHistograms[j]->GetNbinsX(); 
@@ -330,12 +334,13 @@ bool MCAnalysisI::Finalise( void ) {
       kHistograms[j]->SetBinError(k,newerror);
     }
 
-    kHistograms[j]->Scale( XSec * ConversionFactorCm2ToMicroBarn / ( GetNEventsToRun()*domega ) );
+    kHistograms[j]->Scale( fXSec * ConversionFactorCm2ToMicroBarn / ( GetNEventsToRun() * domega ) );
   }
 
   std::cout << " Total Number of Events Processed = " << fEventsBeforeCuts << std::endl;
   std::cout << " Total number of true signal events = " << fNEventsAfterTopologyCut << std::endl;
   std::cout << " Events after fiducial cuts = " << fNEventsAfterFiducial << std::endl;
 
+  //  xsec_file -> Close() ; 
   return true ; 
 }

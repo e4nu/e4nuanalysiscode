@@ -48,6 +48,8 @@ namespace e4nu {
     long int fNEventsAfterTopologyCut = 0 ; 
     long int fNBkgEvents = 0 ; 
 
+    double fXSec = 0 ; 
+
     void Initialize(void) ;
     void Clear(void); 
 

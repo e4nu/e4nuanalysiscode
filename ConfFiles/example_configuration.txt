@@ -15,7 +15,7 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			100000000
+NEvents			1000000
 FirstEvent		0
 
 #Topology definition
@@ -28,3 +28,5 @@ MaxBackgroundMultiplicity 4
 RangeList 0:2,0:2,0:2,0:2,0:2,0:2,0:180,0:2
 ObservableList ECal,EFMom,RecoQ2,RecoW,QELRecoEnu,DeltaPT,DeltaAlphaT,DeltaPhiT
 NBinsList 150,80,80,80,80,80,80,80
+
+OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output

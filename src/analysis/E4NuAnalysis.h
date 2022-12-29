@@ -23,10 +23,13 @@ namespace e4nu {
     virtual ~E4NuAnalysis();
 
     bool LoadData( const std::string file ) ; 
-    bool Finalise( const std::string out_file ) ;
 
     // Main Analyse function
     bool Analyse(void) ; 
+
+    bool SubstractBackground(void) ; 
+
+    bool Finalise( const std::string out_file ) ;
 
   private : 
     e4nu::EventI * GetValidEvent( const unsigned int event_id ) ;

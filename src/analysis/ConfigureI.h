@@ -51,7 +51,8 @@ namespace e4nu {
       unsigned int GetNEventsToRun(void) const { return kNEvents ; } 
       unsigned int GetFirstEventToRun(void) const { return kFirstEvent ; } 
       unsigned int GetMaxBkgMult(void) const { return kMaxBkgMult ; }
-
+      unsigned int GetMinBkgMult(void) const { return kMult_signal ; }
+      
       // Histogram Configurables
       std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }
       std::vector<unsigned int> GetNBins(void) const { return kNBins ; }
@@ -83,6 +84,9 @@ namespace e4nu {
       // Number of events
       unsigned int kNEvents = 0;
       unsigned int kFirstEvent = 0 ; 
+      
+      // Store "multiplicty" of singal events 
+      unsigned int kMult_signal = 0;
 
       // Histogram configurables
       std::vector< std::string > kObservables ;

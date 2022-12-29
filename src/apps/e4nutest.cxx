@@ -21,6 +21,7 @@ int main( void ) {
   if( ! analysis -> LoadData( file_name.c_str() ) ) return 0 ;  
 
   analysis -> Analyse() ; 
+  analysis -> SubstractBackground() ; 
   analysis -> Finalise("/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output.txt") ; 
 
   delete analysis ;

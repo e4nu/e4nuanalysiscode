@@ -145,11 +145,10 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     ++fNEventsAfterFiducial ;
   }
 
-  // Store "multiplicty" of singal events 
-  static unsigned int mult_signal = event->GetNTopologyParticles( Topology ) ; 
-
   // Apply acceptance to signal
   if( is_signal ) {
+    // Store "multiplicty" of singal events 
+    kMult_signal = event->GetNTopologyParticles( Topology ) ; 
     ++fNEventsAfterTopologyCut ;
     if( ApplyAccWeights() ) {
       for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
@@ -179,7 +178,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     unsigned int mult_bkg = event->GetNSignalParticles( part_map, Topology ) ; 
     // Only store background events with multiplicity > mult_signal
     // Also ignore background events above the maximum multiplicity
-    if( mult_bkg > mult_signal && mult_bkg <= GetMaxBkgMult() ) {
+    if( mult_bkg > kMult_signal && mult_bkg <= GetMaxBkgMult() ) {
       if( fBkg.find(mult_bkg) == fBkg.end() ) {
 	std::vector<EventI*> temp ( 1, event ) ;
 	fBkg[mult_bkg] = temp ; 

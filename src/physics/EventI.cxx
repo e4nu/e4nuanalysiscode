@@ -59,9 +59,19 @@ unsigned int EventI::GetNVisibleParticles( const std::map<int,std::vector<TLoren
 }
 
 unsigned int EventI::GetNSignalParticles( const std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) {
-  unsigned int N_signal = 0 ;
+  unsigned int N_signal = 0 ; 
   for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
-    if ( topology.find(it->first) != topology.end() ) ++N_signal ;
+    if( it->first == conf::kPdgElectron ) continue ; 
+    if( topology.find(it->first) != topology.end() ) ++N_signal ; 
+  }
+  return N_signal ;
+}
+
+unsigned int EventI::GetNTopologyParticles( const std::map<int,unsigned int> topology ) {
+  unsigned int N_signal = 0 ;
+  for( auto it = topology.begin() ; it != topology.end() ; ++it ) {
+    if( it->first == conf::kPdgElectron ) continue ; 
+    if ( it -> second != 0 ) ++N_signal ; 
   }
   return N_signal ;
 }

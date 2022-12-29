@@ -170,23 +170,28 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       }
     }
     wght *= acc_wght ;
+    std::cout << " IS SIGNAL"<<std::endl;
   } else { 
     // BACKGROUND 
     ++fNBkgEvents ;
     // Get Number of signal particles, "multiplicity"
     unsigned int mult_bkg = event->GetNSignalParticles( part_map, Topology ) ; 
     // Only store background events with multiplicity > mult_signal
-    // Also ignore background events above the maximum multiplicity 
-    if( mult_bkg > mult_signal && mult_bkg < GetMaxBkgMult() ) {
+    // Also ignore background events above the maximum multiplicity
+    if( mult_bkg > mult_signal && mult_bkg <= GetMaxBkgMult() ) {
       if( fBkg.find(mult_bkg) == fBkg.end() ) {
 	std::vector<EventI*> temp ( 1, event ) ;
 	fBkg[mult_bkg] = temp ; 
       } else { 
 	fBkg[mult_bkg].push_back( event ) ; 
       }
+    } else { 
+      delete event ; 
+      return nullptr; 
     }
     wght = 0 ; 
   }
+
   // Apply Mottxsec weight
   //
   if( IsElectronData() ) {

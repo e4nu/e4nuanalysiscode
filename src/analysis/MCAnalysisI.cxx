@@ -4,10 +4,13 @@
  * 
  */
 #include <iostream>
+#include "TFile.h"
+#include "TDirectoryFile.h"
 #include "analysis/MCAnalysisI.h"
 #include "utils/ParticleUtils.h"
 #include "utils/KinematicUtils.h"
 #include "conf/ParticleI.h"
+#include "conf/TargetI.h"
 #include "utils/DetectorUtils.h"
 #include "conf/FiducialCutI.h"
 #include "conf/AccpetanceMapsI.h"
@@ -281,6 +284,36 @@ bool MCAnalysisI::Finalise( void ) {
   // Normalize
   double domega = 0.01; // sr
   double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.); // cm^2 to μbarn
+
+  // Get xsec from cross section spline
+  std::string target_tag = "" ;
+  if( GetConfiguredTarget() == conf::kPdgC12 ) target_tag = "e_C12" ; 
+  if( GetConfiguredTarget() == conf::kPdgHe3 ) target_tag = "e_He3" ;
+  if( GetConfiguredTarget() == conf::kPdgHe4 ) target_tag = "e_He4" ;
+  if( GetConfiguredTarget() == conf::kPdgFe56 ) target_tag = "e_Fe56" ;
+  if( GetConfiguredTarget() == conf::kPdgO16 ) target_tag = "e_O16" ;
+
+  std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>( new TFile( ( GetXSecFile() ).c_str(),"READ") );
+  if( !xsec_file ) {
+    std::cout << " ERROR: Xsec file does not exist: " << GetXSecFile() << std::endl;
+    return false ; 
+  }
+  
+  TDirectoryFile * xsec_dir = (TDirectoryFile *) xsec_file -> Get(target_tag.c_str());
+  if( !xsec_dir ) {
+    std::cout << " ERROR: Xsec dir does not exist: " << target_tag << std::endl;
+    return false ; 
+  }
+    
+  TGraph * gxsec  = (TGraph*) xsec_dir  -> Get("tot_em");
+  if( !gxsec ) {
+    std::cout << " ERROR: Cannot create graph for " << "tot_em" << std::endl;
+    return false ; 
+  }
+
+  double XSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
+
+  xsec_file -> Close() ; 
 
   for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
     double NBins = kHistograms[j]->GetNbinsX(); 

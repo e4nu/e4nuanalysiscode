@@ -139,6 +139,8 @@ namespace e4nu {
 	  kOutputFile = value[i] ;
 	} else if ( param[i] == "InputFile" ) {
 	  kInputFile = value[i] ;
+	} else if ( param[i] == "XSecFile" ) {
+	  kXSecFile = value[i] ;
 	}
       }
 
@@ -153,6 +155,10 @@ namespace e4nu {
       }
       if( kOutputFile == "" ) {
 	std::cout << " ERROR : Output file not specified " << std::endl;
+	kIsConfigured = false ; 
+      }
+      if( kXSecFile == "" && !IsData() ) {
+	std::cout << " ERROR : XSec file not specified " << std::endl;
 	kIsConfigured = false ; 
       }
     }

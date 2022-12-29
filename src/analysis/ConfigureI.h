@@ -62,6 +62,7 @@ namespace e4nu {
 
       std::string GetOutputFile(void) const { return kOutputFile ; }
       std::string GetInputFile(void) const { return kInputFile ; }
+      std::string GetXSecFile(void) const { return kXSecFile ; }
 
       virtual ~ConfigureI();
       
@@ -99,6 +100,8 @@ namespace e4nu {
       std::vector<std::vector<double>> kRanges ; 
       std::string kInputFile ;
       std::string kOutputFile = "";
+      std::string kXSecFile = "";
+
       // Topology
       std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity
       unsigned int kMaxBkgMult = 2 ; 

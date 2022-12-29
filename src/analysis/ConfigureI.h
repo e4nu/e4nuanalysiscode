@@ -50,7 +50,7 @@ namespace e4nu {
 
       unsigned int GetNEventsToRun(void) const { return kNEvents ; } 
       unsigned int GetFirstEventToRun(void) const { return kFirstEvent ; } 
-      unsigned int GetBkgMult(void) const { return kMaxBkgMult ; }
+      unsigned int GetMaxBkgMult(void) const { return kMaxBkgMult ; }
 
       // Histogram Configurables
       std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }

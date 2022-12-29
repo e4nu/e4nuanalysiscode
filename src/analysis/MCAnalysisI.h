@@ -36,6 +36,7 @@ namespace e4nu {
     e4nu::EventI * GetEvent( const unsigned int event_id ) ;
 
     MCEventHolder * fData = nullptr ; 
+    std::map<int,std::vector<e4nu::EventI*>> fBkg;
 
     std::map<int,std::unique_ptr<TFile>> kAcceptanceMap;
     std::map<int,std::unique_ptr<TH3D>> kAccMap ; 

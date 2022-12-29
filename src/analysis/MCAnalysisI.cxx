@@ -30,7 +30,8 @@ MCAnalysisI::~MCAnalysisI() {
   kGenMap.clear();
 }
 
-bool MCAnalysisI::LoadData( const std::string file ) {
+bool MCAnalysisI::LoadData( void ) {
+  std::string file = GetInputFile() ; 
   double nevents = GetNEventsToRun() ; 
   double first_event = GetFirstEventToRun() ; 
 
@@ -275,7 +276,24 @@ void MCAnalysisI::Initialize() {
 
 }
 
-bool MCAnalysisI::Finalise( const std::string out_file ) {
+bool MCAnalysisI::Finalise( void ) {
+
+  // Normalize
+  double domega = 0.01; // sr
+  for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
+    double NBins = kHistograms[j]->GetNbinsX(); 
+    
+    for (int k = 1; k <= NBins; k++) { 
+      double content = kHistograms[j]->GetBinContent(k);
+      double error = kHistograms[j]->GetBinError(k);
+      double width = kHistograms[j]->GetBinWidth(k);
+      double newcontent = content / width;
+      double newerror = error / width;
+      kHistograms[j]->SetBinContent(k,newcontent);
+      kHistograms[j]->SetBinError(k,newerror);
+    }
+    kHistograms[j]->Scale(1./(GetNEventsToRun()*domega));
+  }
 
   std::cout << " Total Number of Events Processed = " << fEventsBeforeCuts << std::endl;
   std::cout << " Total number of true signal events = " << fNEventsAfterTopologyCut << std::endl;

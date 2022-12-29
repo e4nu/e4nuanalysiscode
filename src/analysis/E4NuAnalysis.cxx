@@ -24,13 +24,13 @@ E4NuAnalysis::~E4NuAnalysis() {
 
 }
 
-bool E4NuAnalysis::LoadData( const std::string file ) {
+bool E4NuAnalysis::LoadData(void) {
   if( !IsConfigured() ) {
     std::cout << "ERROR: Configuration failed" <<std::endl;
     return false ;
   }
 //  if( IsData() ) return CLASAnalysisI::LoadData(file);
-  return MCAnalysisI::LoadData(file) ; 
+  return MCAnalysisI::LoadData() ; 
 }
 
 EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
@@ -120,14 +120,17 @@ bool E4NuAnalysis::SubstractBackground(void) {
 } 
 
 
-bool E4NuAnalysis::Finalise( const std::string out_file ) {
+bool E4NuAnalysis::Finalise( ) {
+  
+  bool is_ok = MCAnalysisI::Finalise() ; 
+
+  // Store histograms 
   for( unsigned int i = 0 ; i < kHistograms.size() ; ++i ) {
     kHistograms[i]->Write() ; 
   }
 
   kOutFile->Close() ;
-
-  bool is_ok = MCAnalysisI::Finalise( out_file ) ; 
+  std::string out_file = GetOutputFile()+".txt";
 
   std::cout << " Events after electron momentum cut = " << fNEventsAfterEMomCut << std::endl;
   if( ApplyQ2Cut() ) std::cout << " Events after Q2 cut = " << fNEventsAfterQ2Cut << std::endl;

@@ -8,6 +8,8 @@
 
 #include <vector>
 #include <map>
+#include "TH1D.h"
+#include "TFile.h"
 #include "physics/EventI.h"
 
 namespace e4nu { 
@@ -57,7 +59,9 @@ namespace e4nu {
       std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }
       std::vector<unsigned int> GetNBins(void) const { return kNBins ; }
       std::vector<std::vector<double>> GetRange(void) const { return kRanges ; } 
+
       std::string GetOutputFile(void) const { return kOutputFile ; }
+      std::string GetInputFile(void) const { return kInputFile ; }
 
       virtual ~ConfigureI();
       
@@ -93,6 +97,7 @@ namespace e4nu {
       std::vector< std::string > kObservables ;
       std::vector< unsigned int > kNBins ;
       std::vector<std::vector<double>> kRanges ; 
+      std::string kInputFile ;
       std::string kOutputFile = "";
       // Topology
       std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity
@@ -103,6 +108,11 @@ namespace e4nu {
 
       // Background definition
       std::map<int,std::vector<e4nu::EventI*>> fBkg;
+
+
+      // Histograms
+      std::unique_ptr<TFile> kOutFile ;
+      std::vector<TH1D*> kHistograms ; 
 
     };
   }

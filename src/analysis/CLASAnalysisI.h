@@ -17,8 +17,7 @@ namespace e4nu {
   public : 
     CLASAnalysisI(); 
 
-    bool LoadData( const std::string file ) ; 
-    bool LoadData( const std::string file, const unsigned int nmax ) ; 
+    bool LoadData(void) ; 
     e4nu::EventI * GetEvent( const unsigned int event_id ) ;
     unsigned int GetNEvents( void ) const ;
 

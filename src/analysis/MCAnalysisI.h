@@ -25,11 +25,11 @@ namespace e4nu {
  
     MCAnalysisI();
  
-    bool LoadData( const std::string file ) ; 
+    bool LoadData(void);
     unsigned int GetNEvents( void ) const ;
     EventI * GetValidEvent( const unsigned int event_id ) ;
     void SmearParticles( MCEvent * event ) ;
-    bool Finalise( const std::string out_file ) ;
+    bool Finalise( ) ; 
 
   private :
 

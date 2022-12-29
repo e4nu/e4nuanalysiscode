@@ -10,8 +10,6 @@
 #include "analysis/MCAnalysisI.h"
 #include "analysis/CLASAnalysisI.h"
 
-#include "TH1D.h"
-
 using namespace e4nu::conf ; 
 
 namespace e4nu {
@@ -22,14 +20,14 @@ namespace e4nu {
     E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) ;
     virtual ~E4NuAnalysis();
 
-    bool LoadData( const std::string file ) ; 
+    bool LoadData(void) ; 
 
     // Main Analyse function
     bool Analyse(void) ; 
 
     bool SubstractBackground(void) ; 
 
-    bool Finalise( const std::string out_file ) ;
+    bool Finalise(void);
 
   private : 
     e4nu::EventI * GetValidEvent( const unsigned int event_id ) ;
@@ -44,9 +42,6 @@ namespace e4nu {
 
     void Initialize(void) ; 
 
-    // Histograms
-    std::unique_ptr<TFile> kOutFile ;
-    std::vector<TH1D*> kHistograms ; 
   };
 }
 

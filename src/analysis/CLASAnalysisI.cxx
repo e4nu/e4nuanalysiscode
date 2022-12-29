@@ -14,12 +14,7 @@ CLASAnalysisI::CLASAnalysisI() {
 
 CLASAnalysisI::~CLASAnalysisI() {;}
 
-bool CLASAnalysisI::LoadData( const std::string file ) {
-
-  return kIsDataLoaded ; 
-}
-
-bool CLASAnalysisI::LoadData( const std::string file, const unsigned int nmax ) {
+bool CLASAnalysisI::LoadData( void ) {
 
   return kIsDataLoaded ; 
 }

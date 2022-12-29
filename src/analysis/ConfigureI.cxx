@@ -118,7 +118,6 @@ namespace e4nu {
 	  std::istringstream nbs_list( value[i] ) ;
           while( getline( nbs_list, nb, ',' ) ) {
             kNBins.push_back((unsigned int) std::stoi(nb)) ;
-	    std::cout << nb << std::endl;
           }
 	} else if ( param[i] == "RangeList" ) {
 	  std::istringstream ranges_list( value[i] ) ;
@@ -138,6 +137,8 @@ namespace e4nu {
 	  }
 	} else if ( param[i] == "OutputFile" ) {
 	  kOutputFile = value[i] ;
+	} else if ( param[i] == "InputFile" ) {
+	  kInputFile = value[i] ;
 	}
       }
 
@@ -146,6 +147,10 @@ namespace e4nu {
 	kIsConfigured = false ; 
       }
       if( kIsConfigured ) PrintConfiguration() ;
+      if( kInputFile == "" ) {
+	std::cout << " ERROR : Input file not specified " << std::endl;
+	kIsConfigured = false ; 
+      }
       if( kOutputFile == "" ) {
 	std::cout << " ERROR : Output file not specified " << std::endl;
 	kIsConfigured = false ; 

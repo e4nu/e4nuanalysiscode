@@ -22,6 +22,7 @@ namespace e4nu {
     bool IsQEL(void) const { return fIsQEL; }
     bool IsRES(void) const { return fIsRES; } 
     bool IsMEC(void) const { return fIsMEC; }
+    bool IsDIS(void) const { return fIsDIS; }
     
     double GetTrueQ2s(void) const { return fTrueQ2s ; }
     double GetTrueWs(void) const { return fTrueWs; }
@@ -33,7 +34,9 @@ namespace e4nu {
     double GetTruey(void) const { return fTruey ; }
 
     TLorentzVector GetVertex(void) const { return fVertex ; }
-
+    
+    bool GetAccWght(void) const { return fAccWght ; }
+    void SetAccWght( bool wght ) { fAccWght = wght ; }
     friend class MCEventHolder ; 
 
   protected : 
@@ -80,6 +83,7 @@ namespace e4nu {
     double fTruex ; 
     double fTruey ; 
 
+    bool fAccWght = 1 ;
     TLorentzVector fVertex ; 
 
   };

@@ -1,5 +1,3 @@
-/**                                                                                                                                                                                                                   * This file contains utils specific for particles                                                                                                                                                                    * \author Julia Tena Vidal \at Tel Aviv University                                                                                                                                                                   * \date October 2022                                                                                                                                                                                                 **/
-
 #ifndef _KINEMATIC_UTILS_H_
 #define _KINEMATIC_UTILS_H_
 

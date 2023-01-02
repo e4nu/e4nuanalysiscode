@@ -293,7 +293,6 @@ void MCAnalysisI::Initialize() {
   if( GetConfiguredTarget() == conf::kPdgHe4 ) target_tag = "e-_He4" ;
   if( GetConfiguredTarget() == conf::kPdgFe56 ) target_tag = "e-_Fe56" ;
   if( GetConfiguredTarget() == conf::kPdgO16 ) target_tag = "e-_O16" ;
-  target_tag = "e-_H1" ; 
 
   std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>( new TFile( ( GetXSecFile() ).c_str(),"READ") );
   if( !xsec_file ) {
@@ -327,9 +326,6 @@ bool MCAnalysisI::Finalise( void ) {
   // Normalize
   double domega = 0.01; // sr
   double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.); // cm^2 to μbarn
-
-  // HARCODED FOR NOW
-  fXSec = 1.28967e+09 ; //  https://github.com/adishka/e4nu/blob/2362c75f98a79914a26288842962a37c87a3674f/NormalizedRates/OverlayPlots_NormalizedRates.cpp#L323 
 
   for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
     double NBins = kHistograms[j]->GetNbinsX(); 

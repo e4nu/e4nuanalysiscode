@@ -33,6 +33,17 @@ namespace e4nu {
     double GetTruex(void) const { return fTruex ; }
     double GetTruey(void) const { return fTruey ; }
 
+    unsigned int GetTrueNProtons(void) const { return fNP ; }
+    unsigned int GetTrueNNeutrons(void) const { return fNN ; }
+    unsigned int GetTrueNPiP(void) const { return fNPiP ; }
+    unsigned int GetTrueNPiM(void) const { return fNPiM ; }
+    unsigned int GetTrueNPi0(void) const { return fNPi0 ; }
+    unsigned int GetTrueNKP(void) const { return fNKP ; }
+    unsigned int GetTrueNKM(void) const { return fNKM ; }
+    unsigned int GetTrueNK0(void) const { return fNK0 ; }
+    unsigned int GetTrueNEM(void) const { return fNEM ; }
+    unsigned int GetTrueNOther(void) const { return fNOther ; } 
+
     TLorentzVector GetVertex(void) const { return fVertex ; }
     
     bool GetAccWght(void) const { return fAccWght ; }

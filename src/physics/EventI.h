@@ -10,6 +10,7 @@
 #include <iostream>
 #include <map> 
 #include "TLorentzVector.h"
+#include "conf/ParticleI.h"
 
 namespace e4nu {
   class EventI {
@@ -27,16 +28,15 @@ namespace e4nu {
     int GetInLeptPdg(void) const { return fInLeptPdg ; }
     int GetOutLeptPdg(void) const { return fOutLeptPdg ; }
 
-    unsigned int GetNProtons(void) const { return fNP ; }
-    unsigned int GetNNeutrons(void) const { return fNN ; }
-    unsigned int GetNPiP(void) const { return fNPiP ; }
-    unsigned int GetNPiM(void) const { return fNPiM ; }
-    unsigned int GetNPi0(void) const { return fNPi0 ; }
-    unsigned int GetNKP(void) const { return fNKP ; }
-    unsigned int GetNKM(void) const { return fNKM ; }
-    unsigned int GetNK0(void) const { return fNK0 ; }
-    unsigned int GetNEM(void) const { return fNEM ; }
-    unsigned int GetNOther(void) const { return fNOther ; } 
+    unsigned int GetRecoNProtons(void) { return fFinalParticles[conf::kPdgProton].size() ; }
+    unsigned int GetRecoNNeutrons(void) { return fFinalParticles[conf::kPdgNeutron].size() ; }
+    unsigned int GetRecoNPiP(void) { return fFinalParticles[conf::kPdgPiP].size() ; }
+    unsigned int GetRecoNPiM(void) { return fFinalParticles[conf::kPdgPiM].size() ; }
+    unsigned int GetRecoNPi0(void) { return fFinalParticles[conf::kPdgPi0].size() ; }
+    unsigned int GetRecoNKP(void) { return fFinalParticles[conf::kPdgKP].size() ; }
+    unsigned int GetRecoNKM(void) { return fFinalParticles[conf::kPdgKM].size() ; }
+    unsigned int GetRecoNK0(void) { return fFinalParticles[conf::kPdgK0].size() ; }
+    unsigned int GetRecoNEM(void) { return fFinalParticles[conf::kPdgPhoton].size() ; }
 
     void SetWeight(const double w) { fWeight = w ; }
     void AddWeight(const double w) { fWeight *= w ; }
@@ -87,6 +87,8 @@ namespace e4nu {
     TLorentzVector fInLepton ; 
     TLorentzVector fOutLepton ; 
     std::map<int,std::vector<TLorentzVector>> fFinalParticles ; 
+
+    unsigned int fNP, fNN, fNPiP, fNPiM, fNPi0, fNKP, fNKM, fNK0, fNEM, fNOther ; 
     
   private :
 
@@ -96,8 +98,6 @@ namespace e4nu {
     int fInLeptPdg ; 
     int fOutLeptPdg ; 
     bool fIsBkg = false ; 
-
-    unsigned int fNP, fNN, fNPiP, fNPiM, fNPi0, fNKP, fNKM, fNK0, fNEM, fNOther ; 
 
     void Initialize(void) ;
     void Clear(void); 

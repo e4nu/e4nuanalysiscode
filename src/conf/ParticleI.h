@@ -14,6 +14,9 @@ namespace e4nu {
     static const int kPdgPiP = 211 ; 
     static const int kPdgPiM = -211 ; 
     static const int kPdgPi0 = 111 ; 
+    static const int kPdgKP = 321 ;
+    static const int kPdgKM = -321 ;
+    static const int kPdgK0 = 311 ;
     static const int kPdgElectron = 11 ; 
     static const int kPdgPositron = -11 ; 
     static const int kPdgPhoton = 22 ; 

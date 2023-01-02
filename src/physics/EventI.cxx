@@ -122,8 +122,6 @@ double EventI::GetObservable( const std::string observable ) {
   } else if ( observable == "DeltaPhiT" ) {
     if ( event_wproton == false ) return 0; 
     return utils::DeltaPhiT( ef4mom.Vect(), p4mom.Vect() ) ;
-  } else if ( observable == "EFMom" ) { 
-    return ef4mom.P() ;
   } else if ( observable == "LeadingPMom" ) {
     return p4mom.Mag() ; 
   }

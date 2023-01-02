@@ -126,6 +126,9 @@ bool E4NuAnalysis::Finalise( ) {
 
   // Store histograms 
   for( unsigned int i = 0 ; i < kHistograms.size() ; ++i ) {
+    kHistograms[i]->GetXaxis()->SetTitle(GetObservablesTag()[i].c_str()) ; 
+    kHistograms[i]->GetYaxis()->SetTitle(("d#sigma/d"+GetObservablesTag()[i]).c_str()) ; 
+    kHistograms[i]->SetStats(false); 
     kHistograms[i]->Write() ; 
   }
   kAnalysisTree->Write() ; 

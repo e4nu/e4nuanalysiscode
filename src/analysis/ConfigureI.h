@@ -10,6 +10,7 @@
 #include <map>
 #include "TH1D.h"
 #include "TFile.h"
+#include "TTree.h"
 #include "physics/EventI.h"
 
 namespace e4nu { 
@@ -113,8 +114,9 @@ namespace e4nu {
       std::map<int,std::vector<e4nu::EventI*>> fBkg;
 
 
-      // Histograms
+      // Information for output file
       std::unique_ptr<TFile> kOutFile ;
+      std::unique_ptr<TTree> kAnalysisTree ; 
       std::vector<TH1D*> kHistograms ; 
 
     };

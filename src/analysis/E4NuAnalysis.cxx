@@ -108,14 +108,14 @@ bool E4NuAnalysis::SubstractBackground(void) {
   unsigned int max_mult = GetMaxBkgMult(); 
   unsigned int min_mult = GetMinBkgMult(); 
   std::map<int,unsigned int> Topology = GetTopology();
-  
+  /*  
   unsigned int m = max_mult ;
   while ( m >= min_mult ) {
     if( fBkg.find(m) != fBkg.end() ) {
       std::cout<< " Number of events with multiplicity " << m << " = " << fBkg[m].size() <<std::endl; 
     }
     --m ; 
-  }
+    }*/
   
 } 
 
@@ -128,7 +128,7 @@ bool E4NuAnalysis::Finalise( ) {
   for( unsigned int i = 0 ; i < kHistograms.size() ; ++i ) {
     kHistograms[i]->Write() ; 
   }
-
+  kAnalysisTree->Write() ; 
   kOutFile->Close() ;
   std::string out_file = GetOutputFile()+".txt";
 

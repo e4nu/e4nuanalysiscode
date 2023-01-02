@@ -22,6 +22,7 @@ MCAnalysisI::MCAnalysisI() {
   kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
+  kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCTree","GENIE Tree") ) ; 
   this->Initialize() ;
 }
 
@@ -177,11 +178,15 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       }
     }
     wght *= acc_wght ;
+    event->SetAccWght(acc_wght);
   } else { 
     // BACKGROUND 
+    event->SetIsBkg(true); 
     ++fNBkgEvents ;
+    
     // Get Number of signal particles, "multiplicity"
     unsigned int mult_bkg = event->GetNSignalParticles( part_map, Topology ) ; 
+    
     // Only store background events with multiplicity > mult_signal
     // Also ignore background events above the maximum multiplicity
     if( mult_bkg > kMult_signal && mult_bkg <= GetMaxBkgMult() ) {
@@ -206,6 +211,8 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   // Set Final weight
   event->SetWeight( wght ) ; 
+
+  StoreTree(event) ;
 
   return event ; 
 }
@@ -345,5 +352,223 @@ bool MCAnalysisI::Finalise( void ) {
   std::cout << " Events after fiducial cuts = " << fNEventsAfterFiducial << std::endl;
 
   //  xsec_file -> Close() ; 
+  return true ; 
+}
+
+bool MCAnalysisI::StoreTree(MCEvent * event){
+  static int n = true ;
+
+  int ID = event->GetEventID() ; 
+  int TargetPdg = event->GetTargetPdg() ;
+  int InLeptonPdg = event->GetInLeptPdg() ; 
+  int OutLeptonPdg = event->GetOutLeptPdg() ; 
+  double TotWeight = event->GetWeight() ; 
+  double AccWght = event->GetAccWght() ; 
+  double BeamE = event->GetInLepton4Mom().E() ; 
+
+  bool CC = event->IsCC();
+  bool NC = event->IsNC();
+  bool EM = event->IsEM();
+  bool QEL = event->IsQEL();
+  bool RES = event->IsRES();
+  bool MEC = event->IsMEC();
+  bool DIS = event->IsDIS();
+
+  unsigned int NProtons = event->GetNProtons() ; 
+  unsigned int NNeutrons = event->GetNNeutrons();
+  unsigned int NPiP = event->GetNPiP();
+  unsigned int NPiM = event->GetNPiM();
+  unsigned int NPi0 = event->GetNPi0();
+  unsigned int NKP = event->GetNKP();
+  unsigned int NKM = event->GetNKM(); 
+  unsigned int NK0 = event->GetNK0();
+  unsigned int NEM = event->GetNEM();
+  unsigned int NOther = event->GetNOther();
+
+  double TrueQ2s = event->GetTrueQ2s();
+  double TrueWs = event->GetTrueWs();
+  double Truexs = event->GetTruexs();
+  double Trueys = event->GetTrueys();
+  double TrueQ2 = event->GetTrueQ2();
+  double TrueW = event->GetTrueW();
+  double Truex = event->GetTruex();
+  double Truey = event->GetTruey();
+
+  TLorentzVector out_mom = event->GetOutLepton4Mom();
+  double Efl = out_mom.E();
+  double pfl = out_mom.P();
+  double pflx = out_mom.Px();
+  double pfly = out_mom.Py();
+  double pflz = out_mom.Pz();
+  double pfl_theta = out_mom.Theta();
+  double pfl_phi = out_mom.Phi();
+
+  double RecoQELEnu = utils::GetQELRecoEnu( out_mom, TargetPdg ) ; 
+  double RecoEnergyTransfer = utils::GetEnergyTransfer( out_mom, TargetPdg ) ; 
+  double Recoq3 = utils::GetRecoq3( out_mom, BeamE ).Mag() ; 
+  double RecoQ2 = utils::GetRecoQ2( out_mom, BeamE ) ; 
+  double RecoXBJK = utils::GetRecoXBJK( out_mom, BeamE ) ; 
+  double RecoW = utils::GetRecoW(out_mom, BeamE ) ;
+  double MottXSecScale = utils::GetXSecScale( out_mom, BeamE, IsElectronData() ) ; 
+
+  std::map<int,unsigned int> topology = GetTopology() ;
+  static bool topology_has_protons = false ; 
+  if( topology.count(conf::kPdgProton) != 0 ) {
+    if( topology[conf::kPdgProton] != 0 ) topology_has_protons = true ; 
+  }
+  static bool topology_has_pip = false ; 
+  if( topology.count(conf::kPdgPiP) != 0 ) {
+    if( topology[conf::kPdgPiP] != 0 ) topology_has_pip = true ; 
+  }
+
+  static bool topology_has_pim = false ; 
+  if( topology.count(conf::kPdgPiM) != 0 ) {
+    if( topology[conf::kPdgPiM] != 0 ) topology_has_pim = true ; 
+  }
+
+  unsigned int TopMult = event->GetNTopologyParticles( topology );
+  std::map<int,std::vector<TLorentzVector>> hadron_map = event->GetFinalParticles4Mom();
+  TLorentzVector p_max(0,0,0,0) ;
+  if( topology_has_protons ) {
+    double max_mom = 0 ; 
+    for( unsigned int i = 0 ; i < hadron_map[conf::kPdgProton].size() ; ++i ) {
+      if( hadron_map[conf::kPdgProton][i].P() > max_mom ) {
+	max_mom = hadron_map[conf::kPdgProton][i].P() ; 
+	p_max = hadron_map[conf::kPdgProton][i] ; 
+      }
+    }
+  }
+  double proton_mom = p_max.P() ; 
+  double proton_momx = p_max.Px() ; 
+  double proton_momy = p_max.Py() ; 
+  double proton_momz = p_max.Pz() ; 
+  double proton_theta = p_max.Theta() ; 
+  double proton_phi = p_max.Phi() ; 
+  double ECal = utils::GetECal( out_mom, p_max, TargetPdg ) ; 
+  double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
+  double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
+  double DeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ; 
+
+  TLorentzVector pip_max(0,0,0,0) ;
+  if( topology_has_pip ) {
+    double max_mom = 0 ; 
+    for( unsigned int i = 0 ; i < hadron_map[conf::kPdgPiP].size() ; ++i ) {
+      if( hadron_map[conf::kPdgPiP][i].P() > max_mom ) {
+	max_mom = hadron_map[conf::kPdgPiP][i].P() ; 
+	pip_max = hadron_map[conf::kPdgPiP][i] ; 
+      }
+    }
+  }
+  double pip_mom = pip_max.P() ;
+  double pip_momx = pip_max.Px() ;
+  double pip_momy = pip_max.Py() ;
+  double pip_momz = pip_max.Pz() ;
+  double pip_theta = pip_max.Theta() ;
+  double pip_phi = pip_max.Phi() ;
+
+  TLorentzVector pim_max(0,0,0,0) ;
+  if( topology_has_pim ) {
+    double max_mom = 0 ; 
+    for( unsigned int i = 0 ; i < hadron_map[conf::kPdgPiM].size() ; ++i ) {
+      if( hadron_map[conf::kPdgPiM][i].P() > max_mom ) {
+	max_mom = hadron_map[conf::kPdgPiM][i].P() ; 
+	pim_max = hadron_map[conf::kPdgPiM][i] ; 
+      }
+    }
+  }
+  double pim_mom = pim_max.P() ;
+  double pim_momx = pim_max.Px() ;
+  double pim_momy = pim_max.Py() ;
+  double pim_momz = pim_max.Pz() ;
+  double pim_theta = pim_max.Theta() ;
+  double pim_phi = pim_max.Phi() ;
+
+  bool IsBkg = event->IsBkg() ; 
+   
+  if( n == true ) {
+    kAnalysisTree -> Branch( "ID", &ID, "ID/I"); 
+    kAnalysisTree -> Branch( "TargetPdg", &TargetPdg, "TargetPdg/I");
+    kAnalysisTree -> Branch( "InLeptonPdg", &InLeptonPdg, "InLeptonPdg/I");
+    kAnalysisTree -> Branch( "OutLeptonPdg", &OutLeptonPdg, "OutLeptonPdg/I");
+    kAnalysisTree -> Branch( "BeamE", &BeamE, "BeamE/D");
+    kAnalysisTree -> Branch( "CC", &CC, "CC/B");
+    kAnalysisTree -> Branch( "NC", &NC, "NC/B");
+    kAnalysisTree -> Branch( "EM", &EM, "EC/B");
+    kAnalysisTree -> Branch( "QEL", &QEL, "QEL/B");
+    kAnalysisTree -> Branch( "RES", &RES, "RES/B");
+    kAnalysisTree -> Branch( "MEC", &MEC, "MEC/B");
+    kAnalysisTree -> Branch( "DIS", &DIS, "DIS/B");
+    kAnalysisTree -> Branch( "TrueQ2s", &TrueQ2s, "TrueQ2s/D");
+    kAnalysisTree -> Branch( "TrueWs", &TrueWs, "TrueWs/D");
+    kAnalysisTree -> Branch( "Truexs", &Truexs, "Truexs/D");
+    kAnalysisTree -> Branch( "Trueys", &Trueys, "Trueys/D");
+    kAnalysisTree -> Branch( "TrueQ2", &TrueQ2, "TrueQ2/D");
+    kAnalysisTree -> Branch( "TrueW", &TrueW, "TrueW/D");
+    kAnalysisTree -> Branch( "Truex", &Truex, "Truex/D");
+    kAnalysisTree -> Branch( "Truey", &Truey, "Truey/D");
+    kAnalysisTree -> Branch( "TotWeight", &TotWeight, "TotWeight/D");
+    kAnalysisTree -> Branch( "AccWght", &AccWght, "AccWght/D");
+    kAnalysisTree -> Branch( "MottXSecScale", &MottXSecScale, "MottXSecScale/D");
+    kAnalysisTree -> Branch( "IsBkg", &IsBkg, "IsBkg/B");
+    kAnalysisTree -> Branch( "NProtons", &NProtons, "NProtons/I");
+    kAnalysisTree -> Branch( "NNeutrons", &NNeutrons, "NNeutrons/I");
+    kAnalysisTree -> Branch( "NPiP", &NPiP, "NPiP/I");
+    kAnalysisTree -> Branch( "NPiM", &NPiM, "NPiM/I");
+    kAnalysisTree -> Branch( "NPi0", &NPi0, "NPi0/I");
+    kAnalysisTree -> Branch( "NKP", &NKP, "NKP/I");
+    kAnalysisTree -> Branch( "NKM", &NKM, "NKM/I");
+    kAnalysisTree -> Branch( "NK0", &NK0, "NK0/I");
+    kAnalysisTree -> Branch( "NEM", &NEM, "NEM/I");
+    kAnalysisTree -> Branch( "NOther", &NOther, "NOther/I"); 
+    kAnalysisTree -> Branch( "TopMult", &TopMult, "TopMult/I");
+    kAnalysisTree -> Branch( "Efl", &Efl, "Efl/D");
+    kAnalysisTree -> Branch( "pfl", &pfl, "pfl/D");
+    kAnalysisTree -> Branch( "pflx", &pflx, "pflx/D");
+    kAnalysisTree -> Branch( "pfly", &pfly, "pfly/D");
+    kAnalysisTree -> Branch( "pflz", &pflz, "pflz/D");
+    kAnalysisTree -> Branch( "pfl_theta", &pfl_theta, "pfl_theta/D");
+    kAnalysisTree -> Branch( "pfl_phi", &pfl_phi, "pfl_phi/D");
+    kAnalysisTree -> Branch( "RecoQELEnu", &RecoQELEnu, "RecoQELEnu/D");
+    kAnalysisTree -> Branch( "RecoEnergyTransfer", &RecoEnergyTransfer, "RecoEnergyTransfer/D");
+    kAnalysisTree -> Branch( "Recoq3", &Recoq3, "Recoq3/D");
+    kAnalysisTree -> Branch( "RecoQ2", &RecoQ2, "RecoQ2/D");
+    kAnalysisTree -> Branch( "RecoW", &RecoW, "RecoW/D");
+    kAnalysisTree -> Branch( "RecoXBJK", &RecoXBJK, "RecoXBJK/D");
+
+    if( topology_has_protons ) {
+      kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");
+      kAnalysisTree -> Branch( "proton_momx", &proton_momx, "proton_momx/D");
+      kAnalysisTree -> Branch( "proton_momy", &proton_momy, "proton_momy/D");
+      kAnalysisTree -> Branch( "proton_momz", &proton_momz, "proton_momz/D");
+      kAnalysisTree -> Branch( "proton_theta", &proton_theta, "proton_theta/D");
+      kAnalysisTree -> Branch( "proton_phi", &proton_phi, "proton_phi/D");
+      kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
+      kAnalysisTree -> Branch( "AlphaT", &AlphaT, "AlphaT/D");
+      kAnalysisTree -> Branch( "DeltaPT", &DeltaPT, "DeltaPT/D");
+      kAnalysisTree -> Branch( "DeltaPhiT", &DeltaPhiT, "DeltaPhiT/D");
+    }
+
+    if( topology_has_pip ) {
+      kAnalysisTree -> Branch( "pip_mom", &pip_mom, "pip_mom/D");
+      kAnalysisTree -> Branch( "pip_momx", &pip_momx, "pip_momx/D");
+      kAnalysisTree -> Branch( "pip_momy", &pip_momy, "pip_momy/D");
+      kAnalysisTree -> Branch( "pip_momz", &pip_momz, "pip_momz/D");
+      kAnalysisTree -> Branch( "pip_theta", &pip_theta, "pip_theta/D");
+      kAnalysisTree -> Branch( "pip_phi", &pip_phi, "pip_phi/D");
+    }
+
+    if( topology_has_pim ) {
+      kAnalysisTree -> Branch( "pim_mom", &pim_mom, "pim_mom/D");
+      kAnalysisTree -> Branch( "pim_momx", &pim_momx, "pim_momx/D");
+      kAnalysisTree -> Branch( "pim_momy", &pim_momy, "pim_momy/D");
+      kAnalysisTree -> Branch( "pim_momz", &pim_momz, "pim_momz/D");
+      kAnalysisTree -> Branch( "pim_theta", &pim_theta, "pim_theta/D");
+      kAnalysisTree -> Branch( "pim_phi", &pim_phi, "pim_phi/D");
+    }
+
+    n = false ; 
+  }
+  
+  kAnalysisTree -> Fill();
   return true ; 
 }

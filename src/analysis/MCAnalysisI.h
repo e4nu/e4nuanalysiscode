@@ -29,7 +29,8 @@ namespace e4nu {
     unsigned int GetNEvents( void ) const ;
     EventI * GetValidEvent( const unsigned int event_id ) ;
     void SmearParticles( MCEvent * event ) ;
-    bool Finalise( ) ; 
+    bool Finalise(void) ; 
+    bool StoreTree(MCEvent * event);
 
   private :
 

@@ -1,21 +1,21 @@
 #Analysis Cuts
 UseAllSectors	true
-ApplyFiducial 	true
+ApplyFiducial 	false
 ApplyAccWeights false
 ApplyReso	true
-ApplyPhiOpeningAngle	true
-UsePhiThetaBand		true
-ApplyThetaSlice		true
-ApplyGoodSectorPhiSlice	true
-ApplyOutMomCut		true
-ApplyQ2Cut		true
-ApplyWCut		true
+ApplyPhiOpeningAngle	false
+UsePhiThetaBand		false
+ApplyThetaSlice		false
+ApplyGoodSectorPhiSlice	false
+ApplyOutMomCut		false
+ApplyQ2Cut		false
+ApplyWCut		false
 offset			0
 
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			1000000
+NEvents			100000
 FirstEvent		0
 
 #Topology definition
@@ -24,10 +24,10 @@ Toplogy 		11:1,2212:1,211:0,-211:0,111:0
 MaxBackgroundMultiplicity 4
 
 #histogram definition
-RangeList 0:2,0:2,0:2,0:2,0:2,0:2,0:180,0:2
-ObservableList ECal,EFMom,RecoQ2,RecoW,QELRecoEnu,DeltaPT,DeltaAlphaT,DeltaPhiT
-NBinsList 150,80,80,80,80,80,80,80
+RangeList 0:2,0:2,0:2,0:2,0:2,0:180,0:2
+ObservableList ECal,RecoQ2,RecoW,QELRecoEnu,DeltaPT,DeltaAlphaT,DeltaPhiT
+NBinsList 150,80,80,80,80,80,80
 
 InputFile /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master.root
 OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output_test
-XSecFile /pnfs/genie/persistent/users/apapadop/mySplines/master_Q2_0_4/v3_00_06_WithSuSav2/xsec_hydrogen1_spline_EMPlusMEC_G18_10a_02_11a_Q2_0_4.root
+XSecFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/ConfFiles/xsec_carbon12_spline_GEM21_11b_00_000_Q2_0_1.root

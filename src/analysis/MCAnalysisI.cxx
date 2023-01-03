@@ -408,7 +408,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   double pflz = out_mom.Pz();
   double pfl_theta = out_mom.Theta();
   double pfl_phi = out_mom.Phi();
-  unsigned int sector = utils::GetSector( pfl_phi ) ; 
+  unsigned int ElectronSector = utils::GetSector( pfl_phi ) ; 
 
   double RecoQELEnu = utils::GetQELRecoEnu( out_mom, TargetPdg ) ; 
   double RecoEnergyTransfer = utils::GetEnergyTransfer( out_mom, TargetPdg ) ; 
@@ -550,7 +550,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
     kAnalysisTree -> Branch( "RecoQ2", &RecoQ2, "RecoQ2/D");
     kAnalysisTree -> Branch( "RecoW", &RecoW, "RecoW/D");
     kAnalysisTree -> Branch( "RecoXBJK", &RecoXBJK, "RecoXBJK/D");
-    kAnalysisTree -> Branch( "sector", &sector, "sector/I");
+    kAnalysisTree -> Branch( "ElectronSector", &ElectronSector, "ElectronSector/I");
     if( topology_has_protons ) {
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");
       kAnalysisTree -> Branch( "proton_momx", &proton_momx, "proton_momx/D");

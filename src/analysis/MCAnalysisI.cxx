@@ -92,7 +92,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   std::map<int,unsigned int> Topology = GetTopology(); 
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
 
-  // Remove particles bellow threshold
+  // Remove particles below threshold
   for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
     std::vector<TLorentzVector> visible_part ; 
     for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
@@ -149,8 +149,8 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 	  }
 	}
     }
-    ++fNEventsAfterFiducial ;
   }
+  ++fNEventsAfterFiducial ;
 
   // Apply acceptance to signal
   if( is_signal ) {

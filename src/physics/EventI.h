@@ -38,11 +38,11 @@ namespace e4nu {
     unsigned int GetRecoNK0(void) { return fFinalParticles[conf::kPdgK0].size() ; }
     unsigned int GetRecoNEM(void) { return fFinalParticles[conf::kPdgPhoton].size() ; }
 
-    void SetWeight(const double w) { fWeight = w ; }
-    void AddWeight(const double w) { fWeight *= w ; }
-    double GetWeight(void) const { return fWeight ; }
+    double GetTotalWeight(void) const { return fWeight * fAccWght * fMottXSecWght ; }
+    double GetEventWeight(void) const { return fWeight ; }
+    void SetEventWeight( double wght ) { fWeight = wght ; }
     double IsBkg(void) const{ return fIsBkg ; }
-    double SetIsBkg( const bool bkg ) { return fIsBkg = bkg ; }
+    void SetIsBkg( const bool bkg ) { fWeight = 0 ; fIsBkg = bkg ; }
 
     void SetOutLeptonKinematics( const TLorentzVector & tlvect ) { fOutLepton = tlvect ; }
     void SetInLeptonKinematics( const TLorentzVector & tlvect ) { fInLepton = tlvect ; }
@@ -89,14 +89,18 @@ namespace e4nu {
     std::map<int,std::vector<TLorentzVector>> fFinalParticles ; 
 
     unsigned int fNP, fNN, fNPiP, fNPiM, fNPi0, fNKP, fNKM, fNK0, fNEM, fNOther ; 
+
+    double fWeight = 1. ; 
+    double fAccWght = 1. ;
+    double fMottXSecWght = 1. ;
     
   private :
 
-    double fWeight ; 
     unsigned int fEventID ; 
     int fTargetPdg ; 
     int fInLeptPdg ; 
     int fOutLeptPdg ; 
+
     bool fIsBkg = false ; 
 
     void Initialize(void) ;

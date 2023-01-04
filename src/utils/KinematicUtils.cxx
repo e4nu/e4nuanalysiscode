@@ -63,7 +63,7 @@ double utils::GetRecoW( const TLorentzVector & leptonf, const double EBeam ) {
   return TMath::Sqrt( W2 ) ; 
 } 
 
-double utils::GetXSecScale( const TLorentzVector & leptonf, const double EBeam, const bool is_electron ) {
+double utils::GetMottXSecScale( const TLorentzVector & leptonf, const double EBeam, const bool is_electron ) {
   double scale = 1 ; 
   if ( is_electron ) {
     double reco_Q2 = utils::GetRecoQ2( leptonf, EBeam ) ;

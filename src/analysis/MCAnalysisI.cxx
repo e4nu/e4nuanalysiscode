@@ -77,7 +77,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   }
 
   // Check weight is physical
-  double wght = event->GetWeight() ; 
+  double wght = event->GetEventWeight() ; 
   if ( wght < 0 || wght > 10 || wght == 0 ) {
     delete event ;
     return nullptr ; 
@@ -177,7 +177,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 	}
       }
     }
-    wght *= acc_wght ;
     event->SetAccWght(acc_wght);
   } else { 
     // BACKGROUND 
@@ -200,17 +199,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       delete event ; 
       return nullptr; 
     }
-    wght = 0 ; 
   }
-
-  // Apply Mottxsec weight
-  //
-  if( IsElectronData() ) {
-    wght /= utils::GetXSecScale(out_mom, EBeam, true ) ; 
-  }
-
-  // Set Final weight
-  event->SetWeight( wght ) ; 
 
   StoreTree(event) ;
 
@@ -358,7 +347,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   int TargetPdg = event->GetTargetPdg() ;
   int InLeptonPdg = event->GetInLeptPdg() ; 
   int OutLeptonPdg = event->GetOutLeptPdg() ; 
-  double TotWeight = event->GetWeight() ; 
+  double TotWeight = event->GetTotalWeight() ; 
   double AccWght = event->GetAccWght() ; 
   double BeamE = event->GetInLepton4Mom().E() ; 
 
@@ -416,7 +405,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   double RecoQ2 = utils::GetRecoQ2( out_mom, BeamE ) ; 
   double RecoXBJK = utils::GetRecoXBJK( out_mom, BeamE ) ; 
   double RecoW = utils::GetRecoW(out_mom, BeamE ) ;
-  double MottXSecScale = utils::GetXSecScale( out_mom, BeamE, IsElectronData() ) ; 
+  double MottXSecScale = event->GetMottXSecWeight();
 
   std::map<int,unsigned int> topology = GetTopology() ;
   static bool topology_has_protons = false ; 

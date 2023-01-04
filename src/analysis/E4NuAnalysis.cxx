@@ -97,7 +97,7 @@ bool E4NuAnalysis::Analyse(void) {
     }
     
     for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
-      kHistograms[j]-> Fill( event-> GetObservable( GetObservablesTag()[j] ) , event->GetWeight() ) ;
+      kHistograms[j]-> Fill( event-> GetObservable( GetObservablesTag()[j] ) , event->GetTotalWeight() ) ;
     }
   }
   

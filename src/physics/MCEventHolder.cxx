@@ -87,7 +87,7 @@ EventI * MCEventHolder::GetEvent(const unsigned int event_id) {
   fEventHolderChain->GetEntry( event_id ) ; 
   
   event -> SetEventID( iev ) ;
-  event -> SetWeight( wght ) ;
+  event -> SetEventWeight( wght ) ;
   event -> SetIsEM( em ) ;   
   event -> SetIsCC( cc ) ; 
   event -> SetIsNC( nc ) ; 

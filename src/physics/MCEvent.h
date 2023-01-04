@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include "physics/EventI.h"
+#include "utils/KinematicUtils.h"
 
 namespace e4nu {
   class MCEvent : public EventI {
@@ -46,8 +47,10 @@ namespace e4nu {
 
     TLorentzVector GetVertex(void) const { return fVertex ; }
     
-    bool GetAccWght(void) const { return fAccWght ; }
-    void SetAccWght( bool wght ) { fAccWght = wght ; }
+    double GetMottXSecWeight(void) ;
+    double GetAccWght(void) const { return fAccWght ; }
+    void SetAccWght( const double wght ) { fAccWght = wght ; }
+
     friend class MCEventHolder ; 
 
   protected : 
@@ -94,7 +97,6 @@ namespace e4nu {
     double fTruex ; 
     double fTruey ; 
 
-    bool fAccWght = 1 ;
     TLorentzVector fVertex ; 
 
   };

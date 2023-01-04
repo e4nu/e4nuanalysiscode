@@ -63,3 +63,7 @@ void MCEvent::SetFinalParticle( const int pdg, const double E, const double px, 
   }
 }
 
+double MCEvent::GetMottXSecWeight(void) { 
+  fMottXSecWght = 1./utils::GetMottXSecScale( GetOutLepton4Mom(), GetInLepton4Mom().E(), fIsEM ) ; 
+  return fMottXSecWght ; 
+}

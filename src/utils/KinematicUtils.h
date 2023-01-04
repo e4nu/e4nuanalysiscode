@@ -15,7 +15,7 @@ namespace e4nu {
     double GetRecoQ2( const TLorentzVector & leptonf, const double EBeam ) ;
     double GetRecoXBJK( const TLorentzVector & leptonf, const double EBeam ) ;
     double GetRecoW( const TLorentzVector & leptonf, const double EBeam ) ;
-    double GetXSecScale( const TLorentzVector & leptonf, const double EBeam, const bool is_electron = true ) ;
+    double GetMottXSecScale( const TLorentzVector & leptonf, const double EBeam, const bool is_electron = true ) ;
     TVector3 GetPT( const TVector3 p ) ;
     double DeltaAlphaT( const TVector3 p1 , const TVector3 p2 ) ; 
     TVector3 DeltaPT( const TVector3 p1 , const TVector3 p2 ); 

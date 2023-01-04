@@ -82,7 +82,7 @@ clean: FORCE
 	cd ${E4NUANALYSIS}/src/apps && rm -f *.o *~ _* && \
 	cd ${E4NUANALYSIS}/src/physics &&  rm -f *.o *~ _* && \
 	cd ${E4NUANALYSIS}/src/analysis &&  rm -f *.o *~ _* && \
-	cd ${E4NUANALYSIS} && rm -f e4nutest && \
+	cd ${E4NUANALYSIS} && rm -f e4nuanalysis && \
 	cd ${E4NUANALYSIS}/lib && rm -f *.so &&\
 	cd ${E4NUANALYSIS}
 FORCE: 	

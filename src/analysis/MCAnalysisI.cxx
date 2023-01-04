@@ -349,6 +349,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   int OutLeptonPdg = event->GetOutLeptPdg() ; 
   double TotWeight = event->GetTotalWeight() ; 
   double AccWght = event->GetAccWght() ; 
+  double EventWght = event->GetEventWeight() ; 
   double BeamE = event->GetInLepton4Mom().E() ; 
 
   bool CC = event->IsCC();
@@ -503,6 +504,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
     kAnalysisTree -> Branch( "Truex", &Truex, "Truex/D");
     kAnalysisTree -> Branch( "Truey", &Truey, "Truey/D");
     kAnalysisTree -> Branch( "TotWeight", &TotWeight, "TotWeight/D");
+    kAnalysisTree -> Branch( "EventWght", &EventWght, "EventWght/D");
     kAnalysisTree -> Branch( "AccWght", &AccWght, "AccWght/D");
     kAnalysisTree -> Branch( "MottXSecScale", &MottXSecScale, "MottXSecScale/D");
     kAnalysisTree -> Branch( "IsBkg", &IsBkg, "IsBkg/B");

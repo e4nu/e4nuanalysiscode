@@ -88,6 +88,11 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     this -> SmearParticles( event ) ; 
   }
 
+  // Apply fiducial cut to electron
+  if( ApplyFiducial() ) {
+    if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) { delete event ; return nullptr ; } 
+  }
+
   // Get Topology Definition
   std::map<int,unsigned int> Topology = GetTopology(); 
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
@@ -97,16 +102,30 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     std::vector<TLorentzVector> visible_part ; 
     for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
       // Only store particles above threshold
-      if( part_map[it->first][i].P() > conf::GetMinMomentumCut( it->first, EBeam ) ) visible_part.push_back( part_map[it->first][i] ) ; 
+      if( part_map[it->first][i].P() < conf::GetMinMomentumCut( it->first, EBeam ) ) continue ; 
+
+      // Apply Fiducial cut
+      if( ApplyFiducial() ) {
+	if( it->first == conf::kPdgElectron ) {
+	  if (! kFiducialCut -> EFiducialCut(EBeam, part_map[it->first][i].Vect() ) ) continue ; 
+        } else if ( it->first == conf::kPdgProton ) {
+	  if( ! kFiducialCut -> PFiducialCut( EBeam, part_map[it->first][i].Vect() ) ) continue ; 
+        } else if ( it->first == conf::kPdgPiP ) {
+	  if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 1 ) ) continue ;
+	} else if ( it->first == conf::kPdgPhoton ) {
+	  if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 0 ) ) continue ; 
+	}
+      }
+      visible_part.push_back( part_map[it->first][i] ) ; 
     }
     part_map[it->first] = visible_part ; 
   }
-  // Store changes in event
+
+  // Store changes in event after fiducial and momentum cuts
   event -> SetFinalParticlesKinematics( part_map ) ; 
 
   // Signal event
   bool is_signal = false ; 
-  double acc_wght = 1 ; 
   //Topology ID
   for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) {
@@ -118,41 +137,8 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     }
   }
 
-  // Apply Fiducial volume cuts
-  if( ApplyFiducial() ) {
-    for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
-	if( it->first == conf::kPdgElectron ) {
-	  if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) {
-	    delete event;
-	    return nullptr ; 
-	  }
-	} else if ( it->first == conf::kPdgProton ) { 
-	  for( unsigned int i = 0; i < part_map[it->first].size() ; ++i ) {
-	    if( ! kFiducialCut -> PFiducialCut( EBeam, part_map[it->first][i].Vect() ) ) {
-	      delete event;
-	      return nullptr ;
-	    }
-	  }
-	} else if ( it->first == conf::kPdgPiP ) {
-          for( unsigned int i = 0; i < part_map[it->first].size() ; ++i ) {
-            if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 1 ) ) {
-              delete event;
-              return nullptr ;
-            }
-          }
-	} else if ( it->first == conf::kPdgPhoton ) {
-          for( unsigned int i = 0; i < part_map[it->first].size() ; ++i ) {
-            if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 0 ) ) {
-              delete event;
-              return nullptr ;
-            }
-	  }
-	}
-    }
-  }
-  ++fNEventsAfterFiducial ;
-
   // Apply acceptance to signal
+  double acc_wght = 1 ; 
   if( is_signal ) {
     // Store "multiplicty" of singal events 
     kMult_signal = event->GetNTopologyParticles( Topology ) ; 

@@ -15,6 +15,7 @@
 #include "conf/FiducialCutI.h"
 #include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
+#include "conf/AnalysisConstantsI.h"
 
 using namespace e4nu ; 
 
@@ -43,6 +44,7 @@ bool MCAnalysisI::LoadData( void ) {
 
   if( ! kIsDataLoaded ) { 
     fData = new MCEventHolder( file, first_event, nevents ) ;
+    kNEvents = fData->GetNEvents() ; 
     kIsDataLoaded = true ;
   }
   return kIsDataLoaded ; 
@@ -105,7 +107,17 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       // Only store particles above threshold
       if( part_map[it->first][i].P() < conf::GetMinMomentumCut( it->first, EBeam ) ) continue ; 
       
-      // Apply Fiducial cut
+      // Apply photon cuts
+      if( it->first == conf::kPdgPhoton ) {
+	  // within 40 degrees in theta and 30 degrees in phi. Electron phi has already added 30 degree and between 0 to 360
+	  double el_phi_mod = out_mom.Phi()*TMath::RadToDeg() + 30; //Add 30 degree for photon phi cut
+	  if( el_phi_mod < 0 ) el_phi_mod += 360 ; 
+	  double neut_phi_mod = part_map[it->first][i].Phi()*TMath::RadToDeg() + 30; //Add 30 degree for photon phi cut
+	  if (neut_phi_mod < 0) neut_phi_mod += 360 ; 
+	  if( (part_map[it->first][i].Vect()).Angle(out_mom.Vect())*TMath::RadToDeg() < conf::kPhotonRadCut && fabs(neut_phi_mod-el_phi_mod) < conf::kPhotonEPhiDiffCut ) continue ; 
+      }
+      
+      // Apply Fiducial cut for hadrons and photons
       if( ApplyFiducial() ) {
 	if( it->first == conf::kPdgElectron ) {
 	  if (! kFiducialCut -> EFiducialCut(EBeam, part_map[it->first][i].Vect() ) ) continue ; 

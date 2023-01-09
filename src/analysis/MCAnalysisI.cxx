@@ -92,6 +92,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   if( ApplyFiducial() ) {
     if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) { delete event ; return nullptr ; } 
   }
+  ++fNEventsAfterFiducial;
 
   // Get Topology Definition
   std::map<int,unsigned int> Topology = GetTopology(); 
@@ -103,7 +104,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
       // Only store particles above threshold
       if( part_map[it->first][i].P() < conf::GetMinMomentumCut( it->first, EBeam ) ) continue ; 
-
+      
       // Apply Fiducial cut
       if( ApplyFiducial() ) {
 	if( it->first == conf::kPdgElectron ) {
@@ -112,6 +113,8 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 	  if( ! kFiducialCut -> PFiducialCut( EBeam, part_map[it->first][i].Vect() ) ) continue ; 
         } else if ( it->first == conf::kPdgPiP ) {
 	  if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 1 ) ) continue ;
+	} else if ( it->first == conf::kPdgPiM ) {
+	  if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), -1 ) ) continue ;
 	} else if ( it->first == conf::kPdgPhoton ) {
 	  if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 0 ) ) continue ; 
 	}
@@ -320,9 +323,8 @@ bool MCAnalysisI::Finalise( void ) {
 
   std::cout << " Total Number of Events Processed = " << fEventsBeforeCuts << std::endl;
   std::cout << " Total number of true signal events = " << fNEventsAfterTopologyCut << std::endl;
-  std::cout << " Events after fiducial cuts = " << fNEventsAfterFiducial << std::endl;
+  std::cout << " Events after electron fiducial cut = " << fNEventsAfterFiducial << std::endl;
 
-  //  xsec_file -> Close() ; 
   return true ; 
 }
 

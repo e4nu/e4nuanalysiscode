@@ -106,16 +106,18 @@ bool E4NuAnalysis::Analyse(void) {
 
 bool E4NuAnalysis::SubstractBackground(void) {
   unsigned int max_mult = GetMaxBkgMult(); 
-  unsigned int min_mult = GetMinBkgMult(); 
+  unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
   std::map<int,unsigned int> Topology = GetTopology();
-  /*  
+  
   unsigned int m = max_mult ;
   while ( m >= min_mult ) {
     if( fBkg.find(m) != fBkg.end() ) {
       std::cout<< " Number of events with multiplicity " << m << " = " << fBkg[m].size() <<std::endl; 
+      // Calculate weight for events with multiplicity m->m-1
+      // Add events in fBkg(m-1)
     }
     --m ; 
-    }*/
+  }
   
 } 
 

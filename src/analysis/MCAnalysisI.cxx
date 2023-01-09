@@ -139,6 +139,20 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Store changes in event after fiducial and momentum cuts
   event -> SetFinalParticlesKinematics( part_map ) ; 
 
+  // Apply acceptance to all particles 
+  double acc_wght = 1 ;
+  if( ApplyAccWeights() ) {
+    // Electron acceptance
+    if( kAccMap[conf::kPdgElectron] && kGenMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], *kGenMap[conf::kPdgElectron], out_mom ) ; 
+
+    for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
+      for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
+	if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
+      }
+    }
+  }
+  event->SetAccWght(acc_wght);
+
   // Signal event
   bool is_signal = false ; 
   //Topology ID
@@ -147,33 +161,14 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       is_signal = true ; 
     } else if( part_map.count( it->first ) && part_map[it->first].size() == it->second ) {
       is_signal = true ; 
+      kMult_signal = event->GetNTopologyParticles( Topology ) ; 
+      ++fNEventsAfterTopologyCut ;
     } else {
       is_signal = false ; 
     }
   }
 
-  // Apply acceptance to signal
-  double acc_wght = 1 ; 
-  if( is_signal ) {
-    // Store "multiplicty" of singal events 
-    kMult_signal = event->GetNTopologyParticles( Topology ) ; 
-    ++fNEventsAfterTopologyCut ;
-    if( ApplyAccWeights() ) {
-      for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
-	if( it->first == conf::kPdgElectron ) {
-	  // Apply acceptance for electron
-	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], out_mom ) ; 
-	} else { 
-	  for( unsigned int i = 0 ; i < it->second ; ++i ) {
-	    if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
-	  }
-	}
-      }
-    }
-    event->SetAccWght(acc_wght);
-
-  } else { 
-    // BACKGROUND 
+  if( !is_signal){ // BACKGROUND 
     event->SetIsBkg(true); 
     event->SetEventWeight(0.) ; // set to 0 for now
     ++fNBkgEvents ;

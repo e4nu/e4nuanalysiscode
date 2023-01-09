@@ -163,25 +163,19 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 	if( it->first == conf::kPdgElectron ) {
 	  // Apply acceptance for electron
 	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], out_mom ) ; 
-	  if( fabs( acc_wght ) != acc_wght ) {
-	    delete event ; 
-	    return nullptr ; 
-	  }
 	} else { 
 	  for( unsigned int i = 0 ; i < it->second ; ++i ) {
 	    if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
-	    if( fabs( acc_wght) != acc_wght ) {
-	      delete event ; 
-	      return nullptr ; 
-	    }
 	  }
 	}
       }
     }
     event->SetAccWght(acc_wght);
+
   } else { 
     // BACKGROUND 
     event->SetIsBkg(true); 
+    event->SetEventWeight(0.) ; // set to 0 for now
     ++fNBkgEvents ;
     
     // Get Number of signal particles, "multiplicity"
@@ -201,10 +195,11 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       return nullptr; 
     }
   }
-
+  
   StoreTree(event) ;
-
+  
   return event ; 
+    
 }
 
 void MCAnalysisI::SmearParticles( MCEvent * event ) {

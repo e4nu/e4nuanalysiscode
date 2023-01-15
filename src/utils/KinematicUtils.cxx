@@ -15,6 +15,10 @@ double utils::GetECal( const TLorentzVector & leptonf, const TLorentzVector & pr
   return leptonf.E() + proton.E() - conf::kProtonMass + utils::GetBindingEnergy( target_pdg ) ;
 }
 
+double utils::GetRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) {
+  return (conf::kProtonMass * utils::GetBindingEnergy( target_pdg ) +conf::kProtonMass * leptonf.E() ) / ( conf::kProtonMass - leptonf.E() + leptonf.Rho() * TMath::Cos( leptonf.Theta() ));
+}
+
 double utils::GetQELRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) {
   double Ereco = 0 ; 
   double E = leptonf.E();

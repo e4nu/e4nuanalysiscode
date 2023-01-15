@@ -8,6 +8,7 @@ namespace e4nu {
   namespace utils
   {
     double GetECal( const TLorentzVector & leptonf, const TLorentzVector & proton, const unsigned int target_pdg ) ;
+    double GetRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) ;
     double GetQELRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) ;
     double GetEnergyTransfer( const TLorentzVector & leptonf, const double Ebeam ) ;
     double GetNuECal( const TLorentzVector & leptonf, const double ECal ) ;

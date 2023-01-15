@@ -7,6 +7,7 @@
 #define _E4NUANALYSIS_H_
 
 #include <iostream>
+#include "TF1.h"
 #include "analysis/MCAnalysisI.h"
 #include "analysis/CLASAnalysisI.h"
 
@@ -24,16 +25,20 @@ namespace e4nu {
 
     // Main Analyse function
     bool Analyse(void) ; 
-
     bool SubstractBackground(void) ; 
-
     bool Finalise(void);
+
+  protected : 
+    double GetElectronMinTheta(TLorentzVector emom) ; 
 
   private : 
     e4nu::EventI * GetValidEvent( const unsigned int event_id ) ;
     unsigned int GetNEvents( void ) const ;
 
+    TF1 * fElectronFit ; 
+
     long int fNEventsAfterEMomCut = 0 ; 
+    long int fNEventsAfterEThetaCut = 0 ; 
     long int fNEventsAfterPhiCut = 0 ; 
     long int fNEventsAfterQ2Cut = 0 ; 
     long int fNEventsAfterWCut = 0 ; 
@@ -41,7 +46,7 @@ namespace e4nu {
     long int fNEventsAfterThetaCut = 0 ;     
 
     void Initialize(void) ; 
-
+    
   };
 }
 

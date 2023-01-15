@@ -61,6 +61,9 @@ bool E4NuAnalysis::Analyse(void) {
     if( ApplyOutElectronCut() && out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) continue ; 
     ++fNEventsAfterEMomCut ;     
     
+    if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) continue ;
+    ++fNEventsAfterEThetaCut ;     
+
     double reco_Q2 = utils::GetRecoQ2( out_mom, EBeam ) ; 
     double W_var = utils::GetRecoW( out_mom, EBeam ) ;
 
@@ -87,12 +90,16 @@ bool E4NuAnalysis::Analyse(void) {
     }
 
     if( ApplyPhiOpeningAngle() ) {
-      if ( ! conf::ValidPhiOpeningAngle( out_mom.Phi() ) ) continue ;  
+      double phi = out_mom.Phi() ; 
+      if ( ! IsData() ) phi += TMath::Pi() ; 
+      if ( ! conf::ValidPhiOpeningAngle( phi ) ) continue ;  
       ++fNEventsAfterPhiOpeningAngleCut ; 
     }
 
     if( ApplyGoodSectorPhiSlice() ) {
-      if ( ! conf::GoodSectorPhiSlice( out_mom.Phi() ) ) continue ; 
+      double phi = out_mom.Phi() ; 
+      if ( ! IsData() ) phi += TMath::Pi() ; 
+      if ( ! conf::GoodSectorPhiSlice( phi ) ) continue ; 
       ++fNEventsAfterPhiCut ; 
     }
     
@@ -129,7 +136,8 @@ bool E4NuAnalysis::Finalise( ) {
   // Store histograms 
   for( unsigned int i = 0 ; i < kHistograms.size() ; ++i ) {
     kHistograms[i]->GetXaxis()->SetTitle(GetObservablesTag()[i].c_str()) ; 
-    kHistograms[i]->GetYaxis()->SetTitle(("d#sigma/d"+GetObservablesTag()[i]).c_str()) ; 
+    if( NormalizeHist() ) kHistograms[i]->GetYaxis()->SetTitle(("d#sigma/d"+GetObservablesTag()[i]).c_str()) ; 
+    else kHistograms[i]->GetYaxis()->SetTitle("NEvents * weight") ;  
     kHistograms[i]->SetStats(false); 
     kHistograms[i]->Write() ; 
   }
@@ -138,6 +146,7 @@ bool E4NuAnalysis::Finalise( ) {
   std::string out_file = GetOutputFile()+".txt";
 
   std::cout << " Events after electron momentum cut = " << fNEventsAfterEMomCut << std::endl;
+  std::cout << " Events after electron theta cut = " << fNEventsAfterEThetaCut << std::endl;
   if( ApplyQ2Cut() ) std::cout << " Events after Q2 cut = " << fNEventsAfterQ2Cut << std::endl;
   if( ApplyWCut() ) std::cout << " Events after W cut = "<< fNEventsAfterWCut <<std::endl;
   if( ApplyThetaSlice() ) std::cout << " Events after theta cut = " << fNEventsAfterThetaCut << std::endl;
@@ -149,9 +158,19 @@ bool E4NuAnalysis::Finalise( ) {
 
 void E4NuAnalysis::Initialize(void) {
   kOutFile = std::unique_ptr<TFile>( new TFile( (GetOutputFile()+".root").c_str(),"RECREATE") );
- 
+  
   for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
     kHistograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), GetNBins()[i], GetRange()[i][0], GetRange()[i][1] ) ) ; 
   }
+  
+  double Ebeam = GetConfiguredEBeam() ; 
+  fElectronFit = new TF1( "myElectronFit", "[0]+[1]/x",0.,0.5);
+  if( Ebeam == 1.161 ) { fElectronFit -> SetParameters(17,7) ; }
+  if( Ebeam == 2.261 ) { fElectronFit -> SetParameters(16,10.5) ; }
+  if( Ebeam == 4.461 ) { fElectronFit -> SetParameters(13.5,15) ; }
 
+}
+
+double E4NuAnalysis::GetElectronMinTheta( TLorentzVector emom ) {
+  return fElectronFit ->Eval(emom.P()) ; 
 }

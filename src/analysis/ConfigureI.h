@@ -60,6 +60,7 @@ namespace e4nu {
       std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }
       std::vector<unsigned int> GetNBins(void) const { return kNBins ; }
       std::vector<std::vector<double>> GetRange(void) const { return kRanges ; } 
+      bool NormalizeHist(void) { return kNormalize ; }
 
       std::string GetOutputFile(void) const { return kOutputFile ; }
       std::string GetInputFile(void) const { return kInputFile ; }
@@ -102,6 +103,7 @@ namespace e4nu {
       std::string kInputFile ;
       std::string kOutputFile = "";
       std::string kXSecFile = "";
+      bool kNormalize = true ; 
 
       // Topology
       std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity
@@ -112,7 +114,6 @@ namespace e4nu {
 
       // Background definition
       std::map<int,std::vector<e4nu::EventI*>> fBkg;
-
 
       // Information for output file
       std::unique_ptr<TFile> kOutFile ;

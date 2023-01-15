@@ -135,6 +135,9 @@ namespace e4nu {
 	    }
 	    kRanges.push_back( myrange ) ; 
 	  }
+	} else if ( param[i] == "NormalizeHists" ) {
+	  if ( value[i] == "true" ) kNormalize = true ; 
+	  else kNormalize = false ; 
 	} else if ( param[i] == "OutputFile" ) {
 	  kOutputFile = value[i] ;
 	} else if ( param[i] == "InputFile" ) {

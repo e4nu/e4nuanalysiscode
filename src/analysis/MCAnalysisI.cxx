@@ -109,12 +109,12 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       
       // Apply photon cuts
       if( it->first == conf::kPdgPhoton ) {
-	  // within 40 degrees in theta and 30 degrees in phi. Electron phi has already added 30 degree and between 0 to 360
-	  double el_phi_mod = out_mom.Phi()*TMath::RadToDeg() + 30; //Add 30 degree for photon phi cut
-	  if( el_phi_mod < 0 ) el_phi_mod += 360 ; 
-	  double neut_phi_mod = part_map[it->first][i].Phi()*TMath::RadToDeg() + 30; //Add 30 degree for photon phi cut
-	  if (neut_phi_mod < 0) neut_phi_mod += 360 ; 
-	  if( (part_map[it->first][i].Vect()).Angle(out_mom.Vect())*TMath::RadToDeg() < conf::kPhotonRadCut && fabs(neut_phi_mod-el_phi_mod) < conf::kPhotonEPhiDiffCut ) continue ; 
+	// within 40 degrees in theta and 30 degrees in phi. Electron phi has already added 30 degree and between 0 to 360
+	double el_phi_mod = (out_mom.Phi()+TMath::Pi())*TMath::RadToDeg() + 30; //Add 30 degree for photon phi cut
+	if( el_phi_mod < 0 ) el_phi_mod += 360 ; 
+	double neut_phi_mod = (part_map[it->first][i].Phi()+TMath::Pi())*TMath::RadToDeg() + 30; //Add 30 degree for photon phi cut
+	if (neut_phi_mod < 0) neut_phi_mod += 360 ; 
+	if( (part_map[it->first][i].Vect()).Angle(out_mom.Vect())*TMath::RadToDeg() < conf::kPhotonRadCut && fabs(neut_phi_mod-el_phi_mod) < conf::kPhotonEPhiDiffCut ) continue ; 
       }
       
       // Apply Fiducial cut for hadrons and photons
@@ -243,7 +243,7 @@ void MCAnalysisI::Initialize() {
     kFiducialCut -> up_lim1_ec -> Eval(60) ;
     kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), Target , EBeam ) ;
     kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
- }
+  }
 
   // Initialize acceptance map histograms from file
   if( ApplyAccWeights() ) { 
@@ -307,22 +307,23 @@ bool MCAnalysisI::Finalise( void ) {
   double domega = 0.01; // sr
   double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.); // cm^2 to μbarn
 
-  for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
-    double NBins = kHistograms[j]->GetNbinsX(); 
+  if ( NormalizeHist() ) {
+    for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
+      double NBins = kHistograms[j]->GetNbinsX(); 
     
-    for (int k = 1; k <= NBins; k++) { 
-      double content = kHistograms[j]->GetBinContent(k);
-      double error = kHistograms[j]->GetBinError(k);
-      double width = kHistograms[j]->GetBinWidth(k);
-      double newcontent = content / width;
-      double newerror = error / width;
-      kHistograms[j]->SetBinContent(k,newcontent);
-      kHistograms[j]->SetBinError(k,newerror);
+      for (int k = 1; k <= NBins; k++) { 
+	double content = kHistograms[j]->GetBinContent(k);
+	double error = kHistograms[j]->GetBinError(k);
+	double width = kHistograms[j]->GetBinWidth(k);
+	double newcontent = content / width;
+	double newerror = error / width;
+	kHistograms[j]->SetBinContent(k,newcontent);
+	kHistograms[j]->SetBinError(k,newerror);
+      }
+
+      kHistograms[j]->Scale( fXSec * ConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / ( GetNEventsToRun() * domega ) );
     }
-
-    kHistograms[j]->Scale( fXSec * ConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / ( GetNEventsToRun() * domega ) );
   }
-
   std::cout << " Total Number of Events Processed = " << fEventsBeforeCuts << std::endl;
   std::cout << " Total number of true signal events = " << fNEventsAfterTopologyCut << std::endl;
   std::cout << " Events after electron fiducial cut = " << fNEventsAfterFiducial << std::endl;
@@ -387,7 +388,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   double pfly = out_mom.Py();
   double pflz = out_mom.Pz();
   double pfl_theta = out_mom.Theta();
-  double pfl_phi = out_mom.Phi();
+  double pfl_phi = out_mom.Phi() + TMath::Pi();
   unsigned int ElectronSector = utils::GetSector( pfl_phi ) ; 
 
   double RecoQELEnu = utils::GetQELRecoEnu( out_mom, TargetPdg ) ; 
@@ -430,7 +431,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   double proton_momy = p_max.Py() ; 
   double proton_momz = p_max.Pz() ; 
   double proton_theta = p_max.Theta() ; 
-  double proton_phi = p_max.Phi() ; 
+  double proton_phi = p_max.Phi() + TMath::Pi() ; 
   double ECal = utils::GetECal( out_mom, p_max, TargetPdg ) ; 
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
@@ -451,7 +452,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   double pip_momy = pip_max.Py() ;
   double pip_momz = pip_max.Pz() ;
   double pip_theta = pip_max.Theta() ;
-  double pip_phi = pip_max.Phi() ;
+  double pip_phi = pip_max.Phi() + TMath::Pi();
 
   TLorentzVector pim_max(0,0,0,0) ;
   if( topology_has_pim ) {
@@ -468,7 +469,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   double pim_momy = pim_max.Py() ;
   double pim_momz = pim_max.Pz() ;
   double pim_theta = pim_max.Theta() ;
-  double pim_phi = pim_max.Phi() ;
+  double pim_phi = pim_max.Phi() + TMath::Pi() ;
 
   bool IsBkg = event->IsBkg() ; 
    

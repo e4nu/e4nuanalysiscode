@@ -7,6 +7,8 @@
 #ifndef _ANALYSISCUTS_I_H_
 #define _ANALYSISCUTS_I_H_
 
+#include "TLorentzVector.h"
+
 namespace e4nu { 
   namespace conf {
 
@@ -15,6 +17,7 @@ namespace e4nu {
     bool GoodSectorPhiSlice( double phi /*rad*/ ) ; 
     bool GetQ2Cut( double & Q2cut, const double Ebeam ) ; 
     bool GetWCut( double & WCut, const double Ebeam ) ;
+    bool ApplyPhotRadCut( const TLorentzVector emom, const TLorentzVector photmom ) ;
   }
 }
 

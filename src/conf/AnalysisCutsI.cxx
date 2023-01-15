@@ -71,3 +71,14 @@ bool conf::GetWCut( double & WCut, const double Ebeam ) {
   } 
   return false ;
 }
+
+bool conf::ApplyPhotRadCut( const TLorentzVector emom, const TLorentzVector photmom ) {
+  double neut_phi_mod = photmom.Phi()*TMath::RadToDeg() + 30; //Add 30 degree
+  if (neut_phi_mod < 0) neut_phi_mod = neut_phi_mod + 360;  //Neutral particle is between 0 and 360 degree
+
+  double el_phi_mod = emom.Phi()*TMath::RadToDeg()  + 30; //Add 30 degree for plotting and photon phi cut
+  if(el_phi_mod<0)  el_phi_mod  = el_phi_mod+360; //Add 360 so that electron phi is between 0 and 360 degree
+
+  if(photmom.Angle(emom.Vect())*TMath::RadToDeg() < conf::kPhotonRadCut && fabs(neut_phi_mod-el_phi_mod) < conf::kPhotonEPhiDiffCut ) return true ; 
+  return false ;
+}

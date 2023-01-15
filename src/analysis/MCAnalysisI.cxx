@@ -107,14 +107,9 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       // Only store particles above threshold
       if( part_map[it->first][i].P() < conf::GetMinMomentumCut( it->first, EBeam ) ) continue ; 
       
-      // Apply photon cuts
+      // Apply photon cuts for MC and data 
       if( it->first == conf::kPdgPhoton ) {
-	// within 40 degrees in theta and 30 degrees in phi. Electron phi has already added 30 degree and between 0 to 360
-	double el_phi_mod = (out_mom.Phi()+TMath::Pi())*TMath::RadToDeg() + 30; //Add 30 degree for photon phi cut
-	if( el_phi_mod < 0 ) el_phi_mod += 360 ; 
-	double neut_phi_mod = (part_map[it->first][i].Phi()+TMath::Pi())*TMath::RadToDeg() + 30; //Add 30 degree for photon phi cut
-	if (neut_phi_mod < 0) neut_phi_mod += 360 ; 
-	if( (part_map[it->first][i].Vect()).Angle(out_mom.Vect())*TMath::RadToDeg() < conf::kPhotonRadCut && fabs(neut_phi_mod-el_phi_mod) < conf::kPhotonEPhiDiffCut ) continue ; 
+	if( !conf::ApplyPhotRadCut( out_mom, part_map[it->first][i] ) ) continue ; 
       }
       
       // Apply Fiducial cut for hadrons and photons

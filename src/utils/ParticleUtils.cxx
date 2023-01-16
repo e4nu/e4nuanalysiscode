@@ -37,15 +37,11 @@ void utils::ApplyResolution( const int pdg, TLorentzVector & mom, const double E
   double res = utils::GetParticleResolucion( pdg, EBeam ) ;
   double p = mom.P() ;
   double M = GetParticleMass( pdg ) ;
-
-  gRandom = new TRandom3() ; 
-  gRandom->SetSeed(10);
-
+  
   double SmearedP = gRandom->Gaus(p,res*p);
   double SmearedE = sqrt( pow( SmearedP,2 ) + pow( M,2 ) ) ; 
 
   mom.SetPxPyPzE( SmearedP/p * mom.Px(), SmearedP/p * mom.Py(), SmearedP/p * mom.Pz(), SmearedE ) ; 
-  delete gRandom ; 
 }
 
 int utils::GetParticleCharge( const int pdg ) {

@@ -2,7 +2,7 @@
 UseAllSectors	true
 ApplyFiducial	true
 ApplyAccWeights true
-ApplyReso	false
+ApplyReso	true
 
 ApplyPhiOpeningAngle	false
 UsePhiThetaBand		false
@@ -16,7 +16,7 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			1000000
+NEvents			1000000000
 FirstEvent		0
 
 #Topology definition
@@ -31,6 +31,7 @@ ObservableList ECal,OutEMom,LeadingPMom,OutEPhi,Sector,RecoEnu,RecoQ2,RecoW,QELR
 NBinsList 60,60,60,60,6,80,80,80,80,80,80,80
 NormalizeHists false 
 
-InputFile /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master.root
+#InputFile /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master.root
+InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master*.root
 OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output_inclusive_1M
 XSecFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/ConfFiles/xsec_carbon12_spline_GEM21_11b_00_000_Q2_0_1.root

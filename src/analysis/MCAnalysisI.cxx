@@ -6,6 +6,7 @@
 #include <iostream>
 #include "TFile.h"
 #include "TDirectoryFile.h"
+#include <TRandom3.h>
 #include "analysis/MCAnalysisI.h"
 #include "utils/ParticleUtils.h"
 #include "utils/KinematicUtils.h"
@@ -217,11 +218,24 @@ void MCAnalysisI::SmearParticles( MCEvent * event ) {
   
   double EBeam = GetConfiguredEBeam() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
-  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
+
+  /*  
+  double res = utils::GetParticleResolucion( conf::kPdgElectron, EBeam ) ;
+  double p = out_mom.P() ;
+  double M = utils::GetParticleMass( conf::kPdgElectron ) ;
   
+  std::cout << " E mom before smear" << out_mom.P() << std::endl;
+  double SmearedP = gRandom->Gaus(p,res*p);
+  double SmearedE = sqrt( pow( SmearedP,2 ) + pow( M,2 ) ) ; 
+  std::cout << " E mom smeared SmearedPe= " << SmearedP << std::endl;
+  out_mom.SetPxPyPzE( SmearedP/p * out_mom.Px(), SmearedP/p * out_mom.Py(), SmearedP/p * out_mom.Pz(), SmearedE ) ; 
+  std::cout << " V4_el.Px() = " << out_mom.Px() << " V4_el.Py() = "<<  out_mom.Py() << " V4_el.Pz() = "<<  out_mom.Pz() << std::endl;
+*/
   utils::ApplyResolution( conf::kPdgElectron, out_mom, EBeam ) ; 
   event -> EventI::SetOutLeptonKinematics( out_mom ) ; 
   
+  // Apply for other particles
+  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
   for( std::map<int,std::vector<TLorentzVector>>::iterator it = part_map.begin() ; it != part_map.end() ; ++it ) {
     std::vector<TLorentzVector> vtemp ; 
     for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
@@ -310,6 +324,9 @@ void MCAnalysisI::Initialize() {
   fXSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
 
   xsec_file->Close();
+
+  gRandom = new TRandom3() ; 
+  gRandom->SetSeed(10);
 
 }
 

@@ -1,33 +1,36 @@
 #Analysis Cuts
 UseAllSectors	true
-ApplyFiducial 	false
-ApplyAccWeights false
-ApplyReso	true
+ApplyFiducial	true
+ApplyAccWeights true
+ApplyReso	false
+
 ApplyPhiOpeningAngle	false
 UsePhiThetaBand		false
 ApplyThetaSlice		false
 ApplyGoodSectorPhiSlice	false
-ApplyOutMomCut		false
-ApplyQ2Cut		false
-ApplyWCut		false
+ApplyOutMomCut		true
+ApplyQ2Cut		true
+ApplyWCut		true
 offset			0
 
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			100000
+NEvents			1000000
 FirstEvent		0
 
 #Topology definition
 IsData			false
-Toplogy 		11:1,2212:1,211:0,-211:0,111:0
-MaxBackgroundMultiplicity 4
+Toplogy 		11:1,2212:1
+#,211:0,-211:0,111:0,22:0
+MaxBackgroundMultiplicity 2
 
 #histogram definition
-RangeList 0:2,0:2,0:2,0:2,0:2,0:180,0:2
-ObservableList ECal,RecoQ2,RecoW,QELRecoEnu,DeltaPT,DeltaAlphaT,DeltaPhiT
-NBinsList 150,80,80,80,80,80,80
+RangeList 0:2,0:2,0:2,-180:180,-0.5:5.5,0:2,0:2,0:2,0:2,0:2,0:180,0:2
+ObservableList ECal,OutEMom,LeadingPMom,OutEPhi,Sector,RecoEnu,RecoQ2,RecoW,QELRecoEnu,DeltaPT,DeltaAlphaT,DeltaPhiT
+NBinsList 60,60,60,60,6,80,80,80,80,80,80,80
+NormalizeHists false 
 
 InputFile /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master.root
-OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output_test
+OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output_inclusive_1M
 XSecFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/ConfFiles/xsec_carbon12_spline_GEM21_11b_00_000_Q2_0_1.root

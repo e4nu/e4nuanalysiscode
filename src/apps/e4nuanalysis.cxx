@@ -21,7 +21,7 @@ int main( void ) {
   if( ! analysis -> LoadData() ) return 0 ;  
 
   analysis -> Analyse() ; 
-  analysis -> SubstractBackground() ; 
+  //  analysis -> SubstractBackground() ; 
   analysis -> Finalise();
 
   delete analysis ;

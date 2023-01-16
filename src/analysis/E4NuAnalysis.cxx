@@ -58,11 +58,33 @@ bool E4NuAnalysis::Analyse(void) {
     TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
     double EBeam = in_mom.E() ; 
 
-    if( ApplyOutElectronCut() && out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) continue ; 
-    ++fNEventsAfterEMomCut ;     
-    
     if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) continue ;
     ++fNEventsAfterEThetaCut ;     
+
+    if( ApplyOutElectronCut() ){
+      if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) continue ; 
+    }
+    ++fNEventsAfterEMomCut ;     
+
+    if( ApplyThetaSlice() ) {
+      if( out_mom.Theta() * 180./TMath::Pi() < conf::kMinEThetaSlice ) continue ; 
+      if( out_mom.Theta() * 180./TMath::Pi() > conf::kMaxEThetaSlice ) continue ; 
+      ++fNEventsAfterThetaCut ; 
+    }
+
+    if( ApplyPhiOpeningAngle() ) {
+      double phi = out_mom.Phi() ; 
+      if ( ! IsData() ) phi += TMath::Pi() ; 
+      if ( ! conf::ValidPhiOpeningAngle( phi ) ) continue ;  
+    }
+    ++fNEventsAfterPhiOpeningAngleCut ; 
+
+    if( ApplyGoodSectorPhiSlice() ) {
+      double phi = out_mom.Phi() ; 
+      if ( ! IsData() ) phi += TMath::Pi() ; 
+      if ( ! conf::GoodSectorPhiSlice( phi ) ) continue ; 
+    }
+    ++fNEventsAfterPhiCut ; 
 
     double reco_Q2 = utils::GetRecoQ2( out_mom, EBeam ) ; 
     double W_var = utils::GetRecoW( out_mom, EBeam ) ;
@@ -81,26 +103,6 @@ bool E4NuAnalysis::Analyse(void) {
 	if( W_var > MinW ) continue ; 
       }
       ++fNEventsAfterWCut ; 
-    }
-
-    if( ApplyThetaSlice() ) {
-      if( out_mom.Theta() * 180./TMath::Pi() < conf::kMinEThetaSlice ) continue ; 
-      if( out_mom.Theta() * 180./TMath::Pi() > conf::kMaxEThetaSlice ) continue ; 
-      ++fNEventsAfterThetaCut ; 
-    }
-
-    if( ApplyPhiOpeningAngle() ) {
-      double phi = out_mom.Phi() ; 
-      if ( ! IsData() ) phi += TMath::Pi() ; 
-      if ( ! conf::ValidPhiOpeningAngle( phi ) ) continue ;  
-      ++fNEventsAfterPhiOpeningAngleCut ; 
-    }
-
-    if( ApplyGoodSectorPhiSlice() ) {
-      double phi = out_mom.Phi() ; 
-      if ( ! IsData() ) phi += TMath::Pi() ; 
-      if ( ! conf::GoodSectorPhiSlice( phi ) ) continue ; 
-      ++fNEventsAfterPhiCut ; 
     }
     
     for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
@@ -158,12 +160,13 @@ bool E4NuAnalysis::Finalise( ) {
 
 void E4NuAnalysis::Initialize(void) {
   kOutFile = std::unique_ptr<TFile>( new TFile( (GetOutputFile()+".root").c_str(),"RECREATE") );
-  
+  double Ebeam = GetConfiguredEBeam() ; 
+
   for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
     kHistograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), GetNBins()[i], GetRange()[i][0], GetRange()[i][1] ) ) ; 
   }
   
-  double Ebeam = GetConfiguredEBeam() ; 
+
   fElectronFit = new TF1( "myElectronFit", "[0]+[1]/x",0.,0.5);
   if( Ebeam == 1.161 ) { fElectronFit -> SetParameters(17,7) ; }
   if( Ebeam == 2.261 ) { fElectronFit -> SetParameters(16,10.5) ; }

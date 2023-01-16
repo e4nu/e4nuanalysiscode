@@ -6,6 +6,7 @@
 #include <iostream>
 #include "physics/EventI.h"
 #include "conf/ParticleI.h"
+#include "utils/DetectorUtils.h"
 #include "utils/ParticleUtils.h"
 #include "utils/KinematicUtils.h"
 
@@ -125,7 +126,27 @@ double EventI::GetObservable( const std::string observable ) {
     if ( event_wproton == false ) return 0; 
     return utils::DeltaPhiT( ef4mom.Vect(), p4mom.Vect() ) ;
   } else if ( observable == "LeadingPMom" ) {
-    return p4mom.Mag() ; 
+    return p4mom.P() ; 
+  } else if ( observable == "OutEMom" ) {
+    return ef4mom.P() ; 
+  } else if ( observable == "OutEPhi" ) {
+    ef4mom = GetOutLepton4Mom() ;
+    ef4mom.SetPhi( ef4mom.Phi()+TMath::Pi() ) ;
+    return ef4mom.Phi()* 180 / TMath::Pi();
+  } else if ( observable == "Sector" ) {
+    ef4mom = GetOutLepton4Mom() ;
+    ef4mom.SetPhi( ef4mom.Phi()+TMath::Pi() ) ;
+
+    return utils::GetSector( ef4mom.Phi() ) ; 
+
+    /*
+    Float_t phi = ef4mom.Phi() * 180. / TMath::Pi();
+    if (phi < -30.) phi += 360.;
+    Int_t sector = (Int_t)((phi+30.)/60.);
+    if( sector < 0 ) return 0 ; 
+    if( sector > 5 ) return 5 ; 
+    */
+
   }
   std::cout << observable << " is NOT defined " << std::endl;
   return 0 ; 

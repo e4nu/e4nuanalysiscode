@@ -12,16 +12,14 @@
 using namespace e4nu;
 
 double utils::GetAcceptanceMapWeight( TH3D & acc, TH3D & gen, const TLorentzVector p4mom ){
-  //  if( !acc || !gen ) return 1. ;
 
-  double phi = p4mom.Phi() ; 
-  //map 330 till 360 to [-30:0] for the acceptance map histogram
+  double phi = p4mom.Phi() + TMath::Pi() ; 
   if(phi > (2*TMath::Pi() - TMath::Pi()/6.) ) { phi -= 2*TMath::Pi(); }
   phi *= 180/TMath::Pi() ;
 
-  // TO DOUBLE CHECK
-  //  phi += 30 ; 
-  // if( phi < 0 ) phi+= 360 ; 
+  //Redefinition of the phi angle
+  //because the acceptance maps are defined between (-30,330)
+  //  phi -= 30 ; 
 
   double pbin_gen = gen.GetXaxis()->FindBin(p4mom.P());
   double tbin_gen = gen.GetYaxis()->FindBin(p4mom.CosTheta());
@@ -33,7 +31,9 @@ double utils::GetAcceptanceMapWeight( TH3D & acc, TH3D & gen, const TLorentzVect
   double phibin_acc = acc.GetZaxis()->FindBin(phi);
   double num_acc = acc.GetBinContent(pbin_acc, tbin_acc, phibin_acc);
 
-  return num_acc / num_gen;
+  double acc_w = num_acc / num_gen ; 
+  if( fabs(acc_w) != acc_w ) return 0 ; // Safety check
+  return acc_w ; 
 } 
 
 unsigned int utils::GetSector( double phi ) {
@@ -41,7 +41,19 @@ unsigned int utils::GetSector( double phi ) {
   phi += 30 ; //Add 30 degree for plotting and photon phi cut
   if ( phi < 0 ) phi += 360 ; //Add 360 so that electron phi is between 0 and 360 degree
 
+  /*
   return (unsigned int) phi / 60 ; 
+  */
+
+
+  if (phi > 0 && phi < 60) { return 0 ; }
+  if (phi > 60 && phi < 120) { return 1 ; }
+  if (phi > 120 && phi < 180) { return 2 ; }
+  if (phi > 180 && phi < 240) { return 3 ; }
+  if (phi > 240 && phi < 300) { return 4 ; }
+  if (phi > 300 && phi < 360) { return 5 ; }
+  return -1; 
+
 }
 
 bool utils::IsValidSector( const double phi, const double EBeam, const bool use_all ) {

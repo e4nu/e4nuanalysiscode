@@ -57,7 +57,10 @@ EventI * MCAnalysisI::GetEvent( const unsigned int event_id ) {
 EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   
   MCEvent * event = (MCEvent*) fData -> GetEvent(event_id) ; 
-  if( !event ) return nullptr ; 
+  if( !event ) {
+    delete event ; 
+    return nullptr ; 
+  }
 
   ++fEventsBeforeCuts ;
 
@@ -85,6 +88,27 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     return nullptr ; 
   }
 
+  // Apply momentum cut before smearing
+  // Get Topology Definition
+  std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticles4Mom() ;
+
+  // Remove particles below threshold
+  for( auto it = unsmeared_part_map.begin() ; it != unsmeared_part_map.end() ; ++it ) {
+    std::vector<TLorentzVector> above_th_particles ; 
+    for( unsigned int i = 0 ; i < unsmeared_part_map[it->first].size() ; ++i ) {
+      // Only store particles above threshold
+      if( unsmeared_part_map[it->first][i].P() < conf::GetMinMomentumCut( it->first, EBeam ) ) continue ; 
+      
+      // Apply photon cuts for MC and data 
+      if( it->first == conf::kPdgPhoton ) {
+	if( !conf::ApplyPhotRadCut( out_mom, unsmeared_part_map[it->first][i] ) ) continue ; 
+      }
+      above_th_particles.push_back( unsmeared_part_map[it->first][i] ) ;
+    }
+    unsmeared_part_map[it->first] = above_th_particles ;
+  }
+  event -> SetFinalParticlesKinematics( unsmeared_part_map ) ;
+
   // Apply smaring to particles
   if( ApplyReso() ) {
     this -> SmearParticles( event ) ; 
@@ -101,19 +125,12 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
 
   // Remove particles below threshold
-  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
-    std::vector<TLorentzVector> visible_part ; 
-    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
-      // Only store particles above threshold
-      if( part_map[it->first][i].P() < conf::GetMinMomentumCut( it->first, EBeam ) ) continue ; 
-      
-      // Apply photon cuts for MC and data 
-      if( it->first == conf::kPdgPhoton ) {
-	if( !conf::ApplyPhotRadCut( out_mom, part_map[it->first][i] ) ) continue ; 
-      }
-      
-      // Apply Fiducial cut for hadrons and photons
-      if( ApplyFiducial() ) {
+  
+  // Apply Fiducial cut for hadrons and photons
+  if( ApplyFiducial() ) {  
+    for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
+      std::vector<TLorentzVector> visible_part ; 
+      for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
 	if( it->first == conf::kPdgElectron ) {
 	  if (! kFiducialCut -> EFiducialCut(EBeam, part_map[it->first][i].Vect() ) ) continue ; 
         } else if ( it->first == conf::kPdgProton ) {
@@ -125,24 +142,28 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 	} else if ( it->first == conf::kPdgPhoton ) {
 	  if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 0 ) ) continue ; 
 	}
+	visible_part.push_back( part_map[it->first][i] ) ; 
       }
-      visible_part.push_back( part_map[it->first][i] ) ; 
+      part_map[it->first] = visible_part ; 
     }
-    part_map[it->first] = visible_part ; 
   }
-
   // Store changes in event after fiducial and momentum cuts
   event -> SetFinalParticlesKinematics( part_map ) ; 
+  
 
   // Apply acceptance to all particles 
   double acc_wght = 1 ;
   if( ApplyAccWeights() ) {
     // Electron acceptance
     if( kAccMap[conf::kPdgElectron] && kGenMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], *kGenMap[conf::kPdgElectron], out_mom ) ; 
-
-    for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
-      for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
-	if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
+    // Others
+    for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
+      if ( part_map.find(it->first) == part_map.end()) continue ;
+      if( it->first == conf::kPdgElectron ) continue ; 
+      else { 
+	for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
+	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
+	}
       }
     }
   }
@@ -157,13 +178,13 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     } else if( part_map.count( it->first ) && part_map[it->first].size() == it->second ) {
       is_signal = true ; 
       kMult_signal = event->GetNTopologyParticles( Topology ) ; 
-      ++fNEventsAfterTopologyCut ;
     } else {
       is_signal = false ; 
     }
   }
 
-  if( !is_signal){ // BACKGROUND 
+  if( is_signal ) ++fNEventsAfterTopologyCut ;
+  else { // BACKGROUND 
     event->SetIsBkg(true); 
     event->SetEventWeight(0.) ; // set to 0 for now
     ++fNBkgEvents ;
@@ -194,28 +215,24 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
 void MCAnalysisI::SmearParticles( MCEvent * event ) {
   
-  TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
+  double EBeam = GetConfiguredEBeam() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
-
-  double EBeam = GetConfiguredEBeam() ; 
-
-  utils::ApplyResolution( conf::kPdgElectron , in_mom, EBeam ) ; 
-  event -> EventI::SetOutLeptonKinematics( in_mom ) ; 
   
-  utils::ApplyResolution( conf::kPdgElectron , out_mom, EBeam ) ; 
+  utils::ApplyResolution( conf::kPdgElectron, out_mom, EBeam ) ; 
   event -> EventI::SetOutLeptonKinematics( out_mom ) ; 
-
+  
   for( std::map<int,std::vector<TLorentzVector>>::iterator it = part_map.begin() ; it != part_map.end() ; ++it ) {
     std::vector<TLorentzVector> vtemp ; 
     for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
       TLorentzVector temp = (it->second)[i] ; 
-      utils::ApplyResolution( it->first, temp, EBeam ) ;
+      //utils::ApplyResolution( it->first, temp, EBeam ) ;
       vtemp.push_back(temp) ; 
     }
     part_map[it->first] = vtemp ; 
   }
   event -> EventI::SetFinalParticlesKinematics( part_map ) ; 
+  
 } 
 
 unsigned int MCAnalysisI::GetNEvents( void ) const {

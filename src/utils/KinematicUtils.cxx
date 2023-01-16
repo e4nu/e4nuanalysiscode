@@ -12,7 +12,7 @@ using namespace e4nu ;
 
 double utils::GetECal( const TLorentzVector & leptonf, const TLorentzVector & proton, const unsigned int target_pdg ) {
   // CODED FOR 1p0pi ...
-  return leptonf.E() + proton.E() - conf::kProtonMass + utils::GetBindingEnergy( target_pdg ) ;
+  return leptonf.E() + proton.E() - conf::kProtonMass + utils::GetBindingEnergy( target_pdg ) ;  
 }
 
 double utils::GetRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) {

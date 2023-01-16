@@ -41,10 +41,10 @@ void utils::ApplyResolution( const int pdg, TLorentzVector & mom, const double E
   gRandom = new TRandom3() ; 
   gRandom->SetSeed(10);
 
-  double SmearedPe = gRandom->Gaus(p,res*p);
-  double SmearedE = sqrt( pow( SmearedPe,2 ) + pow( M,2 ) ) ; 
+  double SmearedP = gRandom->Gaus(p,res*p);
+  double SmearedE = sqrt( pow( SmearedP,2 ) + pow( M,2 ) ) ; 
 
-  mom.SetPxPyPzE( SmearedPe/p * mom.Px(), SmearedPe/p *mom.Py(), SmearedPe/p *mom.Pz(), SmearedE ) ; 
+  mom.SetPxPyPzE( SmearedP/p * mom.Px(), SmearedP/p * mom.Py(), SmearedP/p * mom.Pz(), SmearedE ) ; 
   delete gRandom ; 
 }
 

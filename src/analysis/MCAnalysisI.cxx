@@ -219,18 +219,6 @@ void MCAnalysisI::SmearParticles( MCEvent * event ) {
   double EBeam = GetConfiguredEBeam() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
 
-  /*  
-  double res = utils::GetParticleResolucion( conf::kPdgElectron, EBeam ) ;
-  double p = out_mom.P() ;
-  double M = utils::GetParticleMass( conf::kPdgElectron ) ;
-  
-  std::cout << " E mom before smear" << out_mom.P() << std::endl;
-  double SmearedP = gRandom->Gaus(p,res*p);
-  double SmearedE = sqrt( pow( SmearedP,2 ) + pow( M,2 ) ) ; 
-  std::cout << " E mom smeared SmearedPe= " << SmearedP << std::endl;
-  out_mom.SetPxPyPzE( SmearedP/p * out_mom.Px(), SmearedP/p * out_mom.Py(), SmearedP/p * out_mom.Pz(), SmearedE ) ; 
-  std::cout << " V4_el.Px() = " << out_mom.Px() << " V4_el.Py() = "<<  out_mom.Py() << " V4_el.Pz() = "<<  out_mom.Pz() << std::endl;
-*/
   utils::ApplyResolution( conf::kPdgElectron, out_mom, EBeam ) ; 
   event -> EventI::SetOutLeptonKinematics( out_mom ) ; 
   
@@ -240,7 +228,7 @@ void MCAnalysisI::SmearParticles( MCEvent * event ) {
     std::vector<TLorentzVector> vtemp ; 
     for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
       TLorentzVector temp = (it->second)[i] ; 
-      //utils::ApplyResolution( it->first, temp, EBeam ) ;
+      utils::ApplyResolution( it->first, temp, EBeam ) ;
       vtemp.push_back(temp) ; 
     }
     part_map[it->first] = vtemp ; 

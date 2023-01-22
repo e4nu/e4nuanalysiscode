@@ -73,12 +73,6 @@ namespace e4nu {
 
     void SetVertex(const double vx, const double vy, const double vz, const double t) { fVertex.SetXYZT(vx, vy, vz, t) ; }
 
-    // Flip phi with respect to GENIE 
-    // GENIE Coordinate system is flipped with respect to class
-    void SetOutLeptonKinematics( const double energy, const double px, const double py, const double pz ) ;
-    void SetInLeptonKinematics( const double energy, const double px, const double py, const double pz ) ; 
-    void SetFinalParticle( const int pdg, const double E, const double px, const double py, const double pz ); 
-
   private :
     bool fIsEM ; 
     bool fIsCC ; 

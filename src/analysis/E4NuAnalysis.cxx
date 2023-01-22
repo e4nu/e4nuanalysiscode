@@ -164,8 +164,7 @@ void E4NuAnalysis::Initialize(void) {
 
   for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
     kHistograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), GetNBins()[i], GetRange()[i][0], GetRange()[i][1] ) ) ; 
-  }
-  
+  }  
 
   fElectronFit = new TF1( "myElectronFit", "[0]+[1]/x",0.,0.5);
   if( Ebeam == 1.161 ) { fElectronFit -> SetParameters(17,7) ; }

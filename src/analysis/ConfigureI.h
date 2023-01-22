@@ -55,6 +55,8 @@ namespace e4nu {
       unsigned int GetFirstEventToRun(void) const { return kFirstEvent ; } 
       unsigned int GetMaxBkgMult(void) const { return kMaxBkgMult ; }
       unsigned int GetMinBkgMult(void) const { return kMult_signal ; }
+
+      unsigned int GetNTopologyParticles(void) ;
       
       // Histogram Configurables
       std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }

@@ -206,7 +206,19 @@ namespace e4nu {
       if( kFirstEvent != 0 ) std::cout << " startint from event " << kFirstEvent << std::endl;
       std::cout << "*********************************************************************" << std::endl;
     }
+
+    unsigned int ConfigureI::GetNTopologyParticles(void) {
+      unsigned int N_signal = 0 ;
+      for( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) {
+	if( it->first == conf::kPdgElectron ) continue ; 
+	if ( it -> second != 0 ) ++N_signal ; 
+      }
+      return N_signal ;
+    }
+
   }
 }
+
+
 
 

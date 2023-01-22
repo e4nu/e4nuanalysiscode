@@ -25,6 +25,7 @@ MCAnalysisI::MCAnalysisI() {
   kAccMap.clear();
   kGenMap.clear();
   kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCTree","GENIE Tree") ) ; 
+  kMult_signal = GetNTopologyParticles() ; 
   this->Initialize() ;
 }
 
@@ -125,8 +126,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   std::map<int,unsigned int> Topology = GetTopology(); 
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
 
-  // Remove particles below threshold
-  
   // Apply Fiducial cut for hadrons and photons
   if( ApplyFiducial() ) {  
     for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
@@ -151,7 +150,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Store changes in event after fiducial and momentum cuts
   event -> SetFinalParticlesKinematics( part_map ) ; 
   
-
   // Apply acceptance to all particles 
   double acc_wght = 1 ;
   if( ApplyAccWeights() ) {
@@ -160,7 +158,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     // Others
     for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
       if ( part_map.find(it->first) == part_map.end()) continue ;
-      if( it->first == conf::kPdgElectron ) continue ; 
+      if ( it->first == conf::kPdgElectron ) continue ; 
       else { 
 	for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
 	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
@@ -178,7 +176,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       is_signal = true ; 
     } else if( part_map.count( it->first ) && part_map[it->first].size() == it->second ) {
       is_signal = true ; 
-      kMult_signal = event->GetNTopologyParticles( Topology ) ; 
     } else {
       is_signal = false ; 
     }
@@ -187,12 +184,11 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   if( is_signal ) ++fNEventsAfterTopologyCut ;
   else { // BACKGROUND 
     event->SetIsBkg(true); 
-    event->SetEventWeight(0.) ; // set to 0 for now
     ++fNBkgEvents ;
-    
+
     // Get Number of signal particles, "multiplicity"
     unsigned int mult_bkg = event->GetNSignalParticles( part_map, Topology ) ; 
-    
+
     // Only store background events with multiplicity > mult_signal
     // Also ignore background events above the maximum multiplicity
     if( mult_bkg > kMult_signal && mult_bkg <= GetMaxBkgMult() ) {
@@ -202,10 +198,9 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       } else { 
 	fBkg[mult_bkg].push_back( event ) ; 
       }
-    } else { 
-      delete event ; 
-      return nullptr; 
     }
+    delete event ; 
+    return nullptr; 
   }
   
   StoreTree(event) ;
@@ -431,7 +426,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
     if( topology[conf::kPdgPiM] != 0 ) topology_has_pim = true ; 
   }
 
-  unsigned int TopMult = event->GetNTopologyParticles( topology );
+  unsigned int TopMult = GetNTopologyParticles();
   std::map<int,std::vector<TLorentzVector>> hadron_map = event->GetFinalParticles4Mom();
   TLorentzVector p_max(0,0,0,0) ;
   if( topology_has_protons ) {

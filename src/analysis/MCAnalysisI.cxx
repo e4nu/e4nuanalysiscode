@@ -246,7 +246,7 @@ void MCAnalysisI::Initialize() {
 
   if( ApplyFiducial() ) {
     // Initialize fiducial for this run
-    kFiducialCut = std::unique_ptr<Fiducial>( new Fiducial() ) ; 
+    kFiducialCut = new Fiducial() ; 
     kFiducialCut -> InitPiMinusFit( EBeam ) ; 
     kFiducialCut -> InitEClimits(); 
     kFiducialCut -> up_lim1_ec -> Eval(60) ;

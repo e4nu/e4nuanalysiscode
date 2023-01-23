@@ -41,7 +41,6 @@ namespace e4nu {
     std::map<int,std::unique_ptr<TFile>> kAcceptanceMap;
     std::map<int,std::unique_ptr<TH3D>> kAccMap ; 
     std::map<int,std::unique_ptr<TH3D>> kGenMap ; 
-    std::unique_ptr<Fiducial> kFiducialCut ;
 
     // Store Statistics after cuts
     long int fEventsBeforeCuts = 0 ; 

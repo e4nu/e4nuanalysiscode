@@ -27,6 +27,7 @@ namespace e4nu {
       kObservables.clear();
       kNBins.clear();
       kRanges.clear();
+      delete kFiducialCut ; 
     }
 
 

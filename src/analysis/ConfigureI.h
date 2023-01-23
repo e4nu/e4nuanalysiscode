@@ -12,6 +12,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "physics/EventI.h"
+#include "utils/Fiducial.h"
 
 namespace e4nu { 
 
@@ -123,6 +124,9 @@ namespace e4nu {
       std::unique_ptr<TFile> kOutFile ;
       std::unique_ptr<TTree> kAnalysisTree ; 
       std::vector<TH1D*> kHistograms ; 
+
+      // Need fiducial cut for background substraction and MC signal definition
+      Fiducial * kFiducialCut ;
 
     };
   }

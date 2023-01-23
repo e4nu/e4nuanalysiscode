@@ -25,7 +25,7 @@ namespace e4nu{
       fbeam_en = EBeam;
       ftarget_pdg = target_pdg ;
       bind_en = e4nu::utils::GetBindingEnergy(ftarget_pdg) ; 
-      fiducialcut = in_fiducial;
+      fiducialcut = in_fiducial ;
       N_tot = in_nrot;
       std::cout << " InitSubtraction: N_tot " << N_tot << " , target_pdg " << ftarget_pdg << std::endl;
       std::cout << " Test InitSubtraction Fiducials " << in_fiducial->up_lim1_ec->Eval(60) << std::endl;
@@ -87,7 +87,7 @@ namespace e4nu{
       return fiducialcut->Pi_phot_fid_united(beam_en,V3_pi_phot, q_pi_phot);
     }
 
-    Fiducial *fiducialcut;
+    Fiducial * fiducialcut;
     TVector3 V3q;
     double fbeam_en;
     unsigned int ftarget_pdg;

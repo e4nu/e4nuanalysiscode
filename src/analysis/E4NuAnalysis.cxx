@@ -117,20 +117,55 @@ bool E4NuAnalysis::SubstractBackground(void) {
   unsigned int max_mult = GetMaxBkgMult(); 
   unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
   std::map<int,unsigned int> Topology = GetTopology();
-  
   unsigned int m = max_mult ;
+
   while ( m >= min_mult ) {
     if( fBkg.find(m) != fBkg.end() ) {
       std::cout<< " Number of events with multiplicity " << m << " = " << fBkg[m].size() <<std::endl; 
-      // Calculate weight for events with multiplicity m->m-1
-      // Add events in fBkg(m-1)
-      for( auto i = 0 ; i < fBkg[m].size() ; ++i ) {
-	std::cout << " m = " << m << " id = " << fBkg[m][i].GetEventID() << std::endl;
-      }
     }
-    --m ; 
+    --m; 
   }
-  
+
+  std::map<int,std::vector<TLorentzVector>> particles ;
+  std::map<int,std::vector<TLorentzVector>> particles_uncorr ; 
+  TLorentzVector V4_el ;
+  if ( fBkg.find(2) != fBkg.end() ) {
+     if ( fBkg[2].size() != 0 ) {
+      for ( unsigned int i = 0 ; i < fBkg[2].size() ; ++i ) {
+	particles = fBkg[2][i].GetFinalParticles4Mom();
+	particles_uncorr = fBkg[2][i].GetFinalParticlesUnCorr4Mom(); // This map needs to change with the cuts as well...
+	
+	if( particles[conf::kPdgProton].size() == 2 
+	    && particles[conf::kPdgPiP].size() == 0 
+	    && particles[conf::kPdgPiM].size() == 0 
+	    && particles[conf::kPdgPi0].size() == 0 
+	    && particles[conf::kPdgPhoton].size() == 0 ) {
+	  std::cout << " Computing background for 2p0pi " << std::endl;	
+
+	  V4_el = fBkg[2][i].GetOutLepton4Mom();
+	  
+	  // 2p0pi -> 1p0pi 
+	  double E_tot_2p[2]={0};
+	  double p_perp_tot_2p[2]={0};
+	  double N_prot_both = 0;
+	  double P_N_2p[2]={0};
+	  
+	  TVector3 V3_2prot_corr[2];
+	  V3_2prot_corr[0] = particles[conf::kPdgProton][0].Vect() ; 
+	  V3_2prot_corr[1] = particles[conf::kPdgProton][1].Vect() ; 
+	  
+	  TVector3 V3_2prot_uncorr[2];
+	  V3_2prot_uncorr[0] = particles_uncorr[conf::kPdgProton][0].Vect() ; 
+	  V3_2prot_uncorr[1] = particles_uncorr[conf::kPdgProton][1].Vect() ; 
+	
+	  //	fRotation->prot2_rot_func( V3_2prot_corr, V3_2prot_uncorr, V4_el, E_tot_2p, p_perp_tot_2p, P_N_2p , &N_prot_both)
+	} else { std::cout << " other topology " << std::endl; }
+      } 
+     particles.clear() ;
+     particles_uncorr.clear() ;
+     }
+  }
+  return true ; 
 } 
 
 

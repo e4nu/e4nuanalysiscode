@@ -15,6 +15,7 @@ namespace e4nu {
       void ApplyResolution( const int pdg, TLorentzVector & mom, const double EBeam ) ; 
       double GetParticleResolucion( const int particle_pdg, const double EBeam ) ; 
       double GetParticleMass( const int pdg ) ; 
+      int GetParticleCharge( const int pdg ) ;
     }
 }
 

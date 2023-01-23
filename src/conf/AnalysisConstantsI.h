@@ -1,4 +1,4 @@
-/**                                                                                                                                                                                                                  
+/**                                                                                                                                                                                                                
  * This file contains general constants to be used in any analysis
  **/
 
@@ -8,31 +8,31 @@
 namespace e4nu {
   namespace conf {
     // Phase space limits
-    const double kQ2Max = 1.75 ; 
-    const double kQ2Min = 0.4 ; 
-    const double kMinTheta = 10 ;
-    const double kMaxTheta = 60 ;
-    const double kMinEePrime = 0.5 ; 
-    const double kMaxEePrime = 2.5 ;
-    const double kPhiOpeningAngle = 6 ; 
+    static const double kQ2Max = 1.75 ; 
+    static const double kQ2Min = 0.4 ; 
+    static const double kMinTheta = 10 ;
+    static const double kMaxTheta = 60 ;
+    static const double kMinEePrime = 0.5 ; 
+    static const double kMaxEePrime = 2.5 ;
+    static const double kPhiOpeningAngle = 6 ; 
     
-    const double kMinThetaProton = 12.;
-    const double kMinThetaPiPlus = 12.;
-    const double kMinThetaPiMinus = 0.;
-    const double kMinThetaGamma = 8.;
+    static const double kMinThetaProton = 12.;
+    static const double kMinThetaPiPlus = 12.;
+    static const double kMinThetaPiMinus = 0.;
+    static const double kMinThetaGamma = 8.;
 
-    const double kMinEThetaSlice = 36 ;
-    const double kMaxEThetaSlice = 39 ; 
+    static const double kMinEThetaSlice = 36 ;
+    static const double kMaxEThetaSlice = 39 ; 
 
-    const double kCenterFirstSector = 30;
-    const double kCenterSecondSector = 90;
-    const double kCenterThirdSector = 150;
-    const double kCenterFourthSector = 210;
-    const double kCenterFifthSector = 270;
-    const double kCenterSixthSector = 330;
+    static const double kCenterFirstSector = 30;
+    static const double kCenterSecondSector = 90;
+    static const double kCenterThirdSector = 150;
+    static const double kCenterFourthSector = 210;
+    static const double kCenterFifthSector = 270;
+    static const double kCenterSixthSector = 330;
 
-    const double kPhotonRadCut = 40 ; 
-    const double kPhotonEPhiDiffCut = 30 ; 
+    static const double kPhotonRadCut = 40 ; 
+    static const double kPhotonEPhiDiffCut = 30 ; 
   }
 }
 

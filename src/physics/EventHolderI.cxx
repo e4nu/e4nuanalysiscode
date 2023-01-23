@@ -16,21 +16,16 @@ EventHolderI::~EventHolderI() {
   this->Clear();
 }
 
-EventHolderI::EventHolderI( const std::string file ) { 
-  this->Initialize() ; 
-  std::cout<< "Loading "<< file << " ... \n" ;
-  if( this->LoadMembers( file ) ) fIsConfigured = true ; 
-  fMaxEvents = fEventHolderChain ->GetEntries() ;
-}
-
-EventHolderI::EventHolderI( const std::string file, const int nmaxevents ) { 
+EventHolderI::EventHolderI( const std::string file, const unsigned int first_event, const unsigned int nmaxevents ) { 
   this->Initialize() ; 
   if( this->LoadMembers( file ) ) { 
     fIsConfigured = true ; 
-    if( nmaxevents > fEventHolderChain -> GetEntries() || nmaxevents < 0 ) fMaxEvents = fEventHolderChain ->GetEntries() ;
+    if( nmaxevents > fEventHolderChain -> GetEntries() || nmaxevents == 0 ) fMaxEvents = fEventHolderChain ->GetEntries() ;
     else fMaxEvents = nmaxevents ; 
-
-    std::cout<< "Loading "<< fMaxEvents << " from " << file << " ... \n" ;
+    fFirstEvent = first_event ;
+    std::cout<< "Loading "<< fMaxEvents << " from " << file ;
+    if( fFirstEvent != 0 ) std::cout << " Starting from event " << fFirstEvent ;
+    std::cout << " ... \n" ;
   }
   else fIsConfigured = false ; 
 }
@@ -51,13 +46,13 @@ bool EventHolderI::LoadMembers( const std::string file ) {
 } 
 
 void EventHolderI::Initialize() { 
-  fEventHolderChain = new TChain("gst","e4nu_analysis") ; 
+  fEventHolderChain = std::unique_ptr<TChain>( new TChain("gst","e4nu_analysis") ); 
   fIsConfigured = true ; 
   fMaxEvents = -1 ; 
 }
 
 void EventHolderI::Clear() { 
   fEventHolderChain = nullptr ;
-  fMaxEvents = -1 ;
-
+  fMaxEvents = 0 ;
+  fFirstEvent = 0 ; 
 }

@@ -29,7 +29,8 @@ namespace e4nu {
     // GENIE Coordinate system is flipped with respect to class
     void SetOutLeptonKinematics( const double energy, const double px, const double py, const double pz ) ;
     void SetInLeptonKinematics( const double energy, const double px, const double py, const double pz ) ; 
- 
+
+
   private :
 
     TLorentzVector fVertex ; 

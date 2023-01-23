@@ -17,8 +17,7 @@ namespace e4nu {
   public: 
 
     CLASEventHolder(); 
-    CLASEventHolder( const std::string root_file ) ; 
-    CLASEventHolder( const std::string root_file, const int maxevents ) ; 
+    CLASEventHolder( const std::string root_file, const int first_event, const int maxevents ) ; 
     CLASEventHolder( const std::vector<std::string> root_file_list ) ; 
     
     bool LoadBranch(void) ;

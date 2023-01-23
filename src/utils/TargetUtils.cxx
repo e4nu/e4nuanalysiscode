@@ -2,7 +2,7 @@
 /*
  * Julia Tena Vidal jtenavidal \at tauex.tau.ac.il 
  */
-
+#include <iostream>
 #include "utils/TargetUtils.h"
 #include "conf/ParticleI.h"
 #include "conf/TargetI.h"

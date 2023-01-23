@@ -7,7 +7,7 @@
 
 namespace e4nu {
   namespace conf {
-    const unsigned int NSectors = 6 ;
+    static const unsigned int NSectors = 6 ;
     
   }
 }

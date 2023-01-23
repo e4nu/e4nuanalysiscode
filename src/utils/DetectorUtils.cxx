@@ -3,41 +3,37 @@
  * \author Julia Tena Vidal \at Tel Aviv University                                                                                                                                                                 
  * \date October 2022                                                                                                                                                                                              
  **/
-
+#include <iostream>
 #include "utils/DetectorUtils.h"
 #include "conf/AccpetanceMapsI.h"
 #include "TMath.h"
-#include "TH3D.h"
 #include "TFile.h"
 
 using namespace e4nu;
 
-double utils::GetAcceptanceMapWeight( const int pdg, const TLorentzVector p4mom, const int target, const double EBeam, const std::string local_path ) {
-  TFile * file_acceptance = TFile::Open( conf::GetAcceptanceFile( pdg, target, EBeam, local_path ).c_str() ) ; 
-  if( !file_acceptance ) return 1. ;
- 
-  TH3D * acc = (TH3D*) file_acceptance -> Get("Accepted Particles");
-  TH3D * gen = (TH3D*) file_acceptance -> Get("Generated Particles");
-  if( !acc || !gen ) return 1. ;
+double utils::GetAcceptanceMapWeight( TH3D & acc, TH3D & gen, const TLorentzVector p4mom ){
 
-  double phi = p4mom.Phi() ; 
-  //map 330 till 360 to [-30:0] for the acceptance map histogram
+  double phi = p4mom.Phi() + TMath::Pi() ; 
   if(phi > (2*TMath::Pi() - TMath::Pi()/6.) ) { phi -= 2*TMath::Pi(); }
-  
-  double pbin_gen = gen->GetXaxis()->FindBin(p4mom.P());
-  double tbin_gen = gen->GetYaxis()->FindBin(p4mom.CosTheta());
-  double phibin_gen = gen->GetZaxis()->FindBin(phi*180/TMath::Pi());
-  double num_gen = gen->GetBinContent(pbin_gen, tbin_gen, phibin_gen);
+  phi *= 180/TMath::Pi() ;
 
-  double pbin_acc = acc->GetXaxis()->FindBin(p4mom.P());
-  double tbin_acc = acc->GetYaxis()->FindBin(p4mom.CosTheta());
-  double phibin_acc = acc->GetZaxis()->FindBin(phi*180/TMath::Pi());
-  double num_acc = acc->GetBinContent(pbin_acc, tbin_acc, phibin_acc);
+  //Redefinition of the phi angle
+  //because the acceptance maps are defined between (-30,330)
+  //  phi -= 30 ; 
 
-  double acc_ratio = (double)num_acc / (double)num_gen;
-  //  double acc_err = (double)sqrt(acc_ratio*(1-acc_ratio)) / (double)num_gen;
+  double pbin_gen = gen.GetXaxis()->FindBin(p4mom.P());
+  double tbin_gen = gen.GetYaxis()->FindBin(p4mom.CosTheta());
+  double phibin_gen = gen.GetZaxis()->FindBin(phi);
+  double num_gen = gen.GetBinContent(pbin_gen, tbin_gen, phibin_gen);
 
-  return acc_ratio;
+  double pbin_acc = acc.GetXaxis()->FindBin(p4mom.P());
+  double tbin_acc = acc.GetYaxis()->FindBin(p4mom.CosTheta());
+  double phibin_acc = acc.GetZaxis()->FindBin(phi);
+  double num_acc = acc.GetBinContent(pbin_acc, tbin_acc, phibin_acc);
+
+  double acc_w = num_acc / num_gen ; 
+  if( fabs(acc_w) != acc_w ) return 0 ; // Safety check
+  return acc_w ; 
 } 
 
 unsigned int utils::GetSector( double phi ) {

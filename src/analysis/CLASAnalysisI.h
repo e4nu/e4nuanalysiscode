@@ -7,20 +7,19 @@
 #define _CLASANALYSIS_I_H_
 
 #include <iostream>
-#include "analysis/AnalysisI.h"
+#include "analysis/ConfigureI.h"
 #include "physics/CLASEventHolder.h"
 
 using namespace e4nu::conf ; 
 
 namespace e4nu {
-  class CLASAnalysisI : virtual public AnalysisI {
+  class CLASAnalysisI : virtual public ConfigureI {
   public : 
     CLASAnalysisI(); 
 
-    bool LoadData( const std::string file ) ; 
-    bool LoadData( const std::string file, const unsigned int nmax ) ; 
+    bool LoadData(void) ; 
     e4nu::EventI * GetEvent( const unsigned int event_id ) ;
-    virtual unsigned int GetNEvents( void ) const ;
+    unsigned int GetNEvents( void ) const ;
 
     // Load Data from root file:
     virtual ~CLASAnalysisI();

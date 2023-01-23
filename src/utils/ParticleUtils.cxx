@@ -37,12 +37,20 @@ void utils::ApplyResolution( const int pdg, TLorentzVector & mom, const double E
   double res = utils::GetParticleResolucion( pdg, EBeam ) ;
   double p = mom.P() ;
   double M = GetParticleMass( pdg ) ;
+  
+  double SmearedP = gRandom->Gaus(p,res*p);
+  double SmearedE = sqrt( pow( SmearedP,2 ) + pow( M,2 ) ) ; 
 
-  gRandom = new TRandom3() ; 
-  gRandom->SetSeed(10);
+  mom.SetPxPyPzE( SmearedP/p * mom.Px(), SmearedP/p * mom.Py(), SmearedP/p * mom.Pz(), SmearedE ) ; 
+}
 
-  double SmearedPe = gRandom->Gaus(p,res*p);
-  double SmearedE = sqrt( pow( SmearedPe,2 ) + pow( M,2 ) ) ; 
-
-  mom.SetPxPyPzE( SmearedPe/p * mom.Px(), SmearedPe/p *mom.Py(), SmearedPe/p *mom.Pz(), SmearedE ) ; 
+int utils::GetParticleCharge( const int pdg ) {
+  if( pdg == conf::kPdgElectron ) return conf::kElectronCharge ; 
+  else if( pdg == conf::kPdgProton ) return conf::kProtonCharge ; 
+  else if ( pdg == conf::kPdgPiP ) return conf::kPiPCharge ; 
+  else if ( pdg == conf::kPdgPiM ) return conf::kPiMCharge ; 
+  else if ( pdg == conf::kPdgPi0 ) return conf::kPi0Charge ;
+  else if ( pdg == conf::kPdgNeutron ) return conf::kNeutronCharge ; 
+  else if ( pdg == conf::kPdgPhoton ) return conf::kPhotonCharge ; 
+  return 0 ; 
 }

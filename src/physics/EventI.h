@@ -10,6 +10,7 @@
 #include <iostream>
 #include <map> 
 #include "TLorentzVector.h"
+#include "conf/ParticleI.h"
 
 namespace e4nu {
   class EventI {
@@ -27,24 +28,32 @@ namespace e4nu {
     int GetInLeptPdg(void) const { return fInLeptPdg ; }
     int GetOutLeptPdg(void) const { return fOutLeptPdg ; }
 
-    unsigned int GetNProtons(void) const { return fNP ; }
-    unsigned int GetNNeutrons(void) const { return fNN ; }
-    unsigned int GetNPiP(void) const { return fNPiP ; }
-    unsigned int GetNPiM(void) const { return fNPiM ; }
-    unsigned int GetNPi0(void) const { return fNPi0 ; }
-    unsigned int GetNKP(void) const { return fNKP ; }
-    unsigned int GetNKM(void) const { return fNKM ; }
-    unsigned int GetNK0(void) const { return fNK0 ; }
-    unsigned int GetNEM(void) const { return fNEM ; }
-    unsigned int GetNOther(void) const { return fNOther ; } 
+    unsigned int GetRecoNProtons(void) { return fFinalParticles[conf::kPdgProton].size() ; }
+    unsigned int GetRecoNNeutrons(void) { return fFinalParticles[conf::kPdgNeutron].size() ; }
+    unsigned int GetRecoNPiP(void) { return fFinalParticles[conf::kPdgPiP].size() ; }
+    unsigned int GetRecoNPiM(void) { return fFinalParticles[conf::kPdgPiM].size() ; }
+    unsigned int GetRecoNPi0(void) { return fFinalParticles[conf::kPdgPi0].size() ; }
+    unsigned int GetRecoNKP(void) { return fFinalParticles[conf::kPdgKP].size() ; }
+    unsigned int GetRecoNKM(void) { return fFinalParticles[conf::kPdgKM].size() ; }
+    unsigned int GetRecoNK0(void) { return fFinalParticles[conf::kPdgK0].size() ; }
+    unsigned int GetRecoNEM(void) { return fFinalParticles[conf::kPdgPhoton].size() ; }
 
-    void SetWeight(const double w) { fWeight = w ; }
-    void AddWeight(const double w) { fWeight *= w ; }
-    double GetWeight(void) const { return fWeight ; }
+    double GetTotalWeight(void) const { return fWeight * fAccWght * fMottXSecWght ; }
+    double GetEventWeight(void) const { return fWeight ; }
+    void SetEventWeight( double wght ) { fWeight = wght ; }
+    double IsBkg(void) const{ return fIsBkg ; }
+    void SetIsBkg( const bool bkg ) { fWeight = 0 ; fIsBkg = bkg ; }
 
-    void SetOutLeptonKinematics( const TLorentzVector tlvect ) { fOutLepton = tlvect ; }
-    void SetInLeptonKinematics( const TLorentzVector tlvect ) { fInLepton = tlvect ; }
+    void SetOutLeptonKinematics( const TLorentzVector & tlvect ) { fOutLepton = tlvect ; }
+    void SetInLeptonKinematics( const TLorentzVector & tlvect ) { fInLepton = tlvect ; }
     void SetFinalParticlesKinematics( const std::map<int,std::vector<TLorentzVector>> part_map ) { fFinalParticles = part_map ; }
+
+    double GetObservable( const std::string observable ) ;
+
+    unsigned int GetEventMultiplicity( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) ;
+    unsigned int GetNVisibleParticles( const std::map<int,std::vector<TLorentzVector>> hadronic_system, const int pdg ) ;
+    unsigned int GetNSignalParticles( const std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) ;
+    int GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) ;
 
   protected : 
     EventI(); 
@@ -77,16 +86,21 @@ namespace e4nu {
     TLorentzVector fInLepton ; 
     TLorentzVector fOutLepton ; 
     std::map<int,std::vector<TLorentzVector>> fFinalParticles ; 
+
+    unsigned int fNP, fNN, fNPiP, fNPiM, fNPi0, fNKP, fNKM, fNK0, fNEM, fNOther ; 
+
+    double fWeight = 1. ; 
+    double fAccWght = 1. ;
+    double fMottXSecWght = 1. ;
     
   private :
 
-    double fWeight ; 
     unsigned int fEventID ; 
     int fTargetPdg ; 
     int fInLeptPdg ; 
     int fOutLeptPdg ; 
 
-    unsigned int fNP, fNN, fNPiP, fNPiM, fNPi0, fNKP, fNKM, fNK0, fNEM, fNOther ; 
+    bool fIsBkg = false ; 
 
     void Initialize(void) ;
     void Clear(void); 

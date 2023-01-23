@@ -8,11 +8,13 @@
 #define _DETECTOR_UTILS_H_
 
 #include "TLorentzVector.h"
+#include "TH3D.h"
+#include "TFile.h"
 
 namespace e4nu {
   namespace utils
   {
-    double GetAcceptanceMapWeight( const int pdg, const TLorentzVector p4mom, const int target, const double EBeam, const std::string local_path ) ; 
+    double GetAcceptanceMapWeight( TH3D & h_acc, TH3D & h_gen, const TLorentzVector p4mom );
     unsigned int GetSector( double phi ) ;
     bool IsValidSector( const double phi, const double EBeam, const bool use_all ) ;
   }

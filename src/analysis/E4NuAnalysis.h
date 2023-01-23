@@ -10,6 +10,7 @@
 #include "TF1.h"
 #include "analysis/MCAnalysisI.h"
 #include "analysis/CLASAnalysisI.h"
+#include "utils/Subtraction.h"
 
 using namespace e4nu::conf ; 
 
@@ -36,6 +37,7 @@ namespace e4nu {
     unsigned int GetNEvents( void ) const ;
 
     TF1 * fElectronFit ; 
+    Subtraction * fRotation;
 
     long int fNEventsAfterEMomCut = 0 ; 
     long int fNEventsAfterEThetaCut = 0 ; 

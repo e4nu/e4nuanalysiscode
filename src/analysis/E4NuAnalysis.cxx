@@ -21,7 +21,8 @@ E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : ConfigureI(conf_file
 E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : ConfigureI(EBeam, TargetPdg), MCAnalysisI(), CLASAnalysisI() { this->Initialize();}
 
 E4NuAnalysis::~E4NuAnalysis() {
-
+  delete fRotation ;
+  delete fElectronFit ; 
 }
 
 bool E4NuAnalysis::LoadData(void) {
@@ -108,6 +109,7 @@ bool E4NuAnalysis::Analyse(void) {
     for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
       kHistograms[j]-> Fill( event-> GetObservable( GetObservablesTag()[j] ) , event->GetTotalWeight() ) ;
     }
+
   }
   
   return true ; 

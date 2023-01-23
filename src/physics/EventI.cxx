@@ -42,6 +42,28 @@ void EventI::SetFinalParticle( const int pdg, const double E, const double px, c
   }
 }
 
+void EventI::SetOutUnCorrLeptonKinematics( const double E, const double px, const double py, const double pz ) {
+  fOutLeptonUnCorr.SetPxPyPzE( px, py, pz, E ) ; 
+  return ; 
+}
+
+void EventI::SetInUnCorrLeptonKinematics( const double E, const double px, const double py, const double pz ) {
+  fInLeptonUnCorr.SetPxPyPzE( px, py, pz, E ) ; 
+  return ; 
+} 
+
+void EventI::SetFinalParticleUnCorr( const int pdg, const double E, const double px, const double py, const double pz ) {
+  TLorentzVector mom;
+  mom.SetPxPyPzE( px, py, pz, E ) ; 
+  if( fFinalParticlesUnCorr.find(pdg) == fFinalParticlesUnCorr.end() ) {
+    std::vector<TLorentzVector> vct ;
+    vct.push_back(mom); 
+    fFinalParticlesUnCorr.insert( std::pair<int,std::vector<TLorentzVector>>(pdg, vct) ) ; 
+  } else {
+    fFinalParticlesUnCorr[pdg].push_back( mom ) ; 
+  }
+}
+
 unsigned int EventI::GetEventMultiplicity( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) {
   // return number of charged particles in event
   unsigned int multiplicity = 0 ; 
@@ -128,17 +150,7 @@ double EventI::GetObservable( const std::string observable ) {
   } else if ( observable == "Sector" ) {
     ef4mom = GetOutLepton4Mom() ;
     ef4mom.SetPhi( ef4mom.Phi()+TMath::Pi() ) ;
-
     return utils::GetSector( ef4mom.Phi() ) ; 
-
-    /*
-    Float_t phi = ef4mom.Phi() * 180. / TMath::Pi();
-    if (phi < -30.) phi += 360.;
-    Int_t sector = (Int_t)((phi+30.)/60.);
-    if( sector < 0 ) return 0 ; 
-    if( sector > 5 ) return 5 ; 
-    */
-
   }
   std::cout << observable << " is NOT defined " << std::endl;
   return 0 ; 
@@ -146,6 +158,7 @@ double EventI::GetObservable( const std::string observable ) {
 
 void EventI::Initialize() { 
   fFinalParticles.clear() ; 
+  fFinalParticlesUnCorr.clear() ; 
   fIsMC = false ; 
   fEventID = 0 ; 
   fWeight = 0 ; 
@@ -166,11 +179,14 @@ void EventI::Initialize() {
 
   fInLepton.SetPxPyPzE( 0,0,0,0 ) ;
   fOutLepton.SetPxPyPzE( 0,0,0,0 ) ;
+  fInLeptonUnCorr.SetPxPyPzE( 0,0,0,0 ) ;
+  fOutLeptonUnCorr.SetPxPyPzE( 0,0,0,0 ) ;
 
 }
 
 void EventI::Clear() { 
 
   fFinalParticles.clear() ; 
+  fFinalParticlesUnCorr.clear() ; 
 
 }

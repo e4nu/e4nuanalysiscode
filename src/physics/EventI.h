@@ -23,6 +23,9 @@ namespace e4nu {
     TLorentzVector GetInLepton4Mom(void) const { return fInLepton ; }
     TLorentzVector GetOutLepton4Mom(void) const { return fOutLepton ; }
     std::map<int,std::vector<TLorentzVector>> GetFinalParticles4Mom(void) const { return fFinalParticles ; }
+    TLorentzVector GetInLeptonUnCorr4Mom(void) const { return fInLeptonUnCorr ; }
+    TLorentzVector GetOutLeptonUnCorr4Mom(void) const { return fOutLeptonUnCorr ; }
+    std::map<int,std::vector<TLorentzVector>> GetFinalParticlesUnCorr4Mom(void) const { return fFinalParticlesUnCorr ; }
  
     int GetTargetPdg(void) const { return fTargetPdg ; }
     int GetInLeptPdg(void) const { return fInLeptPdg ; }
@@ -77,8 +80,11 @@ namespace e4nu {
 
     void SetOutLeptonKinematics( const double energy, const double px, const double py, const double pz ) ;
     void SetInLeptonKinematics( const double energy, const double px, const double py, const double pz ) ; 
-
     void SetFinalParticle( const int pdg, const double E, const double px, const double py, const double pz ) ; 
+
+    void SetOutUnCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) ;
+    void SetInUnCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) ; 
+    void SetFinalParticleUnCorr( const int pdg, const double E, const double px, const double py, const double pz ) ; 
 
     
     // Common funtionalities which depend on MC or data 
@@ -86,6 +92,11 @@ namespace e4nu {
     TLorentzVector fInLepton ; 
     TLorentzVector fOutLepton ; 
     std::map<int,std::vector<TLorentzVector>> fFinalParticles ; 
+
+    // Store uncorrected kinematics
+    TLorentzVector fInLeptonUnCorr ; 
+    TLorentzVector fOutLeptonUnCorr ; 
+    std::map<int,std::vector<TLorentzVector>> fFinalParticlesUnCorr ; 
 
     unsigned int fNP, fNN, fNPiP, fNPiM, fNPi0, fNKP, fNKM, fNK0, fNEM, fNOther ; 
 

@@ -193,10 +193,10 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     // Also ignore background events above the maximum multiplicity
     if( mult_bkg > kMult_signal && mult_bkg <= GetMaxBkgMult() ) {
       if( fBkg.find(mult_bkg) == fBkg.end() ) {
-	std::vector<EventI*> temp ( 1, event ) ;
+	std::vector<EventI> temp ( 1, *event ) ;
 	fBkg[mult_bkg] = temp ; 
       } else { 
-	fBkg[mult_bkg].push_back( event ) ; 
+	fBkg[mult_bkg].push_back( *event ) ; 
       }
     }
     delete event ; 

@@ -118,7 +118,7 @@ namespace e4nu {
       bool kIsConfigured = true ; 
 
       // Background definition
-      std::map<int,std::vector<e4nu::EventI*>> fBkg;
+      std::map<int,std::vector<e4nu::EventI>> fBkg;
 
       // Information for output file
       std::unique_ptr<TFile> kOutFile ;

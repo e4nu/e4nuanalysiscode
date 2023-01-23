@@ -124,6 +124,9 @@ bool E4NuAnalysis::SubstractBackground(void) {
       std::cout<< " Number of events with multiplicity " << m << " = " << fBkg[m].size() <<std::endl; 
       // Calculate weight for events with multiplicity m->m-1
       // Add events in fBkg(m-1)
+      for( auto i = 0 ; i < fBkg[m].size() ; ++i ) {
+	std::cout << " m = " << m << " id = " << fBkg[m][i].GetEventID() << std::endl;
+      }
     }
     --m ; 
   }

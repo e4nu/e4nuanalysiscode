@@ -211,6 +211,9 @@ void E4NuAnalysis::Initialize(void) {
   if( Ebeam == 2.261 ) { fElectronFit -> SetParameters(16,10.5) ; }
   if( Ebeam == 4.461 ) { fElectronFit -> SetParameters(13.5,15) ; }
 
+  fRotation = new Subtraction();
+  fRotation->InitSubtraction( Ebeam, GetConfiguredTarget(), GetNRotations(), kFiducialCut);
+  fRotation->ResetQVector(); //Resets q vector to (0,0,0)
 }
 
 double E4NuAnalysis::GetElectronMinTheta( TLorentzVector emom ) {

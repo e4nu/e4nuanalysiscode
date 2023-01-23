@@ -19,6 +19,7 @@ namespace e4nu {
       kTargetPdg = TargetPdg ;
       kIsDataLoaded = false ;
       kIsConfigured = true ; 
+      InitializeFiducial();
       PrintConfiguration();
     }
     
@@ -166,7 +167,8 @@ namespace e4nu {
 	std::cout << " ERROR : XSec file not specified " << std::endl;
 	kIsConfigured = false ; 
       }
-
+      
+      if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
       if( kIsConfigured ) PrintConfiguration() ;
     }
 

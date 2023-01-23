@@ -202,8 +202,8 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     delete event ; 
     return nullptr; 
   }
-  
-  StoreTree(event) ;
+
+  StoreTree( event ) ;  
   
   return event ; 
     
@@ -243,16 +243,6 @@ void MCAnalysisI::Initialize() {
   // Get run configurables
   double EBeam = GetConfiguredEBeam() ; 
   unsigned int Target = GetConfiguredTarget() ;
-
-  if( ApplyFiducial() ) {
-    // Initialize fiducial for this run
-    kFiducialCut = new Fiducial() ; 
-    kFiducialCut -> InitPiMinusFit( EBeam ) ; 
-    kFiducialCut -> InitEClimits(); 
-    kFiducialCut -> up_lim1_ec -> Eval(60) ;
-    kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), Target , EBeam ) ;
-    kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
-  }
 
   // Initialize acceptance map histograms from file
   if( ApplyAccWeights() ) { 

@@ -107,6 +107,7 @@ namespace e4nu {
 	      }
 	  }
 	} else if ( param[i] == "MaxBackgroundMultiplicity" ) { kMaxBkgMult = (unsigned int) std::stoi( value[i] ) ;
+	} else if ( param[i] == "NRotations" ) { kNRotations = (unsigned int) std::stoi( value[i] ) ;
 	} else if ( param[i] == "ObservableList" ) {
 	  std::string obs ; 
 	  std::istringstream obs_list( value[i] ) ; 
@@ -195,6 +196,7 @@ namespace e4nu {
 	std::cout << "    " << it->first << ", multiplicity " << it->second << std::endl;
       }
       std::cout << "Maximum Background Multiplicity: "<< kMaxBkgMult << "\n" << std::endl;
+      std::cout << "Number of rotations: "<< kNRotations << "\n" << std::endl;
       for( unsigned int i = 0 ; i < kObservables.size(); ++i ) {
 	std::cout << "Observable " << kObservables[i] << std::endl;
 	std::cout << "Number of bins = " << kNBins[i] << std::endl;

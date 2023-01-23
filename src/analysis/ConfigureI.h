@@ -55,6 +55,7 @@ namespace e4nu {
       unsigned int GetFirstEventToRun(void) const { return kFirstEvent ; } 
       unsigned int GetMaxBkgMult(void) const { return kMaxBkgMult ; }
       unsigned int GetMinBkgMult(void) const { return kMult_signal ; }
+      unsigned int GetNRotations(void) const { return kNRotations ; } 
 
       unsigned int GetNTopologyParticles(void) ;
       
@@ -110,6 +111,7 @@ namespace e4nu {
       // Topology
       std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity
       unsigned int kMaxBkgMult = 2 ; 
+      unsigned int kNRotations = 100; 
 
       bool kIsDataLoaded = false ;
       bool kIsConfigured = true ; 

@@ -169,6 +169,23 @@ namespace e4nu {
 
       if( kIsConfigured ) PrintConfiguration() ;
     }
+
+    bool ConfigureI::InitializeFiducial(void) {
+      double EBeam = GetConfiguredEBeam() ; 
+      unsigned int Target = GetConfiguredTarget() ;
+
+      if( ApplyFiducial() ) {
+	// Initialize fiducial for this run
+	kFiducialCut = new Fiducial() ; 
+	kFiducialCut -> InitPiMinusFit( EBeam ) ; 
+	kFiducialCut -> InitEClimits(); 
+	kFiducialCut -> up_lim1_ec -> Eval(60) ;
+	kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), Target , EBeam ) ;
+	kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
+      } else { return true ; }
+      if( !kFiducialCut ) return false ; 
+      return true ; 
+    }
       
     void ConfigureI::PrintConfiguration(void) const { 
       std::cout << "*********************************************************************" << std::endl;

@@ -13,6 +13,7 @@
 #include "TTree.h"
 #include "physics/EventI.h"
 #include "utils/Fiducial.h"
+#include "conf/FiducialCutI.h"
 
 namespace e4nu { 
 
@@ -28,6 +29,7 @@ namespace e4nu {
       ConfigureI( const std::string input_file ) ;
       ConfigureI( const double EBeam, const unsigned int TargetPdg ) ;
       
+      bool InitializeFiducial(void) ;      
       bool IsConfigured(void) const { return kIsConfigured ; }
       void PrintConfiguration(void) const ; 
 

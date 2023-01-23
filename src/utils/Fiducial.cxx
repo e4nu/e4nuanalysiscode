@@ -985,7 +985,7 @@ Bool_t Fiducial::EFiducialCut(double beam_en, TVector3 momentum) {
 
     if(mom <= 2.0) {
 
-      bool SCpdcut = true;
+      SCpdcut = true;
 
       if (SCpdcut) {  // if the SCpdCut bit is set, take off the bad SC paddle by strictly cutting off a theta gap.
 
@@ -1064,7 +1064,7 @@ Bool_t Fiducial::EFiducialCut(double beam_en, TVector3 momentum) {
 
     } else {
 
-      bool SCpdcut = true;
+      SCpdcut = true;
 			
       if (SCpdcut) { // if the SCpdCut bit is set, take off the bad SC paddle by strictly cutting off a theta gap.
 

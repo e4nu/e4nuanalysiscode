@@ -156,6 +156,10 @@ double EventI::GetObservable( const std::string observable ) {
   return 0 ; 
 }
 
+TVector3 EventI::GetRecoq3() const { 
+  return utils::GetRecoq3( fOutLepton, fInLepton.E() ) ; 
+}
+
 void EventI::Initialize() { 
   fFinalParticles.clear() ; 
   fFinalParticlesUnCorr.clear() ; 

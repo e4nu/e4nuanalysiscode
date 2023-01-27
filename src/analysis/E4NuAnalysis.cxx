@@ -142,8 +142,7 @@ bool E4NuAnalysis::SubstractBackground(void) {
 	    && particles[conf::kPdgPiM].size() == 0 
 	    && particles[conf::kPdgPi0].size() == 0 
 	    && particles[conf::kPdgPhoton].size() == 0 ) {
-	  std::cout << " Computing background for 2p0pi " << std::endl;	
-
+	  
 	  V4_el = fBkg[2][i].GetOutLepton4Mom();
 	  
 	  // 2p0pi -> 1p0pi 
@@ -159,9 +158,10 @@ bool E4NuAnalysis::SubstractBackground(void) {
 	  TVector3 V3_2prot_uncorr[2];
 	  V3_2prot_uncorr[0] = particles_uncorr[conf::kPdgProton][0].Vect() ; 
 	  V3_2prot_uncorr[1] = particles_uncorr[conf::kPdgProton][1].Vect() ; 
-	
-	  //	fRotation->prot2_rot_func( V3_2prot_corr, V3_2prot_uncorr, V4_el, E_tot_2p, p_perp_tot_2p, P_N_2p , &N_prot_both)
-	} else { std::cout << " other topology " << std::endl; }
+
+	  fRotation->SetQVector( fBkg[2][i].GetRecoq3() );	
+	  fRotation->prot2_rot_func( V3_2prot_corr, V3_2prot_uncorr, V4_el, E_tot_2p, p_perp_tot_2p, P_N_2p , &N_prot_both);
+	}
       } 
      particles.clear() ;
      particles_uncorr.clear() ;

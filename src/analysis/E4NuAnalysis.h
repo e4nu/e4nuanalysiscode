@@ -29,23 +29,11 @@ namespace e4nu {
     bool SubstractBackground(void) ; 
     bool Finalise(void);
 
-  protected : 
-    double GetElectronMinTheta(TLorentzVector emom) ; 
-
   private : 
     e4nu::EventI * GetValidEvent( const unsigned int event_id ) ;
     unsigned int GetNEvents( void ) const ;
 
-    TF1 * fElectronFit ; 
     Subtraction * fRotation;
-
-    long int fNEventsAfterEMomCut = 0 ; 
-    long int fNEventsAfterEThetaCut = 0 ; 
-    long int fNEventsAfterPhiCut = 0 ; 
-    long int fNEventsAfterQ2Cut = 0 ; 
-    long int fNEventsAfterWCut = 0 ; 
-    long int fNEventsAfterPhiOpeningAngleCut = 0 ; 
-    long int fNEventsAfterThetaCut = 0 ;     
 
     void Initialize(void) ; 
     

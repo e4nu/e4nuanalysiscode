@@ -27,9 +27,12 @@ namespace e4nu {
     AnalysisI( const std::string input_file ) ;
     AnalysisI( const double EBeam, const unsigned int TargetPdg ) ;
       
-    bool InitializeFiducial(void) ;      
+    bool Analyse( EventI * event ) ; 
+    double GetElectronMinTheta( TLorentzVector emom ) ;
+    bool InitializeFiducial(void) ;
     bool IsConfigured(void) const { return kIsConfigured ; }
     void PrintConfiguration(void) const ; 
+    bool Finalise(void) const ; 
 
     std::map<int,unsigned int> GetTopology(void) const{ return kTopology_map ; } 
 
@@ -127,6 +130,16 @@ namespace e4nu {
 
     // Need fiducial cut for background substraction and MC signal definition
     Fiducial * kFiducialCut ;
+    TF1 * fElectronFit ; 
+
+    // Cuts counters
+    long int fNEventsAfterEMomCut = 0 ; 
+    long int fNEventsAfterEThetaCut = 0 ; 
+    long int fNEventsAfterPhiCut = 0 ; 
+    long int fNEventsAfterQ2Cut = 0 ; 
+    long int fNEventsAfterWCut = 0 ; 
+    long int fNEventsAfterPhiOpeningAngleCut = 0 ; 
+    long int fNEventsAfterThetaCut = 0 ;     
 
   };
 }

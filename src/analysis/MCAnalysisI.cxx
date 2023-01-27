@@ -66,6 +66,12 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   ++fEventsBeforeCuts ;
 
+  // Apply Generic analysis cuts
+  if ( ! AnalysisI::Analyse( event ) ) {
+    delete event ; 
+    return nullptr ; 
+  }
+
   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
 
@@ -304,6 +310,8 @@ void MCAnalysisI::Initialize() {
 }
 
 bool MCAnalysisI::Finalise( void ) {
+
+  if( !AnalysisI::Finalise() ) return false ; 
 
   // Normalize
   double domega = 0.01; // sr

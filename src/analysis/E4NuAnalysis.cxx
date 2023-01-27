@@ -55,61 +55,9 @@ bool E4NuAnalysis::Analyse(void) {
       continue ;
     }
 
-    TLorentzVector in_mom = event -> GetInLepton4Mom() ;
-    TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
-    double EBeam = in_mom.E() ; 
-
-    if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) continue ;
-    ++fNEventsAfterEThetaCut ;     
-
-    if( ApplyOutElectronCut() ){
-      if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) continue ; 
-    }
-    ++fNEventsAfterEMomCut ;     
-
-    if( ApplyThetaSlice() ) {
-      if( out_mom.Theta() * 180./TMath::Pi() < conf::kMinEThetaSlice ) continue ; 
-      if( out_mom.Theta() * 180./TMath::Pi() > conf::kMaxEThetaSlice ) continue ; 
-      ++fNEventsAfterThetaCut ; 
-    }
-
-    if( ApplyPhiOpeningAngle() ) {
-      double phi = out_mom.Phi() ; 
-      if ( ! IsData() ) phi += TMath::Pi() ; 
-      if ( ! conf::ValidPhiOpeningAngle( phi ) ) continue ;  
-    }
-    ++fNEventsAfterPhiOpeningAngleCut ; 
-
-    if( ApplyGoodSectorPhiSlice() ) {
-      double phi = out_mom.Phi() ; 
-      if ( ! IsData() ) phi += TMath::Pi() ; 
-      if ( ! conf::GoodSectorPhiSlice( phi ) ) continue ; 
-    }
-    ++fNEventsAfterPhiCut ; 
-
-    double reco_Q2 = utils::GetRecoQ2( out_mom, EBeam ) ; 
-    double W_var = utils::GetRecoW( out_mom, EBeam ) ;
-
-    if( ApplyQ2Cut() ) {
-      double MaxQ2 = 0 ; 
-      if( conf::GetQ2Cut( MaxQ2, EBeam ) ) {
-	if( reco_Q2 < MaxQ2 ) continue ; 
-      }
-      ++fNEventsAfterQ2Cut ; 
-    }
-
-    if( ApplyWCut() ) {
-      double MinW = 0 ; 
-      if( conf::GetWCut( MinW, EBeam ) ) {
-	if( W_var > MinW ) continue ; 
-      }
-      ++fNEventsAfterWCut ; 
-    }
-    
     for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
       kHistograms[j]-> Fill( event-> GetObservable( GetObservablesTag()[j] ) , event->GetTotalWeight() ) ;
     }
-
   }
   
   return true ; 
@@ -215,14 +163,6 @@ bool E4NuAnalysis::Finalise( ) {
   kOutFile->Close() ;
   std::string out_file = GetOutputFile()+".txt";
 
-  std::cout << " Events after electron momentum cut = " << fNEventsAfterEMomCut << std::endl;
-  std::cout << " Events after electron theta cut = " << fNEventsAfterEThetaCut << std::endl;
-  if( ApplyQ2Cut() ) std::cout << " Events after Q2 cut = " << fNEventsAfterQ2Cut << std::endl;
-  if( ApplyWCut() ) std::cout << " Events after W cut = "<< fNEventsAfterWCut <<std::endl;
-  if( ApplyThetaSlice() ) std::cout << " Events after theta cut = " << fNEventsAfterThetaCut << std::endl;
-  if( ApplyPhiOpeningAngle() ) std::cout << " Events after phi opening angle cut = " << fNEventsAfterPhiOpeningAngleCut << std::endl;
-  if( ApplyGoodSectorPhiSlice() ) std::cout << " Events after phi cut = " << fNEventsAfterPhiCut << std::endl;
-
   return is_ok ; 
 }
 
@@ -244,6 +184,3 @@ void E4NuAnalysis::Initialize(void) {
   fRotation->ResetQVector(); //Resets q vector to (0,0,0)
 }
 
-double E4NuAnalysis::GetElectronMinTheta( TLorentzVector emom ) {
-  return fElectronFit ->Eval(emom.P()) ; 
-}

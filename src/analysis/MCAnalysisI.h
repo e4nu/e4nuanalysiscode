@@ -10,14 +10,14 @@
 #include <map>
 #include "TH3D.h"
 #include "utils/Fiducial.h"
-#include "analysis/ConfigureI.h"
+#include "analysis/AnalysisI.h"
 #include "physics/MCEventHolder.h"
 #include "physics/MCEvent.h"
 
 using namespace e4nu::conf ; 
 
 namespace e4nu {
-  class MCAnalysisI: virtual public ConfigureI {
+  class MCAnalysisI: virtual public AnalysisI {
   public : 
     virtual ~MCAnalysisI();
 

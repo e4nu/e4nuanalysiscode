@@ -16,9 +16,9 @@ using namespace e4nu ;
 
 E4NuAnalysis::E4NuAnalysis() {this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : ConfigureI(conf_file), MCAnalysisI(), CLASAnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCAnalysisI(), CLASAnalysisI() { this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : ConfigureI(EBeam, TargetPdg), MCAnalysisI(), CLASAnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCAnalysisI(), CLASAnalysisI() { this->Initialize();}
 
 E4NuAnalysis::~E4NuAnalysis() {
   delete fRotation ;
@@ -131,42 +131,70 @@ bool E4NuAnalysis::SubstractBackground(void) {
   std::map<int,std::vector<TLorentzVector>> particles ;
   std::map<int,std::vector<TLorentzVector>> particles_uncorr ; 
   TLorentzVector V4_el ;
-  if ( fBkg.find(2) != fBkg.end() ) {
-     if ( fBkg[2].size() != 0 ) {
-      for ( unsigned int i = 0 ; i < fBkg[2].size() ; ++i ) {
-	particles = fBkg[2][i].GetFinalParticles4Mom();
-	particles_uncorr = fBkg[2][i].GetFinalParticlesUnCorr4Mom(); // This map needs to change with the cuts as well...
+  unsigned int bkg_mult = min_mult + 1 ;
+ 
+  // remove multiplicity 2 contribution to signal...
+  if ( fBkg.find(bkg_mult) != fBkg.end() ) {
+     if ( fBkg[bkg_mult].size() != 0 ) {
+      for ( unsigned int i = 0 ; i < fBkg[bkg_mult].size() ; ++i ) {
+	particles = fBkg[bkg_mult][i].GetFinalParticles4Mom();
+	particles_uncorr = fBkg[bkg_mult][i].GetFinalParticlesUnCorr4Mom(); // This map needs to change with the cuts as well...
 	
+	// 2p0pi -> 1p0pi ( multiplicity 2 -> multiplicity 1 ) 
 	if( particles[conf::kPdgProton].size() == 2 
 	    && particles[conf::kPdgPiP].size() == 0 
 	    && particles[conf::kPdgPiM].size() == 0 
 	    && particles[conf::kPdgPi0].size() == 0 
 	    && particles[conf::kPdgPhoton].size() == 0 ) {
-	  
-	  V4_el = fBkg[2][i].GetOutLepton4Mom();
-	  
-	  // 2p0pi -> 1p0pi 
-	  double E_tot_2p[2]={0};
-	  double p_perp_tot_2p[2]={0};
-	  double N_prot_both = 0;
-	  double P_N_2p[2]={0};
-	  
-	  TVector3 V3_2prot_corr[2];
-	  V3_2prot_corr[0] = particles[conf::kPdgProton][0].Vect() ; 
-	  V3_2prot_corr[1] = particles[conf::kPdgProton][1].Vect() ; 
-	  
-	  TVector3 V3_2prot_uncorr[2];
-	  V3_2prot_uncorr[0] = particles_uncorr[conf::kPdgProton][0].Vect() ; 
-	  V3_2prot_uncorr[1] = particles_uncorr[conf::kPdgProton][1].Vect() ; 
 
-	  fRotation->SetQVector( fBkg[2][i].GetRecoq3() );	
+	  V4_el = fBkg[bkg_mult][i].GetOutLepton4Mom();
+	  
+	  double E_tot_2p[bkg_mult]={0};
+	  double p_perp_tot_2p[bkg_mult]={0};
+	  double N_prot_both = 0;
+	  double P_N_2p[bkg_mult]={0};
+	  
+	  TVector3 V3_2prot_corr[bkg_mult];
+	  for ( unsigned k = 0 ; k < bkg_mult ; ++k ) {
+	    V3_2prot_corr[k] = particles[conf::kPdgProton][k].Vect() ; 
+	  }
+	  
+	  TVector3 V3_2prot_uncorr[bkg_mult];
+	  for ( unsigned k = 0 ; k < bkg_mult ; ++k ) {
+	    V3_2prot_uncorr[k] = particles_uncorr[conf::kPdgProton][k].Vect() ; 
+	  }
+
+	  fRotation->SetQVector( fBkg[bkg_mult][i].GetRecoq3() );	
 	  fRotation->prot2_rot_func( V3_2prot_corr, V3_2prot_uncorr, V4_el, E_tot_2p, p_perp_tot_2p, P_N_2p , &N_prot_both);
+	  
+	  for( unsigned int j = 0 ; j < bkg_mult ; ++j ) {
+	   fBkg[bkg_mult][i].SetEventWeight( -P_N_2p[j] ) ; 
+	   fBkg[bkg_mult][i].SetIsBkg(false); // For now, we change to signal... with negative weight
+	   if ( fBkg.find(min_mult) != fBkg.end() ) {
+	     fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	   } else {
+	     std::vector<e4nu::EventI> temp = { fBkg[bkg_mult][i] } ;
+	     fBkg[min_mult] = temp ; 
+	   }
+	  }
 	}
       } 
      particles.clear() ;
      particles_uncorr.clear() ;
      }
   }
+
+  // Store corrected background in event sample
+
+  for( unsigned int k = 0 ; k < fBkg[min_mult].size() ; ++k ) {
+    // if( IsData() ) 
+    // MCAnalysisI::StoreTree( (MCEventI) fBkg[min_mult][k] ) ;  
+    for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
+      // Store in histogram
+      kHistograms[j]-> Fill( fBkg[min_mult][k].GetObservable( GetObservablesTag()[j] ) , fBkg[min_mult][k].GetTotalWeight() ) ;
+    }
+  }
+
   return true ; 
 } 
 

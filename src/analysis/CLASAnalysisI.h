@@ -7,13 +7,13 @@
 #define _CLASANALYSIS_I_H_
 
 #include <iostream>
-#include "analysis/ConfigureI.h"
+#include "analysis/AnalysisI.h"
 #include "physics/CLASEventHolder.h"
 
 using namespace e4nu::conf ; 
 
 namespace e4nu {
-  class CLASAnalysisI : virtual public ConfigureI {
+  class CLASAnalysisI : virtual public AnalysisI {
   public : 
     CLASAnalysisI(); 
 

@@ -74,27 +74,29 @@ bool BackgroundI::InitializeFiducial(void) {
 }
 
 bool BackgroundI::SubstractBackground(void) {
-  return false ;
+
   unsigned int max_mult = GetMaxBkgMult(); 
-  unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
-  std::map<int,unsigned int> Topology = GetTopology();
-  unsigned int m = max_mult ;
 
-  while ( m >= min_mult ) {
-    if( fBkg.find(m) != fBkg.end() ) {
-      std::cout<< " Number of events with multiplicity " << m << " = " << fBkg[m].size() <<std::endl; 
+  if( GetSubstractBkg() == true ) {
+
+    unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
+    std::map<int,unsigned int> Topology = GetTopology();
+    unsigned int m = max_mult ;
+
+    while ( m >= min_mult ) {
+      if( fBkg.find(m) != fBkg.end() ) {
+	std::cout<< " Number of events with multiplicity " << m << " = " << fBkg[m].size() <<std::endl; 
+      }
+      --m; 
     }
-    --m; 
-  }
 
-  std::map<int,std::vector<TLorentzVector>> particles ;
-  std::map<int,std::vector<TLorentzVector>> particles_uncorr ; 
-  TLorentzVector V4_el ;
-  unsigned int bkg_mult = min_mult + 1 ;
+    std::map<int,std::vector<TLorentzVector>> particles ;
+    std::map<int,std::vector<TLorentzVector>> particles_uncorr ; 
+    TLorentzVector V4_el ;
+    unsigned int bkg_mult = min_mult + 1 ;
  
-  // remove multiplicity 2 contribution to signal...
-  if ( fBkg.find(bkg_mult) != fBkg.end() ) {
-     if ( fBkg[bkg_mult].size() != 0 ) {
+    // remove multiplicity 2 contribution to signal...
+    if ( fBkg.find(bkg_mult) != fBkg.end() ) {
       for ( unsigned int i = 0 ; i < fBkg[bkg_mult].size() ; ++i ) {
 	particles = fBkg[bkg_mult][i].GetFinalParticles4Mom();
 	particles_uncorr = fBkg[bkg_mult][i].GetFinalParticlesUnCorr4Mom(); // This map needs to change with the cuts as well...
@@ -127,32 +129,20 @@ bool BackgroundI::SubstractBackground(void) {
 	  fRotation->prot2_rot_func( V3_2prot_corr, V3_2prot_uncorr, V4_el, E_tot_2p, p_perp_tot_2p, P_N_2p , &N_prot_both);
 	  
 	  for( unsigned int j = 0 ; j < bkg_mult ; ++j ) {
-	   fBkg[bkg_mult][i].SetEventWeight( -P_N_2p[j] ) ; 
-	   fBkg[bkg_mult][i].SetIsBkg(false); // For now, we change to signal... with negative weight
-	   if ( fBkg.find(min_mult) != fBkg.end() ) {
-	     fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
-	   } else {
-	     std::vector<e4nu::EventI> temp = { fBkg[bkg_mult][i] } ;
-	     fBkg[min_mult] = temp ; 
-	   }
+	    fBkg[bkg_mult][i].SetEventWeight( -P_N_2p[j] ) ; 
+	    if ( fBkg.find(min_mult) != fBkg.end() ) {
+	      fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	    } else {
+	      std::vector<e4nu::MCEvent> temp = { fBkg[bkg_mult][i] } ;
+	      fBkg[min_mult] = temp ; 
+	    }
 	  }
-	}
-      } 
-     particles.clear() ;
-     particles_uncorr.clear() ;
-     }
-  }
-
-  // Store corrected background in event sample
-
-  for( unsigned int k = 0 ; k < fBkg[min_mult].size() ; ++k ) {
-    // if( IsData() ) 
-    // MCAnalysisI::StoreTree( (MCEventI) fBkg[min_mult][k] ) ;  
-    for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
-      // Store in histogram
-      kHistograms[j]-> Fill( fBkg[min_mult][k].GetObservable( GetObservablesTag()[j] ) , fBkg[min_mult][k].GetTotalWeight() ) ;
+	
+	} 
+	particles.clear() ;
+	particles_uncorr.clear() ;
+      }
     }
   }
-
   return true ; 
 } 

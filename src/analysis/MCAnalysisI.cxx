@@ -187,8 +187,18 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     }
   }
 
-  if( is_signal ) ++fNEventsAfterTopologyCut ;
-  else { // BACKGROUND 
+  unsigned int signal_mult = GetMinBkgMult() ;
+  if( is_signal ) {
+    // Storing in background the signal events
+    if( fBkg.find(signal_mult) == fBkg.end() ) {
+      std::vector<MCEvent> temp ( 1, *event ) ;
+      fBkg[signal_mult] = temp ; 
+    } else { 
+      fBkg[signal_mult].push_back( *event ) ; 
+    }
+
+    ++fNEventsAfterTopologyCut ;
+  } else { // BACKGROUND 
     event->SetIsBkg(true); 
     ++fNBkgEvents ;
 
@@ -197,9 +207,9 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
     // Only store background events with multiplicity > mult_signal
     // Also ignore background events above the maximum multiplicity
-    if( mult_bkg > kMult_signal && mult_bkg <= GetMaxBkgMult() ) {
+    if( mult_bkg > signal_mult && mult_bkg <= GetMaxBkgMult() ) {
       if( fBkg.find(mult_bkg) == fBkg.end() ) {
-	std::vector<EventI> temp ( 1, *event ) ;
+	std::vector<MCEvent> temp ( 1, *event ) ;
 	fBkg[mult_bkg] = temp ; 
       } else { 
 	fBkg[mult_bkg].push_back( *event ) ; 
@@ -209,7 +219,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     return nullptr; 
   }
 
-  StoreTree( event ) ;  
+  //  StoreTree( event ) ;  
   
   return event ; 
     
@@ -313,6 +323,19 @@ bool MCAnalysisI::Finalise( void ) {
 
   if( !AnalysisI::Finalise() ) return false ; 
 
+  // Store corrected background in event sample
+  unsigned int min_mult = GetMinBkgMult() ; 
+  for( unsigned int k = 0 ; k < fBkg[min_mult].size() ; ++k ) {
+    // if( IsData() ) 
+    MCEvent * bkg_event = static_cast<MCEvent*>( &fBkg[min_mult][k] ); 
+    StoreTree( bkg_event ) ; // Store background event in TTree
+
+    // Store in histogram(s)
+    for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
+      kHistograms[j]-> Fill( fBkg[min_mult][k].GetObservable( GetObservablesTag()[j] ) , fBkg[min_mult][k].GetTotalWeight() ) ;
+    }
+  }
+
   // Normalize
   double domega = 0.01; // sr
   double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.); // cm^2 to μbarn
@@ -342,8 +365,7 @@ bool MCAnalysisI::Finalise( void ) {
 }
 
 bool MCAnalysisI::StoreTree(MCEvent * event){
-  static int n = true ;
-
+  static bool n = true ; 
   int ID = event->GetEventID() ; 
   int TargetPdg = event->GetTargetPdg() ;
   int InLeptonPdg = event->GetInLeptPdg() ; 
@@ -482,7 +504,6 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   double pim_phi = pim_max.Phi() + TMath::Pi() ;
 
   bool IsBkg = event->IsBkg() ; 
-   
   if( n == true ) {
     kAnalysisTree -> Branch( "ID", &ID, "ID/I"); 
     kAnalysisTree -> Branch( "TargetPdg", &TargetPdg, "TargetPdg/I");

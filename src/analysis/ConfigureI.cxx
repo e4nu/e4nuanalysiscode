@@ -109,6 +109,9 @@ ConfigureI::ConfigureI( const std::string input_file ) {
 	  kTopology_map.insert( pair ) ;
 	}
       }
+    } else if ( param[i] == "SubstractBkg" ) { 
+      if( value[i] == "true" ) kSubstractBkg = true ; 
+      else kSubstractBkg = false ; 
     } else if ( param[i] == "MaxBackgroundMultiplicity" ) { kMaxBkgMult = (unsigned int) std::stoi( value[i] ) ;
     } else if ( param[i] == "NRotations" ) { kNRotations = (unsigned int) std::stoi( value[i] ) ;
     } else if ( param[i] == "ObservableList" ) {
@@ -193,13 +196,20 @@ void ConfigureI::PrintConfiguration(void) const {
   std::cout << "Target Pdg : " << kTargetPdg << "\n" <<std::endl;
   if ( kIsData ) std::cout << "\nIsData" << std::endl;
   else std::cout << "Is MC Data " << std::endl;
-  if( kIsElectron) std::cout << " Electron scattering data \n" <<std::endl;
+  
+  if( kIsElectron ) std::cout << " Electron scattering \n" <<std::endl;
+  else std::cout << " Neutrino scattering \n" <<std::endl;
+  
   std::cout << "Topology: " << std::endl;
   for ( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) { 
     std::cout << "    " << it->first << ", multiplicity " << it->second << std::endl;
   }
-  std::cout << "Maximum Background Multiplicity: "<< kMaxBkgMult << "\n" << std::endl;
-  std::cout << "Number of rotations: "<< kNRotations << "\n" << std::endl;
+  if( kSubstractBkg ) {
+    std::cout << "\nBackground Substraction enabled : " << std::endl;
+    std::cout << "Maximum Background Multiplicity: "<< kMaxBkgMult << std::endl;
+    std::cout << "Number of rotations: "<< kNRotations << "\n" << std::endl;
+  }
+
   for( unsigned int i = 0 ; i < kObservables.size(); ++i ) {
     std::cout << "Observable " << kObservables[i] << std::endl;
     std::cout << "Number of bins = " << kNBins[i] << std::endl;

@@ -11,12 +11,13 @@ ApplyGoodSectorPhiSlice	false
 ApplyOutMomCut		true
 ApplyQ2Cut		true
 ApplyWCut		true
+SubstractBkg 		false
 offset			0
 
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			10000
+NEvents			5000000
 FirstEvent		0
 
 #Topology definition
@@ -32,5 +33,5 @@ NormalizeHists false
 
 #InputFile /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master.root
 InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master*.root
-OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/output_inclusive_1M
+OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/e4nuanalysis_1p0pi_noBkg
 XSecFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/ConfFiles/xsec_carbon12_spline_GEM21_11b_00_000_Q2_0_1.root

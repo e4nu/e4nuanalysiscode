@@ -21,14 +21,11 @@ namespace e4nu{
     //initialize Beam Energy String, Target Name String, Map of binding energies and Fiducial cuts
     //N_tot of rotations, q vector is set to (0,0,0)
     void InitSubtraction(double EBeam, unsigned int target_pdg, int in_nrot, Fiducial * in_fiducial ) {
-      std::cout << " Subtraction start of initialize " << std::endl;
       fbeam_en = EBeam;
       ftarget_pdg = target_pdg ;
       bind_en = e4nu::utils::GetBindingEnergy(ftarget_pdg) ; 
       fiducialcut = in_fiducial ;
       N_tot = in_nrot;
-      std::cout << " InitSubtraction: N_tot " << N_tot << " , target_pdg " << ftarget_pdg << std::endl;
-      std::cout << " Test InitSubtraction Fiducials " << in_fiducial->up_lim1_ec->Eval(60) << std::endl;
       V3q.SetX(0);
       V3q.SetY(0);
       V3q.SetZ(0);

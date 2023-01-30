@@ -10,7 +10,6 @@
 #include "TF1.h"
 #include "analysis/MCAnalysisI.h"
 #include "analysis/CLASAnalysisI.h"
-#include "utils/Subtraction.h"
 
 using namespace e4nu::conf ; 
 
@@ -26,14 +25,11 @@ namespace e4nu {
 
     // Main Analyse function
     bool Analyse(void) ; 
-    bool SubstractBackground(void) ; 
     bool Finalise(void);
 
   private : 
     e4nu::EventI * GetValidEvent( const unsigned int event_id ) ;
     unsigned int GetNEvents( void ) const ;
-
-    Subtraction * fRotation;
 
     void Initialize(void) ; 
     

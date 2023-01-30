@@ -124,7 +124,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   // Apply fiducial cut to electron
   if( ApplyFiducial() ) {
-    if (! kFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) { delete event ; return nullptr ; } 
+    if (! fFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) { delete event ; return nullptr ; } 
   }
   ++fNEventsAfterFiducial;
 
@@ -138,15 +138,15 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       std::vector<TLorentzVector> visible_part ; 
       for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
 	if( it->first == conf::kPdgElectron ) {
-	  if (! kFiducialCut -> EFiducialCut(EBeam, part_map[it->first][i].Vect() ) ) continue ; 
+	  if (! fFiducialCut -> EFiducialCut(EBeam, part_map[it->first][i].Vect() ) ) continue ; 
         } else if ( it->first == conf::kPdgProton ) {
-	  if( ! kFiducialCut -> PFiducialCut( EBeam, part_map[it->first][i].Vect() ) ) continue ; 
+	  if( ! fFiducialCut -> PFiducialCut( EBeam, part_map[it->first][i].Vect() ) ) continue ; 
         } else if ( it->first == conf::kPdgPiP ) {
-	  if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 1 ) ) continue ;
+	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 1 ) ) continue ;
 	} else if ( it->first == conf::kPdgPiM ) {
-	  if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), -1 ) ) continue ;
+	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), -1 ) ) continue ;
 	} else if ( it->first == conf::kPdgPhoton ) {
-	  if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 0 ) ) continue ; 
+	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 0 ) ) continue ; 
 	}
 	visible_part.push_back( part_map[it->first][i] ) ; 
       }

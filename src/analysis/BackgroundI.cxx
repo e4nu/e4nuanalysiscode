@@ -130,7 +130,7 @@ bool BackgroundI::SubstractBackground(void) {
 	// Create new map for event particles
 	std::map<int,std::vector<TLorentzVector>> t_particles ;
 	std::map<int,std::vector<TLorentzVector>> t_particles_uncorr ;
-	  
+	double event_wgt = fBkg[bkg_mult][i].GetTotalWeight() ;
 	for( unsigned int j = 0 ; j < bkg_mult ; ++j ) {
 	  std::vector<TLorentzVector> corr_mom = { particles[conf::kPdgProton][j] } ;
 	  std::vector<TLorentzVector> uncorr_mom = { particles_uncorr[conf::kPdgProton][j] } ;
@@ -138,7 +138,7 @@ bool BackgroundI::SubstractBackground(void) {
 	  t_particles_uncorr[conf::kPdgProton] = uncorr_mom ; 
 	  fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
 	  fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
-	  fBkg[bkg_mult][i].SetEventWeight( -P_N_2p[j] ) ; 
+	  fBkg[bkg_mult][i].SetEventWeight( -P_N_2p[j] * event_wgt ) ; 
 	  if ( fBkg.find(min_mult) != fBkg.end() ) {
 	    fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
 	  } else {
@@ -166,25 +166,25 @@ bool BackgroundI::SubstractBackground(void) {
       unsigned int n_pions = particles[conf::kPdgPiP].size() + particles[conf::kPdgPiM].size() + particles[conf::kPdgPi0].size() + particles[conf::kPdgPhoton].size() ;  
       if( particles[conf::kPdgProton].size() == 2 && n_pions == 1 ) {
 
-	TLorentzVector V3_2prot_corr[2];
+	TVector3 V3_2prot_corr[2];
 	for ( unsigned k = 0 ; k < 2 ; ++k ) {
-	  V3_2prot_corr[k] = particles[conf::kPdgProton][k] ; 
+	  V3_2prot_corr[k] = particles[conf::kPdgProton][k].Vect() ; 
 	}
 	  
-	TLorentzVector V3_2prot_uncorr[2];
+	TVector3 V3_2prot_uncorr[2];
 	for ( unsigned k = 0 ; k < 2 ; ++k ) {
-	  V3_2prot_uncorr[k] = particles_uncorr[conf::kPdgProton][k] ; 
+	  V3_2prot_uncorr[k] = particles_uncorr[conf::kPdgProton][k].Vect() ; 
 	}
 
 	double P_2p1pito2p0pi[2] = {0};
 	double P_2p1pito1p1pi[2] = {0};
 	double P_2p1pito1p0pi[2] = {0};
 	double Ptot = 0;
-
-	//	fRotation->prot2_pi1_rot_func(V3_2prot_corr.Vect(),V3_2prot_uncorr.Vect(),V3_1pi_corr.Vect(), charge_pi[0], 
-	//			      V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,
-	//			      P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
-
+	/*
+	fRotation->prot2_pi1_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_1pi_corr, charge_pi[0], 
+				      V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,
+				      P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
+	*/
       }
 
       // 3p0pi 

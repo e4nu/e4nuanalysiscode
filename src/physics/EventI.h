@@ -50,6 +50,9 @@ namespace e4nu {
     void SetOutLeptonKinematics( const TLorentzVector & tlvect ) { fOutLepton = tlvect ; }
     void SetInLeptonKinematics( const TLorentzVector & tlvect ) { fInLepton = tlvect ; }
     void SetFinalParticlesKinematics( const std::map<int,std::vector<TLorentzVector>> part_map ) { fFinalParticles = part_map ; }
+
+    void SetOutLeptonUnCorrKinematics( const TLorentzVector & tlvect ) { fOutLeptonUnCorr = tlvect ; }
+    void SetFinalParticlesUnCorrKinematics( const std::map<int,std::vector<TLorentzVector>> part_map ) { fFinalParticlesUnCorr = part_map ; }
     
     double GetObservable( const std::string observable ) ;
 

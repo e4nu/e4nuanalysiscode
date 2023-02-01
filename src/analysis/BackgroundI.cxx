@@ -124,6 +124,7 @@ bool BackgroundI::SubstractBackground(void) {
 	  V3_2prot_uncorr[k] = particles_uncorr[conf::kPdgProton][k].Vect() ; 
 	}
 
+	// Set rotation around q3 vector
 	fRotation->SetQVector( fBkg[bkg_mult][i].GetRecoq3() );	
 	fRotation->prot2_rot_func( V3_2prot_corr, V3_2prot_uncorr, V4_el, E_tot_2p, p_perp_tot_2p, P_N_2p , &N_prot_both);
 
@@ -135,7 +136,8 @@ bool BackgroundI::SubstractBackground(void) {
 	  std::vector<TLorentzVector> corr_mom = { particles[conf::kPdgProton][j] } ;
 	  std::vector<TLorentzVector> uncorr_mom = { particles_uncorr[conf::kPdgProton][j] } ;
 	  t_particles[conf::kPdgProton] = corr_mom ;
-	  t_particles_uncorr[conf::kPdgProton] = uncorr_mom ; 
+	  t_particles_uncorr[conf::kPdgProton] = uncorr_mom ;
+	  // Store background event with the detected proton
 	  fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
 	  fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
 	  fBkg[bkg_mult][i].SetEventWeight( -P_N_2p[j] * event_wgt ) ; 
@@ -152,13 +154,12 @@ bool BackgroundI::SubstractBackground(void) {
     }
   }
 
-
   bkg_mult = min_mult + 2 ;
   // remove multiplicity 3 contribution to signal...
   if ( fBkg.find(bkg_mult) != fBkg.end() ) {
     for ( unsigned int i = 0 ; i < fBkg[bkg_mult].size() ; ++i ) {
       particles = fBkg[bkg_mult][i].GetFinalParticles4Mom();
-      particles_uncorr = fBkg[bkg_mult][i].GetFinalParticlesUnCorr4Mom(); // This map needs to change with the cuts as well...
+      particles_uncorr = fBkg[bkg_mult][i].GetFinalParticlesUnCorr4Mom();
       V4_el = fBkg[bkg_mult][i].GetOutLepton4Mom();
       fRotation->SetQVector( fBkg[bkg_mult][i].GetRecoq3() );	
 	
@@ -176,15 +177,84 @@ bool BackgroundI::SubstractBackground(void) {
 	  V3_2prot_uncorr[k] = particles_uncorr[conf::kPdgProton][k].Vect() ; 
 	}
 
+	TVector3 V3_1pi_corr(0,0,0) ; 
+	int pi_charge = 0 ; 
+	if( particles[conf::kPdgPiP].size() == 1 ) {
+	  V3_1pi_corr = particles[conf::kPdgPiP][0].Vect() ; 
+	  pi_charge = 1 ; 
+	} else if( particles[conf::kPdgPiM].size() == 1 ) {
+	  V3_1pi_corr = particles[conf::kPdgPiM][0].Vect() ;
+	  pi_charge = -1 ; 
+	} else if( particles[conf::kPdgPi0].size() == 1 ) V3_1pi_corr = particles[conf::kPdgPi0][0].Vect() ; 
+	else if( particles[conf::kPdgPhoton].size() == 1 ) V3_1pi_corr = particles[conf::kPdgPhoton][0].Vect() ; 
+
+	double Ecal_2p1pi_to2p0pi[bkg_mult-1] = {0};
+	double p_miss_perp_2p1pi_to2p0pi[bkg_mult-1]={0}; 
 	double P_2p1pito2p0pi[2] = {0};
 	double P_2p1pito1p1pi[2] = {0};
 	double P_2p1pito1p0pi[2] = {0};
 	double Ptot = 0;
-	/*
-	fRotation->prot2_pi1_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_1pi_corr, charge_pi[0], 
+
+	fRotation->prot2_pi1_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_1pi_corr, pi_charge, 
 				      V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,
 				      P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
-	*/
+	// 2p 1pi -> 2p 0pi
+	// Create new map for event particles
+	std::map<int,std::vector<TLorentzVector>> t_particles ;
+	std::map<int,std::vector<TLorentzVector>> t_particles_uncorr ;
+	double event_wgt = fBkg[bkg_mult][i].GetTotalWeight() ;
+
+	// Store one proton only so ECal calculation is consistent with master
+	for( unsigned int j = 0 ; j < particles[conf::kPdgProton].size() ; ++j ) {
+	  std::vector<TLorentzVector> corr_pmom, uncorr_pmom ; 
+	  corr_pmom.push_back( particles[conf::kPdgProton][j] ) ;
+	  uncorr_pmom.push_back( particles_uncorr[conf::kPdgProton][j] ) ;
+	  // Store information
+	  fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
+	  fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
+	  fBkg[bkg_mult][i].SetEventWeight( P_2p1pito2p0pi[j] * event_wgt ) ; 
+	  if ( fBkg.find(min_mult) != fBkg.end() ) {
+	    fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	  } else {
+	    std::vector<e4nu::MCEvent> temp = { fBkg[bkg_mult][i] } ;
+	    fBkg[min_mult] = temp ; 
+	  }
+	}
+
+	// 2p 1pi -> 1p 1pi
+	// Store one proton only so ECal calculation is consistent with master
+	for( unsigned int j = 0 ; j < particles[conf::kPdgProton].size() ; ++j ) {
+	  std::vector<TLorentzVector> corr_pmom, uncorr_pmom ; 
+	  corr_pmom.push_back( particles[conf::kPdgProton][j] ) ;
+	  uncorr_pmom.push_back( particles_uncorr[conf::kPdgProton][j] ) ;
+	  // Store information
+	  fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
+	  fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
+	  fBkg[bkg_mult][i].SetEventWeight( P_2p1pito1p1pi[j] * event_wgt ) ; 
+	  if ( fBkg.find(min_mult) != fBkg.end() ) {
+	    fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	  } else {
+	    std::vector<e4nu::MCEvent> temp = { fBkg[bkg_mult][i] } ;
+	    fBkg[min_mult] = temp ; 
+	  }
+	}
+	// 2p 1pi -> 1p 0pi
+	// Store one proton only so ECal calculation is consistent with master
+	for( unsigned int j = 0 ; j < particles[conf::kPdgProton].size() ; ++j ) {
+	  std::vector<TLorentzVector> corr_pmom, uncorr_pmom ; 
+	  corr_pmom.push_back( particles[conf::kPdgProton][j] ) ;
+	  uncorr_pmom.push_back( particles_uncorr[conf::kPdgProton][j] ) ;
+	  // Store information
+	  fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
+	  fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
+	  fBkg[bkg_mult][i].SetEventWeight( -P_2p1pito1p0pi[j] * event_wgt ) ; 
+	  if ( fBkg.find(min_mult) != fBkg.end() ) {
+	    fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	  } else {
+	    std::vector<e4nu::MCEvent> temp = { fBkg[bkg_mult][i] } ;
+	    fBkg[min_mult] = temp ; 
+	  }
+	}
       }
 
       // 3p0pi 

@@ -1,4 +1,4 @@
-B/** 
+/** 
  * \info These parameters are configurable 
  * the default values are set here
  **/
@@ -92,6 +92,7 @@ bool BackgroundI::SubstractBackground(void) {
   std::map<int,std::vector<TLorentzVector>> particles_uncorr ; 
   TLorentzVector V4_el ;
   unsigned int bkg_mult = min_mult + 1 ;
+  if( bkg_mult > max_mult ) return true ; 
 
   // Create new map for event particles
   std::map<int,std::vector<TLorentzVector>> t_particles ;
@@ -121,7 +122,7 @@ bool BackgroundI::SubstractBackground(void) {
 	for ( unsigned k = 0 ; k < bkg_mult ; ++k ) {
 	  V3_2prot_corr[k] = particles[conf::kPdgProton][k].Vect() ; 
 	}
-	1;95;0c
+	
 	TVector3 V3_2prot_uncorr[bkg_mult];
 	for ( unsigned k = 0 ; k < bkg_mult ; ++k ) {
 	  V3_2prot_uncorr[k] = particles_uncorr[conf::kPdgProton][k].Vect() ; 
@@ -154,6 +155,7 @@ bool BackgroundI::SubstractBackground(void) {
   }
 
   bkg_mult = min_mult + 2 ;
+  if( bkg_mult > max_mult ) return true ; 
   // remove multiplicity 3 contribution to signal...
   if ( fBkg.find(bkg_mult) != fBkg.end() ) {
     for ( unsigned int i = 0 ; i < fBkg[bkg_mult].size() ; ++i ) {
@@ -328,33 +330,58 @@ bool BackgroundI::SubstractBackground(void) {
   }
 
   bkg_mult = min_mult + 3 ;
+  if( bkg_mult > max_mult ) return true ; 
   // remove multiplicity 4 contribution to signal...
   if ( fBkg.find(bkg_mult) != fBkg.end() ) {
     for ( unsigned int i = 0 ; i < fBkg[bkg_mult].size() ; ++i ) {
       particles = fBkg[bkg_mult][i].GetFinalParticles4Mom();
       particles_uncorr = fBkg[bkg_mult][i].GetFinalParticlesUnCorr4Mom(); // This map needs to change with the cuts as well...
       double event_wgt = fBkg[bkg_mult][i].GetTotalWeight() ;
-	
-      // 2p2pi 
       unsigned int n_pions = particles[conf::kPdgPiP].size() + particles[conf::kPdgPiM].size() + particles[conf::kPdgPi0].size() + particles[conf::kPdgPhoton].size() ;  
-      if( particles[conf::kPdgProton].size() == 2 && n_pions == 2 ) {
-	// rotation->prot2_pi2_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_2pi_corr,charge_pi, V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
-      }
+
+      // 2p2pi 
 
       // 3p1pi
       if( particles[conf::kPdgProton].size() == 3 && n_pions == 1 ) {
-	// rotation->prot3_pi1_rot_func(V3_prot_corr,V3_prot_uncorr, V3_pi_corr, charge_pi[0] , V4_el,Ecal_3p1pi,p_miss_perp_3p1pi, P_tot_3p);
+	double P_tot_3p[3]={0};
+	double Ecal_3p1pi[3]={0};
+	double p_miss_perp_3p1pi[3]={0};
+	TVector3 V3_prot_uncorr[3],V3_prot_corr[3];
+	for ( unsigned k = 0 ; k < 3 ; ++k ) {
+	  V3_prot_corr[k] = particles[conf::kPdgProton][k].Vect() ; 
+	  V3_prot_uncorr[k] = particles_uncorr[conf::kPdgProton][k].Vect() ; 
+	}
 
-      }
+	TVector3 V3_pi_corr(0,0,0) ; 
+	int pi_charge = 0 ; 
+	if( particles[conf::kPdgPiP].size() == 1 ) {
+	  V3_pi_corr = particles[conf::kPdgPiP][0].Vect() ; 
+	  pi_charge = 1 ; 
+	} else if( particles[conf::kPdgPiM].size() == 1 ) {
+	  V3_pi_corr = particles[conf::kPdgPiM][0].Vect() ;
+	  pi_charge = -1 ; 
+	} else if( particles[conf::kPdgPi0].size() == 1 ) V3_pi_corr = particles[conf::kPdgPi0][0].Vect() ; 
+	else if( particles[conf::kPdgPhoton].size() == 1 ) V3_pi_corr = particles[conf::kPdgPhoton][0].Vect() ; 
 
-      // 1p3pi
-      if( particles[conf::kPdgProton].size() == 1 && n_pions == 3 ) {
-	//void Subtraction::prot1_pi3_rot_func(TVector3  V3prot,TVector3 V3pi[3], int q_pi[3], double *P_tot){
-      }
+	fRotation->prot3_pi1_rot_func(V3_prot_corr, V3_prot_uncorr, V3_pi_corr, pi_charge , V4_el, Ecal_3p1pi, p_miss_perp_3p1pi, P_tot_3p);
 
-      // 4p0pi 
-      if( particles[conf::kPdgProton].size() == 4 && n_pions == 0 ) {
-	// NOT INCLUDED
+	for(int j = 0; j < 3; j++) {
+	  std::vector<TLorentzVector> corr_pmom = { particles[conf::kPdgProton][j] } ; 
+	  std::vector<TLorentzVector> uncorr_pmom = {particles_uncorr[conf::kPdgProton][j] }; 
+	  t_particles[conf::kPdgProton] = corr_pmom ;
+	  t_particles_uncorr[conf::kPdgProton] = uncorr_pmom ;
+	  // Store information
+	  fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
+	  fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
+	  fBkg[bkg_mult][i].SetEventWeight( P_tot_3p[j] * event_wgt ) ; 
+	  if ( fBkg.find(min_mult) != fBkg.end() ) {
+	    fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	  } else {
+	    std::vector<e4nu::MCEvent> temp = { fBkg[bkg_mult][i] } ;
+	    fBkg[min_mult] = temp ; 
+	  }
+	}
+       
       }
     }
   }

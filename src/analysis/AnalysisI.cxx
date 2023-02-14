@@ -11,6 +11,7 @@
 #include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
 #include "utils/KinematicUtils.h"
+#include "utils/DetectorUtils.h"
 #include "utils/Utils.h"
 
 using namespace e4nu; 
@@ -30,6 +31,8 @@ bool AnalysisI::Analyse( EventI * event ) {
   TLorentzVector in_mom = event -> GetInLepton4Mom() ;
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
   double EBeam = in_mom.E() ; 
+  
+  if( !utils::IsValidSector( out_mom.Phi(), EBeam, UseAllSectors() ) ) return false ;   
 
   if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) return false ;
   ++fNEventsAfterEThetaCut ;     

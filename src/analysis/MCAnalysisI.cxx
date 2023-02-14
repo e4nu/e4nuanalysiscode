@@ -65,13 +65,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   }
 
   ++fEventsBeforeCuts ;
-  /*
-  // Apply Generic analysis cuts
-  if ( ! AnalysisI::Analyse( event ) ) {
-    delete event ; 
-    return nullptr ; 
-  }
-*/
+
   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
 

@@ -65,13 +65,13 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   }
 
   ++fEventsBeforeCuts ;
-
+  /*
   // Apply Generic analysis cuts
   if ( ! AnalysisI::Analyse( event ) ) {
     delete event ; 
     return nullptr ; 
   }
-
+*/
   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
 
@@ -120,6 +120,12 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Apply smaring to particles
   if( ApplyReso() ) {
     this -> SmearParticles( event ) ; 
+  }
+
+  // Apply Generic analysis cuts
+  if ( ! AnalysisI::Analyse( event ) ) {
+    delete event ; 
+    return nullptr ; 
   }
 
   // Apply fiducial cut to electron
@@ -218,8 +224,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     delete event ; 
     return nullptr; 
   }
-
-  //  StoreTree( event ) ;  
   
   return event ; 
     

@@ -20,7 +20,7 @@ BackgroundI::BackgroundI( ) {
 
   if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
-  if( kIsConfigured && fFiducialCut ) {
+  if( kIsConfigured && ApplyFiducial() ) {
     fRotation = new Subtraction();
     fRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), fFiducialCut);
     fRotation->ResetQVector(); //Resets q vector to (0,0,0) 
@@ -31,7 +31,7 @@ BackgroundI::BackgroundI( const std::string input_file ) : ConfigureI( input_fil
 
   if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
-  if( kIsConfigured && fFiducialCut ) {
+  if( kIsConfigured && ApplyFiducial() ) {
     fRotation = new Subtraction();
     fRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), fFiducialCut);
     fRotation->ResetQVector(); //Resets q vector to (0,0,0)
@@ -42,7 +42,7 @@ BackgroundI::BackgroundI( const double EBeam, const unsigned int TargetPdg ) : C
 
   if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
-  if( kIsConfigured && fFiducialCut ) {
+  if( kIsConfigured && ApplyFiducial() ) {
     fRotation = new Subtraction();
     fRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), fFiducialCut);
     fRotation->ResetQVector(); //Resets q vector to (0,0,0)
@@ -75,7 +75,8 @@ bool BackgroundI::InitializeFiducial(void) {
 
 bool BackgroundI::SubstractBackground(void) {
 
-  if( !GetSubstractBkg() ) return false ;
+  /*
+  if( !GetSubstractBkg() ) return true ;
 
   unsigned int max_mult = GetMaxBkgMult(); // Max multiplicity specified in conf file
   unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
@@ -110,7 +111,6 @@ bool BackgroundI::SubstractBackground(void) {
       if( particles[conf::kPdgProton].size() == 2 
 	  && particles[conf::kPdgPiP].size() == 0 
 	  && particles[conf::kPdgPiM].size() == 0 
-	  && particles[conf::kPdgPi0].size() == 0 
 	  && particles[conf::kPdgPhoton].size() == 0 ) {
 	  
 	double E_tot_2p[bkg_mult]={0};
@@ -166,7 +166,7 @@ bool BackgroundI::SubstractBackground(void) {
       double event_wgt = fBkg[bkg_mult][i].GetTotalWeight() ;
 
       // 2p1pi 
-      unsigned int n_pions = particles[conf::kPdgPiP].size() + particles[conf::kPdgPiM].size() + particles[conf::kPdgPi0].size() + particles[conf::kPdgPhoton].size() ;  
+      unsigned int n_pions = particles[conf::kPdgPiP].size() + particles[conf::kPdgPiM].size() + particles[conf::kPdgPhoton].size() ;  
       if( particles[conf::kPdgProton].size() == 2 && n_pions == 1 ) {
 
 	TVector3 V3_2prot_corr[2], V3_2prot_uncorr[2];
@@ -183,7 +183,6 @@ bool BackgroundI::SubstractBackground(void) {
 	} else if( particles[conf::kPdgPiM].size() == 1 ) {
 	  V3_1pi_corr = particles[conf::kPdgPiM][0].Vect() ;
 	  pi_charge = -1 ; 
-	} else if( particles[conf::kPdgPi0].size() == 1 ) V3_1pi_corr = particles[conf::kPdgPi0][0].Vect() ; 
 	else if( particles[conf::kPdgPhoton].size() == 1 ) V3_1pi_corr = particles[conf::kPdgPhoton][0].Vect() ; 
 
 	double Ecal_2p1pi_to2p0pi[bkg_mult-1] = {0};
@@ -337,7 +336,7 @@ bool BackgroundI::SubstractBackground(void) {
       particles = fBkg[bkg_mult][i].GetFinalParticles4Mom();
       particles_uncorr = fBkg[bkg_mult][i].GetFinalParticlesUnCorr4Mom(); // This map needs to change with the cuts as well...
       double event_wgt = fBkg[bkg_mult][i].GetTotalWeight() ;
-      unsigned int n_pions = particles[conf::kPdgPiP].size() + particles[conf::kPdgPiM].size() + particles[conf::kPdgPi0].size() + particles[conf::kPdgPhoton].size() ;  
+      unsigned int n_pions = particles[conf::kPdgPiP].size() + particles[conf::kPdgPiM].size() + particles[conf::kPdgPhoton].size() ;  
 
       // 2p2pi 
 
@@ -360,7 +359,6 @@ bool BackgroundI::SubstractBackground(void) {
 	} else if( particles[conf::kPdgPiM].size() == 1 ) {
 	  V3_pi_corr = particles[conf::kPdgPiM][0].Vect() ;
 	  pi_charge = -1 ; 
-	} else if( particles[conf::kPdgPi0].size() == 1 ) V3_pi_corr = particles[conf::kPdgPi0][0].Vect() ; 
 	else if( particles[conf::kPdgPhoton].size() == 1 ) V3_pi_corr = particles[conf::kPdgPhoton][0].Vect() ; 
 
 	fRotation->prot3_pi1_rot_func(V3_prot_corr, V3_prot_uncorr, V3_pi_corr, pi_charge , V4_el, Ecal_3p1pi, p_miss_perp_3p1pi, P_tot_3p);
@@ -385,5 +383,6 @@ bool BackgroundI::SubstractBackground(void) {
       }
     }
   }
+  */
   return true ; 
 } 

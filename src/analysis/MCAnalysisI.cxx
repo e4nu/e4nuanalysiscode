@@ -1,115 +1,118 @@
-// _______________________________________________
-/*
- * Analysis Interface base class
- * 
- */
-#include <iostream>
-#include "TFile.h"
-#include "TDirectoryFile.h"
-#include <TRandom3.h>
-#include "analysis/MCAnalysisI.h"
-#include "utils/ParticleUtils.h"
-#include "utils/KinematicUtils.h"
-#include "conf/ParticleI.h"
-#include "conf/TargetI.h"
-#include "utils/DetectorUtils.h"
-#include "conf/FiducialCutI.h"
-#include "conf/AccpetanceMapsI.h"
-#include "conf/AnalysisCutsI.h"
-#include "conf/AnalysisConstantsI.h"
+ // _______________________________________________
+ /*
+  * Analysis Interface base class
+  * 
+  */
+ #include <iostream>
+ #include "TFile.h"
+ #include "TDirectoryFile.h"
+ #include <TRandom3.h>
+ #include "analysis/MCAnalysisI.h"
+ #include "utils/ParticleUtils.h"
+ #include "utils/KinematicUtils.h"
+ #include "conf/ParticleI.h"
+ #include "conf/TargetI.h"
+ #include "utils/DetectorUtils.h"
+ #include "conf/FiducialCutI.h"
+ #include "conf/AccpetanceMapsI.h"
+ #include "conf/AnalysisCutsI.h"
+ #include "conf/AnalysisConstantsI.h"
 
-using namespace e4nu ; 
+ using namespace e4nu ; 
 
-MCAnalysisI::MCAnalysisI() {
-  kAcceptanceMap.clear();
-  kAccMap.clear();
-  kGenMap.clear();
-  kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCTree","GENIE Tree") ) ; 
-  kMult_signal = GetNTopologyParticles() ; 
-  this->Initialize() ;
-}
+ MCAnalysisI::MCAnalysisI() {
+   kAcceptanceMap.clear();
+   kAccMap.clear();
+   kGenMap.clear();
+   kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCTree","GENIE Tree") ) ; 
+   kMult_signal = GetNTopologyParticles() ; 
+   this->Initialize() ;
+ }
 
-MCAnalysisI::~MCAnalysisI() {
-  delete fData;
+ MCAnalysisI::~MCAnalysisI() {
+   delete fData;
 
-  kAcceptanceMap.clear();
-  kAccMap.clear();
-  kGenMap.clear();
-}
+   kAcceptanceMap.clear();
+   kAccMap.clear();
+   kGenMap.clear();
+ }
 
-bool MCAnalysisI::LoadData( void ) {
-  if( ! IsConfigured() ) return false ; 
+ bool MCAnalysisI::LoadData( void ) {
+   if( ! IsConfigured() ) return false ; 
 
-  std::string file = GetInputFile() ; 
-  double nevents = GetNEventsToRun() ; 
-  double first_event = GetFirstEventToRun() ; 
+   std::string file = GetInputFile() ; 
+   double nevents = GetNEventsToRun() ; 
+   double first_event = GetFirstEventToRun() ; 
 
-  if( ! kIsDataLoaded ) { 
-    fData = new MCEventHolder( file, first_event, nevents ) ;
-    kNEvents = fData->GetNEvents() ; 
-    kIsDataLoaded = true ;
-  }
-  return kIsDataLoaded ; 
-}
+   if( ! kIsDataLoaded ) { 
+     fData = new MCEventHolder( file, first_event, nevents ) ;
+     kNEvents = fData->GetNEvents() ; 
+     kIsDataLoaded = true ;
+   }
+   return kIsDataLoaded ; 
+ }
 
-EventI * MCAnalysisI::GetEvent( const unsigned int event_id ) {
-  return fData -> GetEvent(event_id) ; 
-}
+ EventI * MCAnalysisI::GetEvent( const unsigned int event_id ) {
+   return fData -> GetEvent(event_id) ; 
+ }
 
-EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
-  
-  MCEvent * event = (MCEvent*) fData -> GetEvent(event_id) ; 
-  if( !event ) {
-    delete event ; 
-    return nullptr ; 
-  }
+ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
-  ++fEventsBeforeCuts ;
+   MCEvent * event = (MCEvent*) fData -> GetEvent(event_id) ; 
+   if( !event ) {
+     delete event ; 
+     return nullptr ; 
+   }
 
-  TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
-  TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
+   ++fEventsBeforeCuts ;
 
-  // Check run is correct
-  double EBeam = GetConfiguredEBeam() ; 
-  if ( in_mom.E() != EBeam ) {
-    std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
-    delete event ;
-    exit(11); 
-  }
+   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
+   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
 
-  if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) {
-    std::cout << "Target is " << event -> GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
-    delete event ;
-    exit(11); 
-  }
+   // Check run is correct
+   double EBeam = GetConfiguredEBeam() ; 
+   if ( in_mom.E() != EBeam ) {
+     std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
+     delete event ;
+     exit(11); 
+   }
 
-  // Check weight is physical
-  double wght = event->GetEventWeight() ; 
-  if ( wght < 0 || wght > 10 || wght == 0 ) {
-    delete event ;
-    return nullptr ; 
-  }
+   if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) {
+     std::cout << "Target is " << event -> GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
+     delete event ;
+     exit(11); 
+   }
 
-  // Apply momentum cut before smearing
-  // Get Topology Definition
-  std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticles4Mom() ;
+   // Check weight is physical
+   double wght = event->GetEventWeight() ; 
+   if ( wght < 0 || wght > 10 || wght == 0 ) {
+     delete event ;
+     return nullptr ; 
+   }
 
-  // Remove particles below threshold
-  for( auto it = unsmeared_part_map.begin() ; it != unsmeared_part_map.end() ; ++it ) {
-    std::vector<TLorentzVector> above_th_particles ; 
-    for( unsigned int i = 0 ; i < unsmeared_part_map[it->first].size() ; ++i ) {
-      // Only store particles above threshold
-      if( unsmeared_part_map[it->first][i].P() < conf::GetMinMomentumCut( it->first, EBeam ) ) continue ; 
-      
-      // Apply photon cuts for MC and data 
-      if( it->first == conf::kPdgPhoton ) {
-	if( !conf::ApplyPhotRadCut( out_mom, unsmeared_part_map[it->first][i] ) ) continue ; 
-      }
-      above_th_particles.push_back( unsmeared_part_map[it->first][i] ) ;
-    }
-    unsmeared_part_map[it->first] = above_th_particles ;
-  }
-  event -> SetFinalParticlesKinematics( unsmeared_part_map ) ;
+   // Apply momentum cut before smearing
+   // Get Topology Definition
+   if( ApplyMomCut() ) { 
+     std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticlesUnCorr4Mom() ;
+     
+     // Remove particles below threshold
+     for( auto it = unsmeared_part_map.begin() ; it != unsmeared_part_map.end() ; ++it ) {
+       std::vector<TLorentzVector> above_th_particles ; 
+       for( unsigned int i = 0 ; i < unsmeared_part_map[it->first].size() ; ++i ) {
+	 // Only store particles above threshold
+	 if( unsmeared_part_map[it->first][i].P() <= conf::GetMinMomentumCut( it->first, EBeam ) )  continue ; 
+	 
+	 // Apply photon cuts for MC and data 
+	 if( it->first == conf::kPdgPhoton ) {
+	   if( !conf::ApplyPhotRadCut( out_mom, unsmeared_part_map[it->first][i] ) ) continue ; 
+	 }
+	 above_th_particles.push_back( unsmeared_part_map[it->first][i] ) ;
+       }
+       unsmeared_part_map[it->first] = above_th_particles ;
+     }
+     event -> SetFinalParticlesKinematics( unsmeared_part_map ) ;
+     event -> SetFinalParticlesUnCorrKinematics( unsmeared_part_map ) ; 
+   }
 
   // Apply smaring to particles
   if( ApplyReso() ) {
@@ -131,11 +134,13 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Get Topology Definition
   std::map<int,unsigned int> Topology = GetTopology(); 
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event -> GetFinalParticlesUnCorr4Mom() ;
 
   // Apply Fiducial cut for hadrons and photons
-  if( ApplyFiducial() ) {  
+  if( ApplyFiducial() ) {      
     for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
       std::vector<TLorentzVector> visible_part ; 
+      std::vector<TLorentzVector> visible_part_uncorr ; 
       for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
 	if( it->first == conf::kPdgElectron ) {
 	  if (! fFiducialCut -> EFiducialCut(EBeam, part_map[it->first][i].Vect() ) ) continue ; 
@@ -149,12 +154,18 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 0 ) ) continue ; 
 	}
 	visible_part.push_back( part_map[it->first][i] ) ; 
+	visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
       }
       part_map[it->first] = visible_part ; 
+      part_map_uncorr[it->first] = visible_part_uncorr ; 
     }
+    
+    // Store changes in event after fiducial and momentum cuts
+    event -> SetFinalParticlesKinematics( part_map ) ; 
+    event -> SetFinalParticlesUnCorrKinematics( part_map_uncorr ) ; 
+    
   }
-  // Store changes in event after fiducial and momentum cuts
-  event -> SetFinalParticlesKinematics( part_map ) ; 
+
   
   // Apply acceptance to all particles 
   double acc_wght = 1 ;
@@ -171,20 +182,18 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 	}
       }
     }
+    event->SetAccWght(acc_wght);
   }
-  event->SetAccWght(acc_wght);
 
   // Signal event
-  bool is_signal = false ; 
+  bool is_signal = true ;
   //Topology ID
   for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
-    if( it->first == conf::kPdgElectron ) {
-      is_signal = true ; 
-    } else if( part_map.count( it->first ) && part_map[it->first].size() == it->second ) {
-      is_signal = true ; 
-    } else {
+    if( it->first == conf::kPdgElectron ) continue ; 
+    else if( part_map[it->first].size() != it->second ) {
       is_signal = false ; 
-    }
+      break ; 
+    } 
   }
 
   unsigned int signal_mult = GetMinBkgMult() ;

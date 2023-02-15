@@ -39,6 +39,7 @@ namespace e4nu {
     bool GetOffSet(void) const { return koffset ; } 
     bool ApplyQ2Cut(void) const{ return kQ2Cut ; }
     bool ApplyWCut(void) const{ return kWCut ; }
+    bool ApplyMomCut(void) const { return kApplyMomCut ; } 
     bool ApplyOutElectronCut(void) const { return fOutMomCut ; }      
     bool IsElectronData(void) const { return kIsElectron ; }
     bool IsConfigured(void) const { return kIsConfigured ; }
@@ -74,6 +75,7 @@ namespace e4nu {
     bool kUsePhiThetaBand = false ;
     bool kApplyThetaSlice = false; 
     bool kApplyGoodSectorPhiSlice = false ; 
+    bool kApplyMomCut = true ; 
     bool kIsData = false ; 
     bool kQ2Cut = true ; 
     bool kWCut = true ; 

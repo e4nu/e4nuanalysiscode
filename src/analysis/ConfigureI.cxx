@@ -63,6 +63,9 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     } else if ( param[i] == "ApplyReso" ) {
       if ( value[i] == "false" ) kApplyReso = false ;
       else kApplyReso = true ; 
+    } else if ( param[i] == "ApplyMomCut" ) {
+      if ( value[i] == "false" ) kApplyMomCut = false ;
+      else kApplyMomCut = true ; 
     } else if ( param[i] == "ApplyPhiOpeningAngle" ) {
       if( value[i] == "true" ) kApplyPhiOpeningAngle = true ; 
       else kApplyPhiOpeningAngle = false ; 
@@ -186,6 +189,7 @@ void ConfigureI::PrintConfiguration(void) const {
   std::cout << "ApplyFiducial:" << kApplyFiducial << std::endl;
   std::cout << "ApplyAccWeights: " << kApplyAccWeights << std::endl;
   std::cout << "ApplyReso:" << kApplyReso << std::endl;
+  std::cout << "ApplyMomCut:" << kApplyMomCut << std::endl;
   std::cout << "ApplyQ2Cut: " << kQ2Cut << std::endl;
   std::cout << "ApplyWCut: " << kWCut << std::endl;
   std::cout << "ApplyPhiOpeningAngle:" << kApplyPhiOpeningAngle << std::endl;

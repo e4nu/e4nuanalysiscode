@@ -565,6 +565,7 @@ bool Fiducial::SetFiducialCutParameters(double beam_en){
     param_file3.close();
   }
   else printf("There are no fiducial cut parameters to be read at %3.1f GeV!\n", beam_en);
+  return true ; 
 }
 
 Bool_t Fiducial::GetEPhiLimits(double beam_en, Float_t momentum, Float_t theta, Int_t sector,Float_t *EPhiMin, Float_t *EPhiMax){

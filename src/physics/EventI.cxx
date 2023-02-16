@@ -73,19 +73,13 @@ unsigned int EventI::GetEventMultiplicity( const std::map<int,std::vector<TLoren
   return multiplicity ; 
 }
 
-unsigned int EventI::GetNVisibleParticles( const std::map<int,std::vector<TLorentzVector>> hadronic_system, const int pdg ) {
-  unsigned int N_particle = 0 ;
-  for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
-    if ( it->first == pdg ) ++N_particle ; 
-  }
-  return N_particle ;
-}
-
-unsigned int EventI::GetNSignalParticles( const std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) {
+unsigned int EventI::GetNSignalParticles( std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) {
   unsigned int N_signal = 0 ; 
   for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) continue ; 
-    if( topology.find(it->first) != topology.end() ) ++N_signal ; 
+    if( topology.find(it->first) != topology.end() ) {
+      N_signal += hadronic_system[it->first].size() ;
+    }
   }
 
   return N_signal ;
@@ -151,7 +145,9 @@ double EventI::GetObservable( const std::string observable ) {
     ef4mom = GetOutLepton4Mom() ;
     ef4mom.SetPhi( ef4mom.Phi()+TMath::Pi() ) ;
     return utils::GetSector( ef4mom.Phi() ) ; 
-  }
+  } else if ( observable == "Weight" ) { 
+    return this->GetEventWeight() ;
+  } 
   std::cout << observable << " is NOT defined " << std::endl;
   return 0 ; 
 }

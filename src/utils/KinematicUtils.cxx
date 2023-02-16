@@ -67,16 +67,6 @@ double utils::GetRecoW( const TLorentzVector & leptonf, const double EBeam ) {
   return TMath::Sqrt( W2 ) ; 
 } 
 
-double utils::GetMottXSecScale( const TLorentzVector & leptonf, const double EBeam, const bool is_electron ) {
-  double scale = 1 ; 
-  if ( is_electron ) {
-    double reco_Q2 = utils::GetRecoQ2( leptonf, EBeam ) ;
-    scale /= std::pow( reco_Q2, 2 ) ; 
-  }
-  // Add additional scalings ?
-  return scale ; 
-}
-
 TVector3 utils::GetPT( const TVector3 p ) {
   TVector3 beam_dir (0,0,1);
   double vect_parallel = p.Dot(beam_dir);

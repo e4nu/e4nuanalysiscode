@@ -90,6 +90,10 @@
      return nullptr ; 
    }
 
+   if ( ApplyMottScaling() ) { 
+     event -> SetMottXSecWeight() ; 
+   }
+
    // Apply momentum cut before smearing
    // Get Topology Definition
    if( ApplyMomCut() ) { 
@@ -166,7 +170,6 @@
     
   }
 
-  
   // Apply acceptance to all particles 
   double acc_wght = 1 ;
   if( ApplyAccWeights() ) {
@@ -271,7 +274,6 @@ void MCAnalysisI::Initialize() {
   if( ApplyAccWeights() ) { 
     kAcceptanceMap = conf::GetAcceptanceFileMap2( Target, EBeam ) ; 
 
-    // THESE ONE BELOW CAUSE A SMALL MEMORY LEAK - INVESTIGATE
     kAccMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ) ) ;
     kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ) );
     kAccMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ) );
@@ -337,9 +339,14 @@ bool MCAnalysisI::Finalise( void ) {
     MCEvent * bkg_event = static_cast<MCEvent*>( &fBkg[min_mult][k] ); 
     StoreTree( bkg_event ) ; // Store background event in TTree
 
+    double norm_weight = 1 ; 
+    if( ApplyCorrWeights() ) { 
+      norm_weight = fBkg[min_mult][k].GetTotalWeight() ;
+    }
+
     // Store in histogram(s)
     for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
-      kHistograms[j]-> Fill( fBkg[min_mult][k].GetObservable( GetObservablesTag()[j] ) , fBkg[min_mult][k].GetTotalWeight() ) ;
+      kHistograms[j]-> Fill( fBkg[min_mult][k].GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
     }
   }
 
@@ -503,6 +510,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
       }
     }
   }
+
   double pim_mom = pim_max.P() ;
   double pim_momx = pim_max.Px() ;
   double pim_momy = pim_max.Py() ;

@@ -60,6 +60,12 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     } else if ( param[i] == "ApplyAccWeights" ){
       if ( value[i] == "false" ) kApplyAccWeights = false ; 
       else kApplyAccWeights = true ; 
+    } else if ( param[i] == "ApplyCorrWeights" ){
+      if ( value[i] == "false" ) kApplyCorrWeights = false ; 
+      else kApplyCorrWeights = true ; 
+    } else if ( param[i] == "ApplyMottWeight" ){
+      if ( value[i] == "false" ) kApplyMottWeight = false ; 
+      else kApplyMottWeight = true ; 
     } else if ( param[i] == "ApplyReso" ) {
       if ( value[i] == "false" ) kApplyReso = false ;
       else kApplyReso = true ; 
@@ -148,6 +154,11 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     } else if ( param[i] == "NormalizeHists" ) {
       if ( value[i] == "true" ) kNormalize = true ; 
       else kNormalize = false ; 
+      if( kNormalize && ! kApplyCorrWeights ) {
+	std::cout << " WARNING: You are trying to Normalize the cross section without correction weights. Aborting..." << std::endl;
+	kIsConfigured = false ; 
+	break ;
+      } 
     } else if ( param[i] == "OutputFile" ) {
       kOutputFile = value[i] ;
     } else if ( param[i] == "InputFile" ) {
@@ -188,6 +199,7 @@ void ConfigureI::PrintConfiguration(void) const {
   std::cout << "ApplyWCut: "<<kWCut<< std::endl;
   std::cout << "ApplyFiducial:" << kApplyFiducial << std::endl;
   std::cout << "ApplyAccWeights: " << kApplyAccWeights << std::endl;
+  std::cout << "ApplyMottWeight: " << kApplyMottWeight << std::endl;
   std::cout << "ApplyReso:" << kApplyReso << std::endl;
   std::cout << "ApplyMomCut:" << kApplyMomCut << std::endl;
   std::cout << "ApplyQ2Cut: " << kQ2Cut << std::endl;
@@ -219,6 +231,7 @@ void ConfigureI::PrintConfiguration(void) const {
     std::cout << "Number of bins = " << kNBins[i] << std::endl;
     std::cout << "Range = {"<<kRanges[i][0]<<","<<kRanges[i][1]<<"}\n"<<std::endl;
   }
+  if( kApplyCorrWeights ) std::cout << " Weights are taken into account in the histograms" << std::endl;
   std::cout << "\nXSecFile " << kXSecFile << std::endl;
   std::cout << "\nStoring output in " << kOutputFile << std::endl;
   std::cout << "Analizing " << kNEvents << " ... " <<std::endl;
@@ -230,7 +243,7 @@ unsigned int ConfigureI::GetNTopologyParticles(void) {
   unsigned int N_signal = 0 ;
   for( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) continue ; 
-    if ( it -> second != 0 ) ++N_signal ; 
+    N_signal += it->second ; 
   }
   return N_signal ;
 }

@@ -66,7 +66,10 @@ bool E4NuAnalysis::Finalise( ) {
   for( unsigned int i = 0 ; i < kHistograms.size() ; ++i ) {
     kHistograms[i]->GetXaxis()->SetTitle(GetObservablesTag()[i].c_str()) ; 
     if( NormalizeHist() ) kHistograms[i]->GetYaxis()->SetTitle(("d#sigma/d"+GetObservablesTag()[i]).c_str()) ; 
-    else kHistograms[i]->GetYaxis()->SetTitle("NEvents * weight") ;  
+    else {
+      if( ApplyCorrWeights() ) kHistograms[i]->GetYaxis()->SetTitle("Weighted Events * weight") ;  
+      else kHistograms[i]->GetYaxis()->SetTitle("UnWeighted #Events") ;  
+    }
     kHistograms[i]->SetStats(false); 
     kHistograms[i]->Write() ; 
   }

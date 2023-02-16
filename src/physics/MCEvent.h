@@ -46,10 +46,10 @@ namespace e4nu {
     unsigned int GetTrueNOther(void) const { return fNOther ; } 
 
     TLorentzVector GetVertex(void) const { return fVertex ; }
-    
-    double GetMottXSecWeight(void) ;
+    double GetMottXSecWeight(void) const { return fMottXSecWght ; }
     double GetAccWght(void) const { return fAccWght ; }
     void SetAccWght( const double wght ) { fAccWght = wght ; }
+    void SetMottXSecWeight(void) ; 
 
     friend class MCEventHolder ; 
 

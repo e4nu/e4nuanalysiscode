@@ -57,8 +57,7 @@ namespace e4nu {
     double GetObservable( const std::string observable ) ;
 
     unsigned int GetEventMultiplicity( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) ;
-    unsigned int GetNVisibleParticles( const std::map<int,std::vector<TLorentzVector>> hadronic_system, const int pdg ) ;
-    unsigned int GetNSignalParticles( const std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) ;
+    unsigned int GetNSignalParticles( std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) ;
     int GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) ;
     TVector3 GetRecoq3(void) const ; 
 

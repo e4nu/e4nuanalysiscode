@@ -29,7 +29,9 @@ namespace e4nu {
     unsigned int GetConfiguredTarget(void) const { return kTargetPdg ; }
     bool UseAllSectors(void) const { return kUseAllSectors ; } 
     bool ApplyFiducial(void) const { return kApplyFiducial ; }
-    bool ApplyAccWeights(void) const { return kApplyAccWeights ; } 
+    bool ApplyCorrWeights(void) const { return kApplyAccWeights ; }
+    bool ApplyAccWeights(void) const { return kApplyAccWeights ; }
+    bool ApplyMottScaling(void) const { return kApplyMottWeight ; }
     bool ApplyReso(void) const { return kApplyReso ; }
     bool ApplyPhiOpeningAngle(void) const { return kApplyPhiOpeningAngle ; }
     bool UsePhiThetaBand(void) const { return kUsePhiThetaBand ; } 
@@ -70,6 +72,8 @@ namespace e4nu {
     bool kUseAllSectors = false ; 
     bool kApplyFiducial = true ; 
     bool kApplyAccWeights = true ; 
+    bool kApplyCorrWeights = true ; 
+    bool kApplyMottWeight = true ; 
     bool kApplyReso = true ; 
     bool kApplyPhiOpeningAngle = false ; 
     bool kUsePhiThetaBand = false ;

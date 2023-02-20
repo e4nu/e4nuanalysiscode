@@ -637,7 +637,7 @@ Bool_t Fiducial::GetEPhiLimits(double beam_en, Float_t momentum, Float_t theta, 
 Bool_t Fiducial::EFiducialCut(double beam_en, TVector3 momentum) {
 
   // Electron fiducial cut, return kTRUE if pass or kFALSE if not
-  momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ;
+  /////momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ;
   Bool_t status = kTRUE;
   std::string fbeam_en = std::to_string((int)(beam_en*1000));
   bool SCpdcut = true;
@@ -1183,7 +1183,7 @@ double Fiducial::GetTheta(TVector3 momentum) {
 Bool_t Fiducial::PFiducialCut(double beam_en, TVector3 momentum){
   //Positive Hadron Fiducial Cut
   //Please refer to <A HREF="http://www.jlab.org/Hall-B/secure/e2/bzh/pfiducialcut.html">Electron Fiducial Cuts</A> -- Bin Zhang (MIT).
-  momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ; 
+  //momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ; 
 
   if (beam_en == 0) {
 
@@ -1806,7 +1806,7 @@ Bool_t Fiducial::PFiducialCut(double beam_en, TVector3 momentum){
 Bool_t Fiducial::PiplFiducialCut(double beam_en, TVector3 momentum, Float_t *philow, Float_t *phiup){
   //Positive Hadron Fiducial Cut
   //Please refer to <A HREF="http://www.jlab.org/Hall-B/secure/e2/bzh/pfiducialcut.html">Electron Fiducial Cuts</A> -- Bin Zhang (MIT).
-  momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ; 
+  //momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ; 
 
   if (beam_en == 0) {
 
@@ -2474,7 +2474,7 @@ Bool_t Fiducial::PimiFiducialCutExtra(double beam_en, TVector3 momentum) {
 //                                       adequate for the zero pion analyses
 
 Bool_t Fiducial::PimiFiducialCut(double beam_en, TVector3 momentum, Float_t *pimi_philow, Float_t *pimi_phiup){
-  momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ; 
+  // momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ; 
   
   if (beam_en == 0) {
 

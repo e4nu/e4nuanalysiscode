@@ -1,4 +1,5 @@
-/**                                                                                                                                                                                                                   * This file contains utils specific for particles                                                                                                                                                                    * \author Julia Tena Vidal \at Tel Aviv University                                                                                                                                                                   * \date October 2022                                                                                                                                                                                                 **/
+/**                                                                                                                                                                                           * This file contains utils specific for particles                                                                                                                                             * \author Julia Tena Vidal \at Tel Aviv University                                                                                                                                            * \date October 2022                                                                                                                                                                          **/
+
 #include <iostream>
 #include <cmath>
 #include "TVector3.h"
@@ -44,7 +45,7 @@ double utils::GetNuECal( const TLorentzVector & leptonf, const double ECal ) {
 
 TVector3 utils::GetRecoq3( const TLorentzVector & leptonf, const double EBeam ) {
   TLorentzVector beam ( 0,0,EBeam,EBeam) ;
-  return ( leptonf - beam ).Vect() ;
+  return ( beam - leptonf ).Vect() ;
 }
 
 double utils::GetRecoQ2( const TLorentzVector & leptonf, const double EBeam ) {

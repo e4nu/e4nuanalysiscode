@@ -30,7 +30,6 @@ void Subtraction::prot3_rot_func(TVector3  V3prot[3],TVector3  V3prot_uncorr[3],
   int count =0;
 
   for(int g=0; g<N_tot; g++){
-
     rot_angle = gRandom->Uniform(0,2*TMath::Pi());
 
     for(int i=0;i<N_3p;i++) {
@@ -49,7 +48,6 @@ void Subtraction::prot3_rot_func(TVector3  V3prot[3],TVector3  V3prot_uncorr[3],
     if(prot_stat[0] && prot_stat[1] && !prot_stat[2])   N_p2[0]=N_p2[0]+1;
     if(prot_stat[0] && !prot_stat[1] && prot_stat[2])   N_p2[1]=N_p2[1]+1;
     if(!prot_stat[0] && prot_stat[1] && prot_stat[2])   N_p2[2]=N_p2[2]+1;
-
 
   }//for loop of 3p rotations ends
 
@@ -115,15 +113,12 @@ void  Subtraction::prot2_rot_func(TVector3  V3prot[2],TVector3  V3prot_uncorr[2]
   double N_2=0;
 
   for(int g1=0; g1<N_tot; g1++){
-
-
-    rot_angle=gRandom->Uniform(0,2*TMath::Pi());
+    rot_angle = gRandom->Uniform(0,2*TMath::Pi());
 
     V3_2prot[0]=V3prot_uncorr[0];
     V3_2prot[1]=V3prot_uncorr[1];
     V3_2prot[0].Rotate(rot_angle,V3q);
     V3_2prot[1].Rotate(rot_angle,V3q);
-
 
     if(PFiducialCut(fbeam_en, V3_2prot[0])  && !PFiducialCut(fbeam_en, V3_2prot[1])) N_p2to1[0]=N_p2to1[0]+1;
     if(!PFiducialCut(fbeam_en, V3_2prot[0]) && PFiducialCut(fbeam_en, V3_2prot[1]))  N_p2to1[1]=N_p2to1[1]+1;
@@ -340,7 +335,6 @@ void Subtraction::prot2_pi1_rot_func(TVector3 V3_2prot_corr[2],TVector3 V3_2prot
   for(int g=0; g<N_tot; g++){
 
     rot_angle=gRandom->Uniform(0,2*TMath::Pi());
-
 
     V3_2p_rotated[0]=V3_2prot_uncorr[0];
     V3_2p_rotated[1]=V3_2prot_uncorr[1];

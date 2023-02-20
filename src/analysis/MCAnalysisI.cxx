@@ -131,7 +131,9 @@
 
   // Apply fiducial cut to electron
   if( ApplyFiducial() ) {
-    if (! fFiducialCut -> EFiducialCut(EBeam, out_mom.Vect() ) ) { delete event ; return nullptr ; } 
+    TLorentzVector temp_e = out_mom ; 
+    temp_e.SetPhi( out_mom.Phi() + TMath::Pi() ) ;
+    if (! fFiducialCut -> EFiducialCut(EBeam, temp_e.Vect()/*out_mom.Vect()*/ ) ) { delete event ; return nullptr ; } 
   }
   ++fNEventsAfterFiducial;
 
@@ -146,16 +148,18 @@
       std::vector<TLorentzVector> visible_part ; 
       std::vector<TLorentzVector> visible_part_uncorr ; 
       for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
+	TLorentzVector temp_part = part_map[it->first][i] ; 
+	temp_part.SetPhi( temp_part.Phi() + TMath::Pi() ) ;
 	if( it->first == conf::kPdgElectron ) {
-	  if (! fFiducialCut -> EFiducialCut(EBeam, part_map[it->first][i].Vect() ) ) continue ; 
+	  if (! fFiducialCut -> EFiducialCut(EBeam, temp_part.Vect() /*part_map[it->first][i].Vect()*/ ) ) continue ; 
         } else if ( it->first == conf::kPdgProton ) {
-	  if( ! fFiducialCut -> PFiducialCut( EBeam, part_map[it->first][i].Vect() ) ) continue ; 
+	  if( ! fFiducialCut -> PFiducialCut( EBeam, temp_part.Vect() /*part_map[it->first][i].Vect()*/ ) ) continue ; 
         } else if ( it->first == conf::kPdgPiP ) {
-	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 1 ) ) continue ;
+	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect() /*part_map[it->first][i].Vect()*/, 1 ) ) continue ;
 	} else if ( it->first == conf::kPdgPiM ) {
-	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), -1 ) ) continue ;
+	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect() /*part_map[it->first][i].Vect()*/, -1 ) ) continue ;
 	} else if ( it->first == conf::kPdgPhoton ) {
-	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, part_map[it->first][i].Vect(), 0 ) ) continue ; 
+	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect() /*part_map[it->first][i].Vect()*/, 0 ) ) continue ; 
 	}
 	visible_part.push_back( part_map[it->first][i] ) ; 
 	visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
@@ -200,6 +204,7 @@
   }
 
   unsigned int signal_mult = GetMinBkgMult() ;
+  
   if( is_signal ) {
     // Storing in background the signal events
     if( fBkg.find(signal_mult) == fBkg.end() ) {

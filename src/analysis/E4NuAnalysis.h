@@ -25,6 +25,7 @@ namespace e4nu {
 
     // Main Analyse function
     bool Analyse(void) ; 
+    bool SubtractBackground( void ) ;
     bool Finalise(void);
 
   private : 

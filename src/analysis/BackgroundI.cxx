@@ -50,7 +50,6 @@ BackgroundI::BackgroundI( const double EBeam, const unsigned int TargetPdg ) : C
 }    
 
 BackgroundI::~BackgroundI() {
-  fBkg.clear() ; 
   delete fRotation ;
   delete fFiducialCut ;
 }
@@ -73,17 +72,17 @@ bool BackgroundI::InitializeFiducial(void) {
   return true ; 
 }
 
-bool BackgroundI::SubstractBackground(void) {
+bool BackgroundI::SubtractBackground( std::map<int,std::vector<e4nu::MCEvent>> & event_holder ) {
   if( !ApplyFiducial() ) return true ; 
-  if( !GetSubstractBkg() ) return true ;
+  if( !GetSubtractBkg() ) return true ;
 
   unsigned int max_mult = GetMaxBkgMult(); // Max multiplicity specified in conf file
   unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
   std::map<int,unsigned int> Topology = GetTopology();
   unsigned int m = max_mult ;
   while ( m >= min_mult ) {
-    if( fBkg.find(m) != fBkg.end() ) {
-      std::cout<< " Number of events with multiplicity " << m << " = " << fBkg[m].size() <<std::endl; 
+    if( event_holder.find(m) != event_holder.end() ) {
+      std::cout<< " Number of events with multiplicity " << m << " = " << event_holder[m].size() <<std::endl; 
     }
     --m; 
   }
@@ -97,12 +96,12 @@ bool BackgroundI::SubstractBackground(void) {
   // Create new map for event particles
   std::map<int,std::vector<TLorentzVector>> t_particles ;
   std::map<int,std::vector<TLorentzVector>> t_particles_uncorr ;
-  if ( fBkg.find(bkg_mult) != fBkg.end() ) {
-    for ( unsigned int i = 0 ; i < fBkg[bkg_mult].size() ; ++i ) {
-      particles = fBkg[bkg_mult][i].GetFinalParticles4Mom();
-      particles_uncorr = fBkg[bkg_mult][i].GetFinalParticlesUnCorr4Mom(); // This map needs to change with the cuts as well...
-      V4_el = fBkg[bkg_mult][i].GetOutLepton4Mom();
-      double event_wgt = fBkg[bkg_mult][i].GetEventWeight() ;
+  if ( event_holder.find(bkg_mult) != event_holder.end() ) {
+    for ( unsigned int i = 0 ; i < event_holder[bkg_mult].size() ; ++i ) {
+      particles = event_holder[bkg_mult][i].GetFinalParticles4Mom();
+      particles_uncorr = event_holder[bkg_mult][i].GetFinalParticlesUnCorr4Mom(); // This map needs to change with the cuts as well...
+      V4_el = event_holder[bkg_mult][i].GetOutLepton4Mom();
+      double event_wgt = event_holder[bkg_mult][i].GetEventWeight() ;
       unsigned int n_pions =  particles[conf::kPdgPiP].size() + particles[conf::kPdgPiM].size() + particles[conf::kPdgPhoton].size() ; 
  
       // remove multiplicity 2 contribution to signal...
@@ -124,7 +123,7 @@ bool BackgroundI::SubstractBackground(void) {
 	}
 
 	// Set rotation around q3 vector
-	fRotation->SetQVector( fBkg[bkg_mult][i].GetRecoq3() );	
+	fRotation->SetQVector( event_holder[bkg_mult][i].GetRecoq3() );	
 	fRotation->prot2_rot_func( V3_2prot_corr, V3_2prot_uncorr, V4_el, E_tot_2p, p_perp_tot_2p, P_N_2p , &N_prot_both);
 
 	for( unsigned int j = 0 ; j < bkg_mult ; ++j ) {
@@ -134,15 +133,15 @@ bool BackgroundI::SubstractBackground(void) {
 	  t_particles_uncorr[conf::kPdgProton] = uncorr_mom ;
 	  
 	  // Store background event with the detected proton
-	  fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
-	  fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
-	  fBkg[bkg_mult][i].SetEventWeight( -P_N_2p[j] * event_wgt ) ; 
+	  event_holder[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
+	  event_holder[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
+	  event_holder[bkg_mult][i].SetEventWeight( -P_N_2p[j] * event_wgt ) ; 
 
-	  if ( fBkg.find(min_mult) != fBkg.end() ) {
-	    fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	  if ( event_holder.find(min_mult) != event_holder.end() ) {
+	    event_holder[min_mult].push_back( event_holder[bkg_mult][i] ) ; 
 	  } else {
-	    std::vector<e4nu::MCEvent> temp = { fBkg[bkg_mult][i] } ;
-	    fBkg[min_mult] = temp ; 
+	    std::vector<e4nu::MCEvent> temp = { event_holder[bkg_mult][i] } ;
+	    event_holder[min_mult] = temp ; 
 	  }
 	  
 	}
@@ -156,13 +155,13 @@ bool BackgroundI::SubstractBackground(void) {
   bkg_mult = min_mult + 2 ;
   if( bkg_mult > max_mult ) return true ; 
   // remove multiplicity 3 contribution to signal...
-  if ( fBkg.find(bkg_mult) != fBkg.end() ) {
-    for ( unsigned int i = 0 ; i < fBkg[bkg_mult].size() ; ++i ) {
-      particles = fBkg[bkg_mult][i].GetFinalParticles4Mom();
-      particles_uncorr = fBkg[bkg_mult][i].GetFinalParticlesUnCorr4Mom();
-      V4_el = fBkg[bkg_mult][i].GetOutLepton4Mom();
-      fRotation->SetQVector( fBkg[bkg_mult][i].GetRecoq3() );	
-      double event_wgt = fBkg[bkg_mult][i].GetEventWeight() ;
+  if ( event_holder.find(bkg_mult) != event_holder.end() ) {
+    for ( unsigned int i = 0 ; i < event_holder[bkg_mult].size() ; ++i ) {
+      particles = event_holder[bkg_mult][i].GetFinalParticles4Mom();
+      particles_uncorr = event_holder[bkg_mult][i].GetFinalParticlesUnCorr4Mom();
+      V4_el = event_holder[bkg_mult][i].GetOutLepton4Mom();
+      fRotation->SetQVector( event_holder[bkg_mult][i].GetRecoq3() );	
+      double event_wgt = event_holder[bkg_mult][i].GetEventWeight() ;
       
       // 2p1pi 
       unsigned int n_pions = particles[conf::kPdgPiP].size() + particles[conf::kPdgPiM].size() + particles[conf::kPdgPhoton].size() ;  
@@ -203,15 +202,15 @@ bool BackgroundI::SubstractBackground(void) {
 	  t_particles[conf::kPdgProton] = corr_mom ;
 	  t_particles_uncorr[conf::kPdgProton] = uncorr_mom ;
 	  // Store information
-	  fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
-	  fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
-	  fBkg[bkg_mult][i].SetEventWeight( P_2p1pito2p0pi[j] * event_wgt ) ; 
+	  event_holder[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
+	  event_holder[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
+	  event_holder[bkg_mult][i].SetEventWeight( P_2p1pito2p0pi[j] * event_wgt ) ; 
 	  
-	  if ( fBkg.find(min_mult) != fBkg.end() ) {
-	    fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	  if ( event_holder.find(min_mult) != event_holder.end() ) {
+	    event_holder[min_mult].push_back( event_holder[bkg_mult][i] ) ; 
 	  } else {
-	    std::vector<e4nu::MCEvent> temp = { fBkg[bkg_mult][i] } ;
-	    fBkg[min_mult] = temp ; 
+	    std::vector<e4nu::MCEvent> temp = { event_holder[bkg_mult][i] } ;
+	    event_holder[min_mult] = temp ; 
 	  }
 	}
 
@@ -223,14 +222,14 @@ bool BackgroundI::SubstractBackground(void) {
 	  t_particles[conf::kPdgProton] = corr_mom ;
 	  t_particles_uncorr[conf::kPdgProton] = uncorr_mom ;
 	  // Store information
-	  fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
-	  fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
-	  fBkg[bkg_mult][i].SetEventWeight( P_2p1pito1p1pi[j] * event_wgt ) ; 
-	  if ( fBkg.find(min_mult) != fBkg.end() ) {
-	    fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	  event_holder[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
+	  event_holder[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
+	  event_holder[bkg_mult][i].SetEventWeight( P_2p1pito1p1pi[j] * event_wgt ) ; 
+	  if ( event_holder.find(min_mult) != event_holder.end() ) {
+	    event_holder[min_mult].push_back( event_holder[bkg_mult][i] ) ; 
 	  } else {
-	    std::vector<e4nu::MCEvent> temp = { fBkg[bkg_mult][i] } ;
-	    fBkg[min_mult] = temp ; 
+	    std::vector<e4nu::MCEvent> temp = { event_holder[bkg_mult][i] } ;
+	    event_holder[min_mult] = temp ; 
 	  }
 	}
 	// 2p 1pi -> 1p 0pi
@@ -241,14 +240,14 @@ bool BackgroundI::SubstractBackground(void) {
 	  t_particles[conf::kPdgProton] = corr_mom ;
 	  t_particles_uncorr[conf::kPdgProton] = uncorr_mom ;
 	  // Store information
-	  fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
-	  fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
-	  fBkg[bkg_mult][i].SetEventWeight( -P_2p1pito1p0pi[j] * event_wgt ) ; 
-	  if ( fBkg.find(min_mult) != fBkg.end() ) {
-	    fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	  event_holder[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
+	  event_holder[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
+	  event_holder[bkg_mult][i].SetEventWeight( -P_2p1pito1p0pi[j] * event_wgt ) ; 
+	  if ( event_holder.find(min_mult) != event_holder.end() ) {
+	    event_holder[min_mult].push_back( event_holder[bkg_mult][i] ) ; 
 	  } else {
-	    std::vector<e4nu::MCEvent> temp = { fBkg[bkg_mult][i] } ;
-	    fBkg[min_mult] = temp ; 
+	    std::vector<e4nu::MCEvent> temp = { event_holder[bkg_mult][i] } ;
+	    event_holder[min_mult] = temp ; 
 	  }
 	}
       } // outside topology 2p1pi check 
@@ -297,14 +296,14 @@ bool BackgroundI::SubstractBackground(void) {
 	    t_particles[conf::kPdgProton] = corr_mom ;
 	    t_particles_uncorr[conf::kPdgProton] = uncorr_mom; 
 	    // Store information
-	    fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
-	    fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
-	    fBkg[bkg_mult][i].SetEventWeight( P_3pto2p[c][j] * event_wgt ) ; 
-	    if ( fBkg.find(min_mult) != fBkg.end() ) {
-	      fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	    event_holder[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
+	    event_holder[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
+	    event_holder[bkg_mult][i].SetEventWeight( P_3pto2p[c][j] * event_wgt ) ; 
+	    if ( event_holder.find(min_mult) != event_holder.end() ) {
+	      event_holder[min_mult].push_back( event_holder[bkg_mult][i] ) ; 
 	    } else {
-	      std::vector<e4nu::MCEvent> temp = { fBkg[bkg_mult][i] } ;
-	      fBkg[min_mult] = temp ; 
+	      std::vector<e4nu::MCEvent> temp = { event_holder[bkg_mult][i] } ;
+	      event_holder[min_mult] = temp ; 
 	    }
 	  }
 	}
@@ -317,14 +316,14 @@ bool BackgroundI::SubstractBackground(void) {
 	  t_particles[conf::kPdgProton] = corr_pmom ;
 	  t_particles_uncorr[conf::kPdgProton] = uncorr_pmom ;
 	  // Store information
-	  fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
-	  fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
-	  fBkg[bkg_mult][i].SetEventWeight( -P_3pto1p[j] * event_wgt ) ; 
-	  if ( fBkg.find(min_mult) != fBkg.end() ) {
-	    fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	  event_holder[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
+	  event_holder[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
+	  event_holder[bkg_mult][i].SetEventWeight( -P_3pto1p[j] * event_wgt ) ; 
+	  if ( event_holder.find(min_mult) != event_holder.end() ) {
+	    event_holder[min_mult].push_back( event_holder[bkg_mult][i] ) ; 
 	  } else {
-	    std::vector<e4nu::MCEvent> temp = { fBkg[bkg_mult][i] } ;
-	    fBkg[min_mult] = temp ; 
+	    std::vector<e4nu::MCEvent> temp = { event_holder[bkg_mult][i] } ;
+	    event_holder[min_mult] = temp ; 
 	  }
 	}
       } // outside topology 3p 
@@ -334,13 +333,13 @@ bool BackgroundI::SubstractBackground(void) {
   bkg_mult = min_mult + 3 ;
   if( bkg_mult > max_mult ) return true ; 
   // remove multiplicity 4 contribution to signal...
-  if ( fBkg.find(bkg_mult) != fBkg.end() ) {
-    for ( unsigned int i = 0 ; i < fBkg[bkg_mult].size() ; ++i ) {
-      particles = fBkg[bkg_mult][i].GetFinalParticles4Mom();
-      particles_uncorr = fBkg[bkg_mult][i].GetFinalParticlesUnCorr4Mom();
-      V4_el = fBkg[bkg_mult][i].GetOutLepton4Mom();
-      fRotation->SetQVector( fBkg[bkg_mult][i].GetRecoq3() );	
-      double event_wgt = fBkg[bkg_mult][i].GetEventWeight() ;
+  if ( event_holder.find(bkg_mult) != event_holder.end() ) {
+    for ( unsigned int i = 0 ; i < event_holder[bkg_mult].size() ; ++i ) {
+      particles = event_holder[bkg_mult][i].GetFinalParticles4Mom();
+      particles_uncorr = event_holder[bkg_mult][i].GetFinalParticlesUnCorr4Mom();
+      V4_el = event_holder[bkg_mult][i].GetOutLepton4Mom();
+      fRotation->SetQVector( event_holder[bkg_mult][i].GetRecoq3() );	
+      double event_wgt = event_holder[bkg_mult][i].GetEventWeight() ;
       unsigned int n_pions = particles[conf::kPdgPiP].size() + particles[conf::kPdgPiM].size() + particles[conf::kPdgPhoton].size() ;  
 
       // 2p2pi 
@@ -396,14 +395,14 @@ bool BackgroundI::SubstractBackground(void) {
 	    t_particles[conf::kPdgProton] = corr_pmom ;
 	    t_particles_uncorr[conf::kPdgProton] = uncorr_pmom ;
 	    // Store information
-	    fBkg[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
-	    fBkg[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
-	    fBkg[bkg_mult][i].SetEventWeight( P_tot_3p[j] * event_wgt ) ; 
-	    if ( fBkg.find(min_mult) != fBkg.end() ) {
-	      fBkg[min_mult].push_back( fBkg[bkg_mult][i] ) ; 
+	    event_holder[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
+	    event_holder[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
+	    event_holder[bkg_mult][i].SetEventWeight( P_tot_3p[j] * event_wgt ) ; 
+	    if ( event_holder.find(min_mult) != event_holder.end() ) {
+	      event_holder[min_mult].push_back( event_holder[bkg_mult][i] ) ; 
 	    } else {
-	      std::vector<e4nu::MCEvent> temp = { fBkg[bkg_mult][i] } ;
-	      fBkg[min_mult] = temp ; 
+	      std::vector<e4nu::MCEvent> temp = { event_holder[bkg_mult][i] } ;
+	      event_holder[min_mult] = temp ; 
 	    }
 	  }
       }

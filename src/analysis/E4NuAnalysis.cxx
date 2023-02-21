@@ -58,6 +58,11 @@ bool E4NuAnalysis::Analyse(void) {
   return true ; 
 }
 
+bool E4NuAnalysis::SubtractBackground() {
+  return MCAnalysisI::SubtractBackground() ; 
+  // Add for class
+} 
+
 bool E4NuAnalysis::Finalise( ) {
   
   bool is_ok = MCAnalysisI::Finalise() ; 

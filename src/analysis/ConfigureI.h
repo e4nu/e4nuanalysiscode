@@ -51,7 +51,7 @@ namespace e4nu {
     unsigned int GetMaxBkgMult(void) const { return kMaxBkgMult ; }
     unsigned int GetMinBkgMult(void) const { return kMult_signal ; }
     unsigned int GetNRotations(void) const { return kNRotations ; } 
-    bool GetSubstractBkg(void) const { return kSubstractBkg ; }
+    bool GetSubtractBkg(void) const { return kSubtractBkg ; }
 
     std::map<int,unsigned int> GetTopology(void) const{ return kTopology_map ; } 
     unsigned int GetNTopologyParticles(void) ;    
@@ -98,7 +98,7 @@ namespace e4nu {
       
     // Store "multiplicty" of singal events 
     unsigned int kMult_signal = 0;
-    bool kSubstractBkg = false ;
+    bool kSubtractBkg = false ;
 
     // Histogram configurables
     std::vector< std::string > kObservables ;

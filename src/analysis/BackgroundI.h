@@ -26,15 +26,11 @@ namespace e4nu {
     BackgroundI( const std::string input_file ) ;
     BackgroundI( const double EBeam, const unsigned int TargetPdg ) ;
 
-    bool SubstractBackground(void) ; 
+    bool SubtractBackground( std::map<int,std::vector<e4nu::MCEvent>> & event_holder ) ; 
       
   protected:
     bool InitializeFiducial(void) ;
     virtual ~BackgroundI();
-
-    // Background definition
-    //    std::map<int,std::vector<e4nu::EventI>> fBkg;
-    std::map<int,std::vector<e4nu::MCEvent>> fBkg;
 
     Fiducial * fFiducialCut ;
     Subtraction * fRotation;

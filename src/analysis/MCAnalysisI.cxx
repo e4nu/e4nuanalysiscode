@@ -31,7 +31,7 @@
 
  MCAnalysisI::~MCAnalysisI() {
    delete fData;
-
+   kAnalysedEventHolder.clear();
    kAcceptanceMap.clear();
    kAccMap.clear();
    kGenMap.clear();
@@ -133,7 +133,7 @@
   if( ApplyFiducial() ) {
     TLorentzVector temp_e = out_mom ; 
     temp_e.SetPhi( out_mom.Phi() + TMath::Pi() ) ;
-    if (! fFiducialCut -> EFiducialCut(EBeam, temp_e.Vect()/*out_mom.Vect()*/ ) ) { delete event ; return nullptr ; } 
+    if (! fFiducialCut -> EFiducialCut(EBeam, temp_e.Vect() ) ) { delete event ; return nullptr ; } 
   }
   ++fNEventsAfterFiducial;
 
@@ -151,15 +151,15 @@
 	TLorentzVector temp_part = part_map[it->first][i] ; 
 	temp_part.SetPhi( temp_part.Phi() + TMath::Pi() ) ;
 	if( it->first == conf::kPdgElectron ) {
-	  if (! fFiducialCut -> EFiducialCut(EBeam, temp_part.Vect() /*part_map[it->first][i].Vect()*/ ) ) continue ; 
+	  if (! fFiducialCut -> EFiducialCut(EBeam, temp_part.Vect() ) ) continue ; 
         } else if ( it->first == conf::kPdgProton ) {
-	  if( ! fFiducialCut -> PFiducialCut( EBeam, temp_part.Vect() /*part_map[it->first][i].Vect()*/ ) ) continue ; 
+	  if( ! fFiducialCut -> PFiducialCut( EBeam, temp_part.Vect() ) ) continue ; 
         } else if ( it->first == conf::kPdgPiP ) {
-	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect() /*part_map[it->first][i].Vect()*/, 1 ) ) continue ;
+	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect(), 1 ) ) continue ;
 	} else if ( it->first == conf::kPdgPiM ) {
-	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect() /*part_map[it->first][i].Vect()*/, -1 ) ) continue ;
+	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect(), -1 ) ) continue ;
 	} else if ( it->first == conf::kPdgPhoton ) {
-	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect() /*part_map[it->first][i].Vect()*/, 0 ) ) continue ; 
+	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect(), 0 ) ) continue ; 
 	}
 	visible_part.push_back( part_map[it->first][i] ) ; 
 	visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
@@ -207,11 +207,11 @@
   
   if( is_signal ) {
     // Storing in background the signal events
-    if( fBkg.find(signal_mult) == fBkg.end() ) {
+    if( kAnalysedEventHolder.find(signal_mult) == kAnalysedEventHolder.end() ) {
       std::vector<MCEvent> temp ( 1, *event ) ;
-      fBkg[signal_mult] = temp ; 
+      kAnalysedEventHolder[signal_mult] = temp ; 
     } else { 
-      fBkg[signal_mult].push_back( *event ) ; 
+      kAnalysedEventHolder[signal_mult].push_back( *event ) ; 
     }
 
     ++fNEventsAfterTopologyCut ;
@@ -225,11 +225,11 @@
     // Only store background events with multiplicity > mult_signal
     // Also ignore background events above the maximum multiplicity
     if( mult_bkg > signal_mult && mult_bkg <= GetMaxBkgMult() ) {
-      if( fBkg.find(mult_bkg) == fBkg.end() ) {
+      if( kAnalysedEventHolder.find(mult_bkg) == kAnalysedEventHolder.end() ) {
 	std::vector<MCEvent> temp ( 1, *event ) ;
-	fBkg[mult_bkg] = temp ; 
+	kAnalysedEventHolder[mult_bkg] = temp ; 
       } else { 
-	fBkg[mult_bkg].push_back( *event ) ; 
+	kAnalysedEventHolder[mult_bkg].push_back( *event ) ; 
       }
     }
     delete event ; 
@@ -239,6 +239,10 @@
   return event ; 
     
 }
+
+bool MCAnalysisI::SubtractBackground() {
+  return BackgroundI::SubtractBackground( kAnalysedEventHolder ) ; 
+} 
 
 void MCAnalysisI::SmearParticles( MCEvent * event ) {
   
@@ -339,19 +343,19 @@ bool MCAnalysisI::Finalise( void ) {
 
   // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult() ; 
-  for( unsigned int k = 0 ; k < fBkg[min_mult].size() ; ++k ) {
+  for( unsigned int k = 0 ; k < kAnalysedEventHolder[min_mult].size() ; ++k ) {
     // if( IsData() ) 
-    MCEvent * bkg_event = static_cast<MCEvent*>( &fBkg[min_mult][k] ); 
+    MCEvent * bkg_event = static_cast<MCEvent*>( &kAnalysedEventHolder[min_mult][k] ); 
     StoreTree( bkg_event ) ; // Store background event in TTree
 
     double norm_weight = 1 ; 
     if( ApplyCorrWeights() ) { 
-      norm_weight = fBkg[min_mult][k].GetTotalWeight() ;
+      norm_weight = kAnalysedEventHolder[min_mult][k].GetTotalWeight() ;
     }
 
     // Store in histogram(s)
     for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
-      kHistograms[j]-> Fill( fBkg[min_mult][k].GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
+      kHistograms[j]-> Fill( kAnalysedEventHolder[min_mult][k].GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
     }
   }
 

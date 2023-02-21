@@ -118,9 +118,9 @@ ConfigureI::ConfigureI( const std::string input_file ) {
 	  kTopology_map.insert( pair ) ;
 	}
       }
-    } else if ( param[i] == "SubstractBkg" ) { 
-      if( value[i] == "true" ) kSubstractBkg = true ; 
-      else kSubstractBkg = false ; 
+    } else if ( param[i] == "SubtractBkg" ) { 
+      if( value[i] == "true" ) kSubtractBkg = true ; 
+      else kSubtractBkg = false ; 
     } else if ( param[i] == "MaxBackgroundMultiplicity" ) { kMaxBkgMult = (unsigned int) std::stoi( value[i] ) ;
     } else if ( param[i] == "NRotations" ) { kNRotations = (unsigned int) std::stoi( value[i] ) ;
     } else if ( param[i] == "ObservableList" ) {
@@ -220,8 +220,8 @@ void ConfigureI::PrintConfiguration(void) const {
   for ( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) { 
     std::cout << "    " << it->first << ", multiplicity " << it->second << std::endl;
   }
-  if( kSubstractBkg ) {
-    std::cout << "\nBackground Substraction enabled : " << std::endl;
+  if( kSubtractBkg ) {
+    std::cout << "\nBackground Subtraction enabled : " << std::endl;
     std::cout << "Maximum Background Multiplicity: "<< kMaxBkgMult << std::endl;
     std::cout << "Number of rotations: "<< kNRotations << "\n" << std::endl;
   }

@@ -29,7 +29,6 @@ namespace e4nu {
     unsigned int GetNEvents( void ) const ;
     EventI * GetValidEvent( const unsigned int event_id ) ;
     bool SubtractBackground( void ) ;
-
     void SmearParticles( MCEvent * event ) ;
 
     bool Finalise(void) ; 
@@ -54,7 +53,6 @@ namespace e4nu {
     double fXSec = 0 ; 
 
     // Event Holder for signal and background
-    //    std::map<int,std::vector<e4nu::EventI>> kAnalysedEventHolder;
     std::map<int,std::vector<e4nu::MCEvent>> kAnalysedEventHolder;
 
     void Initialize(void) ;

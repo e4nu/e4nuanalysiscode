@@ -345,8 +345,7 @@ bool MCAnalysisI::Finalise( void ) {
   unsigned int min_mult = GetMinBkgMult() ; 
   for( unsigned int k = 0 ; k < kAnalysedEventHolder[min_mult].size() ; ++k ) {
     // if( IsData() ) 
-    MCEvent * bkg_event = static_cast<MCEvent*>( &kAnalysedEventHolder[min_mult][k] ); 
-    StoreTree( bkg_event ) ; // Store background event in TTree
+    StoreTree( static_cast<MCEvent*>( &kAnalysedEventHolder[min_mult][k] ) );
 
     double norm_weight = 1 ; 
     if( ApplyCorrWeights() ) { 

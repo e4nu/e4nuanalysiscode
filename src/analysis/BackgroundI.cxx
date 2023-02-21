@@ -1,4 +1,4 @@
-/** 
+/**
  * \info These parameters are configurable 
  * the default values are set here
  **/
@@ -105,7 +105,7 @@ bool BackgroundI::SubtractBackground( std::map<int,std::vector<e4nu::MCEvent>> &
       unsigned int n_pions =  particles[conf::kPdgPiP].size() + particles[conf::kPdgPiM].size() + particles[conf::kPdgPhoton].size() ; 
  
       // remove multiplicity 2 contribution to signal...
-      // 2p0pi -> 1p0pi ( multiplicity 2 -> multiplicity 1 ) 
+      // 2p0pi . 1p0pi ( multiplicity 2 . multiplicity 1 ) 
       if( particles[conf::kPdgProton].size() == 2 && n_pions == 0 ) { 
 	double E_tot_2p[bkg_mult]={0};
 	double p_perp_tot_2p[bkg_mult]={0};
@@ -194,7 +194,7 @@ bool BackgroundI::SubtractBackground( std::map<int,std::vector<e4nu::MCEvent>> &
 				      V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,
 				      P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
 
-	// 2p 1pi -> 2p 0pi
+	// 2p 1pi . 2p 0pi
 	// Store one proton only so ECal calculation is consistent with master
 	for( unsigned int j = 0 ; j < particles[conf::kPdgProton].size() ; ++j ) {
 	  std::vector<TLorentzVector> corr_mom = { particles[conf::kPdgProton][j] } ;
@@ -214,7 +214,7 @@ bool BackgroundI::SubtractBackground( std::map<int,std::vector<e4nu::MCEvent>> &
 	  }
 	}
 
-	// 2p 1pi -> 1p 1pi
+	// 2p 1pi . 1p 1pi
 	// Store one proton only for a consistent ECal calculation
 	for( unsigned int j = 0 ; j < particles[conf::kPdgProton].size() ; ++j ) {
 	  std::vector<TLorentzVector> corr_mom = { particles[conf::kPdgProton][j] } ;
@@ -232,7 +232,7 @@ bool BackgroundI::SubtractBackground( std::map<int,std::vector<e4nu::MCEvent>> &
 	    event_holder[min_mult] = temp ; 
 	  }
 	}
-	// 2p 1pi -> 1p 0pi
+	// 2p 1pi . 1p 0pi
 	// Store one proton only so ECal calculation is consistent with master
 	for( unsigned int j = 0 ; j < particles[conf::kPdgProton].size() ; ++j ) {
 	  std::vector<TLorentzVector> corr_mom = { particles[conf::kPdgProton][j] } ;
@@ -253,7 +253,7 @@ bool BackgroundI::SubtractBackground( std::map<int,std::vector<e4nu::MCEvent>> &
       } // outside topology 2p1pi check 
     
       
-      // 3p0pi ->2p -> 1p
+      // 3p0pi .2p . 1p
       if( particles[conf::kPdgProton].size() == 3 && n_pions == 0 ) {
 	const int N_3p = 3;
 	const int N_comb = 3; // N_2p!/(N_2p!*(N_3p-N_2p)!
@@ -288,7 +288,7 @@ bool BackgroundI::SubtractBackground( std::map<int,std::vector<e4nu::MCEvent>> &
 
 	fRotation->prot3_rot_func( V3_prot_corr,V3_prot_uncorr,V4_el,E_cal_3pto2p,p_miss_perp_3pto2p, P_3pto2p,N_p1, E_cal_3pto1p,p_miss_perp_3pto1p,&N_p_three);
 
-	//3p to 2p->1p
+	//3p to 2p.1p
 	for(int c = 0; c < N_comb; c++) { // Loop over number of combinations
 	  for(int j = 0; j < N_2p; j++) { // Loop over two protons
 	    std::vector<TLorentzVector> corr_mom = { TLV_prot_corr[c][j] };
@@ -307,7 +307,7 @@ bool BackgroundI::SubtractBackground( std::map<int,std::vector<e4nu::MCEvent>> &
 	    }
 	  }
 	}
-	// 3p -> 1p 
+	// 3p . 1p 
 	for(int j = 0; j < N_3p; j++) {
 	  P_3pto1p[j]= N_p1[j] / N_p_three;
 

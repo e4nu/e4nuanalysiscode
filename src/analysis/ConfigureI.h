@@ -11,6 +11,8 @@
 #include "TH1D.h"
 #include "TFile.h"
 #include "TTree.h"
+#include "conf/FiducialCutI.h"
+#include "utils/Fiducial.h"
 
 namespace e4nu { 
 
@@ -55,6 +57,7 @@ namespace e4nu {
 
     std::map<int,unsigned int> GetTopology(void) const{ return kTopology_map ; } 
     unsigned int GetNTopologyParticles(void) ;    
+    Fiducial * GetFiducialCut(void) { return kFiducialCut ; } 
       
     // Histogram Configurables
     std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }
@@ -99,6 +102,9 @@ namespace e4nu {
     // Store "multiplicty" of singal events 
     unsigned int kMult_signal = 0;
     bool kSubtractBkg = false ;
+
+    bool InitializeFiducial(void) ;
+    Fiducial * kFiducialCut = nullptr ;
 
     // Histogram configurables
     std::vector< std::string > kObservables ;

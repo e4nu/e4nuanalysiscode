@@ -13,7 +13,6 @@
 #include "TTree.h"
 #include "physics/EventI.h"
 #include "utils/Fiducial.h"
-#include "conf/FiducialCutI.h"
 #include "analysis/BackgroundI.h"
 
 namespace e4nu { 
@@ -34,16 +33,16 @@ namespace e4nu {
       
   protected: 
 
-    TF1 * fElectronFit ; 
+    TF1 * kElectronFit = nullptr ; 
 
     // Cuts counters
-    long int fNEventsAfterEMomCut = 0 ; 
-    long int fNEventsAfterEThetaCut = 0 ; 
-    long int fNEventsAfterPhiCut = 0 ; 
-    long int fNEventsAfterQ2Cut = 0 ; 
-    long int fNEventsAfterWCut = 0 ; 
-    long int fNEventsAfterPhiOpeningAngleCut = 0 ; 
-    long int fNEventsAfterThetaCut = 0 ;     
+    long int kNEventsAfterEMomCut = 0 ; 
+    long int kNEventsAfterEThetaCut = 0 ; 
+    long int kNEventsAfterPhiCut = 0 ; 
+    long int kNEventsAfterQ2Cut = 0 ; 
+    long int kNEventsAfterWCut = 0 ; 
+    long int kNEventsAfterPhiOpeningAngleCut = 0 ; 
+    long int kNEventsAfterThetaCut = 0 ;     
 
   };
 }

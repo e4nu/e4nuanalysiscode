@@ -7,7 +7,6 @@
 #include <string>
 #include <fstream>
 #include "analysis/BackgroundI.h"
-#include "conf/FiducialCutI.h"
 #include "conf/AnalysisConstantsI.h"
 #include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
@@ -18,42 +17,42 @@ using namespace e4nu;
 
 BackgroundI::BackgroundI( ) {
 
-  if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
+  //  if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
   if( kIsConfigured && ApplyFiducial() ) {
     kRotation = new Subtraction();
-    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), kFiducialCut);
+    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), GetFiducialCut() );
     kRotation->ResetQVector(); //Resets q vector to (0,0,0) 
   }
 }
 
 BackgroundI::BackgroundI( const std::string input_file ) : ConfigureI( input_file ) {
 
-  if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
+  //  if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
   if( kIsConfigured && ApplyFiducial() ) {
     kRotation = new Subtraction();
-    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), kFiducialCut);
+    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), GetFiducialCut() );
     kRotation->ResetQVector(); //Resets q vector to (0,0,0)
   }
 }
 
 BackgroundI::BackgroundI( const double EBeam, const unsigned int TargetPdg ) : ConfigureI( EBeam, TargetPdg ) {
 
-  if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
+  //  if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
   if( kIsConfigured && ApplyFiducial() ) {
     kRotation = new Subtraction();
-    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), kFiducialCut);
+    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), GetFiducialCut() );
     kRotation->ResetQVector(); //Resets q vector to (0,0,0)
   }
 }    
 
 BackgroundI::~BackgroundI() {
   delete kRotation ;
-  delete kFiducialCut ;
+  //  delete kFiducialCut ;
 }
-
+/*
 bool BackgroundI::InitializeFiducial(void) {
   double EBeam = GetConfiguredEBeam() ; 
   unsigned int Target = GetConfiguredTarget() ;
@@ -72,4 +71,4 @@ bool BackgroundI::InitializeFiducial(void) {
   return true ; 
 }
 
-
+*/

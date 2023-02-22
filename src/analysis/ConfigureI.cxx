@@ -23,6 +23,9 @@ ConfigureI::ConfigureI( const double EBeam, const unsigned int TargetPdg ) {
   kTargetPdg = TargetPdg ;
   kIsDataLoaded = false ;
   kIsConfigured = true ; 
+
+  if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
+
   PrintConfiguration();
 }
     
@@ -31,6 +34,7 @@ ConfigureI::~ConfigureI() {
   kObservables.clear();
   kNBins.clear();
   kRanges.clear();
+  delete kFiducialCut ;
 }
 
 ConfigureI::ConfigureI( const std::string input_file ) {
@@ -186,7 +190,10 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     kIsConfigured = false ; 
   }
       
+  if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
+
   if( kIsConfigured ) PrintConfiguration() ;
+
 }
       
 void ConfigureI::PrintConfiguration(void) const { 
@@ -248,4 +255,22 @@ unsigned int ConfigureI::GetNTopologyParticles(void) {
   return N_signal ;
 }
 
+
+bool ConfigureI::InitializeFiducial(void) {
+  double EBeam = GetConfiguredEBeam() ; 
+  unsigned int Target = GetConfiguredTarget() ;
+
+  if( ApplyFiducial() ) {
+    // Initialize fiducial for this run
+    kFiducialCut = new Fiducial() ; 
+    kFiducialCut -> InitPiMinusFit( EBeam ) ; 
+    kFiducialCut -> InitEClimits(); 
+    kFiducialCut -> up_lim1_ec -> Eval(60) ;
+    kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), Target , EBeam ) ;
+    kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
+    if( !kFiducialCut ) return false ; 
+  } else { return true ; }
+
+  return true ; 
+}
 

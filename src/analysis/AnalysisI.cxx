@@ -16,15 +16,13 @@
 
 using namespace e4nu; 
 
-AnalysisI::AnalysisI( ) {;}
+AnalysisI::AnalysisI( ) { ; }
 
-AnalysisI::AnalysisI( const std::string input_file ) : BackgroundI( input_file ) { ; }
+AnalysisI::AnalysisI( const std::string input_file ) : BackgroundI( input_file ) { if( kIsConfigured ) kIsConfigured = InitializeFiducial() ;  }
 
 AnalysisI::AnalysisI( const double EBeam, const unsigned int TargetPdg ) : BackgroundI( EBeam, TargetPdg ) {;}    
 
-AnalysisI::~AnalysisI() {
-  
-}
+AnalysisI::~AnalysisI() {;}
 
 bool AnalysisI::Analyse( EventI * event ) {
 
@@ -35,17 +33,17 @@ bool AnalysisI::Analyse( EventI * event ) {
   if( !utils::IsValidSector( out_mom.Phi(), EBeam, UseAllSectors() ) ) return false ;   
 
   if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) return false ;
-  ++fNEventsAfterEThetaCut ;     
+  ++kNEventsAfterEThetaCut ;     
 
   if( ApplyOutElectronCut() ){
     if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) return false ; 
+  ++kNEventsAfterEMomCut ;     
   }
-  ++fNEventsAfterEMomCut ;     
 
   if( ApplyThetaSlice() ) {
     if( out_mom.Theta() * 180./TMath::Pi() < conf::kMinEThetaSlice ) return false ; 
     if( out_mom.Theta() * 180./TMath::Pi() > conf::kMaxEThetaSlice ) return false ; 
-    ++fNEventsAfterThetaCut ; 
+    ++kNEventsAfterThetaCut ; 
   }
 
   if( ApplyPhiOpeningAngle() ) {
@@ -53,14 +51,14 @@ bool AnalysisI::Analyse( EventI * event ) {
     if ( ! IsData() ) phi += TMath::Pi() ; 
     if ( ! conf::ValidPhiOpeningAngle( phi ) ) return false ;  
   }
-  ++fNEventsAfterPhiOpeningAngleCut ; 
+  ++kNEventsAfterPhiOpeningAngleCut ; 
 
   if( ApplyGoodSectorPhiSlice() ) {
     double phi = out_mom.Phi() ; 
     if ( ! IsData() ) phi += TMath::Pi() ; 
     if ( ! conf::GoodSectorPhiSlice( phi ) ) return false ; 
   }
-  ++fNEventsAfterPhiCut ; 
+  ++kNEventsAfterPhiCut ; 
 
   double reco_Q2 = utils::GetRecoQ2( out_mom, EBeam ) ; 
   double W_var = utils::GetRecoW( out_mom, EBeam ) ;
@@ -70,7 +68,7 @@ bool AnalysisI::Analyse( EventI * event ) {
     if( conf::GetQ2Cut( MaxQ2, EBeam ) ) {
       if( reco_Q2 < MaxQ2 ) return false ; 
     }
-    ++fNEventsAfterQ2Cut ; 
+    ++kNEventsAfterQ2Cut ; 
   }
 
   if( ApplyWCut() ) {
@@ -78,7 +76,7 @@ bool AnalysisI::Analyse( EventI * event ) {
     if( conf::GetWCut( MinW, EBeam ) ) {
       if( W_var > MinW ) return false ; 
     }
-    ++fNEventsAfterWCut ; 
+    ++kNEventsAfterWCut ; 
   }
 
   return true ; 
@@ -86,16 +84,16 @@ bool AnalysisI::Analyse( EventI * event ) {
 
 
 double AnalysisI::GetElectronMinTheta( TLorentzVector emom ) {
-  return fElectronFit ->Eval(emom.P()) ; 
+  return kElectronFit ->Eval(emom.P()) ; 
 }
 
 bool AnalysisI::Finalise(void) const{
-  std::cout << " Events after electron momentum cut = " << fNEventsAfterEMomCut << std::endl;
-  std::cout << " Events after electron theta cut = " << fNEventsAfterEThetaCut << std::endl;
-  if( ApplyQ2Cut() ) std::cout << " Events after Q2 cut = " << fNEventsAfterQ2Cut << std::endl;
-  if( ApplyWCut() ) std::cout << " Events after W cut = "<< fNEventsAfterWCut <<std::endl;
-  if( ApplyThetaSlice() ) std::cout << " Events after theta cut = " << fNEventsAfterThetaCut << std::endl;
-  if( ApplyPhiOpeningAngle() ) std::cout << " Events after phi opening angle cut = " << fNEventsAfterPhiOpeningAngleCut << std::endl;
-  if( ApplyGoodSectorPhiSlice() ) std::cout << " Events after phi cut = " << fNEventsAfterPhiCut << std::endl;
+  std::cout << " Events after electron momentum cut = " << kNEventsAfterEMomCut << std::endl;
+  std::cout << " Events after electron theta cut = " << kNEventsAfterEThetaCut << std::endl;
+  if( ApplyQ2Cut() ) std::cout << " Events after Q2 cut = " << kNEventsAfterQ2Cut << std::endl;
+  if( ApplyWCut() ) std::cout << " Events after W cut = "<< kNEventsAfterWCut <<std::endl;
+  if( ApplyThetaSlice() ) std::cout << " Events after theta cut = " << kNEventsAfterThetaCut << std::endl;
+  if( ApplyPhiOpeningAngle() ) std::cout << " Events after phi opening angle cut = " << kNEventsAfterPhiOpeningAngleCut << std::endl;
+  if( ApplyGoodSectorPhiSlice() ) std::cout << " Events after phi cut = " << kNEventsAfterPhiCut << std::endl;
   return true ; 
 }

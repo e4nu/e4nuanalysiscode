@@ -369,10 +369,7 @@ namespace e4nu {
     }
       
   protected:
-    //bool InitializeFiducial(void) ;
     virtual ~BackgroundI();
-
-    //    Fiducial * kFiducialCut = nullptr ;
     Subtraction * kRotation = nullptr ;
 
   };

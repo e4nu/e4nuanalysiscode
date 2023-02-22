@@ -1,4 +1,3 @@
- // _______________________________________________
  /*
   * Analysis Interface base class
   * 
@@ -133,7 +132,7 @@
   if( ApplyFiducial() ) {
     TLorentzVector temp_e = out_mom ; 
     temp_e.SetPhi( out_mom.Phi() + TMath::Pi() ) ;
-    if (! fFiducialCut -> EFiducialCut(EBeam, temp_e.Vect() ) ) { delete event ; return nullptr ; } 
+    if (! kFiducialCut -> EFiducialCut(EBeam, temp_e.Vect() ) ) { delete event ; return nullptr ; } 
   }
   ++fNEventsAfterFiducial;
 
@@ -151,15 +150,15 @@
 	TLorentzVector temp_part = part_map[it->first][i] ; 
 	temp_part.SetPhi( temp_part.Phi() + TMath::Pi() ) ;
 	if( it->first == conf::kPdgElectron ) {
-	  if (! fFiducialCut -> EFiducialCut(EBeam, temp_part.Vect() ) ) continue ; 
+	  if (! kFiducialCut -> EFiducialCut(EBeam, temp_part.Vect() ) ) continue ; 
         } else if ( it->first == conf::kPdgProton ) {
-	  if( ! fFiducialCut -> PFiducialCut( EBeam, temp_part.Vect() ) ) continue ; 
+	  if( ! kFiducialCut -> PFiducialCut( EBeam, temp_part.Vect() ) ) continue ; 
         } else if ( it->first == conf::kPdgPiP ) {
-	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect(), 1 ) ) continue ;
+	  if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect(), 1 ) ) continue ;
 	} else if ( it->first == conf::kPdgPiM ) {
-	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect(), -1 ) ) continue ;
+	  if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect(), -1 ) ) continue ;
 	} else if ( it->first == conf::kPdgPhoton ) {
-	  if( ! fFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect(), 0 ) ) continue ; 
+	  if( ! kFiducialCut -> Pi_phot_fid_united( EBeam, temp_part.Vect(), 0 ) ) continue ; 
 	}
 	visible_part.push_back( part_map[it->first][i] ) ; 
 	visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
@@ -241,7 +240,7 @@
 }
 
 bool MCAnalysisI::SubtractBackground() {
-  return BackgroundI::SubtractBackground( kAnalysedEventHolder ) ; 
+  return BackgroundI::SubtractBackground<MCEvent>( kAnalysedEventHolder ) ; 
 } 
 
 void MCAnalysisI::SmearParticles( MCEvent * event ) {

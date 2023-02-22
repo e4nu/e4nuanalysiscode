@@ -26,9 +26,11 @@ namespace e4nu {
     BackgroundI( const std::string input_file ) ;
     BackgroundI( const double EBeam, const unsigned int TargetPdg ) ;
 
+    // This template class guarantees the same substraction method for data and MC
+    // Definition must be in header file to avoid linking issuess
     template <class T> 
       bool SubtractBackground( std::map<int,std::vector<T>> & event_holder ) {
-      if( !ApplyFiducial() ) return true ; 
+      if( !ApplyFiducial()  ) return true ; 
       if( !GetSubtractBkg() ) return true ;
 
       unsigned int max_mult = GetMaxBkgMult(); // Max multiplicity specified in conf file
@@ -78,8 +80,8 @@ namespace e4nu {
 	    }
 
 	    // Set rotation around q3 vector
-	    fRotation->SetQVector( event_holder[bkg_mult][i].GetRecoq3() );	
-	    fRotation->prot2_rot_func( V3_2prot_corr, V3_2prot_uncorr, V4_el, E_tot_2p, p_perp_tot_2p, P_N_2p , &N_prot_both);
+	    kRotation->SetQVector( event_holder[bkg_mult][i].GetRecoq3() );	
+	    kRotation->prot2_rot_func( V3_2prot_corr, V3_2prot_uncorr, V4_el, E_tot_2p, p_perp_tot_2p, P_N_2p , &N_prot_both);
 
 	    for( unsigned int j = 0 ; j < bkg_mult ; ++j ) {
 	      std::vector<TLorentzVector> corr_mom = { particles[conf::kPdgProton][j] } ;
@@ -115,7 +117,7 @@ namespace e4nu {
 	  particles = event_holder[bkg_mult][i].GetFinalParticles4Mom();
 	  particles_uncorr = event_holder[bkg_mult][i].GetFinalParticlesUnCorr4Mom();
 	  V4_el = event_holder[bkg_mult][i].GetOutLepton4Mom();
-	  fRotation->SetQVector( event_holder[bkg_mult][i].GetRecoq3() );	
+	  kRotation->SetQVector( event_holder[bkg_mult][i].GetRecoq3() );	
 	  double event_wgt = event_holder[bkg_mult][i].GetEventWeight() ;
       
 	  // 2p1pi 
@@ -145,7 +147,7 @@ namespace e4nu {
 	    double P_2p1pito1p0pi[2] = {0};
 	    double Ptot = 0;
 	  
-	    fRotation->prot2_pi1_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_1pi_corr, pi_charge, 
+	    kRotation->prot2_pi1_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_1pi_corr, pi_charge, 
 					  V4_el,Ecal_2p1pi_to2p0pi,p_miss_perp_2p1pi_to2p0pi,
 					  P_2p1pito2p0pi, P_2p1pito1p1pi, P_2p1pito1p0pi,&Ptot);
 
@@ -241,7 +243,7 @@ namespace e4nu {
 	    double p_miss_perp_3pto2p[3][N_2p]={0};
 	    double P_3pto2p[3][N_2p]={0};
 
-	    fRotation->prot3_rot_func( V3_prot_corr,V3_prot_uncorr,V4_el,E_cal_3pto2p,p_miss_perp_3pto2p, P_3pto2p,N_p1, E_cal_3pto1p,p_miss_perp_3pto1p,&N_p_three);
+	    kRotation->prot3_rot_func( V3_prot_corr,V3_prot_uncorr,V4_el,E_cal_3pto2p,p_miss_perp_3pto2p, P_3pto2p,N_p1, E_cal_3pto1p,p_miss_perp_3pto1p,&N_p_three);
 
 	    //3p to 2p.1p
 	    for(int c = 0; c < N_comb; c++) { // Loop over number of combinations
@@ -293,7 +295,7 @@ namespace e4nu {
 	  particles = event_holder[bkg_mult][i].GetFinalParticles4Mom();
 	  particles_uncorr = event_holder[bkg_mult][i].GetFinalParticlesUnCorr4Mom();
 	  V4_el = event_holder[bkg_mult][i].GetOutLepton4Mom();
-	  fRotation->SetQVector( event_holder[bkg_mult][i].GetRecoq3() );	
+	  kRotation->SetQVector( event_holder[bkg_mult][i].GetRecoq3() );	
 	  double event_wgt = event_holder[bkg_mult][i].GetEventWeight() ;
 	  unsigned int n_pions = particles[conf::kPdgPiP].size() + particles[conf::kPdgPiM].size() + particles[conf::kPdgPhoton].size() ;  
 
@@ -317,7 +319,7 @@ namespace e4nu {
 	      for ( unsigned k = 0 ; k < 2 ; ++k ) {
 	      V3_2pi_corr[k] = particles[conf::kPdgPiP][k].Vect() ; 
 	      }
-	      fRotation->prot2_pi2_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_2pi_corr,charge_pi, V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
+	      kRotation->prot2_pi2_rot_func(V3_2prot_corr,V3_2prot_uncorr,V3_2pi_corr,charge_pi, V4_el, Ecal_2p2pi,p_miss_perp_2p2pi,Ptot_2p);
 	    */
 	    // THIS IS NOT COMPLETE - MUST ADD ALL PIONS
 	  }
@@ -342,7 +344,7 @@ namespace e4nu {
 	      pi_charge = -1 ; 
 	    } else if( particles[conf::kPdgPhoton].size() == 1 ) V3_pi_corr = particles[conf::kPdgPhoton][0].Vect() ; 
 
-	    fRotation->prot3_pi1_rot_func(V3_prot_corr, V3_prot_uncorr, V3_pi_corr, pi_charge , V4_el, Ecal_3p1pi, p_miss_perp_3p1pi, P_tot_3p);
+	    kRotation->prot3_pi1_rot_func(V3_prot_corr, V3_prot_uncorr, V3_pi_corr, pi_charge , V4_el, Ecal_3p1pi, p_miss_perp_3p1pi, P_tot_3p);
 
 	    for(int j = 0; j < 3; j++) {
 	      std::vector<TLorentzVector> corr_pmom = { particles[conf::kPdgProton][j] } ; 
@@ -370,8 +372,8 @@ namespace e4nu {
     bool InitializeFiducial(void) ;
     virtual ~BackgroundI();
 
-    Fiducial * fFiducialCut = nullptr ;
-    Subtraction * fRotation = nullptr ;
+    Fiducial * kFiducialCut = nullptr ;
+    Subtraction * kRotation = nullptr ;
 
   };
 }

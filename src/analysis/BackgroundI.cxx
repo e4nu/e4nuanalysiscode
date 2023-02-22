@@ -21,9 +21,9 @@ BackgroundI::BackgroundI( ) {
   if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
   if( kIsConfigured && ApplyFiducial() ) {
-    fRotation = new Subtraction();
-    fRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), fFiducialCut);
-    fRotation->ResetQVector(); //Resets q vector to (0,0,0) 
+    kRotation = new Subtraction();
+    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), kFiducialCut);
+    kRotation->ResetQVector(); //Resets q vector to (0,0,0) 
   }
 }
 
@@ -32,9 +32,9 @@ BackgroundI::BackgroundI( const std::string input_file ) : ConfigureI( input_fil
   if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
   if( kIsConfigured && ApplyFiducial() ) {
-    fRotation = new Subtraction();
-    fRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), fFiducialCut);
-    fRotation->ResetQVector(); //Resets q vector to (0,0,0)
+    kRotation = new Subtraction();
+    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), kFiducialCut);
+    kRotation->ResetQVector(); //Resets q vector to (0,0,0)
   }
 }
 
@@ -43,15 +43,15 @@ BackgroundI::BackgroundI( const double EBeam, const unsigned int TargetPdg ) : C
   if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
   if( kIsConfigured && ApplyFiducial() ) {
-    fRotation = new Subtraction();
-    fRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), fFiducialCut);
-    fRotation->ResetQVector(); //Resets q vector to (0,0,0)
+    kRotation = new Subtraction();
+    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), kFiducialCut);
+    kRotation->ResetQVector(); //Resets q vector to (0,0,0)
   }
 }    
 
 BackgroundI::~BackgroundI() {
-  delete fRotation ;
-  delete fFiducialCut ;
+  delete kRotation ;
+  delete kFiducialCut ;
 }
 
 bool BackgroundI::InitializeFiducial(void) {
@@ -60,13 +60,13 @@ bool BackgroundI::InitializeFiducial(void) {
 
   if( ApplyFiducial() ) {
     // Initialize fiducial for this run
-    fFiducialCut = new Fiducial() ; 
-    fFiducialCut -> InitPiMinusFit( EBeam ) ; 
-    fFiducialCut -> InitEClimits(); 
-    fFiducialCut -> up_lim1_ec -> Eval(60) ;
-    fFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), Target , EBeam ) ;
-    fFiducialCut -> SetFiducialCutParameters( EBeam ) ;
-    if( !fFiducialCut ) return false ; 
+    kFiducialCut = new Fiducial() ; 
+    kFiducialCut -> InitPiMinusFit( EBeam ) ; 
+    kFiducialCut -> InitEClimits(); 
+    kFiducialCut -> up_lim1_ec -> Eval(60) ;
+    kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), Target , EBeam ) ;
+    kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
+    if( !kFiducialCut ) return false ; 
   } else { return true ; }
 
   return true ; 

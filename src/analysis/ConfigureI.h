@@ -1,6 +1,10 @@
 /**
- * \info These parameters are configurable 
+ * \info 
+ * The analysis parameters are configurable 
  * the default values are set here
+ * These can also be configured provided a configuration file (input_file)
+ * The class also deals with the setup of Fiducials, ElectronFits, and other 
+ * cofnigurables which are needed for both data and MC analyses
  **/
 
 #ifndef _CONFIGURE_I_H_
@@ -44,7 +48,7 @@ namespace e4nu {
     bool ApplyQ2Cut(void) const{ return kQ2Cut ; }
     bool ApplyWCut(void) const{ return kWCut ; }
     bool ApplyMomCut(void) const { return kApplyMomCut ; } 
-    bool ApplyOutElectronCut(void) const { return fOutMomCut ; }      
+    bool ApplyOutElectronCut(void) const { return kOutEMomCut ; }      
     bool IsElectronData(void) const { return kIsElectron ; }
     bool IsConfigured(void) const { return kIsConfigured ; }
 
@@ -74,41 +78,40 @@ namespace e4nu {
     virtual ~ConfigureI();
       
   protected: 
-    bool kUseAllSectors = false ; 
-    bool kApplyFiducial = true ; 
-    bool kApplyAccWeights = true ; 
-    bool kApplyCorrWeights = true ; 
-    bool kApplyMottWeight = true ; 
-    bool kApplyReso = true ; 
-    bool kApplyPhiOpeningAngle = false ; 
-    bool kUsePhiThetaBand = false ;
-    bool kApplyThetaSlice = false; 
+    bool InitializeFiducial(void) ;
+    
+    // Members
+    bool kIsData = false ; // Is data (class?)
+    bool kUseAllSectors = false ; // Are there any dead sectors?
+    bool kApplyFiducial = true ; // Set to false to remove fiducial cuts
+    bool kApplyAccWeights = true ; // Set to false to ignore acceptance weights 
+    bool kApplyMottWeight = true ; // Apply mott xsec convertion
+    bool kApplyReso = true ; // Apply particle resolution
+    bool kApplyPhiOpeningAngle = false ; // Apply PhiOpening Angle check
+    bool kUsePhiThetaBand = false ; // Use a restricted Phi Theta band
+    bool kApplyThetaSlice = false; // Use a theta slice
     bool kApplyGoodSectorPhiSlice = false ; 
-    bool kApplyMomCut = true ; 
-    bool kIsData = false ; 
-    bool kQ2Cut = true ; 
-    bool kWCut = true ; 
-    bool fOutMomCut = true ;
-    bool kIsElectron = true ; 
-    // ofset for oscillation studies
-    double koffset = 0 ; 
+    bool kApplyMomCut = true ; // Apply min momentum cuts on particles
+    bool kQ2Cut = true ; // Apply Q2 cut
+    bool kWCut = true ; // Apply W2 cut
+    bool kOutEMomCut = true ; // Apply outgoing E cut
+    bool kIsElectron = true ; // Is EM data  
+    double koffset = 0 ;  // ofset for oscillation studies
+    bool kSubtractBkg = false ; // Apply background correction
 
-    // Physics 
     double kEBeam = 1.161 ; 
     unsigned int kTargetPdg = 1000060120 ;
-
-    // Number of events
     unsigned int kNEvents = 0;
     unsigned int kFirstEvent = 0 ; 
-      
-    // Store "multiplicty" of singal events 
     unsigned int kMult_signal = 0;
-    bool kSubtractBkg = false ;
 
-    bool InitializeFiducial(void) ;
     Fiducial * kFiducialCut = nullptr ;
-
     TF1 * kElectronFit = nullptr ; 
+
+    // Topology
+    std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity
+    unsigned int kMaxBkgMult = 2 ; 
+    unsigned int kNRotations = 100; 
 
     // Histogram configurables
     std::vector< std::string > kObservables ;
@@ -117,20 +120,17 @@ namespace e4nu {
     std::string kInputFile ;
     std::string kOutputFile = "";
     std::string kXSecFile = "";
-    bool kNormalize = true ; 
-
-    // Topology
-    std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity
-    unsigned int kMaxBkgMult = 2 ; 
-    unsigned int kNRotations = 100; 
-
-    bool kIsDataLoaded = false ;
-    bool kIsConfigured = true ; 
+    bool kNormalize = true ; // Normalize histograms to cross section
+    bool kApplyCorrWeights = true ; // Set to false to ignore correction weights to be applied to the histograms
 
     // Information for output file
     std::unique_ptr<TFile> kOutFile ;
     std::unique_ptr<TTree> kAnalysisTree ; 
     std::vector<TH1D*> kHistograms ; 
+
+    // Configuration validity checks:
+    bool kIsDataLoaded = false ;
+    bool kIsConfigured = true ; 
 
   };
 }

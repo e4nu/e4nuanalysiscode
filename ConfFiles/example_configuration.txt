@@ -10,7 +10,7 @@ ApplyMomCut             true
 UsePhiThetaBand		false
 ApplyThetaSlice		false
 ApplyGoodSectorPhiSlice	false
-ApplyOutMomCut		true
+ApplyOutEMomCut		true
 ApplyQ2Cut		true
 ApplyWCut		true
 SubtractBkg 		true

@@ -106,9 +106,9 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     } else if( param[i] == "ApplyWCut" ) { 
       if( value[i] == "true" ) kWCut = true ; 
       else kWCut = false ; 	
-    } else if ( param[i] == "ApplyOutMomCut" ) {
-      if( value[i] == "true" ) fOutMomCut = true ; 
-      else fOutMomCut = false ; 
+    } else if ( param[i] == "ApplyOutEMomCut" ) {
+      if( value[i] == "true" ) kOutEMomCut = true ; 
+      else kOutEMomCut = false ; 
     }else if( param[i] == "IsElectronData" ) { 
       if( value[i] == "true" ) kIsElectron = true ; 
       else kIsElectron = false ; 
@@ -218,7 +218,7 @@ void ConfigureI::PrintConfiguration(void) const {
   std::cout << "*                         E4NU ANALYSIS CONF                       **" << std::endl;
   std::cout << "*********************************************************************" << std::endl;
   std::cout << "UseAllSectors: " << kUseAllSectors << std::endl;
-  std::cout << "ApplyOutMomCut: " <<fOutMomCut << std::endl;
+  std::cout << "ApplyOutMomCut: " <<kOutEMomCut << std::endl;
   std::cout << "ApplyQ2Cut: "<<kQ2Cut<< std::endl;
   std::cout << "ApplyWCut: "<<kWCut<< std::endl;
   std::cout << "ApplyFiducial:" << kApplyFiducial << std::endl;

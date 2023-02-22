@@ -63,7 +63,7 @@
      return nullptr ; 
    }
 
-   ++fEventsBeforeCuts ;
+   ++kNEventsBeforeCuts ;
 
    TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
    TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
@@ -136,7 +136,7 @@
     temp_e.SetPhi( out_mom.Phi() + TMath::Pi() ) ;
     if (! fiducial -> EFiducialCut(EBeam, temp_e.Vect() ) ) { delete event ; return nullptr ; } 
   }
-  ++fNEventsAfterFiducial;
+  ++kNEventsAfterFiducial;
 
   // Get Topology Definition
   std::map<int,unsigned int> Topology = GetTopology(); 
@@ -215,10 +215,10 @@
       kAnalysedEventHolder[signal_mult].push_back( *event ) ; 
     }
 
-    ++fNEventsAfterTopologyCut ;
+    ++kNEventsAfterTopologyCut ;
   } else { // BACKGROUND 
     event->SetIsBkg(true); 
-    ++fNBkgEvents ;
+    ++kNBkgEvents ;
 
     // Get Number of signal particles, "multiplicity"
     unsigned int mult_bkg = event->GetNSignalParticles( part_map, Topology ) ; 
@@ -329,7 +329,7 @@ void MCAnalysisI::Initialize() {
     return ; 
   }
 
-  fXSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
+  kXSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
 
   xsec_file->Close();
 
@@ -377,12 +377,12 @@ bool MCAnalysisI::Finalise( void ) {
 	kHistograms[j]->SetBinError(k,newerror);
       }
 
-      kHistograms[j]->Scale( fXSec * ConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / ( GetNEventsToRun() * domega ) );
+      kHistograms[j]->Scale( kXSec * ConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / ( GetNEventsToRun() * domega ) );
     }
   }
-  std::cout << " Total Number of Events Processed = " << fEventsBeforeCuts << std::endl;
-  std::cout << " Total number of true signal events = " << fNEventsAfterTopologyCut << std::endl;
-  std::cout << " Events after electron fiducial cut = " << fNEventsAfterFiducial << std::endl;
+  std::cout << " Total Number of Events Processed = " << kNEventsBeforeCuts << std::endl;
+  std::cout << " Total number of true signal events = " << kNEventsAfterTopologyCut << std::endl;
+  std::cout << " Events after electron fiducial cut = " << kNEventsAfterFiducial << std::endl;
 
   return true ; 
 }

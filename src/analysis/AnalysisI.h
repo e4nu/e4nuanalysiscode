@@ -1,6 +1,5 @@
 /**
- * \info These parameters are configurable 
- * the default values are set here
+ * This class deals with common analysis features which are present in data and MC
  **/
 
 #ifndef _ANALYSIS_I_H_

@@ -132,9 +132,7 @@
   Fiducial * fiducial = nullptr ; 
   if( ApplyFiducial() ) {
     fiducial = GetFiducialCut() ; 
-    TLorentzVector temp_e = out_mom ; 
-    temp_e.SetPhi( out_mom.Phi() + TMath::Pi() ) ;
-    if (! fiducial -> EFiducialCut(EBeam, temp_e.Vect() ) ) { delete event ; return nullptr ; } 
+    if (! fiducial -> EFiducialCut(EBeam, out_mom.Vect() ) ) { delete event ; return nullptr ; } 
   }
   ++kNEventsAfterFiducial;
 
@@ -150,7 +148,6 @@
       std::vector<TLorentzVector> visible_part_uncorr ; 
       for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
 	TLorentzVector temp_part = part_map[it->first][i] ; 
-	temp_part.SetPhi( temp_part.Phi() + TMath::Pi() ) ;
 	if( it->first == conf::kPdgElectron ) {
 	  if (! fiducial -> EFiducialCut(EBeam, temp_part.Vect() ) ) continue ; 
         } else if ( it->first == conf::kPdgProton ) {

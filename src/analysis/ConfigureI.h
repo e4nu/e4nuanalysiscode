@@ -58,7 +58,9 @@ namespace e4nu {
     std::map<int,unsigned int> GetTopology(void) const{ return kTopology_map ; } 
     unsigned int GetNTopologyParticles(void) ;    
     Fiducial * GetFiducialCut(void) { return kFiducialCut ; } 
-      
+
+    double GetElectronMinTheta( TLorentzVector emom ) ;      
+    
     // Histogram Configurables
     std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }
     std::vector<unsigned int> GetNBins(void) const { return kNBins ; }
@@ -105,6 +107,8 @@ namespace e4nu {
 
     bool InitializeFiducial(void) ;
     Fiducial * kFiducialCut = nullptr ;
+
+    TF1 * kElectronFit = nullptr ; 
 
     // Histogram configurables
     std::vector< std::string > kObservables ;

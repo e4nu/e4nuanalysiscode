@@ -26,14 +26,11 @@ namespace e4nu {
     AnalysisI( const double EBeam, const unsigned int TargetPdg ) ;
 
     bool Analyse( EventI * event ) ; 
-    double GetElectronMinTheta( TLorentzVector emom ) ;
     bool Finalise(void) const ; 
 
     virtual ~AnalysisI();
       
   protected: 
-
-    TF1 * kElectronFit = nullptr ; 
 
     // Cuts counters
     long int kNEventsAfterEMomCut = 0 ; 

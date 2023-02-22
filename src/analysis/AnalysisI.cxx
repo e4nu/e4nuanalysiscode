@@ -82,11 +82,6 @@ bool AnalysisI::Analyse( EventI * event ) {
   return true ; 
 }
 
-
-double AnalysisI::GetElectronMinTheta( TLorentzVector emom ) {
-  return kElectronFit ->Eval(emom.P()) ; 
-}
-
 bool AnalysisI::Finalise(void) const{
   std::cout << " Events after electron momentum cut = " << kNEventsAfterEMomCut << std::endl;
   std::cout << " Events after electron theta cut = " << kNEventsAfterEThetaCut << std::endl;

@@ -5,7 +5,6 @@
  #include <iostream>
  #include "TFile.h"
  #include "TDirectoryFile.h"
- #include <TRandom3.h>
  #include "analysis/MCAnalysisI.h"
  #include "utils/ParticleUtils.h"
  #include "utils/KinematicUtils.h"
@@ -318,9 +317,6 @@ void MCAnalysisI::Initialize() {
   kXSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
 
   xsec_file->Close();
-
-  gRandom = new TRandom3() ; 
-  gRandom->SetSeed(10);
 
 }
 

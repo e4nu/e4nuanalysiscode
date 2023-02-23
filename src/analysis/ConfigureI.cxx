@@ -208,6 +208,10 @@ ConfigureI::ConfigureI( const std::string input_file ) {
   if( Ebeam == 4.461 ) { kElectronFit -> SetParameters(13.5,15) ; }
 
   if( !kElectronFit ) kIsConfigured = false ; 
+
+  gRandom = new TRandom3() ; 
+  gRandom->SetSeed(10);
+
   if( kIsConfigured ) PrintConfiguration() ;
   else std::cout << " CONFIGURATION FAILED..." << std::endl;
 

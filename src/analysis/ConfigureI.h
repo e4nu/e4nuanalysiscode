@@ -17,6 +17,7 @@
 #include "TTree.h"
 #include "conf/FiducialCutI.h"
 #include "utils/Fiducial.h"
+#include <TRandom3.h>
 
 namespace e4nu { 
 

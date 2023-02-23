@@ -12,6 +12,7 @@
 #include <TLorentzVector.h>
 #include "utils/Fiducial.h"
 #include "conf/AnalysisConstantsI.h"
+#include "conf/ParticleI.h"
 
 using namespace e4nu ; 
 
@@ -631,6 +632,19 @@ Bool_t Fiducial::GetEPhiLimits(double beam_en, Float_t momentum, Float_t theta, 
   }
   return kTRUE;
 }
+
+// --------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, const TVector3 momentum ) {
+
+  if ( pdg == conf::kPdgElectron ) return EFiducialCut( beam_en, momentum ) ; 
+  else if ( pdg == conf::kPdgProton ) return PFiducialCut( beam_en, momentum ) ; 
+  else if ( pdg == conf::kPdgPiP ) return Pi_phot_fid_united( beam_en, momentum, 1 ) ; 
+  else if ( pdg == conf::kPdgPiM ) return Pi_phot_fid_united (beam_en, momentum, -1 ) ; 
+  else if ( pdg == conf::kPdgPhoton ) return Pi_phot_fid_united( beam_en, momentum, 0 ) ; 
+  return true ; 
+}
+
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------
 

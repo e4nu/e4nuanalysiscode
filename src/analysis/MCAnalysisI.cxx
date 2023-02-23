@@ -132,7 +132,7 @@
   Fiducial * fiducial = nullptr ; 
   if( ApplyFiducial() ) {
     fiducial = GetFiducialCut() ; 
-    if (! fiducial -> EFiducialCut(EBeam, out_mom.Vect() ) ) { delete event ; return nullptr ; } 
+    if (! fiducial -> FiducialCut(conf::kPdgElectron, EBeam, out_mom.Vect() ) ) { delete event ; return nullptr ; } 
   }
   ++kNEventsAfterFiducial;
 
@@ -147,18 +147,7 @@
       std::vector<TLorentzVector> visible_part ; 
       std::vector<TLorentzVector> visible_part_uncorr ; 
       for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
-	TLorentzVector temp_part = part_map[it->first][i] ; 
-	if( it->first == conf::kPdgElectron ) {
-	  if (! fiducial -> EFiducialCut(EBeam, temp_part.Vect() ) ) continue ; 
-        } else if ( it->first == conf::kPdgProton ) {
-	  if( ! fiducial -> PFiducialCut( EBeam, temp_part.Vect() ) ) continue ; 
-        } else if ( it->first == conf::kPdgPiP ) {
-	  if( ! fiducial -> Pi_phot_fid_united( EBeam, temp_part.Vect(), 1 ) ) continue ;
-	} else if ( it->first == conf::kPdgPiM ) {
-	  if( ! fiducial -> Pi_phot_fid_united( EBeam, temp_part.Vect(), -1 ) ) continue ;
-	} else if ( it->first == conf::kPdgPhoton ) {
-	  if( ! fiducial -> Pi_phot_fid_united( EBeam, temp_part.Vect(), 0 ) ) continue ; 
-	}
+	if( ! fiducial -> FiducialCut(it->first, EBeam, part_map[it->first][i].Vect() ) ) continue ; 
 	visible_part.push_back( part_map[it->first][i] ) ; 
 	visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
       }

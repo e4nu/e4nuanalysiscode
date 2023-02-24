@@ -65,7 +65,10 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
 	                                                                              // counters is the number of events with that specific topology and id list 
 	// The following mapps contain the output of the fiducial cut for each particle in an event
 	std::map<int,std::vector<bool>> is_particle_contained ; 
-	
+	// Create map id
+	std::map<std::vector<int>,std::vector<int>> new_topology ;
+	std::vector<int> part_pdg_list, part_id_list ;	
+	// Start rotations
 	for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) { 
 	  // Set rotation around q3 vector
 	  TVector3 VectorRecoQ = event_holder[m][event_id].GetRecoq3() ;	
@@ -90,8 +93,12 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
               }
 	      
 	      // Calculate rotated event multiplicity
-	      if( is_particle_contained[part_pdg][part_id] ) ++rot_event_mult ; 
-	    } 
+	      if( is_particle_contained[part_pdg][part_id] ) {
+		++rot_event_mult ; 
+		part_pdg_list.push_back( part_pdg ) ; 
+		part_id_list.push_back( part_id ) ; 
+	      } 
+	    }
 	  }
 	  
 	  // If multiplicity < minimum multiplicity, remove
@@ -99,21 +106,10 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
 	  
 	  // If multiplicity is the same as the original event multiplicity,
 	  if( rot_event_mult == m ) ++N_tot ; 
-
-	  // Create map id
-	  std::vector<int> part_pdg_list, part_id_list ;
-	  for( auto it = is_particle_contained.begin(); it != is_particle_contained.end() ; ++it ) { 
-	    for( unsigned int idp = 0 ; idp < (it->second).size() ; ++idp ) { 
-	      if( is_particle_contained[it->first][idp] ) {
-		part_pdg_list.push_back( it->first ) ; 
-		part_id_list.push_back( idp ) ; 
-	      }
-	    }
-	  } 
-	  
-	  std::map<std::vector<int>,std::vector<int>> new_topology ;
+      
+	  // For other case, store combination of particles which contribute
+	  // And add entry in corresponding map 
 	  new_topology[part_pdg_list] = part_id_list ; 
-	  // Add entry in corresponding map 
 	  counter[new_topology] += 1 ; 
 	
 	}// Close rotation loop
@@ -122,6 +118,7 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
 
 	// Clean maps for next iteration 
 	is_particle_contained.clear() ;
+	new_topology.clear();
       } // Close event loop 
     }
     --m; 

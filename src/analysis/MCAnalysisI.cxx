@@ -1,4 +1,4 @@
- /*
+/*
   * Analysis Interface base class
   * 
   */
@@ -208,6 +208,19 @@
     // Get Number of signal particles, "multiplicity"
     unsigned int mult_bkg = event->GetNSignalParticles( part_map, Topology ) ; 
 
+    // Check events are above minumum particle multiplicity 
+    bool is_signal_bkg = true ; 
+    std::map<int,std::vector<TLorentzVector>> hadrons = event->GetFinalParticles4Mom() ;
+    
+    for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
+      is_signal_bkg *= ChechMinParticleMultiplicity( part->first, (part->second).size() ) ;
+    }
+
+    if( !is_signal_bkg ) {
+      delete event ;
+      return nullptr;
+    }
+
     // Only store background events with multiplicity > mult_signal
     // Also ignore background events above the maximum multiplicity
     if( mult_bkg > signal_mult && mult_bkg <= GetMaxBkgMult() ) {
@@ -227,7 +240,8 @@
 }
 
 bool MCAnalysisI::SubtractBackground() {
-  return BackgroundI::SubtractBackground<MCEvent>( kAnalysedEventHolder ) ; 
+  //  return BackgroundI::SubtractBackground<MCEvent>( kAnalysedEventHolder ) ; 
+  return BackgroundI::NewBackgroundSubstraction( kAnalysedEventHolder ) ; 
 } 
 
 void MCAnalysisI::SmearParticles( MCEvent * event ) {

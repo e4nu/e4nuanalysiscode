@@ -26,6 +26,7 @@ namespace e4nu {
     BackgroundI( const std::string input_file ) ;
     BackgroundI( const double EBeam, const unsigned int TargetPdg ) ;
 
+    bool ChechMinParticleMultiplicity( int pdg, unsigned int part_mult ) const ;
     bool NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> & event_holder ) ;
 
     // This template class guarantees the same substraction method for data and MC

@@ -31,7 +31,7 @@ int main( void ) {
   // and stores the background events with the substracted probabilities
   // For the stored histograms, the background is substracted
   analysis -> SubtractBackground() ; 
-
+  
   // Stores all the information in a TTree file
   // If requested, it also stores the requested histograms in an output root file
   analysis -> Finalise();

@@ -62,8 +62,12 @@ namespace e4nu {
 	  particles_uncorr = event_holder[bkg_mult][i].GetFinalParticlesUnCorr4Mom(); // This map needs to change with the cuts as well...
 	  V4_el = event_holder[bkg_mult][i].GetOutLepton4Mom();
 	  double event_wgt = event_holder[bkg_mult][i].GetEventWeight() ;
+
 	  unsigned int n_pions =  particles[conf::kPdgPiP].size() + particles[conf::kPdgPiM].size() + particles[conf::kPdgPhoton].size() ; 
- 
+
+	  // Set rotation around q3 vector
+	  kRotation->SetQVector( event_holder[bkg_mult][i].GetRecoq3() );	 
+
 	  // remove multiplicity 2 contribution to signal...
 	  // 2p0pi . 1p0pi ( multiplicity 2 . multiplicity 1 ) 
 	  if( particles[conf::kPdgProton].size() == 2 && n_pions == 0 ) { 
@@ -82,8 +86,6 @@ namespace e4nu {
 	      V3_2prot_uncorr[k] = particles_uncorr[conf::kPdgProton][k].Vect() ; 
 	    }
 
-	    // Set rotation around q3 vector
-	    kRotation->SetQVector( event_holder[bkg_mult][i].GetRecoq3() );	
 	    kRotation->prot2_rot_func( V3_2prot_corr, V3_2prot_uncorr, V4_el, E_tot_2p, p_perp_tot_2p, P_N_2p , &N_prot_both);
 
 	    for( unsigned int j = 0 ; j < bkg_mult ; ++j ) {
@@ -106,6 +108,49 @@ namespace e4nu {
 	  
 	    }
 	  } // close 2p0pi topology check 
+	  
+	  if( particles[conf::kPdgProton].size() == 1 && n_pions == 1 ) { 
+	    TVector3 V3_prot_uncorr[1] ; 
+	    for ( unsigned k = 0 ; k < 1 ; ++k ) {
+              V3_prot_uncorr[k] = particles_uncorr[conf::kPdgProton][k].Vect() ;
+            }
+
+	    TVector3 V3_pi_corr[1] ; 
+	    double pi_charge[1] ; 
+	    if ( particles[conf::kPdgPiP].size() == 1 ) {
+	      V3_pi_corr[0] = particles[conf::kPdgPiP][0].Vect() ;  
+	      pi_charge[0] = 1; 
+	    } else if ( particles[conf::kPdgPiM].size() == 1 ) {
+	      V3_pi_corr[0] = particles[conf::kPdgPiM][0].Vect() ;
+	      pi_charge[0] = -1 ;
+	    } else if ( particles[conf::kPdgPhoton].size() == 1 ) {
+	      V3_pi_corr[0] = particles[conf::kPdgPhoton][0].Vect() ;  
+	      pi_charge[0] = 0 ; 
+	    }
+
+	    double N_piphot_det;
+	    double N_piphot_undet;
+
+	    kRotation->prot1_pi1_rot_func(V3_prot_uncorr[0],V3_pi_corr[0], pi_charge[0], &N_piphot_det,&N_piphot_undet);
+
+	    std::vector<TLorentzVector> corr_mom = { particles[conf::kPdgProton][0] } ;
+	    std::vector<TLorentzVector> uncorr_mom = { particles_uncorr[conf::kPdgProton][0] } ;
+	    t_particles[conf::kPdgProton] = corr_mom ;
+	    t_particles_uncorr[conf::kPdgProton] = uncorr_mom ;
+	  
+	    // Store background event with the detected proton
+	    event_holder[bkg_mult][i].SetFinalParticlesKinematics( t_particles ) ; 
+	    event_holder[bkg_mult][i].SetFinalParticlesUnCorrKinematics( t_particles_uncorr ) ; 
+	    event_holder[bkg_mult][i].SetEventWeight( -N_piphot_undet/N_piphot_det * event_wgt ) ; 
+	    
+	    if ( event_holder.find(min_mult) != event_holder.end() ) {
+	      event_holder[min_mult].push_back( event_holder[bkg_mult][i] ) ; 
+	    } else {
+	      std::vector<e4nu::MCEvent> temp = { event_holder[bkg_mult][i] } ;
+	      event_holder[min_mult] = temp ; 
+	    } 
+	  }
+	  
 	  particles.clear() ;
 	  particles_uncorr.clear() ;
 	} // close loop over bkg m 2 events

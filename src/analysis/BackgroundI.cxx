@@ -68,11 +68,12 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
 
       for( unsigned int event_id = 0 ; event_id < event_holder[m].size() ; ++event_id ) { 
 	// Add counter for same multiplicity 
-	double N_tot = 0 ; 
+	double N_all = 0 ; 
 	std::map<std::map<std::vector<int>,std::vector<int>>, double> probability_count ; // size of pdg_vector is multiplicity
                                                                                           // probability_counts is the number of events with that specific topology and id list 
 	// Create map id
 	std::map<std::vector<int>,std::vector<int>> new_topology ;
+
 	// Start rotations
 	for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) { 
 	  // Set rotation around q3 vector
@@ -90,7 +91,7 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
 	  for( auto it = rot_particles.begin() ; it != rot_particles.end() ; ++it ) {
 	    int part_pdg = it->first ; 
 	    if( Topology.find( part_pdg ) == Topology.end() ) continue ; // Skip particles which are not in signal definition 
-	    
+	 
 	    for ( unsigned int part_id = 0 ; part_id < (it->second).size() ; ++part_id ) {
 	      TVector3 part_vect = (it->second)[part_id].Vect() ;
 	      part_vect.Rotate(rotation_angle,VectorRecoQ);
@@ -115,7 +116,7 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
 	  // If multiplicity < minimum multiplicity, remove
 	  if( rot_event_mult < min_mult ) continue ; 
 	  
-	  // Chech if particle multiplicity is above signal particle multiplicity 
+	  // Check if particle multiplicity is above signal particle multiplicity 
 	  bool is_signal_bkg = true ; 
 	  for( unsigned int k = 0 ; k < part_pdg_list.size() ; ++k ) { 
 	    unsigned int count_particle = 0 ; 
@@ -123,8 +124,7 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
 	      if( is_particle_contained[part_pdg_list[k]][l] ) ++count_particle ; 
 	    }
 	 
-	    is_signal_bkg = ChechMinParticleMultiplicity( part_pdg_list[k], count_particle ) ;
-	    if( !is_signal_bkg ) break ; 
+	    is_signal_bkg *= ChechMinParticleMultiplicity( part_pdg_list[k], count_particle ) ;
 	  }
 
 	  if( ! is_signal_bkg ) {
@@ -133,7 +133,7 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
 
 	  // If multiplicity is the same as the original event multiplicity,
 	  if( rot_event_mult == m ) {
-	    ++N_tot ; 
+	    ++N_all ; 
 	    continue ; 
 	  }
 
@@ -147,7 +147,7 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
 	}// Close rotation loop
 
 	// Skip if denominator is 0
-	if( N_tot == 0 ) continue ; 
+	if( N_all == 0 ) continue ; 
 
 	// Store event particles with correct weight and multiplicty
 	double event_wgt = event_holder[m][event_id].GetEventWeight() ;
@@ -161,15 +161,18 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
 	    for( unsigned int k = 0 ; k < (it_key->first).size() ; ++k ) { 
 	      int particle_pdg = (it_key->first)[k] ; 
 	      int particle_id = (it_key->second)[k] ; 
+	      
 	      temp_corr_mom[particle_pdg].push_back( particles[particle_pdg][particle_id] ) ; 
 	      temp_uncorr_mom[particle_pdg].push_back( particles_uncorr[particle_pdg][particle_id] ) ; 
 	      ++new_multiplicity ; 
 	    }
+
 	    event_holder[m][event_id].SetFinalParticlesKinematics( temp_corr_mom ) ; 
 	    event_holder[m][event_id].SetFinalParticlesUnCorrKinematics( temp_uncorr_mom ) ; 
 
-	    double probability = - (it->second) * event_wgt / N_tot ; 
+	    double probability = - (it->second) * event_wgt / N_all ; 
 	    event_holder[m][event_id].SetEventWeight( probability ) ; 
+
 	    if ( event_holder.find(new_multiplicity) != event_holder.end() ) {
 	      event_holder[new_multiplicity].push_back( event_holder[m][event_id] ) ; 
 	    } else {

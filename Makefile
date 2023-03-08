@@ -1,34 +1,88 @@
-ROOTCFLAGS  := $(shell root-config --cflags)
-ROOTLDFLAGS := $(shell root-config --ldflags)
-ROOTLIBS    := $(shell root-config --libs) -lEG
-ROOTGLIBS   := $(shell root-config --glibs)
+#
+# This is the main e4nu project Makefile.
+# Author: Julia Tena Vidal, jtenavidal \at tauex.tau.ac.il
+#
 
-INCLUDES    := -I../include
+SHELL = /bin/sh
+NAME = all
+MAKEFILE = Makefile
 
-CXX       := g++
-CXXFLAGS  += -std=c++11 -Wall -Wshadow -Warray-bounds -Wmissing-field-initializers -fPIC $(ROOTCFLAGS)
-LD        := g++
-LDFLAGS   := $(ROOTLDFLAGS)
+include $(E4NUANALYSIS)/src/make/Make.include
 
-OBJECTS1   := FilterData.o Subtraction.o run_e2a_ep_neutrino6_united4_radphot.o Fiducial.o e2a_ep_neutrino6_united4_radphot.o GetCharge_FilterData.o
-OBJECTS2   := Subtraction.o run_genie_analysis.o Fiducial.o genie_analysis.o
-OBJECTS3   := Subtraction.o run_systematics.o Fiducial.o systematics.o
+BUILD_TARGETS = configuration \
+		utilities \
+		physics \
+		analysis \
+		apps \
 
+# ...
+# here add main targets to build
 
-all: e2a_ep genie_analysis systematics
+INSTALL_TARGETS =  make-install-dirs \
+		   copy-install-files
 
-genie_analysis: $(OBJECTS2)
-		$(CXX) -o genie_analysis $(OBJECTS2) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
+all:     $(BUILD_TARGETS)
+install: $(INSTALL_TARGETS)
 
-e2a_ep: $(OBJECTS1)
-	$(CXX) -o e2a_ep $(OBJECTS1) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
+configuration: FORCE
+	@echo " "
+	@echo "** Building Configuration..."
+	cd ${E4NUANALYSIS}/src/conf && \
+	make && \
+	cd ${E4NUANALYSIS}
+	@echo " Done."
 
-systematics: $(OBJECTS3)
-		$(CXX) -o systematics $(OBJECTS3) $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)
+utilities: FORCE
+	@echo " "
+	@echo "** Building Utilities..."
+	cd ${E4NUANALYSIS}/src/utils && \
+	make && \
+	cd ${E4NUANALYSIS}
+physics : FORCE
+	@echo " "
+	@echo "** Building Physics..."
+	cd ${E4NUANALYSIS}/src/physics && \
+	make && \
+	cd ${E4NUANALYSIS}
 
-clean:
-	@echo 'Removing all build files'
-	@rm -rf *.o run_e2a_ep run_genie_analysis run_systematics *~
+analysis : FORCE
+	@echo " "
+	@echo "** Building Analysis..."
+	cd ${E4NUANALYSIS}/src/analysis && \
+	make && \
+	cd ${E4NUANALYSIS}
 
-%.o: %.C
-	$(CXX) -c $< -O2 $(CXXFLAGS) $(INCLUDES)
+apps : FORCE
+	@echo " "
+	@echo "** Building Apps..."
+	cd ${E4NUANALYSIS}/src/apps && \
+	make && \
+	cd ${E4NUANALYSIS}
+
+make-install-dirs: FORCE
+	@echo " "
+	@echo "** Creating directory structure for E4NUANALYSIS installation..."
+	[ -d ${E4NUANALYSIS_INSTALLATION_PATH} ] || mkdir ${E4NUANALYSIS_INSTALLATION_PATH}
+	cd ${E4NUANALYSIS_INSTALLATION_PATH}
+	[ -d ${E4NUANALYSIS_BIN_INSTALLATION_PATH} ] || mkdir ${E4NUANALYSIS_BIN_INSTALLATION_PATH}
+	[ -d ${E4NUANALYSIS_LIB_INSTALLATION_PATH} ] || mkdir ${E4NUANALYSIS_LIB_INSTALLATION_PATH}
+	[ -d ${E4NUANALYSIS_INC_INSTALLATION_PATH} ] || mkdir ${E4NUANALYSIS_INC_INSTALLATION_PATH}
+	mkdir ${E4NUANALYSIS_INC_INSTALLATION_PATH}/conf
+	mkdir ${E4NUANALYSIS_INC_INSTALLATION_PATH}/src
+	mkdir ${E4NUANALYSIS_INC_INSTALLATION_PATH}/src/utils
+	mkdir ${E4NUANALYSIS_INC_INSTALLATION_PATH}/src/physics
+	mkdir ${E4NUANALYSIS_INC_INSTALLATION_PATH}/src/analysis
+	mkdir ${E4NUANALYSIS_INC_INSTALLATION_PATH}/src/apps
+
+clean: FORCE
+	@echo " "
+	@echo "** Cleaning ..."
+	cd ${E4NUANALYSIS}/src/conf &&  rm -f *.o *~ _*  && \
+	cd ${E4NUANALYSIS}/src/utils && rm -f *.o *~ _* && \
+	cd ${E4NUANALYSIS}/src/apps && rm -f *.o *~ _* && \
+	cd ${E4NUANALYSIS}/src/physics &&  rm -f *.o *~ _* && \
+	cd ${E4NUANALYSIS}/src/analysis &&  rm -f *.o *~ _* && \
+	cd ${E4NUANALYSIS} && rm -f e4nuanalysis && \
+	cd ${E4NUANALYSIS}/lib && rm -f *.so &&\
+	cd ${E4NUANALYSIS}
+FORCE: 	

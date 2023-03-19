@@ -28,6 +28,7 @@ namespace e4nu {
 
     bool ChechMinParticleMultiplicity( int pdg, unsigned int part_mult ) const ;
     bool NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> & event_holder ) ;
+    bool AcceptanceCorrection( std::map<int,std::vector<MCEvent>> & event_holder ) ;
 
     // This template class guarantees the same substraction method for data and MC
     // Definition must be in header file to avoid linking issuess

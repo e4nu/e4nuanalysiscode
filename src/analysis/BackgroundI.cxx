@@ -188,6 +188,66 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
     --m; 
   }
 
+  delete fiducial ; 
 
+  return true ; 
+}
+
+
+bool BackgroundI::AcceptanceCorrection( std::map<int,std::vector<MCEvent>> & event_holder ) { 
+
+  // We need to correct for signal events that are reconstructed outside of the fiducial
+  if( !ApplyFiducial()  ) return true ; 
+  if( !GetSubtractBkg() ) return true ;
+  Fiducial * fiducial = GetFiducialCut() ; 
+
+  unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
+  std::map<int,unsigned int> Topology = GetTopology();
+  std::vector<MCEvent> signal_events = event_holder[min_mult] ; 
+
+  unsigned int n_truesignal = signal_events.size() ;
+  for( unsigned int i = 0 ; i < n_truesignal ; ++i ) { 
+
+    long N_signal_detected = 0 ; 
+    long N_signal_undetected = 0 ; 
+    
+    // Start rotations
+    for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) { 
+      // Set rotation around q3 vector
+      TVector3 VectorRecoQ = signal_events[i].GetRecoq3() ;	
+      double rotation_angle = gRandom->Uniform(0,2*TMath::Pi());
+	  
+      std::map<int,std::vector<TLorentzVector>> rot_particles = signal_events[i].GetFinalParticles4Mom() ;
+      std::map<int,std::vector<TLorentzVector>> rot_particles_uncorr = signal_events[i].GetFinalParticlesUnCorr4Mom() ;
+      
+      // Rotate all particles 
+      for( auto it = rot_particles.begin() ; it != rot_particles.end() ; ++it ) {
+	int part_pdg = it->first ; 
+	bool is_contained = true ; 
+	if( Topology.find( part_pdg ) == Topology.end() ) continue ; // Skip particles which are not in signal definition 
+	
+	for ( unsigned int part_id = 0 ; part_id < (it->second).size() ; ++part_id ) {
+	  TVector3 part_vect = (it->second)[part_id].Vect() ;
+	  part_vect.Rotate(rotation_angle,VectorRecoQ);
+	      
+	  // Check which particles are in fiducial	      
+	  is_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect ) ;
+	}
+	if( is_contained ) ++N_signal_detected ; 
+	else ++N_signal_undetected ; 
+      }
+    }
+
+      // Add missing signal events
+      MCEvent temp_event = signal_events[i] ;
+      double event_wgt = temp_event.GetEventWeight() ;
+      temp_event.SetEventWeight( + event_wgt * N_signal_undetected / N_signal_detected ) ; 
+      signal_events.push_back(temp_event);
+
+  }
+  // Store correction
+  event_holder[min_mult] = signal_events ; 
+  
+  delete fiducial ;
   return true ; 
 }

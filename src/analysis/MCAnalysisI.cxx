@@ -241,7 +241,9 @@
 
 bool MCAnalysisI::SubtractBackground() {
   //  return BackgroundI::SubtractBackground<MCEvent>( kAnalysedEventHolder ) ; 
-  return BackgroundI::NewBackgroundSubstraction( kAnalysedEventHolder ) ; 
+  bool is_ok = BackgroundI::NewBackgroundSubstraction( kAnalysedEventHolder ) ; 
+  is_ok *= BackgroundI::AcceptanceCorrection( kAnalysedEventHolder ) ; 
+  return is_ok ; 
 } 
 
 void MCAnalysisI::SmearParticles( MCEvent * event ) {

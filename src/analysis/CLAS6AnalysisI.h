@@ -9,6 +9,7 @@
 #include <iostream>
 #include "analysis/AnalysisI.h"
 #include "physics/CLAS6EventHolder.h"
+#include "physics/CLAS6Event.h"
 
 using namespace e4nu::conf ; 
 
@@ -17,16 +18,29 @@ namespace e4nu {
   public : 
     CLAS6AnalysisI(); 
 
-    bool LoadData(void) ; 
-    e4nu::EventI * GetEvent( const unsigned int event_id ) ;
-    unsigned int GetNEvents( void ) const ;
-
-    // Load Data from root file:
+  protected : 
     virtual ~CLAS6AnalysisI();
+
+    bool LoadData(void);
+    unsigned int GetNEvents( void ) const ;
+    EventI * GetValidEvent( const unsigned int event_id ) ;
+    bool SubtractBackground( void ) ;
+    bool Finalise(void) ; 
+    bool StoreTree(CLAS6Event * event);
 
   private :
 
-    CLAS6EventHolder * fData ; 
+    e4nu::EventI * GetEvent( const unsigned int event_id ) ;
+
+    CLAS6EventHolder * fData = nullptr ; 
+
+    // Store Statistics after cuts
+    long int kNEventsBeforeCuts = 0 ; 
+    long int kNEventsAfterTopologyCut = 0 ; 
+    long int kNBkgEvents = 0 ; 
+
+    // Event Holder for signal and background
+    std::map<int,std::vector<e4nu::CLAS6Event>> kAnalysedEventHolder;
 
     void Initialize(void) ;
     void Clear(void); 

@@ -23,11 +23,9 @@ using namespace e4nu::conf ;
 namespace e4nu {
   class MCAnalysisI: virtual public AnalysisI {
   public : 
-
     virtual ~MCAnalysisI();
 
-  protected :
- 
+  protected : 
     MCAnalysisI();
  
     bool LoadData(void);

@@ -4,16 +4,17 @@
  */
 
 #include "physics/CLAS6EventHolder.h"
+#include "physics/CLAS6Event.h"
 
 using namespace e4nu ; 
 
 CLAS6EventHolder::CLAS6EventHolder(): EventHolderI() { this->Initialize(); } 
 
 CLAS6EventHolder::~CLAS6EventHolder() {
-  this->Clear();
+  //  this->Clear();
 }
 
-CLAS6EventHolder::CLAS6EventHolder( const std::string file, const int first_event, const int nmaxevents ): EventHolderI( file, first_event, nmaxevents ) { 
+CLAS6EventHolder::CLAS6EventHolder( const std::string file, const unsigned first_event, const unsigned int nmaxevents ): EventHolderI( file, first_event , nmaxevents ) { 
   this->Initialize() ; 
 }
 
@@ -25,23 +26,22 @@ CLAS6EventHolder::CLAS6EventHolder( const std::vector<std::string> files ): Even
 bool CLAS6EventHolder::LoadBranch(void) {
   if( !fEventHolderChain ) return false ; 
 
+  //  fEventHolderChain->SetBranchAddress("iev", &iev, &b_iev);
+  
   return true ;
 }
 
-unsigned int CLAS6EventHolder::GetNEventsChain(void) { 
-  if(!fEventHolderChain) return false ; 
- 
-  return fEventHolderChain->GetEntries();
-}
+EventI * CLAS6EventHolder::GetEvent(const unsigned int event_id) {
 
-bool CLAS6EventHolder::LoadEvent( const unsigned int event_id ) {
+  if ( event_id > (unsigned int) fMaxEvents ) return nullptr ; 
 
-  return true ; 
-}
-
-bool CLAS6EventHolder::LoadAllEvents(void) {
+  //  static 
+  CLAS6Event * event = new CLAS6Event() ; 
+  fEventHolderChain->GetEntry( event_id ) ; 
   
-  return true ; 
+  //event -> SetEventID( iev ) ;
+  
+  return event ; 
 }
 
 void CLAS6EventHolder::Initialize() { 
@@ -49,5 +49,5 @@ void CLAS6EventHolder::Initialize() {
 }
 
 void CLAS6EventHolder::Clear() { 
-  //  b_iev = nullptr ;   
+
 }

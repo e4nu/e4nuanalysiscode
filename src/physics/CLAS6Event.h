@@ -9,7 +9,7 @@
 
 #include <iostream>
 #include "physics/EventI.h"
-#include "physics/CLAS6EventHolder.h"
+#include "utils/KinematicUtils.h"
 
 namespace e4nu {
   class CLAS6Event : public EventI {
@@ -22,18 +22,12 @@ namespace e4nu {
     friend class CLAS6EventHolder ; 
 
   protected : 
- 
     void SetVertex(const double vx, const double vy, const double vz, const double t) { fVertex.SetXYZT(vx, vy, vz, t) ; }
-
-    // Flip phi with respect to GENIE 
-    // GENIE Coordinate system is flipped with respect to class
-    void SetOutLeptonKinematics( const double energy, const double px, const double py, const double pz ) ;
-    void SetInLeptonKinematics( const double energy, const double px, const double py, const double pz ) ; 
-
 
   private :
 
     TLorentzVector fVertex ; 
+
   };
 }
 

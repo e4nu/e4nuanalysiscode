@@ -8,12 +8,29 @@
 #include "utils/KinematicUtils.h"
 #include "conf/ParticleI.h"
 #include "utils/TargetUtils.h"
+#include "utils/ParticleUtils.h"
 
 using namespace e4nu ;
 
 double utils::GetECal( const TLorentzVector & leptonf, const TLorentzVector & proton, const unsigned int target_pdg ) {
   // CODED FOR 1p0pi ...
   return leptonf.E() + proton.E() - conf::kProtonMass + utils::GetBindingEnergy( target_pdg ) ;  
+}
+
+double utils::GetECal( const EventI event, const std::map<int,unsigned int> Topology ) {
+  std::map<int,std::vector<TLorentzVector>> particle_map = event.GetFinalParticles4Mom() ; 
+  double ECal = event.GetOutLepton4Mom().E() ; // Add energy of outgoing lepton
+  for( auto it = particle_map.begin() ; it != particle_map.end() ; ++it ) {
+    // Skip particles not in topology definition
+    if( Topology.find(it->first) == Topology.end() ) continue ;  
+    // Calculate ECal for visible particles
+    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
+      ECal += (it->second)[i].E() - utils::GetParticleMass( it->first) ; // Add Kinetic energy of hadrons
+      if( it->first == conf::kPdgProton ) ECal += utils::GetBindingEnergy( event.GetTargetPdg() ) ; // Correct for proton binding energy
+    }
+  }
+
+  return ECal ;
 }
 
 double utils::GetRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) {

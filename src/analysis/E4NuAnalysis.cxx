@@ -16,7 +16,7 @@ using namespace e4nu ;
 
 E4NuAnalysis::E4NuAnalysis() {this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCAnalysisI(), CLAS6CAnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCAnalysisI(), CLAS6AnalysisI() { this->Initialize();}
 
 E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCAnalysisI(), CLAS6AnalysisI() { this->Initialize();}
 
@@ -27,7 +27,7 @@ bool E4NuAnalysis::LoadData(void) {
     std::cout << "ERROR: Configuration failed" <<std::endl;
     return false ;
   }
-  if( IsData() ) return CLAS6AnalysisI::LoadData(file);
+  if( IsData() ) return CLAS6AnalysisI::LoadData();
   return MCAnalysisI::LoadData() ; 
 }
 

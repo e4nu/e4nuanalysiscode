@@ -1,25 +1,25 @@
 /**
  * This class contains all the information of an event
- * It is an interface - therefore it is independent of the release type, which can be either CLAS or data
+ * It is an interface - therefore it is independent of the release type, which can be either CLAS6 or data
  * \date October 2022                                                                                                                                                                                              
  **/
 
-#ifndef _EVENT_CLAS_H_
-#define _EVENT_CLAS_H_
+#ifndef _EVENT_CLAS6_H_
+#define _EVENT_CLAS6_H_
 
 #include <iostream>
 #include "physics/EventI.h"
-#include "physics/CLASEventHolder.h"
+#include "physics/CLAS6EventHolder.h"
 
 namespace e4nu {
-  class CLASEvent : public EventI {
+  class CLAS6Event : public EventI {
   public : 
-    CLASEvent(); 
-    virtual ~CLASEvent();
+    CLAS6Event(); 
+    virtual ~CLAS6Event();
 
     TLorentzVector GetVertex(void) const { return fVertex ; }
 
-    friend class CLASEventHolder ; 
+    friend class CLAS6EventHolder ; 
 
   protected : 
  

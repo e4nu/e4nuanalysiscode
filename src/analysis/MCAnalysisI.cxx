@@ -242,6 +242,7 @@
 bool MCAnalysisI::SubtractBackground() {
   //  return BackgroundI::SubtractBackground<MCEvent>( kAnalysedEventHolder ) ; 
   bool is_ok = BackgroundI::NewBackgroundSubstraction( kAnalysedEventHolder ) ; 
+  return true ; 
   is_ok *= BackgroundI::AcceptanceCorrection( kAnalysedEventHolder ) ; 
   return is_ok ; 
 } 
@@ -485,7 +486,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   double proton_momz = p_max.Pz() ; 
   double proton_theta = p_max.Theta() ; 
   double proton_phi = p_max.Phi() + TMath::Pi() ; 
-  double ECal = utils::GetECal( out_mom, p_max, TargetPdg ) ; 
+  double ECal = utils::GetECal( out_mom.E(), event->GetFinalParticles4Mom(), TargetPdg ) ; 
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
   double DeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ; 

@@ -111,7 +111,7 @@ double EventI::GetObservable( const std::string observable ) {
 
   if( observable == "ECal" ) {
     if ( event_wproton == false ) return 0 ; 
-    return utils::GetECal( ef4mom, p4mom, target ) ; 
+    return utils::GetECal( ef4mom.E(), GetFinalParticles4Mom(), target ) ; 
   } else if ( observable == "RecoEnu" ) {
     return utils::GetRecoEnu( ef4mom, target ) ;
   } else if ( observable == "QELRecoEnu" ) {

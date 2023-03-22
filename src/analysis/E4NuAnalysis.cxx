@@ -32,7 +32,7 @@ bool E4NuAnalysis::LoadData(void) {
 }
 
 EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
-  //if( IsData() ) CLAS6AnalysisI::GetEvent( event_id ) ; 
+  if( IsData() ) return CLAS6AnalysisI::GetEvent( event_id ) ; 
   return MCAnalysisI::GetValidEvent( event_id ) ; 
 }
 
@@ -57,8 +57,8 @@ bool E4NuAnalysis::Analyse(void) {
 }
 
 bool E4NuAnalysis::SubtractBackground() {
+  //  if( IsData() ) CLAS6AnalysisI::
   return MCAnalysisI::SubtractBackground() ; 
-  // Add for class
 } 
 
 bool E4NuAnalysis::Finalise( ) {

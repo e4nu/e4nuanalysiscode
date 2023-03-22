@@ -7,8 +7,7 @@
 
 namespace e4nu {
   namespace utils {
-    double GetECal( const TLorentzVector & leptonf, const TLorentzVector & proton, const unsigned int target_pdg ) ;
-    double GetECal( const EventI event, const std::map<int,unsigned int> Topology ) ;
+    double GetECal( const double Ef, const std::map<int,std::vector<TLorentzVector>> particle_map, const int tgt ) ;
     double GetRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) ;
     double GetQELRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) ;
     double GetEnergyTransfer( const TLorentzVector & leptonf, const double Ebeam ) ;

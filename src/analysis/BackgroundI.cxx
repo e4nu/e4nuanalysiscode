@@ -188,8 +188,6 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
     --m; 
   }
 
-  delete fiducial ; 
-
   return true ; 
 }
 

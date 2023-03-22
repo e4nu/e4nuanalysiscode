@@ -24,13 +24,12 @@ namespace e4nu {
     bool LoadData(void);
     unsigned int GetNEvents( void ) const ;
     EventI * GetValidEvent( const unsigned int event_id ) ;
+    e4nu::EventI * GetEvent( const unsigned int event_id ) ;
     bool SubtractBackground( void ) ;
     bool Finalise(void) ; 
     bool StoreTree(CLAS6Event * event);
 
   private :
-
-    e4nu::EventI * GetEvent( const unsigned int event_id ) ;
 
     CLAS6EventHolder * fData = nullptr ; 
 

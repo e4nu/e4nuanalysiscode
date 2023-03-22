@@ -16,9 +16,9 @@ using namespace e4nu ;
 
 E4NuAnalysis::E4NuAnalysis() {this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCAnalysisI(), CLASAnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCAnalysisI(), CLAS6CAnalysisI() { this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCAnalysisI(), CLASAnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCAnalysisI(), CLAS6AnalysisI() { this->Initialize();}
 
 E4NuAnalysis::~E4NuAnalysis() {;}
 
@@ -27,12 +27,12 @@ bool E4NuAnalysis::LoadData(void) {
     std::cout << "ERROR: Configuration failed" <<std::endl;
     return false ;
   }
-//  if( IsData() ) return CLASAnalysisI::LoadData(file);
+  if( IsData() ) return CLAS6AnalysisI::LoadData(file);
   return MCAnalysisI::LoadData() ; 
 }
 
 EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
-  //if( IsData() ) CLASAnalysisI::GetEvent( event_id ) ; 
+  //if( IsData() ) CLAS6AnalysisI::GetEvent( event_id ) ; 
   return MCAnalysisI::GetValidEvent( event_id ) ; 
 }
 

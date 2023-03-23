@@ -98,14 +98,39 @@ double EventI::GetObservable( const std::string observable ) {
   unsigned int target = fTargetPdg ; 
   double EBeam = GetInLepton4Mom().E();
   TLorentzVector ef4mom = GetOutLepton4Mom() ;
-  TLorentzVector p4mom ; 
-  bool event_wproton = false ; 
+  TLorentzVector p4mom, pip4mom, pim4mom ; 
+  bool event_wproton = false, event_wpip = false, event_wpim = false ; 
   
   if( fFinalParticles.find( conf::kPdgProton ) != fFinalParticles.end() ) { 
     event_wproton = true ;
     double max_mom = 0 ; 
     for ( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgProton].size() ; ++i ) {
-      if( fFinalParticles[conf::kPdgProton][i].P() > max_mom ) p4mom = fFinalParticles[conf::kPdgProton][i] ;
+      if( fFinalParticles[conf::kPdgProton][i].P() > max_mom ) {
+	max_mom = fFinalParticles[conf::kPdgProton][i].P() ; 
+	p4mom = fFinalParticles[conf::kPdgProton][i] ;
+      }
+    }
+  }
+
+  if( fFinalParticles.find( conf::kPdgPiP ) != fFinalParticles.end() ) { 
+    event_wpip = true ;
+    double max_mom = 0 ; 
+    for ( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgPiP].size() ; ++i ) {
+      if( fFinalParticles[conf::kPdgPiP][i].P() > max_mom ) {
+	max_mom = fFinalParticles[conf::kPdgPiP][i].P() ; 
+	pip4mom = fFinalParticles[conf::kPdgPiP][i] ;
+      }
+    }
+  }
+
+  if( fFinalParticles.find( conf::kPdgPiM ) != fFinalParticles.end() ) { 
+    event_wpim = true ;
+    double max_mom = 0 ; 
+    for ( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgPiM].size() ; ++i ) {
+      if( fFinalParticles[conf::kPdgPiM][i].P() > max_mom ) {
+	max_mom = fFinalParticles[conf::kPdgPiM][i].P() ; 
+	pim4mom = fFinalParticles[conf::kPdgPiM][i] ;
+      }
     }
   }
 
@@ -147,38 +172,24 @@ double EventI::GetObservable( const std::string observable ) {
     return utils::GetSector( ef4mom.Phi() ) ; 
   } else if ( observable == "Weight" ) { 
     return this->GetEventWeight() ;
-  } else if ( observable == "PiPMom" ) {
-    double mom = 0 ;     
-    for( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgPiP].size() ; ++i ) {
-      if ( fFinalParticles[conf::kPdgPiP][i].P() > mom ) mom = fFinalParticles[conf::kPdgPiP][i].P() ;
-    }
-    return mom ; 
-  } else if ( observable == "PiMMom" ) {
-    double mom = 0 ;     
-    for( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgPiM].size() ; ++i ) {
-      if ( fFinalParticles[conf::kPdgPiM][i].P() > mom ) mom = fFinalParticles[conf::kPdgPiM][i].P() ;
-    }
-    return mom ; 
-  } else if ( observable == "PiPTheta" ) {
-    double mom = 0 ;
-    double theta = 0 ; 
-    for( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgPiP].size() ; ++i ) {
-      if ( fFinalParticles[conf::kPdgPiP][i].P() > mom ) {
-	mom = fFinalParticles[conf::kPdgPiP][i].P() ;
-	theta = fFinalParticles[conf::kPdgPiP][i].Theta() ;
-      }
-    }
-    return theta ; 
-  } else if ( observable == "PiMTheta" ) {
-    double mom = 0 ;
-    double theta = 0 ; 
-    for( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgPiM].size() ; ++i ) {
-      if ( fFinalParticles[conf::kPdgPiM][i].P() > mom ) {
-	mom = fFinalParticles[conf::kPdgPiM][i].P() ;
-	theta = fFinalParticles[conf::kPdgPiM][i].Theta() ;
-      }
-    }
-    return theta; 
+  } else if ( observable == "LeadingPiPMom" ) {
+    if( !event_wpip ) return 0 ; 
+    return pip4mom.P() ; 
+  } else if ( observable == "LeadingPiMMom" ) {
+    if( !event_wpim ) return 0 ; 
+    return pim4mom.P() ; 
+  } else if ( observable == "LeadingPiPTheta" ) {
+    if( !event_wpip ) return 0 ; 
+    return pip4mom.Theta() ; 
+  } else if ( observable == "LeadingPiMTheta" ) {
+    if( !event_wpim ) return 0 ; 
+    return pim4mom.Theta() ; 
+  } else if ( observable == "HadSystemDeltaAlphaT" ) {
+    return utils::DeltaAlphaT( ef4mom, GetFinalParticles4Mom() ) ;
+  } else if ( observable == "HadSystemDeltaPhiT" ) {
+    return utils::DeltaPhiT( ef4mom, GetFinalParticles4Mom() ) ;
+  } else if ( observable == "HadSystemDeltaPT" ) {
+    return utils::DeltaPT( ef4mom, GetFinalParticles4Mom() ).Mag() ;
   }
 
   std::cout << observable << " is NOT defined " << std::endl;

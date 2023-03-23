@@ -1,0 +1,41 @@
+#Analysis Cuts
+UseAllSectors	false
+ApplyFiducial	true
+ApplyAccWeights true
+ApplyReso	true
+
+ApplyMottWeight true
+ApplyPhiOpeningAngle	false
+ApplyMomCut             true
+UsePhiThetaBand		false
+ApplyThetaSlice		false
+ApplyGoodSectorPhiSlice	false
+ApplyOutEMomCut		true
+ApplyQ2Cut		true
+ApplyWCut		true
+SubtractBkg 		true
+offset			0
+
+#Run Configurables
+EBeam			1.161
+TargetPdg		1000060120
+NEvents			1000000000
+FirstEvent		0
+
+#Topology definition
+IsData			false
+Toplogy 		11:1,2212:1,-211:0,211:1,22:0
+MaxBackgroundMultiplicity 4
+NRotations 100
+
+#histogram definition
+RangeList 0:2,0:2,-180:180,-0.5:5.5,0:2,0:2,0:2,0:2,0:2,0:180,0:2,0:2,-180:180,-180:180,0:180,0:2,
+ObservableList ECal,OutEMom,OutEPhi,Sector,RecoEnu,RecoQ2,RecoW,QELRecoEnu,DeltaPT,DeltaAlphaT,DeltaPhiT,LeadingPiPMom,LeadingPiPTheta,HadSystemDeltaAlphaT,HadSystemDeltaPhiT,HadSystemDeltaPT
+NBinsList 60,60,60,6,80,80,80,80,80,80,80,80,80,80,80,80
+NormalizeHists false
+ApplyCorrWeights true
+
+#InputFile /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master.root
+InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master*.root
+OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/e4nuanalysis_1pip_Inclusive
+XSecFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/ConfFiles/xsec_carbon12_spline_GEM21_11b_00_000_Q2_0_1.root

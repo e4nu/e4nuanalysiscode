@@ -147,7 +147,40 @@ double EventI::GetObservable( const std::string observable ) {
     return utils::GetSector( ef4mom.Phi() ) ; 
   } else if ( observable == "Weight" ) { 
     return this->GetEventWeight() ;
-  } 
+  } else if ( observable == "PiPMom" ) {
+    double mom = 0 ;     
+    for( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgPiP].size() ; ++i ) {
+      if ( fFinalParticles[conf::kPdgPiP][i].P() > mom ) mom = fFinalParticles[conf::kPdgPiP][i].P() ;
+    }
+    return mom ; 
+  } else if ( observable == "PiMMom" ) {
+    double mom = 0 ;     
+    for( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgPiM].size() ; ++i ) {
+      if ( fFinalParticles[conf::kPdgPiM][i].P() > mom ) mom = fFinalParticles[conf::kPdgPiM][i].P() ;
+    }
+    return mom ; 
+  } else if ( observable == "PiPTheta" ) {
+    double mom = 0 ;
+    double theta = 0 ; 
+    for( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgPiP].size() ; ++i ) {
+      if ( fFinalParticles[conf::kPdgPiP][i].P() > mom ) {
+	mom = fFinalParticles[conf::kPdgPiP][i].P() ;
+	theta = fFinalParticles[conf::kPdgPiP][i].Theta() ;
+      }
+    }
+    return theta ; 
+  } else if ( observable == "PiMTheta" ) {
+    double mom = 0 ;
+    double theta = 0 ; 
+    for( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgPiM].size() ; ++i ) {
+      if ( fFinalParticles[conf::kPdgPiM][i].P() > mom ) {
+	mom = fFinalParticles[conf::kPdgPiM][i].P() ;
+	theta = fFinalParticles[conf::kPdgPiM][i].Theta() ;
+      }
+    }
+    return theta; 
+  }
+
   std::cout << observable << " is NOT defined " << std::endl;
   return 0 ; 
 }

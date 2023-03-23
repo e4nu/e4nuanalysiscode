@@ -17,7 +17,7 @@ double utils::GetECal( const double Ef, const std::map<int,std::vector<TLorentzV
   for( auto it = particle_map.begin() ; it != particle_map.end() ; ++it ) {
     // Calculate ECal for visible particles
     for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
-      ECal += (it->second)[i].E() - utils::GetParticleMass( it->first) ; // Add Kinetic energy of hadrons
+      ECal += (it->second)[i].E() - utils::GetParticleMass( it->first ) ; // Add Kinetic energy of hadrons
       if( it->first == conf::kPdgProton ) ECal += utils::GetBindingEnergy( tgt ) ; // Correct for proton binding energy
     }
   }
@@ -93,6 +93,13 @@ double utils::DeltaAlphaT( const TVector3 p1 /*out electron*/, const TVector3 p2
   return acos(-P1T_dir.Dot(DeltaPT_dir)) * 180. / TMath::Pi();
 }
 
+double utils::DeltaAlphaT( const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+  TVector3 P1T_dir = utils::GetPT(out_electron.Vect()).Unit();
+  TVector3 DeltaPT_dir = utils::DeltaPT(out_electron, hadrons).Unit();
+
+  return acos(-P1T_dir.Dot(DeltaPT_dir)) * 180. / TMath::Pi();
+}
+
 TVector3 utils::DeltaPT( const TVector3 p1 , const TVector3 p2 ) {
   TVector3 P1_T = utils::GetPT(p1);
   TVector3 P2_T = utils::GetPT(p2);
@@ -100,9 +107,34 @@ TVector3 utils::DeltaPT( const TVector3 p1 , const TVector3 p2 ) {
   return P1_T + P2_T;
 }
 
+TVector3 utils::DeltaPT( const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+  TVector3 P1_T = utils::GetPT(out_electron.Vect());
+  TLorentzVector tot_hadron ; 
+  for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
+    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
+      tot_hadron += (it->second)[i] ; 
+    }
+  }
+  TVector3 P2_T = utils::GetPT(tot_hadron.Vect());
+
+  return P1_T + P2_T;
+}
+
 double utils::DeltaPhiT( const TVector3 p1 , const TVector3 p2 ) {
   TVector3 P1T_dir = utils::GetPT(p1).Unit();
   TVector3 P2T_dir = utils::GetPT(p2).Unit();
+  return acos(-P1T_dir.Dot(P2T_dir)) * 180. / TMath::Pi() ; 
+}
+
+double utils::DeltaPhiT( const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+  TVector3 P1T_dir = utils::GetPT(out_electron.Vect()).Unit();
+  TLorentzVector tot_hadron ;
+  for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
+    for( unsigned int i= 0 ; i< (it->second).size() ; ++i ) {
+      tot_hadron += (it->second)[i] ;
+    }
+  }
+  TVector3 P2T_dir = utils::GetPT(tot_hadron.Vect()).Unit();
   return acos(-P1T_dir.Dot(P2T_dir)) * 180. / TMath::Pi() ; 
 }
 

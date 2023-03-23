@@ -92,8 +92,22 @@
      event -> SetMottXSecWeight() ; 
    }
 
+   // Remove particles not specified in topology maps
+   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticlesUnCorr4Mom() ;
+   std::map<int,unsigned int> Topology = GetTopology();
+   std::map<int,std::vector<TLorentzVector>> cooked_part_map ; 
+   for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
+     if( Topology.find(it->first) == Topology.end() ) continue ; 
+     std::vector<TLorentzVector> topology_particles ;
+     for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
+       topology_particles.push_back( part_map[it->first][i] ) ;
+     }
+     cooked_part_map[it->first] = topology_particles ;
+   }
+   event -> SetFinalParticlesKinematics( cooked_part_map ) ;
+   event -> SetFinalParticlesUnCorrKinematics( cooked_part_map ) ;
+
    // Apply momentum cut before smearing
-   // Get Topology Definition
    if( ApplyMomCut() ) { 
      std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticlesUnCorr4Mom() ;
      
@@ -135,9 +149,8 @@
   }
   ++kNEventsAfterFiducial;
 
-  // Get Topology Definition
-  std::map<int,unsigned int> Topology = GetTopology(); 
-  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
+
+  part_map = event -> GetFinalParticles4Mom() ;
   std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event -> GetFinalParticlesUnCorr4Mom() ;
 
   // Apply Fiducial cut for hadrons and photons

@@ -27,12 +27,12 @@ bool E4NuAnalysis::LoadData(void) {
     std::cout << "ERROR: Configuration failed" <<std::endl;
     return false ;
   }
-  if( IsData() ) return CLAS6AnalysisI::LoadData();
+  //  if( IsData() ) return CLAS6AnalysisI::LoadData();
   return MCAnalysisI::LoadData() ; 
 }
 
 EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
-  if( IsData() ) return CLAS6AnalysisI::GetEvent( event_id ) ; 
+  //  if( IsData() ) return CLAS6AnalysisI::GetEvent( event_id ) ; 
   return MCAnalysisI::GetValidEvent( event_id ) ; 
 }
 

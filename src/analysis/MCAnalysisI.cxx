@@ -149,7 +149,6 @@
   }
   ++kNEventsAfterFiducial;
 
-
   part_map = event -> GetFinalParticles4Mom() ;
   std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event -> GetFinalParticlesUnCorr4Mom() ;
 
@@ -174,6 +173,7 @@
   }
 
   // Apply acceptance to all particles 
+  // Only applied to particles of interest
   double acc_wght = 1 ;
   if( ApplyAccWeights() ) {
     // Electron acceptance
@@ -546,13 +546,13 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
     kAnalysisTree -> Branch( "InLeptonPdg", &InLeptonPdg, "InLeptonPdg/I");
     kAnalysisTree -> Branch( "OutLeptonPdg", &OutLeptonPdg, "OutLeptonPdg/I");
     kAnalysisTree -> Branch( "BeamE", &BeamE, "BeamE/D");
-    kAnalysisTree -> Branch( "CC", &CC, "CC/B");
-    kAnalysisTree -> Branch( "NC", &NC, "NC/B");
-    kAnalysisTree -> Branch( "EM", &EM, "EC/B");
-    kAnalysisTree -> Branch( "QEL", &QEL, "QEL/B");
-    kAnalysisTree -> Branch( "RES", &RES, "RES/B");
-    kAnalysisTree -> Branch( "MEC", &MEC, "MEC/B");
-    kAnalysisTree -> Branch( "DIS", &DIS, "DIS/B");
+    kAnalysisTree -> Branch( "CC", &CC, "CC/O");
+    kAnalysisTree -> Branch( "NC", &NC, "NC/O");
+    kAnalysisTree -> Branch( "EM", &EM, "EC/O");
+    kAnalysisTree -> Branch( "QEL", &QEL, "QEL/O");
+    kAnalysisTree -> Branch( "RES", &RES, "RES/O");
+    kAnalysisTree -> Branch( "MEC", &MEC, "MEC/O");
+    kAnalysisTree -> Branch( "DIS", &DIS, "DIS/O");
     kAnalysisTree -> Branch( "TrueQ2s", &TrueQ2s, "TrueQ2s/D");
     kAnalysisTree -> Branch( "TrueWs", &TrueWs, "TrueWs/D");
     kAnalysisTree -> Branch( "Truexs", &Truexs, "Truexs/D");
@@ -565,7 +565,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
     kAnalysisTree -> Branch( "EventWght", &EventWght, "EventWght/D");
     kAnalysisTree -> Branch( "AccWght", &AccWght, "AccWght/D");
     kAnalysisTree -> Branch( "MottXSecScale", &MottXSecScale, "MottXSecScale/D");
-    kAnalysisTree -> Branch( "IsBkg", &IsBkg, "IsBkg/B");
+    kAnalysisTree -> Branch( "IsBkg", &IsBkg, "IsBkg/O");
     kAnalysisTree -> Branch( "TrueNProtons", &TrueNProtons, "TrueNProtons/I");
     kAnalysisTree -> Branch( "TrueNNeutrons", &TrueNNeutrons, "TrueNNeutrons/I");
     kAnalysisTree -> Branch( "TrueNPiP", &TrueNPiP, "TrueNPiP/I");

@@ -43,13 +43,9 @@ BackgroundI::~BackgroundI() {
   delete kRotation ;
 }
 
-bool BackgroundI::ChechMinParticleMultiplicity( int pdg, unsigned int part_mult ) const {
+unsigned int BackgroundI::GetMinParticleMultiplicity( int pdg ) const {
   std::map<int,unsigned int> Topology = GetTopology();
-  if( Topology.find(pdg) != Topology.end() ) { 
-    if ( Topology[pdg] == 0 ) return true ; 
-    if ( part_mult < Topology[pdg] ) return false ; 
-  }
-  return true ; 
+  return Topology[pdg] ;
 }
 
 bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> & event_holder ) { 
@@ -74,6 +70,12 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
 	// Create map id
 	std::map<std::vector<int>,std::vector<int>> new_topology ;
 
+	// Rotate all Hadrons
+	std::map<int,std::vector<TLorentzVector>> particlessdfs = event_holder[m][event_id].GetFinalParticles4Mom() ;
+	for( auto it = particlessdfs.begin() ; it != particlessdfs.end() ; ++it ) {
+	  int part_pdg = it->first ; 
+	}
+	
 	// Start rotations
 	for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) { 
 	  // Set rotation around q3 vector
@@ -114,17 +116,20 @@ bool BackgroundI::NewBackgroundSubstraction( std::map<int,std::vector<MCEvent>> 
 	  }
 
 	  // If multiplicity < minimum multiplicity, remove
-	  if( rot_event_mult < min_mult ) continue ; 
-	  
+	  if( rot_event_mult < min_mult ) {
+	    continue ; 
+	  }
+
 	  // Check if particle multiplicity is above signal particle multiplicity 
 	  bool is_signal_bkg = true ; 
-	  for( unsigned int k = 0 ; k < part_pdg_list.size() ; ++k ) { 
-	    unsigned int count_particle = 0 ; 
-	    for( unsigned int l = 0 ; l < is_particle_contained[part_pdg_list[k]].size() ; ++l ) { 
-	      if( is_particle_contained[part_pdg_list[k]][l] ) ++count_particle ; 
+	  for( auto it = Topology.begin(); it!=Topology.end();++it){
+	    if( it->first == conf::kPdgElectron ) continue ; 
+	    if( it->second == 0 ) continue ; // If min mult is 0, continue
+	    unsigned int count_p = 0 ; 
+	    for( unsigned int idp = 0 ; idp < part_pdg_list.size() ; ++idp ){
+	      if( part_pdg_list[idp] == it->first ) ++count_p ;  
 	    }
-	 
-	    is_signal_bkg *= ChechMinParticleMultiplicity( part_pdg_list[k], count_particle ) ;
+	    if( count_p < Topology[it->first] ) is_signal_bkg *=false ;
 	  }
 
 	  if( ! is_signal_bkg ) {
@@ -219,9 +224,9 @@ bool BackgroundI::AcceptanceCorrection( std::map<int,std::vector<MCEvent>> & eve
       std::map<int,std::vector<TLorentzVector>> rot_particles_uncorr = signal_events[i].GetFinalParticlesUnCorr4Mom() ;
       
       // Rotate all particles 
+      bool is_contained = true ; 
       for( auto it = rot_particles.begin() ; it != rot_particles.end() ; ++it ) {
 	int part_pdg = it->first ; 
-	bool is_contained = true ; 
 	if( Topology.find( part_pdg ) == Topology.end() ) continue ; // Skip particles which are not in signal definition 
 	
 	for ( unsigned int part_id = 0 ; part_id < (it->second).size() ; ++part_id ) {
@@ -231,21 +236,21 @@ bool BackgroundI::AcceptanceCorrection( std::map<int,std::vector<MCEvent>> & eve
 	  // Check which particles are in fiducial	      
 	  is_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect ) ;
 	}
-	if( is_contained ) ++N_signal_detected ; 
-	else ++N_signal_undetected ; 
       }
+      if( is_contained ) ++N_signal_detected ; 
+      else ++N_signal_undetected ; 
     }
 
       // Add missing signal events
       MCEvent temp_event = signal_events[i] ;
       double event_wgt = temp_event.GetEventWeight() ;
       temp_event.SetEventWeight( + event_wgt * N_signal_undetected / N_signal_detected ) ; 
+      temp_event.SetIsBkg(true);
       signal_events.push_back(temp_event);
 
   }
   // Store correction
   event_holder[min_mult] = signal_events ; 
   
-  delete fiducial ;
   return true ; 
 }

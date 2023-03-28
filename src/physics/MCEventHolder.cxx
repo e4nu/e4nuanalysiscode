@@ -65,11 +65,26 @@ bool MCEventHolder::LoadBranch(void) {
   fEventHolderChain->SetBranchAddress("nfem", &nfem, &b_nfem);
   fEventHolderChain->SetBranchAddress("nfother", &nfother, &b_nfother);
   fEventHolderChain->SetBranchAddress("nf", &nf, &b_nf);
-  fEventHolderChain->SetBranchAddress("pdgf", pdgf, &b_pdgf);
   fEventHolderChain->SetBranchAddress("Ef", Ef, &b_Ef);
   fEventHolderChain->SetBranchAddress("pxf", pxf, &b_pxf);
   fEventHolderChain->SetBranchAddress("pyf", pyf, &b_pyf);
   fEventHolderChain->SetBranchAddress("pzf", pzf, &b_pzf);
+  fEventHolderChain->SetBranchAddress("pdgf", pdgf, &b_pdgf);
+  fEventHolderChain->SetBranchAddress("nin", &nin, &b_nin);
+  fEventHolderChain->SetBranchAddress("nipip", &nipip, &b_nipip);
+  fEventHolderChain->SetBranchAddress("nipim", &nipim, &b_nipim);
+  fEventHolderChain->SetBranchAddress("nipi0", &nipi0, &b_nipi0);
+  fEventHolderChain->SetBranchAddress("nikp", &nikp, &b_nikp);
+  fEventHolderChain->SetBranchAddress("nikm", &nikm, &b_nikm);
+  fEventHolderChain->SetBranchAddress("nik0", &nik0, &b_nik0);
+  fEventHolderChain->SetBranchAddress("niem", &niem, &b_niem);
+  fEventHolderChain->SetBranchAddress("niother", &niother, &b_niother);
+  fEventHolderChain->SetBranchAddress("ni", &ni, &b_ni);
+  fEventHolderChain->SetBranchAddress("pdgi", pdgi, &b_pdgi);
+  fEventHolderChain->SetBranchAddress("Ei", Ei, &b_Ei);
+  fEventHolderChain->SetBranchAddress("pxi", pxi, &b_pxi);
+  fEventHolderChain->SetBranchAddress("pyi", pyi, &b_pyi);
+  fEventHolderChain->SetBranchAddress("pzi", pzi, &b_pzi);
   fEventHolderChain->SetBranchAddress("vtxx", &vtxx, &b_vtxx);
   fEventHolderChain->SetBranchAddress("vtxy", &vtxy, &b_vtxy);
   fEventHolderChain->SetBranchAddress("vtxz", &vtxz, &b_vtxz);
@@ -132,6 +147,37 @@ EventI * MCEventHolder::GetEvent(const unsigned int event_id) {
   return event ; 
 }
 
+
+
+EventI * MCEventHolder::GetEventNoFSI(const unsigned int event_id) {
+
+  MCEvent * event = static_cast<MCEvent*>( GetEvent(event_id) ); 
+  if( ! event ) return nullptr ; 
+  
+  event -> SetNProtons( nip ) ; 
+  event -> SetNNeutrons( nin ) ; 
+  event -> SetNPiP( nipip ) ; 
+  event -> SetNPiM( nipim ) ; 
+  event -> SetNPi0( nipi0 ) ; 
+  event -> SetNKP( nikp ) ;
+  event -> SetNKM( nikm ) ; 
+  event -> SetNK0( nik0 ) ; 
+  event -> SetNEM( niem ) ; 
+  event -> SetNOther( niother ) ; 
+
+  // Reset particle map 
+  std::map<int,std::vector<TLorentzVector>> part_map ; 
+  event->SetFinalParticlesKinematics(part_map); 
+  event->SetFinalParticlesUnCorrKinematics(part_map);
+  
+  // Set final state particle kinematics
+  for ( unsigned int p = 0 ; p < (unsigned int) ni ; ++p ) {
+    event -> SetFinalParticle( pdgi[p], Ei[p], pxi[p], pyi[p], pzi[p] ) ; 
+    event -> SetFinalParticleUnCorr( pdgi[p], Ei[p], pxi[p], pyi[p], pzi[p] ) ; 
+  }
+  return event ; 
+}
+
 void MCEventHolder::Initialize() { 
   this->LoadBranch();
 }
@@ -182,6 +228,22 @@ void MCEventHolder::Clear() {
   delete b_pxf ;   
   delete b_pyf ;   
   delete b_pzf ;   
+  delete b_nip ;   
+  delete b_nin ;   
+  delete b_nipip ;   
+  delete b_nipim ;   
+  delete b_nipi0 ;   
+  delete b_nikp ;   
+  delete b_nikm ;   
+  delete b_nik0 ;   
+  delete b_niem ;   
+  delete b_niother ;   
+  delete b_ni ;   
+  delete b_pdgi ;   
+  delete b_Ei ;   
+  delete b_pxi ;   
+  delete b_pyi ;   
+  delete b_pzi ;   
   delete b_vtxx ;   
   delete b_vtxy ;   
   delete b_vtxz ;   

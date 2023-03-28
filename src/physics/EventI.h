@@ -44,7 +44,9 @@ namespace e4nu {
     double GetTotalWeight(void) const { return fWeight * fAccWght * fMottXSecWght ; }
     double GetEventWeight(void) const { return fWeight ; }
     void SetEventWeight( double wght ) { fWeight = wght ; }
+    double IsTrueBkg(void) const{ return fIsTrueBkg ; }
     double IsBkg(void) const{ return fIsBkg ; }
+    void SetIsTrueBkg( const bool bkg ) { fIsTrueBkg = bkg ; }
     void SetIsBkg( const bool bkg ) { fIsBkg = bkg ; }
 
     void SetOutLeptonKinematics( const TLorentzVector & tlvect ) { fOutLepton = tlvect ; }
@@ -115,6 +117,7 @@ namespace e4nu {
     int fOutLeptPdg ; 
 
     bool fIsBkg = false ; 
+    bool fIsTrueBkg = false ; 
 
     void Initialize(void) ;
     void Clear(void); 

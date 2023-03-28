@@ -20,6 +20,7 @@ namespace e4nu {
     bool LoadBranch(void) ;
     
     e4nu::EventI * GetEvent(const unsigned int event_id) ;
+    e4nu::EventI * GetEventNoFSI(const unsigned int event_id) ;
 
     ~MCEventHolder();
 
@@ -73,6 +74,22 @@ namespace e4nu {
     Double_t pxf[120] ;
     Double_t pyf[120] ;
     Double_t pzf[120] ;
+    Int_t  nip = 0 ;
+    Int_t  nin = 0 ;
+    Int_t  nipip = 0 ;
+    Int_t  nipim = 0 ;
+    Int_t  nipi0 = 0 ;
+    Int_t  nikp = 0 ;
+    Int_t  nikm = 0 ;
+    Int_t  nik0 = 0 ;
+    Int_t  niem = 0 ;
+    Int_t  niother = 0 ;
+    Int_t ni = 0 ;
+    Int_t pdgi[120] ;
+    Double_t Ei[120] ;
+    Double_t pxi[120] ;
+    Double_t pyi[120] ;
+    Double_t pzi[120] ;
     Double_t vtxx = 0 ;
     Double_t vtxy = 0 ;
     Double_t vtxz = 0 ;
@@ -122,6 +139,22 @@ namespace e4nu {
     TBranch * b_pxf = nullptr ;   
     TBranch * b_pyf = nullptr ;   
     TBranch * b_pzf = nullptr ;   
+    TBranch * b_nip = nullptr ;   
+    TBranch * b_nin = nullptr ;   
+    TBranch * b_nipip = nullptr ;   
+    TBranch * b_nipim = nullptr ;   
+    TBranch * b_nipi0 = nullptr ;   
+    TBranch * b_nikp = nullptr ;   
+    TBranch * b_nikm = nullptr ;   
+    TBranch * b_nik0 = nullptr ;   
+    TBranch * b_niem = nullptr ;   
+    TBranch * b_niother = nullptr ;   
+    TBranch * b_ni = nullptr ;   
+    TBranch * b_pdgi = nullptr ;   
+    TBranch * b_Ei = nullptr ;   
+    TBranch * b_pxi = nullptr ;   
+    TBranch * b_pyi = nullptr ;   
+    TBranch * b_pzi = nullptr ;   
     TBranch * b_vtxx = nullptr ;   
     TBranch * b_vtxy = nullptr ;   
     TBranch * b_vtxz = nullptr ;   

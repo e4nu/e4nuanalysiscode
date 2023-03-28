@@ -56,13 +56,24 @@
 
  EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
 
-   MCEvent * event = (MCEvent*) fData -> GetEvent(event_id) ; 
+   MCEvent * event ;
+   if( IsNoFSI() ) {
+     // This function will load the full event using pre FSI nucleon kinematics
+     event = (MCEvent*) fData -> GetEventNoFSI(event_id) ; 
+   } else event = (MCEvent*) fData -> GetEvent(event_id) ; 
+
    if( !event ) {
      delete event ; 
      return nullptr ; 
    }
 
    ++kNEventsBeforeCuts ;
+
+  // Apply Generic analysis cuts
+  if ( ! AnalysisI::Analyse( event ) ) {
+    delete event ; 
+    return nullptr ; 
+  }
 
    TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
    TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
@@ -93,6 +104,7 @@
    }
 
    // Remove particles not specified in topology maps
+   // No Cuts are applied on those
    std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticlesUnCorr4Mom() ;
    std::map<int,unsigned int> Topology = GetTopology();
    std::map<int,std::vector<TLorentzVector>> cooked_part_map ; 
@@ -135,12 +147,6 @@
     this -> SmearParticles( event ) ; 
   }
 
-  // Apply Generic analysis cuts
-  if ( ! AnalysisI::Analyse( event ) ) {
-    delete event ; 
-    return nullptr ; 
-  }
-
   // Apply fiducial cut to electron
   Fiducial * fiducial = nullptr ; 
   if( ApplyFiducial() ) {
@@ -148,6 +154,15 @@
     if (! fiducial -> FiducialCut(conf::kPdgElectron, EBeam, out_mom.Vect() ) ) { delete event ; return nullptr ; } 
   }
   ++kNEventsAfterFiducial;
+
+  // Tag particle as signal or background before fiducial
+  for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
+    if( it->first == conf::kPdgElectron ) continue ; 
+    else if( part_map[it->first].size() != it->second ) {
+      event->SetIsTrueBkg(true);
+      break ; 
+    } 
+  }
 
   part_map = event -> GetFinalParticles4Mom() ;
   std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event -> GetFinalParticlesUnCorr4Mom() ;
@@ -197,7 +212,7 @@
   for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) continue ; 
     else if( part_map[it->first].size() != it->second ) {
-      is_signal = false ; 
+      is_signal *= false ; 
       break ; 
     } 
   }
@@ -224,9 +239,13 @@
     // Check events are above minumum particle multiplicity 
     bool is_signal_bkg = true ; 
     std::map<int,std::vector<TLorentzVector>> hadrons = event->GetFinalParticles4Mom() ;
-    
-    for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
-      is_signal_bkg *= ChechMinParticleMultiplicity( part->first, (part->second).size() ) ;
+    std::map<int,unsigned int> Topology = GetTopology();
+    for( auto it = Topology.begin(); it!=Topology.end();++it){
+      if( it->first == conf::kPdgElectron ) continue ; 
+      for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
+	if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() < it->second ) is_signal_bkg *= false ;   
+	if( hadrons.find(it->first) == hadrons.end() &&  it->second != 0 ) is_signal_bkg *= false ;   
+      }
     }
 
     if( !is_signal_bkg ) {
@@ -253,11 +272,9 @@
 }
 
 bool MCAnalysisI::SubtractBackground() {
-  //  return BackgroundI::SubtractBackground<MCEvent>( kAnalysedEventHolder ) ; 
   bool is_ok = BackgroundI::NewBackgroundSubstraction( kAnalysedEventHolder ) ; 
-  return true ; 
   //  is_ok *= BackgroundI::AcceptanceCorrection( kAnalysedEventHolder ) ; 
-  //return is_ok ; 
+  return is_ok ; 
 } 
 
 void MCAnalysisI::SmearParticles( MCEvent * event ) {
@@ -503,7 +520,11 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
   double DeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ; 
+  double HadAlphaT = utils::DeltaAlphaT( out_mom, hadron_map ) ; 
+  double HadDeltaPT = utils::DeltaPT( out_mom, hadron_map ).Mag() ; 
+  double HadDeltaPhiT = utils::DeltaPhiT( out_mom, hadron_map ) ; 
 
+  //const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons 
   TLorentzVector pip_max(0,0,0,0) ;
   if( topology_has_pip ) {
     double max_mom = 0 ; 
@@ -539,6 +560,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   double pim_theta = pim_max.Theta() ;
   double pim_phi = pim_max.Phi() + TMath::Pi() ;
 
+  bool IsTrueBkg = event->IsTrueBkg() ; 
   bool IsBkg = event->IsBkg() ; 
   if( n == true ) {
     kAnalysisTree -> Branch( "ID", &ID, "ID/I"); 
@@ -565,6 +587,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
     kAnalysisTree -> Branch( "EventWght", &EventWght, "EventWght/D");
     kAnalysisTree -> Branch( "AccWght", &AccWght, "AccWght/D");
     kAnalysisTree -> Branch( "MottXSecScale", &MottXSecScale, "MottXSecScale/D");
+    kAnalysisTree -> Branch( "IsTrueBkg", &IsTrueBkg, "IsTrueBkg/O");
     kAnalysisTree -> Branch( "IsBkg", &IsBkg, "IsBkg/O");
     kAnalysisTree -> Branch( "TrueNProtons", &TrueNProtons, "TrueNProtons/I");
     kAnalysisTree -> Branch( "TrueNNeutrons", &TrueNNeutrons, "TrueNNeutrons/I");
@@ -630,7 +653,9 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
       kAnalysisTree -> Branch( "pim_theta", &pim_theta, "pim_theta/D");
       kAnalysisTree -> Branch( "pim_phi", &pim_phi, "pim_phi/D");
     }
-
+    kAnalysisTree -> Branch( "HadAlphaT", &HadAlphaT, "HadAlphaT/D");
+    kAnalysisTree -> Branch( "HadDeltaPT", &HadDeltaPT, "HadDeltaPT/D");
+    kAnalysisTree -> Branch( "HadDeltaPhiT", &HadDeltaPhiT, "HadDeltaPhiT/D");
     n = false ; 
   }
   

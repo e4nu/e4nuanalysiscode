@@ -109,11 +109,14 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     } else if ( param[i] == "ApplyOutEMomCut" ) {
       if( value[i] == "true" ) kOutEMomCut = true ; 
       else kOutEMomCut = false ; 
-    }else if( param[i] == "IsElectronData" ) { 
+    } else if( param[i] == "IsElectronData" ) { 
       if( value[i] == "true" ) kIsElectron = true ; 
       else kIsElectron = false ; 
-    }else if ( param[i] == "offset" ) koffset = std::stod( value[i] ) ; 
-    else if ( param[i] == "EBeam" ) kEBeam = std::stod( value[i] ) ; 
+    } else if ( param[i] == "offset" ) koffset = std::stod( value[i] ) ; 
+    else if ( param[i] == "NoFSI") {
+      if( value[i] == "true" ) kNoFSI = true ; 
+      else kNoFSI = false ; 
+    } else if ( param[i] == "EBeam" ) kEBeam = std::stod( value[i] ) ; 
     else if ( param[i] == "TargetPdg" ) kTargetPdg = (unsigned int) std::stoi( value[i] ) ; 
     else if ( param[i] == "NEvents" ) kNEvents = (unsigned int) std::stoi( value[i] ) ;
     else if ( param[i] == "FirstEvent" ) kFirstEvent = (unsigned int) std::stoi( value[i] ) ;
@@ -239,8 +242,10 @@ void ConfigureI::PrintConfiguration(void) const {
   std::cout << "EBeam: " << kEBeam << " GeV " << std::endl;
   std::cout << "Target Pdg : " << kTargetPdg << "\n" <<std::endl;
   if ( kIsData ) std::cout << "\nIsData" << std::endl;
-  else std::cout << "Is MC Data " << std::endl;
-  
+  else {
+    std::cout << "Is MC Data " << std::endl;
+    if ( kNoFSI ) std::cout << " No FSI " << std::endl ; 
+  }
   if( kIsElectron ) std::cout << " Electron scattering \n" <<std::endl;
   else std::cout << " Neutrino scattering \n" <<std::endl;
   
@@ -248,6 +253,7 @@ void ConfigureI::PrintConfiguration(void) const {
   for ( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) { 
     std::cout << "    " << it->first << ", multiplicity " << it->second << std::endl;
   }
+
   if( kSubtractBkg ) {
     std::cout << "\nBackground Subtraction enabled : " << std::endl;
     std::cout << "Maximum Background Multiplicity: "<< kMaxBkgMult << std::endl;
@@ -259,12 +265,14 @@ void ConfigureI::PrintConfiguration(void) const {
     std::cout << "Number of bins = " << kNBins[i] << std::endl;
     std::cout << "Range = {"<<kRanges[i][0]<<","<<kRanges[i][1]<<"}\n"<<std::endl;
   }
+
   if( kApplyCorrWeights ) std::cout << " Weights are taken into account in the histograms" << std::endl;
   std::cout << "\nXSecFile " << kXSecFile << std::endl;
   std::cout << "\nStoring output in " << kOutputFile << std::endl;
   std::cout << "Analizing " << kNEvents << " ... " <<std::endl;
   if( kFirstEvent != 0 ) std::cout << " startint from event " << kFirstEvent << std::endl;
   std::cout << "*********************************************************************" << std::endl;
+
 }
 
 unsigned int ConfigureI::GetNTopologyParticles(void) {

@@ -128,9 +128,13 @@
     // Check events are above minumum particle multiplicity 
     bool is_signal_bkg = true ; 
     std::map<int,std::vector<TLorentzVector>> hadrons = event->GetFinalParticles4Mom() ;
-    
-    for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
-      is_signal_bkg *= ChechMinParticleMultiplicity( part->first, (part->second).size() ) ;
+    std::map<int,unsigned int> Topology = GetTopology();
+    for( auto it = Topology.begin(); it!=Topology.end();++it){
+      if( it->first == conf::kPdgElectron ) continue ; 
+      for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
+	if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() < it->second ) is_signal_bkg *= false ;   
+	if( hadrons.find(it->first) == hadrons.end() &&  it->second != 0 ) is_signal_bkg *= false ;   
+      }
     }
 
     if( !is_signal_bkg ) {

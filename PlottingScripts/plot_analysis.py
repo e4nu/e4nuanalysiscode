@@ -29,7 +29,6 @@ hist_pitheta = ROOT.TH1D("Pion_angle", "Pion Theta", 40, 0, 150 )
 for entry in tree:
     TotWeight = entry.TotWeight 
     IsBkg = entry.IsBkg 
-    if IsBkg : continue 
     EM = entry.EM
     QEL = entry.QEL
     RES = entry.RES
@@ -44,7 +43,8 @@ for entry in tree:
     alphaT = entry.AlphaT
     #hist_W.Fill(TrueW)
     #if TotWeight == 0 : continue
-    hist_aT.Fill(alphaT,TotWeight)
+    hist_aT.Fill(alphaT)#,TotWeight)
+
 #hist_W.Draw()
 
 hist_aT.Draw("hist")

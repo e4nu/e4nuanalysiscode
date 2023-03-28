@@ -180,7 +180,7 @@ double EventI::GetObservable( const std::string observable ) {
     return pim4mom.P() ; 
   } else if ( observable == "LeadingPiPTheta" ) {
     if( !event_wpip ) return 0 ; 
-    return pip4mom.Theta() ; 
+    return pip4mom.Theta() * 180 / TMath::Pi() ; 
   } else if ( observable == "LeadingPiMTheta" ) {
     if( !event_wpim ) return 0 ; 
     return pim4mom.Theta() ; 

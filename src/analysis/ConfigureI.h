@@ -52,6 +52,7 @@ namespace e4nu {
     bool ApplyOutElectronCut(void) const { return kOutEMomCut ; }      
     bool IsElectronData(void) const { return kIsElectron ; }
     bool IsConfigured(void) const { return kIsConfigured ; }
+    bool IsNoFSI(void) const { return kNoFSI ; }
 
     unsigned int GetNEventsToRun(void) const { return kNEvents ; } 
     unsigned int GetFirstEventToRun(void) const { return kFirstEvent ; } 
@@ -99,6 +100,7 @@ namespace e4nu {
     bool kIsElectron = true ; // Is EM data  
     double koffset = 0 ;  // ofset for oscillation studies
     bool kSubtractBkg = false ; // Apply background correction
+    bool kNoFSI = false ;
 
     double kEBeam = 1.161 ; 
     unsigned int kTargetPdg = 1000060120 ;

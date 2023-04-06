@@ -69,7 +69,14 @@ ConfigureI::ConfigureI( const std::string input_file ) {
       else kUseAllSectors = false ; 
     } else if ( param[i] == "ApplyFiducial" ){
       if( value[i] == "false" ) kApplyFiducial = false ; 
-      else kApplyFiducial = true ; 
+      else {
+	kApplyFiducial = true ; 
+	kApplyHadFiducial = true ; 
+	kApplyEFiducial = true ; 
+      }
+    } else if ( param[i] == "ApplyHadFiducial" ){
+      if( value[i] == "false" ) kApplyHadFiducial = false ; 
+      else kApplyHadFiducial = true ; 
     } else if ( param[i] == "ApplyAccWeights" ){
       if ( value[i] == "false" ) kApplyAccWeights = false ; 
       else kApplyAccWeights = true ; 
@@ -229,6 +236,8 @@ void ConfigureI::PrintConfiguration(void) const {
   std::cout << "ApplyQ2Cut: "<<kQ2Cut<< std::endl;
   std::cout << "ApplyWCut: "<<kWCut<< std::endl;
   std::cout << "ApplyFiducial:" << kApplyFiducial << std::endl;
+  std::cout << "ApplyEFiducial:" << kApplyEFiducial << std::endl;
+  std::cout << "ApplyHadFiducial:" << kApplyHadFiducial << std::endl;
   std::cout << "ApplyAccWeights: " << kApplyAccWeights << std::endl;
   std::cout << "ApplyMottWeight: " << kApplyMottWeight << std::endl;
   std::cout << "ApplyReso:" << kApplyReso << std::endl;
@@ -266,7 +275,6 @@ void ConfigureI::PrintConfiguration(void) const {
     std::cout << "Range = {"<<kRanges[i][0]<<","<<kRanges[i][1]<<"}\n"<<std::endl;
   }
 
-  if( kApplyCorrWeights ) std::cout << " Weights are taken into account in the histograms" << std::endl;
   std::cout << "\nXSecFile " << kXSecFile << std::endl;
   std::cout << "\nStoring output in " << kOutputFile << std::endl;
   std::cout << "Analizing " << kNEvents << " ... " <<std::endl;

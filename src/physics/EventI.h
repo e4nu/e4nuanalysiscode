@@ -44,9 +44,15 @@ namespace e4nu {
     double GetTotalWeight(void) const { return fWeight * fAccWght * fMottXSecWght ; }
     double GetEventWeight(void) const { return fWeight ; }
     void SetEventWeight( double wght ) { fWeight = wght ; }
-    double IsTrueBkg(void) const{ return fIsTrueBkg ; }
-    double IsBkg(void) const{ return fIsBkg ; }
+    bool IsTrueBkg(void) const{ return fIsTrueBkg ; }
+    bool IsRecoBkg(void) const{ return fIsRecoBkg ; }
+    bool IsBkg(void) const{ return fIsBkg ; }
+    bool IsUndetectedSignal(void) const{ return fIsUndetectedSignal ; }
+    bool IsUndetectedESignal(void) const{ return fIsUndetectedESignal ; }
     void SetIsTrueBkg( const bool bkg ) { fIsTrueBkg = bkg ; }
+    void SetIsRecoBkg( const bool bkg ) { fIsRecoBkg = bkg ; }
+    void SetIsUndetectedSignal( const bool sig ) { fIsUndetectedSignal = sig ; }
+    void SetIsUndetectedESignal( const bool sig ) { fIsUndetectedESignal = sig ; }
     void SetIsBkg( const bool bkg ) { fIsBkg = bkg ; }
 
     void SetOutLeptonKinematics( const TLorentzVector & tlvect ) { fOutLepton = tlvect ; }
@@ -117,7 +123,10 @@ namespace e4nu {
     int fOutLeptPdg ; 
 
     bool fIsBkg = false ; 
+    bool fIsRecoBkg = false ; 
     bool fIsTrueBkg = false ; 
+    bool fIsUndetectedSignal = false ; 
+    bool fIsUndetectedESignal = false ; 
 
     void Initialize(void) ;
     void Clear(void); 

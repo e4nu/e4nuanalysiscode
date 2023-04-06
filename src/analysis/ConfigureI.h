@@ -36,7 +36,9 @@ namespace e4nu {
     unsigned int GetConfiguredTarget(void) const { return kTargetPdg ; }
     bool UseAllSectors(void) const { return kUseAllSectors ; } 
     bool ApplyFiducial(void) const { return kApplyFiducial ; }
-    bool ApplyCorrWeights(void) const { return kApplyAccWeights ; }
+    bool ApplyEFiducial(void) const { return kApplyEFiducial ; }
+    bool ApplyHadFiducial(void) const { return kApplyHadFiducial ; }
+    bool ApplyCorrWeights(void) const { return kApplyCorrWeights ; }
     bool ApplyAccWeights(void) const { return kApplyAccWeights ; }
     bool ApplyMottScaling(void) const { return kApplyMottWeight ; }
     bool ApplyReso(void) const { return kApplyReso ; }
@@ -86,6 +88,8 @@ namespace e4nu {
     bool kIsData = false ; // Is data (class?)
     bool kUseAllSectors = false ; // Are there any dead sectors?
     bool kApplyFiducial = true ; // Set to false to remove fiducial cuts
+    bool kApplyEFiducial = true ; // Set to false to remove fiducial cuts
+    bool kApplyHadFiducial = true ; // Set to false to remove fiducial cuts
     bool kApplyAccWeights = true ; // Set to false to ignore acceptance weights 
     bool kApplyMottWeight = true ; // Apply mott xsec convertion
     bool kApplyReso = true ; // Apply particle resolution

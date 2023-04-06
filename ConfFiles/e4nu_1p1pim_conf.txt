@@ -1,19 +1,21 @@
 #Analysis Cuts
 UseAllSectors	false
-ApplyFiducial	true
+ApplyFiducial true
+ApplyEFiducial true
+ApplyHadFiducial true
+SubtractBkg 	true
 ApplyAccWeights false
 ApplyReso	true
 
 ApplyMottWeight false
 ApplyPhiOpeningAngle	false
-ApplyMomCut             false
+ApplyMomCut             true
 UsePhiThetaBand		false
 ApplyThetaSlice		false
 ApplyGoodSectorPhiSlice	false
 ApplyOutEMomCut		true
 ApplyQ2Cut		true
 ApplyWCut		true
-SubtractBkg 		true
 offset			0
 
 #Run Configurables
@@ -27,8 +29,8 @@ FirstEvent		0
 
 #Topology definition
 IsData			false
-Toplogy 		11:1,2212:1,-211:1,211:0,22:0
-MaxBackgroundMultiplicity 4
+Toplogy 		11:1,2212:1,-211:1,211:0,22:0,111:0
+MaxBackgroundMultiplicity 3
 NRotations 300
 
 #histogram definition
@@ -42,5 +44,5 @@ ApplyCorrWeights true
 #InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_4461GeV/apapadop_SuSav2_C12_4461GeV_master.root
 InputFile /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master.root
 #InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master*.root
-OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/e4nuanalysis_1p1pim_wfiducial_wbkg_nomomcut_noweights
+OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/e4nuanalysis_1p1pim_wfiduciale
 XSecFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/ConfFiles/xsec_carbon12_spline_GEM21_11b_00_000_Q2_0_1.root

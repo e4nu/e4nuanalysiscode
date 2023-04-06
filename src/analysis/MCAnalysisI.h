@@ -31,8 +31,7 @@ namespace e4nu {
     bool LoadData(void);
     unsigned int GetNEvents( void ) const ;
     EventI * GetValidEvent( const unsigned int event_id ) ;
-    bool SubtractBackground( void ) ;
-    bool Finalise(void) ; 
+    bool Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) ; 
     bool StoreTree(MCEvent * event);
 
   private :
@@ -53,9 +52,6 @@ namespace e4nu {
 
     // XSec value
     double kXSec = 0 ; 
-
-    // Event Holder for signal and background
-    std::map<int,std::vector<e4nu::MCEvent>> kAnalysedEventHolder;
 
     void Initialize(void) ;
     void Clear(void); 

@@ -1,2 +1,0 @@
-# Plotting scripts
-The e4nu analysis code selects signal events and substracts from the signal potential background candidates. The output of the analysis is a root file containing a TTree with valuable information of signal and bakckground events. This information is stored and can be plotted in numerous ways. The plotting scripts used by the e4nu collaboration are available in this directory. 

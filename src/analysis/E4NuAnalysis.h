@@ -34,6 +34,9 @@ namespace e4nu {
     e4nu::EventI * GetValidEvent( const unsigned int event_id ) ;
     unsigned int GetNEvents( void ) const ;
 
+    // Event Holder for signal and background
+    std::map<int,std::vector<e4nu::EventI*>> kAnalysedEventHolder;
+
     void Initialize(void) ; 
     
   };

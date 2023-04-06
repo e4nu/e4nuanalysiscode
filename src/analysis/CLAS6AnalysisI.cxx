@@ -28,7 +28,6 @@
 
  CLAS6AnalysisI::~CLAS6AnalysisI() {
    delete fData;
-   kAnalysedEventHolder.clear();
  }
 
  bool CLAS6AnalysisI::LoadData( void ) {
@@ -89,83 +88,10 @@
     delete event ; 
     return nullptr ; 
   }
-
-  // Get Topology Definition
-  std::map<int,unsigned int> Topology = GetTopology(); 
-  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
-  std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event -> GetFinalParticlesUnCorr4Mom() ;
-
-  // Signal event
-  bool is_signal = true ;
-  //Topology ID
-  for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
-    if( it->first == conf::kPdgElectron ) continue ; 
-    else if( part_map[it->first].size() != it->second ) {
-      is_signal = false ; 
-      break ; 
-    } 
-  }
-
-  unsigned int signal_mult = GetMinBkgMult() ;
-  
-  if( is_signal ) {
-    // Storing in background the signal events
-    if( kAnalysedEventHolder.find(signal_mult) == kAnalysedEventHolder.end() ) {
-      std::vector<CLAS6Event> temp ( 1, *event ) ;
-      kAnalysedEventHolder[signal_mult] = temp ; 
-    } else { 
-      kAnalysedEventHolder[signal_mult].push_back( *event ) ; 
-    }
-
-    ++kNEventsAfterTopologyCut ;
-  } else { // BACKGROUND 
-    event->SetIsBkg(true); 
-    ++kNBkgEvents ;
-
-    // Get Number of signal particles, "multiplicity"
-    unsigned int mult_bkg = event->GetNSignalParticles( part_map, Topology ) ; 
-
-    // Check events are above minumum particle multiplicity 
-    bool is_signal_bkg = true ; 
-    std::map<int,std::vector<TLorentzVector>> hadrons = event->GetFinalParticles4Mom() ;
-    std::map<int,unsigned int> Topology = GetTopology();
-    for( auto it = Topology.begin(); it!=Topology.end();++it){
-      if( it->first == conf::kPdgElectron ) continue ; 
-      for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
-	if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() < it->second ) is_signal_bkg *= false ;   
-	if( hadrons.find(it->first) == hadrons.end() &&  it->second != 0 ) is_signal_bkg *= false ;   
-      }
-    }
-
-    if( !is_signal_bkg ) {
-      delete event ;
-      return nullptr;
-    }
-
-    // Only store background events with multiplicity > mult_signal
-    // Also ignore background events above the maximum multiplicity
-    if( mult_bkg > signal_mult && mult_bkg <= GetMaxBkgMult() ) {
-      if( kAnalysedEventHolder.find(mult_bkg) == kAnalysedEventHolder.end() ) {
-	std::vector<CLAS6Event> temp ( 1, *event ) ;
-	kAnalysedEventHolder[mult_bkg] = temp ; 
-      } else { 
-	kAnalysedEventHolder[mult_bkg].push_back( *event ) ; 
-      }
-    }
-    delete event ; 
-    return nullptr; 
-  }
   
   return event ; 
     
 }
-
-bool CLAS6AnalysisI::SubtractBackground() {
-  //  return BackgroundI::SubtractBackground<CLAS6Event>( kAnalysedEventHolder ) ; 
-  //  bool is_ok = BackgroundI::NewBackgroundSubstraction( kAnalysedEventHolder ) ; 
-  //is_ok *= BackgroundI::AcceptanceCorrection( kAnalysedEventHolder ) ; 
-  return true ;//is_ok ; 
-} 
 
 unsigned int CLAS6AnalysisI::GetNEvents( void ) const {
   return (unsigned int) fData ->GetNEvents() ; 
@@ -176,24 +102,24 @@ void CLAS6AnalysisI::Initialize() {
   fData = nullptr ; 
 }
 
-bool CLAS6AnalysisI::Finalise( void ) {
+bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) {
 
   if( !AnalysisI::Finalise() ) return false ; 
 
   // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult() ; 
-  for( unsigned int k = 0 ; k < kAnalysedEventHolder[min_mult].size() ; ++k ) {
+  for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) {
     // if( IsData() ) 
-    StoreTree( static_cast<CLAS6Event*>( &kAnalysedEventHolder[min_mult][k] ) );
+    StoreTree( static_cast<CLAS6Event*>( event_holder[min_mult][k] ) );
 
     double norm_weight = 1 ; 
     if( ApplyCorrWeights() ) { 
-      norm_weight = kAnalysedEventHolder[min_mult][k].GetTotalWeight() ;
+      norm_weight = event_holder[min_mult][k]->GetTotalWeight() ;
     }
 
     // Store in histogram(s)
     for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
-      kHistograms[j]-> Fill( kAnalysedEventHolder[min_mult][k].GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
+      kHistograms[j]-> Fill( event_holder[min_mult][k]->GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
     }
   }
 

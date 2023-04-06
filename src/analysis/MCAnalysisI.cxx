@@ -30,7 +30,6 @@ MCAnalysisI::MCAnalysisI() {
 
 MCAnalysisI::~MCAnalysisI() {
   delete fData;
-  kAnalysedEventHolder.clear();
   kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
@@ -228,74 +227,8 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     event->SetAccWght(acc_wght);
   }
 
-  // Step 6: Classify events as signal or Background
-  bool is_signal = true ;
-  part_map = event -> GetFinalParticles4Mom() ;
-  //Topology ID
-  for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
-    if( it->first == conf::kPdgElectron ) continue ; 
-    else if( part_map[it->first].size() != it->second ) {
-      is_signal = false ; 
-      break ; 
-    } 
-  }
-
-  unsigned int signal_mult = GetMinBkgMult() ;  
-  if( is_signal ) {
-    // Storing in background the signal events
-      if( kAnalysedEventHolder.find(signal_mult) == kAnalysedEventHolder.end() ) {
-      std::vector<MCEvent> temp ( 1, *event ) ;
-      kAnalysedEventHolder[signal_mult] = temp ; 
-    } else { 
-      kAnalysedEventHolder[signal_mult].push_back( *event ) ; 
-    }
-    ++kNEventsAfterTopologyCut ;
-  } else { // BACKGROUND 
-    event->SetIsBkg(true); 
-    ++kNBkgEvents ;
-
-    // Get Number of signal particles, "multiplicity"
-    unsigned int mult_bkg = event->GetNSignalParticles( part_map, Topology ) ; 
-
-    // Check events are above minumum particle multiplicity 
-    bool is_signal_bkg = true ; 
-    std::map<int,std::vector<TLorentzVector>> hadrons = event->GetFinalParticles4Mom() ;
-    for( auto it = Topology.begin(); it!=Topology.end();++it){
-      if( it->first == conf::kPdgElectron ) continue ; 
-      for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
-	if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() < it->second ) { is_signal_bkg = false ; break ; } 
-	if( hadrons.find(it->first) == hadrons.end() &&  it->second != 0 ) { is_signal_bkg = false ; break ; }
-      }
-    }
-
-    if( !is_signal_bkg ) {
-      delete event ;
-      return nullptr;
-    }
-
-    // Only store background events with multiplicity > mult_signal
-    // Also ignore background events above the maximum multiplicity
-    if( mult_bkg > signal_mult && mult_bkg <= GetMaxBkgMult() ) {
-      if( kAnalysedEventHolder.find(mult_bkg) == kAnalysedEventHolder.end() ) {
-	std::vector<MCEvent> temp ( 1, *event ) ;
-	kAnalysedEventHolder[mult_bkg] = temp ; 
-      } else { 
-	kAnalysedEventHolder[mult_bkg].push_back( *event ) ; 
-      }
-    }
-
-    delete event ; 
-    return nullptr; 
-  }
-  
   return event ; 
 }
-
-bool MCAnalysisI::SubtractBackground() {
-  if( ! BackgroundI::NewBackgroundSubstraction( kAnalysedEventHolder ) ) return false ;  
-  //if( ! BackgroundI::AcceptanceCorrection( kAnalysedEventHolder ) ) return false ; 
-  return true ; 
-} 
 
 void MCAnalysisI::SmearParticles( MCEvent * event ) {
   
@@ -387,21 +320,21 @@ void MCAnalysisI::Initialize() {
 
 }
 
-bool MCAnalysisI::Finalise( void ) {
+bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) {
 
   if( !AnalysisI::Finalise() ) return false ; 
 
   // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult() ; 
-  for( unsigned int k = 0 ; k < kAnalysedEventHolder[min_mult].size() ; ++k ) {
+  for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) {
     // if( IsData() ) 
-    StoreTree( static_cast<MCEvent*>( &kAnalysedEventHolder[min_mult][k] ) );
+    StoreTree( static_cast<MCEvent*>( event_holder[min_mult][k] ) );
 
-    double norm_weight = kAnalysedEventHolder[min_mult][k].GetTotalWeight() ;
+    double norm_weight = event_holder[min_mult][k]->GetTotalWeight() ;
 
     // Store in histogram(s)
     for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
-      kHistograms[j]-> Fill( kAnalysedEventHolder[min_mult][k].GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
+      kHistograms[j]-> Fill( event_holder[min_mult][k]->GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
     }
   }
 

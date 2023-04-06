@@ -25,8 +25,7 @@ namespace e4nu {
     unsigned int GetNEvents( void ) const ;
     EventI * GetValidEvent( const unsigned int event_id ) ;
     e4nu::EventI * GetEvent( const unsigned int event_id ) ;
-    bool SubtractBackground( void ) ;
-    bool Finalise(void) ; 
+    bool Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) ; 
     bool StoreTree(CLAS6Event * event);
 
   private :
@@ -37,9 +36,6 @@ namespace e4nu {
     long int kNEventsBeforeCuts = 0 ; 
     long int kNEventsAfterTopologyCut = 0 ; 
     long int kNBkgEvents = 0 ; 
-
-    // Event Holder for signal and background
-    std::map<int,std::vector<e4nu::CLAS6Event>> kAnalysedEventHolder;
 
     void Initialize(void) ;
     void Clear(void); 

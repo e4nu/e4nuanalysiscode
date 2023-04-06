@@ -177,8 +177,8 @@ namespace e4nu {
       unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
       std::map<int,unsigned int> Topology = GetTopology();
       std::vector<T*> signal_events = event_holder[min_mult] ; 
-
       unsigned int n_truesignal = signal_events.size() ;
+
       for( unsigned int i = 0 ; i < n_truesignal ; ++i ) { 
 
 	long N_signal_detected = 0 ; 

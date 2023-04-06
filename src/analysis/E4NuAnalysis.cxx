@@ -32,11 +32,12 @@ bool E4NuAnalysis::LoadData(void) {
 }
 
 EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
-  //  if( IsData() ) return CLAS6AnalysisI::GetEvent( event_id ) ; 
+  //if( IsData() ) return CLAS6AnalysisI::GetValidEvent( event_id ) ; 
   return MCAnalysisI::GetValidEvent( event_id ) ; 
 }
 
 unsigned int E4NuAnalysis::GetNEvents( void ) const {
+  // if( IsData() ) return CLAS6AnalysisI::GetNEvents() ;
   return MCAnalysisI::GetNEvents() ;
 }
 

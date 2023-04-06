@@ -1,5 +1,6 @@
 /*
- * Analysis Interface base class
+ * MC Analysis analysis
+ * This class deals with analysis features specific for MC data
  * 
  */
 #include <iostream>
@@ -75,6 +76,8 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     return nullptr ; 
   }
 
+  // Step 1 : veryify run is setup correctly 
+  // Use true information to double-check beam energy, target pdg 
   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
 
   // Check run is correct
@@ -98,11 +101,14 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     return nullptr ; 
   }
 
+  // Apply Mott Scaling to correct for different coupling
   if ( ApplyMottScaling() ) { 
     event -> SetMottXSecWeight() ; 
   }
 
+  // Step 2 : Cook event
   // Remove particles not specified in topology maps
+  // These are ignored in the analysis
   // No Cuts are applied on those
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticlesUnCorr4Mom() ;
@@ -119,7 +125,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   event -> SetFinalParticlesKinematics( cooked_part_map ) ;
   event -> SetFinalParticlesUnCorrKinematics( cooked_part_map ) ;
   
-  // Tag true Bkg events 
+  // For debugging purposes, tag true Bkg events before momentum cuts
   for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) continue ; 
     else if( part_map[it->first].size() != it->second ) {
@@ -128,7 +134,8 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     } 
   }
 
-  // Apply momentum cut before smearing
+  // Step 3: Apply momentum cut (detector specific) 
+  // This is done before smearing
   if( ApplyMomCut() ) { 
     std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticlesUnCorr4Mom() ;
      
@@ -151,36 +158,10 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     event -> SetFinalParticlesUnCorrKinematics( unsmeared_part_map ) ; 
   }
 
-  /*
-  // Can be used to debug ..
-  part_map = event -> GetFinalParticles4Mom() ;
-  bool is_signal_true = true;
-  if( part_map[conf::kPdgProton].size() == 2
-      && part_map[conf::kPdgPiM].size() == 0
-      && part_map[conf::kPdgPiP].size() == 0
-      && part_map[conf::kPdgPi0].size() == 0
-      && part_map[conf::kPdgPhoton].size() == 0 ) {
-    is_signal_true = false ;
-    }
-
-  if( is_signal_true ) {
-    delete event;
-    return nullptr ;
-    }
-  */
-
-  // Apply smaring to particles
+  // Step 4 : smear particles momentum 
   if( ApplyReso() ) {
     this -> SmearParticles( event ) ; 
   }
-
-  // Apply fiducial cut to electron
-  Fiducial * fiducial = nullptr ; 
-  if( ApplyFiducial() ) {
-    fiducial = GetFiducialCut() ; 
-    if (! fiducial -> FiducialCut(conf::kPdgElectron, EBeam, out_mom.Vect() ) ) { delete event ; return nullptr ; } 
-  }
-  ++kNEventsAfterFiducial;
 
   // Tag particle as signal or background before fiducial
   part_map = event -> GetFinalParticles4Mom() ;
@@ -191,12 +172,23 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       break ; 
     } 
   }
+
+  // Step 5: Apply fiducials
+  // The detector has gaps where the particles cannot be detected
+  // We need to account for these with fiducial cuts
+  // First, we apply it to the electron
+  // Apply fiducial cut to electron
+  Fiducial * fiducial = nullptr ; 
+  if( ApplyFiducial() ) {
+    fiducial = GetFiducialCut() ; 
+    if (! fiducial -> FiducialCut(conf::kPdgElectron, EBeam, out_mom.Vect() ) ) { delete event ; return nullptr ; } 
+  }
+  ++kNEventsAfterFiducial;
   
   // Apply Fiducial cut for hadrons and photons
-  part_map = event -> GetFinalParticles4Mom() ;
-  std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event -> GetFinalParticlesUnCorr4Mom() ;
-
   if( ApplyFiducial() ) {      
+    part_map = event -> GetFinalParticles4Mom() ;
+    std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event -> GetFinalParticlesUnCorr4Mom() ;
     std::map<int,std::vector<TLorentzVector>> contained_part_map, contained_part_map_uncorr ; 
     for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
       std::vector<TLorentzVector> visible_part ; 
@@ -211,13 +203,13 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
       contained_part_map_uncorr[it->first] = visible_part_uncorr ; 
     }
     
-    // Store changes in event after fiducial and momentum cuts
+    // Store changes in event after fiducial cut
     event -> SetFinalParticlesKinematics( contained_part_map ) ; 
     event -> SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ; 
   }
   
-  // Apply acceptance to all particles 
-  // Only applied to particles of interest
+  // Step 6: Apply Acceptance Correction (Efficiency correction)
+  // This takes into account the efficiency detection of each particle in theta and phi
   double acc_wght = 1 ;
   if( ApplyAccWeights() ) {
     part_map = event -> GetFinalParticles4Mom() ;
@@ -236,7 +228,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     event->SetAccWght(acc_wght);
   }
 
-  // Signal event
+  // Step 6: Classify events as signal or Background
   bool is_signal = true ;
   part_map = event -> GetFinalParticles4Mom() ;
   //Topology ID

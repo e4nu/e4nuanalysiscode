@@ -37,18 +37,15 @@ namespace e4nu {
   private :
 
     void SmearParticles( MCEvent * event ) ;
-    e4nu::EventI * GetEvent( const unsigned int event_id ) ;
+    void ApplyMomentumCut( MCEvent * event ) ;
+    bool ApplyFiducialCut( MCEvent * event ) ; 
+    void ApplyAcceptanceCorrection( MCEvent * event ) ;
+    EventI * GetEvent( const unsigned int event_id ) ;
 
     MCEventHolder * fData = nullptr ; 
     std::map<int,std::unique_ptr<TFile>> kAcceptanceMap;
     std::map<int,std::unique_ptr<TH3D>> kAccMap ; 
     std::map<int,std::unique_ptr<TH3D>> kGenMap ; 
-
-    // Store Statistics after cuts
-    long int kNEventsBeforeCuts = 0 ; 
-    long int kNEventsAfterFiducial = 0 ; 
-    long int kNEventsAfterTopologyCut = 0 ; 
-    long int kNBkgEvents = 0 ; 
 
     // XSec value
     double kXSec = 0 ; 

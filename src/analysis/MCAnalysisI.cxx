@@ -67,8 +67,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     return nullptr ; 
   }
 
-  ++kNEventsBeforeCuts ;
-
   // Apply Generic analysis cuts
   if ( ! AnalysisI::Analyse( event ) ) {
     delete event ; 
@@ -105,26 +103,9 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     event -> SetMottXSecWeight() ; 
   }
 
-  // Step 2 : Cook event
-  // Remove particles not specified in topology maps
-  // These are ignored in the analysis
-  // No Cuts are applied on those
-  TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
-  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticlesUnCorr4Mom() ;
-  std::map<int,unsigned int> Topology = GetTopology();
-  std::map<int,std::vector<TLorentzVector>> cooked_part_map ; 
-  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
-    if( Topology.find(it->first) == Topology.end() ) continue ; 
-    std::vector<TLorentzVector> topology_particles ;
-    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
-      topology_particles.push_back( part_map[it->first][i] ) ;
-    }
-    cooked_part_map[it->first] = topology_particles ;
-  }
-  event -> SetFinalParticlesKinematics( cooked_part_map ) ;
-  event -> SetFinalParticlesUnCorrKinematics( cooked_part_map ) ;
-  
   // For debugging purposes, tag true Bkg events before momentum cuts
+  std::map<int,unsigned int> Topology = GetTopology();
+  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticlesUnCorr4Mom() ;
   for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) continue ; 
     else if( part_map[it->first].size() != it->second ) {
@@ -133,31 +114,11 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     } 
   }
 
-  // Step 3: Apply momentum cut (detector specific) 
+  // Step 2: Apply momentum cut (detector specific) 
   // This is done before smearing
-  if( ApplyMomCut() ) { 
-    std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticlesUnCorr4Mom() ;
-     
-    // Remove particles below threshold
-    for( auto it = unsmeared_part_map.begin() ; it != unsmeared_part_map.end() ; ++it ) {
-      std::vector<TLorentzVector> above_th_particles ; 
-      for( unsigned int i = 0 ; i < unsmeared_part_map[it->first].size() ; ++i ) {
-	// Only store particles above threshold
-	if( unsmeared_part_map[it->first][i].P() <= conf::GetMinMomentumCut( it->first, EBeam ) )  continue ; 
-	 
-	// Apply photon cuts for MC and data 
-	if( it->first == conf::kPdgPhoton ) {
-	  if( !conf::ApplyPhotRadCut( out_mom, unsmeared_part_map[it->first][i] ) ) continue ; 
-	}
-	above_th_particles.push_back( unsmeared_part_map[it->first][i] ) ;
-      }
-      unsmeared_part_map[it->first] = above_th_particles ;
-    }
-    event -> SetFinalParticlesKinematics( unsmeared_part_map ) ;
-    event -> SetFinalParticlesUnCorrKinematics( unsmeared_part_map ) ; 
-  }
+  this->ApplyMomentumCut( event ) ; 
 
-  // Step 4 : smear particles momentum 
+  // Step 3 : smear particles momentum 
   if( ApplyReso() ) {
     this -> SmearParticles( event ) ; 
   }
@@ -172,46 +133,83 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     } 
   }
 
-  // Step 5: Apply fiducials
+  // Step 4: Apply fiducials
   // The detector has gaps where the particles cannot be detected
   // We need to account for these with fiducial cuts
+  if ( ! this->ApplyFiducialCut( event ) ) return nullptr ; 
+  
+  // Step 5: Apply Acceptance Correction (Efficiency correction)
+  // This takes into account the efficiency detection of each particle in theta and phi
+  this->ApplyAcceptanceCorrection( event ) ; 
+
+  return event ; 
+}
+
+void MCAnalysisI::ApplyMomentumCut( MCEvent * event ) {
+  if( ApplyMomCut() ) { 
+    std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticlesUnCorr4Mom() ;
+    TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
+    // Remove particles below threshold
+    for( auto it = unsmeared_part_map.begin() ; it != unsmeared_part_map.end() ; ++it ) {
+      std::vector<TLorentzVector> above_th_particles ; 
+      for( unsigned int i = 0 ; i < unsmeared_part_map[it->first].size() ; ++i ) {
+	// Only store particles above threshold
+	if( unsmeared_part_map[it->first][i].P() <= conf::GetMinMomentumCut( it->first, GetConfiguredEBeam() ) )  continue ; 
+	 
+	// Apply photon cuts for MC and data 
+	if( it->first == conf::kPdgPhoton ) {
+	  if( ! conf::ApplyPhotRadCut( out_mom, unsmeared_part_map[it->first][i] ) ) continue ; 
+	}
+	above_th_particles.push_back( unsmeared_part_map[it->first][i] ) ;
+      }
+      unsmeared_part_map[it->first] = above_th_particles ;
+    }
+    event -> SetFinalParticlesKinematics( unsmeared_part_map ) ;
+    event -> SetFinalParticlesUnCorrKinematics( unsmeared_part_map ) ; 
+  }
+  return ;
+}
+
+bool MCAnalysisI::ApplyFiducialCut( MCEvent * event ) { 
   // First, we apply it to the electron
   // Apply fiducial cut to electron
-  Fiducial * fiducial = nullptr ; 
-  if( ApplyFiducial() ) {
-    fiducial = GetFiducialCut() ; 
-    if (! fiducial -> FiducialCut(conf::kPdgElectron, EBeam, out_mom.Vect() ) ) { delete event ; return nullptr ; } 
-  }
-  ++kNEventsAfterFiducial;
+  if( ! ApplyFiducial() ) return true ; 
+  Fiducial * fiducial = GetFiducialCut() ; 
+  if( ! fiducial ) return true ; 
+
+  TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
+  if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect() ) ) { delete event ; return false ; }
   
   // Apply Fiducial cut for hadrons and photons
-  if( ApplyFiducial() ) {      
-    part_map = event -> GetFinalParticles4Mom() ;
-    std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event -> GetFinalParticlesUnCorr4Mom() ;
-    std::map<int,std::vector<TLorentzVector>> contained_part_map, contained_part_map_uncorr ; 
-    for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
-      std::vector<TLorentzVector> visible_part ; 
-      std::vector<TLorentzVector> visible_part_uncorr ; 
-      for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
-	if( ! fiducial -> FiducialCut(it->first, EBeam, part_map[it->first][i].Vect() ) ) continue ; 
-	visible_part.push_back( part_map[it->first][i] ) ; 
-	visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
-      }
-      if( visible_part.size() == 0 ) continue ; 
-      contained_part_map[it->first] = visible_part ; 
-      contained_part_map_uncorr[it->first] = visible_part_uncorr ; 
+  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event -> GetFinalParticlesUnCorr4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> contained_part_map, contained_part_map_uncorr ; 
+  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
+    std::vector<TLorentzVector> visible_part ; 
+    std::vector<TLorentzVector> visible_part_uncorr ; 
+    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
+      if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), part_map[it->first][i].Vect() ) ) continue ; 
+      visible_part.push_back( part_map[it->first][i] ) ; 
+      visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
     }
-    
-    // Store changes in event after fiducial cut
-    event -> SetFinalParticlesKinematics( contained_part_map ) ; 
-    event -> SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ; 
+    if( visible_part.size() == 0 ) continue ; 
+    contained_part_map[it->first] = visible_part ; 
+    contained_part_map_uncorr[it->first] = visible_part_uncorr ; 
   }
   
-  // Step 6: Apply Acceptance Correction (Efficiency correction)
-  // This takes into account the efficiency detection of each particle in theta and phi
+  // Store changes in event after fiducial cut
+  event -> SetFinalParticlesKinematics( contained_part_map ) ; 
+  event -> SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ; 
+
+  return true ; 
+}
+
+void MCAnalysisI::ApplyAcceptanceCorrection( MCEvent * event ) { 
   double acc_wght = 1 ;
   if( ApplyAccWeights() ) {
-    part_map = event -> GetFinalParticles4Mom() ;
+    TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
+    std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
+    std::map<int,unsigned int> Topology = GetTopology();
     // Electron acceptance
     if( kAccMap[conf::kPdgElectron] && kGenMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], *kGenMap[conf::kPdgElectron], out_mom ) ; 
     // Others
@@ -226,12 +224,10 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     }
     event->SetAccWght(acc_wght);
   }
-
-  return event ; 
+  return ; 
 }
 
 void MCAnalysisI::SmearParticles( MCEvent * event ) {
-  
   double EBeam = GetConfiguredEBeam() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
 
@@ -359,9 +355,6 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
       kHistograms[j]->Scale( kXSec * ConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / ( GetNEventsToRun() * domega ) );
     }
   }
-  std::cout << " Total Number of Events Processed = " << kNEventsBeforeCuts << std::endl;
-  std::cout << " Total number of true signal events = " << kNEventsAfterTopologyCut << std::endl;
-  std::cout << " Events after electron fiducial cut = " << kNEventsAfterFiducial << std::endl;
 
   return true ; 
 }

@@ -30,20 +30,18 @@ bool AnalysisI::Analyse( EventI * event ) {
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
   double EBeam = in_mom.E() ; 
   
+  // Step 1 : Apply generic cuts
   if( !utils::IsValidSector( out_mom.Phi(), EBeam, UseAllSectors() ) ) return false ;   
 
   if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) return false ;
-  ++kNEventsAfterEThetaCut ;     
 
   if( ApplyOutElectronCut() ){
     if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) return false ; 
-  ++kNEventsAfterEMomCut ;     
   }
 
   if( ApplyThetaSlice() ) {
     if( out_mom.Theta() * 180./TMath::Pi() < conf::kMinEThetaSlice ) return false ; 
     if( out_mom.Theta() * 180./TMath::Pi() > conf::kMaxEThetaSlice ) return false ; 
-    ++kNEventsAfterThetaCut ; 
   }
 
   if( ApplyPhiOpeningAngle() ) {
@@ -51,14 +49,12 @@ bool AnalysisI::Analyse( EventI * event ) {
     if ( ! IsData() ) phi += TMath::Pi() ; 
     if ( ! conf::ValidPhiOpeningAngle( phi ) ) return false ;  
   }
-  ++kNEventsAfterPhiOpeningAngleCut ; 
 
   if( ApplyGoodSectorPhiSlice() ) {
     double phi = out_mom.Phi() ; 
     if ( ! IsData() ) phi += TMath::Pi() ; 
     if ( ! conf::GoodSectorPhiSlice( phi ) ) return false ; 
   }
-  ++kNEventsAfterPhiCut ; 
 
   double reco_Q2 = utils::GetRecoQ2( out_mom, EBeam ) ; 
   double W_var = utils::GetRecoW( out_mom, EBeam ) ;
@@ -68,7 +64,6 @@ bool AnalysisI::Analyse( EventI * event ) {
     if( conf::GetQ2Cut( MaxQ2, EBeam ) ) {
       if( reco_Q2 < MaxQ2 ) return false ; 
     }
-    ++kNEventsAfterQ2Cut ; 
   }
 
   if( ApplyWCut() ) {
@@ -76,19 +71,38 @@ bool AnalysisI::Analyse( EventI * event ) {
     if( conf::GetWCut( MinW, EBeam ) ) {
       if( W_var > MinW ) return false ; 
     }
-    ++kNEventsAfterWCut ; 
   }
 
+  // Step 2 : Cook event
+  // Remove particles not specified in topology maps
+  // These are ignored in the analysis
+  // No Cuts are applied on those
+  this->CookEvent( event ) ; 
+  
   return true ; 
 }
 
+void AnalysisI::CookEvent( EventI * event ) { 
+  // Remove particles not specified in topology maps
+  // These are ignored in the analysis
+  // No Cuts are applied on those
+  TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
+  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticlesUnCorr4Mom() ;
+  std::map<int,unsigned int> Topology = GetTopology();
+  std::map<int,std::vector<TLorentzVector>> cooked_part_map ; 
+  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
+    if( Topology.find(it->first) == Topology.end() ) continue ; 
+    std::vector<TLorentzVector> topology_particles ;
+    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
+      topology_particles.push_back( part_map[it->first][i] ) ;
+    }
+    cooked_part_map[it->first] = topology_particles ;
+  }
+  event -> SetFinalParticlesKinematics( cooked_part_map ) ;
+  event -> SetFinalParticlesUnCorrKinematics( cooked_part_map ) ;
+  return ; 
+}
+
 bool AnalysisI::Finalise(void) const{
-  std::cout << " Events after electron momentum cut = " << kNEventsAfterEMomCut << std::endl;
-  std::cout << " Events after electron theta cut = " << kNEventsAfterEThetaCut << std::endl;
-  if( ApplyQ2Cut() ) std::cout << " Events after Q2 cut = " << kNEventsAfterQ2Cut << std::endl;
-  if( ApplyWCut() ) std::cout << " Events after W cut = "<< kNEventsAfterWCut <<std::endl;
-  if( ApplyThetaSlice() ) std::cout << " Events after theta cut = " << kNEventsAfterThetaCut << std::endl;
-  if( ApplyPhiOpeningAngle() ) std::cout << " Events after phi opening angle cut = " << kNEventsAfterPhiOpeningAngleCut << std::endl;
-  if( ApplyGoodSectorPhiSlice() ) std::cout << " Events after phi cut = " << kNEventsAfterPhiCut << std::endl;
   return true ; 
 }

@@ -27,19 +27,11 @@ namespace e4nu {
     bool Analyse( EventI * event ) ; 
     bool Finalise(void) const ; 
 
+  protected : 
+    void CookEvent( EventI * event ) ;
+
     virtual ~AnalysisI();
       
-  protected: 
-
-    // Cuts counters
-    long int kNEventsAfterEMomCut = 0 ; 
-    long int kNEventsAfterEThetaCut = 0 ; 
-    long int kNEventsAfterPhiCut = 0 ; 
-    long int kNEventsAfterQ2Cut = 0 ; 
-    long int kNEventsAfterWCut = 0 ; 
-    long int kNEventsAfterPhiOpeningAngleCut = 0 ; 
-    long int kNEventsAfterThetaCut = 0 ;     
-
   };
 }
 

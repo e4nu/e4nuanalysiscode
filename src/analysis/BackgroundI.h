@@ -125,12 +125,14 @@ namespace e4nu {
 	    if( N_all == 0 ) continue ; 
 
 	    // Store event particles with correct weight and multiplicty
-	    T * temp_event = event_holder[m][event_id] ;
-	    double event_wgt = temp_event->GetEventWeight() ;
-	    std::map<int,std::vector<TLorentzVector>> particles = temp_event->GetFinalParticles4Mom() ;
-	    std::map<int,std::vector<TLorentzVector>> particles_uncorr = temp_event->GetFinalParticlesUnCorr4Mom() ;
 	    for( auto it = probability_count.begin() ; it != probability_count.end() ; ++it ) { 
 	      for( auto it_key = it->first.begin() ; it_key != it->first.end() ; ++it_key ) { 
+		T * temp_event = new T() ; 
+		* temp_event = * event_holder[m][event_id] ;	    
+		double event_wgt = temp_event->GetEventWeight() ;
+		std::map<int,std::vector<TLorentzVector>> particles = temp_event->GetFinalParticles4Mom() ;
+		std::map<int,std::vector<TLorentzVector>> particles_uncorr = temp_event->GetFinalParticlesUnCorr4Mom() ;
+
 		std::map<int,std::vector<TLorentzVector>> temp_corr_mom ;
 		std::map<int,std::vector<TLorentzVector>> temp_uncorr_mom ;
 		int new_multiplicity = 0 ; 
@@ -148,7 +150,11 @@ namespace e4nu {
 
 		double probability = - (it->second) * event_wgt / N_all ; 
 		temp_event->SetEventWeight( probability ) ; 
-
+	
+		// Store analysis record after background substraction (4) : 
+		temp_event->StoreAnalysisRecord(4+m); // Id is the bkg id (4) + original multiplicity.
+		                                      // For m = signal_multiplicity, id = 3+signal_mult
+		
 		if ( event_holder.find(new_multiplicity) != event_holder.end() ) {
 		  event_holder[new_multiplicity].push_back( temp_event ) ; 
 		} else {
@@ -212,11 +218,17 @@ namespace e4nu {
 	}
 	if( N_signal_detected == 0 ) continue ; 
 	// Add missing signal events
-	T * temp_event = signal_events[i] ;
+	T * temp_event = new T() ; 
+	* temp_event = * signal_events[i] ; 
+	
 	double event_wgt = temp_event->GetEventWeight() ;
 	temp_event->SetEventWeight( + event_wgt * N_signal_undetected / N_signal_detected ) ; 
 	temp_event->SetIsUndetectedSignal(true);
 	signal_events.push_back(temp_event);
+	
+	// Store analysis record after acceptance correction (3) : 
+	temp_event->StoreAnalysisRecord(3);
+  
       }
       // Store correction
       event_holder[min_mult] = signal_events ; 

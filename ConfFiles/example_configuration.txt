@@ -4,7 +4,7 @@ ApplyFiducial	true
 ApplyAccWeights false
 ApplyReso	false
 
-ApplyMottWeight true
+ApplyMottWeight false
 ApplyPhiOpeningAngle	false
 ApplyMomCut             true
 UsePhiThetaBand		false
@@ -19,13 +19,13 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			10000000
+NEvents			200
 FirstEvent		0
 
 #Topology definition
 IsData			false
-Toplogy 		11:1,2212:1,-211:1,211:0,22:0,111:0
-MaxBackgroundMultiplicity 3
+Toplogy 		11:1,2212:1,-211:0,211:0,22:0,111:0
+MaxBackgroundMultiplicity 2
 NRotations 300
 
 #histogram definition

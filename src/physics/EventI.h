@@ -15,6 +15,7 @@
 namespace e4nu {
   class EventI {
   public : 
+    EventI(); 
     virtual ~EventI();
 
     bool IsMC(void) { return fIsMC ;}
@@ -44,6 +45,8 @@ namespace e4nu {
     double GetTotalWeight(void) const { return fWeight * fAccWght * fMottXSecWght ; }
     double GetEventWeight(void) const { return fWeight ; }
     void SetEventWeight( double wght ) { fWeight = wght ; }
+    double GetMottXSecWeight(void) const { return fMottXSecWght ; }
+    double GetAccWght(void) const { return fAccWght ; }
     bool IsTrueBkg(void) const{ return fIsTrueBkg ; }
     bool IsRecoBkg(void) const{ return fIsRecoBkg ; }
     bool IsBkg(void) const{ return fIsBkg ; }
@@ -69,8 +72,12 @@ namespace e4nu {
     int GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) ;
     TVector3 GetRecoq3(void) const ; 
 
+    // Background debugging methods
+    // This method returns the pdg of the visible particles before and after fiducial cuts
+    std::map<unsigned int,std::pair<std::vector<int>,double>> GetAnalysisRecord(void) { return fAnalysisRecord; }
+    void StoreAnalysisRecord( unsigned int analysis_step ) ; 
+
   protected : 
-    EventI(); 
 
     // Common Functionalities    
     void SetEventID( const unsigned int id ) { fEventID = id ; }
@@ -114,7 +121,7 @@ namespace e4nu {
     double fWeight = 1. ; 
     double fAccWght = 1. ;
     double fMottXSecWght = 1. ;
-    
+
   private :
 
     unsigned int fEventID ; 
@@ -127,6 +134,8 @@ namespace e4nu {
     bool fIsTrueBkg = false ; 
     bool fIsUndetectedSignal = false ; 
     bool fIsUndetectedESignal = false ; 
+    
+    std::map<unsigned int,std::pair<std::vector<int>,double>> fAnalysisRecord; 
 
     void Initialize(void) ;
     void Clear(void); 

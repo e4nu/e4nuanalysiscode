@@ -44,10 +44,8 @@ namespace e4nu {
     unsigned int GetTrueNK0(void) const { return fNK0 ; }
     unsigned int GetTrueNEM(void) const { return fNEM ; }
     unsigned int GetTrueNOther(void) const { return fNOther ; } 
-
     TLorentzVector GetVertex(void) const { return fVertex ; }
-    double GetMottXSecWeight(void) const { return fMottXSecWght ; }
-    double GetAccWght(void) const { return fAccWght ; }
+
     void SetAccWght( const double wght ) { fAccWght = wght ; }
     void SetMottXSecWeight(void) ; 
 

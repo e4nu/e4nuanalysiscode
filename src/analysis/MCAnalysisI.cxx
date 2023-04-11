@@ -26,6 +26,7 @@ MCAnalysisI::MCAnalysisI() {
   kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCTree","GENIE Tree") ) ; 
   kMult_signal = GetNTopologyParticles() ; 
   this->Initialize() ;
+  gInterpreter->GenerateDictionary("std::map<unsigned int,std::pair<std::vector<int>,double>>", "map");
 }
 
 MCAnalysisI::~MCAnalysisI() {
@@ -114,6 +115,9 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     } 
   }
 
+  // Store analysis record before momentum cuts (0) :
+  event->StoreAnalysisRecord(0);
+
   // Step 2: Apply momentum cut (detector specific) 
   // This is done before smearing
   this->ApplyMomentumCut( event ) ; 
@@ -122,6 +126,9 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   if( ApplyReso() ) {
     this -> SmearParticles( event ) ; 
   }
+
+  // Store analysis record after momentum cuts (1) :
+  event->StoreAnalysisRecord(1);
 
   // Tag particle as signal or background before fiducial
   part_map = event -> GetFinalParticles4Mom() ;
@@ -141,6 +148,9 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Step 5: Apply Acceptance Correction (Efficiency correction)
   // This takes into account the efficiency detection of each particle in theta and phi
   this->ApplyAcceptanceCorrection( event ) ; 
+
+  // Store analysis record after fiducial cut and acceptance correction (2):
+  event->StoreAnalysisRecord(2);
 
   return event ; 
 }
@@ -332,6 +342,27 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
     for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
       kHistograms[j]-> Fill( event_holder[min_mult][k]->GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
     }
+
+    std::cout << " event " << k << " ID = " << event_holder[min_mult][k]->GetEventID() <<std::endl;
+    // Store plots for Bakcground debugging
+    std::map<unsigned int,std::pair<std::vector<int>,double>> AnalysisRecord = event_holder[min_mult][k]->GetAnalysisRecord() ;
+    std::cout << event_holder[min_mult][k]-> GetTotalWeight() <<std::endl;
+    std::cout << event_holder[min_mult][k]-> GetEventWeight() <<std::endl;
+    std::cout << event_holder[min_mult][k]-> GetAccWght() <<std::endl;
+    std::cout << event_holder[min_mult][k]-> GetMottXSecWeight() <<std::endl;
+
+    for (const auto& it : AnalysisRecord ) {
+      const auto& myUint = it.first;
+      const auto& myPair = it.second;
+      const auto& myVec = myPair.first;
+      const auto& myDouble = myPair.second;
+      std::cout << "Key: " << myUint << " -> Value: (";
+      for (const auto& i : myVec) {
+	std::cout << i << " ";
+      }
+      std::cout << "), " << myDouble << std::endl;
+    }
+
   }
 
   // Normalize
@@ -508,6 +539,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   bool IsBkg = event->IsBkg() ; 
   bool IsUndetectedSignal = event->IsUndetectedSignal() ; 
   bool IsUndetectedESignal = event->IsUndetectedESignal() ; 
+
   if( n == true ) {
     kAnalysisTree -> Branch( "ID", &ID, "ID/I"); 
     kAnalysisTree -> Branch( "TargetPdg", &TargetPdg, "TargetPdg/I");
@@ -572,7 +604,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
     kAnalysisTree -> Branch( "RecoW", &RecoW, "RecoW/D");
     kAnalysisTree -> Branch( "RecoXBJK", &RecoXBJK, "RecoXBJK/D");
     kAnalysisTree -> Branch( "ElectronSector", &ElectronSector, "ElectronSector/I");
-    
+   
     if( topology_has_protons ) {
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");
       kAnalysisTree -> Branch( "proton_momx", &proton_momx, "proton_momx/D");
@@ -610,5 +642,6 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   }
   
   kAnalysisTree -> Fill();
+
   return true ; 
 }

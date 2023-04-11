@@ -64,6 +64,18 @@ void EventI::SetFinalParticleUnCorr( const int pdg, const double E, const double
   }
 }
 
+void EventI::StoreAnalysisRecord( unsigned int analysis_step ) {
+  double weight = this->GetTotalWeight() ; 
+  std::map<int,std::vector<TLorentzVector>> part_map = this->GetFinalParticles4Mom() ; 
+  std::vector<int> pdg_list ; 
+  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) { 
+    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) pdg_list.push_back( it->first ) ; 
+  }
+  std::pair<std::vector<int>,double> pair ( pdg_list, weight ) ; 
+  fAnalysisRecord[analysis_step] = pair ; 
+  return ; 
+}
+
 unsigned int EventI::GetEventMultiplicity( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) {
   // return number of charged particles in event
   unsigned int multiplicity = 0 ; 
@@ -225,12 +237,13 @@ void EventI::Initialize() {
   fOutLepton.SetPxPyPzE( 0,0,0,0 ) ;
   fInLeptonUnCorr.SetPxPyPzE( 0,0,0,0 ) ;
   fOutLeptonUnCorr.SetPxPyPzE( 0,0,0,0 ) ;
-
+  
+  fAnalysisRecord.clear();
 }
 
 void EventI::Clear() { 
 
   fFinalParticles.clear() ; 
   fFinalParticlesUnCorr.clear() ; 
-
+  fAnalysisRecord.clear();
 }

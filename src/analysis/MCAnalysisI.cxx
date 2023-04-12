@@ -342,25 +342,7 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
       kHistograms[j]-> Fill( event_holder[min_mult][k]->GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
     }
 
-    std::cout << " event " << k << " ID = " << event_holder[min_mult][k]->GetEventID() <<std::endl;
-    // Store plots for Bakcground debugging
-    std::map<unsigned int,std::pair<std::vector<int>,double>> AnalysisRecord = event_holder[min_mult][k]->GetAnalysisRecord() ;
-    std::cout << event_holder[min_mult][k]-> GetTotalWeight() <<std::endl;
-    std::cout << event_holder[min_mult][k]-> GetEventWeight() <<std::endl;
-    std::cout << event_holder[min_mult][k]-> GetAccWght() <<std::endl;
-    std::cout << event_holder[min_mult][k]-> GetMottXSecWeight() <<std::endl;
-
-    for (const auto& it : AnalysisRecord ) {
-      const auto& myUint = it.first;
-      const auto& myPair = it.second;
-      const auto& myVec = myPair.first;
-      const auto& myDouble = myPair.second;
-      std::cout << "Key: " << myUint << " -> Value: (";
-      for (const auto& i : myVec) {
-	std::cout << i << " ";
-      }
-      std::cout << "), " << myDouble << std::endl;
-    }
+    PlotBkgInformation( event_holder[min_mult][k] ) ; 
 
   }
 
@@ -387,6 +369,32 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
   }
 
   return true ; 
+}
+
+void MCAnalysisI::PlotBkgInformation( EventI * event ) {
+  std::cout << " event ID = " << event->GetEventID() <<std::endl;
+  // Store plots for Bakcground debugging
+  std::map<unsigned int,std::pair<std::vector<int>,double>> AnalysisRecord = event->GetAnalysisRecord() ;
+  std::cout << event-> GetTotalWeight() <<std::endl;
+  std::cout << event-> GetEventWeight() <<std::endl;
+  std::cout << event-> GetAccWght() <<std::endl;
+  std::cout << event-> GetMottXSecWeight() <<std::endl;
+  // Signal multiplicity
+  unsigned int min_mult = GetMinBkgMult() ;
+  unsigned int max_mult = GetMaxBkgMult(); // Max multiplicity specified in conf file
+  // Define status ids
+  const unsigned int id_bcuts = 0 ;
+  const unsigned int id_acuts = 1 ;
+  const unsigned int id_fid = 2 ;
+  const unsigned int id_acccorr = 3 ;
+  const unsigned int id_bkgcorr = 4 ;
+  const unsigned int id_maxbkg = id_bkgcorr + max_mult ;
+  const unsigned int id_minbkg = id_bkgcorr + min_mult ;
+  const std::pair<std::vector<int>,double> record_bmomcuts = AnalysisRecord[id_bcuts] ; // Before mom cuts
+  const std::pair<std::vector<int>,double> record_amomcuts = AnalysisRecord[id_acuts] ; // After mom cuts
+  const std::pair<std::vector<int>,double> record_afiducials = AnalysisRecord[id_fid] ; // After fiducials
+  const std::pair<std::vector<int>,double> record_acccorr = AnalysisRecord[id_acccorr] ; // Acc Correction
+
 }
 
 bool MCAnalysisI::StoreTree(MCEvent * event){

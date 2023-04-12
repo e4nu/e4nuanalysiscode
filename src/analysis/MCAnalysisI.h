@@ -41,7 +41,8 @@ namespace e4nu {
     bool ApplyFiducialCut( MCEvent * event ) ; 
     void ApplyAcceptanceCorrection( MCEvent * event ) ;
     EventI * GetEvent( const unsigned int event_id ) ;
-
+    void PlotBkgInformation( EventI * event ) ;
+    
     MCEventHolder * fData = nullptr ; 
     std::map<int,std::unique_ptr<TFile>> kAcceptanceMap;
     std::map<int,std::unique_ptr<TH3D>> kAccMap ; 

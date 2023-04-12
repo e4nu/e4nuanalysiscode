@@ -156,9 +156,20 @@ bool E4NuAnalysis::Finalise( ) {
 void E4NuAnalysis::Initialize(void) {
   kOutFile = std::unique_ptr<TFile>( new TFile( (GetOutputFile()+".root").c_str(),"RECREATE") );
 
+  unsigned int ECal_id;
   for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
     kHistograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), GetNBins()[i], GetRange()[i][0], GetRange()[i][1] ) ) ; 
+    if( GetObservablesTag()[i] == "ECal" ) ECal_id = i ; 
   }  
+
+  if( GetNBins()[ECal_id] != 0 ) {
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_OnlySignal").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+    id_signal = kHistograms.size() -1 ;
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotTrueBkg").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+    id_tottruebkg = kHistograms.size() -1 ;
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotEstBkg").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+    id_totestbkg = kHistograms.size() -1 ; 
+  }
 
 }
 

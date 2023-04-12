@@ -34,6 +34,9 @@ namespace e4nu {
     bool Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) ; 
     bool StoreTree(MCEvent * event);
 
+    // ID for Background historams
+    unsigned int id_signal, id_tottruebkg, id_totestbkg ;
+
   private :
 
     void SmearParticles( MCEvent * event ) ;

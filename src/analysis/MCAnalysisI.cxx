@@ -338,7 +338,7 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
     double norm_weight = event_holder[min_mult][k]->GetTotalWeight() ;
 
     // Store in histogram(s)
-    for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
+    for( unsigned int j = 0 ; j < GetObservablesTag().size() ; ++j ) {
       kHistograms[j]-> Fill( event_holder[min_mult][k]->GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
     }
 
@@ -351,7 +351,7 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
   double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.); // cm^2 to μbarn
 
   if ( NormalizeHist() ) {
-    for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
+    for( unsigned int j = 0 ; j < GetObservablesTag().size() ; ++j ) {
       double NBins = kHistograms[j]->GetNbinsX(); 
     
       for (int k = 1; k <= NBins; k++) { 

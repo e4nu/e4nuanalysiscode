@@ -134,7 +134,7 @@ bool E4NuAnalysis::Finalise( ) {
   is_ok = MCAnalysisI::Finalise(kAnalysedEventHolder) ; 
 
   if( is_ok ) { 
-    for( unsigned int i = 0 ; i < kHistograms.size() ; ++i ) {
+    for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
       kHistograms[i]->GetXaxis()->SetTitle(GetObservablesTag()[i].c_str()) ; 
       if( NormalizeHist() ) kHistograms[i]->GetYaxis()->SetTitle(("d#sigma/d"+GetObservablesTag()[i]).c_str()) ; 
       else {

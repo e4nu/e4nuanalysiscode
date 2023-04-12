@@ -385,14 +385,14 @@ void MCAnalysisI::PlotBkgInformation( EventI * event ) {
   const unsigned int id_bcuts = 0 ;
   const unsigned int id_acuts = 1 ;
   const unsigned int id_fid = 2 ;
-  const unsigned int id_acccorr = 3 ;
+  const unsigned int id_acc = 3 ;
   const unsigned int id_bkgcorr = 4 ;
   const unsigned int id_maxbkg = id_bkgcorr + max_mult ;
   const unsigned int id_minbkg = id_bkgcorr + min_mult ;
   const std::pair<std::vector<int>,double> record_bmomcuts = AnalysisRecord[id_bcuts] ; // Before mom cuts
   const std::pair<std::vector<int>,double> record_amomcuts = AnalysisRecord[id_acuts] ; // After mom cuts
   const std::pair<std::vector<int>,double> record_afiducials = AnalysisRecord[id_fid] ; // After fiducials
-  const std::pair<std::vector<int>,double> record_acccorr = AnalysisRecord[id_acccorr] ; // Acc Correction
+  const std::pair<std::vector<int>,double> record_acccorr = AnalysisRecord[id_acc] ; // Acc Correction
 
   if( !kHistograms[id_totestbkg] || !kHistograms[id_signal] || !kHistograms[id_tottruebkg] ) return ;
  
@@ -401,8 +401,10 @@ void MCAnalysisI::PlotBkgInformation( EventI * event ) {
     kHistograms[id_totestbkg]->Fill( event->GetObservable("ECal"), - event->GetTotalWeight() ) ; 
   } else { 
    // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
-    if( (record_afiducials.first).size() == (record_amomcuts.first).size() ) {
+    if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() == 0 ) {
       kHistograms[id_signal]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+    } else if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() != 0 ) {
+      kHistograms[id_acccorr]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
     } else { 
       kHistograms[id_tottruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
     }

@@ -177,6 +177,8 @@ void E4NuAnalysis::Initialize(void) {
     id_tottruebkg = kHistograms.size() -1 ;
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotEstBkg").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
     id_totestbkg = kHistograms.size() -1 ; 
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_SignalAccCorr").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+    id_acccorr = kHistograms.size() -1 ; 
   }
 
 }

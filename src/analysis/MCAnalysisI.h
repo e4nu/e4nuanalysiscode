@@ -35,7 +35,7 @@ namespace e4nu {
     bool StoreTree(MCEvent * event);
 
     // ID for Background historams
-    unsigned int id_signal, id_tottruebkg, id_totestbkg ;
+    unsigned int id_signal, id_tottruebkg, id_totestbkg, id_acccorr;
 
   private :
 

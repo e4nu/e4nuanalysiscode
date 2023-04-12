@@ -374,7 +374,7 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
 void MCAnalysisI::PlotBkgInformation( EventI * event ) {
  
   if( ! GetDebugBkg() ) return ;
-
+ 
   // Store plots for Bakcground debugging
   std::map<unsigned int,std::pair<std::vector<int>,double>> AnalysisRecord = event->GetAnalysisRecord() ;
  
@@ -394,11 +394,13 @@ void MCAnalysisI::PlotBkgInformation( EventI * event ) {
   const std::pair<std::vector<int>,double> record_afiducials = AnalysisRecord[id_fid] ; // After fiducials
   const std::pair<std::vector<int>,double> record_acccorr = AnalysisRecord[id_acccorr] ; // Acc Correction
 
-  if( (record_acccorr.first).size() > min_mult ) {
+  if( !kHistograms[id_totestbkg] || !kHistograms[id_signal] || !kHistograms[id_tottruebkg] ) return ;
+ 
+  if( (record_afiducials.first).size() > min_mult ) {
     // This is used to estimate the background contribution 
     kHistograms[id_totestbkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ; 
   } else { 
-    // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
+   // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
     if( (record_afiducials.first).size() == (record_amomcuts.first).size() ) {
       kHistograms[id_signal]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
     } else { 

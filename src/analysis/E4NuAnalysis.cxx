@@ -133,18 +133,29 @@ bool E4NuAnalysis::Finalise( ) {
   if( IsData() ) is_ok = CLAS6AnalysisI::Finalise(kAnalysedEventHolder) ; 
   is_ok = MCAnalysisI::Finalise(kAnalysedEventHolder) ; 
 
+  unsigned int hist_size = GetObservablesTag().size() ; 
+  //  if( GetDebugBkg() ) hist_size = kHistograms.size() ; 
+
   if( is_ok ) { 
-    for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
+    for( unsigned int i = 0 ; i < hist_size ; ++i ) {
       kHistograms[i]->GetXaxis()->SetTitle(GetObservablesTag()[i].c_str()) ; 
       if( NormalizeHist() ) kHistograms[i]->GetYaxis()->SetTitle(("d#sigma/d"+GetObservablesTag()[i]).c_str()) ; 
       else {
-	kHistograms[i]->GetYaxis()->SetTitle("Weighted Events * weight") ;  
+	kHistograms[i]->GetYaxis()->SetTitle("Weighted Events") ;  
       }
       kHistograms[i]->SetStats(false); 
       kHistograms[i]->Write() ; 
     }
   }
 
+  if( GetDebugBkg() ) { 
+    if( kHistograms[id_tottruebkg] ) {
+      std::cout << kHistograms[id_tottruebkg]->GetEntries() << std::endl;
+      kHistograms[id_tottruebkg]->GetXaxis()->SetTitle("ECal") ; 
+      kHistograms[id_tottruebkg]->GetYaxis()->SetTitle("Weighted Events") ; 
+      kHistograms[id_tottruebkg]->Write();
+    }
+  }
   kAnalysisTree->Write() ; 
 
   kOutFile->Close() ;

@@ -173,12 +173,25 @@ void E4NuAnalysis::Initialize(void) {
   if( GetNBins()[ECal_id] != 0 && GetDebugBkg() ) {
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_OnlySignal").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
     id_signal = kHistograms.size() -1 ;
-    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotTrueBkg").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
-    id_tottruebkg = kHistograms.size() -1 ;
-    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotEstBkg").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
-    id_totestbkg = kHistograms.size() -1 ; 
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_SignalAccCorr").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
     id_acccorr = kHistograms.size() -1 ; 
+
+    // True Background -> Signal 
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotTrueBkg").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+    id_tottruebkg = kHistograms.size() -1 ;
+
+    unsigned int min_mult = GetMinBkgMult() ; 
+    unsigned int max_mult = GetMaxBkgMult() ; 
+    unsigned int mult = min_mult + 1 ;
+    for( unsigned int j = 0 ; j < max_mult - min_mult ; ++j ) { 
+      kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotTrueBkg_mult_"+std::to_string(mult)).c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+      mult += 1 ; 
+
+    }
+    
+    // Estimated background correction from background events
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotEstBkg").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+    id_totestbkg = kHistograms.size() -1 ; 
   }
 
 }

@@ -407,6 +407,11 @@ void MCAnalysisI::PlotBkgInformation( EventI * event ) {
       kHistograms[id_acccorr]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
     } else { 
       kHistograms[id_tottruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+     
+      // Fill each multiplicity contribution 
+      unsigned int id = (record_amomcuts.first).size() - min_mult ; 
+
+      if( kHistograms[id_tottruebkg+id] ) kHistograms[id_tottruebkg+id]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
     }
   }
 }

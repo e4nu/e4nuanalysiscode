@@ -62,6 +62,7 @@ namespace e4nu {
     unsigned int GetMinBkgMult(void) const { return kMult_signal ; }
     unsigned int GetNRotations(void) const { return kNRotations ; } 
     bool GetSubtractBkg(void) const { return kSubtractBkg ; }
+    bool GetDebugBkg(void) const { return kDebugBkg ; } 
 
     std::map<int,unsigned int> GetTopology(void) const{ return kTopology_map ; } 
     unsigned int GetNTopologyParticles(void) ;    
@@ -129,6 +130,7 @@ namespace e4nu {
     std::string kXSecFile = "";
     bool kNormalize = true ; // Normalize histograms to cross section
     bool kApplyCorrWeights = true ; // Set to false to ignore correction weights to be applied to the histograms
+    bool kDebugBkg = false ; 
 
     // Information for output file
     std::unique_ptr<TFile> kOutFile ;

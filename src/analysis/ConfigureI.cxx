@@ -182,6 +182,10 @@ ConfigureI::ConfigureI( const std::string input_file ) {
 	kIsConfigured = false ; 
 	break ;
       } 
+    } else if ( param[i] == "DebugBkg") {
+      if( value[i] == "false" ) {
+	kDebugBkg = false ; 
+      } else { kDebugBkg = true ; }  
     } else if ( param[i] == "OutputFile" ) {
       kOutputFile = value[i] ;
     } else if ( param[i] == "InputFile" ) {
@@ -274,6 +278,7 @@ void ConfigureI::PrintConfiguration(void) const {
     std::cout << "Number of bins = " << kNBins[i] << std::endl;
     std::cout << "Range = {"<<kRanges[i][0]<<","<<kRanges[i][1]<<"}\n"<<std::endl;
   }
+  if( kDebugBkg ) std::cout << " Storing debugging plots for background " << std::endl;
 
   std::cout << "\nXSecFile " << kXSecFile << std::endl;
   std::cout << "\nStoring output in " << kOutputFile << std::endl;

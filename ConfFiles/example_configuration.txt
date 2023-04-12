@@ -33,6 +33,7 @@ RangeList 0:2,0:2,0:2,-180:180,-0.5:5.5,0:2,0:2,0:2,0:2,0:2,0:180,0:2
 ObservableList ECal,OutEMom,LeadingPMom,OutEPhi,Sector,RecoEnu,RecoQ2,RecoW,QELRecoEnu,DeltaPT,DeltaAlphaT,DeltaPhiT
 NBinsList 60,60,60,60,6,80,80,80,80,80,80,80
 NormalizeHists false
+DebugBkg true 
 
 #InputFile /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master.root
 InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master*.root

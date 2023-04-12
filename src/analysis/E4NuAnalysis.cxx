@@ -162,7 +162,7 @@ void E4NuAnalysis::Initialize(void) {
     if( GetObservablesTag()[i] == "ECal" ) ECal_id = i ; 
   }  
 
-  if( GetNBins()[ECal_id] != 0 ) {
+  if( GetNBins()[ECal_id] != 0 && GetDebugBkg() ) {
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_OnlySignal").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
     id_signal = kHistograms.size() -1 ;
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotTrueBkg").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 

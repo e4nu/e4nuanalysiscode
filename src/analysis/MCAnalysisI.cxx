@@ -373,6 +373,8 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
 
 void MCAnalysisI::PlotBkgInformation( EventI * event ) {
  
+  if( ! GetDebugBkg() ) return ;
+
   // Store plots for Bakcground debugging
   std::map<unsigned int,std::pair<std::vector<int>,double>> AnalysisRecord = event->GetAnalysisRecord() ;
  

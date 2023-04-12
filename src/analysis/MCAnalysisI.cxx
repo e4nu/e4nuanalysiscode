@@ -398,7 +398,7 @@ void MCAnalysisI::PlotBkgInformation( EventI * event ) {
  
   if( (record_afiducials.first).size() > min_mult ) {
     // This is used to estimate the background contribution 
-    kHistograms[id_totestbkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ; 
+    kHistograms[id_totestbkg]->Fill( event->GetObservable("ECal"), - event->GetTotalWeight() ) ; 
   } else { 
    // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
     if( (record_afiducials.first).size() == (record_amomcuts.first).size() ) {

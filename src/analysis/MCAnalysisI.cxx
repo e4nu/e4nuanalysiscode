@@ -26,7 +26,6 @@ MCAnalysisI::MCAnalysisI() {
   kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCTree","GENIE Tree") ) ; 
   kMult_signal = GetNTopologyParticles() ; 
   this->Initialize() ;
-  gInterpreter->GenerateDictionary("std::map<unsigned int,std::pair<std::vector<int>,double>>", "map");
 }
 
 MCAnalysisI::~MCAnalysisI() {

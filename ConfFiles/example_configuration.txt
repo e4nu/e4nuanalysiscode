@@ -1,4 +1,4 @@
-B1;95;0cB1;95;0c#Analysis Cuts
+B1;95;0c#Analysis Cuts
 UseAllSectors	false
 ApplyFiducial	true
 ApplyAccWeights false
@@ -19,13 +19,13 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			10000
+NEvents			1000000000
 FirstEvent		0
 
 #Topology definition
 IsData			false
-Toplogy 		11:1,2212:1,-211:0,211:0,22:0,111:0
-MaxBackgroundMultiplicity 4
+Toplogy 		11:1,2212:1,-211:1,211:0,22:0,111:0
+MaxBackgroundMultiplicity 5
 NRotations 500
 
 #histogram definition

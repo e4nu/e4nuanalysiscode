@@ -163,7 +163,7 @@ namespace e4nu {
 		}
 	      }
 	    }
-	
+	    delete event_holder[m][event_id];
 	  } // Close event loop 
 	}
 	--m; 

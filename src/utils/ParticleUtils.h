@@ -6,7 +6,8 @@
 
 #ifndef _PARTICLE_UTILS_H_
 #define _PARTICLE_UTILS_H_
-#include <iostream> 
+#include <iostream>
+#include <string> 
 #include "TLorentzVector.h"
 
 namespace e4nu { 
@@ -16,6 +17,7 @@ namespace e4nu {
       double GetParticleResolucion( const int particle_pdg, const double EBeam ) ; 
       double GetParticleMass( const int pdg ) ; 
       int GetParticleCharge( const int pdg ) ;
+      std::string PdgToString( const int pdg ) ;
     }
 }
 

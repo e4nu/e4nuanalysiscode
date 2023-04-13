@@ -54,3 +54,14 @@ int utils::GetParticleCharge( const int pdg ) {
   else if ( pdg == conf::kPdgPhoton ) return conf::kPhotonCharge ; 
   return 0 ; 
 }
+
+std::string utils::PdgToString( const int pdg ) { 
+  if( pdg == conf::kPdgElectron ) return "e" ;
+  else if( pdg == conf::kPdgProton ) return "p";
+  else if ( pdg == conf::kPdgPiP ) return "pip" ;
+  else if ( pdg == conf::kPdgPiM ) return "pim" ; 
+  else if ( pdg == conf::kPdgPi0 ) return "pi0" ;
+  else if ( pdg == conf::kPdgNeutron ) return "n" ;
+  else if ( pdg == conf::kPdgPhoton ) return "photon";
+  return "undefined" ;
+}

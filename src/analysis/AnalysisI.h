@@ -29,6 +29,12 @@ namespace e4nu {
 
   protected : 
     void CookEvent( EventI * event ) ;
+    void PlotBkgInformation( EventI * event ) ;
+
+    // ID for Background historams
+    unsigned int kid_signal, kid_tottruebkg, kid_totestbkg, kid_acccorr;
+    unsigned int kid_2p0pitruebkg, kid_1p1pitruebkg, kid_2p1pitruebkg, kid_1p2pitruebkg ;
+    unsigned int kid_2p0piestbkg, kid_1p1piestbkg, kid_2p1piestbkg, kid_1p2piestbkg ;
 
     virtual ~AnalysisI();
       

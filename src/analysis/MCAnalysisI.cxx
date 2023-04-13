@@ -371,65 +371,6 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
   return true ; 
 }
 
-void MCAnalysisI::PlotBkgInformation( EventI * event ) {
- 
-  if( ! GetDebugBkg() ) return ;
- 
-  // Store plots for Bakcground debugging
-  std::map<unsigned int,std::pair<std::vector<int>,double>> AnalysisRecord = event->GetAnalysisRecord() ;
- 
-  // Signal multiplicity
-  unsigned int min_mult = GetMinBkgMult() ;
-  unsigned int max_mult = GetMaxBkgMult(); // Max multiplicity specified in conf file
-  // Define status ids
-  const unsigned int id_bcuts = 0 ;
-  const unsigned int id_acuts = 1 ;
-  const unsigned int id_fid = 2 ;
-  const unsigned int id_acc = 3 ;
-  const unsigned int id_bkgcorr = 4 ;
-  const unsigned int id_maxbkg = id_bkgcorr + max_mult ;
-  const unsigned int id_minbkg = id_bkgcorr + min_mult ;
-  const std::pair<std::vector<int>,double> record_bmomcuts = AnalysisRecord[id_bcuts] ; // Before mom cuts
-  const std::pair<std::vector<int>,double> record_amomcuts = AnalysisRecord[id_acuts] ; // After mom cuts
-  const std::pair<std::vector<int>,double> record_afiducials = AnalysisRecord[id_fid] ; // After fiducials
-  const std::pair<std::vector<int>,double> record_acccorr = AnalysisRecord[id_acc] ; // Acc Correction
-
-  if( !kHistograms[id_totestbkg] || !kHistograms[id_signal] || !kHistograms[id_tottruebkg] ) return ;
-
-  if( (record_afiducials.first).size() > min_mult ) {
-    // This is used to estimate the total background contribution 
-    kHistograms[id_totestbkg]->Fill( event->GetObservable("ECal"), - event->GetTotalWeight() ) ; 
-
-    // Store contributions from different multiplicities 
-    // Check only direct contribution : 
-    unsigned int original_mult = min_mult + 1 ; 
-    for( unsigned int j = 0 ; j < max_mult - min_mult ; ++j ) { 
-      bool is_m_bkg = true ; 
-      if( (AnalysisRecord[original_mult+id_bkgcorr].first).size() != min_mult ) is_m_bkg = false ; 
-
-      // Fill for direct contributions only
-      unsigned int id2 = id_totestbkg + original_mult - min_mult ; 	
-      if( kHistograms[id2] && is_m_bkg ) kHistograms[id2]->Fill( event->GetObservable("ECal"), -event->GetTotalWeight() ) ;
-	
-      ++original_mult; 
-    }
-          
-  } else { 
-   // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
-    if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() == 0 ) {
-      kHistograms[id_signal]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
-    } else if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() != 0 ) {
-      kHistograms[id_acccorr]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
-    } else { 
-      kHistograms[id_tottruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
-     
-      // Fill each multiplicity contribution 
-      unsigned int id = (record_amomcuts.first).size() - min_mult ; 
-      if( kHistograms[id_tottruebkg+id] ) kHistograms[id_tottruebkg+id]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
-    }
-  }
-}
-
 bool MCAnalysisI::StoreTree(MCEvent * event){
   static bool n = true ; 
   int ID = event->GetEventID() ; 

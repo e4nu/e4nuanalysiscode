@@ -34,9 +34,6 @@ namespace e4nu {
     bool Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) ; 
     bool StoreTree(MCEvent * event);
 
-    // ID for Background historams
-    unsigned int id_signal, id_tottruebkg, id_totestbkg, id_acccorr;
-
   private :
 
     void SmearParticles( MCEvent * event ) ;
@@ -44,7 +41,6 @@ namespace e4nu {
     bool ApplyFiducialCut( MCEvent * event ) ; 
     void ApplyAcceptanceCorrection( MCEvent * event ) ;
     EventI * GetEvent( const unsigned int event_id ) ;
-    void PlotBkgInformation( EventI * event ) ;
     
     MCEventHolder * fData = nullptr ; 
     std::map<int,std::unique_ptr<TFile>> kAcceptanceMap;

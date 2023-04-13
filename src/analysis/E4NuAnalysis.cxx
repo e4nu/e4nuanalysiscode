@@ -13,6 +13,7 @@
 #include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
 #include "utils/KinematicUtils.h"
+#include "utils/ParticleUtils.h"
 #include "utils/Utils.h"
 
 using namespace e4nu ; 
@@ -146,8 +147,8 @@ bool E4NuAnalysis::Finalise( ) {
 	  kHistograms[i]->GetYaxis()->SetTitle("Weighted Events") ;  
 	}
       } else { 
-	kHistograms[id_tottruebkg]->GetXaxis()->SetTitle("ECal") ;
-	kHistograms[id_tottruebkg]->GetYaxis()->SetTitle("Weighted Events") ;
+	kHistograms[i]->GetXaxis()->SetTitle("ECal") ;
+	kHistograms[i]->GetYaxis()->SetTitle("Weighted Events") ;
       }
       kHistograms[i]->SetStats(false); 
       kHistograms[i]->Write() ; 
@@ -172,13 +173,13 @@ void E4NuAnalysis::Initialize(void) {
 
   if( GetNBins()[ECal_id] != 0 && GetDebugBkg() ) {
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_OnlySignal").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
-    id_signal = kHistograms.size() -1 ;
+    kid_signal = kHistograms.size() -1 ;
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_SignalAccCorr").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
-    id_acccorr = kHistograms.size() -1 ; 
+    kid_acccorr = kHistograms.size() -1 ; 
 
     // True Background -> Signal 
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotTrueBkg").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
-    id_tottruebkg = kHistograms.size() -1 ;
+    kid_tottruebkg = kHistograms.size() -1 ;
 
     unsigned int min_mult = GetMinBkgMult() ; 
     unsigned int max_mult = GetMaxBkgMult() ; 
@@ -186,18 +187,47 @@ void E4NuAnalysis::Initialize(void) {
     for( unsigned int j = 0 ; j < max_mult - min_mult ; ++j ) { 
       kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotTrueBkg_mult_"+std::to_string(mult)).c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
       mult += 1 ; 
-
     }
+   
+    // Add plots for min_mult + 1, in terms of particle content
+    // Hardcoded for simplicity ... Adding few cases
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotTrueBkg_mult_2_2p0pi").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+    kid_2p0pitruebkg = kHistograms.size() -1 ;
     
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotTrueBkg_mult_2_1p1pi").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ;
+    kid_1p1pitruebkg = kHistograms.size() -1 ; 
+    
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotTrueBkg_mult_3_2p1pi").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+    kid_2p1pitruebkg = kHistograms.size() -1 ;
+    
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotTrueBkg_mult_3_1p2pi").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+    kid_1p2pitruebkg = kHistograms.size() -1 ;
+  
+  
     // Estimated background correction from background events
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotEstBkg").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
-    id_totestbkg = kHistograms.size() -1 ; 
+    kid_totestbkg = kHistograms.size() -1 ; 
 
     mult = min_mult + 1 ;
     for( unsigned int j = 0 ; j < max_mult - min_mult ; ++j ) { 
       kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotEstBkg_mult_"+std::to_string(mult)).c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
       mult += 1 ; 
     }
+
+    // Add plots for min_mult + 1, in terms of particle content
+    // Hardcoded for simplicity ... Adding few cases
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotEstBkg_mult_2_2p0pi").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+    kid_2p0piestbkg = kHistograms.size() -1 ;
+    
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotEstBkg_mult_2_1p1pi").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ;
+    kid_1p1piestbkg = kHistograms.size() -1 ; 
+    
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotEstBkg_mult_3_2p1pi").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+    kid_2p1piestbkg = kHistograms.size() -1 ;
+    
+    kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotEstBkg_mult_3_1p2pi").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+    kid_1p2piestbkg = kHistograms.size() -1 ;
   }
 }
-
+  
+  

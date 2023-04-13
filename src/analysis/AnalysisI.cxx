@@ -103,6 +103,114 @@ void AnalysisI::CookEvent( EventI * event ) {
   return ; 
 }
 
+void AnalysisI::PlotBkgInformation( EventI * event ) {
+ 
+  if( ! GetDebugBkg() ) return ;
+ 
+  // Store plots for Bakcground debugging
+  std::map<unsigned int,std::pair<std::vector<int>,double>> AnalysisRecord = event->GetAnalysisRecord() ;
+ 
+  // Signal multiplicity
+  unsigned int min_mult = GetMinBkgMult() ;
+  unsigned int max_mult = GetMaxBkgMult(); // Max multiplicity specified in conf file
+  // Define status ids
+  const unsigned int id_bcuts = 0 ;
+  const unsigned int id_acuts = 1 ;
+  const unsigned int id_fid = 2 ;
+  const unsigned int id_acc = 3 ;
+  const unsigned int id_bkgcorr = 4 ;
+  const std::pair<std::vector<int>,double> record_bmomcuts = AnalysisRecord[id_bcuts] ; // Before mom cuts
+  const std::pair<std::vector<int>,double> record_amomcuts = AnalysisRecord[id_acuts] ; // After mom cuts
+  const std::pair<std::vector<int>,double> record_afiducials = AnalysisRecord[id_fid] ; // After fiducials
+  const std::pair<std::vector<int>,double> record_acccorr = AnalysisRecord[id_acc] ; // Acc Correction
+
+  if( !kHistograms[kid_totestbkg] || !kHistograms[kid_signal] || !kHistograms[kid_tottruebkg] 
+      || !kHistograms[kid_2p0pitruebkg] || !kHistograms[kid_1p1pitruebkg] || !kHistograms[kid_2p1pitruebkg] || !kHistograms[kid_1p2pitruebkg] 
+      || !kHistograms[kid_2p0piestbkg] || !kHistograms[kid_1p1piestbkg] || !kHistograms[kid_2p1piestbkg] || !kHistograms[kid_1p2piestbkg] ) return ;
+
+  if( (record_afiducials.first).size() > min_mult ) {
+    // This is used to estimate the total background contribution 
+    kHistograms[kid_totestbkg]->Fill( event->GetObservable("ECal"), - event->GetTotalWeight() ) ; 
+
+    // Store contributions from different multiplicities 
+    // Check only direct contribution : 
+    unsigned int original_mult = min_mult + 1 ; 
+    for( unsigned int j = 0 ; j < max_mult - min_mult ; ++j ) { 
+      bool is_m_bkg = true ; 
+      if( (AnalysisRecord[original_mult+id_bkgcorr].first).size() != min_mult ) is_m_bkg = false ; 
+
+      // Fill for direct contributions only
+      unsigned int id2 = kid_totestbkg + original_mult - min_mult ; 	
+      if( kHistograms[id2] && is_m_bkg ) {
+	kHistograms[id2]->Fill( event->GetObservable("ECal"), -event->GetTotalWeight() ) ;
+      }
+
+      // Filling for specific topologies:
+      // First, we need to get the correct mother pdg list.
+      std::vector<int> pdgs ;
+      if( (record_afiducials.first).size() == original_mult ) pdgs = record_afiducials.first ; // It comes directly from background event
+      else if( (AnalysisRecord[original_mult+1+id_bkgcorr].first).size() == original_mult ) pdgs= AnalysisRecord[original_mult+1+id_bkgcorr].first ; // It comes from original_mult + 1 event
+      // If none of the two cases above, the bkg event comes directly from a higher multiplicity event ... discard. Only considering direct contributions or corrections
+
+      // Count number of protons and pions
+      unsigned int nprotons = 0 ; 
+      unsigned int npions = 0 ;
+      for ( unsigned int k = 0 ; k < pdgs.size() ; ++k ) { 
+	int particle_pdg = pdgs[k];
+	if( particle_pdg == conf::kPdgProton ) ++nprotons ; 
+	else if ( particle_pdg == conf::kPdgPiP || particle_pdg == conf::kPdgPiM || particle_pdg == conf::kPdgPi0 || particle_pdg == conf::kPdgPhoton ) ++npions ; 
+      }
+
+      // Add breakdown in topologies
+      if( original_mult == 2 ) {
+	// Store according to initial topology
+	if( nprotons == 2 && npions == 0 ) kHistograms[kid_2p0piestbkg]->Fill( event->GetObservable("ECal"), -event->GetTotalWeight() ) ;
+	if( nprotons == 1 && npions == 1 ) kHistograms[kid_1p1piestbkg]->Fill( event->GetObservable("ECal"), -event->GetTotalWeight() ) ;
+      } else if (original_mult == 3 ) { 
+	// Store according to initial topology
+	if( nprotons == 2 && npions == 1 ) kHistograms[kid_2p1piestbkg]->Fill( event->GetObservable("ECal"), -event->GetTotalWeight() ) ;
+	if( nprotons == 1 && npions == 2 ) kHistograms[kid_1p2piestbkg]->Fill( event->GetObservable("ECal"), -event->GetTotalWeight() ) ;
+      }
+
+      ++original_mult; 
+    }
+          
+  } else { 
+   // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
+    if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() == 0 ) {
+      kHistograms[kid_signal]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+    } else if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() != 0 ) {
+      kHistograms[kid_acccorr]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+    } else { 
+      kHistograms[kid_tottruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+     
+      // Fill each multiplicity contribution 
+      unsigned int id = (record_amomcuts.first).size() - min_mult ; 
+      if( kHistograms[kid_tottruebkg+id] ) kHistograms[kid_tottruebkg+id]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+
+      // Count number of protons and pions
+      unsigned int nprotons = 0 ; 
+      unsigned int npions = 0 ;
+      for ( unsigned int k = 0 ; k < (record_amomcuts.first).size() ; ++k ) { 
+	int particle_pdg = (record_amomcuts.first)[k];
+	if( particle_pdg == conf::kPdgProton ) ++nprotons ; 
+	else if ( particle_pdg == conf::kPdgPiP || particle_pdg == conf::kPdgPiM || particle_pdg == conf::kPdgPi0 || particle_pdg == conf::kPdgPhoton ) ++npions ; 
+      }
+
+      // Add breakdown in topologies
+      if( (record_amomcuts.first).size() == 2 ) {
+	// Store according to initial topology
+	if( nprotons == 2 && npions == 0 ) kHistograms[kid_2p0pitruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+	if( nprotons == 1 && npions == 1 ) kHistograms[kid_1p1pitruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+      } else if ( (record_amomcuts.first).size() == 3 ) { 
+	// Store according to initial topology
+	if( nprotons == 2 && npions == 1 ) kHistograms[kid_2p1pitruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+	if( nprotons == 1 && npions == 2 ) kHistograms[kid_1p2pitruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+      }
+    }
+  }
+}
+
 bool AnalysisI::Finalise(void) const{
   return true ; 
 }

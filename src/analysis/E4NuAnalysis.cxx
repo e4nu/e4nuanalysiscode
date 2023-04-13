@@ -192,7 +192,12 @@ void E4NuAnalysis::Initialize(void) {
     // Estimated background correction from background events
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotEstBkg").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
     id_totestbkg = kHistograms.size() -1 ; 
-  }
 
+    mult = min_mult + 1 ;
+    for( unsigned int j = 0 ; j < max_mult - min_mult ; ++j ) { 
+      kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_TotEstBkg_mult_"+std::to_string(mult)).c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
+      mult += 1 ; 
+    }
+  }
 }
 

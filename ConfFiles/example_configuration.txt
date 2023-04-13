@@ -1,4 +1,4 @@
-B1;95;0c#Analysis Cuts
+B1;95;0cB1;95;0c#Analysis Cuts
 UseAllSectors	false
 ApplyFiducial	true
 ApplyAccWeights false
@@ -19,7 +19,7 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			1000000
+NEvents			10000000
 FirstEvent		0
 
 #Topology definition

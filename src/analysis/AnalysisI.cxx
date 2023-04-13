@@ -114,15 +114,10 @@ void AnalysisI::PlotBkgInformation( EventI * event ) {
   unsigned int min_mult = GetMinBkgMult() ;
   unsigned int max_mult = GetMaxBkgMult(); // Max multiplicity specified in conf file
   // Define status ids
-  const unsigned int id_bcuts = 0 ;
-  const unsigned int id_acuts = 1 ;
-  const unsigned int id_fid = 2 ;
-  const unsigned int id_acc = 3 ;
-  const unsigned int id_bkgcorr = 4 ;
-  const std::pair<std::vector<int>,double> record_bmomcuts = AnalysisRecord[id_bcuts] ; // Before mom cuts
-  const std::pair<std::vector<int>,double> record_amomcuts = AnalysisRecord[id_acuts] ; // After mom cuts
-  const std::pair<std::vector<int>,double> record_afiducials = AnalysisRecord[id_fid] ; // After fiducials
-  const std::pair<std::vector<int>,double> record_acccorr = AnalysisRecord[id_acc] ; // Acc Correction
+  const std::pair<std::vector<int>,double> record_bmomcuts = AnalysisRecord[kid_bcuts] ; // Before mom cuts
+  const std::pair<std::vector<int>,double> record_amomcuts = AnalysisRecord[kid_acuts] ; // After mom cuts
+  const std::pair<std::vector<int>,double> record_afiducials = AnalysisRecord[kid_fid] ; // After fiducials
+  const std::pair<std::vector<int>,double> record_acccorr = AnalysisRecord[kid_acc] ; // Acc Correction
 
   if( !kHistograms[kid_totestbkg] || !kHistograms[kid_signal] || !kHistograms[kid_tottruebkg] 
       || !kHistograms[kid_2p0pitruebkg] || !kHistograms[kid_1p1pitruebkg] || !kHistograms[kid_2p1pitruebkg] || !kHistograms[kid_1p2pitruebkg] 
@@ -137,7 +132,7 @@ void AnalysisI::PlotBkgInformation( EventI * event ) {
     unsigned int original_mult = min_mult + 1 ; 
     for( unsigned int j = 0 ; j < max_mult - min_mult ; ++j ) { 
       bool is_m_bkg = true ; 
-      if( (AnalysisRecord[original_mult+id_bkgcorr].first).size() != min_mult ) is_m_bkg = false ; 
+      if( (AnalysisRecord[original_mult+kid_bkgcorr].first).size() != min_mult ) is_m_bkg = false ; 
 
       // Fill for direct contributions only
       unsigned int id2 = kid_totestbkg + original_mult - min_mult ; 	
@@ -149,7 +144,7 @@ void AnalysisI::PlotBkgInformation( EventI * event ) {
       // First, we need to get the correct mother pdg list.
       std::vector<int> pdgs ;
       if( (record_afiducials.first).size() == original_mult ) pdgs = record_afiducials.first ; // It comes directly from background event
-      else if( (AnalysisRecord[original_mult+1+id_bkgcorr].first).size() == original_mult ) pdgs= AnalysisRecord[original_mult+1+id_bkgcorr].first ; // It comes from original_mult + 1 event
+      else if( (AnalysisRecord[original_mult+1+kid_bkgcorr].first).size() == original_mult ) pdgs= AnalysisRecord[original_mult+1+kid_bkgcorr].first ; // It comes from original_mult + 1 event
       // If none of the two cases above, the bkg event comes directly from a higher multiplicity event ... discard. Only considering direct contributions or corrections
 
       // Count number of protons and pions

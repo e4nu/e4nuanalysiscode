@@ -141,6 +141,13 @@ namespace e4nu {
     bool kIsDataLoaded = false ;
     bool kIsConfigured = true ; 
 
+    // Analysis Record ID's
+    const unsigned int kid_bcuts = 0 ;
+    const unsigned int kid_acuts = 1 ;
+    const unsigned int kid_fid = 2 ;
+    const unsigned int kid_acc = 3 ;
+    const unsigned int kid_bkgcorr = 4 ;
+    
   };
 }
 

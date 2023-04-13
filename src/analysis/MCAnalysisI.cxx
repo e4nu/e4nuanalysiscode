@@ -115,7 +115,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   }
 
   // Store analysis record before momentum cuts (0) :
-  event->StoreAnalysisRecord(0);
+  event->StoreAnalysisRecord(kid_bcuts);
 
   // Step 2: Apply momentum cut (detector specific) 
   // This is done before smearing
@@ -127,7 +127,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   }
 
   // Store analysis record after momentum cuts (1) :
-  event->StoreAnalysisRecord(1);
+  event->StoreAnalysisRecord(kid_acuts);
 
   // Tag particle as signal or background before fiducial
   part_map = event -> GetFinalParticles4Mom() ;
@@ -149,7 +149,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   this->ApplyAcceptanceCorrection( event ) ; 
 
   // Store analysis record after fiducial cut and acceptance correction (2):
-  event->StoreAnalysisRecord(2);
+  event->StoreAnalysisRecord(kid_fid);
 
   return event ; 
 }

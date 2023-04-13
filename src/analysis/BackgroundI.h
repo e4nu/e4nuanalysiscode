@@ -152,8 +152,8 @@ namespace e4nu {
 		temp_event->SetEventWeight( probability ) ; 
 	
 		// Store analysis record after background substraction (4) : 
-		temp_event->StoreAnalysisRecord(4+m); // Id is the bkg id (4) + original multiplicity.
-		                                      // For m = signal_multiplicity, id = 3+signal_mult
+		temp_event->StoreAnalysisRecord(kid_bkgcorr+m); // Id is the bkg id (4) + original multiplicity.
+		                                                // For m = signal_multiplicity, id = 3+signal_mult
 		
 		if ( event_holder.find(new_multiplicity) != event_holder.end() ) {
 		  event_holder[new_multiplicity].push_back( temp_event ) ; 
@@ -227,7 +227,7 @@ namespace e4nu {
 	signal_events.push_back(temp_event);
 	
 	// Store analysis record after acceptance correction (3) : 
-	temp_event->StoreAnalysisRecord(3);
+	temp_event->StoreAnalysisRecord(kid_acc);
   
       }
       // Store correction

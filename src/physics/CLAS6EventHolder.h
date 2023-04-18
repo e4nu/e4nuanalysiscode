@@ -31,7 +31,6 @@ namespace e4nu {
      The CLAS event format is different from the GENIE MC format
      The code GetCharge_FilterData.C applies some generic CLAS-specific cuts
      and stores the information in a genie-like format. 
-     This code will print a warning if the wrong format is used. 
     */
 
     // Members for root file

@@ -30,7 +30,7 @@ bool CLAS6EventHolder::LoadBranch(void) {
      The CLAS event format is different from the GENIE MC format
      The code GetCharge_FilterData.C applies some generic CLAS-specific cuts
      and stores the information in a genie-like format. 
-     This code will print a warning if the wrong format is used. 
+
      The available GENIE-like CLAS6 data can be found here: 
      /w/hallb-scifs17exp/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_%s_%s_neutrino6_united4_radphot_test_100M.root
   */

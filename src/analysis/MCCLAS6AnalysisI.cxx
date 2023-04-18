@@ -78,13 +78,6 @@ EventI * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Use true information to double-check beam energy, target pdg 
   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
 
-  // Check weight is physical
-  double wght = event->GetEventWeight() ; 
-  if ( wght < 0 || wght > 10 || wght == 0 ) {
-    delete event ;
-    return nullptr ; 
-  }
-
   // Apply Mott Scaling to correct for different coupling
   if ( ApplyMottScaling() ) { 
     event -> SetMottXSecWeight() ; 
@@ -104,7 +97,6 @@ EventI * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   // Store analysis record after momentum cuts (1) :
   event->StoreAnalysisRecord(kid_acuts);
-
 
   // Step 4: Apply fiducials
   // The detector has gaps where the particles cannot be detected

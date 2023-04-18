@@ -66,7 +66,6 @@ namespace e4nu {
     bool ApplyMomCut(void) const { return kApplyMomCut ; } 
     bool ApplyOutElectronCut(void) const { return kOutEMomCut ; }      
     bool IsNoFSI(void) const { return kNoFSI ; }
-    double GetElectronMinTheta( TLorentzVector emom ) ;      
 
     Fiducial * GetFiducialCut(void) { return kFiducialCut ; } 
 
@@ -126,7 +125,6 @@ namespace e4nu {
     unsigned int kMult_signal = 0;
 
     Fiducial * kFiducialCut = nullptr ;
-    TF1 * kElectronFit = nullptr ; 
 
     // Topology
     std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity

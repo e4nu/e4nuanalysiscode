@@ -16,13 +16,13 @@
 
 using namespace e4nu; 
 
-AnalysisI::AnalysisI( ) { ; }
+AnalysisI::AnalysisI( ) { this->Initialize(); }
 
-AnalysisI::AnalysisI( const std::string input_file ) : BackgroundI( input_file ) { if( kIsConfigured ) kIsConfigured = InitializeFiducial() ;  }
+AnalysisI::AnalysisI( const std::string input_file ) : BackgroundI( input_file ) { this->Initialize(); }
 
-AnalysisI::AnalysisI( const double EBeam, const unsigned int TargetPdg ) : BackgroundI( EBeam, TargetPdg ) {;}    
+AnalysisI::AnalysisI( const double EBeam, const unsigned int TargetPdg ) : BackgroundI( EBeam, TargetPdg ) { this->Initialize();}    
 
-AnalysisI::~AnalysisI() {;}
+AnalysisI::~AnalysisI() { this->Initialize();}
 
 bool AnalysisI::Analyse( EventI * event ) {
 
@@ -42,6 +42,14 @@ bool AnalysisI::Analyse( EventI * event ) {
     std::cout << "Target is " << event -> GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
     delete event ;
     exit(11); 
+  }
+
+
+  // Check weight is physical
+  double wght = event->GetEventWeight() ; 
+  if ( wght < 0 || wght > 10 || wght == 0 ) {
+    delete event ;
+    return false ; 
   }
   
   if( !utils::IsValidSector( out_mom.Phi(), EBeam, UseAllSectors() ) ) return false ;   
@@ -219,6 +227,22 @@ void AnalysisI::PlotBkgInformation( EventI * event ) {
   }
 }
 
-bool AnalysisI::Finalise(void) const{
+double AnalysisI::GetElectronMinTheta( TLorentzVector emom ) {
+  return kElectronFit ->Eval(emom.P()) ; 
+}
+
+void AnalysisI::Initialize(void) { 
+  double Ebeam = GetConfiguredEBeam() ; 
+  std::cout << " beam in analysisI " << Ebeam << std::endl;
+  kElectronFit = new TF1( "myElectronFit", "[0]+[1]/x",0.,0.5);
+  if( Ebeam == 1.161 ) { kElectronFit -> SetParameters(17,7) ; }
+  if( Ebeam == 2.261 ) { kElectronFit -> SetParameters(16,10.5) ; }
+  if( Ebeam == 4.461 ) { kElectronFit -> SetParameters(13.5,15) ; }
+  if( !kElectronFit ) kIsConfigured = false ; 
+  if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
+}
+
+bool AnalysisI::Finalise(void) {
+  if( kElectronFit ) delete kElectronFit ;
   return true ; 
 }

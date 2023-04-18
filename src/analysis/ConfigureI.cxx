@@ -27,14 +27,6 @@ ConfigureI::ConfigureI( const double EBeam, const unsigned int TargetPdg ) {
 
   if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
-  double Ebeam = GetConfiguredEBeam() ; 
-  kElectronFit = new TF1( "myElectronFit", "[0]+[1]/x",0.,0.5);
-  if( Ebeam == 1.161 ) { kElectronFit -> SetParameters(17,7) ; }
-  if( Ebeam == 2.261 ) { kElectronFit -> SetParameters(16,10.5) ; }
-  if( Ebeam == 4.461 ) { kElectronFit -> SetParameters(13.5,15) ; }
-
-  if( !kElectronFit ) kIsConfigured = false ; 
-
   PrintConfiguration();
 }
     
@@ -44,7 +36,6 @@ ConfigureI::~ConfigureI() {
   kNBins.clear();
   kRanges.clear();
   delete kFiducialCut ;
-  delete kElectronFit ; 
 }
 
 ConfigureI::ConfigureI( const std::string input_file ) {
@@ -232,14 +223,6 @@ ConfigureI::ConfigureI( const std::string input_file ) {
 
   if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
-  double Ebeam = GetConfiguredEBeam() ; 
-  kElectronFit = new TF1( "myElectronFit", "[0]+[1]/x",0.,0.5);
-  if( Ebeam == 1.161 ) { kElectronFit -> SetParameters(17,7) ; }
-  if( Ebeam == 2.261 ) { kElectronFit -> SetParameters(16,10.5) ; }
-  if( Ebeam == 4.461 ) { kElectronFit -> SetParameters(13.5,15) ; }
-
-  if( !kElectronFit ) kIsConfigured = false ; 
-
   gRandom = new TRandom3() ; 
   gRandom->SetSeed(10);
 
@@ -335,7 +318,4 @@ bool ConfigureI::InitializeFiducial(void) {
   return true ; 
 }
 
-double ConfigureI::GetElectronMinTheta( TLorentzVector emom ) {
-  return kElectronFit ->Eval(emom.P()) ; 
-}
 

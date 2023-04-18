@@ -223,7 +223,6 @@ namespace e4nu {
 	
 	double event_wgt = temp_event->GetEventWeight() ;
 	temp_event->SetEventWeight( + event_wgt * N_signal_undetected / N_signal_detected ) ; 
-	temp_event->SetIsUndetectedSignal(true);
 	signal_events.push_back(temp_event);
 	
 	// Store analysis record after acceptance correction (3) : 

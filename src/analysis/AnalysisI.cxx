@@ -28,9 +28,23 @@ bool AnalysisI::Analyse( EventI * event ) {
 
   TLorentzVector in_mom = event -> GetInLepton4Mom() ;
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
-  double EBeam = in_mom.E() ; 
-  
+  std::cout<<in_mom.P()<<std::endl;  
+
   // Step 1 : Apply generic cuts
+  // Check run is correct
+  double EBeam = GetConfiguredEBeam() ; 
+  if ( in_mom.E() != EBeam ) {
+    std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
+    delete event ;
+    exit(11); 
+  }
+  
+  if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) {
+    std::cout << "Target is " << event -> GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
+    delete event ;
+    exit(11); 
+  }
+  
   if( !utils::IsValidSector( out_mom.Phi(), EBeam, UseAllSectors() ) ) return false ;   
 
   if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) return false ;

@@ -1,4 +1,4 @@
-B1;95;0c#Analysis Cuts
+#Analysis Cuts
 UseAllSectors	false
 ApplyFiducial	true
 ApplyAccWeights false
@@ -19,11 +19,11 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			1000000000
+NEvents			100000
 FirstEvent		0
 
 #Topology definition
-IsData			false
+IsData			true
 Toplogy 		11:1,2212:1,-211:1,211:0,22:0,111:0
 MaxBackgroundMultiplicity 5
 NRotations 500
@@ -33,7 +33,7 @@ RangeList 0:2,0:2,0:2,-180:180,-0.5:5.5,0:2,0:2,0:2,0:2,0:2,0:180,0:2
 ObservableList ECal,OutEMom,LeadingPMom,OutEPhi,Sector,RecoEnu,RecoQ2,RecoW,QELRecoEnu,DeltaPT,DeltaAlphaT,DeltaPhiT
 NBinsList 60,60,60,60,6,80,80,80,80,80,80,80
 NormalizeHists false
-DebugBkg true 
+DebugBkg false
 
 #InputFile /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master.root
 InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master*.root

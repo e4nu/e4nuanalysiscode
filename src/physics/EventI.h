@@ -19,7 +19,6 @@ namespace e4nu {
     virtual ~EventI();
 
     bool IsMC(void) { return fIsMC ;}
-
     unsigned int GetEventID(void) const { return fEventID ; } 
     TLorentzVector GetInLepton4Mom(void) const { return fInLepton ; }
     TLorentzVector GetOutLepton4Mom(void) const { return fOutLepton ; }
@@ -47,15 +46,7 @@ namespace e4nu {
     void SetEventWeight( double wght ) { fWeight = wght ; }
     double GetMottXSecWeight(void) const { return fMottXSecWght ; }
     double GetAccWght(void) const { return fAccWght ; }
-    bool IsTrueBkg(void) const{ return fIsTrueBkg ; }
-    bool IsRecoBkg(void) const{ return fIsRecoBkg ; }
     bool IsBkg(void) const{ return fIsBkg ; }
-    bool IsUndetectedSignal(void) const{ return fIsUndetectedSignal ; }
-    bool IsUndetectedESignal(void) const{ return fIsUndetectedESignal ; }
-    void SetIsTrueBkg( const bool bkg ) { fIsTrueBkg = bkg ; }
-    void SetIsRecoBkg( const bool bkg ) { fIsRecoBkg = bkg ; }
-    void SetIsUndetectedSignal( const bool sig ) { fIsUndetectedSignal = sig ; }
-    void SetIsUndetectedESignal( const bool sig ) { fIsUndetectedESignal = sig ; }
     void SetIsBkg( const bool bkg ) { fIsBkg = bkg ; }
 
     void SetOutLeptonKinematics( const TLorentzVector & tlvect ) { fOutLepton = tlvect ; }
@@ -66,7 +57,6 @@ namespace e4nu {
     void SetFinalParticlesUnCorrKinematics( const std::map<int,std::vector<TLorentzVector>> part_map ) { fFinalParticlesUnCorr = part_map ; }
     
     double GetObservable( const std::string observable ) ;
-
     unsigned int GetEventMultiplicity( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) ;
     unsigned int GetNSignalParticles( std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) ;
     int GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) ;
@@ -103,7 +93,6 @@ namespace e4nu {
     void SetOutUnCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) ;
     void SetInUnCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) ; 
     void SetFinalParticleUnCorr( const int pdg, const double E, const double px, const double py, const double pz ) ; 
-
     
     // Common funtionalities which depend on MC or data 
     bool fIsMC ;
@@ -130,10 +119,6 @@ namespace e4nu {
     int fOutLeptPdg ; 
 
     bool fIsBkg = false ; 
-    bool fIsRecoBkg = false ; 
-    bool fIsTrueBkg = false ; 
-    bool fIsUndetectedSignal = false ; 
-    bool fIsUndetectedESignal = false ; 
     
     std::map<unsigned int,std::pair<std::vector<int>,double>> fAnalysisRecord; 
 

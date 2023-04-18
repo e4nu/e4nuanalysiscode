@@ -16,6 +16,7 @@
 #include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
 #include "conf/AnalysisConstantsI.h"
+#include "conf/ConstantsI.h"
 
 using namespace e4nu ; 
 
@@ -23,7 +24,7 @@ MCAnalysisI::MCAnalysisI() {
   kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
-  kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCTree","GENIE Tree") ) ; 
+  if( !IsData() ) kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCTree","GENIE Tree") ) ; 
   kMult_signal = GetNTopologyParticles() ; 
   this->Initialize() ;
 }
@@ -77,20 +78,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Use true information to double-check beam energy, target pdg 
   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
 
-  // Check run is correct
-  double EBeam = GetConfiguredEBeam() ; 
-  if ( in_mom.E() != EBeam ) {
-    std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
-    delete event ;
-    exit(11); 
-  }
-
-  if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) {
-    std::cout << "Target is " << event -> GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
-    delete event ;
-    exit(11); 
-  }
-
   // Check weight is physical
   double wght = event->GetEventWeight() ; 
   if ( wght < 0 || wght > 10 || wght == 0 ) {
@@ -101,17 +88,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Apply Mott Scaling to correct for different coupling
   if ( ApplyMottScaling() ) { 
     event -> SetMottXSecWeight() ; 
-  }
-
-  // For debugging purposes, tag true Bkg events before momentum cuts
-  std::map<int,unsigned int> Topology = GetTopology();
-  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticlesUnCorr4Mom() ;
-  for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
-    if( it->first == conf::kPdgElectron ) continue ; 
-    else if( part_map[it->first].size() != it->second ) {
-      event->SetIsTrueBkg(true) ;
-      break ; 
-    } 
   }
 
   // Store analysis record before momentum cuts (0) :
@@ -129,15 +105,6 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   // Store analysis record after momentum cuts (1) :
   event->StoreAnalysisRecord(kid_acuts);
 
-  // Tag particle as signal or background before fiducial
-  part_map = event -> GetFinalParticles4Mom() ;
-  for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
-    if( it->first == conf::kPdgElectron ) continue ; 
-    else if( part_map[it->first].size() != it->second ) {
-      event->SetIsRecoBkg(true);
-      break ; 
-    } 
-  }
 
   // Step 4: Apply fiducials
   // The detector has gaps where the particles cannot be detected
@@ -348,7 +315,6 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
 
   // Normalize
   double domega = 0.01; // sr
-  double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.); // cm^2 to μbarn
 
   if ( NormalizeHist() ) {
     for( unsigned int j = 0 ; j < GetObservablesTag().size() ; ++j ) {
@@ -364,7 +330,7 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
 	kHistograms[j]->SetBinError(k,newerror);
       }
 
-      kHistograms[j]->Scale( kXSec * ConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / ( GetNEventsToRun() * domega ) );
+      kHistograms[j]->Scale( kXSec * kConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / ( GetNEventsToRun() * domega ) );
     }
   }
 
@@ -515,11 +481,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   double pim_theta = pim_max.Theta() ;
   double pim_phi = pim_max.Phi() + TMath::Pi() ;
 
-  bool IsTrueBkg = event->IsTrueBkg() ; 
-  bool IsRecoBkg = event->IsRecoBkg() ; 
   bool IsBkg = event->IsBkg() ; 
-  bool IsUndetectedSignal = event->IsUndetectedSignal() ; 
-  bool IsUndetectedESignal = event->IsUndetectedESignal() ; 
 
   if( n == true ) {
     kAnalysisTree -> Branch( "ID", &ID, "ID/I"); 
@@ -546,11 +508,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
     kAnalysisTree -> Branch( "EventWght", &EventWght, "EventWght/D");
     kAnalysisTree -> Branch( "AccWght", &AccWght, "AccWght/D");
     kAnalysisTree -> Branch( "MottXSecScale", &MottXSecScale, "MottXSecScale/D");
-    kAnalysisTree -> Branch( "IsTrueBkg", &IsTrueBkg, "IsTrueBkg/O");
     kAnalysisTree -> Branch( "IsBkg", &IsBkg, "IsBkg/O");
-    kAnalysisTree -> Branch( "IsUndetectedSignal", &IsUndetectedSignal, "IsUndetectedSignal/O");
-    kAnalysisTree -> Branch( "IsUndetectedESignal", &IsUndetectedESignal, "IsUndetectedESignal/O");
-    kAnalysisTree -> Branch( "IsRecoBkg", &IsRecoBkg, "IsRecoBkg/O");
     kAnalysisTree -> Branch( "TrueNProtons", &TrueNProtons, "TrueNProtons/I");
     kAnalysisTree -> Branch( "TrueNNeutrons", &TrueNNeutrons, "TrueNNeutrons/I");
     kAnalysisTree -> Branch( "TrueNPiP", &TrueNPiP, "TrueNPiP/I");

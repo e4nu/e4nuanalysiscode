@@ -172,6 +172,11 @@ void E4NuAnalysis::Initialize(void) {
   }  
 
   if( GetNBins()[ECal_id] != 0 && GetDebugBkg() ) {
+    // These histograms are used to debug the background
+    // It compares the true background distribution to the estimated background distribution
+    // Different contributions are considered, depending on the multiplicity or the topology
+    // You can find some examples here: https://docdb.lns.mit.edu/e4nudb/0000/000060/001/NewBackgroundMethod_test.pdf
+
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_OnlySignal").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
     kid_signal = kHistograms.size() -1 ;
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_SignalAccCorr").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 

@@ -144,7 +144,7 @@ bool E4NuAnalysis::Finalise( ) {
   bool is_ok = true ; 
   if( IsCLAS6Analysis() ) {
     if( IsData() ) is_ok = CLAS6AnalysisI::Finalise(kAnalysedEventHolder) ; 
-    is_ok = MCCLAS6AnalysisI::Finalise(kAnalysedEventHolder) ; 
+    else is_ok = MCCLAS6AnalysisI::Finalise(kAnalysedEventHolder) ; 
   }
 
   unsigned int hist_size = GetObservablesTag().size() ; 

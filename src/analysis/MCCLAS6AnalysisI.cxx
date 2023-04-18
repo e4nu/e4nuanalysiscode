@@ -6,7 +6,7 @@
 #include <iostream>
 #include "TFile.h"
 #include "TDirectoryFile.h"
-#include "analysis/MCAnalysisI.h"
+#include "analysis/MCCLAS6AnalysisI.h"
 #include "utils/ParticleUtils.h"
 #include "utils/KinematicUtils.h"
 #include "conf/ParticleI.h"
@@ -20,23 +20,23 @@
 
 using namespace e4nu ; 
 
-MCAnalysisI::MCAnalysisI() {
+MCCLAS6AnalysisI::MCCLAS6AnalysisI() {
   kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
-  if( !IsData() ) kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCTree","GENIE Tree") ) ; 
+  if( !IsData() ) kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCCLAS6Tree","GENIE CLAS6 Tree") ) ; 
   kMult_signal = GetNTopologyParticles() ; 
   this->Initialize() ;
 }
 
-MCAnalysisI::~MCAnalysisI() {
+MCCLAS6AnalysisI::~MCCLAS6AnalysisI() {
   delete fData;
   kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
 }
 
-bool MCAnalysisI::LoadData( void ) {
+bool MCCLAS6AnalysisI::LoadData( void ) {
   if( ! IsConfigured() ) return false ; 
 
   std::string file = GetInputFile() ; 
@@ -51,11 +51,11 @@ bool MCAnalysisI::LoadData( void ) {
   return kIsDataLoaded ; 
 }
 
-EventI * MCAnalysisI::GetEvent( const unsigned int event_id ) {
+EventI * MCCLAS6AnalysisI::GetEvent( const unsigned int event_id ) {
   return fData -> GetEvent(event_id) ; 
 }
 
-EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
+EventI * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   MCEvent * event ;
   if( IsNoFSI() ) {
@@ -121,7 +121,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   return event ; 
 }
 
-void MCAnalysisI::ApplyMomentumCut( MCEvent * event ) {
+void MCCLAS6AnalysisI::ApplyMomentumCut( MCEvent * event ) {
   if( ApplyMomCut() ) { 
     std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticlesUnCorr4Mom() ;
     TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
@@ -146,7 +146,7 @@ void MCAnalysisI::ApplyMomentumCut( MCEvent * event ) {
   return ;
 }
 
-bool MCAnalysisI::ApplyFiducialCut( MCEvent * event ) { 
+bool MCCLAS6AnalysisI::ApplyFiducialCut( MCEvent * event ) { 
   // First, we apply it to the electron
   // Apply fiducial cut to electron
   if( ! ApplyFiducial() ) return true ; 
@@ -180,7 +180,7 @@ bool MCAnalysisI::ApplyFiducialCut( MCEvent * event ) {
   return true ; 
 }
 
-void MCAnalysisI::ApplyAcceptanceCorrection( MCEvent * event ) { 
+void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( MCEvent * event ) { 
   double acc_wght = 1 ;
   if( ApplyAccWeights() ) {
     TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
@@ -203,7 +203,7 @@ void MCAnalysisI::ApplyAcceptanceCorrection( MCEvent * event ) {
   return ; 
 }
 
-void MCAnalysisI::SmearParticles( MCEvent * event ) {
+void MCCLAS6AnalysisI::SmearParticles( MCEvent * event ) {
   double EBeam = GetConfiguredEBeam() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
 
@@ -225,11 +225,11 @@ void MCAnalysisI::SmearParticles( MCEvent * event ) {
   
 } 
 
-unsigned int MCAnalysisI::GetNEvents( void ) const {
+unsigned int MCCLAS6AnalysisI::GetNEvents( void ) const {
   return (unsigned int) fData ->GetNEvents() ; 
 }
 
-void MCAnalysisI::Initialize() { 
+void MCCLAS6AnalysisI::Initialize() { 
 
   fData = nullptr ; 
 
@@ -292,7 +292,7 @@ void MCAnalysisI::Initialize() {
 
 }
 
-bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) {
+bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) {
 
   if( !AnalysisI::Finalise() ) return false ; 
 
@@ -337,7 +337,7 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
   return true ; 
 }
 
-bool MCAnalysisI::StoreTree(MCEvent * event){
+bool MCCLAS6AnalysisI::StoreTree(MCEvent * event){
   static bool n = true ; 
   int ID = event->GetEventID() ; 
   int TargetPdg = event->GetTargetPdg() ;

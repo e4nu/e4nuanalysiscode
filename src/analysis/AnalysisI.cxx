@@ -28,7 +28,6 @@ bool AnalysisI::Analyse( EventI * event ) {
 
   TLorentzVector in_mom = event -> GetInLepton4Mom() ;
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
-  std::cout<<in_mom.P()<<std::endl;  
 
   // Step 1 : Apply generic cuts
   // Check run is correct

@@ -12,6 +12,7 @@
 #include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
 #include "utils/KinematicUtils.h"
+#include "utils/ParticleUtils.h"
 #include "utils/Utils.h"
 
 using namespace e4nu; 
@@ -107,6 +108,12 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     } else if ( param[i] == "IsData" ) {
       if( value[i] == "true" ) kIsData = true ; 
       else kIsData = false ; 
+    } else if ( param[i] == "IsCLAS6Analysis") { 
+      if( value[i] == "true" ) { kIsCLAS6Analysis = true ; kIsCLAS12Analysis = false ;} 
+      else kIsCLAS6Analysis = false ; 
+    } else if ( param[i] == "IsCLAS12Analysis") { 
+      if( value[i] == "true" ) { kIsCLAS12Analysis = true ; kIsCLAS6Analysis = false; } 
+      else kIsCLAS12Analysis = false ; 
     } else if( param[i] == "ApplyQ2Cut" ) { 
       if( value[i] == "true" ) kQ2Cut = true ; 
       else kQ2Cut = false ; 
@@ -212,7 +219,17 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     std::cout << " ERROR : XSec file not specified " << std::endl;
     kIsConfigured = false ; 
   }
-      
+  
+  if( !kIsCLAS6Analysis && !kIsCLAS6Analysis ) {
+    std::cout << " WARN : Analysis type not configured. Using CLAS6... " << std::endl;
+    kIsCLAS6Analysis = true ;
+  }
+
+  if( !kIsCLAS6Analysis && !kIsCLAS6Analysis ) {
+    std::cout << " ERROR : CLAS12 analysis not available yet..."<<std::endl;
+    kIsConfigured = false ;
+  }
+
   if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
   double Ebeam = GetConfiguredEBeam() ; 
@@ -259,12 +276,14 @@ void ConfigureI::PrintConfiguration(void) const {
     std::cout << "Is MC Data " << std::endl;
     if ( kNoFSI ) std::cout << " No FSI " << std::endl ; 
   }
+  if( kIsCLAS6Analysis ) std::cout << " Analysing CLAS6 "<<std::endl;
+  if( kIsCLAS12Analysis ) std::cout << " Analysing CLAS12 "<<std::endl;
   if( kIsElectron ) std::cout << " Electron scattering \n" <<std::endl;
   else std::cout << " Neutrino scattering \n" <<std::endl;
   
   std::cout << "Topology: " << std::endl;
   for ( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) { 
-    std::cout << "    " << it->first << ", multiplicity " << it->second << std::endl;
+    std::cout << "    " << utils::PdgToString(it->first) << ", multiplicity " << it->second << std::endl;
   }
 
   if( kSubtractBkg ) {

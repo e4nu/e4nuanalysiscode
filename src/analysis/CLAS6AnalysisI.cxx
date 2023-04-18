@@ -125,7 +125,6 @@ bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_
 	kHistograms[j]->SetBinError(k,newerror);
       }
       kHistograms[j]->Scale( 1./ ( IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor / MassNumber ) * kConversionFactorCm2ToMicroBarn / domega ) ;
-
     }
   }
 

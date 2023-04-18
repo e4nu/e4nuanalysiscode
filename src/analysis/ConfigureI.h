@@ -30,10 +30,24 @@ namespace e4nu {
     // Configure with input file 
     ConfigureI( const std::string input_file ) ;
     ConfigureI( const double EBeam, const unsigned int TargetPdg ) ;
-      
-    void PrintConfiguration(void) const ; 
+
+    // Get generic information about your analysis
+    bool IsData(void) const { return kIsData ; } 
+    bool IsCLAS6Analysis(void) const { return kIsCLAS6Analysis ; } 
+    bool IsCLAS12Analysis(void) const { return kIsCLAS12Analysis ; } 
+    bool IsElectronData(void) const { return kIsElectron ; }
+    bool IsConfigured(void) const { return kIsConfigured ; }
+
+    unsigned int GetNEventsToRun(void) const { return kNEvents ; } 
+    unsigned int GetFirstEventToRun(void) const { return kFirstEvent ; } 
+    
+    // Get physics information about the analysis      
     double GetConfiguredEBeam(void) const { return kEBeam ; }
     unsigned int GetConfiguredTarget(void) const { return kTargetPdg ; }
+    std::map<int,unsigned int> GetTopology(void) const{ return kTopology_map ; } 
+    unsigned int GetNTopologyParticles(void) ;    
+    
+    // Get informtion about cuts:
     bool UseAllSectors(void) const { return kUseAllSectors ; } 
     bool ApplyFiducial(void) const { return kApplyFiducial ; }
     bool ApplyEFiducial(void) const { return kApplyEFiducial ; }
@@ -46,29 +60,22 @@ namespace e4nu {
     bool UsePhiThetaBand(void) const { return kUsePhiThetaBand ; } 
     bool ApplyThetaSlice(void) const { return kApplyThetaSlice ; } 
     bool ApplyGoodSectorPhiSlice(void) const { return kApplyGoodSectorPhiSlice ; }
-    bool IsData(void) const { return kIsData ; } 
     bool GetOffSet(void) const { return koffset ; } 
     bool ApplyQ2Cut(void) const{ return kQ2Cut ; }
     bool ApplyWCut(void) const{ return kWCut ; }
     bool ApplyMomCut(void) const { return kApplyMomCut ; } 
     bool ApplyOutElectronCut(void) const { return kOutEMomCut ; }      
-    bool IsElectronData(void) const { return kIsElectron ; }
-    bool IsConfigured(void) const { return kIsConfigured ; }
     bool IsNoFSI(void) const { return kNoFSI ; }
+    double GetElectronMinTheta( TLorentzVector emom ) ;      
 
-    unsigned int GetNEventsToRun(void) const { return kNEvents ; } 
-    unsigned int GetFirstEventToRun(void) const { return kFirstEvent ; } 
+    Fiducial * GetFiducialCut(void) { return kFiducialCut ; } 
+
+    // Get information about the background subtraction method
     unsigned int GetMaxBkgMult(void) const { return kMaxBkgMult ; }
     unsigned int GetMinBkgMult(void) const { return kMult_signal ; }
     unsigned int GetNRotations(void) const { return kNRotations ; } 
     bool GetSubtractBkg(void) const { return kSubtractBkg ; }
     bool GetDebugBkg(void) const { return kDebugBkg ; } 
-
-    std::map<int,unsigned int> GetTopology(void) const{ return kTopology_map ; } 
-    unsigned int GetNTopologyParticles(void) ;    
-    Fiducial * GetFiducialCut(void) { return kFiducialCut ; } 
-
-    double GetElectronMinTheta( TLorentzVector emom ) ;      
     
     // Histogram Configurables
     std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }
@@ -76,17 +83,22 @@ namespace e4nu {
     std::vector<std::vector<double>> GetRange(void) const { return kRanges ; } 
     bool NormalizeHist(void) { return kNormalize ; }
 
+    // Output file information
     std::string GetOutputFile(void) const { return kOutputFile ; }
     std::string GetInputFile(void) const { return kInputFile ; }
     std::string GetXSecFile(void) const { return kXSecFile ; }
 
-    virtual ~ConfigureI();
+    // Others 
+    void PrintConfiguration(void) const ; 
       
   protected: 
+    virtual ~ConfigureI();
     bool InitializeFiducial(void) ;
     
     // Members
-    bool kIsData = false ; // Is data (class?)
+    bool kIsData = false ; // Is data
+    bool kIsCLAS6Analysis = true ; 
+    bool kIsCLAS12Analysis = false ; // Disabled for now
     bool kUseAllSectors = false ; // Are there any dead sectors?
     bool kApplyFiducial = true ; // Set to false to remove fiducial cuts
     bool kApplyEFiducial = true ; // Set to false to remove fiducial cuts

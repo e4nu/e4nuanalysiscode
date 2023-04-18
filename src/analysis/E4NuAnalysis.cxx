@@ -20,9 +20,9 @@ using namespace e4nu ;
 
 E4NuAnalysis::E4NuAnalysis() {this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCAnalysisI(), CLAS6AnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCCLAS6AnalysisI(), CLAS6AnalysisI() { this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCAnalysisI(), CLAS6AnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCCLAS6AnalysisI(), CLAS6AnalysisI() { this->Initialize();}
 
 E4NuAnalysis::~E4NuAnalysis() {;}
 
@@ -31,18 +31,27 @@ bool E4NuAnalysis::LoadData(void) {
     std::cout << "ERROR: Configuration failed" <<std::endl;
     return false ;
   }
-  if( IsData() ) return CLAS6AnalysisI::LoadData();
-  return MCAnalysisI::LoadData() ; 
+  if( IsCLAS6Analysis() ) { 
+    if( IsData() ) return CLAS6AnalysisI::LoadData();
+    return MCCLAS6AnalysisI::LoadData() ; 
+  } if( IsCLAS12Analysis() ) return false ;  
+  return false ; 
 }
 
 EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
-  if( IsData() ) return CLAS6AnalysisI::GetValidEvent( event_id ) ; 
-  return MCAnalysisI::GetValidEvent( event_id ) ; 
+  if( IsCLAS6Analysis() ) { 
+    if( IsData() ) return CLAS6AnalysisI::GetValidEvent( event_id ) ; 
+    return MCCLAS6AnalysisI::GetValidEvent( event_id ) ; 
+  } else if ( IsCLAS12Analysis() ) return nullptr ; 
+  return nullptr; 
 }
 
 unsigned int E4NuAnalysis::GetNEvents( void ) const {
-  if( IsData() ) return CLAS6AnalysisI::GetNEvents() ;
-  return MCAnalysisI::GetNEvents() ;
+  if( IsCLAS6Analysis() ) {
+    if( IsData() ) return CLAS6AnalysisI::GetNEvents() ;
+    return MCCLAS6AnalysisI::GetNEvents() ;
+  } 
+  return 0 ; 
 }
 
 bool E4NuAnalysis::Analyse(void) {
@@ -55,9 +64,11 @@ bool E4NuAnalysis::Analyse(void) {
     // Get valid event after analysis
     // It returns cooked event, with detector effects
     EventI * event ;
-    if( IsData() ) event = (EventI*) CLAS6AnalysisI::GetValidEvent(i) ; 
-    else event = (EventI*) MCAnalysisI::GetValidEvent(i) ; 
-  
+    if( IsCLAS6Analysis() ) {
+      if( IsData() ) event = (EventI*) CLAS6AnalysisI::GetValidEvent(i) ; 
+      else event = (EventI*) MCCLAS6AnalysisI::GetValidEvent(i) ; 
+    } 
+
     if( ! event ) {
       continue ;
     }
@@ -131,8 +142,10 @@ bool E4NuAnalysis::SubtractBackground() {
 bool E4NuAnalysis::Finalise( ) {
   
   bool is_ok = true ; 
-  if( IsData() ) is_ok = CLAS6AnalysisI::Finalise(kAnalysedEventHolder) ; 
-  is_ok = MCAnalysisI::Finalise(kAnalysedEventHolder) ; 
+  if( IsCLAS6Analysis() ) {
+    if( IsData() ) is_ok = CLAS6AnalysisI::Finalise(kAnalysedEventHolder) ; 
+    is_ok = MCCLAS6AnalysisI::Finalise(kAnalysedEventHolder) ; 
+  }
 
   unsigned int hist_size = GetObservablesTag().size() ; 
   if( GetDebugBkg() ) hist_size = kHistograms.size() ; 

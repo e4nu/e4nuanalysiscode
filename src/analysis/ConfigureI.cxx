@@ -17,7 +17,9 @@
 
 using namespace e4nu; 
 
-ConfigureI::ConfigureI( ) {;}
+ConfigureI::ConfigureI( ) {
+    this->Initialize();
+}
 
 ConfigureI::ConfigureI( const double EBeam, const unsigned int TargetPdg ) { 
   kEBeam = EBeam ; 
@@ -25,9 +27,7 @@ ConfigureI::ConfigureI( const double EBeam, const unsigned int TargetPdg ) {
   kIsDataLoaded = false ;
   kIsConfigured = true ; 
 
-  if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
-
-  PrintConfiguration();
+  this->Initialize();
 }
     
 ConfigureI::~ConfigureI() {
@@ -221,10 +221,15 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     kIsConfigured = false ;
   }
 
-  if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
+  this->Initialize();
+}
+
+void ConfigureI::Initialize(void){
 
   gRandom = new TRandom3() ; 
   gRandom->SetSeed(10);
+
+  if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
   if( kIsConfigured ) PrintConfiguration() ;
   else std::cout << " CONFIGURATION FAILED..." << std::endl;

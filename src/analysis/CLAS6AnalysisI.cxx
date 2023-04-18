@@ -58,16 +58,16 @@ EventI * CLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
     return nullptr ; 
   }
 
-  TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
-  TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
-
-
   // Apply Generic analysis cuts
   if ( ! AnalysisI::Analyse( event ) ) {
     delete event ; 
     return nullptr ; 
   }
-  
+
+  // No further code is needed
+  // Fiducial cuts are already taken care of
+  // No Need to apply them again
+
   return event ; 
     
 }
@@ -77,7 +77,6 @@ unsigned int CLAS6AnalysisI::GetNEvents( void ) const {
 }
 
 void CLAS6AnalysisI::Initialize() { 
-
   fData = nullptr ; 
 }
 

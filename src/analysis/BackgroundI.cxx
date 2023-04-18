@@ -16,31 +16,27 @@
 using namespace e4nu; 
 
 BackgroundI::BackgroundI( ) {
-  if( kIsConfigured && ApplyFiducial() ) {
-    kRotation = new Subtraction();
-    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), GetFiducialCut() );
-    kRotation->ResetQVector(); 
-  }
+  this->Initialize();
 }
 
 BackgroundI::BackgroundI( const std::string input_file ) : ConfigureI( input_file ) {
-  if( kIsConfigured && ApplyFiducial() ) {
-    kRotation = new Subtraction();
-    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), GetFiducialCut() );
-    kRotation->ResetQVector(); 
-  }
+  this->Initialize();
 }
 
 BackgroundI::BackgroundI( const double EBeam, const unsigned int TargetPdg ) : ConfigureI( EBeam, TargetPdg ) {
-  if( kIsConfigured && ApplyFiducial() ) {
-    kRotation = new Subtraction();
-    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), GetFiducialCut() );
-    kRotation->ResetQVector(); 
-  }
+  this->Initialize();
 }    
 
 BackgroundI::~BackgroundI() {
   delete kRotation ;
+}
+
+void BackgroundI::Initialize(void){
+  if( kIsConfigured && ApplyFiducial() ) {
+    kRotation = new Subtraction();
+    kRotation->InitSubtraction( GetConfiguredEBeam(), GetConfiguredTarget(), GetNRotations(), GetFiducialCut() );
+    kRotation->ResetQVector(); 
+  }
 }
 
 unsigned int BackgroundI::GetMinParticleMultiplicity( int pdg ) const {

@@ -133,7 +133,7 @@ bool E4NuAnalysis::Analyse(void) {
 
 bool E4NuAnalysis::SubtractBackground() {
   
-  if( ! BackgroundI::NewBackgroundSubstraction( kAnalysedEventHolder ) ) return false ;  
+  if( ! BackgroundI::BackgroundSubstraction( kAnalysedEventHolder ) ) return false ;  
   if( ! BackgroundI::AcceptanceCorrection( kAnalysedEventHolder ) ) return false ; 
 
   return true ; 

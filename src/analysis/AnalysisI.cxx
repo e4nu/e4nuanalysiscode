@@ -233,7 +233,7 @@ double AnalysisI::GetElectronMinTheta( TLorentzVector emom ) {
 
 void AnalysisI::Initialize(void) { 
   double Ebeam = GetConfiguredEBeam() ; 
-  std::cout << " beam in analysisI " << Ebeam << std::endl;
+  
   kElectronFit = new TF1( "myElectronFit", "[0]+[1]/x",0.,0.5);
   if( Ebeam == 1.161 ) { kElectronFit -> SetParameters(17,7) ; }
   if( Ebeam == 2.261 ) { kElectronFit -> SetParameters(16,10.5) ; }

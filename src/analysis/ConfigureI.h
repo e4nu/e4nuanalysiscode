@@ -30,6 +30,7 @@ namespace e4nu {
     // Configure with input file 
     ConfigureI( const std::string input_file ) ;
     ConfigureI( const double EBeam, const unsigned int TargetPdg ) ;
+    void Initialize(void);
 
     // Get generic information about your analysis
     bool IsData(void) const { return kIsData ; } 

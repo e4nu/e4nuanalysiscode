@@ -32,7 +32,3 @@ The e4nu analysis code is highly factorized into different classes, which inheri
 
 ---------------
 ## User Guide
-
----------------
-## Configuration GuiderRecordHeaderData**:
-

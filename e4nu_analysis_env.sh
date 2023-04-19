@@ -3,13 +3,6 @@
 # Set up the UPS products needed to build and use GENIE
 source /grid/fermiapp/products/larsoft/setups
 setup root v6_12_06a -q e17:debug
-setup lhapdf v5_9_1k -q e17:debug
-setup log4cpp v1_1_3a -q e17:debug
-setup pdfsets v5_9_1b
-
-# Set up much more recent versions of gdb and git
-setup gdb v8_1
-setup git v2_15_1
 
 echo "Setting E4NU environment variables..."
 

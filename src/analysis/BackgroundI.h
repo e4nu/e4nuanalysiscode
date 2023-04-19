@@ -74,7 +74,7 @@ namespace e4nu {
 		  part_vect.Rotate(rotation_angle,VectorRecoQ);
 	      
 		  // Check which particles are in fiducial
-		  bool is_particle_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect ) ; 
+		  bool is_particle_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData() ) ; 
 	      
 		  // Calculate rotated event multiplicity
 		  if( is_particle_contained ) {
@@ -212,7 +212,7 @@ namespace e4nu {
 	      part_vect.Rotate(rotation_angle,VectorRecoQ);
 	      
 	      // Check which particles are in fiducial	      
-	      is_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect ) ;
+	      is_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData() ) ;
 	    }
 	  }
 	  if( is_contained ) ++N_signal_detected ; 

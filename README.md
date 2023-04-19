@@ -10,6 +10,7 @@ To configure the software:
 3. Run the main application, `./e4nuanalysis`
 
 After each run, you will get a new root file containing information from the valid analised events. The information stored in this file, as well as it's name, can be configured from a configuration file (see Configuration section).
+
 **NOTICE**: as of now, the code only works at the gpvms. 
 ---------------
 ## Directory Structure

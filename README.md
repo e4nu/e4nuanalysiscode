@@ -1,8 +1,12 @@
 # e4nu Analysis code
+
 This repository contains the e4nu analysis code and utils to plot the relevant information
 The following are brief descriptions of the code structure, various classes and configuration examples. It also provides with instructions for new e4nu analysers.
+
 ---------------
+
 ## Compile and run e4nu analyses
+
 To configure the software:
 1. Setup the enviromental variables in "e4nu_analysis_env.sh": `source e4nu_analysis_env.sh;`
 2. Compile the code "make" from the E4NUANALYSIS directory: `cd $E4NUANALYSIS; make;`
@@ -14,7 +18,9 @@ After each run, you will get a new root file containing information from the val
 NOTICE: as of now, the code only works at the gpvms. 
 
 ---------------
+
 ## Directory Structure
+
 The code can be found in different subdirectories, with the following structure: 
 - **src** : source directory. Further described below.
 - **data** : contains data files used to run analyses. There's two sub-directories, `AcceptanceMaps` and `FiducialsCorrections`, containing acceptance maps and fiducial corrections. As of now, only CLAS6 information is available. 
@@ -28,8 +34,11 @@ The structure of the src directory is as follows:
 - **analysis** : this directory contains the main classes used for analysis. The structure it's explained in the next section. 
 - **apps** : contains the main executable
 -  make : it contains some make files needed for compilation 
+
 ---------------
+
 ## E4nu Analysis Code
+
 The e4nu analysis code is highly factorized into different classes, which inherit from each other. The main structure is depicted in the diagram below:
 ![e4nu diagram](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/PlottingScripts/e4nuanalysis_diagram.png)
 

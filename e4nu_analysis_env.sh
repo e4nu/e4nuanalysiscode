@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Set up the UPS products needed to build and use GENIE
-source /grid/fermiapp/products/larsoft/setups
+#source /grid/fermiapp/products/larsoft/setups
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh && retval="$?"
 setup root v6_12_06a -q e17:debug
 
 echo "Setting E4NU environment variables..."

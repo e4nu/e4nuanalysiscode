@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <cstdlib>
 #include "TH1D.h"
 #include "analysis/E4NuAnalysis.h"
 
@@ -18,7 +19,10 @@ int main( void ) {
 
   // This object can be initialized with a configuration file which contains information on the event run, 
   // cuts and analysis requirements, and output file location
-  E4NuAnalysis * analysis = new E4NuAnalysis("/genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/vfork/ConfFiles/example_configuration.txt") ;
+  char * env = std::getenv("E4NUANALYSIS") ; 
+  std::string path( env ) ; 
+  path += "/ConfFiles/" ;
+  E4NuAnalysis * analysis = new E4NuAnalysis((path+"example_configuration.txt").c_str()) ;
   if( ! analysis ) return 0 ; 
   
   if( ! analysis -> LoadData() ) return 0 ;  

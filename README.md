@@ -39,6 +39,9 @@ The structure of the src directory is as follows:
 
 ## E4nu Analysis Code
 
+The main analysis flow is as follows:
+![e4nu flow](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/PlottingScripts/e4nu_analysis_flow.png)
+
 The e4nu analysis code is highly factorized into different classes, which inherit from each other. The main structure is depicted in the diagram below:
 ![e4nu diagram](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/PlottingScripts/e4nuanalysis_diagram.png)
 

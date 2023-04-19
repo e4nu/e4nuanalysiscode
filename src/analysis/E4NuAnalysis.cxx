@@ -23,9 +23,9 @@ using namespace e4nu ;
 
 E4NuAnalysis::E4NuAnalysis() {this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCCLAS6StandardAnalysis(), CLAS6AnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCCLAS6StandardAnalysis(), CLAS6StandardAnalysis() { this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCCLAS6StandardAnalysis(), CLAS6AnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCCLAS6StandardAnalysis(), CLAS6StandardAnalysis() { this->Initialize();}
 
 E4NuAnalysis::~E4NuAnalysis() {;}
 
@@ -34,9 +34,11 @@ bool E4NuAnalysis::LoadData(void) {
     std::cout << "ERROR: Configuration failed" <<std::endl;
     return false ;
   }
+  // Include new analysis classes with the corresponding analysis ID:
   if( IsCLAS6Analysis() ) { 
-    if( IsData() ) return CLAS6AnalysisI::LoadData();
-    else {
+    if( IsData() ) {
+      if( GetAnalysisTypeID() == 0 ) return CLAS6StandardAnalysis::LoadData();
+    }else {
       if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::LoadData() ; 
       else return false ; 
     } if( IsCLAS12Analysis() ) return false ;  
@@ -46,9 +48,11 @@ bool E4NuAnalysis::LoadData(void) {
 }
 
 EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
+  // Include new analysis classes with the corresponding analysis ID:
   if( IsCLAS6Analysis() ) { 
-    if( IsData() ) return CLAS6AnalysisI::GetValidEvent( event_id ) ; 
-    else{ 
+    if( IsData() ) {
+      if( GetAnalysisTypeID() == 0 ) return CLAS6StandardAnalysis::GetValidEvent( event_id ) ; 
+    } else{ 
       if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::GetValidEvent( event_id ) ; 
       else return nullptr ; 
     }
@@ -57,9 +61,11 @@ EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
 }
 
 unsigned int E4NuAnalysis::GetNEvents( void ) const {
+    // Include new analysis classes with the corresponding analysis ID:
   if( IsCLAS6Analysis() ) {
-    if( IsData() ) return CLAS6AnalysisI::GetNEvents() ;
-    else { 
+    if( IsData() ) {
+      if( GetAnalysisTypeID() == 0 ) return CLAS6StandardAnalysis::GetNEvents() ;
+    } else { 
       if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::GetNEvents() ;
       else return false ; 
     }
@@ -77,9 +83,11 @@ bool E4NuAnalysis::Analyse(void) {
     // Get valid event after analysis
     // It returns cooked event, with detector effects
     EventI * event ;
+    // Include new analysis classes with the corresponding analysis ID:
     if( IsCLAS6Analysis() ) {
-      if( IsData() ) event = (EventI*) CLAS6AnalysisI::GetValidEvent(i) ; 
-      else {
+      if( IsData() ) {
+	if( GetAnalysisTypeID() == 0 ) event = (EventI*) CLAS6StandardAnalysis::GetValidEvent(i) ; 
+      } else {
 	if( GetAnalysisTypeID() == 0 ) event = (EventI*) MCCLAS6StandardAnalysis::GetValidEvent(i) ; 
 	else event = nullptr ; 
       }

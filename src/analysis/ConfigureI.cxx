@@ -117,6 +117,8 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     } else if( param[i] == "IsElectronData" ) { 
       if( value[i] == "true" ) kIsElectron = true ; 
       else kIsElectron = false ; 
+    } else if ( param[i] == "AnalysisTypeID" ) { 
+      kAnalysisTypeID = std::stoi(value[i]) ; 
     } else if ( param[i] == "offset" ) koffset = std::stod( value[i] ) ; 
     else if ( param[i] == "NoFSI") {
       if( value[i] == "true" ) kNoFSI = true ; 
@@ -268,7 +270,7 @@ void ConfigureI::PrintConfiguration(void) const {
   if( kIsCLAS12Analysis ) std::cout << " Analysing CLAS12 "<<std::endl;
   if( kIsElectron ) std::cout << " Electron scattering \n" <<std::endl;
   else std::cout << " Neutrino scattering \n" <<std::endl;
-  
+  std::cout << " Analysis Type ID: " << GetAnalysisTypeID() << std::endl;
   std::cout << "Topology: " << std::endl;
   for ( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) { 
     std::cout << "    " << utils::PdgToString(it->first) << ", multiplicity " << it->second << std::endl;

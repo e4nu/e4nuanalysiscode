@@ -5,6 +5,9 @@
  * It is also responsible for the signal/bkg selection
  * And instiantates the Background substraction method
  * 
+ * Analysis Type ID : 
+ * 0 => Generic analysis
+ * Add new id list here...
  */
 #include <iostream>
 #include "analysis/E4NuAnalysis.h"
@@ -20,9 +23,9 @@ using namespace e4nu ;
 
 E4NuAnalysis::E4NuAnalysis() {this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCCLAS6AnalysisI(), CLAS6AnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCCLAS6StandardAnalysis(), CLAS6AnalysisI() { this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCCLAS6AnalysisI(), CLAS6AnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCCLAS6StandardAnalysis(), CLAS6AnalysisI() { this->Initialize();}
 
 E4NuAnalysis::~E4NuAnalysis() {;}
 
@@ -33,15 +36,22 @@ bool E4NuAnalysis::LoadData(void) {
   }
   if( IsCLAS6Analysis() ) { 
     if( IsData() ) return CLAS6AnalysisI::LoadData();
-    return MCCLAS6AnalysisI::LoadData() ; 
-  } if( IsCLAS12Analysis() ) return false ;  
-  return false ; 
+    else {
+      if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::LoadData() ; 
+      else return false ; 
+    } if( IsCLAS12Analysis() ) return false ;  
+    return false ; 
+  }
+  return true ; 
 }
 
 EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
   if( IsCLAS6Analysis() ) { 
     if( IsData() ) return CLAS6AnalysisI::GetValidEvent( event_id ) ; 
-    return MCCLAS6AnalysisI::GetValidEvent( event_id ) ; 
+    else{ 
+      if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::GetValidEvent( event_id ) ; 
+      else return nullptr ; 
+    }
   } else if ( IsCLAS12Analysis() ) return nullptr ; 
   return nullptr; 
 }
@@ -49,7 +59,10 @@ EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
 unsigned int E4NuAnalysis::GetNEvents( void ) const {
   if( IsCLAS6Analysis() ) {
     if( IsData() ) return CLAS6AnalysisI::GetNEvents() ;
-    return MCCLAS6AnalysisI::GetNEvents() ;
+    else { 
+      if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::GetNEvents() ;
+      else return false ; 
+    }
   } 
   return 0 ; 
 }
@@ -66,7 +79,10 @@ bool E4NuAnalysis::Analyse(void) {
     EventI * event ;
     if( IsCLAS6Analysis() ) {
       if( IsData() ) event = (EventI*) CLAS6AnalysisI::GetValidEvent(i) ; 
-      else event = (EventI*) MCCLAS6AnalysisI::GetValidEvent(i) ; 
+      else {
+	if( GetAnalysisTypeID() == 0 ) event = (EventI*) MCCLAS6StandardAnalysis::GetValidEvent(i) ; 
+	else event = nullptr ; 
+      }
     } 
 
     if( ! event ) {
@@ -144,7 +160,9 @@ bool E4NuAnalysis::Finalise( ) {
   bool is_ok = true ; 
   if( IsCLAS6Analysis() ) {
     if( IsData() ) is_ok = CLAS6AnalysisI::Finalise(kAnalysedEventHolder) ; 
-    else is_ok = MCCLAS6AnalysisI::Finalise(kAnalysedEventHolder) ; 
+    else {
+      if( GetAnalysisTypeID() == 0 ) is_ok = MCCLAS6StandardAnalysis::Finalise(kAnalysedEventHolder) ; 
+    }
   }
 
   unsigned int hist_size = GetObservablesTag().size() ; 

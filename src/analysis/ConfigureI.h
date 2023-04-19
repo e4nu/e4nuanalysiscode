@@ -38,7 +38,7 @@ namespace e4nu {
     bool IsCLAS12Analysis(void) const { return kIsCLAS12Analysis ; } 
     bool IsElectronData(void) const { return kIsElectron ; }
     bool IsConfigured(void) const { return kIsConfigured ; }
-
+    unsigned int GetAnalysisTypeID(void) const{ return kAnalysisTypeID ; }
     unsigned int GetNEventsToRun(void) const { return kNEvents ; } 
     unsigned int GetFirstEventToRun(void) const { return kFirstEvent ; } 
     
@@ -151,6 +151,9 @@ namespace e4nu {
     // Configuration validity checks:
     bool kIsDataLoaded = false ;
     bool kIsConfigured = true ; 
+
+    // Analysis ID 
+    unsigned int kAnalysisTypeID = 0 ;  // 0 -> Generic 
 
     // Analysis Record ID's
     const unsigned int kid_bcuts = 0 ;

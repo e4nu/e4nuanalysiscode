@@ -10,13 +10,13 @@
 
 #include <iostream>
 #include "TF1.h"
-#include "analysis/MCCLAS6AnalysisI.h"
+#include "analysis/MCCLAS6StandardAnalysis.h"
 #include "analysis/CLAS6AnalysisI.h"
 
 using namespace e4nu::conf ; 
 
 namespace e4nu {
-  class E4NuAnalysis : public MCCLAS6AnalysisI, public CLAS6AnalysisI { 
+  class E4NuAnalysis : public MCCLAS6StandardAnalysis, public CLAS6AnalysisI { 
   public : 
     E4NuAnalysis(); 
     E4NuAnalysis( const std::string conf_file ) ;

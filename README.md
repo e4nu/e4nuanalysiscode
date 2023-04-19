@@ -1,5 +1,5 @@
 # e4nu Analysis code
-- This repository contains the e4nu analysis code and utils to plot the relevant information
+This repository contains the e4nu analysis code and utils to plot the relevant information
 The following are brief descriptions of the code structure, various classes and configuration examples. It also provides with instructions for new e4nu analysers.
 ---------------
 ## Compile and run e4nu analyses

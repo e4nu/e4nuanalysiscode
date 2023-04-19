@@ -8,6 +8,7 @@ To configure the software:
 2. Compile the code "make" from the E4NUANALYSIS directory: `cd $E4NUANALYSIS; make;`
 4. If a previous installation exists, `cd $E4NUANALYSIS; make clean ; make;`
 3. Run the main application, `./e4nuanalysis`
+
 After each run, you will get a new root file containing information from the valid analised events. The information stored in this file, as well as it's name, can be configured from a configuration file (see Configuration section).
 **NOTICE**: as of now, the code only works at the gpvms. 
 ---------------

@@ -42,5 +42,22 @@ The structure of the src directory is as follows:
 The e4nu analysis code is highly factorized into different classes, which inherit from each other. The main structure is depicted in the diagram below:
 ![e4nu diagram](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/PlottingScripts/e4nuanalysis_diagram.png)
 
+Each class has a specific role within the e4nu analysis:
+- **ConfigueI**: it is responsible for the analysis configuration. The configuration is setup with an input txt file (see ConfigFiles/example_configuration.txt). All aspects of the analysis are configurable. It can be used to change the signal Topology definition, or turn off/on analysis cuts/requirements. 
+- **BackgroundI**: it deals with all background substraction methods. 
+- **AnalysisI**: it deals with analysis features common between data and MC. In particular:
+  1. Requires valid event weights
+  2. Electron kinematic cuts
+  3. Cuts on Q2, W 
+  4. Cooks the event - it removes all particles not specified in topology definition. For instance, in the case of a 1p0pi analysis (1p0pip0pim0pi00photons), it would remove neutrons, kaons, or other particles from the event. This simplifies the loops later in the analysis. 
+- **MCCLAS6AnalysisI**: it deals with analysis features specific to MC data for CLAS6 analysis:
+  1. Applies a minimum momentum cut on hadrons
+  2. Smears hadrons kinematics
+  3. Fiducials are taken care for
+  4. Accepance weights are included 
+- **CLAS6AnalysisI**: it deals with analysis features specific to CLAS6 data.
+- **MCCLAS6StandardAnalysis** and **CLAS6StandardAnalysis**: they inherit from the interfaces. The standard classes simply call the `MCCLAS6AnalysisI::GetValidEvent(id)` functions. For analysis that differ from the standard one, a new class should be added with a new implementation of `GetValidEvent(id)`. The analysis is configured with the `AnalysisID` keyword. For now, only the standard analysis is available (analysis id of 0). 
+- **E4NuAnalysis**: it is responsible to call either the MC or data objects according to the Configuration. It also deals with the **signal/bkg** selection. 
+
 ---------------
 ## User Guide

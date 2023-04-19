@@ -68,8 +68,7 @@ Each class has a specific role within the e4nu analysis:
 
 New users might want to include analysis features specific to their analysis. This section depicts the best coding practices for this goal in the e4nuanalysis software.
 
-- The following classes ***musn't be modified***: BackgroundI, AnalysisI, CLAS6AnalysisI and MCCLAS6AnalysisI. These classes **are completely generic**. If the user doesn't want t\
-o use a specific cut or effect, it should simply be turned off using the configuration file.
+- The following classes ***musn't be modified***: BackgroundI, AnalysisI, CLAS6AnalysisI and MCCLAS6AnalysisI. These classes **are completely generic**. If the user doesn't want to use a specific cut or effect, it should simply be turned off using the configuration file.
 - If additional features have to be included, the user should use either the CLAS6StandardAnalysis and CLAS6StandardAnalysis classes as templates for their new class (with a speci\
 fic name for their analysis). In addition, these classes must be accordingly included in `E4NuAnalysis`. A new analysis ID must be asigned to these classes.
 - ConfigureI should not be modified, unless the user wants to add new configurables.

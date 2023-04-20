@@ -92,6 +92,7 @@ EventI * CLAS6EventHolder::GetEvent(const unsigned int event_id) {
   // Set final state particle kinematics
   for ( unsigned int p = 0 ; p < (unsigned int) nf ; ++p ) {
     event -> SetFinalParticle( pdgf[p], Ef[p], pxf[p], pyf[p], pzf[p] ) ; 
+    event -> SetFinalParticleUnCorr( pdgf[p], Ef[p], pxf[p], pyf[p], pzf[p] ) ; 
   }
 
   return event ; 

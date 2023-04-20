@@ -23,7 +23,7 @@ NEvents			100000
 FirstEvent		0
 
 #Topology definition
-IsData			false
+IsData			true
 IsCLAS6Analysis		true
 Toplogy 		11:1,2212:1,-211:1,211:0,22:0,111:0
 MaxBackgroundMultiplicity 5

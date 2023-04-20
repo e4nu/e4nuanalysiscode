@@ -52,7 +52,7 @@ Each class has a specific role within the e4nu analysis:
   1. Requires valid event weights
   2. Electron kinematic cuts
   3. Cuts on Q2, W 
-  4. Cooks the event - it removes all particles not specified in topology definition. For instance, in the case of a 1p0pi analysis, it would remove neutrons, kaons, or other particles from the event. This simplifies the loops later in the analysis. 
+  4. [Cooks the event](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/AnalysisI.cxx#L106) - it removes all particles not specified in topology definition. For instance, in the case of a 1p0pi analysis, it would remove neutrons, kaons, or other particles from the event. This simplifies the loops later in the analysis. 
 - **MCCLAS6AnalysisI**: it deals with analysis features specific to MC data for CLAS6 analysis:
   1. Applies a minimum momentum cut on hadrons
   2. Smears hadrons kinematics
@@ -69,8 +69,7 @@ Each class has a specific role within the e4nu analysis:
 New users might want to include analysis features specific to their analysis. This section depicts the best coding practices for this goal in the e4nuanalysis software.
 
 - The following classes ***musn't be modified***: BackgroundI, AnalysisI, CLAS6AnalysisI and MCCLAS6AnalysisI. These classes **are completely generic**. If the user doesn't want to use a specific cut or effect, it should simply be turned off using the configuration file.
-- If additional features have to be included, the user should use either the CLAS6StandardAnalysis and CLAS6StandardAnalysis classes as templates for their new class (with a speci
-fic name for their analysis). In addition, these classes must be accordingly included in `E4NuAnalysis`. A new analysis ID must be asigned to these classes.
+- If additional features have to be included, the user should use either the CLAS6StandardAnalysis and CLAS6StandardAnalysis classes as templates for their new class (with a specific name for their analysis). In addition, these classes must be accordingly included in `E4NuAnalysis`. A new analysis ID must be asigned to these classes.
 - ConfigureI should not be modified, unless the user wants to add new configurables.
 
 ---------------
@@ -91,22 +90,23 @@ Analysis topology definition:
 Background subtraction method configurables:
 - **MaxBackgroundMultiplicity**: maximum background multiplicity to consider in your background substraction method
 - **NRotations**: number of rotations used in the background substraction method
+- **SubtractBkg**: bool. If true, the background substraction method is used. 
 
-Analysis cuts: set to true or false to turn on or off
-- **ApplyPhiOpeningAngle**
-- **ApplyMomCut**
-- **UsePhiThetaBand**
-- **ApplyThetaSlice**
-- **UseAllSectors** 
-- **ApplyFiducial**
-- **ApplyAccWeights**
-- **ApplyReso**
-- **ApplyMottWeight**
-- **ApplyGoodSectorPhiSlice**
-- **ApplyOutEMomCut**
-- **ApplyQ2Cut**
-- **ApplyWCut**
-- **SubtractBkg**
+AnalysisI cuts: set to true or false to turn on or off
+- **ApplyPhiOpeningAngle**: see [line](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/AnalysisI.cxx#L68).
+- **ApplyThetaSlice**: the limits for electron angle are defined [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisConstantsI.h#L24).
+- **UseAllSectors**: if false, only some sectors are used, see [DetectorUtils](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/utils/DetectorUtils.cxx#L48) for more details.
+- **ApplyFiducial**: used to turn off or on fiducials. Fiducials are used in the [MC analysis](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/MCCLAS6AnalysisI.cxx#L141) as well as the background subtraction method.
+- **ApplyGoodSectorPhiSlice**: see [conf::GoodSectorPhiSlice(double phi)](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisCutsI.cxx#L42)
+- **ApplyOutEMomCut**: the limits are defined [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisConstantsI.h#L15).
+- **ApplyQ2Cut**: [cut on Q2](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisCutsI.cxx#L52) which depends on the beam energy. 
+- **ApplyWCut**: [cut on W](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisCutsI.cxx#L67).
+
+MCCLAS6AnalysisI Cuts: set to either true or false to turn on or off
+- **ApplyMomCut**: it considers a minimum momentum cut for hadrons. The cut depends on the pdg of the hadron and the beam energy. You can find the exact values [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisCutsI.cxx#L13), and it's [implementation](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/MCCLAS6AnalysisI.cxx#L116).
+- **ApplyAccWeights**: used to consider efficiency maps. The maps location is `$E4NUANALYSIS/data/AcceptanceMaps/CLAS6/`. They depend on the beam energy, target and hadron pdg (see [AccpetanceMapsI](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AccpetanceMapsI.cxx#L14)). It is implemented in [MCCLAS6AnalysisI](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/MCCLAS6AnalysisI.cxx#L175).
+- **ApplyReso**: used to smear the particles momentum. It only depends on the hadron pdg. You can find the values used [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/ParticleI.h#L31). See the implementation [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/MCCLAS6AnalysisI.cxx#L198).
+- **ApplyMottWeight**: it scales the events by the [Mott Scaling](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/physics/MCEvent.cxx#L38) to correct for the different coupling
 
 Histogram configurables:
 - **RangeList**: min1:max1,min2:max2,..,minN:maxN

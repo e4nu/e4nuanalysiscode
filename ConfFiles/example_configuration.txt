@@ -30,9 +30,9 @@ MaxBackgroundMultiplicity 5
 NRotations 500
 
 #histogram definition
-RangeList 0:2,0:2,0:2,-180:180,-0.5:5.5,0:2,0:2,0:2,0:2,0:2,0:180,0:2
-ObservableList ECal,OutEMom,LeadingPMom,OutEPhi,Sector,RecoEnu,RecoQ2,RecoW,QELRecoEnu,DeltaPT,DeltaAlphaT,DeltaPhiT
-NBinsList 60,60,60,60,6,80,80,80,80,80,80,80
+RangeList 0.5:1.1,0:2,0:2,0:2,0:10,0:180,0:1,0:2
+ObservableList ECal,OutEMom,LeadingPMom,LeadingPiMMom,LeadingPiMTheta,HadSystemDeltaAlphaT,HadSystemDeltaPhiT,HadSystemDeltaPT
+NBinsList 60,60,60,60,60,60,60,60
 NormalizeHists true
 DebugBkg false
 

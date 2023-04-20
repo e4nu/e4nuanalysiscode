@@ -115,6 +115,8 @@ Histogram configurables:
 - **NormalizeHists**: set to true to normalize from event distribuiton to cross section
 - **DebugBkg**: add background plots for debugging
 
+You can find the available observables [here](https://github.com/e4nu/e4nuanalysiscode/blob/e029793c6e445fe2179e42a30e3c55eeaf1af980/src/physics/EventI.cxx#L149)
+
 Input and output files configurables:
 - **InputFile**: path to input root files with events to analize
 - **OutputFile**: output root files with analised events and histograms

@@ -2,7 +2,7 @@
 UseAllSectors	false
 ApplyFiducial	true
 ApplyAccWeights false
-ApplyReso	false
+ApplyReso	true
 
 ApplyMottWeight false
 ApplyPhiOpeningAngle	false
@@ -19,11 +19,11 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			1000000
+NEvents			100000000
 FirstEvent		0
 
 #Topology definition
-IsData			true
+IsData			false
 IsCLAS6Analysis		true
 Toplogy 		11:1,2212:1,-211:1,211:0,22:0,111:0
 MaxBackgroundMultiplicity 5
@@ -36,7 +36,7 @@ NBinsList 60,60,60,60,60,60,60,60
 NormalizeHists true
 DebugBkg false
 
-InputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GetCharge_genie_filtered_data_e2a_ep_C12_1161_neutrino6_united4_radphot_test_100M.root
-#InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master*.root
-OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/e4nuanalysiscode/test_data
+#InputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GetCharge_genie_filtered_data_e2a_ep_C12_1161_neutrino6_united4_radphot_test_100M.root
+InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master*.root
+OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/e4nuanalysiscode/test_mc_noacc
 XSecFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/e4nuanalysiscode/ConfFiles/xsec_carbon12_spline_GEM21_11b_00_000_Q2_0_1.root

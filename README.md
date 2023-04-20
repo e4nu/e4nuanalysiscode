@@ -52,7 +52,7 @@ Each class has a specific role within the e4nu analysis:
   1. Requires valid event weights
   2. Electron kinematic cuts
   3. Cuts on Q2, W 
-  4. Cooks the event - it removes all particles not specified in topology definition. For instance, in the case of a 1p0pi analysis (1p0pip0pim0pi00photons), it would remove neutrons, kaons, or other particles from the event. This simplifies the loops later in the analysis. 
+  4. Cooks the event - it removes all particles not specified in topology definition. For instance, in the case of a 1p0pi analysis, it would remove neutrons, kaons, or other particles from the event. This simplifies the loops later in the analysis. 
 - **MCCLAS6AnalysisI**: it deals with analysis features specific to MC data for CLAS6 analysis:
   1. Applies a minimum momentum cut on hadrons
   2. Smears hadrons kinematics

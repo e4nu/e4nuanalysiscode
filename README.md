@@ -75,23 +75,23 @@ New analysis can be performed by ***simply modifying the configuration file***, 
 
 ## Configuration Guide 
 
-Run configurables:
+***Run configurables***:
 - **EBeam**: beam energy. It should match the root file content
 - **TargetPdg**: pdg of the target used in the run
 - **NEvents**: number of events to run in your analysis
 - **FirstEvent**: first event to start runing from. It can be used for parallelization
 
-Analysis topology definition:
+***Analysis topology definition***:
 - **IsData**: used to inform the software whether the data is experimental (true) or not (false)
 - **IsCLAS6Analysis**: bool set to true or false. For now it can only be true as CLAS12 is not available yet
 - **Toplogy**: used to define the topology of the analysis. The format must be pdg1:multiplicity1,pdg2:multiplicity2 and so on
 
-Background subtraction method configurables:
+***Background subtraction method configurables***:
 - **MaxBackgroundMultiplicity**: maximum background multiplicity to consider in your background substraction method
 - **NRotations**: number of rotations used in the background substraction method
 - **SubtractBkg**: bool. If true, the background substraction method is used. 
 
-AnalysisI cuts: set to true or false to turn on or off
+***AnalysisI cuts***: set to true or false to turn on or off
 - **ApplyPhiOpeningAngle**: see [line](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/AnalysisI.cxx#L68).
 - **ApplyThetaSlice**: the limits for electron angle are defined [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisConstantsI.h#L24).
 - **UseAllSectors**: if false, only some sectors are used, see [DetectorUtils](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/utils/DetectorUtils.cxx#L48) for more details.
@@ -101,13 +101,13 @@ AnalysisI cuts: set to true or false to turn on or off
 - **ApplyQ2Cut**: [cut on Q2](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisCutsI.cxx#L52) which depends on the beam energy. 
 - **ApplyWCut**: [cut on W](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisCutsI.cxx#L67).
 
-MCCLAS6AnalysisI Cuts: set to either true or false to turn on or off
+***MCCLAS6AnalysisI Cuts***: set to either true or false to turn on or off
 - **ApplyMomCut**: it considers a minimum momentum cut for hadrons. The cut depends on the pdg of the hadron and the beam energy. You can find the exact values [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisCutsI.cxx#L13), and it's [implementation](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/MCCLAS6AnalysisI.cxx#L116).
 - **ApplyAccWeights**: used to consider efficiency maps. The maps location is `$E4NUANALYSIS/data/AcceptanceMaps/CLAS6/`. They depend on the beam energy, target and hadron pdg (see [AccpetanceMapsI](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AccpetanceMapsI.cxx#L14)). It is implemented in [MCCLAS6AnalysisI](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/MCCLAS6AnalysisI.cxx#L175).
 - **ApplyReso**: used to smear the particles momentum. It only depends on the hadron pdg. You can find the values used [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/ParticleI.h#L31). See the implementation [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/MCCLAS6AnalysisI.cxx#L198).
 - **ApplyMottWeight**: it scales the events by the [Mott Scaling](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/physics/MCEvent.cxx#L38) to correct for the different coupling
 
-Histogram configurables:
+***Histogram configurables***:
 - **RangeList**: min1:max1,min2:max2,..,minN:maxN
 - **ObservableList**: obs1,obs2,...,obsN
 - **NBinsList**: nb1,nb2,...,nbN
@@ -116,7 +116,7 @@ Histogram configurables:
 
 You can find the available observables [here](https://github.com/e4nu/e4nuanalysiscode/blob/e029793c6e445fe2179e42a30e3c55eeaf1af980/src/physics/EventI.cxx#L149)
 
-Input and output files configurables:
+***Input and output files configurables***:
 - **InputFile**: path to input root files with events to analize
 - **OutputFile**: output root files with analised events and histograms
 - **XSecFile**: path to xml file for MC normalization

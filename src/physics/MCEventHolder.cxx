@@ -99,7 +99,7 @@ EventI * MCEventHolder::GetEvent(const unsigned int event_id) {
 
   MCEvent * event = new MCEvent() ; 
   fEventHolderChain->GetEntry( event_id ) ; 
-  
+
   event -> SetEventID( iev ) ;
   event -> SetEventWeight( wght ) ;
   event -> SetIsEM( em ) ;   

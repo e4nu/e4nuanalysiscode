@@ -61,7 +61,7 @@ EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
 }
 
 unsigned int E4NuAnalysis::GetNEvents( void ) const {
-    // Include new analysis classes with the corresponding analysis ID:
+  // Include new analysis classes with the corresponding analysis ID:
   if( IsCLAS6Analysis() ) {
     if( IsData() ) {
       if( GetAnalysisTypeID() == 0 ) return CLAS6StandardAnalysis::GetNEvents() ;
@@ -97,62 +97,67 @@ bool E4NuAnalysis::Analyse(void) {
       continue ;
     }
 
-    // Classify events as signal or Background
-    bool is_signal = true ;
-    std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
-    std::map<int,unsigned int> Topology = GetTopology();
-    //Topology ID
-    for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
-      if( it->first == conf::kPdgElectron ) continue ; 
-      else if( part_map[it->first].size() != it->second ) {
-	is_signal = false ; 
-	break ; 
-      } 
-    }
+    this->ClassifyEvent( event ) ; // Classify events as signal or Background
 
-    unsigned int signal_mult = GetMinBkgMult() ;  
-    if( is_signal ) {
-      // Storing in background the signal events
-      if( kAnalysedEventHolder.find(signal_mult) == kAnalysedEventHolder.end() ) {
-	std::vector<EventI*> temp ( 1, event ) ;
-	kAnalysedEventHolder[signal_mult] = temp ; 
-      } else { 
-	kAnalysedEventHolder[signal_mult].push_back( event ) ; 
-      }
-    } else { // BACKGROUND 
-      event->SetIsBkg(true); 
-
-      // Get Number of signal particles, "multiplicity"
-      unsigned int mult_bkg = event->GetNSignalParticles( part_map, Topology ) ; 
-
-      // Check events are above minumum particle multiplicity 
-      bool is_signal_bkg = true ; 
-      std::map<int,std::vector<TLorentzVector>> hadrons = event->GetFinalParticles4Mom() ;
-      for( auto it = Topology.begin(); it!=Topology.end();++it){
-	if( it->first == conf::kPdgElectron ) continue ; 
-	for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
-	  if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() < it->second ) { is_signal_bkg = false ; break ; } 
-	  if( hadrons.find(it->first) == hadrons.end() &&  it->second != 0 ) { is_signal_bkg = false ; break ; }
-	}
-      }
-
-      if( !is_signal_bkg ) {
-	continue ; 
-      }      
-      // Only store background events with multiplicity > mult_signal
-      // Also ignore background events above the maximum multiplicity
-      if( mult_bkg > signal_mult && mult_bkg <= GetMaxBkgMult() ) {
-	if( kAnalysedEventHolder.find(mult_bkg) == kAnalysedEventHolder.end() ) {
-	  std::vector<EventI*> temp ( 1, event ) ;
-	  kAnalysedEventHolder[mult_bkg] = temp ; 
-	} else { 
-	  kAnalysedEventHolder[mult_bkg].push_back( event ) ; 
-	}
-      }
-      continue ; 
-    }
   }  
   return true ; 
+}
+
+void E4NuAnalysis::ClassifyEvent( EventI * event ) { 
+  // Classify as signal or background based on topology
+  bool is_signal = true ;
+  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
+  std::map<int,unsigned int> Topology = GetTopology();
+  //Topology ID
+  for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
+    if( it->first == conf::kPdgElectron ) continue ; 
+    else if( part_map[it->first].size() != it->second ) {
+      is_signal = false ; 
+      break ; 
+    } 
+  }
+
+  // Store in AnalysedEventHolder
+  unsigned int signal_mult = GetMinBkgMult() ;  
+  if( is_signal ) {
+    // Storing in background the signal events
+    if( kAnalysedEventHolder.find(signal_mult) == kAnalysedEventHolder.end() ) {
+      std::vector<EventI*> temp ( 1, event ) ;
+      kAnalysedEventHolder[signal_mult] = temp ; 
+    } else { 
+      kAnalysedEventHolder[signal_mult].push_back( event ) ; 
+    }
+  } else { // BACKGROUND 
+    event->SetIsBkg(true); 
+
+    // Get Number of signal particles, "multiplicity"
+    unsigned int mult_bkg = event->GetNSignalParticles( part_map, Topology ) ; 
+      
+    // Check events are above minumum particle multiplicity 
+    bool is_signal_bkg = true ; 
+    std::map<int,std::vector<TLorentzVector>> hadrons = event->GetFinalParticles4Mom() ;
+    for( auto it = Topology.begin(); it!=Topology.end();++it){
+      if( it->first == conf::kPdgElectron ) continue ; 
+      for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
+	if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() < it->second ) { is_signal_bkg = false ; break ; } 
+	if( hadrons.find(it->first) == hadrons.end() &&  it->second != 0 ) { is_signal_bkg = false ; break ; }
+      }
+    }
+
+    if( !is_signal_bkg ) return ; 
+
+    // Only store background events with multiplicity > mult_signal
+    // Also ignore background events above the maximum multiplicity
+    if( mult_bkg > signal_mult && mult_bkg <= GetMaxBkgMult() ) {
+      if( kAnalysedEventHolder.find(mult_bkg) == kAnalysedEventHolder.end() ) {
+	std::vector<EventI*> temp ( 1, event ) ;
+	kAnalysedEventHolder[mult_bkg] = temp ; 
+      } else { 
+	kAnalysedEventHolder[mult_bkg].push_back( event ) ; 
+      }
+    }
+  }
+  return ; 
 }
 
 bool E4NuAnalysis::SubtractBackground() {

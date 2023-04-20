@@ -28,6 +28,7 @@ namespace e4nu {
 
     bool LoadData(void) ; 
     bool Analyse(void) ; 
+    void ClassifyEvent( EventI * event ) ;
     bool SubtractBackground( void ) ;
     bool Finalise(void);
 

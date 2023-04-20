@@ -99,7 +99,6 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     } else if ( param[i] == "IsData" ) {
       if( value[i] == "true" ) kIsData = true ; 
       else kIsData = false ; 
-      std::cout << " IS DATA " << kIsData << std::endl;
     } else if ( param[i] == "IsCLAS6Analysis") { 
       if( value[i] == "true" ) { kIsCLAS6Analysis = true ; kIsCLAS12Analysis = false ;} 
       else kIsCLAS6Analysis = false ; 

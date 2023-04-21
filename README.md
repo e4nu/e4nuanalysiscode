@@ -71,6 +71,25 @@ Each class has a specific role within the e4nu analysis:
 
 An event is defined with the [EventI class](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/EventI.h). There's two specialitzations of this base class, one for MC events, [MCEvent](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/MCEvent.h), and one for CLAS6 data events, [CLAS6Event](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/CLAS6Event.h).
 
+The main difference between `CLAS6Event` and `MCEvent` members is that `MCEvent` has the information on true level GENIE variables, such as the type of interaction, or before FSI kinematics. These are not accessible for `CLAS6Event`s, hence the different specialitzation. 
+
+The base class, `EventI`, contains all the relevant information for analysis: 
+- Event ID
+- Target pdg code
+- Incoming and Outcoming lepton pdg codes
+- Initial lepton kinematics (TLorentzVector)
+- Final lepton kinematics (TLorentzVector)
+- Final hadrons kinematics: map<int,vector<TLorentzVector>>. The key is the particle pdg code. For each pdg, there's a vector containing all Lorentz Vector. For instance, if there's two pions, there will be two entries with pdg code 211. Pdg codes can easily be accessed using the [ParticleI members](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/conf/ParticleI.h). For instance, to get the number of pions in our event, we can simply do `(event->GetFinalParticles4Mom())[conf::kPdgPiP].size()`. 
+- The same variables as above are stored for the uncorrected kinematics (before we take into account smearing effects). These are only relevant for MC data. 
+- Number of reconstructed hadrons (for protons, pions, and so on)
+- Mott weight
+- Event weight 
+- Acceptance weight (only relevant for MC)
+- Total Event weight : total weight = event weight * acceptance weight * mott weight 
+- Event multiplicity : number of topology particles in event. For instance, for a 1p0pi analysis, a 1p0pi event has multiplicity 1. A 2p0pi event has multiplicity 2. It should only be used after the event has been cooked (this is handled in AnalysisI). 
+
+The corresponding getter and setter functions are available to access and modify an event during the analysis. 
+
 ---------------
 
 ## User Guide

@@ -60,7 +60,7 @@ Each class has a specific role within the e4nu analysis:
   1. Applies a minimum momentum cut on hadrons
   2. Smears hadrons kinematics
   3. Fiducials are taken care for
-  4. Acceptance weights are included 
+  4. Acceptance weights are computed 
 - **CLAS6AnalysisI**: it deals with analysis features specific to CLAS6 data.
 - **MCCLAS6StandardAnalysis** and **CLAS6StandardAnalysis**: they inherit from the interfaces. The standard classes simply call the `MCCLAS6AnalysisI::GetValidEvent(id)` functions. For analysis that differ from the standard one, a new class should be added with a new implementation of `GetValidEvent(id)`. The analysis is configured with the `AnalysisID` keyword. For now, only the standard analysis is available (analysis id of 0). 
 - **E4NuAnalysis**: it is responsible to call either the MC or data objects according to the Configuration. It also deals with the **signal/bkg** selection. 

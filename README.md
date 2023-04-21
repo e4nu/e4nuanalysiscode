@@ -50,7 +50,7 @@ The (...) boxes indicate that new classes might be added to accomodate new analy
 
 Each class has a specific role within the e4nu analysis:
 - **ConfigueI**: it is responsible for the analysis configuration. The configuration is setup with an input txt file (see ConfigFiles/example_configuration.txt). All aspects of the analysis are configurable. It can be used to change the signal Topology definition, or turn off/on analysis cuts/requirements. 
-- **BackgroundI**: it deals with all background subtraction methods. 
+- **BackgroundI**: it deals with all background subtraction methods. More information on the available configuration setups can be found in Configuration Guide.
 - **AnalysisI**: it deals with analysis features common between data and MC. In particular:
   1. Requires valid event weights
   2. Electron kinematic cuts

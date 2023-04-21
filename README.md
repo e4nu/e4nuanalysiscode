@@ -80,7 +80,7 @@ The base class, `EventI`, contains all the relevant information for analysis:
 - Incoming and Outcoming lepton pdg codes
 - Initial lepton kinematics (TLorentzVector)
 - Final lepton kinematics (TLorentzVector)
-- Final hadrons kinematics: map<int,vector<TLorentzVector>>. The key is the particle pdg code. For each pdg, there's a vector containing all Lorentz Vector. For instance, if there's two pions, there will be two entries with pdg code 211. Pdg codes can easily be accessed using the [ParticleI members](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/conf/ParticleI.h). For instance, to get the number of pions in our event, we can simply do `(event->GetFinalParticles4Mom())[conf::kPdgPiP].size()`. 
+- Final hadrons kinematics: map<int,vector< TLorentzVector > >. The key is the particle pdg code. For each pdg, there's a vector containing all Lorentz Vector. For instance, if there's two pions, there will be two entries with pdg code 211. Pdg codes can easily be accessed using the [ParticleI members](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/conf/ParticleI.h). For instance, to get the number of pions in our event, we can simply do `(event->GetFinalParticles4Mom())[conf::kPdgPiP].size()`. 
 - The same variables as above are stored for the uncorrected kinematics (before we take into account smearing effects). These are only relevant for MC data. 
 - Number of reconstructed hadrons (for protons, pions, and so on)
 - Mott weight

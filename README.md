@@ -141,7 +141,7 @@ E4nu users might want to ***include analysis features specific to their analysis
 - **RangeList**: min1:max1,min2:max2,..,minN:maxN
 - **ObservableList**: obs1,obs2,...,obsN
 - **NBinsList**: nb1,nb2,...,nbN
-- **NormalizeHists**: set to true to normalize from event distribuiton to cross section
+- **NormalizeHists**: set to true to normalize from event distribution to cross section
 - **DebugBkg**: add background plots for debugging
 
 You can find the available observables [here](https://github.com/e4nu/e4nuanalysiscode/blob/e029793c6e445fe2179e42a30e3c55eeaf1af980/src/physics/EventI.cxx#L149)

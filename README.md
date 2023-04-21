@@ -39,7 +39,7 @@ The structure of the src directory is as follows:
 
 ## E4nu Analysis Code
 
-The analysis app [e4nuanalysis.cxx](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/apps/e4nuanalysis.cxx) is the main executable. It's content is simple: it creates an E4NuAnalysis object (see below details on inheritance chain), configured with `ConfigFiles/example_configuration`. This object is then used to load the data from an input root file ([analysis -> LoadData()](https://github.com/e4nu/e4nuanalysiscode/blob/721dd5f41d51f4827630165cb8f86bac7c127865/src/apps/e4nuanalysis.cxx#L28)), run the analysis and background subtraction methods, and finally, store the analized information in a TTree as well as Histograms.
+The analysis app [e4nuanalysis.cxx](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/apps/e4nuanalysis.cxx) is the main executable. It's content is simple: it instiantates an E4NuAnalysis object (see below details on inheritance chain), configured with `ConfigFiles/example_configuration`. This object is then used to load the data from an input root file ([analysis -> LoadData()](https://github.com/e4nu/e4nuanalysiscode/blob/721dd5f41d51f4827630165cb8f86bac7c127865/src/apps/e4nuanalysis.cxx#L28)), run the analysis and background subtraction methods, and finally, store the analized information in a TTree as well as Histograms.
 
 The main analysis flow is as follows:
 ![e4nu flow](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/PlottingScripts/e4nu_analysis_flow.png)

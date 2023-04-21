@@ -71,7 +71,7 @@ Each class has a specific role within the e4nu analysis:
 
 An event is defined with the [EventI class](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/EventI.h). There's two specialitzations of this base class, one for MC events, [MCEvent](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/MCEvent.h), and one for CLAS6 data events, [CLAS6Event](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/CLAS6Event.h).
 
-The main difference between `CLAS6Event` and `MCEvent` members is that `MCEvent` has the information on true level GENIE variables, such as the type of interaction, or before FSI kinematics. These are not accessible for `CLAS6Event`s, hence the different specialitzation. 
+The main difference between `CLAS6Event` and `MCEvent` members is that `MCEvent` has true level GENIE information, such as the type of interaction, or before FSI kinematics. These are not accessible for `CLAS6Event`s, hence the different specialitzation. 
 
 The base class, `EventI`, contains all the relevant information for analysis: 
 - Event ID
@@ -145,6 +145,9 @@ E4nu users might want to ***include analysis features specific to their analysis
 - **DebugBkg**: add background plots for debugging
 
 You can find the available observables [here](https://github.com/e4nu/e4nuanalysiscode/blob/e029793c6e445fe2179e42a30e3c55eeaf1af980/src/physics/EventI.cxx#L149)
+
+It is also possible to change the configuration to use GENIE information before FSI effects. To do so, simply do:
+- **No FSI** true
 
 ***Input and output files configurables***:
 - **InputFile**: path to input root files with events to analize

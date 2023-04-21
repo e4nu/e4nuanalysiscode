@@ -67,6 +67,12 @@ Each class has a specific role within the e4nu analysis:
 
 ---------------
 
+## Accessing Event Information
+
+An event is defined with the [EventI class](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/EventI.h). There's two specialitzations of this base class, one for MC events, [MCEvent](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/MCEvent.h), and one for CLAS6 data events, [CLAS6Event](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/CLAS6Event.h).
+
+---------------
+
 ## User Guide
 New analysis can be performed by ***simply modifying the configuration file***, where the topology definition can be adjusted to the new analysis. 
 

@@ -46,6 +46,7 @@ The main analysis flow is as follows:
 
 The e4nu analysis code is highly factorized into different classes, which inherit from each other. ConfigureI is the base class, E4NuAnalyisis is the top derived class. The main structure is depicted in the diagram below:
 ![e4nu diagram](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/PlottingScripts/e4nuanalysis_diagram.png)
+The (...) boxes indicate that new classes might be added to accomodate new analysis cuts, specific to a new analysis (see user gide section below).
 
 Each class has a specific role within the e4nu analysis:
 - **ConfigueI**: it is responsible for the analysis configuration. The configuration is setup with an input txt file (see ConfigFiles/example_configuration.txt). All aspects of the analysis are configurable. It can be used to change the signal Topology definition, or turn off/on analysis cuts/requirements. 

@@ -69,7 +69,7 @@ Each class has a specific role within the e4nu analysis:
 ## User Guide
 New analysis can be performed by ***simply modifying the configuration file***, where the topology definition can be adjusted to the new analysis. 
 
-E4nu users might want to include analysis features specific to their analysis. This section depicts the best coding practices for this goal in the e4nuanalysis software.
+E4nu users might want to ***include analysis features specific to their analysis***. This section depicts the best coding practices for this goal in the e4nuanalysis software.
 
 - **Musn't modify**: The following classes ***musn't be modified***: BackgroundI, AnalysisI, CLAS6StandardAnalysis, MCCLAS5StandardAnalysis, CLAS6AnalysisI and MCCLAS6AnalysisI. These classes **are completely generic**. If the user doesn't want to use a specific cut or effect, this should simply be turned off using the configuration file. 
 - **To modify**: If additional features have to be included, the user should use either the CLAS6StandardAnalysis and CLAS6StandardAnalysis classes as templates for their new class (with a specific name for their analysis). For instance, if the user wants to write new features specific to a Transparency measurement, for instance, these should be specified in two new classes, such as MCCLAS6TransparencyAnalysis and CLAS6TransparencyAnalysis. In addition, the new classes must be accordingly included in `E4NuAnalysis`, as `E4NuAnalysis` will inherit from those. A new analysis ID must be asigned to these classes to be able to configure it with the input configuration file.

@@ -94,13 +94,53 @@ bool AnalysisI::Analyse( EventI * event ) {
     }
   }
 
-  // Step 2 : Cook event
+  // Apply Mott Scaling to correct for different coupling
+  if ( ApplyMottScaling() ) { 
+    event -> SetMottXSecWeight() ; 
+  }
+
+  // Store analysis record before momentum cuts (0) :
+  event->StoreAnalysisRecord(kid_bcuts);
+
+  // Step 2: Apply momentum cut (detector specific) 
+  this->ApplyMomentumCut( event ) ; 
+
+  // Store analysis record after momentum cuts:
+  event->StoreAnalysisRecord(kid_acuts);
+
+  // Step 3 : Cook event
   // Remove particles not specified in topology maps
   // These are ignored in the analysis
   // No Cuts are applied on those
   this->CookEvent( event ) ; 
   
   return true ; 
+}
+
+
+void AnalysisI::ApplyMomentumCut( MCEvent * event ) {
+  if( ApplyMomCut() ) { 
+    std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticlesUnCorr4Mom() ;
+    TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
+    // Remove particles below threshold
+    for( auto it = unsmeared_part_map.begin() ; it != unsmeared_part_map.end() ; ++it ) {
+      std::vector<TLorentzVector> above_th_particles ; 
+      for( unsigned int i = 0 ; i < unsmeared_part_map[it->first].size() ; ++i ) {
+	// Only store particles above threshold
+	if( unsmeared_part_map[it->first][i].P() <= conf::GetMinMomentumCut( it->first, GetConfiguredEBeam() ) )  continue ; 
+	 
+	// Apply photon cuts for MC and data 
+	if( it->first == conf::kPdgPhoton ) {
+	  if( ! conf::ApplyPhotRadCut( out_mom, unsmeared_part_map[it->first][i] ) ) continue ; 
+	}
+	above_th_particles.push_back( unsmeared_part_map[it->first][i] ) ;
+      }
+      unsmeared_part_map[it->first] = above_th_particles ;
+    }
+    event -> SetFinalParticlesKinematics( unsmeared_part_map ) ;
+    event -> SetFinalParticlesUnCorrKinematics( unsmeared_part_map ) ; 
+  }
+  return ;
 }
 
 void AnalysisI::CookEvent( EventI * event ) { 

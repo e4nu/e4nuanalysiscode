@@ -54,13 +54,13 @@ Each class has a specific role within the e4nu analysis:
 - **AnalysisI**: it deals with analysis features common between data and MC. In particular:
   1. Requires valid event weights
   2. Electron kinematic cuts
-  3. Cuts on Q2, W 
-  4. [Cooks the event](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/AnalysisI.cxx#L106) - it removes all particles not specified in topology definition. For instance, in the case of a 1p0pi analysis, it would remove neutrons, kaons, or other particles from the event. This simplifies the loops later in the analysis. 
+  3. Cuts on Q2, W
+  4. Applies a minimum momentum cut on hadrons 
+  5. [Cooks the event](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/AnalysisI.cxx#L106) - it removes all particles not specified in topology definition. For instance, in the case of a 1p0pi analysis, it would remove neutrons, kaons, or other particles from the event. This simplifies the loops later in the analysis. 
 - **MCCLAS6AnalysisI**: it deals with analysis features specific to MC data for CLAS6 analysis:
-  1. Applies a minimum momentum cut on hadrons
-  2. Smears hadrons kinematics
-  3. Fiducials are taken care for
-  4. Acceptance weights are computed 
+  1. Smears hadrons kinematics
+  2. Fiducials are taken care for
+  3. Acceptance weights are computed 
 - **CLAS6AnalysisI**: it deals with analysis features specific to CLAS6 data.
 - **MCCLAS6StandardAnalysis** and **CLAS6StandardAnalysis**: they inherit from the MCCLAS6AnalysisI and CLAS6AnalysisI interfaces. The standard classes are templates to facilitate the integration of new analysis by new users. For this reason, the standard classes simply call the `MCCLAS6AnalysisI::GetValidEvent(id)` or `CLAS6AnalysisI::GetValidEvent(id)` functions. For analysis that differ from the standard one, a new class should be added with a new implementation of `GetValidEvent(id)`, using these classes as templates. The analysis is configured with the `AnalysisID` keyword. For now, only the standard analysis is available (analysis id of 0). New analysis would require a new analysis ID.
 - **E4NuAnalysis**: this is the main class used for analysis. It is responsible to call either the MC or data objects according to the Configuration. It also deals with the **signal/bkg** selection. An E4NuAnalysis object is defined in `e4nuanalysis.cxx` using a configuration file. 
@@ -131,9 +131,9 @@ E4nu users might want to ***include analysis features specific to their analysis
 - **ApplyOutEMomCut**: the limits are defined [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisConstantsI.h#L15).
 - **ApplyQ2Cut**: [cut on Q2](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisCutsI.cxx#L52) which depends on the beam energy. 
 - **ApplyWCut**: [cut on W](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisCutsI.cxx#L67).
+- **ApplyMomCut**: it considers a minimum momentum cut for hadrons. The cut depends on the pdg of the hadron and the beam energy. You can find the exact values [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisCutsI.cxx#L13), and it's [implementation](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/MCCLAS6AnalysisI.cxx#L116).
 
 ***MCCLAS6AnalysisI Cuts***: set to either true or false to turn on or off
-- **ApplyMomCut**: it considers a minimum momentum cut for hadrons. The cut depends on the pdg of the hadron and the beam energy. You can find the exact values [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AnalysisCutsI.cxx#L13), and it's [implementation](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/MCCLAS6AnalysisI.cxx#L116).
 - **ApplyAccWeights**: used to consider efficiency maps. The maps location is `$E4NUANALYSIS/data/AcceptanceMaps/CLAS6/`. They depend on the beam energy, target and hadron pdg (see [AccpetanceMapsI](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/AccpetanceMapsI.cxx#L14)). It is implemented in [MCCLAS6AnalysisI](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/MCCLAS6AnalysisI.cxx#L175).
 - **ApplyReso**: used to smear the particles momentum. It only depends on the hadron pdg. You can find the values used [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/ParticleI.h#L31). See the implementation [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/MCCLAS6AnalysisI.cxx#L198).
 - **ApplyMottWeight**: it scales the events by the [Mott Scaling](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/physics/MCEvent.cxx#L38) to correct for the different coupling

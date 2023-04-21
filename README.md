@@ -138,6 +138,9 @@ E4nu users might want to ***include analysis features specific to their analysis
 - **ApplyReso**: used to smear the particles momentum. It only depends on the hadron pdg. You can find the values used [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/conf/ParticleI.h#L31). See the implementation [here](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/MCCLAS6AnalysisI.cxx#L198).
 - **ApplyMottWeight**: it scales the events by the [Mott Scaling](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/physics/MCEvent.cxx#L38) to correct for the different coupling
 
+It is also possible to change the configuration to use GENIE information before FSI effects. To do so, simply do:
+- **No FSI** true
+
 ***Histogram configurables***:
 - **RangeList**: min1:max1,min2:max2,..,minN:maxN
 - **ObservableList**: obs1,obs2,...,obsN
@@ -146,9 +149,6 @@ E4nu users might want to ***include analysis features specific to their analysis
 - **DebugBkg**: add background plots for debugging
 
 You can find the available observables [here](https://github.com/e4nu/e4nuanalysiscode/blob/e029793c6e445fe2179e42a30e3c55eeaf1af980/src/physics/EventI.cxx#L149)
-
-It is also possible to change the configuration to use GENIE information before FSI effects. To do so, simply do:
-- **No FSI** true
 
 ***Input and output files configurables***:
 - **InputFile**: path to input root files with events to analize

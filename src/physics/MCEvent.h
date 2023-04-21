@@ -47,7 +47,6 @@ namespace e4nu {
     TLorentzVector GetVertex(void) const { return fVertex ; }
 
     void SetAccWght( const double wght ) { fAccWght = wght ; }
-    void SetMottXSecWeight(void) ; 
 
     friend class MCEventHolder ; 
 

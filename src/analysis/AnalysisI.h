@@ -31,6 +31,7 @@ namespace e4nu {
   protected : 
     void CookEvent( EventI * event ) ;
     void PlotBkgInformation( EventI * event ) ;
+    void ApplyMomentumCut( EventI * event ) ;
     double GetElectronMinTheta( TLorentzVector emom ) ;      
 
     // ID for Background historams

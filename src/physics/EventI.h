@@ -44,6 +44,7 @@ namespace e4nu {
     double GetTotalWeight(void) const { return fWeight * fAccWght * fMottXSecWght ; }
     double GetEventWeight(void) const { return fWeight ; }
     void SetEventWeight( double wght ) { fWeight = wght ; }
+    void SetMottXSecWeight(void) ; 
     double GetMottXSecWeight(void) const { return fMottXSecWght ; }
     double GetAccWght(void) const { return fAccWght ; }
     bool IsBkg(void) const{ return fIsBkg ; }

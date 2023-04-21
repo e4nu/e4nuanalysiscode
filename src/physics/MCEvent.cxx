@@ -32,8 +32,3 @@ MCEvent::MCEvent(): EventI() {
 
 MCEvent::~MCEvent() {;}
 
-void MCEvent::SetMottXSecWeight(void) { 
-  // Set Mott XSec
-  double reco_Q2 = utils::GetRecoQ2( this->GetOutLepton4Mom(), this->GetInLepton4Mom().E() ) ;
-  fMottXSecWght = std::pow( reco_Q2, 2 ) ; 
-}

@@ -62,7 +62,7 @@ Each class has a specific role within the e4nu analysis:
   3. Fiducials are taken care for
   4. Acceptance weights are computed 
 - **CLAS6AnalysisI**: it deals with analysis features specific to CLAS6 data.
-- **MCCLAS6StandardAnalysis** and **CLAS6StandardAnalysis**: they inherit from the interfaces. The standard classes simply call the `MCCLAS6AnalysisI::GetValidEvent(id)` functions. For analysis that differ from the standard one, a new class should be added with a new implementation of `GetValidEvent(id)`. The analysis is configured with the `AnalysisID` keyword. For now, only the standard analysis is available (analysis id of 0). 
+- **MCCLAS6StandardAnalysis** and **CLAS6StandardAnalysis**: they inherit from the MCCLAS6AnalysisI and CLAS6AnalysisI interfaces. The standard classes are templates to facilitate the integration of new analysis by new users. For this reason, the standard classes simply call the `MCCLAS6AnalysisI::GetValidEvent(id)` or `CLAS6AnalysisI::GetValidEvent(id)` functions. For analysis that differ from the standard one, a new class should be added with a new implementation of `GetValidEvent(id)`, using these classes as templates. The analysis is configured with the `AnalysisID` keyword. For now, only the standard analysis is available (analysis id of 0). New analysis would require a new analysis ID.
 - **E4NuAnalysis**: it is responsible to call either the MC or data objects according to the Configuration. It also deals with the **signal/bkg** selection. 
 
 ---------------

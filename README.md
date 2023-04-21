@@ -32,8 +32,8 @@ The structure of the src directory is as follows:
 - **utils** : it provides with utils which can be used for any analysis. Some examples are `Fiducial.h`, `KinematicUtils.h` (with event kinematics definitions), and so on.  
 - **physics** : it contains the implementation of `EventI`, and the corresponding specializations for data and MC, `CLAS6Event` and `MCEvent`. It also contains the `EventHolder` class and it's specializations. These are used to load the data from the input root files. 
 - **analysis** : this directory contains the main classes used for analysis. The structure it's explained in the next section. 
-- **apps** : contains the main executable
--  make : it contains some make files needed for compilation 
+- **apps** : contains the main executable, `e4nuanalysis.cxx`
+-  make : it contains some make files needed for compilation
 
 ---------------
 

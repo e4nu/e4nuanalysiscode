@@ -71,9 +71,9 @@ New analysis can be performed by ***simply modifying the configuration file***, 
 
 E4nu users might want to include analysis features specific to their analysis. This section depicts the best coding practices for this goal in the e4nuanalysis software.
 
-- **Musn't modify**: The following classes ***musn't be modified***: BackgroundI, AnalysisI, CLAS6StandardAnalysis, MCCLAS5StandardAnalysis, CLAS6AnalysisI and MCCLAS6AnalysisI. These classes **are completely generic**. If the user doesn't want to use a specific cut or effect, this should simply be turned off using the configuration file.
+- **Musn't modify**: The following classes ***musn't be modified***: BackgroundI, AnalysisI, CLAS6StandardAnalysis, MCCLAS5StandardAnalysis, CLAS6AnalysisI and MCCLAS6AnalysisI. These classes **are completely generic**. If the user doesn't want to use a specific cut or effect, this should simply be turned off using the configuration file. 
 - **To modify**: If additional features have to be included, the user should use either the CLAS6StandardAnalysis and CLAS6StandardAnalysis classes as templates for their new class (with a specific name for their analysis). For instance, if the user wants to write new features specific to a Transparency measurement, for instance, these should be specified in two new classes, such as MCCLAS6TransparencyAnalysis and CLAS6TransparencyAnalysis. In addition, the new classes must be accordingly included in `E4NuAnalysis`, as `E4NuAnalysis` will inherit from those. A new analysis ID must be asigned to these classes to be able to configure it with the input configuration file.
-- **Can modify**: ConfigureI should not be modified, unless the user wants to add new configurables.
+- **Can modify**: ConfigureI should not be modified, unless the user wants to add new configurables. The main executable, `e4nuanalysis.cxx`, doesn't have to be modified, as it calls the analysis functions in a specific order. It is possible to change the configuration file name from [there](https://github.com/e4nu/e4nuanalysiscode/blob/721dd5f41d51f4827630165cb8f86bac7c127865/src/apps/e4nuanalysis.cxx#L25). 
 
 ---------------
 

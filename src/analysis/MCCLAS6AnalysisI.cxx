@@ -247,7 +247,6 @@ bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & even
   // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult() ; 
   for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) {
-    // if( IsData() ) 
     StoreTree( static_cast<MCEvent*>( event_holder[min_mult][k] ) );
 
     double norm_weight = event_holder[min_mult][k]->GetTotalWeight() ;
@@ -262,8 +261,6 @@ bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & even
   }
 
   // Normalize
-  double domega = 0.01; // sr
-
   if ( NormalizeHist() ) {
     for( unsigned int j = 0 ; j < GetObservablesTag().size() ; ++j ) {
       double NBins = kHistograms[j]->GetNbinsX(); 
@@ -278,7 +275,7 @@ bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & even
 	kHistograms[j]->SetBinError(k,newerror);
       }
 
-      kHistograms[j]->Scale( kXSec * kConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / ( GetNEventsToRun() * domega ) );
+      kHistograms[j]->Scale( kXSec * kConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / GetNEventsToRun() );
     }
   }
 

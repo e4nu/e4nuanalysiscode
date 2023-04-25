@@ -103,7 +103,7 @@ bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_
   // Normalize
   unsigned int tgt_pdg = GetConfiguredTarget() ; 
   double EBeam = GetConfiguredEBeam() ; 
-  double domega = 0.01; // sr
+
   // Get constants
   unsigned int MassNumber = utils::GetMassNumber( tgt_pdg ) ;
   double IntegratedCharge = conf::GetIntegratedCharge( tgt_pdg, EBeam ); 
@@ -123,7 +123,7 @@ bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_
 	kHistograms[j]->SetBinContent(k,newcontent);
 	kHistograms[j]->SetBinError(k,newerror);
       }
-      kHistograms[j]->Scale( 1./ ( IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor / MassNumber ) * kConversionFactorCm2ToMicroBarn / domega ) ;
+      kHistograms[j]->Scale(  kConversionFactorCm2ToMicroBarn * MassNumber / ( IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor ) ) ;
     }
   }
 

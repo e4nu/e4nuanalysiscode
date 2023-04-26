@@ -37,7 +37,6 @@ double utils::GetAcceptanceMapWeight( TH3D & acc, TH3D & gen, const TLorentzVect
 } 
 
 unsigned int utils::GetSector( double phi ) {
-  phi += TMath::Pi() ;
   phi *= TMath::RadToDeg() ; 
   phi += 30 ; //Add 30 degree for plotting and photon phi cut
   if ( phi < 0 ) phi += 360 ; //Add 360 so that electron phi is between 0 and 360 degree

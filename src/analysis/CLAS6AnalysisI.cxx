@@ -1,94 +1,74 @@
 /*
-  * Analysis Interface base class
-  * 
-  */
- #include <iostream>
- #include "TFile.h"
- #include "TDirectoryFile.h"
- #include "analysis/CLAS6AnalysisI.h"
- #include "utils/ParticleUtils.h"
- #include "utils/KinematicUtils.h"
- #include "conf/ParticleI.h"
- #include "conf/TargetI.h"
- #include "utils/DetectorUtils.h"
- #include "conf/FiducialCutI.h"
- #include "conf/AccpetanceMapsI.h"
- #include "conf/AnalysisCutsI.h"
- #include "conf/AnalysisConstantsI.h"
+ * Analysis Interface base class
+ * 
+ */
+#include <iostream>
+#include "TFile.h"
+#include "TDirectoryFile.h"
+#include "analysis/CLAS6AnalysisI.h"
+#include "utils/ParticleUtils.h"
+#include "utils/KinematicUtils.h"
+#include "conf/ParticleI.h"
+#include "conf/TargetI.h"
+#include "utils/ParticleUtils.h"
+#include "utils/DetectorUtils.h"
+#include "conf/FiducialCutI.h"
+#include "conf/AccpetanceMapsI.h"
+#include "conf/AnalysisCutsI.h"
+#include "conf/AnalysisConstantsI.h"
+#include "conf/CLAS6ConstantsI.h"
+#include "conf/ConstantsI.h"
 
- using namespace e4nu ; 
+using namespace e4nu ; 
 
- CLAS6AnalysisI::CLAS6AnalysisI() {
-   // if( IsData() ) {
-   //kAnalysisTree = std::unique_ptr<TTree>( new TTree("CLAS6Tree","CLAS6 Tree") ) ; 
-   /// kMult_signal = GetNTopologyParticles() ; 
-   //}
-   this->Initialize() ;
- }
+CLAS6AnalysisI::CLAS6AnalysisI() {
+  if( IsData() ) kAnalysisTree = std::unique_ptr<TTree>( new TTree("CLAS6Tree","CLAS6 Tree") ) ; 
+  kMult_signal = GetNTopologyParticles() ; 
+   
+  this->Initialize() ;
+}
 
- CLAS6AnalysisI::~CLAS6AnalysisI() {
-   delete fData;
- }
+CLAS6AnalysisI::~CLAS6AnalysisI() {
+  delete fData;
+}
 
- bool CLAS6AnalysisI::LoadData( void ) {
-   if( ! IsConfigured() ) return false ; 
+bool CLAS6AnalysisI::LoadData( void ) {
+  if( ! IsConfigured() ) return false ; 
 
-   std::string file = GetInputFile() ; 
-   double nevents = GetNEventsToRun() ; 
-   double first_event = GetFirstEventToRun() ; 
+  std::string file = GetInputFile() ; 
+  double nevents = GetNEventsToRun() ; 
+  double first_event = GetFirstEventToRun() ; 
 
-   if( ! kIsDataLoaded ) { 
-     fData = new CLAS6EventHolder( file, first_event, nevents ) ;
-     kNEvents = fData->GetNEvents() ; 
-     kIsDataLoaded = true ;
-   }
-   return kIsDataLoaded ; 
- }
+  if( ! kIsDataLoaded ) { 
+    fData = new CLAS6EventHolder( file, first_event, nevents ) ;
+    kNEvents = fData->GetNEvents() ; 
+    kIsDataLoaded = true ;
+  }
+  return kIsDataLoaded ; 
+}
 
- EventI * CLAS6AnalysisI::GetEvent( const unsigned int event_id ) {
-   return fData -> GetEvent(event_id) ; 
- }
+EventI * CLAS6AnalysisI::GetEvent( const unsigned int event_id ) {
+  return fData -> GetEvent(event_id) ; 
+}
 
- EventI * CLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
+EventI * CLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
 
-   CLAS6Event * event = (CLAS6Event*) fData -> GetEvent(event_id) ; 
-   if( !event ) {
-     delete event ; 
-     return nullptr ; 
-   }
-
-   ++kNEventsBeforeCuts ;
-
-   TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
-   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
-
-   // Check run is correct
-   double EBeam = GetConfiguredEBeam() ; 
-   if ( in_mom.E() != EBeam ) {
-     std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
-     delete event ;
-     exit(11); 
-   }
-
-   if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) {
-     std::cout << "Target is " << event -> GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
-     delete event ;
-     exit(11); 
-   }
-
-   // Check weight is physical
-   double wght = event->GetEventWeight() ; 
-   if ( wght < 0 || wght > 10 || wght == 0 ) {
-     delete event ;
-     return nullptr ; 
-   }
+  CLAS6Event * event = (CLAS6Event*) fData -> GetEvent(event_id) ; 
+  if( !event ) {
+    delete event ; 
+    return nullptr ; 
+  }
 
   // Apply Generic analysis cuts
   if ( ! AnalysisI::Analyse( event ) ) {
     delete event ; 
     return nullptr ; 
   }
-  
+
+  // No further code is needed
+  // Fiducial cuts are already taken care of
+  // No Need to apply them again
+
   return event ; 
     
 }
@@ -98,7 +78,6 @@ unsigned int CLAS6AnalysisI::GetNEvents( void ) const {
 }
 
 void CLAS6AnalysisI::Initialize() { 
-
   fData = nullptr ; 
 }
 
@@ -109,7 +88,6 @@ bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_
   // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult() ; 
   for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) {
-    // if( IsData() ) 
     StoreTree( static_cast<CLAS6Event*>( event_holder[min_mult][k] ) );
 
     double norm_weight = 1 ; 
@@ -124,8 +102,14 @@ bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_
   }
 
   // Normalize
-  double domega = 0.01; // sr
-  double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.); // cm^2 to μbarn
+  unsigned int tgt_pdg = GetConfiguredTarget() ; 
+  double EBeam = GetConfiguredEBeam() ; 
+
+  // Get constants
+  unsigned int MassNumber = utils::GetMassNumber( tgt_pdg ) ;
+  double IntegratedCharge = conf::GetIntegratedCharge( tgt_pdg, EBeam ); 
+  double TargetLength = conf::GetTargetLength( tgt_pdg ) ;
+  double TargetDensity = conf::GetTargetDensity( tgt_pdg ) ;
 
   if ( NormalizeHist() ) {
     for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
@@ -140,12 +124,9 @@ bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_
 	kHistograms[j]->SetBinContent(k,newcontent);
 	kHistograms[j]->SetBinError(k,newerror);
       }
-
-      //      kHistograms[j]->Scale( kXSec * ConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / ( GetNEventsToRun() * domega ) );
+      kHistograms[j]->Scale(  kConversionFactorCm2ToMicroBarn * MassNumber / ( IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor ) ) ;
     }
   }
-  std::cout << " Total Number of Events Processed = " << kNEventsBeforeCuts << std::endl;
-  std::cout << " Total number of true signal events = " << kNEventsAfterTopologyCut << std::endl;
 
   return true ; 
 }

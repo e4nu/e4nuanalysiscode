@@ -10,13 +10,17 @@
 
 #include <iostream>
 #include "TF1.h"
-#include "analysis/MCAnalysisI.h"
-#include "analysis/CLAS6AnalysisI.h"
+// Include here new analysis classes
+#include "analysis/MCCLAS6StandardAnalysis.h"
+#include "analysis/CLAS6StandardAnalysis.h"
 
 using namespace e4nu::conf ; 
 
 namespace e4nu {
-  class E4NuAnalysis : public MCAnalysisI, public CLAS6AnalysisI { 
+  class E4NuAnalysis : 
+    // Include here new analysis classes 
+    public MCCLAS6StandardAnalysis, 
+    public CLAS6StandardAnalysis { 
   public : 
     E4NuAnalysis(); 
     E4NuAnalysis( const std::string conf_file ) ;
@@ -24,6 +28,7 @@ namespace e4nu {
 
     bool LoadData(void) ; 
     bool Analyse(void) ; 
+    void ClassifyEvent( EventI * event ) ;
     bool SubtractBackground( void ) ;
     bool Finalise(void);
 

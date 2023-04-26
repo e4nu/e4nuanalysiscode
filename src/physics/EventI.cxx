@@ -208,6 +208,13 @@ double EventI::GetObservable( const std::string observable ) {
   return 0 ; 
 }
 
+
+void EventI::SetMottXSecWeight(void) { 
+  // Set Mott XSec
+  double reco_Q2 = utils::GetRecoQ2( this->GetOutLepton4Mom(), this->GetInLepton4Mom().E() ) ;
+  fMottXSecWght = std::pow( reco_Q2, 2 ) ; 
+}
+
 TVector3 EventI::GetRecoq3() const { 
   return utils::GetRecoq3( fOutLepton, fInLepton.E() ) ; 
 }

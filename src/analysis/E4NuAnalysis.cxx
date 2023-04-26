@@ -5,6 +5,9 @@
  * It is also responsible for the signal/bkg selection
  * And instiantates the Background substraction method
  * 
+ * Analysis Type ID : 
+ * 0 => Generic analysis
+ * Add new id list here...
  */
 #include <iostream>
 #include "analysis/E4NuAnalysis.h"
@@ -20,9 +23,9 @@ using namespace e4nu ;
 
 E4NuAnalysis::E4NuAnalysis() {this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCAnalysisI(), CLAS6AnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCCLAS6StandardAnalysis(), CLAS6StandardAnalysis() { this->Initialize();}
 
-E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCAnalysisI(), CLAS6AnalysisI() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCCLAS6StandardAnalysis(), CLAS6StandardAnalysis() { this->Initialize();}
 
 E4NuAnalysis::~E4NuAnalysis() {;}
 
@@ -31,18 +34,43 @@ bool E4NuAnalysis::LoadData(void) {
     std::cout << "ERROR: Configuration failed" <<std::endl;
     return false ;
   }
-  if( IsData() ) return CLAS6AnalysisI::LoadData();
-  return MCAnalysisI::LoadData() ; 
+  // Include new analysis classes with the corresponding analysis ID:
+  if( IsCLAS6Analysis() ) { 
+    if( IsData() ) {
+      if( GetAnalysisTypeID() == 0 ) return CLAS6StandardAnalysis::LoadData();
+    }else {
+      if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::LoadData() ; 
+      else return false ; 
+    } if( IsCLAS12Analysis() ) return false ;  
+    return false ; 
+  }
+  return true ; 
 }
 
 EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
-  if( IsData() ) return CLAS6AnalysisI::GetValidEvent( event_id ) ; 
-  return MCAnalysisI::GetValidEvent( event_id ) ; 
+  // Include new analysis classes with the corresponding analysis ID:
+  if( IsCLAS6Analysis() ) { 
+    if( IsData() ) {
+      if( GetAnalysisTypeID() == 0 ) return CLAS6StandardAnalysis::GetValidEvent( event_id ) ; 
+    } else{ 
+      if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::GetValidEvent( event_id ) ; 
+      else return nullptr ; 
+    }
+  } else if ( IsCLAS12Analysis() ) return nullptr ; 
+  return nullptr; 
 }
 
 unsigned int E4NuAnalysis::GetNEvents( void ) const {
-  if( IsData() ) return CLAS6AnalysisI::GetNEvents() ;
-  return MCAnalysisI::GetNEvents() ;
+  // Include new analysis classes with the corresponding analysis ID:
+  if( IsCLAS6Analysis() ) {
+    if( IsData() ) {
+      if( GetAnalysisTypeID() == 0 ) return CLAS6StandardAnalysis::GetNEvents() ;
+    } else { 
+      if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::GetNEvents() ;
+      else return false ; 
+    }
+  } 
+  return 0 ; 
 }
 
 bool E4NuAnalysis::Analyse(void) {
@@ -55,75 +83,87 @@ bool E4NuAnalysis::Analyse(void) {
     // Get valid event after analysis
     // It returns cooked event, with detector effects
     EventI * event ;
-    if( IsData() ) event = (EventI*) CLAS6AnalysisI::GetValidEvent(i) ; 
-    else event = (EventI*) MCAnalysisI::GetValidEvent(i) ; 
-  
+    // Include new analysis classes with the corresponding analysis ID:
+    if( IsCLAS6Analysis() ) {
+      if( IsData() ) {
+	if( GetAnalysisTypeID() == 0 ) event = (EventI*) CLAS6StandardAnalysis::GetValidEvent(i) ; 
+      } else {
+	if( GetAnalysisTypeID() == 0 ) event = (EventI*) MCCLAS6StandardAnalysis::GetValidEvent(i) ; 
+	else event = nullptr ; 
+      }
+    } 
+
     if( ! event ) {
       continue ;
     }
 
-    // Classify events as signal or Background
-    bool is_signal = true ;
-    std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
-    std::map<int,unsigned int> Topology = GetTopology();
-    //Topology ID
-    for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
-      if( it->first == conf::kPdgElectron ) continue ; 
-      else if( part_map[it->first].size() != it->second ) {
-	is_signal = false ; 
-	break ; 
-      } 
-    }
+    this->ClassifyEvent( event ) ; // Classify events as signal or Background
 
-    unsigned int signal_mult = GetMinBkgMult() ;  
-    if( is_signal ) {
-      // Storing in background the signal events
-      if( kAnalysedEventHolder.find(signal_mult) == kAnalysedEventHolder.end() ) {
-	std::vector<EventI*> temp ( 1, event ) ;
-	kAnalysedEventHolder[signal_mult] = temp ; 
-      } else { 
-	kAnalysedEventHolder[signal_mult].push_back( event ) ; 
-      }
-    } else { // BACKGROUND 
-      event->SetIsBkg(true); 
-
-      // Get Number of signal particles, "multiplicity"
-      unsigned int mult_bkg = event->GetNSignalParticles( part_map, Topology ) ; 
-
-      // Check events are above minumum particle multiplicity 
-      bool is_signal_bkg = true ; 
-      std::map<int,std::vector<TLorentzVector>> hadrons = event->GetFinalParticles4Mom() ;
-      for( auto it = Topology.begin(); it!=Topology.end();++it){
-	if( it->first == conf::kPdgElectron ) continue ; 
-	for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
-	  if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() < it->second ) { is_signal_bkg = false ; break ; } 
-	  if( hadrons.find(it->first) == hadrons.end() &&  it->second != 0 ) { is_signal_bkg = false ; break ; }
-	}
-      }
-
-      if( !is_signal_bkg ) {
-	continue ; 
-      }      
-      // Only store background events with multiplicity > mult_signal
-      // Also ignore background events above the maximum multiplicity
-      if( mult_bkg > signal_mult && mult_bkg <= GetMaxBkgMult() ) {
-	if( kAnalysedEventHolder.find(mult_bkg) == kAnalysedEventHolder.end() ) {
-	  std::vector<EventI*> temp ( 1, event ) ;
-	  kAnalysedEventHolder[mult_bkg] = temp ; 
-	} else { 
-	  kAnalysedEventHolder[mult_bkg].push_back( event ) ; 
-	}
-      }
-      continue ; 
-    }
   }  
   return true ; 
 }
 
+void E4NuAnalysis::ClassifyEvent( EventI * event ) { 
+  // Classify as signal or background based on topology
+  bool is_signal = true ;
+  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
+  std::map<int,unsigned int> Topology = GetTopology();
+  //Topology ID
+  for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
+    if( it->first == conf::kPdgElectron ) continue ; 
+    else if( part_map[it->first].size() != it->second ) {
+      is_signal = false ; 
+      break ; 
+    } 
+  }
+
+  // Store in AnalysedEventHolder
+  unsigned int signal_mult = GetMinBkgMult() ;  
+  if( is_signal ) {
+    // Storing in background the signal events
+    if( kAnalysedEventHolder.find(signal_mult) == kAnalysedEventHolder.end() ) {
+      std::vector<EventI*> temp ( 1, event ) ;
+      kAnalysedEventHolder[signal_mult] = temp ; 
+    } else { 
+      kAnalysedEventHolder[signal_mult].push_back( event ) ; 
+    }
+  } else { // BACKGROUND 
+    event->SetIsBkg(true); 
+
+    // Get Number of signal particles, "multiplicity"
+    unsigned int mult_bkg = event->GetNSignalParticles( part_map, Topology ) ; 
+      
+    // Check events are above minumum particle multiplicity 
+    bool is_signal_bkg = true ; 
+    std::map<int,std::vector<TLorentzVector>> hadrons = event->GetFinalParticles4Mom() ;
+    for( auto it = Topology.begin(); it!=Topology.end();++it){
+      if( it->first == conf::kPdgElectron ) continue ; 
+      for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
+	if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() < it->second ) { is_signal_bkg = false ; break ; } 
+	if( hadrons.find(it->first) == hadrons.end() &&  it->second != 0 ) { is_signal_bkg = false ; break ; }
+      }
+    }
+
+    if( !is_signal_bkg ) return ; 
+
+    // Only store background events with multiplicity > mult_signal
+    // Also ignore background events above the maximum multiplicity
+    if( mult_bkg > signal_mult && mult_bkg <= GetMaxBkgMult() ) {
+      if( kAnalysedEventHolder.find(mult_bkg) == kAnalysedEventHolder.end() ) {
+	std::vector<EventI*> temp ( 1, event ) ;
+	kAnalysedEventHolder[mult_bkg] = temp ; 
+      } else { 
+	kAnalysedEventHolder[mult_bkg].push_back( event ) ; 
+      }
+    }
+  }
+  return ; 
+}
+
 bool E4NuAnalysis::SubtractBackground() {
   
-  if( ! BackgroundI::NewBackgroundSubstraction( kAnalysedEventHolder ) ) return false ;  
-  if( ! BackgroundI::AcceptanceCorrection( kAnalysedEventHolder ) ) return false ; 
+  if( ! BackgroundI::BackgroundSubstraction( kAnalysedEventHolder ) ) return false ;  
+  //  if( ! BackgroundI::AcceptanceCorrection( kAnalysedEventHolder ) ) return false ; 
 
   return true ; 
 } 
@@ -131,8 +171,12 @@ bool E4NuAnalysis::SubtractBackground() {
 bool E4NuAnalysis::Finalise( ) {
   
   bool is_ok = true ; 
-  if( IsData() ) is_ok = CLAS6AnalysisI::Finalise(kAnalysedEventHolder) ; 
-  is_ok = MCAnalysisI::Finalise(kAnalysedEventHolder) ; 
+  if( IsCLAS6Analysis() ) {
+    if( IsData() ) is_ok = CLAS6AnalysisI::Finalise(kAnalysedEventHolder) ; 
+    else {
+      if( GetAnalysisTypeID() == 0 ) is_ok = MCCLAS6StandardAnalysis::Finalise(kAnalysedEventHolder) ; 
+    }
+  }
 
   unsigned int hist_size = GetObservablesTag().size() ; 
   if( GetDebugBkg() ) hist_size = kHistograms.size() ; 
@@ -172,6 +216,11 @@ void E4NuAnalysis::Initialize(void) {
   }  
 
   if( GetNBins()[ECal_id] != 0 && GetDebugBkg() ) {
+    // These histograms are used to debug the background
+    // It compares the true background distribution to the estimated background distribution
+    // Different contributions are considered, depending on the multiplicity or the topology
+    // You can find some examples here: https://docdb.lns.mit.edu/e4nudb/0000/000060/001/NewBackgroundMethod_test.pdf
+
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_OnlySignal").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 
     kid_signal = kHistograms.size() -1 ;
     kHistograms.push_back( new TH1D( (GetObservablesTag()[ECal_id]+"_SignalAccCorr").c_str(),GetObservablesTag()[ECal_id].c_str(), GetNBins()[ECal_id], GetRange()[ECal_id][0], GetRange()[ECal_id][1] ) ) ; 

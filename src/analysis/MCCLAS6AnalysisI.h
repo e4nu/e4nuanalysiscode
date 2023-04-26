@@ -21,12 +21,12 @@
 using namespace e4nu::conf ; 
 
 namespace e4nu {
-  class MCAnalysisI: virtual public AnalysisI {
+  class MCCLAS6AnalysisI: virtual public AnalysisI {
   public : 
-    virtual ~MCAnalysisI();
+    virtual ~MCCLAS6AnalysisI();
 
   protected : 
-    MCAnalysisI();
+    MCCLAS6AnalysisI();
  
     bool LoadData(void);
     unsigned int GetNEvents( void ) const ;
@@ -37,7 +37,6 @@ namespace e4nu {
   private :
 
     void SmearParticles( MCEvent * event ) ;
-    void ApplyMomentumCut( MCEvent * event ) ;
     bool ApplyFiducialCut( MCEvent * event ) ; 
     void ApplyAcceptanceCorrection( MCEvent * event ) ;
     EventI * GetEvent( const unsigned int event_id ) ;

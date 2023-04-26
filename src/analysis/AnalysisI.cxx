@@ -16,24 +16,46 @@
 
 using namespace e4nu; 
 
-AnalysisI::AnalysisI( ) { ; }
+AnalysisI::AnalysisI( ) { this->Initialize(); }
 
-AnalysisI::AnalysisI( const std::string input_file ) : BackgroundI( input_file ) { if( kIsConfigured ) kIsConfigured = InitializeFiducial() ;  }
+AnalysisI::AnalysisI( const std::string input_file ) : BackgroundI( input_file ) { this->Initialize(); }
 
-AnalysisI::AnalysisI( const double EBeam, const unsigned int TargetPdg ) : BackgroundI( EBeam, TargetPdg ) {;}    
+AnalysisI::AnalysisI( const double EBeam, const unsigned int TargetPdg ) : BackgroundI( EBeam, TargetPdg ) { this->Initialize();}    
 
-AnalysisI::~AnalysisI() {;}
+AnalysisI::~AnalysisI() { this->Initialize();}
 
 bool AnalysisI::Analyse( EventI * event ) {
 
   TLorentzVector in_mom = event -> GetInLepton4Mom() ;
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
-  double EBeam = in_mom.E() ; 
-  
+
   // Step 1 : Apply generic cuts
-  if( !utils::IsValidSector( out_mom.Phi(), EBeam, UseAllSectors() ) ) return false ;   
+  // Check run is correct
+  double EBeam = GetConfiguredEBeam() ; 
+  if ( in_mom.E() != EBeam ) {
+    std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
+    delete event ;
+    exit(11); 
+  }
+  
+  if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) {
+    std::cout << "Target is " << event -> GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
+    delete event ;
+    exit(11); 
+  }
+
+  // Check weight is physical
+  double wght = event->GetEventWeight() ; 
+  if ( wght < 0 || wght > 10 || wght == 0 ) {
+    delete event ;
+    return false ; 
+  }
 
   if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) return false ;
+
+  double e_phi = out_mom.Phi() ; 
+  if( !IsData() ) e_phi += TMath::Pi() ;
+  if( !utils::IsValidSector( e_phi, EBeam, UseAllSectors() ) ) return false ;
 
   if( ApplyOutElectronCut() ){
     if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) return false ; 
@@ -73,13 +95,54 @@ bool AnalysisI::Analyse( EventI * event ) {
     }
   }
 
-  // Step 2 : Cook event
+  // Apply Mott Scaling to correct for different coupling
+  if ( ApplyMottScaling() ) { 
+    event -> SetMottXSecWeight() ; 
+  }
+
+  // Store analysis record before momentum cuts (0) :
+  event->StoreAnalysisRecord(kid_bcuts);
+
+  // Step 2: Apply momentum cut (detector specific) 
+  if( ApplyMomCut() ) { 
+    this->ApplyMomentumCut( event ) ; 
+  }
+  // Store analysis record after momentum cuts:
+  event->StoreAnalysisRecord(kid_acuts);
+
+  // Step 3 : Cook event
   // Remove particles not specified in topology maps
   // These are ignored in the analysis
   // No Cuts are applied on those
   this->CookEvent( event ) ; 
-  
+
   return true ; 
+}
+
+
+void AnalysisI::ApplyMomentumCut( EventI * event ) {
+
+  std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticlesUnCorr4Mom() ;
+  TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
+  // Remove particles below threshold
+  for( auto it = unsmeared_part_map.begin() ; it != unsmeared_part_map.end() ; ++it ) {
+    std::vector<TLorentzVector> above_th_particles ; 
+    for( unsigned int i = 0 ; i < unsmeared_part_map[it->first].size() ; ++i ) {
+      // Only store particles above threshold
+      if( unsmeared_part_map[it->first][i].P() <= conf::GetMinMomentumCut( it->first, GetConfiguredEBeam() ) )  continue ; 
+	 
+      // Apply photon cuts for MC and data 
+      if( it->first == conf::kPdgPhoton ) {
+	if( ! conf::ApplyPhotRadCut( out_mom, unsmeared_part_map[it->first][i] ) ) continue ; 
+      }
+      above_th_particles.push_back( unsmeared_part_map[it->first][i] ) ;
+    }
+    unsmeared_part_map[it->first] = above_th_particles ;
+  }
+  event -> SetFinalParticlesKinematics( unsmeared_part_map ) ;
+  event -> SetFinalParticlesUnCorrKinematics( unsmeared_part_map ) ; 
+  
+  return ;
 }
 
 void AnalysisI::CookEvent( EventI * event ) { 
@@ -171,7 +234,7 @@ void AnalysisI::PlotBkgInformation( EventI * event ) {
     }
           
   } else { 
-   // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
+    // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
     if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() == 0 ) {
       kHistograms[kid_signal]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
     } else if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() != 0 ) {
@@ -206,6 +269,22 @@ void AnalysisI::PlotBkgInformation( EventI * event ) {
   }
 }
 
-bool AnalysisI::Finalise(void) const{
+double AnalysisI::GetElectronMinTheta( TLorentzVector emom ) {
+  return kElectronFit ->Eval(emom.P()) ; 
+}
+
+void AnalysisI::Initialize(void) { 
+  double Ebeam = GetConfiguredEBeam() ; 
+  
+  kElectronFit = new TF1( "myElectronFit", "[0]+[1]/x",0.,0.5);
+  if( Ebeam == 1.161 ) { kElectronFit -> SetParameters(17,7) ; }
+  if( Ebeam == 2.261 ) { kElectronFit -> SetParameters(16,10.5) ; }
+  if( Ebeam == 4.461 ) { kElectronFit -> SetParameters(13.5,15) ; }
+  if( !kElectronFit ) kIsConfigured = false ; 
+  if( kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
+}
+
+bool AnalysisI::Finalise(void) {
+  if( kElectronFit ) delete kElectronFit ;
   return true ; 
 }

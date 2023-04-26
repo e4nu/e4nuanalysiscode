@@ -6,7 +6,7 @@
 #include <iostream>
 #include "TFile.h"
 #include "TDirectoryFile.h"
-#include "analysis/MCAnalysisI.h"
+#include "analysis/MCCLAS6AnalysisI.h"
 #include "utils/ParticleUtils.h"
 #include "utils/KinematicUtils.h"
 #include "conf/ParticleI.h"
@@ -16,26 +16,27 @@
 #include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
 #include "conf/AnalysisConstantsI.h"
+#include "conf/ConstantsI.h"
 
 using namespace e4nu ; 
 
-MCAnalysisI::MCAnalysisI() {
+MCCLAS6AnalysisI::MCCLAS6AnalysisI() {
   kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
-  kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCTree","GENIE Tree") ) ; 
+  if( !IsData() ) kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCCLAS6Tree","GENIE CLAS6 Tree") ) ; 
   kMult_signal = GetNTopologyParticles() ; 
   this->Initialize() ;
 }
 
-MCAnalysisI::~MCAnalysisI() {
+MCCLAS6AnalysisI::~MCCLAS6AnalysisI() {
   delete fData;
   kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
 }
 
-bool MCAnalysisI::LoadData( void ) {
+bool MCCLAS6AnalysisI::LoadData( void ) {
   if( ! IsConfigured() ) return false ; 
 
   std::string file = GetInputFile() ; 
@@ -50,11 +51,11 @@ bool MCAnalysisI::LoadData( void ) {
   return kIsDataLoaded ; 
 }
 
-EventI * MCAnalysisI::GetEvent( const unsigned int event_id ) {
+EventI * MCCLAS6AnalysisI::GetEvent( const unsigned int event_id ) {
   return fData -> GetEvent(event_id) ; 
 }
 
-EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
+EventI * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
 
   MCEvent * event ;
   if( IsNoFSI() ) {
@@ -67,76 +68,15 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
     return nullptr ; 
   }
 
-  // Apply Generic analysis cuts
+  // Apply Generic analysis cuts (0-3)
   if ( ! AnalysisI::Analyse( event ) ) {
     delete event ; 
     return nullptr ; 
   }
 
-  // Step 1 : veryify run is setup correctly 
-  // Use true information to double-check beam energy, target pdg 
-  TLorentzVector in_mom = event -> GetInLepton4Mom() ; 
-
-  // Check run is correct
-  double EBeam = GetConfiguredEBeam() ; 
-  if ( in_mom.E() != EBeam ) {
-    std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
-    delete event ;
-    exit(11); 
-  }
-
-  if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) {
-    std::cout << "Target is " << event -> GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
-    delete event ;
-    exit(11); 
-  }
-
-  // Check weight is physical
-  double wght = event->GetEventWeight() ; 
-  if ( wght < 0 || wght > 10 || wght == 0 ) {
-    delete event ;
-    return nullptr ; 
-  }
-
-  // Apply Mott Scaling to correct for different coupling
-  if ( ApplyMottScaling() ) { 
-    event -> SetMottXSecWeight() ; 
-  }
-
-  // For debugging purposes, tag true Bkg events before momentum cuts
-  std::map<int,unsigned int> Topology = GetTopology();
-  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticlesUnCorr4Mom() ;
-  for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
-    if( it->first == conf::kPdgElectron ) continue ; 
-    else if( part_map[it->first].size() != it->second ) {
-      event->SetIsTrueBkg(true) ;
-      break ; 
-    } 
-  }
-
-  // Store analysis record before momentum cuts (0) :
-  event->StoreAnalysisRecord(kid_bcuts);
-
-  // Step 2: Apply momentum cut (detector specific) 
-  // This is done before smearing
-  this->ApplyMomentumCut( event ) ; 
-
   // Step 3 : smear particles momentum 
   if( ApplyReso() ) {
     this -> SmearParticles( event ) ; 
-  }
-
-  // Store analysis record after momentum cuts (1) :
-  event->StoreAnalysisRecord(kid_acuts);
-
-  // Tag particle as signal or background before fiducial
-  part_map = event -> GetFinalParticles4Mom() ;
-  for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
-    if( it->first == conf::kPdgElectron ) continue ; 
-    else if( part_map[it->first].size() != it->second ) {
-      event->SetIsRecoBkg(true);
-      break ; 
-    } 
   }
 
   // Step 4: Apply fiducials
@@ -154,32 +94,7 @@ EventI * MCAnalysisI::GetValidEvent( const unsigned int event_id ) {
   return event ; 
 }
 
-void MCAnalysisI::ApplyMomentumCut( MCEvent * event ) {
-  if( ApplyMomCut() ) { 
-    std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticlesUnCorr4Mom() ;
-    TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
-    // Remove particles below threshold
-    for( auto it = unsmeared_part_map.begin() ; it != unsmeared_part_map.end() ; ++it ) {
-      std::vector<TLorentzVector> above_th_particles ; 
-      for( unsigned int i = 0 ; i < unsmeared_part_map[it->first].size() ; ++i ) {
-	// Only store particles above threshold
-	if( unsmeared_part_map[it->first][i].P() <= conf::GetMinMomentumCut( it->first, GetConfiguredEBeam() ) )  continue ; 
-	 
-	// Apply photon cuts for MC and data 
-	if( it->first == conf::kPdgPhoton ) {
-	  if( ! conf::ApplyPhotRadCut( out_mom, unsmeared_part_map[it->first][i] ) ) continue ; 
-	}
-	above_th_particles.push_back( unsmeared_part_map[it->first][i] ) ;
-      }
-      unsmeared_part_map[it->first] = above_th_particles ;
-    }
-    event -> SetFinalParticlesKinematics( unsmeared_part_map ) ;
-    event -> SetFinalParticlesUnCorrKinematics( unsmeared_part_map ) ; 
-  }
-  return ;
-}
-
-bool MCAnalysisI::ApplyFiducialCut( MCEvent * event ) { 
+bool MCCLAS6AnalysisI::ApplyFiducialCut( MCEvent * event ) { 
   // First, we apply it to the electron
   // Apply fiducial cut to electron
   if( ! ApplyFiducial() ) return true ; 
@@ -187,7 +102,7 @@ bool MCAnalysisI::ApplyFiducialCut( MCEvent * event ) {
   if( ! fiducial ) return true ; 
 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
-  if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect() ) ) { delete event ; return false ; }
+  if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect(), IsData() ) ) { delete event ; return false ; }
   
   // Apply Fiducial cut for hadrons and photons
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
@@ -197,7 +112,7 @@ bool MCAnalysisI::ApplyFiducialCut( MCEvent * event ) {
     std::vector<TLorentzVector> visible_part ; 
     std::vector<TLorentzVector> visible_part_uncorr ; 
     for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
-      if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), part_map[it->first][i].Vect() ) ) continue ; 
+      if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), part_map[it->first][i].Vect(), IsData() ) ) continue ; 
       visible_part.push_back( part_map[it->first][i] ) ; 
       visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
     }
@@ -213,7 +128,7 @@ bool MCAnalysisI::ApplyFiducialCut( MCEvent * event ) {
   return true ; 
 }
 
-void MCAnalysisI::ApplyAcceptanceCorrection( MCEvent * event ) { 
+void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( MCEvent * event ) { 
   double acc_wght = 1 ;
   if( ApplyAccWeights() ) {
     TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
@@ -236,7 +151,7 @@ void MCAnalysisI::ApplyAcceptanceCorrection( MCEvent * event ) {
   return ; 
 }
 
-void MCAnalysisI::SmearParticles( MCEvent * event ) {
+void MCCLAS6AnalysisI::SmearParticles( MCEvent * event ) {
   double EBeam = GetConfiguredEBeam() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
 
@@ -258,11 +173,11 @@ void MCAnalysisI::SmearParticles( MCEvent * event ) {
   
 } 
 
-unsigned int MCAnalysisI::GetNEvents( void ) const {
+unsigned int MCCLAS6AnalysisI::GetNEvents( void ) const {
   return (unsigned int) fData ->GetNEvents() ; 
 }
 
-void MCAnalysisI::Initialize() { 
+void MCCLAS6AnalysisI::Initialize() { 
 
   fData = nullptr ; 
 
@@ -325,14 +240,13 @@ void MCAnalysisI::Initialize() {
 
 }
 
-bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) {
+bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) {
 
   if( !AnalysisI::Finalise() ) return false ; 
 
   // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult() ; 
   for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) {
-    // if( IsData() ) 
     StoreTree( static_cast<MCEvent*>( event_holder[min_mult][k] ) );
 
     double norm_weight = event_holder[min_mult][k]->GetTotalWeight() ;
@@ -347,9 +261,6 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
   }
 
   // Normalize
-  double domega = 0.01; // sr
-  double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.); // cm^2 to μbarn
-
   if ( NormalizeHist() ) {
     for( unsigned int j = 0 ; j < GetObservablesTag().size() ; ++j ) {
       double NBins = kHistograms[j]->GetNbinsX(); 
@@ -364,14 +275,14 @@ bool MCAnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_hol
 	kHistograms[j]->SetBinError(k,newerror);
       }
 
-      kHistograms[j]->Scale( kXSec * ConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / ( GetNEventsToRun() * domega ) );
+      kHistograms[j]->Scale( kXSec * kConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) / GetNEventsToRun() );
     }
   }
 
   return true ; 
 }
 
-bool MCAnalysisI::StoreTree(MCEvent * event){
+bool MCCLAS6AnalysisI::StoreTree(MCEvent * event){
   static bool n = true ; 
   int ID = event->GetEventID() ; 
   int TargetPdg = event->GetTargetPdg() ;
@@ -515,11 +426,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
   double pim_theta = pim_max.Theta() ;
   double pim_phi = pim_max.Phi() + TMath::Pi() ;
 
-  bool IsTrueBkg = event->IsTrueBkg() ; 
-  bool IsRecoBkg = event->IsRecoBkg() ; 
   bool IsBkg = event->IsBkg() ; 
-  bool IsUndetectedSignal = event->IsUndetectedSignal() ; 
-  bool IsUndetectedESignal = event->IsUndetectedESignal() ; 
 
   if( n == true ) {
     kAnalysisTree -> Branch( "ID", &ID, "ID/I"); 
@@ -546,11 +453,7 @@ bool MCAnalysisI::StoreTree(MCEvent * event){
     kAnalysisTree -> Branch( "EventWght", &EventWght, "EventWght/D");
     kAnalysisTree -> Branch( "AccWght", &AccWght, "AccWght/D");
     kAnalysisTree -> Branch( "MottXSecScale", &MottXSecScale, "MottXSecScale/D");
-    kAnalysisTree -> Branch( "IsTrueBkg", &IsTrueBkg, "IsTrueBkg/O");
     kAnalysisTree -> Branch( "IsBkg", &IsBkg, "IsBkg/O");
-    kAnalysisTree -> Branch( "IsUndetectedSignal", &IsUndetectedSignal, "IsUndetectedSignal/O");
-    kAnalysisTree -> Branch( "IsUndetectedESignal", &IsUndetectedESignal, "IsUndetectedESignal/O");
-    kAnalysisTree -> Branch( "IsRecoBkg", &IsRecoBkg, "IsRecoBkg/O");
     kAnalysisTree -> Branch( "TrueNProtons", &TrueNProtons, "TrueNProtons/I");
     kAnalysisTree -> Branch( "TrueNNeutrons", &TrueNNeutrons, "TrueNNeutrons/I");
     kAnalysisTree -> Branch( "TrueNPiP", &TrueNPiP, "TrueNPiP/I");

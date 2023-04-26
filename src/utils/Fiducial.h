@@ -40,7 +40,7 @@ namespace e4nu {
     // -------------------------------------------------------------------------- 
 
     // apapadop // Nov 23 2020 // Narrow band 30 deg in phi and either accepting ALL theta or theta_pos > 12 deg (piplus & protons) and theta_pi- > 30
-    Bool_t FiducialCut( const int pdg, const double beam_en, const TVector3 momentum ) ; 
+    Bool_t FiducialCut( const int pdg, const double beam_en, TVector3 momentum, const bool is_data ) ; 
     Bool_t PFiducialCutExtra(double beam_en, TVector3 momentum);
     Bool_t PiplFiducialCutExtra(double beam_en, TVector3 momentum);
     Bool_t PimiFiducialCutExtra(double beam_en, TVector3 momentum);

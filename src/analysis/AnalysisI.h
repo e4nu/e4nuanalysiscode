@@ -25,11 +25,14 @@ namespace e4nu {
     AnalysisI( const double EBeam, const unsigned int TargetPdg ) ;
 
     bool Analyse( EventI * event ) ; 
-    bool Finalise(void) const ; 
+    void Initialize(void) ;
+    bool Finalise(void) ;
 
   protected : 
     void CookEvent( EventI * event ) ;
     void PlotBkgInformation( EventI * event ) ;
+    void ApplyMomentumCut( EventI * event ) ;
+    double GetElectronMinTheta( TLorentzVector emom ) ;      
 
     // ID for Background historams
     unsigned int kid_signal, kid_tottruebkg, kid_totestbkg, kid_acccorr;
@@ -37,6 +40,9 @@ namespace e4nu {
     unsigned int kid_2p0piestbkg, kid_1p1piestbkg, kid_2p1piestbkg, kid_1p2piestbkg ;
 
     virtual ~AnalysisI();
+
+  private : 
+    TF1 * kElectronFit = nullptr ; 
       
   };
 }

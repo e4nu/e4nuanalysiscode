@@ -64,4 +64,12 @@ double utils::GetResidualTargetMass( const unsigned int target_pdg ) {
   return mass ;
 }
 
+unsigned int utils::GetMassNumber( const unsigned int target_pdg ){
+  double mass =0 ;
 
+  if ( target_pdg == conf::kPdgHe3 ) mass = 3 ; 
+  else if ( target_pdg == conf::kPdgHe4 ) mass = 4 ; 
+  else if ( target_pdg == conf::kPdgC12 ) mass = 12 ; 
+  else if ( target_pdg == conf::kPdgFe56 ) mass = 56 ;
+  return mass ;
+}

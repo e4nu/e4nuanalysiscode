@@ -16,6 +16,7 @@ namespace e4nu {
       double GetResidualTargetMass( const unsigned int target_pdg ) ; 
       unsigned int GetTargetNProtons( const unsigned int target_pdg ); 
       unsigned int GetTargetNNeutrons( const unsigned int target_pdg );
+      unsigned int GetMassNumber( const unsigned int target_pdg );
     }
 }
 

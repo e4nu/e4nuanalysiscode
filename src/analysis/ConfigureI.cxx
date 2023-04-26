@@ -12,11 +12,14 @@
 #include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
 #include "utils/KinematicUtils.h"
+#include "utils/ParticleUtils.h"
 #include "utils/Utils.h"
 
 using namespace e4nu; 
 
-ConfigureI::ConfigureI( ) {;}
+ConfigureI::ConfigureI( ) {
+    this->Initialize();
+}
 
 ConfigureI::ConfigureI( const double EBeam, const unsigned int TargetPdg ) { 
   kEBeam = EBeam ; 
@@ -24,17 +27,7 @@ ConfigureI::ConfigureI( const double EBeam, const unsigned int TargetPdg ) {
   kIsDataLoaded = false ;
   kIsConfigured = true ; 
 
-  if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
-
-  double Ebeam = GetConfiguredEBeam() ; 
-  kElectronFit = new TF1( "myElectronFit", "[0]+[1]/x",0.,0.5);
-  if( Ebeam == 1.161 ) { kElectronFit -> SetParameters(17,7) ; }
-  if( Ebeam == 2.261 ) { kElectronFit -> SetParameters(16,10.5) ; }
-  if( Ebeam == 4.461 ) { kElectronFit -> SetParameters(13.5,15) ; }
-
-  if( !kElectronFit ) kIsConfigured = false ; 
-
-  PrintConfiguration();
+  this->Initialize();
 }
     
 ConfigureI::~ConfigureI() {
@@ -43,7 +36,6 @@ ConfigureI::~ConfigureI() {
   kNBins.clear();
   kRanges.clear();
   delete kFiducialCut ;
-  delete kElectronFit ; 
 }
 
 ConfigureI::ConfigureI( const std::string input_file ) {
@@ -107,6 +99,12 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     } else if ( param[i] == "IsData" ) {
       if( value[i] == "true" ) kIsData = true ; 
       else kIsData = false ; 
+    } else if ( param[i] == "IsCLAS6Analysis") { 
+      if( value[i] == "true" ) { kIsCLAS6Analysis = true ; kIsCLAS12Analysis = false ;} 
+      else kIsCLAS6Analysis = false ; 
+    } else if ( param[i] == "IsCLAS12Analysis") { 
+      if( value[i] == "true" ) { kIsCLAS12Analysis = true ; kIsCLAS6Analysis = false; } 
+      else kIsCLAS12Analysis = false ; 
     } else if( param[i] == "ApplyQ2Cut" ) { 
       if( value[i] == "true" ) kQ2Cut = true ; 
       else kQ2Cut = false ; 
@@ -119,6 +117,8 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     } else if( param[i] == "IsElectronData" ) { 
       if( value[i] == "true" ) kIsElectron = true ; 
       else kIsElectron = false ; 
+    } else if ( param[i] == "AnalysisTypeID" ) { 
+      kAnalysisTypeID = std::stoi(value[i]) ; 
     } else if ( param[i] == "offset" ) koffset = std::stod( value[i] ) ; 
     else if ( param[i] == "NoFSI") {
       if( value[i] == "true" ) kNoFSI = true ; 
@@ -212,19 +212,26 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     std::cout << " ERROR : XSec file not specified " << std::endl;
     kIsConfigured = false ; 
   }
-      
-  if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
+  
+  if( !kIsCLAS6Analysis && !kIsCLAS6Analysis ) {
+    std::cout << " WARN : Analysis type not configured. Using CLAS6... " << std::endl;
+    kIsCLAS6Analysis = true ;
+  }
 
-  double Ebeam = GetConfiguredEBeam() ; 
-  kElectronFit = new TF1( "myElectronFit", "[0]+[1]/x",0.,0.5);
-  if( Ebeam == 1.161 ) { kElectronFit -> SetParameters(17,7) ; }
-  if( Ebeam == 2.261 ) { kElectronFit -> SetParameters(16,10.5) ; }
-  if( Ebeam == 4.461 ) { kElectronFit -> SetParameters(13.5,15) ; }
+  if( !kIsCLAS6Analysis && !kIsCLAS6Analysis ) {
+    std::cout << " ERROR : CLAS12 analysis not available yet..."<<std::endl;
+    kIsConfigured = false ;
+  }
 
-  if( !kElectronFit ) kIsConfigured = false ; 
+  this->Initialize();
+}
+
+void ConfigureI::Initialize(void){
 
   gRandom = new TRandom3() ; 
   gRandom->SetSeed(10);
+
+  if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
 
   if( kIsConfigured ) PrintConfiguration() ;
   else std::cout << " CONFIGURATION FAILED..." << std::endl;
@@ -259,12 +266,14 @@ void ConfigureI::PrintConfiguration(void) const {
     std::cout << "Is MC Data " << std::endl;
     if ( kNoFSI ) std::cout << " No FSI " << std::endl ; 
   }
+  if( kIsCLAS6Analysis ) std::cout << " Analysing CLAS6 "<<std::endl;
+  if( kIsCLAS12Analysis ) std::cout << " Analysing CLAS12 "<<std::endl;
   if( kIsElectron ) std::cout << " Electron scattering \n" <<std::endl;
   else std::cout << " Neutrino scattering \n" <<std::endl;
-  
+  std::cout << " Analysis Type ID: " << GetAnalysisTypeID() << std::endl;
   std::cout << "Topology: " << std::endl;
   for ( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) { 
-    std::cout << "    " << it->first << ", multiplicity " << it->second << std::endl;
+    std::cout << "    " << utils::PdgToString(it->first) << ", multiplicity " << it->second << std::endl;
   }
 
   if( kSubtractBkg ) {
@@ -316,7 +325,4 @@ bool ConfigureI::InitializeFiducial(void) {
   return true ; 
 }
 
-double ConfigureI::GetElectronMinTheta( TLorentzVector emom ) {
-  return kElectronFit ->Eval(emom.P()) ; 
-}
 

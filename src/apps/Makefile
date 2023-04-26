@@ -16,9 +16,6 @@ e4nuanalysis: FORCE
 	@echo "** Building e4nuanalysis ... "
 	g++ -W -Wall -fPIC -Wshadow $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)  -c e4nuanalysis.cxx $(ROOT_INCLUDES) $(E4NUANALYSIS_INCLUDES)
 	g++ $(LDFLAGS) e4nuanalysis.o $(LIBRARIES) -o $(E4NUANALYSIS)/e4nuanalysis
-	@echo "** Building e4nuanalysis_pianalysis ... "
-	g++ -W -Wall -fPIC -Wshadow $(ROOTCFLAGS) $(ROOTLDFLAGS) $(ROOTLIBS)  -c e4nuanalysis_pianalysis.cxx $(ROOT_INCLUDES) $(E4NUANALYSIS_INCLUDES)
-	g++ $(LDFLAGS) e4nuanalysis_pianalysis.o $(LIBRARIES) -o $(E4NUANALYSIS)/e4nuanalysis_pianalysis
 
 purge: FORCE
 	rm -f *.o *~ *.d core
@@ -26,11 +23,7 @@ purge: FORCE
 clean: FORCE
 	rm -f *.o *~ *.d core
 	rm -f $(E4NUANALYSIS)/e4nuanalysis
-	rm -f $(E4NUANALYSIS)/e4nuanalysis_pianalysis
 
-distclean: FORCE
-	rm -f $(E4NUANALYSIS)/e4nuanalysis
-	rm -f $(E4NUANALYSIS)/e4nuanalysis_pianalysis
 FORCE:
 
 # DO NOT DELETE

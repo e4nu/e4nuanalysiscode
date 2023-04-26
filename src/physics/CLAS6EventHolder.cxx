@@ -91,8 +91,15 @@ EventI * CLAS6EventHolder::GetEvent(const unsigned int event_id) {
 
   // Set final state particle kinematics
   for ( unsigned int p = 0 ; p < (unsigned int) nf ; ++p ) {
-    event -> SetFinalParticle( pdgf[p], Ef[p], pxf[p], pyf[p], pzf[p] ) ; 
-    event -> SetFinalParticleUnCorr( pdgf[p], Ef[p], pxf[p], pyf[p], pzf[p] ) ; 
+    unsigned int id = p ; 
+    // We stored proton momentum vectors with and without momentum correction for CLAS
+    // (ProtonMomCorrection_He3_4Cell) in the filtered data file (see lines 1118-1138 of
+    // https://github.com/adishka/e4nu/blob/master/FilterData.C). 
+    // That allows to have the correction itself accessible in the output files without knowing the correction function itself.
+    // We used the arbitrary index shift of 60 to store the information for the corrected 
+    if( pdgf[p] == conf::kPdgProton ) id += 60 ;
+    event -> SetFinalParticle( pdgf[p], Ef[id], pxf[id], pyf[id], pzf[id] ) ; 
+    event -> SetFinalParticleUnCorr( pdgf[p], Ef[id], pxf[id], pyf[id], pzf[id] ) ; 
   }
 
   return event ; 

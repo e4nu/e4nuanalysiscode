@@ -636,7 +636,7 @@ Bool_t Fiducial::GetEPhiLimits(double beam_en, Float_t momentum, Float_t theta, 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, TVector3 momentum, const bool is_data ) {
-
+  
   if( !is_data ) {
     // Electron fiducial cut, return kTRUE if pass or kFALSE if not
     momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ;

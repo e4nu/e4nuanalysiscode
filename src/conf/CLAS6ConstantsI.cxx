@@ -14,7 +14,7 @@ double conf::GetIntegratedCharge( const unsigned int tgt_pdg, const double EBeam
     if( EBeam == 2.261 ) ic = 1.08 ;
     else if ( EBeam == 4.461 ) ic = 0.87 ;
   } else if ( tgt_pdg == kPdgC12 ) { 
-    if( EBeam == 1.161 ) ic = 0.19 ;
+    if( EBeam == 1.161 ) ic = 0.079 ;
     else if( EBeam == 2.261 ) ic = 1.79 ;
     else if ( EBeam == 4.461 ) ic = 2.14 ;
   } else if ( tgt_pdg == kPdgFe56 ) { 

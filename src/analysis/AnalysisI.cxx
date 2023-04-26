@@ -44,17 +44,18 @@ bool AnalysisI::Analyse( EventI * event ) {
     exit(11); 
   }
 
-
   // Check weight is physical
   double wght = event->GetEventWeight() ; 
   if ( wght < 0 || wght > 10 || wght == 0 ) {
     delete event ;
     return false ; 
   }
-  
-  if( !utils::IsValidSector( out_mom.Phi(), EBeam, UseAllSectors() ) ) return false ;   
 
   if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) return false ;
+
+  double e_phi = out_mom.Phi() ; 
+  if( !IsData() ) e_phi += TMath::Pi() ;
+  if( !utils::IsValidSector( e_phi, EBeam, UseAllSectors() ) ) return false ;
 
   if( ApplyOutElectronCut() ){
     if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) return false ; 
@@ -114,7 +115,7 @@ bool AnalysisI::Analyse( EventI * event ) {
   // These are ignored in the analysis
   // No Cuts are applied on those
   this->CookEvent( event ) ; 
-  
+
   return true ; 
 }
 

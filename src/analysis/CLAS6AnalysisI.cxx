@@ -10,6 +10,7 @@
 #include "utils/KinematicUtils.h"
 #include "conf/ParticleI.h"
 #include "conf/TargetI.h"
+#include "utils/ParticleUtils.h"
 #include "utils/DetectorUtils.h"
 #include "conf/FiducialCutI.h"
 #include "conf/AccpetanceMapsI.h"

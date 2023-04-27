@@ -163,7 +163,7 @@ void E4NuAnalysis::ClassifyEvent( EventI * event ) {
 bool E4NuAnalysis::SubtractBackground() {
   
   if( ! BackgroundI::BackgroundSubstraction( kAnalysedEventHolder ) ) return false ;  
-  //  if( ! BackgroundI::AcceptanceCorrection( kAnalysedEventHolder ) ) return false ; 
+  if( ! BackgroundI::AcceptanceCorrection( kAnalysedEventHolder ) ) return false ; 
 
   return true ; 
 } 

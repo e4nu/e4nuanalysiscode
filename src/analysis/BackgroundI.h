@@ -180,7 +180,10 @@ namespace e4nu {
       // We need to correct for signal events that are reconstructed outside of the fiducial
       if( !ApplyFiducial()  ) return true ; 
       if( !GetSubtractBkg() ) return true ;
+
       Fiducial * fiducial = GetFiducialCut() ; 
+      if( !fiducial ) return false ; 
+      std::cout << " Applying Acceptance Correction to hadrons ... " << std::endl;
 
       unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
       std::map<int,unsigned int> Topology = GetTopology();

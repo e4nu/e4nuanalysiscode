@@ -195,7 +195,7 @@ double EventI::GetObservable( const std::string observable ) {
     return pip4mom.Theta() * 180 / TMath::Pi() ; 
   } else if ( observable == "LeadingPiMTheta" ) {
     if( !event_wpim ) return 0 ; 
-    return pim4mom.Theta() ; 
+    return pim4mom.Theta() * 180 / TMath::Pi() ; 
   } else if ( observable == "HadSystemDeltaAlphaT" ) {
     return utils::DeltaAlphaT( ef4mom, GetFinalParticles4Mom() ) ;
   } else if ( observable == "HadSystemDeltaPhiT" ) {

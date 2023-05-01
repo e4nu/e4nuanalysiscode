@@ -250,7 +250,7 @@ bool CLAS6AnalysisI::StoreTree(CLAS6Event * event){
     kAnalysisTree -> Branch( "BeamE", &BeamE, "BeamE/D");
     kAnalysisTree -> Branch( "TotWeight", &TotWeight, "TotWeight/D");
     kAnalysisTree -> Branch( "EventWght", &EventWght, "EventWght/D");
-    kAnalysisTree -> Branch( "IsBkg", &IsBkg, "IsBkg/B");
+    kAnalysisTree -> Branch( "IsBkg", &IsBkg, "IsBkg/O");
     kAnalysisTree -> Branch( "RecoNProtons", &RecoNProtons, "RecoNProtons/I");
     kAnalysisTree -> Branch( "RecoNNeutrons", &RecoNNeutrons, "RecoNNeutrons/I");
     kAnalysisTree -> Branch( "RecoNPiP", &RecoNPiP, "RecoNPiP/I");

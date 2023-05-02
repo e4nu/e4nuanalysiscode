@@ -158,7 +158,7 @@ bool CLAS6AnalysisI::StoreTree(CLAS6Event * event){
   double pfly = out_mom.Py();
   double pflz = out_mom.Pz();
   double pfl_theta = out_mom.Theta();
-  double pfl_phi = out_mom.Phi() + TMath::Pi();
+  double pfl_phi = out_mom.Phi() ;
   unsigned int ElectronSector = utils::GetSector( pfl_phi ) ; 
 
   double RecoQELEnu = utils::GetQELRecoEnu( out_mom, TargetPdg ) ; 

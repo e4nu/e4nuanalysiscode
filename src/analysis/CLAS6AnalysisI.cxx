@@ -200,7 +200,7 @@ bool CLAS6AnalysisI::StoreTree(CLAS6Event * event){
   double proton_momy = p_max.Py() ; 
   double proton_momz = p_max.Pz() ; 
   double proton_theta = p_max.Theta() ; 
-  double proton_phi = p_max.Phi() + TMath::Pi() ; 
+  double proton_phi = p_max.Phi(); 
   double ECal = utils::GetECal( out_mom.E(), event->GetFinalParticles4Mom(), TargetPdg ) ; 
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
@@ -221,7 +221,7 @@ bool CLAS6AnalysisI::StoreTree(CLAS6Event * event){
   double pip_momy = pip_max.Py() ;
   double pip_momz = pip_max.Pz() ;
   double pip_theta = pip_max.Theta() ;
-  double pip_phi = pip_max.Phi() + TMath::Pi();
+  double pip_phi = pip_max.Phi();
 
   TLorentzVector pim_max(0,0,0,0) ;
   if( topology_has_pim ) {
@@ -239,7 +239,7 @@ bool CLAS6AnalysisI::StoreTree(CLAS6Event * event){
   double pim_momy = pim_max.Py() ;
   double pim_momz = pim_max.Pz() ;
   double pim_theta = pim_max.Theta() ;
-  double pim_phi = pim_max.Phi() + TMath::Pi() ;
+  double pim_phi = pim_max.Phi() ;
 
   bool IsBkg = event->IsBkg() ; 
   if( n == true ) {

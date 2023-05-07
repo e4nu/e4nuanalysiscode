@@ -3,13 +3,13 @@
 UseAllSectors	false
 ApplyFiducial   true
 ApplyAccWeights false
-ApplyReso	false
+ApplyReso	true
 ApplyMomCut     true
 ApplyMottWeight true
 ApplyOutEMomCut	true
-ApplyQ2Cut		true
-ApplyWCut		true
-SubtractBkg 	true
+ApplyQ2Cut	true
+ApplyWCut	true
+SubtractBkg true
 
 ApplyPhiOpeningAngle	false
 UsePhiThetaBand		false
@@ -24,19 +24,19 @@ NEvents			1000000000
 FirstEvent		0
 
 #Topology definition
-IsData			true
+IsData			false
 IsCLAS6Analysis		true
 Toplogy 		11:1,2212:1,-211:1,221:0,22:0,111:0
-MaxBackgroundMultiplicity 3
-NRotations 100
+MaxBackgroundMultiplicity 4
+NRotations 1000
 
 #histogram definition
 RangeList 0:2,0:2,0:2,0:2,0:10,0:180,0:1,0:2
 ObservableList ECal,OutEMom,LeadingPMom,LeadingPiMMom,LeadingPiMTheta,HadSystemDeltaAlphaT,HadSystemDeltaPhiT,HadSystemDeltaPT
 NBinsList 60,60,60,60,60,60,60,60
-NormalizeHists true
+NormalizeHists false
 DebugBkg false
 
-#InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master*.root
-OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/e4nuanalysiscode/test_data_normalise_1p1pi
-XSecFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/e4nuanalysiscode/ConfFiles/xsec_carbon12_spline_GEM21_11b_00_000_Q2_0_1.root
+InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master*.root
+OutputFile  /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/test_mc_normalise_EAccCorr
+XSecFile /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/ConfFiles/xsec_carbon12_spline_GEM21_11b_00_000_Q2_0_1.root

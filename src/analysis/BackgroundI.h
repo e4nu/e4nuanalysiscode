@@ -175,7 +175,7 @@ namespace e4nu {
     }
 
     template <class T>
-      bool AcceptanceCorrection( std::map<int,std::vector<T*>> & event_holder ) { 
+      bool HadronsAcceptanceCorrection( std::map<int,std::vector<T*>> & event_holder ) { 
 
       // We need to correct for signal events that are reconstructed outside of the fiducial
       if( !ApplyFiducial()  ) return true ; 
@@ -215,8 +215,10 @@ namespace e4nu {
 	      part_vect.Rotate(rotation_angle,VectorRecoQ);
 	      
 	      // Check which particles are in fiducial	      
-	      is_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData() ) ;
+	      is_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData() ) ;
+	      if( !is_contained ) break ; 
 	    }
+	    if( !is_contained ) break ; 
 	  }
 	  if( is_contained ) ++N_signal_detected ; 
 	  else ++N_signal_undetected ; 
@@ -233,6 +235,62 @@ namespace e4nu {
 	// Store analysis record after acceptance correction (3) : 
 	temp_event->StoreAnalysisRecord(kid_acc);
   
+      }
+      // Store correction
+      event_holder[min_mult] = signal_events ; 
+  
+      return true ; 
+    }
+
+
+    template <class T>
+      bool ElectronAcceptanceCorrection( std::map<int,std::vector<T*>> & event_holder ) { 
+
+      // We need to correct for signal events that are reconstructed outside of the fiducial
+      if( !ApplyFiducial()  ) return true ; 
+      if( !GetSubtractBkg() ) return true ;
+
+      Fiducial * fiducial = GetFiducialCut() ; 
+      if( !fiducial ) return false ; 
+      std::cout << " Applying Electron Acceptance Correction ... " << std::endl;
+
+      unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
+      std::map<int,unsigned int> Topology = GetTopology();
+      std::vector<T*> signal_events = event_holder[min_mult] ; 
+      unsigned int n_truesignal = signal_events.size() ;
+
+      for( unsigned int i = 0 ; i < n_truesignal ; ++i ) { 
+
+	long N_signal_detected = 0 ; 
+	long N_signal_undetected = 0 ; 
+    
+	// Start rotations
+	for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) { 
+	  // Set rotation around q3 vector
+	  TVector3 BeamVector (0,0,1);
+	  double rotation_angle = gRandom->Uniform(0,2*TMath::Pi());
+	  
+	  TVector3 emom = signal_events[i]->GetOutLepton4Mom().Vect() ;
+
+	  // Rotate all particles 
+	  emom.Rotate(rotation_angle, BeamVector);
+
+	  bool is_contained = fiducial->FiducialCut( conf::kPdgElectron, GetConfiguredEBeam(), emom, IsData() ) ;
+
+	  if( is_contained ) ++N_signal_detected ; 
+	  else ++N_signal_undetected ; 
+	}
+	if( N_signal_detected == 0 ) continue ; 
+	// Add missing signal events
+	T * temp_event = new T() ; 
+	* temp_event = * signal_events[i] ; 
+	
+	double event_wgt = temp_event->GetEventWeight() ;
+	temp_event->SetEventWeight( + event_wgt * N_signal_undetected / N_signal_detected ) ; 
+	signal_events.push_back(temp_event);
+	
+	// Store analysis record after acceptance correction (3) : 
+	temp_event->StoreAnalysisRecord(kid_acc);
       }
       // Store correction
       event_holder[min_mult] = signal_events ; 

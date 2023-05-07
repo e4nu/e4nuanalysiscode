@@ -103,7 +103,7 @@ bool MCCLAS6AnalysisI::ApplyFiducialCut( MCEvent * event ) {
 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
   if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect(), IsData() ) ) { delete event ; return false ; }
-  
+
   // Apply Fiducial cut for hadrons and photons
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
   std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event -> GetFinalParticlesUnCorr4Mom() ;

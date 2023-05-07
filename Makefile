@@ -1,73 +1,48 @@
-#
-# This is the main e4nu project Makefile.
-# Author: Julia Tena Vidal, jtenavidal \at tauex.tau.ac.il
-#
+# Directories
+SRCDIR := src
+OBJDIR := obj
+BINDIR := bin
 
-SHELL = /bin/sh
-NAME = all
-MAKEFILE = Makefile
+# Compiler options
+CXX := g++
+CXXFLAGS := -Wall -O2 -I$(SRCDIR) $(shell root-config --cflags)
 
-include $(E4NUANALYSIS)/src/make/Make.include
+# Linker options
+LD := g++
+LDFLAGS := $(shell root-config --libs) -lstdc++ -Wno-undef
 
-BUILD_TARGETS = configuration \
-		utilities \
-		physics \
-		analysis \
-		apps \
+# Source files
+UTILS_SRCS := $(wildcard $(SRCDIR)/utils/*.cxx)
+CONF_SRCS := $(wildcard $(SRCDIR)/conf/*.cxx)
+PHYSICS_SRCS := $(wildcard $(SRCDIR)/physics/*.cxx)
+ANALYSIS_SRCS := $(wildcard $(SRCDIR)/analysis/*.cxx)
+APP_SRCS := $(wildcard $(SRCDIR)/app/*.cxx)
 
-# ...
-# here add main targets to build
+# Object files
+UTILS_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(UTILS_SRCS))
+CONF_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(CONF_SRCS))
+PHYSICS_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(PHYSICS_SRCS))
+ANALYSIS_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(ANALYSIS_SRCS))
+APP_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(APP_SRCS)) $(OBJDIR)/apps/e4nuanalysis.o
 
-INSTALL_TARGETS =  make-install-dirs \
-		   copy-install-files
+all: e4nuanalysis
+ 
+e4nuanalysis: $(UTILS_OBJS) $(CONF_OBJS) $(PHYSICS_OBJS) $(ANALYSIS_OBJS) $(APP_OBJS) $(APP_OBJS)
+	@mkdir -p $(@D)
+	$(LD) $(LDFLAGS) $^ -o $@
 
-all:     $(BUILD_TARGETS)
-install: $(INSTALL_TARGETS)
+$(OBJDIR)/%.o: $(SRCDIR)/%.cxx
+	@mkdir -p $(@D)	
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-configuration: FORCE
-	@echo " "
-	@echo "** Building Configuration..."
-	cd ${E4NUANALYSIS}/src/conf && \
-	make && \
-	cd ${E4NUANALYSIS}
-	@echo " Done."
+$(OBJDIR)/apps/e4nuanalysis.o: $(SRCDIR)/apps/e4nuanalysis.cxx
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-utilities: FORCE
-	@echo " "
-	@echo "** Building Utilities..."
-	cd ${E4NUANALYSIS}/src/utils && \
-	make && \
-	cd ${E4NUANALYSIS}
-physics : FORCE
-	@echo " "
-	@echo "** Building Physics..."
-	cd ${E4NUANALYSIS}/src/physics && \
-	make && \
-	cd ${E4NUANALYSIS}
+clean:
+	rm -rf $(OBJDIR)/*.o e4nuanalysis
 
-analysis : FORCE
-	@echo " "
-	@echo "** Building Analysis..."
-	cd ${E4NUANALYSIS}/src/analysis && \
-	make && \
-	cd ${E4NUANALYSIS}
+.PHONY: test
 
-apps : FORCE
-	@echo " "
-	@echo "** Building Apps..."
-	cd ${E4NUANALYSIS}/src/apps && \
-	make && \
-	cd ${E4NUANALYSIS}
-
-clean: FORCE
-	@echo " "
-	@echo "** Cleaning ..."
-	cd ${E4NUANALYSIS}/src/conf &&  rm -f *.o *~ _*  && \
-	cd ${E4NUANALYSIS}/src/utils && rm -f *.o *~ _* && \
-	cd ${E4NUANALYSIS}/src/apps && rm -f *.o *~ _* && \
-	cd ${E4NUANALYSIS}/src/physics &&  rm -f *.o *~ _* && \
-	cd ${E4NUANALYSIS}/src/analysis &&  rm -f *.o *~ _* && \
-	cd ${E4NUANALYSIS} && rm -f e4nuanalysis && \
-	cd ${E4NUANALYSIS}/lib && rm -f *.so &&\
-	cd ${E4NUANALYSIS}
-FORCE: 	
+test: e4nuanalysis
+	./e4nuanalysis

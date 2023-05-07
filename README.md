@@ -39,13 +39,13 @@ The structure of the src directory is as follows:
 
 ## E4nu Analysis Code
 
-The analysis app [e4nuanalysis.cxx](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/apps/e4nuanalysis.cxx) is the main executable. It's content is simple: it instiantates an E4NuAnalysis object (see below details on inheritance chain), configured with `ConfigFiles/example_configuration`. This object is then used to load the data from an input root file ([analysis -> LoadData()](https://github.com/e4nu/e4nuanalysiscode/blob/721dd5f41d51f4827630165cb8f86bac7c127865/src/apps/e4nuanalysis.cxx#L28)), run the analysis and background subtraction methods, and finally, store the analized information in a TTree as well as Histograms.
+The analysis app [e4nuanalysis.cxx](https://github.com/e4nu/e4nuanalysiscode/blob/master/src/apps/e4nuanalysis.cxx) is the main executable. It's content is simple: it instiantates an E4NuAnalysis object (see below details on inheritance chain), configured with `ConfigFiles/example_configuration`. This object is then used to load the data from an input root file ([analysis -> LoadData()](https://github.com/e4nu/e4nuanalysiscode/blob/master/src/apps/e4nuanalysis.cxx#L28)), run the analysis and background subtraction methods, and finally, store the analized information in a TTree as well as Histograms.
 
 The main analysis flow is as follows:
-![e4nu flow](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/PlottingScripts/e4nu_analysis_flow.png)
+![e4nu flow](https://github.com/e4nu/e4nuanalysiscode/blob/master/PlottingScripts/e4nu_analysis_flow.png)
 
 The e4nu analysis code is highly factorized into different classes, which inherit from each other. ConfigureI is the base class, E4NuAnalyisis is the top derived class. The main structure is depicted in the diagram below:
-![e4nu diagram](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/PlottingScripts/e4nuanalysis_diagram.png)
+![e4nu diagram](https://github.com/e4nu/e4nuanalysiscode/blob/master/PlottingScripts/e4nuanalysis_diagram.png)
 The (...) boxes indicate that new classes might be added to accomodate new analysis cuts, specific to a new analysis (see user gide section below).
 
 Each class has a specific role within the e4nu analysis:
@@ -56,7 +56,7 @@ Each class has a specific role within the e4nu analysis:
   2. Electron kinematic cuts
   3. Cuts on Q2, W
   4. Applies a minimum momentum cut on hadrons 
-  5. [Cooks the event](https://github.com/e4nu/e4nuanalysiscode/blob/e1669032a67c265d7725fc78678ec6515b966580/src/analysis/AnalysisI.cxx#L106) - it removes all particles not specified in topology definition. For instance, in the case of a 1p0pi analysis, it would remove neutrons, kaons, or other particles from the event. This simplifies the loops later in the analysis. 
+  5. [Cooks the event](https://github.com/e4nu/e4nuanalysiscode/blob/master/src/analysis/AnalysisI.cxx#L106) - it removes all particles not specified in topology definition. For instance, in the case of a 1p0pi analysis, it would remove neutrons, kaons, or other particles from the event. This simplifies the loops later in the analysis. 
 - **MCCLAS6AnalysisI**: it deals with analysis features specific to MC data for CLAS6 analysis:
   1. Smears hadrons kinematics
   2. Fiducials are taken care for
@@ -69,9 +69,9 @@ Each class has a specific role within the e4nu analysis:
 
 ## Accessing Event Information
 
-Data is loaded from root files to Event Holders. [EventHolderI](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/EventHolderI.h) is the base class. There is a derived class for CLAS6 data and one for MC data, [CLAS6EventHolder.h](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/CLAS6EventHolder.h) and [MCEventHolder.h](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/MCEventHolder.h) respectively. From the holders, you can get an event provided the event id. The corresponding CLAS6 and MC data holders are instiantated in `CLAS6AnalysisI.h` and `MCCLAS6AnalysisI.h`.  `E4NuAnalysis` deals with the loop over all events, see [Analyse(void)](https://github.com/e4nu/e4nuanalysiscode/blob/2143f47260d27af111d958b2a13d606b5b89a9db/src/analysis/E4NuAnalysis.cxx#L76). This is the main function called in `e4nuanalyser.cxx`.
+Data is loaded from root files to Event Holders. [EventHolderI](https://github.com/e4nu/e4nuanalysiscode/blob/master/src/physics/EventHolderI.h) is the base class. There is a derived class for CLAS6 data and one for MC data, [CLAS6EventHolder.h](https://github.com/e4nu/e4nuanalysiscode/blob/master/src/physics/CLAS6EventHolder.h) and [MCEventHolder.h](https://github.com/e4nu/e4nuanalysiscode/blob/master/src/physics/MCEventHolder.h) respectively. From the holders, you can get an event provided the event id. The corresponding CLAS6 and MC data holders are instiantated in `CLAS6AnalysisI.h` and `MCCLAS6AnalysisI.h`.  `E4NuAnalysis` deals with the loop over all events, see [Analyse(void)](https://github.com/e4nu/e4nuanalysiscode/blob/master/src/analysis/E4NuAnalysis.cxx#L76). This is the main function called in `e4nuanalyser.cxx`.
 
-An event is defined with the [EventI class](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/EventI.h). There's two specialitzations of this base class, one for MC events, [MCEvent](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/MCEvent.h), and one for CLAS6 data events, [CLAS6Event](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/physics/CLAS6Event.h).
+An event is defined with the [EventI class](https://github.com/e4nu/e4nuanalysiscode/blob/maser/src/physics/EventI.h). There's two specialitzations of this base class, one for MC events, [MCEvent](https://github.com/e4nu/e4nuanalysiscode/blob/master/src/physics/MCEvent.h), and one for CLAS6 data events, [CLAS6Event](https://github.com/e4nu/e4nuanalysiscode/blob/master/src/physics/CLAS6Event.h).
 The main difference between `CLAS6Event` and `MCEvent` members is that `MCEvent` has true level GENIE information, such as the type of interaction, or before FSI kinematics. These are not accessible for `CLAS6Event`s, hence the different specialitzation. 
 
 The base class, `EventI`, contains all the relevant information for analysis: 
@@ -80,7 +80,7 @@ The base class, `EventI`, contains all the relevant information for analysis:
 - Incoming and Outcoming lepton pdg codes
 - Initial lepton kinematics (TLorentzVector)
 - Final lepton kinematics (TLorentzVector)
-- Final hadrons kinematics: map<int,vector< TLorentzVector > >. The key is the particle pdg code. For each pdg, there's a vector containing all Lorentz Vector. For instance, if there's two pions, there will be two entries with pdg code 211. Pdg codes can easily be accessed using the [ParticleI members](https://github.com/e4nu/e4nuanalysiscode/blob/origin/Develop/RefactorizedCode/src/conf/ParticleI.h). For instance, to get the number of pions in our event, we can simply do `(event->GetFinalParticles4Mom())[conf::kPdgPiP].size()`. 
+- Final hadrons kinematics: map<int,vector< TLorentzVector > >. The key is the particle pdg code. For each pdg, there's a vector containing all Lorentz Vector. For instance, if there's two pions, there will be two entries with pdg code 211. Pdg codes can easily be accessed using the [ParticleI members](https://github.com/e4nu/e4nuanalysiscode/blob/master/src/conf/ParticleI.h). For instance, to get the number of pions in our event, we can simply do `(event->GetFinalParticles4Mom())[conf::kPdgPiP].size()`. 
 - The same variables as above are stored for the uncorrected kinematics (before we take into account smearing effects). These are only relevant for MC data. 
 - Number of reconstructed hadrons (for protons, pions, and so on)
 - Mott weight

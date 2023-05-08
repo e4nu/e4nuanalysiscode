@@ -178,7 +178,7 @@ unsigned int MCCLAS6AnalysisI::GetNEvents( void ) const {
 }
 
 void MCCLAS6AnalysisI::Initialize() { 
-
+  if( IsData() ) return ; 
   fData = nullptr ; 
 
   // Get run configurables

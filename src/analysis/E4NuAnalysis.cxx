@@ -82,7 +82,7 @@ bool E4NuAnalysis::Analyse(void) {
   
     // Get valid event after analysis
     // It returns cooked event, with detector effects
-    EventI * event ;
+    EventI * event = nullptr ;
     // Include new analysis classes with the corresponding analysis ID:
     if( IsCLAS6Analysis() ) {
       if( IsData() ) {
@@ -210,7 +210,7 @@ bool E4NuAnalysis::Finalise( ) {
 void E4NuAnalysis::Initialize(void) {
   kOutFile = std::unique_ptr<TFile>( new TFile( (GetOutputFile()+".root").c_str(),"RECREATE") );
 
-  unsigned int ECal_id;
+  unsigned int ECal_id = 0 ;
   for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
     kHistograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), GetNBins()[i], GetRange()[i][0], GetRange()[i][1] ) ) ; 
     if( GetObservablesTag()[i] == "ECal" ) ECal_id = i ; 

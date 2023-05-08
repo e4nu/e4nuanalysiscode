@@ -29,24 +29,20 @@ UTILS_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(UTILS_SRCS))
 CONF_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(CONF_SRCS))
 PHYSICS_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(PHYSICS_SRCS))
 ANALYSIS_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(ANALYSIS_SRCS))
-APP_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(APP_SRCS)) $(OBJDIR)/apps/e4nuanalysis.o
+APP_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(APP_SRCS)) 
 
 all: e4nuanalysis
  
-e4nuanalysis: $(UTILS_OBJS) $(CONF_OBJS) $(PHYSICS_OBJS) $(ANALYSIS_OBJS) $(APP_OBJS) $(APP_OBJS)
+e4nuanalysis: $(SRCDIR)/apps/e4nuanalysis.cxx $(UTILS_OBJS) $(CONF_OBJS) $(PHYSICS_OBJS) $(ANALYSIS_OBJS) $(APP_OBJS)
 	@mkdir -p $(@D)
-	$(LD) $(LDFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $(ROOTLIBS) $(OBJDIR)/utils/*.o $(OBJDIR)/physics/*.o $(OBJDIR)/conf/*.o $(OBJDIR)/analysis/*.o $< -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cxx
 	@mkdir -p $(@D)	
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-$(OBJDIR)/apps/e4nuanalysis.o: $(SRCDIR)/apps/e4nuanalysis.cxx
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(ROOTLIBS) -c $< -o $@
 
 clean:
-	rm -rf $(OBJDIR)/*.o e4nuanalysis
+	rm -rf $(OBJDIR)/* e4nuanalysis
 
 .PHONY: test
 

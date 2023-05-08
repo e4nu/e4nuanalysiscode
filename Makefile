@@ -3,13 +3,19 @@ SRCDIR := src
 OBJDIR := obj
 BINDIR := bin
 
+# ROOT                                                                                                                                                                                               
+ROOTCFLAGS  := $(shell root-config --cflags)
+ROOTLDFLAGS := $(shell root-config --ldflags)
+ROOTLIBS    := $(shell root-config --libs) -lEG
+ROOTGLIBS   := $(shell root-config --glibs)
+
 # Compiler options
 CXX := g++
-CXXFLAGS := -Wall -O2 -I$(SRCDIR) $(shell root-config --cflags)
+CXXFLAGS := -Wall -O2 -I$(SRCDIR) $(ROOTCFLAGS)
 
 # Linker options
 LD := g++
-LDFLAGS := $(shell root-config --libs) -lstdc++ -Wno-undef
+LDFLAGS := $(ROOTLIBS) -lstdc++ -Wno-undef
 
 # Source files
 UTILS_SRCS := $(wildcard $(SRCDIR)/utils/*.cxx)

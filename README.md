@@ -8,7 +8,7 @@ The following are brief descriptions of the code structure, various classes and 
 ## Compile and run e4nu analyses
 
 To configure the software:
-1. Setup the environmental variables in "e4nu_analysis_env.sh": `source e4nu_analysis_env.sh;`
+1. Setup the environmental variables according to the farm you're in. For the FNAL gpvm, `source e4nu_gpvm_env.sh;`. For the ifarm, `source e4nu_ifarm_env.sh;`.
 2. Compile the code "make" from the E4NUANALYSIS directory: `cd $E4NUANALYSIS; make;`
 4. If a previous installation exists, `cd $E4NUANALYSIS; make clean ; make;`
 3. Run the main application, `./e4nuanalysis`

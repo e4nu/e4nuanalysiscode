@@ -1,12 +1,14 @@
+
 #Analysis Cuts
-ApplyFiducial	true
+UseAllSectors	false
+ApplyFiducial   true
+ApplyMomCut     true
+ApplyMottWeight true
 ApplyOutEMomCut	true
 ApplyQ2Cut	true
-ApplyWCut	true
-SubtractBkg 	true
+ApplyWCut	false
+SubtractBkg true
 
-ApplyMottWeight false
-UseAllSectors	false
 ApplyPhiOpeningAngle	false
 UsePhiThetaBand		false
 ApplyThetaSlice		false
@@ -16,22 +18,22 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			1000000
+NEvents			1000000000
 FirstEvent		0
 
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
-Toplogy 		11:1,2212:1,-211:1,211:0,22:0,111:0
-MaxBackgroundMultiplicity 5
-NRotations 500
+Toplogy 		11:1,2212:1,-211:1,221:0,22:0,111:0
+MaxBackgroundMultiplicity 4
+NRotations 1000
 
 #histogram definition
-RangeList 0:2,0:2,0:2,-180:180,-0.5:5.5,0:2,0:2,0:2,0:2,0:2,0:180,0:2
-ObservableList ECal,OutEMom,LeadingPMom,OutEPhi,Sector,RecoEnu,RecoQ2,RecoW,QELRecoEnu,DeltaPT,DeltaAlphaT,DeltaPhiT
-NBinsList 60,60,60,60,6,60,60,60,60,60,60,60
-NormalizeHists true
+RangeList 0:2,0:2,0:2,0:2,0:10,0:180,0:1,0:2
+ObservableList ECal,OutEMom,LeadingPMom,LeadingPiMMom,LeadingPiMTheta,HadSystemDeltaAlphaT,HadSystemDeltaPhiT,HadSystemDeltaPT
+NBinsList 60,60,60,60,60,60,60,60
+NormalizeHists false
 DebugBkg false
 
-InputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GetCharge_genie_filtered_data_e2a_ep_C12_1161_neutrino6_united4_radphot_test_100M.root
-OutputFile /genie/app/users/jtenavid/e4v/E4NuAnalysis/Source/e4nuanalysiscode/e4nu1p1pi_clas6data
+InputFile  /w/hallb-scshelf2102/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_C12_2261_neutrino6_united4_radphot_test_100M.root
+OutputFile  /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/e4nuanalysis_clas6data_C12_2261MeV_1p1pim

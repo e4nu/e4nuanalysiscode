@@ -3,12 +3,13 @@
 UseAllSectors	false
 ApplyFiducial   true
 ApplyAccWeights false
-ApplyReso	true
+ApplyReso	false
+ApplyAccWeights false
 ApplyMomCut     true
 ApplyMottWeight true
 ApplyOutEMomCut	true
 ApplyQ2Cut	true
-ApplyWCut	true
+ApplyWCut	false
 SubtractBkg true
 
 ApplyPhiOpeningAngle	false
@@ -18,13 +19,13 @@ ApplyGoodSectorPhiSlice	false
 offset			0
 
 #Run Configurables
-EBeam			1.161
+EBeam			2.261
 TargetPdg		1000060120
 NEvents			1000000000
 FirstEvent		0
 
 #Topology definition
-IsData			false
+IsData			true
 IsCLAS6Analysis		true
 Toplogy 		11:1,2212:1,-211:1,221:0,22:0,111:0
 MaxBackgroundMultiplicity 4
@@ -37,6 +38,5 @@ NBinsList 60,60,60,60,60,60,60,60
 NormalizeHists false
 DebugBkg false
 
-InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_1161GeV/apapadop_SuSav2_C12_1161GeV_master*.root
-OutputFile  /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/test_mc_normalise_EAccCorr
-XSecFile /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/ConfFiles/xsec_carbon12_spline_GEM21_11b_00_000_Q2_0_1.root
+InputFile  /w/hallb-scshelf2102/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_C12_2261_neutrino6_united4_radphot_test_100M.root
+OutputFile  /u/home/jtena/Software/e4nuanalysiscode/e4nuanalysis_clas6data_C12_2261MeV_1p1pim

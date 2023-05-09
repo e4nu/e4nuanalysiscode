@@ -10,4 +10,4 @@ echo "Setting E4NU environment variables..."
 # foolproof. See https://stackoverflow.com/a/246128/4081973 if you need
 # something more robust for edge cases (e.g., you're calling the script using
 # symlinks).
-THIS_DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export E4NUANALYSIS="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

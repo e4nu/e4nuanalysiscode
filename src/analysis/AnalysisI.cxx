@@ -24,30 +24,27 @@ AnalysisI::AnalysisI( const double EBeam, const unsigned int TargetPdg ) : Backg
 
 AnalysisI::~AnalysisI() { this->Initialize();}
 
-bool AnalysisI::Analyse( EventI * event ) {
+bool AnalysisI::Analyse( Event & event ) {
 
-  TLorentzVector in_mom = event -> GetInLepton4Mom() ;
-  TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
+  TLorentzVector in_mom = event.GetInLepton4Mom() ;
+  TLorentzVector out_mom = event.GetOutLepton4Mom() ;
 
   // Step 1 : Apply generic cuts
   // Check run is correct
   double EBeam = GetConfiguredEBeam() ; 
   if ( in_mom.E() != EBeam ) {
     std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
-    delete event ;
     exit(11); 
   }
   
-  if ( (unsigned int) event -> GetTargetPdg() != GetConfiguredTarget() ) {
-    std::cout << "Target is " << event -> GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
-    delete event ;
+  if ( (unsigned int) event.GetTargetPdg() != GetConfiguredTarget() ) {
+    std::cout << "Target is " << event.GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
     exit(11); 
   }
 
   // Check weight is physical
-  double wght = event->GetEventWeight() ; 
+  double wght = event.GetEventWeight() ; 
   if ( wght < 0 || wght > 10 || wght == 0 ) {
-    delete event ;
     return false ; 
   }
 
@@ -97,18 +94,18 @@ bool AnalysisI::Analyse( EventI * event ) {
 
   // Apply Mott Scaling to correct for different coupling
   if ( ApplyMottScaling() ) { 
-    event -> SetMottXSecWeight() ; 
+    event.SetMottXSecWeight() ; 
   }
 
   // Store analysis record before momentum cuts (0) :
-  event->StoreAnalysisRecord(kid_bcuts);
+  event.StoreAnalysisRecord(kid_bcuts);
 
   // Step 2: Apply momentum cut (detector specific) 
   if( ApplyMomCut() ) { 
     this->ApplyMomentumCut( event ) ; 
   }
   // Store analysis record after momentum cuts:
-  event->StoreAnalysisRecord(kid_acuts);
+  event.StoreAnalysisRecord(kid_acuts);
 
   // Step 3 : Cook event
   // Remove particles not specified in topology maps
@@ -120,10 +117,10 @@ bool AnalysisI::Analyse( EventI * event ) {
 }
 
 
-void AnalysisI::ApplyMomentumCut( EventI * event ) {
+void AnalysisI::ApplyMomentumCut( Event & event ) {
 
-  std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticlesUnCorr4Mom() ;
-  TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event.GetFinalParticlesUnCorr4Mom() ;
+  TLorentzVector out_mom = event.GetOutLepton4Mom() ;
   // Remove particles below threshold
   for( auto it = unsmeared_part_map.begin() ; it != unsmeared_part_map.end() ; ++it ) {
     std::vector<TLorentzVector> above_th_particles ; 
@@ -139,18 +136,18 @@ void AnalysisI::ApplyMomentumCut( EventI * event ) {
     }
     unsmeared_part_map[it->first] = above_th_particles ;
   }
-  event -> SetFinalParticlesKinematics( unsmeared_part_map ) ;
-  event -> SetFinalParticlesUnCorrKinematics( unsmeared_part_map ) ; 
+  event.SetFinalParticlesKinematics( unsmeared_part_map ) ;
+  event.SetFinalParticlesUnCorrKinematics( unsmeared_part_map ) ; 
   
   return ;
 }
 
-void AnalysisI::CookEvent( EventI * event ) { 
+void AnalysisI::CookEvent( Event & event ) { 
   // Remove particles not specified in topology maps
   // These are ignored in the analysis
   // No Cuts are applied on those
-  TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
-  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticlesUnCorr4Mom() ;
+  TLorentzVector out_mom = event.GetOutLepton4Mom() ; 
+  std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticlesUnCorr4Mom() ;
   std::map<int,unsigned int> Topology = GetTopology();
   std::map<int,std::vector<TLorentzVector>> cooked_part_map ; 
   for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
@@ -161,17 +158,17 @@ void AnalysisI::CookEvent( EventI * event ) {
     }
     cooked_part_map[it->first] = topology_particles ;
   }
-  event -> SetFinalParticlesKinematics( cooked_part_map ) ;
-  event -> SetFinalParticlesUnCorrKinematics( cooked_part_map ) ;
+  event.SetFinalParticlesKinematics( cooked_part_map ) ;
+  event.SetFinalParticlesUnCorrKinematics( cooked_part_map ) ;
   return ; 
 }
 
-void AnalysisI::PlotBkgInformation( EventI * event ) {
+void AnalysisI::PlotBkgInformation( Event event ) {
  
   if( ! GetDebugBkg() ) return ;
  
   // Store plots for Bakcground debugging
-  std::map<unsigned int,std::pair<std::vector<int>,double>> AnalysisRecord = event->GetAnalysisRecord() ;
+  std::map<unsigned int,std::pair<std::vector<int>,double>> AnalysisRecord = event.GetAnalysisRecord() ;
  
   // Signal multiplicity
   unsigned int min_mult = GetMinBkgMult() ;
@@ -188,7 +185,7 @@ void AnalysisI::PlotBkgInformation( EventI * event ) {
 
   if( (record_afiducials.first).size() > min_mult ) {
     // This is used to estimate the total background contribution 
-    kHistograms[kid_totestbkg]->Fill( event->GetObservable("ECal"), - event->GetTotalWeight() ) ; 
+    kHistograms[kid_totestbkg]->Fill( event.GetObservable("ECal"), - event.GetTotalWeight() ) ; 
 
     // Store contributions from different multiplicities 
     // Check only direct contribution : 
@@ -200,7 +197,7 @@ void AnalysisI::PlotBkgInformation( EventI * event ) {
       // Fill for direct contributions only
       unsigned int id2 = kid_totestbkg + original_mult - min_mult ; 	
       if( kHistograms[id2] && is_m_bkg ) {
-	kHistograms[id2]->Fill( event->GetObservable("ECal"), -event->GetTotalWeight() ) ;
+	kHistograms[id2]->Fill( event.GetObservable("ECal"), -event.GetTotalWeight() ) ;
       }
 
       // Filling for specific topologies:
@@ -222,12 +219,12 @@ void AnalysisI::PlotBkgInformation( EventI * event ) {
       // Add breakdown in topologies
       if( original_mult == 2 ) {
 	// Store according to initial topology
-	if( nprotons == 2 && npions == 0 ) kHistograms[kid_2p0piestbkg]->Fill( event->GetObservable("ECal"), -event->GetTotalWeight() ) ;
-	if( nprotons == 1 && npions == 1 ) kHistograms[kid_1p1piestbkg]->Fill( event->GetObservable("ECal"), -event->GetTotalWeight() ) ;
+	if( nprotons == 2 && npions == 0 ) kHistograms[kid_2p0piestbkg]->Fill( event.GetObservable("ECal"), -event.GetTotalWeight() ) ;
+	if( nprotons == 1 && npions == 1 ) kHistograms[kid_1p1piestbkg]->Fill( event.GetObservable("ECal"), -event.GetTotalWeight() ) ;
       } else if (original_mult == 3 ) { 
 	// Store according to initial topology
-	if( nprotons == 2 && npions == 1 ) kHistograms[kid_2p1piestbkg]->Fill( event->GetObservable("ECal"), -event->GetTotalWeight() ) ;
-	if( nprotons == 1 && npions == 2 ) kHistograms[kid_1p2piestbkg]->Fill( event->GetObservable("ECal"), -event->GetTotalWeight() ) ;
+	if( nprotons == 2 && npions == 1 ) kHistograms[kid_2p1piestbkg]->Fill( event.GetObservable("ECal"), -event.GetTotalWeight() ) ;
+	if( nprotons == 1 && npions == 2 ) kHistograms[kid_1p2piestbkg]->Fill( event.GetObservable("ECal"), -event.GetTotalWeight() ) ;
       }
 
       ++original_mult; 
@@ -236,15 +233,15 @@ void AnalysisI::PlotBkgInformation( EventI * event ) {
   } else { 
     // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
     if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() == 0 ) {
-      kHistograms[kid_signal]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+      kHistograms[kid_signal]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
     } else if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() != 0 ) {
-      kHistograms[kid_acccorr]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+      kHistograms[kid_acccorr]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
     } else { 
-      kHistograms[kid_tottruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+      kHistograms[kid_tottruebkg]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
      
       // Fill each multiplicity contribution 
       unsigned int id = (record_amomcuts.first).size() - min_mult ; 
-      if( kHistograms[kid_tottruebkg+id] ) kHistograms[kid_tottruebkg+id]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+      if( kHistograms[kid_tottruebkg+id] ) kHistograms[kid_tottruebkg+id]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
 
       // Count number of protons and pions
       unsigned int nprotons = 0 ; 
@@ -258,12 +255,12 @@ void AnalysisI::PlotBkgInformation( EventI * event ) {
       // Add breakdown in topologies
       if( (record_amomcuts.first).size() == 2 ) {
 	// Store according to initial topology
-	if( nprotons == 2 && npions == 0 ) kHistograms[kid_2p0pitruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
-	if( nprotons == 1 && npions == 1 ) kHistograms[kid_1p1pitruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+	if( nprotons == 2 && npions == 0 ) kHistograms[kid_2p0pitruebkg]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
+	if( nprotons == 1 && npions == 1 ) kHistograms[kid_1p1pitruebkg]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
       } else if ( (record_amomcuts.first).size() == 3 ) { 
 	// Store according to initial topology
-	if( nprotons == 2 && npions == 1 ) kHistograms[kid_2p1pitruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
-	if( nprotons == 1 && npions == 2 ) kHistograms[kid_1p2pitruebkg]->Fill( event->GetObservable("ECal"), event->GetTotalWeight() ) ;
+	if( nprotons == 2 && npions == 1 ) kHistograms[kid_2p1pitruebkg]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
+	if( nprotons == 1 && npions == 2 ) kHistograms[kid_1p2pitruebkg]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
       }
     }
   }

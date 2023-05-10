@@ -4,7 +4,7 @@
  * 
  */
 #include <iostream>
-#include "physics/EventI.h"
+#include "physics/Event.h"
 #include "conf/ParticleI.h"
 #include "utils/DetectorUtils.h"
 #include "utils/ParticleUtils.h"
@@ -12,25 +12,25 @@
 
 using namespace e4nu ; 
 
-EventI::EventI() { 
+Event::Event() { 
   this->Initialize() ;
 }
 
-EventI::~EventI() {
+Event::~Event() {
   this->Clear();
 }
 
-void EventI::SetOutLeptonKinematics( const double E, const double px, const double py, const double pz ) {
+void Event::SetOutLeptonKinematics( const double E, const double px, const double py, const double pz ) {
   fOutLepton.SetPxPyPzE( px, py, pz, E ) ; 
   return ; 
 }
 
-void EventI::SetInLeptonKinematics( const double E, const double px, const double py, const double pz ) {
+void Event::SetInLeptonKinematics( const double E, const double px, const double py, const double pz ) {
   fInLepton.SetPxPyPzE( px, py, pz, E ) ; 
   return ; 
 } 
 
-void EventI::SetFinalParticle( const int pdg, const double E, const double px, const double py, const double pz ) {
+void Event::SetFinalParticle( const int pdg, const double E, const double px, const double py, const double pz ) {
   TLorentzVector mom;
   mom.SetPxPyPzE( px, py, pz, E ) ; 
   if( fFinalParticles.find(pdg) == fFinalParticles.end() ) {
@@ -42,17 +42,17 @@ void EventI::SetFinalParticle( const int pdg, const double E, const double px, c
   }
 }
 
-void EventI::SetOutUnCorrLeptonKinematics( const double E, const double px, const double py, const double pz ) {
+void Event::SetOutUnCorrLeptonKinematics( const double E, const double px, const double py, const double pz ) {
   fOutLeptonUnCorr.SetPxPyPzE( px, py, pz, E ) ; 
   return ; 
 }
 
-void EventI::SetInUnCorrLeptonKinematics( const double E, const double px, const double py, const double pz ) {
+void Event::SetInUnCorrLeptonKinematics( const double E, const double px, const double py, const double pz ) {
   fInLeptonUnCorr.SetPxPyPzE( px, py, pz, E ) ; 
   return ; 
 } 
 
-void EventI::SetFinalParticleUnCorr( const int pdg, const double E, const double px, const double py, const double pz ) {
+void Event::SetFinalParticleUnCorr( const int pdg, const double E, const double px, const double py, const double pz ) {
   TLorentzVector mom;
   mom.SetPxPyPzE( px, py, pz, E ) ; 
   if( fFinalParticlesUnCorr.find(pdg) == fFinalParticlesUnCorr.end() ) {
@@ -64,7 +64,7 @@ void EventI::SetFinalParticleUnCorr( const int pdg, const double E, const double
   }
 }
 
-void EventI::StoreAnalysisRecord( unsigned int analysis_step ) {
+void Event::StoreAnalysisRecord( unsigned int analysis_step ) {
   double weight = this->GetTotalWeight() ; 
   std::map<int,std::vector<TLorentzVector>> part_map = this->GetFinalParticles4Mom() ; 
   std::vector<int> pdg_list ; 
@@ -76,7 +76,7 @@ void EventI::StoreAnalysisRecord( unsigned int analysis_step ) {
   return ; 
 }
 
-unsigned int EventI::GetEventMultiplicity( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) {
+unsigned int Event::GetEventMultiplicity( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) const {
   // return number of charged particles in event
   unsigned int multiplicity = 0 ; 
   for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
@@ -85,7 +85,7 @@ unsigned int EventI::GetEventMultiplicity( const std::map<int,std::vector<TLoren
   return multiplicity ; 
 }
 
-unsigned int EventI::GetNSignalParticles( std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) {
+unsigned int Event::GetNSignalParticles( std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) const {
   unsigned int N_signal = 0 ; 
   for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) continue ; 
@@ -97,7 +97,7 @@ unsigned int EventI::GetNSignalParticles( std::map<int,std::vector<TLorentzVecto
   return N_signal ;
 }
 
-int EventI::GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) {
+int Event::GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) const {
   // return number of charged particles in event
   unsigned int charge = 0 ; 
   for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
@@ -106,7 +106,7 @@ int EventI::GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzV
   return charge ; 
 }
 
-double EventI::GetObservable( const std::string observable ) {
+double Event::GetObservable( const std::string observable ) {
   unsigned int target = fTargetPdg ; 
   double EBeam = GetInLepton4Mom().E();
   TLorentzVector ef4mom = GetOutLepton4Mom() ;
@@ -209,17 +209,17 @@ double EventI::GetObservable( const std::string observable ) {
 }
 
 
-void EventI::SetMottXSecWeight(void) { 
+void Event::SetMottXSecWeight(void) { 
   // Set Mott XSec
   double reco_Q2 = utils::GetRecoQ2( this->GetOutLepton4Mom(), this->GetInLepton4Mom().E() ) ;
   fMottXSecWght = std::pow( reco_Q2, 2 ) ; 
 }
 
-TVector3 EventI::GetRecoq3() const { 
+TVector3 Event::GetRecoq3() const { 
   return utils::GetRecoq3( fOutLepton, fInLepton.E() ) ; 
 }
 
-void EventI::Initialize() { 
+void Event::Initialize() { 
   fFinalParticles.clear() ; 
   fFinalParticlesUnCorr.clear() ; 
   fIsMC = false ; 
@@ -240,6 +240,24 @@ void EventI::Initialize() {
   fNEM = 0 ; 
   fNOther = 0 ;
 
+  fIsMC = true ; 
+  fIsEM = false ; 
+  fIsCC = false ; 
+  fIsNC = false ; 
+  fIsQEL = false ;
+  fIsRES = false ; 
+  fIsMEC = false ; 
+  fIsDIS = false ;
+  
+  fTrueQ2s = 0 ; 
+  fTrueWs = 0 ; 
+  fTruexs = 0 ; 
+  fTrueys = 0 ; 
+  fTrueQ2 = 0 ; 
+  fTrueW = 0 ; 
+  fTruex = 0 ; 
+  fTruey = 0 ; 
+
   fInLepton.SetPxPyPzE( 0,0,0,0 ) ;
   fOutLepton.SetPxPyPzE( 0,0,0,0 ) ;
   fInLeptonUnCorr.SetPxPyPzE( 0,0,0,0 ) ;
@@ -248,7 +266,7 @@ void EventI::Initialize() {
   fAnalysisRecord.clear();
 }
 
-void EventI::Clear() { 
+void Event::Clear() { 
 
   fFinalParticles.clear() ; 
   fFinalParticlesUnCorr.clear() ; 

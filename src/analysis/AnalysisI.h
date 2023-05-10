@@ -24,14 +24,14 @@ namespace e4nu {
     AnalysisI( const std::string input_file ) ;
     AnalysisI( const double EBeam, const unsigned int TargetPdg ) ;
 
-    bool Analyse( Event * event ) ; 
+    bool Analyse( Event & event ) ; 
     void Initialize(void) ;
     bool Finalise(void) ;
 
   protected : 
-    void CookEvent( Event * event ) ;
-    void PlotBkgInformation( Event * event ) ;
-    void ApplyMomentumCut( Event * event ) ;
+    void CookEvent( Event & event ) ;
+    void PlotBkgInformation( const Event event ) ;
+    void ApplyMomentumCut( Event & event ) ;
     double GetElectronMinTheta( TLorentzVector emom ) ;      
 
     // ID for Background historams

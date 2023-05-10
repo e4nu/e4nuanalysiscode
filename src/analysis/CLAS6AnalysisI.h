@@ -24,8 +24,8 @@ namespace e4nu {
     unsigned int GetNEvents( void ) const ;
     Event * GetValidEvent( const unsigned int event_id ) ;
     e4nu::Event * GetEvent( const unsigned int event_id ) ;
-    bool Finalise( std::map<int,std::vector<e4nu::Event*>> & event_holder ) ; 
-    bool StoreTree(Event * event);
+    bool Finalise( std::map<int,std::vector<e4nu::Event>> & event_holder ) ; 
+    bool StoreTree(Event event);
 
   private :
 

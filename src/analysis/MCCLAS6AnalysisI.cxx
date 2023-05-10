@@ -60,8 +60,8 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
   Event * event ;
   if( IsNoFSI() ) {
     // This function will load the full event using pre FSI nucleon kinematics
-    event = (Event*) fData -> GetEventNoFSI(event_id) ; 
-  } else event = (Event*) fData -> GetEvent(event_id) ; 
+    event = fData -> GetEventNoFSI(event_id) ; 
+  } else event = fData -> GetEvent(event_id) ; 
 
   if( !event ) {
     delete event ; 
@@ -69,24 +69,27 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
   }
 
   // Apply Generic analysis cuts (0-3)
-  if ( ! AnalysisI::Analyse( event ) ) {
+  if ( ! AnalysisI::Analyse( *event ) ) {
     delete event ; 
     return nullptr ; 
   }
 
   // Step 3 : smear particles momentum 
   if( ApplyReso() ) {
-    this -> SmearParticles( event ) ; 
+    this -> SmearParticles( *event ) ; 
   }
 
   // Step 4: Apply fiducials
   // The detector has gaps where the particles cannot be detected
   // We need to account for these with fiducial cuts
-  if ( ! this->ApplyFiducialCut( event ) ) return nullptr ; 
-  
+  if ( ! this->ApplyFiducialCut( *event ) ) {
+    delete event ; 
+    return nullptr ; 
+  }
+
   // Step 5: Apply Acceptance Correction (Efficiency correction)
   // This takes into account the efficiency detection of each particle in theta and phi
-  this->ApplyAcceptanceCorrection( event ) ; 
+  this->ApplyAcceptanceCorrection( *event ) ; 
 
   // Store analysis record after fiducial cut and acceptance correction (2):
   event->StoreAnalysisRecord(kid_fid);
@@ -94,19 +97,19 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
   return event ; 
 }
 
-bool MCCLAS6AnalysisI::ApplyFiducialCut( Event * event ) { 
+bool MCCLAS6AnalysisI::ApplyFiducialCut( Event & event ) { 
   // First, we apply it to the electron
   // Apply fiducial cut to electron
   if( ! ApplyFiducial() ) return true ; 
   Fiducial * fiducial = GetFiducialCut() ; 
   if( ! fiducial ) return true ; 
 
-  TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
-  if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect(), IsData() ) ) { delete event ; return false ; }
+  TLorentzVector out_mom = event.GetOutLepton4Mom() ;
+  if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect(), IsData() ) ) return false ; 
 
   // Apply Fiducial cut for hadrons and photons
-  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
-  std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event -> GetFinalParticlesUnCorr4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event.GetFinalParticlesUnCorr4Mom() ;
   std::map<int,std::vector<TLorentzVector>> contained_part_map, contained_part_map_uncorr ; 
   for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
     std::vector<TLorentzVector> visible_part ; 
@@ -122,17 +125,17 @@ bool MCCLAS6AnalysisI::ApplyFiducialCut( Event * event ) {
   }
   
   // Store changes in event after fiducial cut
-  event -> SetFinalParticlesKinematics( contained_part_map ) ; 
-  event -> SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ; 
+  event.SetFinalParticlesKinematics( contained_part_map ) ; 
+  event.SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ; 
 
   return true ; 
 }
 
-void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event * event ) { 
+void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event & event ) { 
   double acc_wght = 1 ;
   if( ApplyAccWeights() ) {
-    TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
-    std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
+    TLorentzVector out_mom = event.GetOutLepton4Mom() ;
+    std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
     std::map<int,unsigned int> Topology = GetTopology();
     // Electron acceptance
     if( kAccMap[conf::kPdgElectron] && kGenMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], *kGenMap[conf::kPdgElectron], out_mom ) ; 
@@ -146,20 +149,20 @@ void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event * event ) {
 	}
       }
     }
-    event->SetAccWght(acc_wght);
+    event.SetAccWght(acc_wght);
   }
   return ; 
 }
 
-void MCCLAS6AnalysisI::SmearParticles( Event * event ) {
+void MCCLAS6AnalysisI::SmearParticles( Event & event ) {
   double EBeam = GetConfiguredEBeam() ; 
-  TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
+  TLorentzVector out_mom = event.GetOutLepton4Mom() ; 
 
   utils::ApplyResolution( conf::kPdgElectron, out_mom, EBeam ) ; 
-  event -> Event::SetOutLeptonKinematics( out_mom ) ; 
+  event.SetOutLeptonKinematics( out_mom ) ; 
   
   // Apply for other particles
-  std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
   for( std::map<int,std::vector<TLorentzVector>>::iterator it = part_map.begin() ; it != part_map.end() ; ++it ) {
     std::vector<TLorentzVector> vtemp ; 
     for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
@@ -169,7 +172,7 @@ void MCCLAS6AnalysisI::SmearParticles( Event * event ) {
     }
     part_map[it->first] = vtemp ; 
   }
-  event -> Event::SetFinalParticlesKinematics( part_map ) ; 
+  event.SetFinalParticlesKinematics( part_map ) ; 
   
 } 
 
@@ -240,20 +243,20 @@ void MCCLAS6AnalysisI::Initialize() {
 
 }
 
-bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event*>> & event_holder ) {
+bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event>> & event_holder ) {
 
   if( !AnalysisI::Finalise() ) return false ; 
 
   // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult() ; 
   for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) {
-    StoreTree( static_cast<Event*>( event_holder[min_mult][k] ) );
+    StoreTree( event_holder[min_mult][k] );
 
-    double norm_weight = event_holder[min_mult][k]->GetTotalWeight() ;
+    double norm_weight = event_holder[min_mult][k].GetTotalWeight() ;
 
     // Store in histogram(s)
     for( unsigned int j = 0 ; j < GetObservablesTag().size() ; ++j ) {
-      kHistograms[j]-> Fill( event_holder[min_mult][k]->GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
+      kHistograms[j]-> Fill( event_holder[min_mult][k].GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
     }
 
     PlotBkgInformation( event_holder[min_mult][k] ) ; 
@@ -282,56 +285,56 @@ bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event*>> & event
   return true ; 
 }
 
-bool MCCLAS6AnalysisI::StoreTree(Event * event){
+bool MCCLAS6AnalysisI::StoreTree(Event event){
   static bool n = true ; 
-  int ID = event->GetEventID() ; 
-  int TargetPdg = event->GetTargetPdg() ;
-  int InLeptonPdg = event->GetInLeptPdg() ; 
-  int OutLeptonPdg = event->GetOutLeptPdg() ; 
-  double TotWeight = event->GetTotalWeight() ; 
-  double AccWght = event->GetAccWght() ; 
-  double EventWght = event->GetEventWeight() ; 
-  double BeamE = event->GetInLepton4Mom().E() ; 
+  int ID = event.GetEventID() ; 
+  int TargetPdg = event.GetTargetPdg() ;
+  int InLeptonPdg = event.GetInLeptPdg() ; 
+  int OutLeptonPdg = event.GetOutLeptPdg() ; 
+  double TotWeight = event.GetTotalWeight() ; 
+  double AccWght = event.GetAccWght() ; 
+  double EventWght = event.GetEventWeight() ; 
+  double BeamE = event.GetInLepton4Mom().E() ; 
 
-  bool CC = event->IsCC();
-  bool NC = event->IsNC();
-  bool EM = event->IsEM();
-  bool QEL = event->IsQEL();
-  bool RES = event->IsRES();
-  bool MEC = event->IsMEC();
-  bool DIS = event->IsDIS();
+  bool CC = event.IsCC();
+  bool NC = event.IsNC();
+  bool EM = event.IsEM();
+  bool QEL = event.IsQEL();
+  bool RES = event.IsRES();
+  bool MEC = event.IsMEC();
+  bool DIS = event.IsDIS();
 
-  unsigned int TrueNProtons = event->GetTrueNProtons() ; 
-  unsigned int TrueNNeutrons = event->GetTrueNNeutrons();
-  unsigned int TrueNPiP = event->GetTrueNPiP();
-  unsigned int TrueNPiM = event->GetTrueNPiM();
-  unsigned int TrueNPi0 = event->GetTrueNPi0();
-  unsigned int TrueNKP = event->GetTrueNKP();
-  unsigned int TrueNKM = event->GetTrueNKM(); 
-  unsigned int TrueNK0 = event->GetTrueNK0();
-  unsigned int TrueNEM = event->GetTrueNEM();
-  unsigned int TrueNOther = event->GetTrueNOther();
+  unsigned int TrueNProtons = event.GetTrueNProtons() ; 
+  unsigned int TrueNNeutrons = event.GetTrueNNeutrons();
+  unsigned int TrueNPiP = event.GetTrueNPiP();
+  unsigned int TrueNPiM = event.GetTrueNPiM();
+  unsigned int TrueNPi0 = event.GetTrueNPi0();
+  unsigned int TrueNKP = event.GetTrueNKP();
+  unsigned int TrueNKM = event.GetTrueNKM(); 
+  unsigned int TrueNK0 = event.GetTrueNK0();
+  unsigned int TrueNEM = event.GetTrueNEM();
+  unsigned int TrueNOther = event.GetTrueNOther();
 
-  unsigned int RecoNProtons = event->GetRecoNProtons() ; 
-  unsigned int RecoNNeutrons = event->GetRecoNNeutrons();
-  unsigned int RecoNPiP = event->GetRecoNPiP();
-  unsigned int RecoNPiM = event->GetRecoNPiM();
-  unsigned int RecoNPi0 = event->GetRecoNPi0();
-  unsigned int RecoNKP = event->GetRecoNKP();
-  unsigned int RecoNKM = event->GetRecoNKM(); 
-  unsigned int RecoNK0 = event->GetRecoNK0();
-  unsigned int RecoNEM = event->GetRecoNEM();
+  unsigned int RecoNProtons = event.GetRecoNProtons() ; 
+  unsigned int RecoNNeutrons = event.GetRecoNNeutrons();
+  unsigned int RecoNPiP = event.GetRecoNPiP();
+  unsigned int RecoNPiM = event.GetRecoNPiM();
+  unsigned int RecoNPi0 = event.GetRecoNPi0();
+  unsigned int RecoNKP = event.GetRecoNKP();
+  unsigned int RecoNKM = event.GetRecoNKM(); 
+  unsigned int RecoNK0 = event.GetRecoNK0();
+  unsigned int RecoNEM = event.GetRecoNEM();
 
-  double TrueQ2s = event->GetTrueQ2s();
-  double TrueWs = event->GetTrueWs();
-  double Truexs = event->GetTruexs();
-  double Trueys = event->GetTrueys();
-  double TrueQ2 = event->GetTrueQ2();
-  double TrueW = event->GetTrueW();
-  double Truex = event->GetTruex();
-  double Truey = event->GetTruey();
+  double TrueQ2s = event.GetTrueQ2s();
+  double TrueWs = event.GetTrueWs();
+  double Truexs = event.GetTruexs();
+  double Trueys = event.GetTrueys();
+  double TrueQ2 = event.GetTrueQ2();
+  double TrueW = event.GetTrueW();
+  double Truex = event.GetTruex();
+  double Truey = event.GetTruey();
 
-  TLorentzVector out_mom = event->GetOutLepton4Mom();
+  TLorentzVector out_mom = event.GetOutLepton4Mom();
   double Efl = out_mom.E();
   double pfl = out_mom.P();
   double pflx = out_mom.Px();
@@ -347,7 +350,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event * event){
   double RecoQ2 = utils::GetRecoQ2( out_mom, BeamE ) ; 
   double RecoXBJK = utils::GetRecoXBJK( out_mom, BeamE ) ; 
   double RecoW = utils::GetRecoW(out_mom, BeamE ) ;
-  double MottXSecScale = event->GetMottXSecWeight();
+  double MottXSecScale = event.GetMottXSecWeight();
 
   std::map<int,unsigned int> topology = GetTopology() ;
   static bool topology_has_protons = false ; 
@@ -365,7 +368,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event * event){
   }
 
   unsigned int TopMult = GetNTopologyParticles();
-  std::map<int,std::vector<TLorentzVector>> hadron_map = event->GetFinalParticles4Mom();
+  std::map<int,std::vector<TLorentzVector>> hadron_map = event.GetFinalParticles4Mom();
   TLorentzVector p_max(0,0,0,0) ;
   if( topology_has_protons ) {
     double max_mom = 0 ; 
@@ -382,7 +385,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event * event){
   double proton_momz = p_max.Pz() ; 
   double proton_theta = p_max.Theta() ; 
   double proton_phi = p_max.Phi() + TMath::Pi() ; 
-  double ECal = utils::GetECal( out_mom.E(), event->GetFinalParticles4Mom(), TargetPdg ) ; 
+  double ECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg ) ; 
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
   double DeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ; 
@@ -426,7 +429,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event * event){
   double pim_theta = pim_max.Theta() ;
   double pim_phi = pim_max.Phi() + TMath::Pi() ;
 
-  bool IsBkg = event->IsBkg() ; 
+  bool IsBkg = event.IsBkg() ; 
 
   if( n == true ) {
     kAnalysisTree -> Branch( "ID", &ID, "ID/I"); 

@@ -60,7 +60,7 @@ Event * CLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
   }
 
   // Apply Generic analysis cuts
-  if ( ! AnalysisI::Analyse( event ) ) {
+  if ( ! AnalysisI::Analyse( *event ) ) {
     delete event ; 
     return nullptr ; 
   }
@@ -81,23 +81,23 @@ void CLAS6AnalysisI::Initialize() {
   fData = nullptr ; 
 }
 
-bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event*>> & event_holder ) {
+bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event>> & event_holder ) {
 
   if( !AnalysisI::Finalise() ) return false ; 
 
   // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult() ; 
   for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) {
-    StoreTree( static_cast<Event*>( event_holder[min_mult][k] ) );
+    StoreTree( event_holder[min_mult][k] );
 
     double norm_weight = 1 ; 
     if( ApplyCorrWeights() ) { 
-      norm_weight = event_holder[min_mult][k]->GetTotalWeight() ;
+      norm_weight = event_holder[min_mult][k].GetTotalWeight() ;
     }
 
     // Store in histogram(s)
     for( unsigned int j = 0 ; j < kHistograms.size() ; ++j ) {
-      kHistograms[j]-> Fill( event_holder[min_mult][k]->GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
+      kHistograms[j]-> Fill( event_holder[min_mult][k].GetObservable( GetObservablesTag()[j] ), norm_weight ) ; 
     }
   }
 
@@ -131,27 +131,27 @@ bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event*>> & event_h
   return true ; 
 }
 
-bool CLAS6AnalysisI::StoreTree(Event * event){
+bool CLAS6AnalysisI::StoreTree(Event event){
   static bool n = true ; 
-  int ID = event->GetEventID() ; 
-  int TargetPdg = event->GetTargetPdg() ;
-  int InLeptonPdg = event->GetInLeptPdg() ; 
-  int OutLeptonPdg = event->GetOutLeptPdg() ; 
-  double TotWeight = event->GetTotalWeight() ; 
-  double EventWght = event->GetEventWeight() ; 
-  double BeamE = event->GetInLepton4Mom().E() ; 
+  int ID = event.GetEventID() ; 
+  int TargetPdg = event.GetTargetPdg() ;
+  int InLeptonPdg = event.GetInLeptPdg() ; 
+  int OutLeptonPdg = event.GetOutLeptPdg() ; 
+  double TotWeight = event.GetTotalWeight() ; 
+  double EventWght = event.GetEventWeight() ; 
+  double BeamE = event.GetInLepton4Mom().E() ; 
 
-  unsigned int RecoNProtons = event->GetRecoNProtons() ; 
-  unsigned int RecoNNeutrons = event->GetRecoNNeutrons();
-  unsigned int RecoNPiP = event->GetRecoNPiP();
-  unsigned int RecoNPiM = event->GetRecoNPiM();
-  unsigned int RecoNPi0 = event->GetRecoNPi0();
-  unsigned int RecoNKP = event->GetRecoNKP();
-  unsigned int RecoNKM = event->GetRecoNKM(); 
-  unsigned int RecoNK0 = event->GetRecoNK0();
-  unsigned int RecoNEM = event->GetRecoNEM();
+  unsigned int RecoNProtons = event.GetRecoNProtons() ; 
+  unsigned int RecoNNeutrons = event.GetRecoNNeutrons();
+  unsigned int RecoNPiP = event.GetRecoNPiP();
+  unsigned int RecoNPiM = event.GetRecoNPiM();
+  unsigned int RecoNPi0 = event.GetRecoNPi0();
+  unsigned int RecoNKP = event.GetRecoNKP();
+  unsigned int RecoNKM = event.GetRecoNKM(); 
+  unsigned int RecoNK0 = event.GetRecoNK0();
+  unsigned int RecoNEM = event.GetRecoNEM();
 
-  TLorentzVector out_mom = event->GetOutLepton4Mom();
+  TLorentzVector out_mom = event.GetOutLepton4Mom();
   double Efl = out_mom.E();
   double pfl = out_mom.P();
   double pflx = out_mom.Px();
@@ -184,7 +184,7 @@ bool CLAS6AnalysisI::StoreTree(Event * event){
   }
 
   unsigned int TopMult = GetNTopologyParticles();
-  std::map<int,std::vector<TLorentzVector>> hadron_map = event->GetFinalParticles4Mom();
+  std::map<int,std::vector<TLorentzVector>> hadron_map = event.GetFinalParticles4Mom();
   TLorentzVector p_max(0,0,0,0) ;
   if( topology_has_protons ) {
     double max_mom = 0 ; 
@@ -201,7 +201,7 @@ bool CLAS6AnalysisI::StoreTree(Event * event){
   double proton_momz = p_max.Pz() ; 
   double proton_theta = p_max.Theta() ; 
   double proton_phi = p_max.Phi(); 
-  double ECal = utils::GetECal( out_mom.E(), event->GetFinalParticles4Mom(), TargetPdg ) ; 
+  double ECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg ) ; 
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
   double DeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ; 
@@ -241,7 +241,7 @@ bool CLAS6AnalysisI::StoreTree(Event * event){
   double pim_theta = pim_max.Theta() ;
   double pim_phi = pim_max.Phi() ;
 
-  bool IsBkg = event->IsBkg() ; 
+  bool IsBkg = event.IsBkg() ; 
   if( n == true ) {
     kAnalysisTree -> Branch( "ID", &ID, "ID/I"); 
     kAnalysisTree -> Branch( "TargetPdg", &TargetPdg, "TargetPdg/I");

@@ -33,7 +33,7 @@ namespace e4nu {
     // These template class guarantees the same substraction method for data and MC
     // Definition must be in header file to avoid linking issuess
     template <class T>
-      bool BackgroundSubstraction( std::map<int,std::vector<T*>> & event_holder ) { 
+      bool BackgroundSubstraction( std::map<int,std::vector<T>> & event_holder ) { 
       if( !ApplyFiducial()  ) return true ; 
       if( !GetSubtractBkg() ) return true ;
       Fiducial * fiducial = GetFiducialCut() ; 
@@ -55,12 +55,12 @@ namespace e4nu {
 	    // Start rotations
 	    for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) { 
 	      // Set rotation around q3 vector
-	      TVector3 VectorRecoQ = event_holder[m][event_id]->GetRecoq3() ;	
+	      TVector3 VectorRecoQ = event_holder[m][event_id].GetRecoq3() ;	
 	      double rotation_angle = gRandom->Uniform(0,2*TMath::Pi());
 	  
 	      // Rotate all Hadrons
-	      std::map<int,std::vector<TLorentzVector>> rot_particles = event_holder[m][event_id]->GetFinalParticles4Mom() ;
-	      std::map<int,std::vector<TLorentzVector>> rot_particles_uncorr = event_holder[m][event_id]->GetFinalParticlesUnCorr4Mom() ;       
+	      std::map<int,std::vector<TLorentzVector>> rot_particles = event_holder[m][event_id].GetFinalParticles4Mom() ;
+	      std::map<int,std::vector<TLorentzVector>> rot_particles_uncorr = event_holder[m][event_id].GetFinalParticlesUnCorr4Mom() ;       
 	      unsigned int rot_event_mult = 0 ; // rotated event multiplicity
 	      std::vector<int> part_pdg_list, part_id_list ; 
 
@@ -128,11 +128,10 @@ namespace e4nu {
 	    // Store event particles with correct weight and multiplicty
 	    for( auto it = probability_count.begin() ; it != probability_count.end() ; ++it ) { 
 	      for( auto it_key = it->first.begin() ; it_key != it->first.end() ; ++it_key ) { 
-		T * temp_event = new T() ; 
-		* temp_event = * event_holder[m][event_id] ;	    
-		double event_wgt = temp_event->GetEventWeight() ;
-		std::map<int,std::vector<TLorentzVector>> particles = temp_event->GetFinalParticles4Mom() ;
-		std::map<int,std::vector<TLorentzVector>> particles_uncorr = temp_event->GetFinalParticlesUnCorr4Mom() ;
+		T temp_event = event_holder[m][event_id] ;	    
+		double event_wgt = temp_event.GetEventWeight() ;
+		std::map<int,std::vector<TLorentzVector>> particles = temp_event.GetFinalParticles4Mom() ;
+		std::map<int,std::vector<TLorentzVector>> particles_uncorr = temp_event.GetFinalParticlesUnCorr4Mom() ;
 
 		std::map<int,std::vector<TLorentzVector>> temp_corr_mom ;
 		std::map<int,std::vector<TLorentzVector>> temp_uncorr_mom ;
@@ -146,25 +145,24 @@ namespace e4nu {
 		  ++new_multiplicity ; 
 		}
 
-		temp_event->SetFinalParticlesKinematics( temp_corr_mom ) ; 
-		temp_event->SetFinalParticlesUnCorrKinematics( temp_uncorr_mom ) ; 
+		temp_event.SetFinalParticlesKinematics( temp_corr_mom ) ; 
+		temp_event.SetFinalParticlesUnCorrKinematics( temp_uncorr_mom ) ; 
 
 		double probability = - (it->second) * event_wgt / N_all ; 
-		temp_event->SetEventWeight( probability ) ; 
+		temp_event.SetEventWeight( probability ) ; 
 	
 		// Store analysis record after background substraction (4) : 
-		temp_event->StoreAnalysisRecord(kid_bkgcorr+m); // Id is the bkg id (4) + original multiplicity.
+		temp_event.StoreAnalysisRecord(kid_bkgcorr+m); // Id is the bkg id (4) + original multiplicity.
 		                                                // For m = signal_multiplicity, id = 3+signal_mult
 		
 		if ( event_holder.find(new_multiplicity) != event_holder.end() ) {
 		  event_holder[new_multiplicity].push_back( temp_event ) ; 
 		} else {
-		  std::vector<T*> temp = { temp_event } ;
+		  std::vector<T> temp = { temp_event } ;
 		  event_holder[new_multiplicity] = temp ; 
 		}
 	      }
 	    }
-	    delete event_holder[m][event_id];
 	  } // Close event loop 
 	}
 	--m; 
@@ -174,7 +172,7 @@ namespace e4nu {
     }
 
     template <class T>
-      bool HadronsAcceptanceCorrection( std::map<int,std::vector<T*>> & event_holder ) { 
+      bool HadronsAcceptanceCorrection( std::map<int,std::vector<T>> & event_holder ) { 
 
       // We need to correct for signal events that are reconstructed outside of the fiducial
       if( !ApplyFiducial()  ) return true ; 
@@ -197,11 +195,11 @@ namespace e4nu {
 	// Start rotations
 	for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) { 
 	  // Set rotation around q3 vector
-	  TVector3 VectorRecoQ = signal_events[i]->GetRecoq3() ;	
+	  TVector3 VectorRecoQ = signal_events[i].GetRecoq3() ;	
 	  double rotation_angle = gRandom->Uniform(0,2*TMath::Pi());
 	  
-	  std::map<int,std::vector<TLorentzVector>> rot_particles = signal_events[i]->GetFinalParticles4Mom() ;
-	  std::map<int,std::vector<TLorentzVector>> rot_particles_uncorr = signal_events[i]->GetFinalParticlesUnCorr4Mom() ;
+	  std::map<int,std::vector<TLorentzVector>> rot_particles = signal_events[i].GetFinalParticles4Mom() ;
+	  std::map<int,std::vector<TLorentzVector>> rot_particles_uncorr = signal_events[i].GetFinalParticlesUnCorr4Mom() ;
       
 	  // Rotate all particles 
 	  bool is_contained = true ; 
@@ -224,15 +222,13 @@ namespace e4nu {
 	}
 	if( N_signal_detected == 0 ) continue ; 
 	// Add missing signal events
-	T * temp_event = new T() ; 
-	* temp_event = * signal_events[i] ; 
-	
-	double event_wgt = temp_event->GetEventWeight() ;
-	temp_event->SetEventWeight( + event_wgt * N_signal_undetected / N_signal_detected ) ; 
+	T temp_event = signal_events[i] ; 
+	double event_wgt = temp_event.GetEventWeight() ;
+	temp_event.SetEventWeight( + event_wgt * N_signal_undetected / N_signal_detected ) ; 
 	signal_events.push_back(temp_event);
 	
 	// Store analysis record after acceptance correction (3) : 
-	temp_event->StoreAnalysisRecord(kid_acc);
+	temp_event.StoreAnalysisRecord(kid_acc);
   
       }
       // Store correction
@@ -243,7 +239,7 @@ namespace e4nu {
 
 
     template <class T>
-      bool ElectronAcceptanceCorrection( std::map<int,std::vector<T*>> & event_holder ) { 
+      bool ElectronAcceptanceCorrection( std::map<int,std::vector<T>> & event_holder ) { 
 
       // We need to correct for signal events that are reconstructed outside of the fiducial
       if( !ApplyFiducial()  ) return true ; 
@@ -269,7 +265,7 @@ namespace e4nu {
 	  TVector3 BeamVector (0,0,1);
 	  double rotation_angle = gRandom->Uniform(0,2*TMath::Pi());
 	  
-	  TVector3 emom = signal_events[i]->GetOutLepton4Mom().Vect() ;
+	  TVector3 emom = signal_events[i].GetOutLepton4Mom().Vect() ;
 
 	  // Rotate all particles 
 	  emom.Rotate(rotation_angle, BeamVector);
@@ -281,15 +277,14 @@ namespace e4nu {
 	}
 	if( N_signal_detected == 0 ) continue ; 
 	// Add missing signal events
-	T * temp_event = new T() ; 
-	* temp_event = * signal_events[i] ; 
+	T temp_event = signal_events[i] ; 
 	
-	double event_wgt = temp_event->GetEventWeight() ;
-	temp_event->SetEventWeight( + event_wgt * N_signal_undetected / N_signal_detected ) ; 
+	double event_wgt = temp_event.GetEventWeight() ;
+	temp_event.SetEventWeight( + event_wgt * N_signal_undetected / N_signal_detected ) ; 
 	signal_events.push_back(temp_event);
 	
 	// Store analysis record after acceptance correction (3) : 
-	temp_event->StoreAnalysisRecord(kid_acc);
+	temp_event.StoreAnalysisRecord(kid_acc);
       }
       // Store correction
       event_holder[min_mult] = signal_events ; 

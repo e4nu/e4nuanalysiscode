@@ -76,7 +76,7 @@ void Event::StoreAnalysisRecord( unsigned int analysis_step ) {
   return ; 
 }
 
-unsigned int Event::GetEventMultiplicity( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) {
+unsigned int Event::GetEventMultiplicity( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) const {
   // return number of charged particles in event
   unsigned int multiplicity = 0 ; 
   for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
@@ -85,7 +85,7 @@ unsigned int Event::GetEventMultiplicity( const std::map<int,std::vector<TLorent
   return multiplicity ; 
 }
 
-unsigned int Event::GetNSignalParticles( std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) {
+unsigned int Event::GetNSignalParticles( std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) const {
   unsigned int N_signal = 0 ; 
   for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
     if( it->first == conf::kPdgElectron ) continue ; 
@@ -97,7 +97,7 @@ unsigned int Event::GetNSignalParticles( std::map<int,std::vector<TLorentzVector
   return N_signal ;
 }
 
-int Event::GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) {
+int Event::GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) const {
   // return number of charged particles in event
   unsigned int charge = 0 ; 
   for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {

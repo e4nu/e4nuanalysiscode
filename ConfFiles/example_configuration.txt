@@ -37,5 +37,5 @@ NormalizeHists false
 DebugBkg false
 
 InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_2261GeV/apapadop_SuSav2_C12_2261GeV_master.root
-OutputFile  /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/test
+OutputFile  /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/test2
 XSecFile /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/ConfFiles/xsec_carbon12_spline_GEM21_11b_00_000_Q2_0_1.root

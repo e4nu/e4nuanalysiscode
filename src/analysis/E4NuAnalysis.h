@@ -28,7 +28,7 @@ namespace e4nu {
 
     bool LoadData(void) ; 
     bool Analyse(void) ; 
-    void ClassifyEvent( Event * event ) ;
+    void ClassifyEvent( Event event ) ;
     bool SubtractBackground( void ) ;
     bool Finalise(void);
 
@@ -40,7 +40,7 @@ namespace e4nu {
     unsigned int GetNEvents( void ) const ;
 
     // Event Holder for signal and background
-    std::map<int,std::vector<e4nu::Event*>> kAnalysedEventHolder;
+    std::map<int,std::vector<e4nu::Event>> kAnalysedEventHolder;
 
     void Initialize(void) ; 
     

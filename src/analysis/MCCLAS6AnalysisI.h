@@ -30,14 +30,14 @@ namespace e4nu {
     bool LoadData(void);
     unsigned int GetNEvents( void ) const ;
     Event * GetValidEvent( const unsigned int event_id ) ;
-    bool Finalise( std::map<int,std::vector<e4nu::Event*>> & event_holder ) ; 
-    bool StoreTree(Event * event);
+    bool Finalise( std::map<int,std::vector<e4nu::Event>> & event_holder ) ; 
+    bool StoreTree(Event event);
 
   private :
 
-    void SmearParticles( Event * event ) ;
-    bool ApplyFiducialCut( Event * event ) ; 
-    void ApplyAcceptanceCorrection( Event * event ) ;
+    void SmearParticles( Event & event ) ;
+    bool ApplyFiducialCut( Event & event ) ; 
+    void ApplyAcceptanceCorrection( Event & event ) ;
     Event * GetEvent( const unsigned int event_id ) ;
     
     MCEventHolder * fData = nullptr ; 

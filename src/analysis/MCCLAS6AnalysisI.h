@@ -16,7 +16,6 @@
 #include "utils/Fiducial.h"
 #include "analysis/AnalysisI.h"
 #include "physics/MCEventHolder.h"
-#include "physics/MCEvent.h"
 
 using namespace e4nu::conf ; 
 
@@ -30,16 +29,16 @@ namespace e4nu {
  
     bool LoadData(void);
     unsigned int GetNEvents( void ) const ;
-    EventI * GetValidEvent( const unsigned int event_id ) ;
-    bool Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) ; 
-    bool StoreTree(MCEvent * event);
+    Event * GetValidEvent( const unsigned int event_id ) ;
+    bool Finalise( std::map<int,std::vector<e4nu::Event*>> & event_holder ) ; 
+    bool StoreTree(Event * event);
 
   private :
 
-    void SmearParticles( MCEvent * event ) ;
-    bool ApplyFiducialCut( MCEvent * event ) ; 
-    void ApplyAcceptanceCorrection( MCEvent * event ) ;
-    EventI * GetEvent( const unsigned int event_id ) ;
+    void SmearParticles( Event * event ) ;
+    bool ApplyFiducialCut( Event * event ) ; 
+    void ApplyAcceptanceCorrection( Event * event ) ;
+    Event * GetEvent( const unsigned int event_id ) ;
     
     MCEventHolder * fData = nullptr ; 
     std::map<int,std::unique_ptr<TFile>> kAcceptanceMap;

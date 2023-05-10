@@ -12,8 +12,7 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
-//#include "physics/MCEvent.h"
-#include "physics/EventI.h"
+#include "physics/Event.h"
 
 namespace e4nu {
   class EventHolderI {
@@ -30,7 +29,7 @@ namespace e4nu {
     bool LoadMembers( const std::string file ) ; // returns tree number in TChain
 
     virtual bool LoadBranch(void) = 0 ; 
-    virtual e4nu::EventI * GetEvent(const unsigned int event_id) = 0 ;
+    virtual e4nu::Event * GetEvent(const unsigned int event_id) = 0 ;
 
     std::unique_ptr<TChain> fEventHolderChain ; // Can contain more than one tree
     //TChain * fEventHolderChain ; 

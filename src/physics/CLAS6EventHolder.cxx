@@ -4,7 +4,6 @@
  */
 
 #include "physics/CLAS6EventHolder.h"
-#include "physics/CLAS6Event.h"
 
 using namespace e4nu ; 
 
@@ -64,12 +63,12 @@ bool CLAS6EventHolder::LoadBranch(void) {
   return true ;
 }
 
-EventI * CLAS6EventHolder::GetEvent(const unsigned int event_id) {
+Event * CLAS6EventHolder::GetEvent(const unsigned int event_id) {
 
   if ( event_id > (unsigned int) fMaxEvents ) return nullptr ; 
 
   //  static 
-  CLAS6Event * event = new CLAS6Event() ; 
+  Event * event = new Event() ; 
   if ( event_id > (unsigned int) fMaxEvents ) return nullptr ; 
   fEventHolderChain -> GetEntry( event_id ) ; 
 

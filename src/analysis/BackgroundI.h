@@ -12,9 +12,8 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "analysis/ConfigureI.h"
-#include "physics/EventI.h"
-#include "physics/MCEvent.h"
 #include "utils/Subtraction.h"
+#include "conf/ParticleI.h"
 
 namespace e4nu { 
 

@@ -47,13 +47,13 @@ bool CLAS6AnalysisI::LoadData( void ) {
   return kIsDataLoaded ; 
 }
 
-EventI * CLAS6AnalysisI::GetEvent( const unsigned int event_id ) {
+Event * CLAS6AnalysisI::GetEvent( const unsigned int event_id ) {
   return fData -> GetEvent(event_id) ; 
 }
 
-EventI * CLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
+Event * CLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
 
-  CLAS6Event * event = (CLAS6Event*) fData -> GetEvent(event_id) ; 
+  Event * event = fData -> GetEvent(event_id) ; 
   if( !event ) {
     delete event ; 
     return nullptr ; 
@@ -81,14 +81,14 @@ void CLAS6AnalysisI::Initialize() {
   fData = nullptr ; 
 }
 
-bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) {
+bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event*>> & event_holder ) {
 
   if( !AnalysisI::Finalise() ) return false ; 
 
   // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult() ; 
   for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) {
-    StoreTree( static_cast<CLAS6Event*>( event_holder[min_mult][k] ) );
+    StoreTree( static_cast<Event*>( event_holder[min_mult][k] ) );
 
     double norm_weight = 1 ; 
     if( ApplyCorrWeights() ) { 
@@ -131,7 +131,7 @@ bool CLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_
   return true ; 
 }
 
-bool CLAS6AnalysisI::StoreTree(CLAS6Event * event){
+bool CLAS6AnalysisI::StoreTree(Event * event){
   static bool n = true ; 
   int ID = event->GetEventID() ; 
   int TargetPdg = event->GetTargetPdg() ;

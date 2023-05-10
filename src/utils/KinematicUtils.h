@@ -1,9 +1,9 @@
 #ifndef _KINEMATIC_UTILS_H_
 #define _KINEMATIC_UTILS_H_
 
+#include <map>
 #include "TVector3.h"
 #include "TLorentzVector.h"
-#include "physics/EventI.h"
 
 namespace e4nu {
   namespace utils {

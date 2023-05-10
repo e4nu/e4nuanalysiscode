@@ -51,17 +51,17 @@ bool MCCLAS6AnalysisI::LoadData( void ) {
   return kIsDataLoaded ; 
 }
 
-EventI * MCCLAS6AnalysisI::GetEvent( const unsigned int event_id ) {
+Event * MCCLAS6AnalysisI::GetEvent( const unsigned int event_id ) {
   return fData -> GetEvent(event_id) ; 
 }
 
-EventI * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
+Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
 
-  MCEvent * event ;
+  Event * event ;
   if( IsNoFSI() ) {
     // This function will load the full event using pre FSI nucleon kinematics
-    event = (MCEvent*) fData -> GetEventNoFSI(event_id) ; 
-  } else event = (MCEvent*) fData -> GetEvent(event_id) ; 
+    event = (Event*) fData -> GetEventNoFSI(event_id) ; 
+  } else event = (Event*) fData -> GetEvent(event_id) ; 
 
   if( !event ) {
     delete event ; 
@@ -94,7 +94,7 @@ EventI * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
   return event ; 
 }
 
-bool MCCLAS6AnalysisI::ApplyFiducialCut( MCEvent * event ) { 
+bool MCCLAS6AnalysisI::ApplyFiducialCut( Event * event ) { 
   // First, we apply it to the electron
   // Apply fiducial cut to electron
   if( ! ApplyFiducial() ) return true ; 
@@ -128,7 +128,7 @@ bool MCCLAS6AnalysisI::ApplyFiducialCut( MCEvent * event ) {
   return true ; 
 }
 
-void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( MCEvent * event ) { 
+void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event * event ) { 
   double acc_wght = 1 ;
   if( ApplyAccWeights() ) {
     TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
@@ -151,12 +151,12 @@ void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( MCEvent * event ) {
   return ; 
 }
 
-void MCCLAS6AnalysisI::SmearParticles( MCEvent * event ) {
+void MCCLAS6AnalysisI::SmearParticles( Event * event ) {
   double EBeam = GetConfiguredEBeam() ; 
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ; 
 
   utils::ApplyResolution( conf::kPdgElectron, out_mom, EBeam ) ; 
-  event -> EventI::SetOutLeptonKinematics( out_mom ) ; 
+  event -> Event::SetOutLeptonKinematics( out_mom ) ; 
   
   // Apply for other particles
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
@@ -169,7 +169,7 @@ void MCCLAS6AnalysisI::SmearParticles( MCEvent * event ) {
     }
     part_map[it->first] = vtemp ; 
   }
-  event -> EventI::SetFinalParticlesKinematics( part_map ) ; 
+  event -> Event::SetFinalParticlesKinematics( part_map ) ; 
   
 } 
 
@@ -240,14 +240,14 @@ void MCCLAS6AnalysisI::Initialize() {
 
 }
 
-bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) {
+bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event*>> & event_holder ) {
 
   if( !AnalysisI::Finalise() ) return false ; 
 
   // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult() ; 
   for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) {
-    StoreTree( static_cast<MCEvent*>( event_holder[min_mult][k] ) );
+    StoreTree( static_cast<Event*>( event_holder[min_mult][k] ) );
 
     double norm_weight = event_holder[min_mult][k]->GetTotalWeight() ;
 
@@ -282,7 +282,7 @@ bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::EventI*>> & even
   return true ; 
 }
 
-bool MCCLAS6AnalysisI::StoreTree(MCEvent * event){
+bool MCCLAS6AnalysisI::StoreTree(Event * event){
   static bool n = true ; 
   int ID = event->GetEventID() ; 
   int TargetPdg = event->GetTargetPdg() ;

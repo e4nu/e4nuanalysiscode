@@ -47,7 +47,7 @@ bool E4NuAnalysis::LoadData(void) {
   return true ; 
 }
 
-EventI * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
+Event * E4NuAnalysis::GetValidEvent( const unsigned int event_id ) {
   // Include new analysis classes with the corresponding analysis ID:
   if( IsCLAS6Analysis() ) { 
     if( IsData() ) {
@@ -82,13 +82,13 @@ bool E4NuAnalysis::Analyse(void) {
   
     // Get valid event after analysis
     // It returns cooked event, with detector effects
-    EventI * event = nullptr ;
+    Event * event = nullptr ;
     // Include new analysis classes with the corresponding analysis ID:
     if( IsCLAS6Analysis() ) {
       if( IsData() ) {
-	if( GetAnalysisTypeID() == 0 ) event = (EventI*) CLAS6StandardAnalysis::GetValidEvent(i) ; 
+	if( GetAnalysisTypeID() == 0 ) event = (Event*) CLAS6StandardAnalysis::GetValidEvent(i) ; 
       } else {
-	if( GetAnalysisTypeID() == 0 ) event = (EventI*) MCCLAS6StandardAnalysis::GetValidEvent(i) ; 
+	if( GetAnalysisTypeID() == 0 ) event = (Event*) MCCLAS6StandardAnalysis::GetValidEvent(i) ; 
 	else event = nullptr ; 
       }
     } 
@@ -103,7 +103,7 @@ bool E4NuAnalysis::Analyse(void) {
   return true ; 
 }
 
-void E4NuAnalysis::ClassifyEvent( EventI * event ) { 
+void E4NuAnalysis::ClassifyEvent( Event * event ) { 
   // Classify as signal or background based on topology
   bool is_signal = true ;
   std::map<int,std::vector<TLorentzVector>> part_map = event -> GetFinalParticles4Mom() ;
@@ -122,7 +122,7 @@ void E4NuAnalysis::ClassifyEvent( EventI * event ) {
   if( is_signal ) {
     // Storing in background the signal events
     if( kAnalysedEventHolder.find(signal_mult) == kAnalysedEventHolder.end() ) {
-      std::vector<EventI*> temp ( 1, event ) ;
+      std::vector<Event*> temp ( 1, event ) ;
       kAnalysedEventHolder[signal_mult] = temp ; 
     } else { 
       kAnalysedEventHolder[signal_mult].push_back( event ) ; 
@@ -150,7 +150,7 @@ void E4NuAnalysis::ClassifyEvent( EventI * event ) {
     // Also ignore background events above the maximum multiplicity
     if( mult_bkg > signal_mult && mult_bkg <= GetMaxBkgMult() ) {
       if( kAnalysedEventHolder.find(mult_bkg) == kAnalysedEventHolder.end() ) {
-	std::vector<EventI*> temp ( 1, event ) ;
+	std::vector<Event*> temp ( 1, event ) ;
 	kAnalysedEventHolder[mult_bkg] = temp ; 
       } else { 
 	kAnalysedEventHolder[mult_bkg].push_back( event ) ; 

@@ -19,7 +19,7 @@ namespace e4nu {
     
     bool LoadBranch(void) ;
     
-    e4nu::EventI * GetEvent(const unsigned int event_id) ;
+    e4nu::Event * GetEvent(const unsigned int event_id) ;
 
     ~CLAS6EventHolder();
 

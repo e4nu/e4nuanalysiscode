@@ -4,7 +4,6 @@
  */
 
 #include "physics/MCEventHolder.h"
-#include "physics/MCEvent.h"
 
 using namespace e4nu ; 
 
@@ -93,11 +92,11 @@ bool MCEventHolder::LoadBranch(void) {
   return true ;
 }
 
-EventI * MCEventHolder::GetEvent(const unsigned int event_id) {
+Event * MCEventHolder::GetEvent(const unsigned int event_id) {
 
   if ( event_id > (unsigned int) fMaxEvents ) return nullptr ; 
 
-  MCEvent * event = new MCEvent() ; 
+  Event * event = new Event() ; 
   fEventHolderChain->GetEntry( event_id ) ; 
 
   event -> SetEventID( iev ) ;
@@ -149,9 +148,9 @@ EventI * MCEventHolder::GetEvent(const unsigned int event_id) {
 
 
 
-EventI * MCEventHolder::GetEventNoFSI(const unsigned int event_id) {
+Event * MCEventHolder::GetEventNoFSI(const unsigned int event_id) {
 
-  MCEvent * event = static_cast<MCEvent*>( GetEvent(event_id) ); 
+  Event * event = GetEvent(event_id) ; 
   if( ! event ) return nullptr ; 
   
   event -> SetNProtons( nip ) ; 

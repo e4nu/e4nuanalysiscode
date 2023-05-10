@@ -19,8 +19,8 @@ namespace e4nu {
     
     bool LoadBranch(void) ;
     
-    e4nu::EventI * GetEvent(const unsigned int event_id) ;
-    e4nu::EventI * GetEventNoFSI(const unsigned int event_id) ;
+    e4nu::Event * GetEvent(const unsigned int event_id) ;
+    e4nu::Event * GetEventNoFSI(const unsigned int event_id) ;
 
     ~MCEventHolder();
 

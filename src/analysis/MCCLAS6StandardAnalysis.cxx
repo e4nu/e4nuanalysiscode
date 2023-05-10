@@ -26,8 +26,8 @@ MCCLAS6StandardAnalysis::MCCLAS6StandardAnalysis() {}
 
 MCCLAS6StandardAnalysis::~MCCLAS6StandardAnalysis() {}
 
-EventI * MCCLAS6StandardAnalysis::GetValidEvent( const unsigned int event_id ) {
-  MCEvent * event = (MCEvent*) MCCLAS6AnalysisI::GetValidEvent(event_id) ;
+Event * MCCLAS6StandardAnalysis::GetValidEvent( const unsigned int event_id ) {
+  Event * event = MCCLAS6AnalysisI::GetValidEvent(event_id) ;
 
   // Add additional constrains here ...
   // Operations ...

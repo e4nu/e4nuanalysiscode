@@ -24,7 +24,7 @@ AnalysisI::AnalysisI( const double EBeam, const unsigned int TargetPdg ) : Backg
 
 AnalysisI::~AnalysisI() { this->Initialize();}
 
-bool AnalysisI::Analyse( EventI * event ) {
+bool AnalysisI::Analyse( Event * event ) {
 
   TLorentzVector in_mom = event -> GetInLepton4Mom() ;
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
@@ -120,7 +120,7 @@ bool AnalysisI::Analyse( EventI * event ) {
 }
 
 
-void AnalysisI::ApplyMomentumCut( EventI * event ) {
+void AnalysisI::ApplyMomentumCut( Event * event ) {
 
   std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event -> GetFinalParticlesUnCorr4Mom() ;
   TLorentzVector out_mom = event -> GetOutLepton4Mom() ;
@@ -145,7 +145,7 @@ void AnalysisI::ApplyMomentumCut( EventI * event ) {
   return ;
 }
 
-void AnalysisI::CookEvent( EventI * event ) { 
+void AnalysisI::CookEvent( Event * event ) { 
   // Remove particles not specified in topology maps
   // These are ignored in the analysis
   // No Cuts are applied on those
@@ -166,7 +166,7 @@ void AnalysisI::CookEvent( EventI * event ) {
   return ; 
 }
 
-void AnalysisI::PlotBkgInformation( EventI * event ) {
+void AnalysisI::PlotBkgInformation( Event * event ) {
  
   if( ! GetDebugBkg() ) return ;
  

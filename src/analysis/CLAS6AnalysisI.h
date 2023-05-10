@@ -9,7 +9,6 @@
 #include <iostream>
 #include "analysis/AnalysisI.h"
 #include "physics/CLAS6EventHolder.h"
-#include "physics/CLAS6Event.h"
 
 using namespace e4nu::conf ; 
 
@@ -23,10 +22,10 @@ namespace e4nu {
 
     bool LoadData(void);
     unsigned int GetNEvents( void ) const ;
-    EventI * GetValidEvent( const unsigned int event_id ) ;
-    e4nu::EventI * GetEvent( const unsigned int event_id ) ;
-    bool Finalise( std::map<int,std::vector<e4nu::EventI*>> & event_holder ) ; 
-    bool StoreTree(CLAS6Event * event);
+    Event * GetValidEvent( const unsigned int event_id ) ;
+    e4nu::Event * GetEvent( const unsigned int event_id ) ;
+    bool Finalise( std::map<int,std::vector<e4nu::Event*>> & event_holder ) ; 
+    bool StoreTree(Event * event);
 
   private :
 

@@ -23,7 +23,7 @@ namespace e4nu {
   protected : 
     MCCLAS6StandardAnalysis();
  
-    EventI * GetValidEvent( const unsigned int event_id ) ;
+    Event * GetValidEvent( const unsigned int event_id ) ;
 
   };
 }

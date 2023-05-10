@@ -10,7 +10,7 @@
 #include "TH1D.h"
 #include "TFile.h"
 #include "TTree.h"
-#include "physics/EventI.h"
+#include "physics/Event.h"
 #include "utils/Fiducial.h"
 #include "analysis/BackgroundI.h"
 
@@ -24,14 +24,14 @@ namespace e4nu {
     AnalysisI( const std::string input_file ) ;
     AnalysisI( const double EBeam, const unsigned int TargetPdg ) ;
 
-    bool Analyse( EventI * event ) ; 
+    bool Analyse( Event * event ) ; 
     void Initialize(void) ;
     bool Finalise(void) ;
 
   protected : 
-    void CookEvent( EventI * event ) ;
-    void PlotBkgInformation( EventI * event ) ;
-    void ApplyMomentumCut( EventI * event ) ;
+    void CookEvent( Event * event ) ;
+    void PlotBkgInformation( Event * event ) ;
+    void ApplyMomentumCut( Event * event ) ;
     double GetElectronMinTheta( TLorentzVector emom ) ;      
 
     // ID for Background historams

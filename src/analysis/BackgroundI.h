@@ -165,8 +165,7 @@ namespace e4nu {
 	    }
 	  } // Close event loop 
 	}
-	--m; 
-	event_holder[m].clear() ; 
+	--m;
       }
 
       return true ; 

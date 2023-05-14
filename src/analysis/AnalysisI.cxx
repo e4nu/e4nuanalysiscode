@@ -126,7 +126,7 @@ void AnalysisI::ApplyMomentumCut( Event & event ) {
     std::vector<TLorentzVector> above_th_particles ; 
     for( unsigned int i = 0 ; i < unsmeared_part_map[it->first].size() ; ++i ) {
       // Only store particles above threshold
-      if( unsmeared_part_map[it->first][i].P() <= conf::GetMinMomentumCut( it->first, GetConfiguredEBeam() ) )  continue ; 
+      if( unsmeared_part_map[it->first][i].P() < conf::GetMinMomentumCut( it->first, GetConfiguredEBeam() ) )  continue ; 
 	 
       // Apply photon cuts for MC and data 
       if( it->first == conf::kPdgPhoton ) {

@@ -2106,7 +2106,7 @@ Bool_t Fiducial::PiplFiducialCut(double beam_en, TVector3 momentum, Float_t *phi
 
         Int_t tsector = sector + 1;
         Float_t mom_scpd = p;          // momentum for bad sc paddles cuts
-        if (mom_scpd<0.2)mom_scpd=0.2; // momentum smaller than 200 MeV/c, use 200 MeV/c
+        //if (mom_scpd<0.2)mom_scpd=0.2; // momentum smaller than 200 MeV/c, use 200 MeV/c //pion threshold is 150 mev, gaps have been now been updated to be valid to lower momentum
         if(tsector==2){      // sector 2 has one bad paddle
           Float_t badpar2[2];// 2 parameters to determine the position of the theta gap
           for (Int_t i=0; i<2; i++){

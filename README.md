@@ -140,6 +140,7 @@ E4nu users might want to ***include analysis features specific to their analysis
 
 It is also possible to change the configuration to use GENIE information before FSI effects. To do so, simply do:
 - **No FSI** true
+
 To use only true signal events, 
 - **TrueSignal** true 
 

@@ -64,11 +64,16 @@ namespace e4nu {
     bool ApplyQ2Cut(void) const{ return kQ2Cut ; }
     bool ApplyWCut(void) const{ return kWCut ; }
     bool ApplyMomCut(void) const { return kApplyMomCut ; } 
-
     bool ApplyOutElectronCut(void) const { return kOutEMomCut ; }      
     bool IsNoFSI(void) const { return kNoFSI ; }
-
     Fiducial * GetFiducialCut(void) { return kFiducialCut ; } 
+
+    // Define setter functions to be able to change the configuration 
+    void SetTrueSignal( const bool b ) { kTrueSignal = b ; } 
+    void SetApplyFiducial( const bool b ) { kApplyFiducial = b ; }
+    void SetApplyAccWeights( const bool b ) { kApplyAccWeights = b ; }
+    void SetApplyReso( const bool b ) { kApplyReso = b ; }
+    void SetUseAllSectors( const bool b ) { kUseAllSectors = b ; }
 
     // Get information about the background subtraction method
     unsigned int GetMaxBkgMult(void) const { return kMaxBkgMult ; }

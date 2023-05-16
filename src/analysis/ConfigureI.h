@@ -95,6 +95,8 @@ namespace e4nu {
     std::string GetInputFile(void) const { return kInputFile ; }
     std::string GetXSecFile(void) const { return kXSecFile ; }
 
+    void SetOutputFile( std::string output_file ) { kOutputFile = output_file ; }
+
     // Others 
     void PrintConfiguration(void) const ; 
       

@@ -38,7 +38,7 @@ bool E4NuAnalysis::LoadData(void) {
   if( IsCLAS6Analysis() ) { 
     if( IsData() ) {
       if( GetAnalysisTypeID() == 0 ) return CLAS6StandardAnalysis::LoadData();
-    }else {
+    } else {
       if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::LoadData() ; 
       else return false ; 
     } if( IsCLAS12Analysis() ) return false ;  
@@ -127,6 +127,9 @@ void E4NuAnalysis::ClassifyEvent( Event event ) {
       kAnalysedEventHolder[signal_mult].push_back( event ) ; 
     }
   } else { // BACKGROUND 
+    // No need to classify it if we don't apply fiducial
+    if ( !ApplyFiducial() || ! GetSubtractBkg() ) return false ; 
+    // Tag event as Background
     event.SetIsBkg(true); 
 
     // Get Number of signal particles, "multiplicity"
@@ -162,8 +165,6 @@ void E4NuAnalysis::ClassifyEvent( Event event ) {
 bool E4NuAnalysis::SubtractBackground() {
   
   if( ! BackgroundI::BackgroundSubstraction( kAnalysedEventHolder ) ) return false ;  
-  // if( ! BackgroundI::HadronsAcceptanceCorrection( kAnalysedEventHolder ) ) return false ; 
-  //  if( ! BackgroundI::ElectronAcceptanceCorrection( kAnalysedEventHolder ) ) return false ; 
 
   return true ; 
 } 

@@ -180,6 +180,9 @@ ConfigureI::ConfigureI( const std::string input_file ) {
 	kIsConfigured = false ; 
 	break ;
       } 
+    } else if ( param[i] == "ComputeAccCorr" ) { 
+      if( value[i] == "true" ) { kComputeAccCorr = true ; }
+      else kComputeAccCorr = false ; 
     } else if ( param[i] == "DebugBkg") {
       if( value[i] == "false" ) {
 	kDebugBkg = false ; 

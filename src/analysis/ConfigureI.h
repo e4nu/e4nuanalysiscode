@@ -74,6 +74,7 @@ namespace e4nu {
     void SetApplyAccWeights( const bool b ) { kApplyAccWeights = b ; }
     void SetApplyReso( const bool b ) { kApplyReso = b ; }
     void SetUseAllSectors( const bool b ) { kUseAllSectors = b ; }
+    void SetSubtractBkg( const bool b ) { kSubtractBkg = b ; }
 
     // Get information about the background subtraction method
     unsigned int GetMaxBkgMult(void) const { return kMaxBkgMult ; }

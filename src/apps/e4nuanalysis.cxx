@@ -64,6 +64,7 @@ int main( void ) {
     analysis_reco -> SetApplyAccWeights( true ) ; 
     analysis_reco -> SetApplyReso( true ) ; 
     analysis_reco -> SetUseAllSectors( false ) ; 
+    analysis_reco -> SetSubtractBkg( false ) ; 
     std::string OutputFile_reco = analysis_reco->GetOutputFile() + "_truereco" ;
     analysis_reco -> SetOutputFile( OutputFile_reco ) ; 
 

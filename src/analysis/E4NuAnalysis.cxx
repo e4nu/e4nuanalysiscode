@@ -140,10 +140,8 @@ void E4NuAnalysis::ClassifyEvent( Event event ) {
     std::map<int,std::vector<TLorentzVector>> hadrons = event.GetFinalParticles4Mom() ;
     for( auto it = Topology.begin(); it!=Topology.end();++it){
       if( it->first == conf::kPdgElectron ) continue ; 
-      for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
-	if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() < it->second ) { is_signal_bkg = false ; break ; } 
-	if( hadrons.find(it->first) == hadrons.end() &&  it->second != 0 ) { is_signal_bkg = false ; break ; }
-      }
+      if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() < it->second ) { is_signal_bkg = false ; break ; } 
+      if( hadrons.find(it->first) == hadrons.end() &&  it->second != 0 ) { is_signal_bkg = false ; break ; }
     }
 
     if( !is_signal_bkg ) return ; 

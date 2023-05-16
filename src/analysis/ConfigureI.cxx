@@ -63,12 +63,7 @@ ConfigureI::ConfigureI( const std::string input_file ) {
       if( value[i] == "false" ) kApplyFiducial = false ; 
       else {
 	kApplyFiducial = true ; 
-	kApplyHadFiducial = true ; 
-	kApplyEFiducial = true ; 
       }
-    } else if ( param[i] == "ApplyHadFiducial" ){
-      if( value[i] == "false" ) kApplyHadFiducial = false ; 
-      else kApplyHadFiducial = true ; 
     } else if ( param[i] == "ApplyAccWeights" ){
       if ( value[i] == "false" ) kApplyAccWeights = false ; 
       else kApplyAccWeights = true ; 
@@ -141,6 +136,9 @@ ConfigureI::ConfigureI( const std::string input_file ) {
 	  kTopology_map.insert( pair ) ;
 	}
       }
+    } else if ( param[i] == "TrueSignal" ) { 
+      if ( value[i] == "true" ) kTrueSignal = true ; 
+      else kTrueSignal = false ; 
     } else if ( param[i] == "SubtractBkg" ) { 
       if( value[i] == "true" ) kSubtractBkg = true ; 
       else kSubtractBkg = false ; 
@@ -247,8 +245,6 @@ void ConfigureI::PrintConfiguration(void) const {
   std::cout << "ApplyQ2Cut: "<<kQ2Cut<< std::endl;
   std::cout << "ApplyWCut: "<<kWCut<< std::endl;
   std::cout << "ApplyFiducial:" << kApplyFiducial << std::endl;
-  std::cout << "ApplyEFiducial:" << kApplyEFiducial << std::endl;
-  std::cout << "ApplyHadFiducial:" << kApplyHadFiducial << std::endl;
   std::cout << "ApplyAccWeights: " << kApplyAccWeights << std::endl;
   std::cout << "ApplyMottWeight: " << kApplyMottWeight << std::endl;
   std::cout << "ApplyReso:" << kApplyReso << std::endl;
@@ -280,6 +276,10 @@ void ConfigureI::PrintConfiguration(void) const {
     std::cout << "\nBackground Subtraction enabled : " << std::endl;
     std::cout << "Maximum Background Multiplicity: "<< kMaxBkgMult << std::endl;
     std::cout << "Number of rotations: "<< kNRotations << "\n" << std::endl;
+  }
+
+  if( kTrueSignal ) { 
+    std::cout << "Only analysing true signal events : " << std::endl;
   }
 
   for( unsigned int i = 0 ; i < kObservables.size(); ++i ) {

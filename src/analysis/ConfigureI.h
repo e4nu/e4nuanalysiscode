@@ -49,10 +49,9 @@ namespace e4nu {
     unsigned int GetNTopologyParticles(void) ;    
     
     // Get informtion about cuts:
+    bool IsTrueSignal(void) const { return kTrueSignal ; }
     bool UseAllSectors(void) const { return kUseAllSectors ; } 
     bool ApplyFiducial(void) const { return kApplyFiducial ; }
-    bool ApplyEFiducial(void) const { return kApplyEFiducial ; }
-    bool ApplyHadFiducial(void) const { return kApplyHadFiducial ; }
     bool ApplyCorrWeights(void) const { return kApplyCorrWeights ; }
     bool ApplyAccWeights(void) const { return kApplyAccWeights ; }
     bool ApplyMottScaling(void) const { return kApplyMottWeight ; }
@@ -65,6 +64,7 @@ namespace e4nu {
     bool ApplyQ2Cut(void) const{ return kQ2Cut ; }
     bool ApplyWCut(void) const{ return kWCut ; }
     bool ApplyMomCut(void) const { return kApplyMomCut ; } 
+
     bool ApplyOutElectronCut(void) const { return kOutEMomCut ; }      
     bool IsNoFSI(void) const { return kNoFSI ; }
 
@@ -99,10 +99,8 @@ namespace e4nu {
     bool kIsData = false ; // Is data
     bool kIsCLAS6Analysis = true ; 
     bool kIsCLAS12Analysis = false ; // Disabled for now
-    bool kUseAllSectors = false ; // Are there any dead sectors?
+    bool kUseAllSectors = false ; // Are there any dead sectors? It removes sectors 2 and 4
     bool kApplyFiducial = true ; // Set to false to remove fiducial cuts
-    bool kApplyEFiducial = true ; // Set to false to remove fiducial cuts
-    bool kApplyHadFiducial = true ; // Set to false to remove fiducial cuts
     bool kApplyAccWeights = true ; // Set to false to ignore acceptance weights 
     bool kApplyMottWeight = true ; // Apply mott xsec convertion
     bool kApplyReso = true ; // Apply particle resolution
@@ -117,7 +115,8 @@ namespace e4nu {
     bool kIsElectron = true ; // Is EM data  
     double koffset = 0 ;  // ofset for oscillation studies
     bool kSubtractBkg = false ; // Apply background correction
-    bool kNoFSI = false ;
+    bool kNoFSI = false ; // Can be use it to turn off FSI from GENIE files
+    bool kTrueSignal = false ; // It removes background events before any cuts are applied. This is used for acceptance calculations
 
     double kEBeam = 1.161 ; 
     unsigned int kTargetPdg = 1000060120 ;

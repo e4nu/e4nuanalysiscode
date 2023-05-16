@@ -67,7 +67,7 @@ unsigned int E4NuAnalysis::GetNEvents( void ) const {
       if( GetAnalysisTypeID() == 0 ) return CLAS6StandardAnalysis::GetNEvents() ;
     } else { 
       if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::GetNEvents() ;
-      else return false ; 
+      else return 0 ; 
     }
   } 
   return 0 ; 
@@ -128,7 +128,7 @@ void E4NuAnalysis::ClassifyEvent( Event event ) {
     }
   } else { // BACKGROUND 
     // No need to classify it if we don't apply fiducial
-    if ( !ApplyFiducial() || ! GetSubtractBkg() ) return false ; 
+    if ( !ApplyFiducial() || ! GetSubtractBkg() ) return ; 
     // Tag event as Background
     event.SetIsBkg(true); 
 

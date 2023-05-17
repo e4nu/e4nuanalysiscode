@@ -63,12 +63,7 @@ ConfigureI::ConfigureI( const std::string input_file ) {
       if( value[i] == "false" ) kApplyFiducial = false ; 
       else {
 	kApplyFiducial = true ; 
-	kApplyHadFiducial = true ; 
-	kApplyEFiducial = true ; 
       }
-    } else if ( param[i] == "ApplyHadFiducial" ){
-      if( value[i] == "false" ) kApplyHadFiducial = false ; 
-      else kApplyHadFiducial = true ; 
     } else if ( param[i] == "ApplyAccWeights" ){
       if ( value[i] == "false" ) kApplyAccWeights = false ; 
       else kApplyAccWeights = true ; 
@@ -141,6 +136,9 @@ ConfigureI::ConfigureI( const std::string input_file ) {
 	  kTopology_map.insert( pair ) ;
 	}
       }
+    } else if ( param[i] == "TrueSignal" ) { 
+      if ( value[i] == "true" ) kTrueSignal = true ; 
+      else kTrueSignal = false ; 
     } else if ( param[i] == "SubtractBkg" ) { 
       if( value[i] == "true" ) kSubtractBkg = true ; 
       else kSubtractBkg = false ; 
@@ -182,6 +180,12 @@ ConfigureI::ConfigureI( const std::string input_file ) {
 	kIsConfigured = false ; 
 	break ;
       } 
+    } else if ( param[i] == "ComputeTrueAccCorr" ) { 
+      if( value[i] == "true" ) { kComputeTrueAccCorr = true ; }
+      else kComputeTrueAccCorr = false ; 
+    } else if ( param[i] == "ComputeTrueRecoAccCorr" ) { 
+      if( value[i] == "true" ) { kComputeTrueRecoAccCorr = true ; }
+      else kComputeTrueRecoAccCorr = false ; 
     } else if ( param[i] == "DebugBkg") {
       if( value[i] == "false" ) {
 	kDebugBkg = false ; 
@@ -232,9 +236,9 @@ void ConfigureI::Initialize(void){
   gRandom->SetSeed(10);
 
   if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
-
-  if( kIsConfigured ) PrintConfiguration() ;
-  else std::cout << " CONFIGURATION FAILED..." << std::endl;
+  if( !kIsConfigured ) std::cout << " CONFIGURATION FAILED..." << std::endl;
+  if( !IsData() ) kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCCLAS6Tree","GENIE CLAS6 Tree") ) ; 
+  else kAnalysisTree = std::unique_ptr<TTree>( new TTree("CLAS6Tree","CLAS6 Tree") ) ; 
 
 }
       
@@ -244,21 +248,17 @@ void ConfigureI::PrintConfiguration(void) const {
   std::cout << "*********************************************************************" << std::endl;
   std::cout << "UseAllSectors: " << kUseAllSectors << std::endl;
   std::cout << "ApplyOutMomCut: " <<kOutEMomCut << std::endl;
-  std::cout << "ApplyQ2Cut: "<<kQ2Cut<< std::endl;
-  std::cout << "ApplyWCut: "<<kWCut<< std::endl;
-  std::cout << "ApplyFiducial:" << kApplyFiducial << std::endl;
-  std::cout << "ApplyEFiducial:" << kApplyEFiducial << std::endl;
-  std::cout << "ApplyHadFiducial:" << kApplyHadFiducial << std::endl;
-  std::cout << "ApplyAccWeights: " << kApplyAccWeights << std::endl;
-  std::cout << "ApplyMottWeight: " << kApplyMottWeight << std::endl;
-  std::cout << "ApplyReso:" << kApplyReso << std::endl;
-  std::cout << "ApplyMomCut:" << kApplyMomCut << std::endl;
-  std::cout << "ApplyQ2Cut: " << kQ2Cut << std::endl;
-  std::cout << "ApplyWCut: " << kWCut << std::endl;
-  std::cout << "ApplyPhiOpeningAngle:" << kApplyPhiOpeningAngle << std::endl;
-  std::cout << "UsePhiThetaBand:"<< kUsePhiThetaBand << std::endl;
-  std::cout << "ApplyThetaSlice:"<< kApplyThetaSlice << std::endl;
-  std::cout << "ApplyGoodSectorPhiSlice:"<<kApplyGoodSectorPhiSlice << "\n"<<std::endl;
+  if( kQ2Cut ) std::cout << "ApplyQ2Cut: "<<kQ2Cut<< std::endl;
+  if( kWCut ) std::cout << "ApplyWCut: "<<kWCut<< std::endl;
+  if( kApplyFiducial ) std::cout << "ApplyFiducial:" << kApplyFiducial << std::endl;
+  if( kApplyAccWeights ) std::cout << "ApplyAccWeights: " << kApplyAccWeights << std::endl;
+  if( kApplyMottWeight )std::cout << "ApplyMottWeight: " << kApplyMottWeight << std::endl;
+  if( kApplyReso ) std::cout << "ApplyReso:" << kApplyReso << std::endl;
+  if( kApplyMomCut ) std::cout << "ApplyMomCut:" << kApplyMomCut << std::endl;
+  if( kApplyPhiOpeningAngle) std::cout << "ApplyPhiOpeningAngle:" << kApplyPhiOpeningAngle << std::endl;
+  if( kUsePhiThetaBand ) std::cout << "UsePhiThetaBand:"<< kUsePhiThetaBand << std::endl;
+  if( kApplyThetaSlice ) std::cout << "ApplyThetaSlice:"<< kApplyThetaSlice << std::endl;
+  if( kApplyGoodSectorPhiSlice ) std::cout << "ApplyGoodSectorPhiSlice:"<<kApplyGoodSectorPhiSlice << "\n"<<std::endl;
   std::cout << "EBeam: " << kEBeam << " GeV " << std::endl;
   std::cout << "Target Pdg : " << kTargetPdg << "\n" <<std::endl;
   if ( kIsData ) std::cout << "\nIsData" << std::endl;
@@ -281,6 +281,8 @@ void ConfigureI::PrintConfiguration(void) const {
     std::cout << "Maximum Background Multiplicity: "<< kMaxBkgMult << std::endl;
     std::cout << "Number of rotations: "<< kNRotations << "\n" << std::endl;
   }
+
+  if( kTrueSignal ) std::cout << "Only analysing true signal events : " << std::endl;
 
   for( unsigned int i = 0 ; i < kObservables.size(); ++i ) {
     std::cout << "Observable " << kObservables[i] << std::endl;

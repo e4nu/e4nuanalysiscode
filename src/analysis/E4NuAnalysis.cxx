@@ -21,13 +21,13 @@
 
 using namespace e4nu ; 
 
-E4NuAnalysis::E4NuAnalysis() {this->Initialize();}
+E4NuAnalysis::E4NuAnalysis() {}
 
-E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCCLAS6StandardAnalysis(), CLAS6StandardAnalysis() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCCLAS6StandardAnalysis(), CLAS6StandardAnalysis() {}
 
-E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCCLAS6StandardAnalysis(), CLAS6StandardAnalysis() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCCLAS6StandardAnalysis(), CLAS6StandardAnalysis() {}
 
-E4NuAnalysis::~E4NuAnalysis() {;}
+E4NuAnalysis::~E4NuAnalysis() { }
 
 bool E4NuAnalysis::LoadData(void) {
   if( !IsConfigured() ) {
@@ -38,7 +38,7 @@ bool E4NuAnalysis::LoadData(void) {
   if( IsCLAS6Analysis() ) { 
     if( IsData() ) {
       if( GetAnalysisTypeID() == 0 ) return CLAS6StandardAnalysis::LoadData();
-    }else {
+    } else {
       if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::LoadData() ; 
       else return false ; 
     } if( IsCLAS12Analysis() ) return false ;  
@@ -67,7 +67,7 @@ unsigned int E4NuAnalysis::GetNEvents( void ) const {
       if( GetAnalysisTypeID() == 0 ) return CLAS6StandardAnalysis::GetNEvents() ;
     } else { 
       if( GetAnalysisTypeID() == 0 ) return MCCLAS6StandardAnalysis::GetNEvents() ;
-      else return false ; 
+      else return 0 ; 
     }
   } 
   return 0 ; 
@@ -127,6 +127,9 @@ void E4NuAnalysis::ClassifyEvent( Event event ) {
       kAnalysedEventHolder[signal_mult].push_back( event ) ; 
     }
   } else { // BACKGROUND 
+    // No need to classify it if we don't apply fiducial
+    if ( !ApplyFiducial() || ! GetSubtractBkg() ) return ; 
+    // Tag event as Background
     event.SetIsBkg(true); 
 
     // Get Number of signal particles, "multiplicity"
@@ -137,10 +140,8 @@ void E4NuAnalysis::ClassifyEvent( Event event ) {
     std::map<int,std::vector<TLorentzVector>> hadrons = event.GetFinalParticles4Mom() ;
     for( auto it = Topology.begin(); it!=Topology.end();++it){
       if( it->first == conf::kPdgElectron ) continue ; 
-      for( auto part = hadrons.begin() ; part != hadrons.end() ; ++part ) {
-	if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() < it->second ) { is_signal_bkg = false ; break ; } 
-	if( hadrons.find(it->first) == hadrons.end() &&  it->second != 0 ) { is_signal_bkg = false ; break ; }
-      }
+      if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() < it->second ) { is_signal_bkg = false ; break ; } 
+      if( hadrons.find(it->first) == hadrons.end() &&  it->second != 0 ) { is_signal_bkg = false ; break ; }
     }
 
     if( !is_signal_bkg ) return ; 
@@ -162,8 +163,6 @@ void E4NuAnalysis::ClassifyEvent( Event event ) {
 bool E4NuAnalysis::SubtractBackground() {
   
   if( ! BackgroundI::BackgroundSubstraction( kAnalysedEventHolder ) ) return false ;  
-  // if( ! BackgroundI::HadronsAcceptanceCorrection( kAnalysedEventHolder ) ) return false ; 
-  //  if( ! BackgroundI::ElectronAcceptanceCorrection( kAnalysedEventHolder ) ) return false ; 
 
   return true ; 
 } 
@@ -207,8 +206,8 @@ bool E4NuAnalysis::Finalise( ) {
 }
 
 void E4NuAnalysis::Initialize(void) {
-  kOutFile = std::unique_ptr<TFile>( new TFile( (GetOutputFile()+".root").c_str(),"RECREATE") );
-
+  kOutFile = std::unique_ptr<TFile> ( new TFile( (GetOutputFile()+".root").c_str(),"RECREATE") ) ;
+    
   unsigned int ECal_id = 0 ;
   for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
     kHistograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), GetNBins()[i], GetRange()[i][0], GetRange()[i][1] ) ) ; 

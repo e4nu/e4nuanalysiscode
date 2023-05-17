@@ -159,7 +159,9 @@ You can find the available observables [here](https://github.com/e4nu/e4nuanalys
 - **XSecFile**: path to xml file for MC normalization
 
 ***Acceptance Correction***:
+
 We compute the acceptance correction (acc corr = 1/efficiency), as : 
+
 Acceptance Correction = True Signal Events / True Reconstructed Signal Events 
 
 The corresponding files can be obtained with the same configuration files, with an additional option:

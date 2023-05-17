@@ -157,6 +157,13 @@ You can find the available observables [here](https://github.com/e4nu/e4nuanalys
 - **InputFile**: path to input root files with events to analize
 - **OutputFile**: output root files with analised events and histograms
 - **XSecFile**: path to xml file for MC normalization
-- **ComputeAccCorr**: if true, it also computes the true and reconstructed signal spectra. It is used for the acceptance correction calculation.
+
+***Acceptance Correction***:
+We compute the acceptance correction (acc corr = 1/efficiency), as : 
+Acceptance Correction = True Signal Events / True Reconstructed Signal Events 
+
+The corresponding files can be obtained with the same configuration files, with an additional option:
+- **ComputeTrueAccCorr**: if true, it computes the true signal spectra for the configuration of interest. It is used for the acceptance correction calculation.
+- **ComputeTrueRecoAccCorr**: if true, it also computes the true reconstructed signal spectra for the configuration of interest. It is used for the acceptance correction calculation.
 
 

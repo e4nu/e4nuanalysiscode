@@ -30,6 +30,8 @@ namespace e4nu {
     bool Analyse(void) ; 
     void ClassifyEvent( Event event ) ;
     bool SubtractBackground( void ) ;
+
+    void Initialize(void) ; 
     bool Finalise(void);
 
     virtual ~E4NuAnalysis();
@@ -41,8 +43,6 @@ namespace e4nu {
 
     // Event Holder for signal and background
     std::map<int,std::vector<e4nu::Event>> kAnalysedEventHolder;
-
-    void Initialize(void) ; 
     
   };
 }

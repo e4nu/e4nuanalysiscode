@@ -41,7 +41,8 @@ namespace e4nu {
     unsigned int GetAnalysisTypeID(void) const{ return kAnalysisTypeID ; }
     unsigned int GetNEventsToRun(void) const { return kNEvents ; } 
     unsigned int GetFirstEventToRun(void) const { return kFirstEvent ; } 
-    bool ComputeAccCorrection(void) const { return kComputeAccCorr; }
+    bool ComputeTrueAccCorrection(void) const { return kComputeTrueAccCorr; }
+    bool ComputeTrueRecoAccCorrection(void) const { return kComputeTrueRecoAccCorr; }
  
     // Get physics information about the analysis      
     double GetConfiguredEBeam(void) const { return kEBeam ; }
@@ -108,7 +109,8 @@ namespace e4nu {
     bool kIsData = false ; // Is data
     bool kIsCLAS6Analysis = true ; 
     bool kIsCLAS12Analysis = false ; // Disabled for now
-    bool kComputeAccCorr = false ; // Bool used to compute acc correction files
+    bool kComputeTrueAccCorr = false ; // Bool used to compute acc correction files, True distribution
+    bool kComputeTrueRecoAccCorr = false ; // Bool used to compute acc correction files, True Reconstructed distribution
     bool kUseAllSectors = false ; // Are there any dead sectors? It removes sectors 2 and 4
     bool kApplyFiducial = true ; // Set to false to remove fiducial cuts
     bool kApplyAccWeights = true ; // Set to false to ignore acceptance weights 

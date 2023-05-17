@@ -21,13 +21,13 @@
 
 using namespace e4nu ; 
 
-E4NuAnalysis::E4NuAnalysis() {this->Initialize();}
+E4NuAnalysis::E4NuAnalysis() {}
 
-E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCCLAS6StandardAnalysis(), CLAS6StandardAnalysis() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const std::string conf_file ) : AnalysisI(conf_file), MCCLAS6StandardAnalysis(), CLAS6StandardAnalysis() {}
 
-E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCCLAS6StandardAnalysis(), CLAS6StandardAnalysis() { this->Initialize();}
+E4NuAnalysis::E4NuAnalysis( const double EBeam, const unsigned int TargetPdg ) : AnalysisI(EBeam, TargetPdg), MCCLAS6StandardAnalysis(), CLAS6StandardAnalysis() {}
 
-E4NuAnalysis::~E4NuAnalysis() {;}
+E4NuAnalysis::~E4NuAnalysis() { }
 
 bool E4NuAnalysis::LoadData(void) {
   if( !IsConfigured() ) {
@@ -206,8 +206,8 @@ bool E4NuAnalysis::Finalise( ) {
 }
 
 void E4NuAnalysis::Initialize(void) {
-  kOutFile = std::unique_ptr<TFile>( new TFile( (GetOutputFile()+".root").c_str(),"RECREATE") );
-
+  kOutFile = std::unique_ptr<TFile> ( new TFile( (GetOutputFile()+".root").c_str(),"RECREATE") ) ;
+    
   unsigned int ECal_id = 0 ;
   for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
     kHistograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), GetNBins()[i], GetRange()[i][0], GetRange()[i][1] ) ) ; 

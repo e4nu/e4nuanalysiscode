@@ -12,7 +12,6 @@
 #include "conf/ParticleI.h"
 #include "conf/TargetI.h"
 #include "utils/DetectorUtils.h"
-#include "conf/FiducialCutI.h"
 #include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
 #include "conf/AnalysisConstantsI.h"
@@ -78,15 +77,7 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
     this -> SmearParticles( *event ) ; 
   }
 
-  // Step 4: Apply fiducials
-  // The detector has gaps where the particles cannot be detected
-  // We need to account for these with fiducial cuts
-  if ( ! this->ApplyFiducialCut( *event ) ) {
-    delete event ; 
-    return nullptr ; 
-  }
-
-  // Step 5: Apply Acceptance Correction (Efficiency correction)
+  // Step 4: Apply Acceptance Correction (Efficiency correction)
   // This takes into account the efficiency detection of each particle in theta and phi
   this->ApplyAcceptanceCorrection( *event ) ; 
 
@@ -94,40 +85,6 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
   event->StoreAnalysisRecord(kid_fid);
 
   return event ; 
-}
-
-bool MCCLAS6AnalysisI::ApplyFiducialCut( Event & event ) { 
-  // First, we apply it to the electron
-  // Apply fiducial cut to electron
-  bool apply_fiducial = ApplyFiducial() ;
-  Fiducial * fiducial = GetFiducialCut() ; 
-  if( ! fiducial && apply_fiducial ) return true ; 
-
-  TLorentzVector out_mom = event.GetOutLepton4Mom() ;
-  if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect(), IsData(), apply_fiducial ) ) return false ; 
-
-  // Apply Fiducial cut for hadrons and photons
-  std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
-  std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event.GetFinalParticlesUnCorr4Mom() ;
-  std::map<int,std::vector<TLorentzVector>> contained_part_map, contained_part_map_uncorr ; 
-  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
-    std::vector<TLorentzVector> visible_part ; 
-    std::vector<TLorentzVector> visible_part_uncorr ; 
-    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
-      if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), part_map[it->first][i].Vect(), IsData(), apply_fiducial ) ) continue ; 
-      visible_part.push_back( part_map[it->first][i] ) ; 
-      visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
-    }
-    if( visible_part.size() == 0 ) continue ; 
-    contained_part_map[it->first] = visible_part ; 
-    contained_part_map_uncorr[it->first] = visible_part_uncorr ; 
-  }
-  
-  // Store changes in event after fiducial cut
-  event.SetFinalParticlesKinematics( contained_part_map ) ; 
-  event.SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ; 
-
-  return true ; 
 }
 
 void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event & event ) { 

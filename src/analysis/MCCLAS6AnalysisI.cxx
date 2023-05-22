@@ -24,7 +24,6 @@ MCCLAS6AnalysisI::MCCLAS6AnalysisI() {
   kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
-  if( !IsData() ) kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCCLAS6Tree","GENIE CLAS6 Tree") ) ; 
   kMult_signal = GetNTopologyParticles() ; 
   this->Initialize() ;
 }

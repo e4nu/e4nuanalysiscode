@@ -141,6 +141,9 @@ E4nu users might want to ***include analysis features specific to their analysis
 It is also possible to change the configuration to use GENIE information before FSI effects. To do so, simply do:
 - **No FSI** true
 
+To use only true signal events, 
+- **TrueSignal** true 
+
 ***Histogram configurables***:
 - **RangeList**: min1:max1,min2:max2,..,minN:maxN
 - **ObservableList**: obs1,obs2,...,obsN
@@ -155,5 +158,14 @@ You can find the available observables [here](https://github.com/e4nu/e4nuanalys
 - **OutputFile**: output root files with analised events and histograms
 - **XSecFile**: path to xml file for MC normalization
 
+***Acceptance Correction***:
+
+We compute the acceptance correction (acc corr = 1/efficiency), as : 
+
+Acceptance Correction = True Signal Events / True Reconstructed Signal Events 
+
+The corresponding files can be obtained with the same configuration files, with an additional option:
+- **ComputeTrueAccCorr**: if true, it computes the true signal spectra for the configuration of interest. It is used for the acceptance correction calculation.
+- **ComputeTrueRecoAccCorr**: if true, it also computes the true reconstructed signal spectra for the configuration of interest. It is used for the acceptance correction calculation.
 
 

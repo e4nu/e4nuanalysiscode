@@ -41,7 +41,9 @@ namespace e4nu {
     unsigned int GetAnalysisTypeID(void) const{ return kAnalysisTypeID ; }
     unsigned int GetNEventsToRun(void) const { return kNEvents ; } 
     unsigned int GetFirstEventToRun(void) const { return kFirstEvent ; } 
-    
+    bool ComputeTrueAccCorrection(void) const { return kComputeTrueAccCorr; }
+    bool ComputeTrueRecoAccCorrection(void) const { return kComputeTrueRecoAccCorr; }
+ 
     // Get physics information about the analysis      
     double GetConfiguredEBeam(void) const { return kEBeam ; }
     unsigned int GetConfiguredTarget(void) const { return kTargetPdg ; }
@@ -52,8 +54,6 @@ namespace e4nu {
     bool IsTrueSignal(void) const { return kTrueSignal ; }
     bool UseAllSectors(void) const { return kUseAllSectors ; } 
     bool ApplyFiducial(void) const { return kApplyFiducial ; }
-    bool ApplyEFiducial(void) const { return kApplyEFiducial ; }
-    bool ApplyHadFiducial(void) const { return kApplyHadFiducial ; }
     bool ApplyCorrWeights(void) const { return kApplyCorrWeights ; }
     bool ApplyAccWeights(void) const { return kApplyAccWeights ; }
     bool ApplyMottScaling(void) const { return kApplyMottWeight ; }
@@ -68,8 +68,15 @@ namespace e4nu {
     bool ApplyMomCut(void) const { return kApplyMomCut ; } 
     bool ApplyOutElectronCut(void) const { return kOutEMomCut ; }      
     bool IsNoFSI(void) const { return kNoFSI ; }
-
     Fiducial * GetFiducialCut(void) { return kFiducialCut ; } 
+
+    // Define setter functions to be able to change the configuration 
+    void SetTrueSignal( const bool b ) { kTrueSignal = b ; } 
+    void SetApplyFiducial( const bool b ) { kApplyFiducial = b ; }
+    void SetApplyAccWeights( const bool b ) { kApplyAccWeights = b ; }
+    void SetApplyReso( const bool b ) { kApplyReso = b ; }
+    void SetUseAllSectors( const bool b ) { kUseAllSectors = b ; }
+    void SetSubtractBkg( const bool b ) { kSubtractBkg = b ; }
 
     // Get information about the background subtraction method
     unsigned int GetMaxBkgMult(void) const { return kMaxBkgMult ; }
@@ -89,6 +96,8 @@ namespace e4nu {
     std::string GetInputFile(void) const { return kInputFile ; }
     std::string GetXSecFile(void) const { return kXSecFile ; }
 
+    void SetOutputFile( std::string output_file ) { kOutputFile = output_file ; }
+
     // Others 
     void PrintConfiguration(void) const ; 
       
@@ -100,10 +109,10 @@ namespace e4nu {
     bool kIsData = false ; // Is data
     bool kIsCLAS6Analysis = true ; 
     bool kIsCLAS12Analysis = false ; // Disabled for now
-    bool kUseAllSectors = false ; // Are there any dead sectors?
+    bool kComputeTrueAccCorr = false ; // Bool used to compute acc correction files, True distribution
+    bool kComputeTrueRecoAccCorr = false ; // Bool used to compute acc correction files, True Reconstructed distribution
+    bool kUseAllSectors = false ; // Are there any dead sectors? It removes sectors 2 and 4
     bool kApplyFiducial = true ; // Set to false to remove fiducial cuts
-    bool kApplyEFiducial = true ; // Set to false to remove fiducial cuts
-    bool kApplyHadFiducial = true ; // Set to false to remove fiducial cuts
     bool kApplyAccWeights = true ; // Set to false to ignore acceptance weights 
     bool kApplyMottWeight = true ; // Apply mott xsec convertion
     bool kApplyReso = true ; // Apply particle resolution
@@ -118,7 +127,8 @@ namespace e4nu {
     bool kIsElectron = true ; // Is EM data  
     double koffset = 0 ;  // ofset for oscillation studies
     bool kSubtractBkg = false ; // Apply background correction
-    bool kNoFSI = false ;
+    bool kNoFSI = false ; // Can be use it to turn off FSI from GENIE files
+    bool kTrueSignal = false ; // It removes background events before any cuts are applied. This is used for acceptance calculations
 
     double kEBeam = 1.161 ; 
     unsigned int kTargetPdg = 1000060120 ;

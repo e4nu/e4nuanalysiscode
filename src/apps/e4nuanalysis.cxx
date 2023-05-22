@@ -22,9 +22,46 @@ int main( void ) {
   char * env = std::getenv("E4NUANALYSIS") ; 
   std::string path( env ) ; 
   path += "/ConfFiles/" ;
+  
   E4NuAnalysis * analysis = new E4NuAnalysis((path+"example_configuration.txt").c_str()) ;
   if( ! analysis ) return 0 ; 
-  
+
+  // Compute acceptance correction files
+  bool compute_trueacc = analysis -> ComputeTrueAccCorrection() ; 
+  bool compute_truerecoacc = analysis -> ComputeTrueRecoAccCorrection() ; 
+
+  if ( analysis -> IsData() ) { compute_trueacc = false ; compute_truerecoacc = false ; }
+
+  if( compute_trueacc && compute_truerecoacc ) { 
+    std::cout << " Due to ROOT related issues, the code can only compute one at the time... Abort." <<std::endl;
+    return 0 ; 
+  }
+
+  if ( compute_trueacc ) {
+    analysis -> SetTrueSignal( true ) ;
+    analysis -> SetApplyFiducial( false ) ;
+    analysis -> SetApplyAccWeights( false ) ;
+    analysis -> SetApplyReso( false ) ;
+    analysis -> SetUseAllSectors( true ) ;
+    std::string OutputFile_true = analysis->GetOutputFile() + "_true" ;
+    analysis -> SetOutputFile( OutputFile_true ) ;
+    std::cout << " Computing true analysis distributions for acceptance correction..."<<std::endl;
+  } else if ( compute_truerecoacc ) { 
+    analysis -> SetTrueSignal( true ) ; 
+    analysis -> SetApplyFiducial( true ) ; 
+    analysis -> SetApplyAccWeights( true ) ; 
+    analysis -> SetApplyReso( true ) ; 
+    analysis -> SetUseAllSectors( false ) ; 
+    analysis -> SetSubtractBkg( false ) ; 
+    std::string OutputFile_reco = analysis->GetOutputFile() + "_truereco" ;
+    analysis -> SetOutputFile( OutputFile_reco ) ; 
+    std::cout << " Computing true reconstructed analysis distributions for acceptance correction..."<<std::endl;
+  }
+
+  analysis -> PrintConfiguration() ;
+  analysis -> Initialize() ;
+
+
   if( ! analysis -> LoadData() ) return 0 ;  
 
   // This first steps deals with smearing effects, acceptance weights, fiducial cuts, etc. 
@@ -41,5 +78,7 @@ int main( void ) {
   analysis -> Finalise();
 
   delete analysis ;
+ 
+
   return 0 ; 
 }

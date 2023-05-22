@@ -22,9 +22,7 @@
 using namespace e4nu ; 
 
 CLAS6AnalysisI::CLAS6AnalysisI() {
-  if( IsData() ) kAnalysisTree = std::unique_ptr<TTree>( new TTree("CLAS6Tree","CLAS6 Tree") ) ; 
   kMult_signal = GetNTopologyParticles() ; 
-   
   this->Initialize() ;
 }
 

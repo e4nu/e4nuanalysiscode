@@ -100,16 +100,6 @@ bool AnalysisI::Analyse( Event & event ) {
   // Store analysis record before momentum cuts (0) :
   event.StoreAnalysisRecord(kid_bcuts);
 
-  // Step 4 : Remove true Bkg events if requested : 
-  if( IsTrueSignal() ) { 
-    std::map<int,unsigned int> Topology = GetTopology();
-    std::map<int,std::vector<TLorentzVector>> hadrons = event.GetFinalParticles4Mom() ;
-    for( auto it = Topology.begin(); it!=Topology.end();++it){
-      if( it->first == conf::kPdgElectron ) continue ; 
-      if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() != it->second ) return false ;
-    }
-  }
-
   // Step 3 : Apply momentum cut (detector specific) 
   if( ApplyMomCut() ) { 
     this->ApplyMomentumCut( event ) ; 
@@ -122,6 +112,16 @@ bool AnalysisI::Analyse( Event & event ) {
   // These are ignored in the analysis
   // No Cuts are applied on those
   this->CookEvent( event ) ; 
+
+  // Step 5 : Remove true Bkg events if requested : 
+  if( IsTrueSignal() ) { 
+    std::map<int,unsigned int> Topology = GetTopology();
+    std::map<int,std::vector<TLorentzVector>> hadrons = event.GetFinalParticles4Mom() ;
+    for( auto it = Topology.begin(); it!=Topology.end();++it){
+      if( it->first == conf::kPdgElectron ) continue ; 
+      if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() != it->second ) return false ;
+    }
+  }
 
   return true ; 
 }

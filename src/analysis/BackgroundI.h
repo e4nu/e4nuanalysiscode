@@ -34,10 +34,10 @@ namespace e4nu {
     // Definition must be in header file to avoid linking issuess
     template <class T>
       bool BackgroundSubstraction( std::map<int,std::vector<T>> & event_holder ) { 
-      if( !ApplyFiducial()  ) return true ; 
-      if( !GetSubtractBkg() ) return true ;
+      bool apply_fiducial = ApplyFiducial();
+      if( !GetSubtractBkg() || ! apply_fiducial ) return true ;
       Fiducial * fiducial = GetFiducialCut() ; 
-
+      
       unsigned int max_mult = GetMaxBkgMult(); // Max multiplicity specified in conf file
       unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
       std::map<int,unsigned int> Topology = GetTopology();
@@ -73,7 +73,7 @@ namespace e4nu {
 		  part_vect.Rotate(rotation_angle,VectorRecoQ);
 	      
 		  // Check which particles are in fiducial
-		  bool is_particle_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData() ) ; 
+		  bool is_particle_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData(), apply_fiducial ) ; 
 	      
 		  // Calculate rotated event multiplicity
 		  if( is_particle_contained ) {
@@ -175,8 +175,8 @@ namespace e4nu {
       bool HadronsAcceptanceCorrection( std::map<int,std::vector<T>> & event_holder ) { 
 
       // We need to correct for signal events that are reconstructed outside of the fiducial
-      if( !ApplyFiducial()  ) return true ; 
-      if( !GetSubtractBkg() ) return true ;
+      bool apply_fiducial = ApplyFiducial();
+      if( !GetSubtractBkg() || ! apply_fiducial ) return true ;
 
       Fiducial * fiducial = GetFiducialCut() ; 
       if( !fiducial ) return false ; 
@@ -212,7 +212,7 @@ namespace e4nu {
 	      part_vect.Rotate(rotation_angle,VectorRecoQ);
 	      
 	      // Check which particles are in fiducial	      
-	      is_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData() ) ;
+	      is_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData(), apply_fiducial ) ;
 	      if( !is_contained ) break ; 
 	    }
 	    if( !is_contained ) break ; 
@@ -242,8 +242,8 @@ namespace e4nu {
       bool ElectronAcceptanceCorrection( std::map<int,std::vector<T>> & event_holder ) { 
 
       // We need to correct for signal events that are reconstructed outside of the fiducial
-      if( !ApplyFiducial()  ) return true ; 
-      if( !GetSubtractBkg() ) return true ;
+      bool apply_fiducial = ApplyFiducial();
+      if( !GetSubtractBkg() || apply_fiducial ) return true ;
 
       Fiducial * fiducial = GetFiducialCut() ; 
       if( !fiducial ) return false ; 
@@ -270,7 +270,7 @@ namespace e4nu {
 	  // Rotate all particles 
 	  emom.Rotate(rotation_angle, BeamVector);
 
-	  bool is_contained = fiducial->FiducialCut( conf::kPdgElectron, GetConfiguredEBeam(), emom, IsData() ) ;
+	  bool is_contained = fiducial->FiducialCut( conf::kPdgElectron, GetConfiguredEBeam(), emom, IsData(), apply_fiducial ) ;
 
 	  if( is_contained ) ++N_signal_detected ; 
 	  else ++N_signal_undetected ; 

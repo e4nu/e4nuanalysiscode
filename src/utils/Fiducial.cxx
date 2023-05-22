@@ -635,11 +635,18 @@ Bool_t Fiducial::GetEPhiLimits(double beam_en, Float_t momentum, Float_t theta, 
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, TVector3 momentum, const bool is_data ) {
+Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, TVector3 momentum, const bool is_data, const bool apply_fiducial ) {
   
   if( !is_data ) {
     // Electron fiducial cut, return kTRUE if pass or kFALSE if not
     momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ;
+  }
+
+  if (! apply_fiducial )  {
+    if ( pdg == conf::kPdgProton ) return PFiducialCutExtra( beam_en, momentum ) ;
+    else if ( pdg == conf::kPdgPiP ) return PiplFiducialCutExtra( beam_en, momentum ) ;
+    else if ( pdg == conf::kPdgPiM ) return PimiFiducialCutExtra(beam_en, momentum) ;
+    else if ( pdg == conf::kPdgPhoton ) return Phot_fidExtra(momentum) ;    
   }
 
   if ( pdg == conf::kPdgElectron ) return EFiducialCut( beam_en, momentum ) ; 

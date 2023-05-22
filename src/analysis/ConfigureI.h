@@ -49,6 +49,7 @@ namespace e4nu {
     unsigned int GetNTopologyParticles(void) ;    
     
     // Get informtion about cuts:
+    bool IsTrueSignal(void) const { return kTrueSignal ; }
     bool UseAllSectors(void) const { return kUseAllSectors ; } 
     bool ApplyFiducial(void) const { return kApplyFiducial ; }
     bool ApplyEFiducial(void) const { return kApplyEFiducial ; }
@@ -142,6 +143,7 @@ namespace e4nu {
     bool kNormalize = true ; // Normalize histograms to cross section
     bool kApplyCorrWeights = true ; // Set to false to ignore correction weights to be applied to the histograms
     bool kDebugBkg = false ; 
+    bool kTrueSignal = false ;
 
     // Information for output file
     std::unique_ptr<TFile> kOutFile ;

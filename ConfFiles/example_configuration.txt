@@ -8,7 +8,7 @@ ApplyMottWeight true
 ApplyOutEMomCut	true
 ApplyQ2Cut	true
 ApplyWCut	true
-SubtractBkg true
+SubtractBkg false
 
 ApplyPhiOpeningAngle	false
 UsePhiThetaBand		false
@@ -33,8 +33,8 @@ NRotations 1000
 #The following parameters will modify the configuration 
 #TrueAccCorr: by using only true signal events, it provides with the analysed events after momentum cuts. All Sectors are used
 #trueRecoAccCorr: by using only true signal events, it provodes with analysed reconstructed events after momentum, fiducial, acceptance, smearing effects. Sectors 2 and 4 are not used.
-ComputeTrueAccCorr false
-ComputeTrueRecoAccCorr true
+ComputeTrueAccCorr true
+ComputeTrueRecoAccCorr false
 
 #histogram definition
 RangeList 0:3,0:2,0:2,0:2,0:10,0:180,0:1,0:2

@@ -642,8 +642,9 @@ Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, TVector3 mome
     momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ;
   }
 
-  if (! apply_fiducial )  {
-    if ( pdg == conf::kPdgProton ) return PFiducialCutExtra( beam_en, momentum ) ;
+  if ( ! apply_fiducial )  {
+    if ( pdg == conf::kPdgElectron ) return true ; 
+    else if ( pdg == conf::kPdgProton ) return PFiducialCutExtra( beam_en, momentum ) ;
     else if ( pdg == conf::kPdgPiP ) return PiplFiducialCutExtra( beam_en, momentum ) ;
     else if ( pdg == conf::kPdgPiM ) return PimiFiducialCutExtra(beam_en, momentum) ;
     else if ( pdg == conf::kPdgPhoton ) return Phot_fidExtra(momentum) ;    
@@ -2474,6 +2475,7 @@ Bool_t Fiducial::PimiFiducialCutExtra(double beam_en, TVector3 momentum) {
   double mom = momentum.Mag();
   double theta_min = myPiMinusFit->Eval(mom);
 
+  return status ; 
   if (theta < theta_min) { status = false; }
 
   return status;

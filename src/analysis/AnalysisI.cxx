@@ -108,21 +108,16 @@ bool AnalysisI::Analyse( Event & event ) {
   // Store analysis record after momentum cuts:
   event.StoreAnalysisRecord(kid_acuts);
 
-  // Step 4 : Cook event
+  // Step 4: Cook event
   // Remove particles not specified in topology maps
   // These are ignored in the analysis
   // No Cuts are applied on those
   this->CookEvent( event ) ; 
 
-
-  // Step 5: Apply fiducials
-  // The detector has gaps where the particles cannot be detected
-  // We need to account for these with fiducial cuts
-  // It also takes into account angle cuts for particles
-  if ( ! this->ApplyFiducialCut( event ) ) return false ; 
-
-  // Step 6 : Remove true Bkg events if requested : 
-  if( IsTrueSignal() ) { 
+  // Step 5 : Remove true Bkg events if requested : 
+  if( IsTrueSignal() ) {
+    // Apply theta cut on hadrons:
+    if ( ! this->ApplyFiducialCut( event, false ) ) return false ; 
     std::map<int,unsigned int> Topology = GetTopology();
     std::map<int,std::vector<TLorentzVector>> hadrons = event.GetFinalParticles4Mom() ;
     for( auto it = Topology.begin(); it!=Topology.end();++it){
@@ -130,6 +125,12 @@ bool AnalysisI::Analyse( Event & event ) {
       if( hadrons.find(it->first) != hadrons.end() && hadrons[it->first].size() != it->second ) return false ;
     }
   }
+
+  // Step 4: Apply fiducials
+  // The detector has gaps where the particles cannot be detected
+  // We need to account for these with fiducial cuts
+  // It also takes into account angle cuts for particles
+  if ( ! this->ApplyFiducialCut( event, ApplyFiducial() ) ) return false ; 
 
   return true ; 
 }
@@ -182,16 +183,15 @@ void AnalysisI::CookEvent( Event & event ) {
 }
 
 
-bool AnalysisI::ApplyFiducialCut( Event & event ) { 
+bool AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) { 
   // First, we apply it to the electron
   // Apply fiducial cut to electron
-  bool apply_fiducial = ApplyFiducial() ;
   Fiducial * fiducial = GetFiducialCut() ; 
-  if( ! fiducial && apply_fiducial && IsData() ) return true ; 
+  if( ! fiducial || IsData() ) return true ; 
 
   TLorentzVector out_mom = event.GetOutLepton4Mom() ;
   if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect(), IsData(), apply_fiducial ) ) return false ; 
-
+  
   // Apply Fiducial cut for hadrons and photons
   std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
   std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event.GetFinalParticlesUnCorr4Mom() ;
@@ -212,7 +212,7 @@ bool AnalysisI::ApplyFiducialCut( Event & event ) {
   // Store changes in event after fiducial cut
   event.SetFinalParticlesKinematics( contained_part_map ) ; 
   event.SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ; 
-
+  
   return true ; 
 }
 

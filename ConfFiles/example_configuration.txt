@@ -7,7 +7,7 @@ ApplyMomCut     true
 ApplyMottWeight true
 ApplyOutEMomCut	true
 ApplyQ2Cut	true
-ApplyWCut	false
+ApplyWCut	true
 SubtractBkg true
 
 ApplyPhiOpeningAngle	false
@@ -33,8 +33,8 @@ NRotations 1000
 #The following parameters will modify the configuration 
 #TrueAccCorr: by using only true signal events, it provides with the analysed events after momentum cuts. All Sectors are used
 #trueRecoAccCorr: by using only true signal events, it provodes with analysed reconstructed events after momentum, fiducial, acceptance, smearing effects. Sectors 2 and 4 are not used.
-ComputeTrueAccCorr true
-ComputeTrueRecoAccCorr false
+ComputeTrueAccCorr false
+ComputeTrueRecoAccCorr true
 
 #histogram definition
 RangeList 0:3,0:2,0:2,0:2,0:10,0:180,0:1,0:2
@@ -44,5 +44,5 @@ NormalizeHists false
 DebugBkg false
 
 InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_2261GeV/apapadop_SuSav2_C12_2261GeV_master.root
-OutputFile  /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/test
+OutputFile  /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/e4nuanalysis_genie_GEM21_C12_2261MeV_1p0piwpi0_1M_Q4
 XSecFile /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/ConfFiles/xsec_carbon12_spline_GEM21_11b_00_000_Q2_0_1.root

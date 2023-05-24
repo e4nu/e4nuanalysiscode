@@ -312,17 +312,15 @@ unsigned int ConfigureI::GetNTopologyParticles(void) {
 bool ConfigureI::InitializeFiducial(void) {
   double EBeam = GetConfiguredEBeam() ; 
   unsigned int Target = GetConfiguredTarget() ;
-
-  if( ApplyFiducial() ) {
-    // Initialize fiducial for this run
-    kFiducialCut = new Fiducial() ; 
-    kFiducialCut -> InitPiMinusFit( EBeam ) ; 
-    kFiducialCut -> InitEClimits(); 
-    kFiducialCut -> up_lim1_ec -> Eval(60) ;
-    kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), Target , EBeam ) ;
-    kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
-    if( !kFiducialCut ) return false ; 
-  } else { return true ; }
+  
+  // Initialize fiducial for this run
+  kFiducialCut = new Fiducial() ; 
+  kFiducialCut -> InitPiMinusFit( EBeam ) ; 
+  kFiducialCut -> InitEClimits(); 
+  kFiducialCut -> up_lim1_ec -> Eval(60) ;
+  kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), Target , EBeam ) ;
+  kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
+  if( !kFiducialCut ) return false ; 
 
   return true ; 
 }

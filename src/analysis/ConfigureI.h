@@ -153,7 +153,6 @@ namespace e4nu {
     bool kNormalize = true ; // Normalize histograms to cross section
     bool kApplyCorrWeights = true ; // Set to false to ignore correction weights to be applied to the histograms
     bool kDebugBkg = false ; 
-    bool kTrueSignal = false ;
 
     // Information for output file
     std::unique_ptr<TFile> kOutFile ;

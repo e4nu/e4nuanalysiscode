@@ -36,7 +36,6 @@ namespace e4nu {
   private :
 
     void SmearParticles( Event & event ) ;
-    bool ApplyFiducialCut( Event & event ) ; 
     void ApplyAcceptanceCorrection( Event & event ) ;
     Event * GetEvent( const unsigned int event_id ) ;
     

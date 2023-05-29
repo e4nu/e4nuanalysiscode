@@ -36,6 +36,8 @@ int main( void ) {
       analysis -> SetApplyFiducial( true ) ; 
       analysis -> SetApplyAccWeights( true ) ; 
       analysis -> SetApplyReso( true ) ;  
+      std::string OutputFile_data = analysis->GetOutputFile() + "_clas6data" ;
+      analysis -> SetOutputFile( OutputFile_data ) ; 
   }
 
   if( compute_trueacc && compute_truerecoacc ) { 

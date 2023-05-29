@@ -30,7 +30,13 @@ int main( void ) {
   bool compute_trueacc = analysis -> ComputeTrueAccCorrection() ; 
   bool compute_truerecoacc = analysis -> ComputeTrueRecoAccCorrection() ; 
 
-  if ( analysis -> IsData() ) { compute_trueacc = false ; compute_truerecoacc = false ; }
+  if ( analysis -> IsData() ) {   
+      compute_trueacc = false ; 
+      compute_truerecoacc = false ; 
+      analysis -> SetApplyFiducial( true ) ; 
+      analysis -> SetApplyAccWeights( true ) ; 
+      analysis -> SetApplyReso( true ) ;  
+  }
 
   if( compute_trueacc && compute_truerecoacc ) { 
     std::cout << " Due to ROOT related issues, the code can only compute one at the time... Abort." <<std::endl;

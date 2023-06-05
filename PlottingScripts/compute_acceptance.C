@@ -112,6 +112,5 @@ void compute_acceptance(){
   double min = 0;
   double max = 135;
 
-  //compute_acceptance( file_name, observable, nbins, min, max ) ;
-  compute_acceptance( "e4nuanalysis_genie_GEM21_C12_4461MeV_1p0piwpi0_1M_Q4", observable, nbins, min, max ) ;
+  compute_acceptance( file_name, observable, nbins, min, max ) ;
 }

@@ -13,7 +13,11 @@ void compute_acceptance(std::string file_name, std::string observable, unsigned 
   TCanvas * c1 = new TCanvas("c1","c1",800,600);
 
   TFile * file_mcrecoacc = new TFile((file_name+"_truereco.root").c_str(),"ROOT");
-  TFile * file_mctrueacc = new TFile((file_name+"_true.root").c_str(),"READ");
+  TFile * file_mctrueacc = new TFile((file_name+"_true.root").c_str(),"ROOT");
+
+  std::string output_name = file_name+"_acceptance_correction_"+observable ;
+  if( id_sector > 0 ) output_name += "_sector_"+std::to_string(id_sector) ;
+  TFile outputFile ((output_name+".root").c_str(),"RECREATE");
 
   if( !file_mcrecoacc ) { std::cout << "ERROR: the "<< file_name << "_truereco.root does not exist." <<std::endl; return ;}
   if( !file_mctrueacc ) { std::cout << "ERROR: the "<< file_name << "_true.root  does not exist." <<std::endl; return ;}
@@ -91,23 +95,23 @@ void compute_acceptance(std::string file_name, std::string observable, unsigned 
 
   TH1D * ratio = (TH1D*)hist_trueacc->Clone();
   ratio -> Divide(hist_recoacc);
+  ratio -> SetName("Acceptance");
   ratio -> GetXaxis()->SetTitle(observable.c_str());
   ratio -> GetYaxis()->SetTitle("Acceptance correction");
   ratio->Draw("hist err");
+  ratio->Write();
 
-  std::string output_name = file_name+"_acceptance_correction_"+observable ;
-  if( id_sector > 0 ) output_name += "_sector_"+std::to_string(id_sector) ;
-  c1->SaveAs((output_name+".root").c_str());
 }
 
 void compute_acceptance(){
 
   // EDIT :
-  std::string file_name = "e4nuanalysis_genie_GEM21_C12_2261MeV_1p0piwpi0_1M_Q4" ;
-  std::string observable = "proton_mom";
-  int nbins = 60 ;
+  std::string file_name = "e4nuanalysis_genie_GEM21_C12_2261MeV_1p0piwpi0_1M_Q4_wreso" ;
+  std::string observable = "proton_theta";
+  int nbins = 30 ;
   double min = 0;
-  double max = 2.4;
+  double max = 135;
 
-  compute_acceptance( file_name, observable, nbins, min, max ) ;
+  //compute_acceptance( file_name, observable, nbins, min, max ) ;
+  compute_acceptance( "e4nuanalysis_genie_GEM21_C12_4461MeV_1p0piwpi0_1M_Q4", observable, nbins, min, max ) ;
 }

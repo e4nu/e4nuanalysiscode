@@ -11,47 +11,15 @@ double conf::GetIntegratedCharge( const unsigned int tgt_pdg, const double EBeam
   double ic = 0 ;// mC
 
   if( tgt_pdg == kPdgHe4 ) { 
-    if( EBeam == 2.261 ) ic = 1.08 ;
-    else if ( EBeam == 4.461 ) ic = 0.87 ;
+    if( EBeam == 2.261 ) ic = 1.16584 ;
+    else if ( EBeam == 4.461 ) ic = 0.97884 ;
   } else if ( tgt_pdg == kPdgC12 ) { 
     if( EBeam == 1.161 ) ic = 0.079 ;
-    else if( EBeam == 2.261 ) ic = 1.79 ;
-    else if ( EBeam == 4.461 ) ic = 2.14 ;
+    else if( EBeam == 2.261 ) ic = 2.83649 ;
+    else if ( EBeam == 4.461 ) ic = 2.31146 ;
   } else if ( tgt_pdg == kPdgFe56 ) { 
-    if( EBeam == 2.261 ) ic = 0.22 ;
-    else if ( EBeam == 4.461 ) ic = 0.29 ;
-  } 
-  return ic ; 
-}
-
-double conf::GetIntegratedChargeNewFilterRuns( const unsigned int tgt_pdg, const double EBeam ){
-  double ic = 0 ;// mC
-  if ( tgt_pdg == kPdgC12 ) { 
-    if( EBeam == 1.161 ) ic = 0.070707652 ;
-  } 
-  return ic ; 
-}
-
-double conf::GetIntegratedChargeGoodRunListAllRuns( const unsigned int tgt_pdg, const double EBeam ){
-  double ic = 0 ;// mC
-  if ( tgt_pdg == kPdgC12 ) { 
-    if( EBeam == 1.161 ) ic = 0.18432 ;
-  } 
-  return ic ; 
-}
-
-double conf::GetIntegratedChargeGoodRunListLowRuns( const unsigned int tgt_pdg, const double EBeam ){
-  double ic = 0 ;// mC
-  if ( tgt_pdg == kPdgC12 ) { 
-    if( EBeam == 1.161 ) ic = 0.079 ;
-  } 
-  return ic ; 
-}
-
-double conf::GetIntegratedChargeGoodRunListHighRuns( const unsigned int tgt_pdg, const double EBeam ){
-  double ic = 0 ;// mC
-  if ( tgt_pdg == kPdgC12 ) { 
-    if( EBeam == 1.161 ) ic = 0.105 ;
+    if( EBeam == 2.261 ) ic = 0.217238 ;
+    else if ( EBeam == 4.461 ) ic = 0.308581 ;
   } 
   return ic ; 
 }

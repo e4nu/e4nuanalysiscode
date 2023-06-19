@@ -149,10 +149,10 @@ double Event::GetObservable( const std::string observable ) {
   if( observable == "ECal" ) {
     if ( event_wproton == false ) return 0 ; 
     return utils::GetECal( ef4mom.E(), GetFinalParticles4Mom(), target ) ; 
+  }else if( observable == "EQEL" ) {
+    return utils::GetQELRecoEnu( ef4mom, target ) ; 
   } else if ( observable == "RecoEnu" ) {
     return utils::GetRecoEnu( ef4mom, target ) ;
-  } else if ( observable == "QELRecoEnu" ) {
-    return utils::GetQELRecoEnu( ef4mom, target ) ;
   } else if ( observable == "EnergyTransfer" ) {
     return utils::GetEnergyTransfer( ef4mom, EBeam ) ; 
   } else if ( observable == "RecoQ2" ) {

@@ -14,7 +14,7 @@
 using namespace std; 
 using namespace e4nu;
 
-int main( void ) {
+int main( int argc, char* argv[] ) {
   std::cout << "E4Nu analysis ongoing..." << std::endl;
 
   // This object can be initialized with a configuration file which contains information on the event run, 
@@ -22,8 +22,11 @@ int main( void ) {
   char * env = std::getenv("E4NUANALYSIS") ; 
   std::string path( env ) ; 
   path += "/ConfFiles/" ;
+
+  std::string config_file = "example_configuration.txt" ;
+  if ( argv[1] ) config_file = argv[1] ;
   
-  E4NuAnalysis * analysis = new E4NuAnalysis((path+"example_configuration.txt").c_str()) ;
+  E4NuAnalysis * analysis = new E4NuAnalysis((path+config_file).c_str()) ;
   if( ! analysis ) return 0 ; 
 
   // Compute acceptance correction files

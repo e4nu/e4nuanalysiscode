@@ -41,7 +41,7 @@ unsigned int utils::GetSector( double phi ) {
   phi += 30 ; //Add 30 degree for plotting and photon phi cut
   if ( phi < 0 ) phi += 360 ; //Add 360 so that electron phi is between 0 and 360 degree
 
-  return (unsigned int) phi / 60 ; 
+  return (unsigned int) phi / 60. ; 
 }
 
 bool utils::IsValidSector( const double phi, const double EBeam, const bool use_all ) {

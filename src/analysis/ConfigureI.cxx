@@ -59,6 +59,13 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     if ( param[i] == "UseAllSectors" ) {
       if( value[i] == "true" ) kUseAllSectors = true ; 
       else kUseAllSectors = false ; 
+    } else if ( param[i] == "DisableSector" ) { 
+      std::istringstream iss(value[i]);
+      std::string token ; 
+      while (std::getline(iss, token, ',')) {
+        unsigned int sector = stoi(token);
+        kEnabledSectors[sector] = false ; 
+      }
     } else if ( param[i] == "ApplyFiducial" ){
       if( value[i] == "false" ) kApplyFiducial = false ; 
       else {
@@ -246,7 +253,13 @@ void ConfigureI::PrintConfiguration(void) const {
   std::cout << "*********************************************************************" << std::endl;
   std::cout << "*                         E4NU ANALYSIS CONF                       **" << std::endl;
   std::cout << "*********************************************************************" << std::endl;
-  std::cout << "UseAllSectors: " << kUseAllSectors << std::endl;
+  if( !UseAllSectors() ) std::cout << " UseAllSectors: " << UseAllSectors() << std::endl;
+  else { 
+    std::cout << "Enabled Sectors: " << std::endl;
+    for( unsigned int i = 0 ; i < kEnabledSectors.size() ; ++i ) { 
+      std::cout << "Sector " << i << " : " << kEnabledSectors[i] << std::endl; 
+    }
+  }
   std::cout << "ApplyOutMomCut: " <<kOutEMomCut << std::endl;
   if( kQ2Cut ) std::cout << "ApplyQ2Cut: "<<kQ2Cut<< std::endl;
   if( kWCut ) std::cout << "ApplyWCut: "<<kWCut<< std::endl;

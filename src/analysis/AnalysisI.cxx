@@ -53,7 +53,8 @@ bool AnalysisI::Analyse( Event & event ) {
 
   double e_phi = out_mom.Phi() ; 
   if( !IsData() ) e_phi += TMath::Pi() ;
-  if( !utils::IsValidSector( e_phi, EBeam, UseAllSectors() ) ) return false ;
+  if( !utils::IsValidSector( e_phi, EBeam, UseAllSectors() ) ) return false ; 
+  if( !utils::IsValidSector( e_phi, EnabledSectors() ) ) return false ; 
 
   if( ApplyOutElectronCut() ){
     if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) return false ; 

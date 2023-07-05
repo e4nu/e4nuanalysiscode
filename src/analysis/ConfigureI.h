@@ -53,6 +53,7 @@ namespace e4nu {
     // Get informtion about cuts:
     bool IsTrueSignal(void) const { return kTrueSignal ; }
     bool UseAllSectors(void) const { return kUseAllSectors ; } 
+    std::vector<bool> EnabledSectors(void) const { return kEnabledSectors ; } 
     bool ApplyFiducial(void) const { return kApplyFiducial ; }
     bool ApplyCorrWeights(void) const { return kApplyCorrWeights ; }
     bool ApplyAccWeights(void) const { return kApplyAccWeights ; }
@@ -76,6 +77,7 @@ namespace e4nu {
     void SetApplyAccWeights( const bool b ) { kApplyAccWeights = b ; }
     void SetApplyReso( const bool b ) { kApplyReso = b ; }
     void SetUseAllSectors( const bool b ) { kUseAllSectors = b ; }
+    void EnableAllSectors( const bool b ) { kEnabledSectors = { b, b, b, b, b, b } ; } 
     void SetSubtractBkg( const bool b ) { kSubtractBkg = b ; }
 
     // Get information about the background subtraction method
@@ -111,7 +113,8 @@ namespace e4nu {
     bool kIsCLAS12Analysis = false ; // Disabled for now
     bool kComputeTrueAccCorr = false ; // Bool used to compute acc correction files, True distribution
     bool kComputeTrueRecoAccCorr = false ; // Bool used to compute acc correction files, True Reconstructed distribution
-    bool kUseAllSectors = false ; // Are there any dead sectors? It removes sectors 2 and 4
+    bool kUseAllSectors = true ; // Are there any dead sectors? It removes sectors 2 and 4
+    std::vector<bool> kEnabledSectors = { true, true, true, true, true, true } ; // Enabled sector i {0-5}
     bool kApplyFiducial = true ; // Set to false to remove fiducial cuts
     bool kApplyAccWeights = true ; // Set to false to ignore acceptance weights 
     bool kApplyMottWeight = true ; // Apply mott xsec convertion
@@ -121,8 +124,8 @@ namespace e4nu {
     bool kApplyThetaSlice = false; // Use a theta slice
     bool kApplyGoodSectorPhiSlice = false ; 
     bool kApplyMomCut = true ; // Apply min momentum cuts on particles
-    bool kQ2Cut = true ; // Apply Q2 cut
-    bool kWCut = true ; // Apply W2 cut
+    bool kQ2Cut = false ; // Apply Q2 cut
+    bool kWCut = false ; // Apply W2 cut
     bool kOutEMomCut = true ; // Apply outgoing E cut
     bool kIsElectron = true ; // Is EM data  
     double koffset = 0 ;  // ofset for oscillation studies

@@ -1,0 +1,49 @@
+#Analysis Cuts
+DisableSector   2,4
+ApplyFiducial   true
+ApplyAccWeights true
+ApplyReso	true
+ApplyMomCut     true
+ApplyMottWeight true
+ApplyOutEMomCut	true
+ApplyQ2Cut	true
+ApplyWCut	true
+SubtractBkg     true
+
+ApplyPhiOpeningAngle	false
+UsePhiThetaBand		false
+ApplyThetaSlice		false
+ApplyGoodSectorPhiSlice	false
+offset			0
+
+#Run Configurables
+EBeam			1.161
+TargetPdg		1000060120
+NEvents			1000000
+FirstEvent		0
+
+#Topology definition
+IsData			false
+IsCLAS6Analysis		true
+Toplogy 		11:1,2212:1,-211:0,211:0,22:0
+MaxBackgroundMultiplicity 4
+NRotations 1000
+
+#Acceptance correction
+#The following parameters will modify the configuration 
+#TrueAccCorr: by using only true signal events, it provides with the analysed events after momentum cuts. All Sectors are used
+#trueRecoAccCorr: by using only true signal events, it provodes with analysed reconstructed events after momentum, fiducial, acceptance, smearing effects. Sectors 2 and 4 are not used.
+ComputeTrueAccCorr false
+ComputeTrueRecoAccCorr false
+
+#histogram definition
+RangeList 0:3,0:2,0:2,0:2,0:10,0:180,0:1,0:2
+ObservableList ECal,OutEMom,LeadingPMom,LeadingPiMMom,LeadingPiMTheta,HadSystemDeltaAlphaT,HadSystemDeltaPhiT,HadSystemDeltaPT
+NBinsList 60,60,60,60,60,60,60,60
+NormalizeHists false
+DebugBkg false
+
+#InputFile /w/hallb-scshelf2102/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_C12_1161_neutrino6_united4_radphot_test_100M.root
+InputFile  /pnfs/genie/persistent/users/jtenavid/EventGeneration/G18_10a_00_000/NoRad/e_on_1000060120_1161MeV_G18_10a_Q2_def.gst.root
+OutputFile /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/e4nuanalysis_1p0pianalysis_1GeV
+XSecFile   /pnfs/genie/persistent/users/jtenavid/EventGeneration/G18_10a_00_000/NoRad/G18_10a_nuclei_Q2_def_total_xsec.xml

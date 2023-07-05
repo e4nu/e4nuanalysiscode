@@ -301,7 +301,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   unsigned int ElectronSector = utils::GetSector( pfl_phi ) ; 
 
   double RecoQELEnu = utils::GetQELRecoEnu( out_mom, TargetPdg ) ; 
-  double RecoEnergyTransfer = utils::GetEnergyTransfer( out_mom, TargetPdg ) ; 
+  double RecoEnergyTransfer = utils::GetEnergyTransfer( out_mom, BeamE ) ; 
   double Recoq3 = utils::GetRecoq3( out_mom, BeamE ).Mag() ; 
   double RecoQ2 = utils::GetRecoQ2( out_mom, BeamE ) ; 
   double RecoXBJK = utils::GetRecoXBJK( out_mom, BeamE ) ; 

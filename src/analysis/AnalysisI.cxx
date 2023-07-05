@@ -51,8 +51,9 @@ bool AnalysisI::Analyse( Event & event ) {
 
   if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) return false ;
 
-  double e_phi = out_mom.Phi() ; 
-  if( !IsData() ) e_phi += TMath::Pi() ;
+  TVector3 out_emom = out_mom.Vect() ;
+  if( !IsData() ) out_emom.SetPhi(out_emom.Phi() + TMath::Pi() );
+  double e_phi = out_emom.Phi() ; 
   if( !utils::IsValidSector( e_phi, EBeam, UseAllSectors() ) ) return false ; 
   if( !utils::IsValidSector( e_phi, EnabledSectors() ) ) return false ; 
 

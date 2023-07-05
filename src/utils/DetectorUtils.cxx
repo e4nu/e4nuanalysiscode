@@ -58,7 +58,6 @@ bool utils::IsValidSector( const double phi, const double EBeam, const bool use_
 bool utils::IsValidSector( const double phi, const std::vector<bool> enabled_sectors ) {
   
   unsigned int sector = utils::GetSector( phi ) ; 
-  if ( sector > enabled_sectors.size() -1 ) return true ; 
   return enabled_sectors[sector] ; 
 
 }

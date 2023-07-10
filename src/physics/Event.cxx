@@ -174,14 +174,6 @@ double Event::GetObservable( const std::string observable ) {
     return p4mom.P() ; 
   } else if ( observable == "OutEMom" ) {
     return ef4mom.P() ; 
-  } else if ( observable == "OutEPhi" ) {
-    ef4mom = GetOutLepton4Mom() ;
-    //ef4mom.SetPhi( ef4mom.Phi() ) ; // TMath::Pi()
-    return ef4mom.Phi()* 180 / TMath::Pi();
-  } else if ( observable == "Sector" ) {
-    ef4mom = GetOutLepton4Mom() ;
-    //ef4mom.SetPhi( ef4mom.Phi()+TMath::Pi() ) ;
-    return utils::GetSector( ef4mom.Phi() ) ; 
   } else if ( observable == "Weight" ) { 
     return this->GetEventWeight() ;
   } else if ( observable == "LeadingPiPMom" ) {
@@ -192,10 +184,10 @@ double Event::GetObservable( const std::string observable ) {
     return pim4mom.P() ; 
   } else if ( observable == "LeadingPiPTheta" ) {
     if( !event_wpip ) return 0 ; 
-    return pip4mom.Theta() * 180 / TMath::Pi() ; 
+    return pip4mom.Theta() * TMath::RadToDeg() ; 
   } else if ( observable == "LeadingPiMTheta" ) {
     if( !event_wpim ) return 0 ; 
-    return pim4mom.Theta() * 180 / TMath::Pi() ; 
+    return pim4mom.Theta() * TMath::RadToDeg() ; 
   } else if ( observable == "HadSystemDeltaAlphaT" ) {
     return utils::DeltaAlphaT( ef4mom, GetFinalParticles4Mom() ) ;
   } else if ( observable == "HadSystemDeltaPhiT" ) {

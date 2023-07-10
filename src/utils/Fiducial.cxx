@@ -671,9 +671,9 @@ Bool_t Fiducial::EFiducialCut(double beam_en, TVector3 momentum) {
   if ( beam_en > 1. && beam_en < 2. && fTorusCurrent > 740 && fTorusCurrent < 1510) {
 
     Float_t mom = momentum.Mag();
-    Float_t phi = momentum.Phi() * 180. / TMath::Pi();
+    Float_t phi = momentum.Phi() * TMath::RadToDeg() ;
     if (phi < -30.) phi += 360.;
-    Float_t theta = momentum.Theta() * 180. / TMath::Pi();
+    Float_t theta = momentum.Theta() * TMath::RadToDeg() ;
     Int_t sector = (Int_t)((phi+30.)/60.);
     if(sector < 0) sector = 0;
     if(sector > 5) sector = 5; // to match array index
@@ -870,7 +870,7 @@ Bool_t Fiducial::EFiducialCut(double beam_en, TVector3 momentum) {
   // -------------------------------------------------------------------------------------------------
   // 2GeV fiducials
   if ( beam_en > 2. &&  beam_en < 3. && fTorusCurrent > 2240 && fTorusCurrent < 2260) {
-    Float_t phi = momentum.Phi() * 180. / TMath::Pi();
+    Float_t phi = momentum.Phi() * TMath::RadToDeg() ;
     if ( phi < -30. ) { phi += 360.; }
     Int_t sector = (Int_t)( (phi+30.) / 60.);
     if ( sector < 0 ) { sector = 0; }
@@ -1182,7 +1182,7 @@ Bool_t Fiducial::EFiducialCut(double beam_en, TVector3 momentum) {
 
 double Fiducial::GetPhi(TVector3 momentum) {
 
-  double phi = momentum.Phi() * 180. / TMath::Pi() + 30.;
+  double phi = momentum.Phi() * TMath::RadToDeg() + 30.;
   if (phi < 0) { phi += 360; }
   if (phi > 360) { phi -= 360; }
 
@@ -1194,7 +1194,7 @@ double Fiducial::GetPhi(TVector3 momentum) {
 
 double Fiducial::GetTheta(TVector3 momentum) {
 
-  double theta = momentum.Theta() * 180. / TMath::Pi();
+  double theta = momentum.Theta() * TMath::RadToDeg() ;
   if (theta < 0) { theta += 180; }
   if (theta > 180) { theta -= 180; }
 
@@ -2429,7 +2429,7 @@ Bool_t Fiducial::PFiducialCutExtra(double beam_en, TVector3 momentum) {
 
   bool status = true;
 
-  double theta = momentum.Theta() * 180. / TMath::Pi();
+  double theta = momentum.Theta() * TMath::RadToDeg() ;
 
   if (theta < conf::kMinThetaProton) { status = false; }
 
@@ -2443,7 +2443,7 @@ Bool_t Fiducial::PiplFiducialCutExtra(double beam_en, TVector3 momentum) {
 
   bool status = true;
 
-  double theta = momentum.Theta() * 180. / TMath::Pi();
+  double theta = momentum.Theta() * TMath::RadToDeg() ;
 
   if (theta < conf::kMinThetaPiPlus) { status = false; }
 
@@ -2457,7 +2457,7 @@ Bool_t Fiducial::Phot_fidExtra(TVector3 momentum) {
 
   bool status = true;
 
-  double theta = momentum.Theta() * 180. / TMath::Pi();
+  double theta = momentum.Theta() * TMath::RadToDeg() ;
 
   if (theta < conf::kMinThetaGamma) { status = false; }
 
@@ -2471,7 +2471,7 @@ Bool_t Fiducial::PimiFiducialCutExtra(double beam_en, TVector3 momentum) {
 
   bool status = true;
 
-  double theta = momentum.Theta() * 180. / TMath::Pi();
+  double theta = momentum.Theta() * TMath::RadToDeg() ;
   double mom = momentum.Mag();
   double theta_min = myPiMinusFit->Eval(mom);
 

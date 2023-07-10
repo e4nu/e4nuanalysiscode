@@ -89,14 +89,14 @@ double utils::DeltaAlphaT( const TVector3 p1 /*out electron*/, const TVector3 p2
   TVector3 P1T_dir = utils::GetPT(p1).Unit();
   TVector3 DeltaPT_dir = utils::DeltaPT(p1, p2).Unit();
 
-  return acos(-P1T_dir.Dot(DeltaPT_dir)) * 180. / TMath::Pi();
+  return acos(-P1T_dir.Dot(DeltaPT_dir)) * TMath::RadToDeg();
 }
 
 double utils::DeltaAlphaT( const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
   TVector3 P1T_dir = utils::GetPT(out_electron.Vect()).Unit();
   TVector3 DeltaPT_dir = utils::DeltaPT(out_electron, hadrons).Unit();
 
-  return acos(-P1T_dir.Dot(DeltaPT_dir)) * 180. / TMath::Pi();
+  return acos(-P1T_dir.Dot(DeltaPT_dir)) * TMath::RadToDeg();
 }
 
 TVector3 utils::DeltaPT( const TVector3 p1 , const TVector3 p2 ) {
@@ -122,7 +122,7 @@ TVector3 utils::DeltaPT( const TLorentzVector out_electron , const std::map<int,
 double utils::DeltaPhiT( const TVector3 p1 , const TVector3 p2 ) {
   TVector3 P1T_dir = utils::GetPT(p1).Unit();
   TVector3 P2T_dir = utils::GetPT(p2).Unit();
-  return acos(-P1T_dir.Dot(P2T_dir)) * 180. / TMath::Pi() ; 
+  return acos(-P1T_dir.Dot(P2T_dir)) * TMath::RadToDeg() ; 
 }
 
 double utils::DeltaPhiT( const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
@@ -134,7 +134,7 @@ double utils::DeltaPhiT( const TLorentzVector out_electron , const std::map<int,
     }
   }
   TVector3 P2T_dir = utils::GetPT(tot_hadron.Vect()).Unit();
-  return acos(-P1T_dir.Dot(P2T_dir)) * 180. / TMath::Pi() ; 
+  return acos(-P1T_dir.Dot(P2T_dir)) * TMath::RadToDeg() ; 
 }
 
 

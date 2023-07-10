@@ -51,14 +51,11 @@ bool AnalysisI::Analyse( Event & event ) {
 
   if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) return false ;
 
-  double phie = out_mom.Phi() ; 
-  //  if ( ! IsData() ) phie += TMath::Pi() ; 
-  //TVector3 out_emom = out_mom.Vect() ;
-  //  if( !IsData() ) out_emom.SetPhi(out_emom.Phi() + TMath::Pi() );
-  double e_phi = phie;//out_emom.Phi() ; 
+  // GENIE coordinate system flipped with respect to CLAS
+  if( !IsData() ) out_mom.SetPhi( out_mom.Phi() + TMath::Pi() );
 
-  if( !utils::IsValidSector( phie, EBeam, UseAllSectors() ) ) return false ; 
-  if( !utils::IsValidSector( phie, EnabledSectors() ) ) return false ; 
+  if( !utils::IsValidSector( out_mom.Phi(), EBeam, UseAllSectors() ) ) return false ; 
+  if( !utils::IsValidSector( out_mom.Phi(), EnabledSectors() ) ) return false ; 
 
   if( ApplyOutElectronCut() ){
     if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) return false ; 
@@ -70,15 +67,11 @@ bool AnalysisI::Analyse( Event & event ) {
   }
 
   if( ApplyPhiOpeningAngle() ) {
-    double phi = out_mom.Phi() ; 
-    //    if ( ! IsData() ) phi += TMath::Pi() ; 
-    if ( ! conf::ValidPhiOpeningAngle( phi ) ) return false ;  
+    if ( ! conf::ValidPhiOpeningAngle( out_mom.Phi() ) ) return false ;  
   }
 
   if( ApplyGoodSectorPhiSlice() ) {
-    double phi = out_mom.Phi() ; 
-    //if ( ! IsData() ) phi += TMath::Pi() ; 
-    if ( ! conf::GoodSectorPhiSlice( phi ) ) return false ; 
+    if ( ! conf::GoodSectorPhiSlice( out_mom.Phi() ) ) return false ; 
   }
 
   double reco_Q2 = utils::GetRecoQ2( out_mom, EBeam ) ; 
@@ -118,24 +111,6 @@ bool AnalysisI::Analyse( Event & event ) {
   }
   // Store analysis record after momentum cuts:
   event.StoreAnalysisRecord(kid_acuts);
-
-  // Step 5 : Remove true Bkg events if requested : 
-  if( IsTrueSignal() ) {
-    // Apply theta cut on hadrons:
-    if ( ! this->ApplyFiducialCut( event, false ) ) return false ; 
-    std::map<int,unsigned int> Topology = GetTopology();
-    std::map<int,std::vector<TLorentzVector>> hadrons = event.GetFinalParticles4Mom() ;
-    for( auto it = Topology.begin(); it!=Topology.end();++it){
-      if( it->first == conf::kPdgElectron ) continue ; 
-      if( hadrons[it->first].size() != it->second ) return false ; 
-    }
-  }
-
-  // Step 4: Apply fiducials
-  // The detector has gaps where the particles cannot be detected
-  // We need to account for these with fiducial cuts
-  // It also takes into account angle cuts for particles
-  if ( ! this->ApplyFiducialCut( event, ApplyFiducial() ) ) return false ; 
 
   return true ; 
 }
@@ -185,40 +160,6 @@ void AnalysisI::CookEvent( Event & event ) {
   event.SetFinalParticlesKinematics( cooked_part_map ) ;
   event.SetFinalParticlesUnCorrKinematics( cooked_part_map ) ;
   return ; 
-}
-
-
-bool AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) { 
-  // First, we apply it to the electron
-  // Apply fiducial cut to electron
-  Fiducial * fiducial = GetFiducialCut() ; 
-  if( ! fiducial || IsData() ) return true ; 
-
-  TLorentzVector out_mom = event.GetOutLepton4Mom() ;
-  if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect(), IsData(), apply_fiducial ) ) return false ; 
-  
-  // Apply Fiducial cut for hadrons and photons
-  std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
-  std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event.GetFinalParticlesUnCorr4Mom() ;
-  std::map<int,std::vector<TLorentzVector>> contained_part_map, contained_part_map_uncorr ; 
-  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
-    std::vector<TLorentzVector> visible_part ; 
-    std::vector<TLorentzVector> visible_part_uncorr ; 
-    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
-      if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), part_map[it->first][i].Vect(), IsData(), apply_fiducial ) ) continue ; 
-      visible_part.push_back( part_map[it->first][i] ) ; 
-      visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
-    }
-    if( visible_part.size() == 0 ) continue ; 
-    contained_part_map[it->first] = visible_part ; 
-    contained_part_map_uncorr[it->first] = visible_part_uncorr ; 
-  }
-  
-  // Store changes in event after fiducial cut
-  event.SetFinalParticlesKinematics( contained_part_map ) ; 
-  event.SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ; 
-  
-  return true ; 
 }
 
 void AnalysisI::PlotBkgInformation( Event event ) {

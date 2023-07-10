@@ -11,7 +11,7 @@ To configure the software:
 1. Setup the environmental variables according to the farm you're in. For the FNAL gpvm, `source e4nu_gpvm_env.sh;`. For the ifarm, `source e4nu_ifarm_env.sh;`.
 2. Compile the code "make" from the E4NUANALYSIS directory: `cd $E4NUANALYSIS; make;`
 4. If a previous installation exists, `cd $E4NUANALYSIS; make clean ; make;`
-3. Run the main application, `./e4nuanalysis`
+3. Run the main application, `./e4nuanalysis`. You can pass a different configuration file by passing the name to `./e4nuanalysis my_config.txt`. The configuration file must live in ConfigFiles.
 
 After each run, you will get a new root file containing information from the valid analysed events. The information stored in this file, as well as it's name, can be configured from a configuration file (see Configuration guide Wiki).
 

@@ -14,16 +14,18 @@
 using namespace std; 
 using namespace e4nu;
 
-int main( void ) {
+int main( int argc, char* argv[] ) {
   std::cout << "E4Nu analysis ongoing..." << std::endl;
 
   // This object can be initialized with a configuration file which contains information on the event run, 
   // cuts and analysis requirements, and output file location
   char * env = std::getenv("E4NUANALYSIS") ; 
   std::string path( env ) ; 
-  path += "/ConfFiles/" ;
+  path += "/" ;
+  std::string config_file = "ConfFiles/example_configuration.txt" ;
+  if ( argv[1] ) config_file = argv[1] ;
   
-  E4NuAnalysis * analysis = new E4NuAnalysis((path+"example_configuration.txt").c_str()) ;
+  E4NuAnalysis * analysis = new E4NuAnalysis((path+config_file).c_str()) ;
   if( ! analysis ) return 0 ; 
 
   // Compute acceptance correction files
@@ -51,6 +53,7 @@ int main( void ) {
     analysis -> SetApplyAccWeights( false ) ;
     analysis -> SetApplyReso( false ) ;
     analysis -> SetUseAllSectors( true ) ;
+    analysis -> EnableAllSectors( true ) ;
     std::string OutputFile_true = analysis->GetOutputFile() + "_true" ;
     analysis -> SetOutputFile( OutputFile_true ) ;
     std::cout << " Computing true analysis distributions for acceptance correction..."<<std::endl;
@@ -59,7 +62,6 @@ int main( void ) {
     analysis -> SetApplyFiducial( true ) ; 
     analysis -> SetApplyAccWeights( true ) ; 
     analysis -> SetApplyReso( true ) ; 
-    analysis -> SetUseAllSectors( false ) ; 
     analysis -> SetSubtractBkg( false ) ; 
     std::string OutputFile_reco = analysis->GetOutputFile() + "_truereco" ;
     analysis -> SetOutputFile( OutputFile_reco ) ; 

@@ -81,6 +81,27 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
   // This takes into account the efficiency detection of each particle in theta and phi
   this->ApplyAcceptanceCorrection( *event ) ; 
 
+  // Step 5 : Remove true Bkg events if requested : 
+  if( IsTrueSignal() ) {
+    // Apply theta cut on hadrons:
+    if ( ! this->ApplyFiducialCut( *event, false ) ) { delete event; return nullptr ; }
+    std::map<int,unsigned int> Topology = GetTopology();
+    std::map<int,std::vector<TLorentzVector>> hadrons = event->GetFinalParticles4Mom() ;
+    for( auto it = Topology.begin(); it!=Topology.end();++it){
+      if( it->first == conf::kPdgElectron ) continue ; 
+      if( hadrons[it->first].size() != it->second ) { delete event; return nullptr ; }
+    }
+  }
+
+  // Step 6: Apply fiducials
+  // The detector has gaps where the particles cannot be detected
+  // We need to account for these with fiducial cuts
+  // It also takes into account angle cuts for particles
+  if ( ! this->ApplyFiducialCut( *event, ApplyFiducial() ) ) {
+    delete event; 
+    return nullptr ; 
+  }
+
   // Store analysis record after fiducial cut and acceptance correction (2):
   event->StoreAnalysisRecord(kid_fid);
 
@@ -131,6 +152,39 @@ void MCCLAS6AnalysisI::SmearParticles( Event & event ) {
   event.SetFinalParticlesKinematics( part_map ) ; 
   
 } 
+
+bool MCCLAS6AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) { 
+  // First, we apply it to the electron
+  // Apply fiducial cut to electron
+  Fiducial * fiducial = GetFiducialCut() ; 
+  if( ! fiducial || IsData() ) return true ; 
+
+  TLorentzVector out_mom = event.GetOutLepton4Mom() ;
+  if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect(), IsData(), apply_fiducial ) ) return false ; 
+  
+  // Apply Fiducial cut for hadrons and photons
+  std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event.GetFinalParticlesUnCorr4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> contained_part_map, contained_part_map_uncorr ; 
+  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
+    std::vector<TLorentzVector> visible_part ; 
+    std::vector<TLorentzVector> visible_part_uncorr ; 
+    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
+      if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), part_map[it->first][i].Vect(), IsData(), apply_fiducial ) ) continue ; 
+      visible_part.push_back( part_map[it->first][i] ) ; 
+      visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
+    }
+    if( visible_part.size() == 0 ) continue ; 
+    contained_part_map[it->first] = visible_part ; 
+    contained_part_map_uncorr[it->first] = visible_part_uncorr ; 
+  }
+  
+  // Store changes in event after fiducial cut
+  event.SetFinalParticlesKinematics( contained_part_map ) ; 
+  event.SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ; 
+  
+  return true ; 
+}
 
 unsigned int MCCLAS6AnalysisI::GetNEvents( void ) const {
   return (unsigned int) fData ->GetNEvents() ; 
@@ -296,12 +350,13 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double pflx = out_mom.Px();
   double pfly = out_mom.Py();
   double pflz = out_mom.Pz();
-  double pfl_theta = out_mom.Theta();
-  double pfl_phi = out_mom.Phi() + TMath::Pi();
-  unsigned int ElectronSector = utils::GetSector( pfl_phi ) ; 
+  double pfl_theta = out_mom.Theta() * TMath::RadToDeg() ; 
+  out_mom.SetPhi( out_mom.Phi() + TMath::Pi() ) ; 
+  unsigned int ElectronSector = utils::GetSector( out_mom.Phi() ) ; 
+  double pfl_phi = out_mom.Phi() * TMath::RadToDeg() ;
 
   double RecoQELEnu = utils::GetQELRecoEnu( out_mom, TargetPdg ) ; 
-  double RecoEnergyTransfer = utils::GetEnergyTransfer( out_mom, TargetPdg ) ; 
+  double RecoEnergyTransfer = utils::GetEnergyTransfer( out_mom, BeamE ) ; 
   double Recoq3 = utils::GetRecoq3( out_mom, BeamE ).Mag() ; 
   double RecoQ2 = utils::GetRecoQ2( out_mom, BeamE ) ; 
   double RecoXBJK = utils::GetRecoXBJK( out_mom, BeamE ) ; 
@@ -335,12 +390,14 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
       }
     }
   }
+
+  p_max.SetPhi( p_max.Phi() + TMath::Pi() ) ;
   double proton_mom = p_max.P() ; 
   double proton_momx = p_max.Px() ; 
   double proton_momy = p_max.Py() ; 
   double proton_momz = p_max.Pz() ; 
-  double proton_theta = p_max.Theta() ; 
-  double proton_phi = p_max.Phi() + TMath::Pi() ; 
+  double proton_theta = p_max.Theta() * TMath::RadToDeg() ;
+  double proton_phi = p_max.Phi() * TMath::RadToDeg() ;
   double ECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg ) ; 
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
@@ -360,12 +417,14 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
       }
     }
   }
+  
+  pip_max.SetPhi( pip_max.Phi() + TMath::Pi() ) ; 
   double pip_mom = pip_max.P() ;
   double pip_momx = pip_max.Px() ;
   double pip_momy = pip_max.Py() ;
   double pip_momz = pip_max.Pz() ;
-  double pip_theta = pip_max.Theta() ;
-  double pip_phi = pip_max.Phi() + TMath::Pi();
+  double pip_theta = pip_max.Theta() * TMath::RadToDeg(); 
+  double pip_phi = pip_max.Phi() * TMath::RadToDeg() ;
 
   TLorentzVector pim_max(0,0,0,0) ;
   if( topology_has_pim ) {
@@ -378,12 +437,13 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     }
   }
 
+  pip_max.SetPhi( pim_max.Phi() + TMath::Pi() ) ; 
   double pim_mom = pim_max.P() ;
   double pim_momx = pim_max.Px() ;
   double pim_momy = pim_max.Py() ;
   double pim_momz = pim_max.Pz() ;
-  double pim_theta = pim_max.Theta() ;
-  double pim_phi = pim_max.Phi() + TMath::Pi() ;
+  double pim_theta = pim_max.Theta() * TMath::RadToDeg(); 
+  double pim_phi = pim_max.Phi() * TMath::RadToDeg(); 
 
   bool IsBkg = event.IsBkg() ; 
 

@@ -51,11 +51,14 @@ bool AnalysisI::Analyse( Event & event ) {
 
   if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) return false ;
 
-  TVector3 out_emom = out_mom.Vect() ;
-  if( !IsData() ) out_emom.SetPhi(out_emom.Phi() + TMath::Pi() );
-  double e_phi = out_emom.Phi() ; 
-  if( !utils::IsValidSector( e_phi, EBeam, UseAllSectors() ) ) return false ; 
-  if( !utils::IsValidSector( e_phi, EnabledSectors() ) ) return false ; 
+  double phie = out_mom.Phi() ; 
+  //  if ( ! IsData() ) phie += TMath::Pi() ; 
+  //TVector3 out_emom = out_mom.Vect() ;
+  //  if( !IsData() ) out_emom.SetPhi(out_emom.Phi() + TMath::Pi() );
+  double e_phi = phie;//out_emom.Phi() ; 
+
+  if( !utils::IsValidSector( phie, EBeam, UseAllSectors() ) ) return false ; 
+  if( !utils::IsValidSector( phie, EnabledSectors() ) ) return false ; 
 
   if( ApplyOutElectronCut() ){
     if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) return false ; 
@@ -68,13 +71,13 @@ bool AnalysisI::Analyse( Event & event ) {
 
   if( ApplyPhiOpeningAngle() ) {
     double phi = out_mom.Phi() ; 
-    if ( ! IsData() ) phi += TMath::Pi() ; 
+    //    if ( ! IsData() ) phi += TMath::Pi() ; 
     if ( ! conf::ValidPhiOpeningAngle( phi ) ) return false ;  
   }
 
   if( ApplyGoodSectorPhiSlice() ) {
     double phi = out_mom.Phi() ; 
-    if ( ! IsData() ) phi += TMath::Pi() ; 
+    //if ( ! IsData() ) phi += TMath::Pi() ; 
     if ( ! conf::GoodSectorPhiSlice( phi ) ) return false ; 
   }
 

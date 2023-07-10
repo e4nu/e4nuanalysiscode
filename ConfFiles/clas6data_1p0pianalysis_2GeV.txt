@@ -33,7 +33,7 @@ NRotations 1000
 #The following parameters will modify the configuration 
 #TrueAccCorr: by using only true signal events, it provides with the analysed events after momentum cuts. All Sectors are used
 #trueRecoAccCorr: by using only true signal events, it provodes with analysed reconstructed events after momentum, fiducial, acceptance, smearing effects. Sectors 2 and 4 are not used.
-ComputeTrueAccCorr false
+ComputeTrueAccCorr true
 ComputeTrueRecoAccCorr false
 
 #histogram definition
@@ -44,6 +44,6 @@ NormalizeHists false
 DebugBkg false
 
 #InputFile /w/hallb-scshelf2102/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_C12_2261_neutrino6_united4_radphot_test_100M.root
-InputFile  /pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_2261GeV/apapadop_SuSav2_C12_2261GeV_master.root
-OutputFile /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/e4nuanalysis_1p0pianalysis_2GeV
-XSecFile   /pnfs/genie/persistent/users/jtenavid/EventGeneration/G18_10a_00_000/NoRad/G18_10a_nuclei_Q2_04_total_xsec.xml
+InputFile  /pnfs/genie/persistent/users/jtenavid/EventGeneration/G18_10a_00_000/NoRad/e_on_1000060120_2261MeV_G18_10a_Q2_04.gst.root
+OutputFile /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/e4nuanalysis_1p0pianalysis_test
+XSecFile   /pnfs/genie/persistent/users/jtenavid/EventGeneration/G18_10a_00_000/NoRad/G18_10a_nuclei_Q2_04_total_xsec.root

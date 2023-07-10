@@ -53,7 +53,7 @@ int main( int argc, char* argv[] ) {
     analysis -> SetApplyAccWeights( false ) ;
     analysis -> SetApplyReso( false ) ;
     analysis -> SetUseAllSectors( true ) ;
-    //    analysis -> EnableAllSectors( true ) ;
+    analysis -> EnableAllSectors( true ) ;
     std::string OutputFile_true = analysis->GetOutputFile() + "_true" ;
     analysis -> SetOutputFile( OutputFile_true ) ;
     std::cout << " Computing true analysis distributions for acceptance correction..."<<std::endl;

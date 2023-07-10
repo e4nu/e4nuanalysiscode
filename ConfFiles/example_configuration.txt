@@ -34,7 +34,7 @@ NRotations 1000
 #The following parameters will modify the configuration 
 #TrueAccCorr: by using only true signal events, it provides with the analysed events after momentum cuts. All Sectors are used
 #trueRecoAccCorr: by using only true signal events, it provodes with analysed reconstructed events after momentum, fiducial, acceptance, smearing effects. Sectors 2 and 4 are not used.
-ComputeTrueAccCorr false
+ComputeTrueAccCorr true
 ComputeTrueRecoAccCorr false
 
 #histogram definition

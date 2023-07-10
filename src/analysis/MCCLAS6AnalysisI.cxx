@@ -296,9 +296,10 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double pflx = out_mom.Px();
   double pfly = out_mom.Py();
   double pflz = out_mom.Pz();
-  double pfl_theta = out_mom.Theta();
-  double pfl_phi = out_mom.Phi() + TMath::Pi();
-  unsigned int ElectronSector = utils::GetSector( pfl_phi ) ; 
+  double pfl_theta = out_mom.Theta() * TMath::RadToDeg() ; 
+  out_mom.SetPhi( out_mom.Phi() + TMath::Pi() ) ; 
+  unsigned int ElectronSector = utils::GetSector( out_mom.Phi() ) ; 
+  double pfl_phi = out_mom.Phi() * TMath::RadToDeg() ;
 
   double RecoQELEnu = utils::GetQELRecoEnu( out_mom, TargetPdg ) ; 
   double RecoEnergyTransfer = utils::GetEnergyTransfer( out_mom, BeamE ) ; 
@@ -335,12 +336,14 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
       }
     }
   }
+
+  p_max.SetPhi( p_max.Phi() + TMath::Pi() ) ;
   double proton_mom = p_max.P() ; 
   double proton_momx = p_max.Px() ; 
   double proton_momy = p_max.Py() ; 
   double proton_momz = p_max.Pz() ; 
-  double proton_theta = p_max.Theta() ; 
-  double proton_phi = p_max.Phi() + TMath::Pi() ; 
+  double proton_theta = p_max.Theta() * TMath::RadToDeg() ;
+  double proton_phi = p_max.Phi() * TMath::RadToDeg() ;
   double ECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg ) ; 
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
@@ -360,12 +363,14 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
       }
     }
   }
+  
+  pip_max.SetPhi( pip_max.Phi() + TMath::Pi() ) ; 
   double pip_mom = pip_max.P() ;
   double pip_momx = pip_max.Px() ;
   double pip_momy = pip_max.Py() ;
   double pip_momz = pip_max.Pz() ;
-  double pip_theta = pip_max.Theta() ;
-  double pip_phi = pip_max.Phi() + TMath::Pi();
+  double pip_theta = pip_max.Theta() * TMath::RadToDeg(); 
+  double pip_phi = pip_max.Phi() * TMath::RadToDeg() ;
 
   TLorentzVector pim_max(0,0,0,0) ;
   if( topology_has_pim ) {
@@ -378,12 +383,13 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     }
   }
 
+  pip_max.SetPhi( pim_max.Phi() + TMath::Pi() ) ; 
   double pim_mom = pim_max.P() ;
   double pim_momx = pim_max.Px() ;
   double pim_momy = pim_max.Py() ;
   double pim_momz = pim_max.Pz() ;
-  double pim_theta = pim_max.Theta() ;
-  double pim_phi = pim_max.Phi() + TMath::Pi() ;
+  double pim_theta = pim_max.Theta() * TMath::RadToDeg(); 
+  double pim_phi = pim_max.Phi() * TMath::RadToDeg(); 
 
   bool IsBkg = event.IsBkg() ; 
 

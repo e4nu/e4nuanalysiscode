@@ -176,11 +176,11 @@ double Event::GetObservable( const std::string observable ) {
     return ef4mom.P() ; 
   } else if ( observable == "OutEPhi" ) {
     ef4mom = GetOutLepton4Mom() ;
-    ef4mom.SetPhi( ef4mom.Phi()+TMath::Pi() ) ;
+    //ef4mom.SetPhi( ef4mom.Phi() ) ; // TMath::Pi()
     return ef4mom.Phi()* 180 / TMath::Pi();
   } else if ( observable == "Sector" ) {
     ef4mom = GetOutLepton4Mom() ;
-    ef4mom.SetPhi( ef4mom.Phi()+TMath::Pi() ) ;
+    //ef4mom.SetPhi( ef4mom.Phi()+TMath::Pi() ) ;
     return utils::GetSector( ef4mom.Phi() ) ; 
   } else if ( observable == "Weight" ) { 
     return this->GetEventWeight() ;

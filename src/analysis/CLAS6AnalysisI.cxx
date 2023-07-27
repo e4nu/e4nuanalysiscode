@@ -305,6 +305,23 @@ bool CLAS6AnalysisI::StoreTree(Event event){
       kAnalysisTree -> Branch( "pim_phi", &pim_phi, "pim_phi/D");
     }
 
+    // Adding Normalization information
+    unsigned int MassNumber = utils::GetMassNumber( TargetPdg ) ;
+    double IntegratedCharge = conf::GetIntegratedCharge( TargetPdg, BeamE ); 
+    double TargetLength = conf::GetTargetLength( TargetPdg ) ;
+    double TargetDensity = conf::GetTargetDensity( TargetPdg ) ;
+    unsigned int InitialNEvents = kNEvents ;
+    double ConversionFactor = kConversionFactorCm2ToMicroBarn / kOverallUnitConversionFactor ;
+    double DataNormalization = kConversionFactorCm2ToMicroBarn * MassNumber / ( IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor );
+
+    kAnalysisTree -> Branch( "MassNumber", &MassNumber, "MassNumber/I");
+    kAnalysisTree -> Branch( "IntegratedCharge", &IntegratedCharge, "IntegratedCharge/D" );
+    kAnalysisTree -> Branch( "TargetLength", &TargetLength, "TargetLength/D" );
+    kAnalysisTree -> Branch( "TargetDensity", &TargetDensity, "TargetDensity/D" );
+    kAnalysisTree -> Branch( "InitialNEvents", &InitialNEvents, "InitialNEvents/I" );
+    kAnalysisTree -> Branch( "ConversionFactor", &ConversionFactor, "ConversionFactor/D");
+    kAnalysisTree -> Branch( "DataNormalization", &DataNormalization, "DataNormalization/D");
+ 
     n = false ; 
   }
   

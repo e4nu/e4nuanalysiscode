@@ -541,6 +541,17 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "HadAlphaT", &HadAlphaT, "HadAlphaT/D");
     kAnalysisTree -> Branch( "HadDeltaPT", &HadDeltaPT, "HadDeltaPT/D");
     kAnalysisTree -> Branch( "HadDeltaPhiT", &HadDeltaPhiT, "HadDeltaPhiT/D");
+
+    // Add normaization information 
+    unsigned int InitialNEvents = GetNEventsToRun() ;
+    double ConversionFactor = kConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) ;
+    double TotalXSec = kXSec ; 
+    double MCNormalization = TotalXSec * ConversionFactor / InitialNEvents ; 
+    kAnalysisTree -> Branch( "InitialNEvents", &InitialNEvents, "InitialNEvents/I" );
+    kAnalysisTree -> Branch( "ConversionFactor", &ConversionFactor, "ConversionFactor/D" );
+    kAnalysisTree -> Branch( "TotalXSec", &TotalXSec, "TotalXSec/D" );
+    kAnalysisTree -> Branch( "MCNormalization", &MCNormalization, "MCNormalization/D" );
+    
     n = false ; 
   }
   

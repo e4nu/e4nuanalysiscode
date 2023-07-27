@@ -24,6 +24,12 @@ void ReweightPlots(TH1D* h) {
 	}
 }
 
+void NormalizeHist( TH1D * h, double normalization_factor ){
+    // Data normalization
+    h -> Scale( normalization_factor );
+    ReweightPlots(h);
+}
+
 void CorrectData(TH1D* h, TH1D* acc) {
 
   double NBins = h->GetNbinsX();
@@ -70,7 +76,6 @@ void NormalizeMC( TH1D * h, unsigned int target_pdg = 1000060120, unsigned int b
     h -> Scale( mc_scaling );
     ReweightPlots(h);
 }
-
 // Input paramters:
 // MC_file_name : true MC file, without detector effects, after e4nu analysis
 // data_file_name: data file, after e4nu Analysis
@@ -82,7 +87,6 @@ void NormalizeMC( TH1D * h, unsigned int target_pdg = 1000060120, unsigned int b
 
 void Plot1DXSec(std::string MC_file_name, std::string data_file_name,
                 std::string acceptance_file_name, std::string observable,
-                unsigned int target_pdg, unsigned int E_beam, long N_events,
                 int id_sector = -1 /*all*/ ) {
 
   TCanvas * c1 = new TCanvas("c1","c1",800,600);
@@ -138,6 +142,7 @@ void Plot1DXSec(std::string MC_file_name, std::string data_file_name,
   bool IsBkg ;
   int ElectronSector ;
   bool QEL, RES, DIS, MEC;
+  double MCNormalization, DataNormalization ; 
   for ( unsigned int i = 0 ; i < trees.size() ; ++i ){
 
     NEntries = trees[i] -> GetEntries() ;
@@ -165,7 +170,8 @@ void Plot1DXSec(std::string MC_file_name, std::string data_file_name,
     trees[i] -> SetBranchAddress("DIS",&DIS);
 
     trees[i] -> SetBranchAddress("ElectronSector",&ElectronSector);
-
+    if( i == 0 ) trees[i] -> SetBranchAddress("MCNormalization", &MCNormalization ); 
+    else if ( i == 1 ) trees[i] -> SetBranchAddress("DataNormalization",&DataNormalization ); 
 
     for( int j = 0 ; j < NEntries ; ++j ) {
       trees[i]->GetEntry(j) ;
@@ -204,13 +210,13 @@ void Plot1DXSec(std::string MC_file_name, std::string data_file_name,
   }
 
   CorrectData(hist_data, h_acceptance);
-  NormalizeData(hist_data, target_pdg, E_beam );
-  NormalizeMC(hist_true, target_pdg, E_beam, N_events );
-  NormalizeMC(hist_true_QEL, target_pdg, E_beam, N_events );
-  NormalizeMC(hist_true_RES, target_pdg, E_beam, N_events );
-  NormalizeMC(hist_true_SIS, target_pdg, E_beam, N_events );
-  NormalizeMC(hist_true_MEC, target_pdg, E_beam, N_events );
-  NormalizeMC(hist_true_DIS, target_pdg, E_beam, N_events );
+  NormalizeHist(hist_data, DataNormalization );
+  NormalizeHist(hist_true, MCNormalization);
+  NormalizeHist(hist_true_QEL, MCNormalization);
+  NormalizeHist(hist_true_RES, MCNormalization);
+  NormalizeHist(hist_true_SIS, MCNormalization);
+  NormalizeHist(hist_true_MEC, MCNormalization);
+  NormalizeHist(hist_true_DIS, MCNormalization);
 
   hist_data->SetLineColor(kBlack);
   hist_true->SetLineColor(kBlack);
@@ -241,5 +247,5 @@ void Plot1DXSec(){
   std::string acceptance_file = "e4nuanalysis_genie_GEM21_C12_2261MeV_1p0piwpi0_1M_Q4_wreso_acceptance_correction_ECal.root";
   std::string observable = "ECal";
 
-  Plot1DXSec( file_mc, file_data, acceptance_file, "ECal", 1000060120, 1.161, 19800000, -1 ) ;
+  Plot1DXSec( file_mc, file_data, acceptance_file, "ECal", -1 ) ;
 }

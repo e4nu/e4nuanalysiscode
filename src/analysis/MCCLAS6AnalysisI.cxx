@@ -231,7 +231,7 @@ void MCCLAS6AnalysisI::Initialize() {
     std::cout << " ERROR: Xsec file does not exist: " << GetXSecFile() << std::endl;
     kIsConfigured = false ; 
     return ; 
-  }
+   }
   
   TDirectoryFile * xsec_dir = (TDirectoryFile *) xsec_file -> Get(target_tag.c_str());
   if( !xsec_dir ) {
@@ -248,7 +248,7 @@ void MCCLAS6AnalysisI::Initialize() {
   }
 
   kXSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
-
+  std::cout << " Total XSec ("<< GetConfiguredEBeam()<<") = " << kXSec<< std::endl;
   xsec_file->Close();
 
 }

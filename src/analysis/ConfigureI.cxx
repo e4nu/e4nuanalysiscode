@@ -214,7 +214,8 @@ ConfigureI::ConfigureI( const std::string input_file ) {
   if( kInputFile == "" ) {
     std::cout << " ERROR : Input file not specified " << std::endl;
     kIsConfigured = false ; 
-  }
+  } else { std::cout << " Input file: " << kInputFile << std::endl;}
+
   if( kOutputFile == "" ) {
     std::cout << " ERROR : Output file not specified " << std::endl;
     kIsConfigured = false ; 

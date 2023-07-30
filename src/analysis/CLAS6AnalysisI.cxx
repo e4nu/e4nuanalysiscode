@@ -240,6 +240,15 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double pim_theta = pim_max.Theta() * TMath::RadToDeg() ;
   double pim_phi = pim_max.Phi() * TMath::RadToDeg() ;
 
+  unsigned int MassNumber = utils::GetMassNumber( TargetPdg ) ;
+  double IntegratedCharge = conf::GetIntegratedCharge( TargetPdg, BeamE ); 
+  double TargetLength = conf::GetTargetLength( TargetPdg ) ;
+  double TargetDensity = conf::GetTargetDensity( TargetPdg ) ;
+  unsigned int InitialNEvents = kNEvents ;
+  double ConversionFactor = kConversionFactorCm2ToMicroBarn / kOverallUnitConversionFactor ;
+  double DataNormalization = kConversionFactorCm2ToMicroBarn * MassNumber / ( IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor );
+
+
   bool IsBkg = event.IsBkg() ; 
   if( n == true ) {
     kAnalysisTree -> Branch( "ID", &ID, "ID/I"); 
@@ -306,14 +315,6 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     }
 
     // Adding Normalization information
-    unsigned int MassNumber = utils::GetMassNumber( TargetPdg ) ;
-    double IntegratedCharge = conf::GetIntegratedCharge( TargetPdg, BeamE ); 
-    double TargetLength = conf::GetTargetLength( TargetPdg ) ;
-    double TargetDensity = conf::GetTargetDensity( TargetPdg ) ;
-    unsigned int InitialNEvents = kNEvents ;
-    double ConversionFactor = kConversionFactorCm2ToMicroBarn / kOverallUnitConversionFactor ;
-    double DataNormalization = kConversionFactorCm2ToMicroBarn * MassNumber / ( IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor );
-
     kAnalysisTree -> Branch( "MassNumber", &MassNumber, "MassNumber/I");
     kAnalysisTree -> Branch( "IntegratedCharge", &IntegratedCharge, "IntegratedCharge/D" );
     kAnalysisTree -> Branch( "TargetLength", &TargetLength, "TargetLength/D" );

@@ -447,6 +447,12 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
 
   bool IsBkg = event.IsBkg() ; 
 
+  unsigned int InitialNEvents = GetNEventsToRun() ;
+  double ConversionFactor = kConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) ;
+  double TotalXSec = kXSec ; 
+  double MCNormalization = TotalXSec * ConversionFactor / InitialNEvents ; 
+
+
   if( n == true ) {
     kAnalysisTree -> Branch( "ID", &ID, "ID/I"); 
     kAnalysisTree -> Branch( "TargetPdg", &TargetPdg, "TargetPdg/I");
@@ -543,10 +549,6 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "HadDeltaPhiT", &HadDeltaPhiT, "HadDeltaPhiT/D");
 
     // Add normaization information 
-    unsigned int InitialNEvents = GetNEventsToRun() ;
-    double ConversionFactor = kConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) ;
-    double TotalXSec = kXSec ; 
-    double MCNormalization = TotalXSec * ConversionFactor / InitialNEvents ; 
     kAnalysisTree -> Branch( "InitialNEvents", &InitialNEvents, "InitialNEvents/I" );
     kAnalysisTree -> Branch( "ConversionFactor", &ConversionFactor, "ConversionFactor/D" );
     kAnalysisTree -> Branch( "TotalXSec", &TotalXSec, "TotalXSec/D" );

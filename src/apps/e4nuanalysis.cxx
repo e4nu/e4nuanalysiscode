@@ -71,9 +71,7 @@ int main( int argc, char* argv[] ) {
   analysis -> PrintConfiguration() ;
   analysis -> Initialize() ;
 
-
   if( ! analysis -> LoadData() ) return 0 ;  
-
   // This first steps deals with smearing effects, acceptance weights, fiducial cuts, etc. 
   // It also classifies events as signal or background
   analysis -> Analyse() ; 

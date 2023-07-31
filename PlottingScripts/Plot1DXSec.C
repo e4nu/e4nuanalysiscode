@@ -9,25 +9,215 @@
 #include "TTree.h"
 
 
-void ReweightPlots(TH1D* h) {
+void UseE4nuStyle() {
+  // use plain black on white colors
+  gStyle->SetFrameBorderMode(0);
+  gStyle->SetCanvasBorderMode(0);
+  gStyle->SetPadBorderMode(0);
+  gStyle->SetPadColor(0);
+  gStyle->SetCanvasColor(0);
+  gStyle->SetStatColor(0);
+  gStyle->SetFillColor(0);
+  gStyle->SetLegendBorderSize(1);
 
-	double NBins = h->GetNbinsX();
+  //
+  // set the paper & margin sizes
+  gStyle->SetPaperSize(20,26);
+  /*gStyle->SetPadTopMargin(0.05);
+  gStyle->SetPadRightMargin(0.05);
+  gStyle->SetPadBottomMargin(0.16);
+  gStyle->SetPadLeftMargin(0.12);*/
+  gStyle->SetTitleFont(132,"pad");
 
-	for (int i = 1; i <= NBins; i++) {
-		double content = h->GetBinContent(i);
-		double error = h->GetBinError(i);
-		double width = h->GetBinWidth(i);
-		double newcontent = content / width;
-		double newerror = error / width;
-		h->SetBinContent(i,newcontent);
-		h->SetBinError(i,newerror);
-	}
+  // use bold lines and markers
+  gStyle->SetMarkerStyle(20);
+  gStyle->SetLineStyleString(2,"[12 12]"); // postscript dashes
+
+  // do not display any of the standard histogram decorations
+  //gStyle->SetOptTitle(0);
+  gStyle->SetOptStat(0);
+  gStyle->SetOptFit(0);
+
+  // put tick marks on top and RHS of plots
+  gStyle->SetPadTickX(1);
+  gStyle->SetPadTickY(1);
+
+  return ;
+}
+
+
+std::string GetAxisLabel( std::string observable, unsigned int id_axis ){
+	std::string x_axis, y_axis ;
+	if( observable == "ECal") { x_axis = "E_{Cal} [GeV]"; y_axis  = "d#sigma/dE_{Cal} #left[#mub GeV^{-1}#right]"; }
+	else if ( observable == "pfl_theta") { x_axis = "#theta_{e'} [deg]"; y_axis  = "d#sigma/d#theta_{e'} #left[#mub deg^{-1}#right]"; }
+	else if ( observable == "pfl_phi") { x_axis = "#phi_{e'} [deg]"; y_axis  = "d#sigma/d#phi_{e'} #left[#mub deg^{-1}#right]"; }
+	else if ( observable == "pfl") { x_axis = "p_{e'} [GeV/c]"; y_axis  = "d#sigma/dp_{e'} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
+	else if ( observable == "proton_mom") { x_axis = "p_{p} [GeV/c]"; y_axis  = "d#sigma/dp_{p} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
+	else if ( observable == "proton_theta") { x_axis = "#theta_{p} [deg]"; y_axis  = "d#sigma/d#theta_{p} #left[#mub deg^{-1}#right]"; }
+	else if ( observable == "proton_phi") { x_axis = "E_{Cal} [GeV]"; y_axis  = "d#sigma/dE_{Cal} #left[#mub GeV^{-1}#right]"; }
+	else if ( observable == "pim_mom") { x_axis = "p_{#pi^{-}} [GeV/c]"; y_axis  = "d#sigma/dp_{#pi^{-}} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
+	else if ( observable == "pim_theta") { x_axis = "#theta_{#pi^{-}} [deg]"; y_axis  = "d#sigma/d#theta_{#pi^{-}} #left[#mub deg^{-1}#right]"; }
+	else if ( observable == "pip_mom") { x_axis = "p_{#pi^{+}} [GeV/c]"; y_axis  = "d#sigma/dp_{#pi^{+}} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
+	else if ( observable == "pip_theta") { x_axis = "#theta_{#pi^{+}} [deg]"; y_axis  = "d#sigma/d#theta_{#pi^{+}} #left[#mub deg^{-1}#right]"; }
+	else if ( observable == "RecoW") { x_axis = "W [GeV]"; y_axis  = "d#sigma/dW} #left[#mub GeV^{-1}#right#right]"; }
+	else if ( observable == "RecoXBJK") { x_axis = "x_{BJK} [GeV]"; y_axis  = "d#sigma/dx_{BJK}} #left[#mub GeV^{-1}#right]"; }
+	else if ( observable == "RecoQ2") { x_axis = "Q^{2} [GeV]"; y_axis  = "d#sigma/dQ^{2}} #left[#mub GeV^{-1}#right]"; }
+	else if ( observable == "Recoq3") { x_axis = "q_{3} [GeV]"; y_axis  = "d#sigma/dq_{3} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
+	else if ( observable == "DeltaPT") { x_axis = "#deltap_{T} [GeV]"; y_axis  = "d#sigma/d#deltap_{T} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
+	else if ( observable == "HadDeltaPT") { x_axis = "#deltap_{T}^{had} [GeV]"; y_axis  = "d#sigma/d#deltap_{T}^{had} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
+	else if ( observable == "DeltaPhiT") { x_axis = "#delta#phi_{T} [deg]"; y_axis  = "d#sigma/d#delta#phi_{T} #left[#mub deg^{-1}#right]"; }
+	else if ( observable == "HadDeltaPhiT") { x_axis = "#delta#phi_{T}^{had} [deg]"; y_axis  = "d#sigma/d#delta#phi_{T}^{had} #left[#mub deg^{-1}#right]"; }
+	else if ( observable == "AlphaT") { x_axis = "#alpha_{T} [deg]"; y_axis  = "d#sigma/d#alpha_{T} #left[#mub deg^{-1}#right]"; }
+	else if ( observable == "HadAlphaT") { x_axis = "#alpha_{T}^{had} [deg]"; y_axis  = "d#sigma/d#alpha_{T}^{had} #left[#mub deg^{-1}#right]"; }
+	else if ( observable == "RecoEnergyTransfer") { x_axis = "#omega [GeV]"; y_axis  = "d#sigma/d#omega #left[#mub GeV^{-1}#right]"; }
+
+	if( id_axis ==0 ) return x_axis ;
+	return y_axis ;
+}
+
+void StandardFormat( TH1D * prediction, std::string title, int color, int style, std::string observable ) {
+  UseE4nuStyle();
+  prediction -> SetLineColor(color);
+  prediction -> SetLineStyle(style);
+	prediction -> SetMarkerStyle(8);
+  prediction -> SetLineWidth(2);
+
+  prediction -> SetTitle(title.c_str());
+	//prediction -> SetTitleFont(13);
+	prediction -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
+	prediction -> GetYaxis()->SetTitle(GetAxisLabel(observable,1).c_str());
+  prediction -> GetXaxis()->CenterTitle();
+  prediction -> GetYaxis()->CenterTitle();
+
+	int FontStyle = 132;
+  prediction->GetXaxis()->SetTitleOffset(0.8);
+	prediction->GetXaxis()->SetLabelSize(0.04);
+  prediction->GetXaxis()->SetTitleSize(0.06);
+  prediction->GetXaxis()->SetNdivisions(6);
+	prediction->GetXaxis()->SetLabelFont(FontStyle);
+	prediction->GetXaxis()->SetTitleFont(FontStyle);
+
+  prediction->GetYaxis()->SetNdivisions(6);
+  prediction->GetYaxis()->SetTitleOffset(0.8);
+  prediction->GetYaxis()->SetLabelSize(0.04);
+  prediction->GetYaxis()->SetTitleSize(0.06);
+	prediction->GetYaxis()->SetLabelFont(43);
+	prediction->GetYaxis()->SetLabelFont(FontStyle);
+	prediction->GetYaxis()->SetTitleFont(FontStyle);
+	prediction->SetTitleFont(FontStyle);
+
+  return;
+}
+
+void compute_acceptance(std::string file_name, std::string observable, unsigned int nbins, double min, double max, int id_sector = -1 /*all*/ ) {
+
+  TCanvas * c1 = new TCanvas("c1","c1",800,600);
+
+  TFile * file_mcrecoacc = new TFile((file_name+"_truereco.root").c_str(),"ROOT");
+  TFile * file_mctrueacc = new TFile((file_name+"_true.root").c_str(),"ROOT");
+
+  std::string output_name = file_name+"_acceptance_correction_"+observable ;
+  if( id_sector > 0 ) output_name += "_sector_"+std::to_string(id_sector) ;
+  TFile outputFile ((output_name+".root").c_str(),"RECREATE");
+
+  if( !file_mcrecoacc ) { std::cout << "ERROR: the "<< file_name << "_truereco.root does not exist." <<std::endl; return ;}
+  if( !file_mctrueacc ) { std::cout << "ERROR: the "<< file_name << "_true.root  does not exist." <<std::endl; return ;}
+
+  TTree * tree_mcrecoacc = (TTree*)file_mcrecoacc->Get("MCCLAS6Tree");
+  TTree * tree_mctrueacc = (TTree*)file_mctrueacc->Get("MCCLAS6Tree");
+
+  if( !tree_mcrecoacc || !tree_mctrueacc ) { std::cout << "ERROR: the threes do not exist." <<std::endl; return ;}
+
+  TH1D * hist_recoacc = new TH1D( "Reco MC ACC", "", nbins, min, max );
+  TH1D * hist_trueacc = new TH1D( "True MC ACC", "", nbins, min, max );
+
+  std::vector<TTree*> trees = { tree_mcrecoacc, tree_mctrueacc };
+  std::vector<TH1D*> hists = { hist_recoacc, hist_trueacc };
+
+  // OBSERVABLE DEFINITION:
+  double TotWeight ;
+  double ECal,Recoq3,RecoW;
+  double pfl,pfl_theta,pfl_phi;
+  double proton_mom,proton_phi,proton_theta;
+  double pi_mom,pi_theta,pi_phi;
+  double HadAlphaT, HadDeltaPT, HadDeltaPhiT ;
+  long NEntries ;
+  bool IsBkg ;
+  int ElectronSector ;
+  for ( unsigned int i = 0 ; i < trees.size() ; ++i ){
+
+    NEntries = trees[i] -> GetEntries() ;
+    trees[i] -> SetBranchAddress("TotWeight",&TotWeight);
+    trees[i] -> SetBranchAddress("IsBkg",&IsBkg);
+    trees[i] -> SetBranchAddress("pfl",&pfl);
+    trees[i] -> SetBranchAddress("pfl_theta",&pfl_theta);
+    trees[i] -> SetBranchAddress("pfl_phi",&pfl_phi);
+
+    trees[i] -> SetBranchAddress("proton_mom",&proton_mom);
+    trees[i] -> SetBranchAddress("proton_theta",&proton_theta);
+    trees[i] -> SetBranchAddress("proton_phi",&proton_phi);
+
+    trees[i] -> SetBranchAddress("pim_mom",&pi_mom);
+    trees[i] -> SetBranchAddress("pim_theta",&pi_theta);
+    trees[i] -> SetBranchAddress("pim_phi",&pi_phi);
+
+    trees[i] -> SetBranchAddress("ECal",&ECal);
+    trees[i] -> SetBranchAddress("Recoq3",&Recoq3);
+    trees[i] -> SetBranchAddress("RecoW",&RecoW);
+
+    trees[i] -> SetBranchAddress("ElectronSector",&ElectronSector);
+
+
+    for( int j = 0 ; j < NEntries ; ++j ) {
+      trees[i]->GetEntry(j) ;
+      double content = 0 ;
+      double w = TotWeight ;
+
+      if( observable == "ECal") content = ECal ;
+      else if ( observable == "pfl_theta") content = pfl_theta * 180 / TMath::Pi();
+      else if ( observable == "pfl_phi") content = pfl_phi * 180 / TMath::Pi();
+      else if ( observable == "pfl") content = pfl ;
+      else if ( observable == "proton_mom") content = proton_mom ;
+      else if ( observable == "proton_theta") content = proton_theta * 180 / TMath::Pi() ;
+      else if ( observable == "proton_phi") content = proton_phi * 180 / TMath::Pi() ;
+      else if ( observable == "pim_mom") content = pi_mom ;
+      else if ( observable == "pim_theta") content = pi_theta * 180 / TMath::Pi() ;
+      else if ( observable == "RecoW") content = RecoW ;
+      else if ( observable == "Recoq3") content = Recoq3 ;
+
+      if( id_sector > 0 ) {
+	// Compute only for sector of interest
+	if( id_sector != ElectronSector ) continue ;
+      }
+      hists[i] -> Fill( content, w ) ;
+      hists[i] -> SetLineWidth(3);
+    }
+  }
+
+  TH1D * ratio = (TH1D*)hist_trueacc->Clone();
+  ratio -> Divide(hist_recoacc);
+  ratio -> SetName("Acceptance");
+  ratio -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
+  ratio -> GetYaxis()->SetTitle("Acceptance correction");
+  ratio->Draw("hist err");
+  ratio->Write();
+
 }
 
 void NormalizeHist( TH1D * h, double normalization_factor ){
     // Data normalization
     h -> Scale( normalization_factor );
-    ReweightPlots(h);
+    double NBins = h->GetNbinsX();
+
+  	for (int i = 1; i <= NBins; i++) {
+  		double content = h->GetBinContent(i);
+  		double error = h->GetBinError(i);
+  		double width = h->GetBinWidth(i);
+  		double newcontent = content / width;
+  		double newerror = error / width;
+  		h->SetBinContent(i,newcontent);
+  		h->SetBinError(i,newerror);
+  	}
 }
 
 void CorrectData(TH1D* h, TH1D* acc) {
@@ -40,42 +230,6 @@ void CorrectData(TH1D* h, TH1D* acc) {
   }
 }
 
-void NormalizeData( TH1D * h, unsigned int target_pdg = 1000060120, unsigned int beam_E = 1.161 ){
-    // Data normalization
-    const double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.);
-    double ConversionFactorChargeToElectrons = 6.25*TMath::Power(10.,15.);
-    double AvogadroNumber = 6.02*TMath::Power(10.,23);
-    double OverallUnitConversionFactor = ConversionFactorChargeToElectrons * AvogadroNumber;
-    int MassNumber = 12 ;
-    double integrated_ch = 0.079 ;
-    double lenght = 0.1;
-    double density = 1.786;
-
-    if( beam_E == 2.216 && target_pdg == 1000060120) {
-      integrated_ch = 1.79 ;
-    }
-
-    double data_scaling = ConversionFactorCm2ToMicroBarn / ( integrated_ch * lenght * density * OverallUnitConversionFactor / MassNumber ) ;
-
-    h -> Scale( data_scaling );
-    ReweightPlots(h);
-}
-
-
-void NormalizeMC( TH1D * h, unsigned int target_pdg = 1000060120, unsigned int beam_E = 1.161, double N_events = 19800000 ){
-    // Data normalization
-    const double ConversionFactorCm2ToMicroBarn = TMath::Power(10.,30.);
-    double xsec_susa = 1.28967e+09 ;
-
-    if( beam_E == 2.216 && target_pdg == 1000060120) {
-      xsec_susa = 2.1024e+08 ;
-    }
-
-    double mc_scaling = xsec_susa * ConversionFactorCm2ToMicroBarn * TMath::Power(10.,-38.) / N_events ;
-
-    h -> Scale( mc_scaling );
-    ReweightPlots(h);
-}
 // Input paramters:
 // MC_file_name : true MC file, without detector effects, after e4nu analysis
 // data_file_name: data file, after e4nu Analysis
@@ -87,9 +241,16 @@ void NormalizeMC( TH1D * h, unsigned int target_pdg = 1000060120, unsigned int b
 
 void Plot1DXSec(std::string MC_file_name, std::string data_file_name,
                 std::string acceptance_file_name, std::string observable,
+                std::string title, std::string data_name, std::string model,
                 int id_sector = -1 /*all*/ ) {
 
-  TCanvas * c1 = new TCanvas("c1","c1",800,600);
+  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
+  //TPad *pad0 = new TPad("pad2","",0,0,1,1);
+  TPad *pad1 = new TPad("pad1","",0,0,1,1);
+  pad1->Draw();
+  pad1->cd();
+  pad1->SetBottomMargin(0.15);
+  pad1->SetLeftMargin(0.15);
 
   TFile * file_true_MC = new TFile((MC_file_name).c_str(),"ROOT");
   TFile * file_data = new TFile((data_file_name).c_str(),"READ");
@@ -142,7 +303,7 @@ void Plot1DXSec(std::string MC_file_name, std::string data_file_name,
   bool IsBkg ;
   int ElectronSector ;
   bool QEL, RES, DIS, MEC;
-  double MCNormalization, DataNormalization ; 
+  double MCNormalization, DataNormalization ;
   for ( unsigned int i = 0 ; i < trees.size() ; ++i ){
 
     NEntries = trees[i] -> GetEntries() ;
@@ -170,8 +331,8 @@ void Plot1DXSec(std::string MC_file_name, std::string data_file_name,
     trees[i] -> SetBranchAddress("DIS",&DIS);
 
     trees[i] -> SetBranchAddress("ElectronSector",&ElectronSector);
-    if( i == 0 ) trees[i] -> SetBranchAddress("MCNormalization", &MCNormalization ); 
-    else if ( i == 1 ) trees[i] -> SetBranchAddress("DataNormalization",&DataNormalization ); 
+    if( i == 0 ) trees[i] -> SetBranchAddress("MCNormalization", &MCNormalization );
+    else if ( i == 1 ) trees[i] -> SetBranchAddress("DataNormalization",&DataNormalization );
 
     for( int j = 0 ; j < NEntries ; ++j ) {
       trees[i]->GetEntry(j) ;
@@ -201,9 +362,11 @@ void Plot1DXSec(std::string MC_file_name, std::string data_file_name,
         if( QEL ) hist_true_QEL -> Fill( content, w ) ;
         if( RES ) {
           hist_true_RES -> Fill( content, w ) ;
-          hist_true_SIS -> Fill( content, w ) ;
         }
-        if( DIS ) hist_true_DIS -> Fill( content, w ) ;
+        if( DIS ) {
+          if( RecoW < 1.7 ) hist_true_SIS -> Fill( content, w ) ;
+          else hist_true_DIS -> Fill( content, w ) ;
+        }
         if( MEC ) hist_true_MEC -> Fill( content, w ) ;
       }
     }
@@ -218,13 +381,13 @@ void Plot1DXSec(std::string MC_file_name, std::string data_file_name,
   NormalizeHist(hist_true_MEC, MCNormalization);
   NormalizeHist(hist_true_DIS, MCNormalization);
 
-  hist_data->SetLineColor(kBlack);
-  hist_true->SetLineColor(kBlack);
-  hist_true_QEL->SetLineColor(kBlue-3);
-  hist_true_RES->SetLineColor(kGreen+2);
-  hist_true_SIS->SetLineColor(kOrange);
-  hist_true_MEC->SetLineColor(kMagenta-3);
-  hist_true_DIS->SetLineColor(kCyan+1);
+  StandardFormat( hist_data, title, kBlack, 1, observable ) ;
+	StandardFormat( hist_true, title, kBlack, 1, observable ) ;
+	StandardFormat( hist_true_QEL, title, kBlue-3, 1, observable ) ;
+	StandardFormat( hist_true_RES, title, kGreen+2, 1, observable ) ;
+	StandardFormat( hist_true_SIS, title, kOrange, 1, observable ) ;
+  StandardFormat( hist_true_MEC, title, kMagenta-3, 1, observable ) ;
+	StandardFormat( hist_true_DIS, title, kCyan+1, 1, observable ) ;
 
   hist_true -> Draw("hist");
   hist_true_QEL -> Draw("hist same");
@@ -232,20 +395,48 @@ void Plot1DXSec(std::string MC_file_name, std::string data_file_name,
   hist_true_SIS -> Draw("hist same");
   hist_true_MEC -> Draw("hist same");
   hist_true_DIS -> Draw("hist same");
-  hist_data -> Draw(" same ");
+  hist_data -> Draw(" err same ");
 
-  std::string output_name = "e4nuanalysis_"+std::to_string(target_pdg)+"_"+std::to_string(E_beam)+"GeV_dxsec_d"+observable ;
+  //c1->cd();
+  double LegXmin = 0.1, LegYmin = 0.65, YSpread = 0.25;
+	TLegend* leg = new TLegend(LegXmin,LegYmin,LegXmin+0.9,LegYmin+YSpread);
+  leg->SetBorderSize(0);
+  leg->SetTextFont(132);
+  leg->SetTextSize(0.08);
+  leg->SetFillStyle(0);
+  leg->SetNColumns(2);
+  leg->SetTextSize(0.03);
+  leg->AddEntry(hist_true,("GENIE "+model).c_str(),"l");
+  leg->AddEntry(hist_true_QEL,"EMQEL","l");
+  leg->AddEntry(hist_true_RES,"EMRES","l");
+  leg->AddEntry(hist_true_SIS,"EMSIS","l");
+  leg->AddEntry(hist_true_MEC,"EMMEC","l");
+  leg->AddEntry(hist_true_DIS,"EMDIS","l");
+  leg->AddEntry(hist_data, data_name.c_str());
+  //leg->Draw();
+
+  std::string output_name = MC_file_name+"_dxsec_d"+observable ;
   if( id_sector > 0 ) output_name += "_sector_"+std::to_string(id_sector) ;
   c1->SaveAs((output_name+".root").c_str());
 }
 
 void Plot1DXSec(){
 
-  // EDIT :
-  std::string file_data = "e4nuanalysis_clas6data_C12_2261MeV_1p0pi.root";
-  std::string file_mc = "e4nuanalysis_genie_GEM21_C12_2261MeV_1p0piwpi0_1M_Q4_wreso_true.root" ;
-  std::string acceptance_file = "e4nuanalysis_genie_GEM21_C12_2261MeV_1p0piwpi0_1M_Q4_wreso_acceptance_correction_ECal.root";
-  std::string observable = "ECal";
+	// EDIT :
+	std::string file_name = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/mc_files/e4nuanalysis_1p1pimanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad" ;
+	std::string observable = "proton_mom";
+	int nbins = 30 ;
+	double min = 0;
+	double max = 2.3;
 
-  Plot1DXSec( file_mc, file_data, acceptance_file, "ECal", -1 ) ;
+	compute_acceptance( file_name, observable, nbins, min, max ) ;
+
+  // EDIT :
+  std::string file_data = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/data_files/e4nuanalysis_1p1pimanalysis_e_on_1000060120_2261MeV_clas6data.root";
+  std::string file_mc = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/mc_files/e4nuanalysis_1p1pimanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad_true.root" ;
+  std::string acceptance_file = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/mc_files/e4nuanalysis_1p1pimanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad_acceptance_correction_proton_mom.root";
+  std::string model = "G18_10a";
+  std::string title = "e^{12}C 1p1#pi^{-} at 2.216 GeV";
+  std::string data_name = "CLAS6 data";
+  Plot1DXSec( file_mc, file_data, acceptance_file, observable, title, data_name, model, -1 ) ;
 }

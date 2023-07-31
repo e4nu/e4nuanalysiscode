@@ -204,6 +204,9 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
   double DeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ; 
+  double HadAlphaT = utils::DeltaAlphaT( out_mom, hadron_map ) ; 
+  double HadDeltaPT = utils::DeltaPT( out_mom, hadron_map ).Mag() ; 
+  double HadDeltaPhiT = utils::DeltaPhiT( out_mom, hadron_map ) ; 
 
   TLorentzVector pip_max(0,0,0,0) ;
   if( topology_has_pip ) {
@@ -239,6 +242,15 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double pim_momz = pim_max.Pz() ;
   double pim_theta = pim_max.Theta() * TMath::RadToDeg() ;
   double pim_phi = pim_max.Phi() * TMath::RadToDeg() ;
+
+  unsigned int MassNumber = utils::GetMassNumber( TargetPdg ) ;
+  double IntegratedCharge = conf::GetIntegratedCharge( TargetPdg, BeamE ); 
+  double TargetLength = conf::GetTargetLength( TargetPdg ) ;
+  double TargetDensity = conf::GetTargetDensity( TargetPdg ) ;
+  unsigned int InitialNEvents = kNEvents ;
+  double ConversionFactor = kConversionFactorCm2ToMicroBarn / kOverallUnitConversionFactor ;
+  double DataNormalization = kConversionFactorCm2ToMicroBarn * MassNumber / ( IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor );
+
 
   bool IsBkg = event.IsBkg() ; 
   if( n == true ) {
@@ -304,16 +316,11 @@ bool CLAS6AnalysisI::StoreTree(Event event){
       kAnalysisTree -> Branch( "pim_theta", &pim_theta, "pim_theta/D");
       kAnalysisTree -> Branch( "pim_phi", &pim_phi, "pim_phi/D");
     }
+    kAnalysisTree -> Branch( "HadAlphaT", &HadAlphaT, "HadAlphaT/D");
+    kAnalysisTree -> Branch( "HadDeltaPT", &HadDeltaPT, "HadDeltaPT/D");
+    kAnalysisTree -> Branch( "HadDeltaPhiT", &HadDeltaPhiT, "HadDeltaPhiT/D");
 
     // Adding Normalization information
-    unsigned int MassNumber = utils::GetMassNumber( TargetPdg ) ;
-    double IntegratedCharge = conf::GetIntegratedCharge( TargetPdg, BeamE ); 
-    double TargetLength = conf::GetTargetLength( TargetPdg ) ;
-    double TargetDensity = conf::GetTargetDensity( TargetPdg ) ;
-    unsigned int InitialNEvents = kNEvents ;
-    double ConversionFactor = kConversionFactorCm2ToMicroBarn / kOverallUnitConversionFactor ;
-    double DataNormalization = kConversionFactorCm2ToMicroBarn * MassNumber / ( IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor );
-
     kAnalysisTree -> Branch( "MassNumber", &MassNumber, "MassNumber/I");
     kAnalysisTree -> Branch( "IntegratedCharge", &IntegratedCharge, "IntegratedCharge/D" );
     kAnalysisTree -> Branch( "TargetLength", &TargetLength, "TargetLength/D" );

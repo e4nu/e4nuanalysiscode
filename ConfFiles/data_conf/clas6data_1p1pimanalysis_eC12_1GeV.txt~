@@ -30,5 +30,5 @@ MaxBackgroundMultiplicity 4
 NRotations 1000
 
 InputFile  /w/hallb-scshelf2102/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_C12_1161_neutrino6_united4_radphot_test_100M.root
-OutputFile /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/e4nuanalysis_1p1pimanalysis_G18_10a_Q2_01_e_on_1000060120_2261MeV_NoRad
+OutputFile /u/home/jtena/Software/e4nuanalysiscode/e4nuanalysis_1p1pimanalysis_e_on_1000060120_1161MeV
 

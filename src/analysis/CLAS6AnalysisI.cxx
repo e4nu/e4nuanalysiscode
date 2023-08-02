@@ -242,6 +242,7 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double pim_momz = pim_max.Pz() ;
   double pim_theta = pim_max.Theta() * TMath::RadToDeg() ;
   double pim_phi = pim_max.Phi() * TMath::RadToDeg() ;
+  double HadSystemMass = utils::HadSystemMass( hadron_map ) ; 
 
   unsigned int MassNumber = utils::GetMassNumber( TargetPdg ) ;
   double IntegratedCharge = conf::GetIntegratedCharge( TargetPdg, BeamE ); 
@@ -319,6 +320,7 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "HadAlphaT", &HadAlphaT, "HadAlphaT/D");
     kAnalysisTree -> Branch( "HadDeltaPT", &HadDeltaPT, "HadDeltaPT/D");
     kAnalysisTree -> Branch( "HadDeltaPhiT", &HadDeltaPhiT, "HadDeltaPhiT/D");
+    kAnalysisTree -> Branch( "HadSystemMass", &HadSystemMass, "HadSystemMass/D");
 
     // Adding Normalization information
     kAnalysisTree -> Branch( "MassNumber", &MassNumber, "MassNumber/I");

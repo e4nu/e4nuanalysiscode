@@ -379,7 +379,17 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   }
 
   unsigned int TopMult = GetNTopologyParticles();
+
+  // flip hadrons phi
   std::map<int,std::vector<TLorentzVector>> hadron_map = event.GetFinalParticles4Mom();
+  for( auto it = hadron_map.begin() ; it!=hadron_map.end() ; ++it ) {
+    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
+      TLorentzVector had_4mom = (it->second)[i] ;
+      had_4mom.SetPhi( (it->second)[i].Phi() + TMath::Pi() );
+      (it->second)[i] = had_4mom;
+    }
+  }
+
   TLorentzVector p_max(0,0,0,0) ;
   if( topology_has_protons ) {
     double max_mom = 0 ; 
@@ -391,7 +401,6 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     }
   }
 
-  p_max.SetPhi( p_max.Phi() + TMath::Pi() ) ;
   double proton_mom = p_max.P() ; 
   double proton_momx = p_max.Px() ; 
   double proton_momy = p_max.Py() ; 
@@ -418,7 +427,6 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     }
   }
   
-  pip_max.SetPhi( pip_max.Phi() + TMath::Pi() ) ; 
   double pip_mom = pip_max.P() ;
   double pip_momx = pip_max.Px() ;
   double pip_momy = pip_max.Py() ;
@@ -437,7 +445,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     }
   }
 
-  pip_max.SetPhi( pim_max.Phi() + TMath::Pi() ) ; 
+  double HadSystemMass = utils::HadSystemMass( hadron_map ) ;  
   double pim_mom = pim_max.P() ;
   double pim_momx = pim_max.Px() ;
   double pim_momy = pim_max.Py() ;
@@ -512,6 +520,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "RecoQ2", &RecoQ2, "RecoQ2/D");
     kAnalysisTree -> Branch( "RecoW", &RecoW, "RecoW/D");
     kAnalysisTree -> Branch( "RecoXBJK", &RecoXBJK, "RecoXBJK/D");
+    kAnalysisTree -> Branch( "HadSystemMass", &HadSystemMass, "HadSystemMass/D");
     kAnalysisTree -> Branch( "ElectronSector", &ElectronSector, "ElectronSector/I");
    
     if( topology_has_protons ) {

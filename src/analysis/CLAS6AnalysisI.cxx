@@ -252,9 +252,16 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double ConversionFactor = kConversionFactorCm2ToMicroBarn / kOverallUnitConversionFactor ;
   double DataNormalization = kConversionFactorCm2ToMicroBarn * MassNumber / ( IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor );
 
+  // Store name of files used
+  const char* InputROOTFile = kInputFile.c_str() ;
+  const char* OutputROOTFile = kOutputFile.c_str() ;
+  const char* InputXSecFile = kXSecFile.c_str() ;
 
   bool IsBkg = event.IsBkg() ; 
   if( n == true ) {
+    kAnalysisTree -> Branch( "InputROOTFile", &InputROOTFile, "InputROOTFile/C"); 
+    kAnalysisTree -> Branch( "OutputROOTFile", &OutputROOTFile, "OutputROOTFile/C"); 
+    kAnalysisTree -> Branch( "InputXSecFile", &InputXSecFile, "InputXSecFile/C"); 
     kAnalysisTree -> Branch( "ID", &ID, "ID/I"); 
     kAnalysisTree -> Branch( "TargetPdg", &TargetPdg, "TargetPdg/I");
     kAnalysisTree -> Branch( "InLeptonPdg", &InLeptonPdg, "InLeptonPdg/I");

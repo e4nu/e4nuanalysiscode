@@ -244,6 +244,10 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double pim_phi = pim_max.Phi() * TMath::RadToDeg() ;
   double HadSystemMass = utils::HadSystemMass( hadron_map ) ; 
 
+  double MissingEnergy = utils::MissingEnergy( BeamE, out_mom, hadron_map ).E(); 
+  double MissingMomentum = utils::MissingEnergy( BeamE, out_mom, hadron_map ).P(); 
+  double MissingAngle = utils::MissingEnergy( BeamE, out_mom, hadron_map ).Theta(); 
+
   unsigned int MassNumber = utils::GetMassNumber( TargetPdg ) ;
   double IntegratedCharge = conf::GetIntegratedCharge( TargetPdg, BeamE ); 
   double TargetLength = conf::GetTargetLength( TargetPdg ) ;
@@ -294,6 +298,9 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "RecoW", &RecoW, "RecoW/D");
     kAnalysisTree -> Branch( "RecoXBJK", &RecoXBJK, "RecoXBJK/D");
     kAnalysisTree -> Branch( "ElectronSector", &ElectronSector, "ElectronSector/I");
+    kAnalysisTree -> Branch( "MissingEnergy", &MissingEnergy, "MissingEnergy/D");
+    kAnalysisTree -> Branch( "MissingMomentum", &MissingMomentum, "MissingMomentum/D");
+    kAnalysisTree -> Branch( "MissingAngle", &MissingAngle, "MissingAngle/D");
     if( topology_has_protons ) {
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");
       kAnalysisTree -> Branch( "proton_momx", &proton_momx, "proton_momx/D");

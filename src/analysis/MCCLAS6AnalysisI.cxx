@@ -453,8 +453,11 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double pim_theta = pim_max.Theta() * TMath::RadToDeg(); 
   double pim_phi = pim_max.Phi() * TMath::RadToDeg(); 
 
-  bool IsBkg = event.IsBkg() ; 
+  double MissingEnergy = utils::MissingEnergy( BeamE, out_mom, hadron_map ).E(); 
+  double MissingMomentum = utils::MissingEnergy( BeamE, out_mom, hadron_map ).P(); 
+  double MissingAngle = utils::MissingEnergy( BeamE, out_mom, hadron_map ).Theta(); 
 
+  bool IsBkg = event.IsBkg() ; 
   unsigned int InitialNEvents = GetNEventsToRun() ;
   double ConversionFactor = kConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) ;
   double TotalXSec = kXSec ; 
@@ -529,7 +532,10 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "RecoXBJK", &RecoXBJK, "RecoXBJK/D");
     kAnalysisTree -> Branch( "HadSystemMass", &HadSystemMass, "HadSystemMass/D");
     kAnalysisTree -> Branch( "ElectronSector", &ElectronSector, "ElectronSector/I");
-   
+    kAnalysisTree -> Branch( "MissingEnergy", &MissingEnergy, "MissingEnergy/D");
+    kAnalysisTree -> Branch( "MissingMomentum", &MissingMomentum, "MissingMomentum/D");
+    kAnalysisTree -> Branch( "MissingAngle", &MissingAngle, "MissingAngle/D");
+
     if( topology_has_protons ) {
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");
       kAnalysisTree -> Branch( "proton_momx", &proton_momx, "proton_momx/D");

@@ -301,6 +301,8 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "MissingEnergy", &MissingEnergy, "MissingEnergy/D");
     kAnalysisTree -> Branch( "MissingMomentum", &MissingMomentum, "MissingMomentum/D");
     kAnalysisTree -> Branch( "MissingAngle", &MissingAngle, "MissingAngle/D");
+    kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
+    
     if( topology_has_protons ) {
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");
       kAnalysisTree -> Branch( "proton_momx", &proton_momx, "proton_momx/D");
@@ -308,7 +310,6 @@ bool CLAS6AnalysisI::StoreTree(Event event){
       kAnalysisTree -> Branch( "proton_momz", &proton_momz, "proton_momz/D");
       kAnalysisTree -> Branch( "proton_theta", &proton_theta, "proton_theta/D");
       kAnalysisTree -> Branch( "proton_phi", &proton_phi, "proton_phi/D");
-      kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
       kAnalysisTree -> Branch( "AlphaT", &AlphaT, "AlphaT/D");
       kAnalysisTree -> Branch( "DeltaPT", &DeltaPT, "DeltaPT/D");
       kAnalysisTree -> Branch( "DeltaPhiT", &DeltaPhiT, "DeltaPhiT/D");

@@ -7,6 +7,7 @@
 #include "TCanvas.h"
 #include "TTree.h"
 #include "TEfficiency.h"
+#include <iomanip>
 #include <filesystem>
 
 std::string GetAxisLabel( std::string observable, unsigned int id_axis ){
@@ -161,12 +162,12 @@ std::vector<double> GetAdditionalBinning( std::string second_observable, double 
 	std::vector<double> original_binning = GetBinning( second_observable, EBeam ) ;
 	if( second_observable == "ECal" ) {
 		binning.push_back(original_binning[0]);
-		binning.push_back(EBeam*(1-0.1));
+		binning.push_back(EBeam*(1-0.05));
 		binning.push_back(original_binning[original_binning.size()-1]);
 	}	else if ( second_observable == "HadDeltaPT" || second_observable == "DeltaPT" ){
 		binning.push_back(original_binning[0]);
 		binning.push_back(0.2);
-		binning.push_back(0.4);
+		//binning.push_back(0.4);
 		binning.push_back(original_binning[original_binning.size()-1]);
 	} else if ( second_observable == "HadAlphaT" || second_observable == "AlphaT" ){
 		binning.push_back(original_binning[0]);
@@ -178,8 +179,22 @@ std::vector<double> GetAdditionalBinning( std::string second_observable, double 
 
 std::string GetAlternativeObs( std::string observable ){
 	if( observable == "ECal" ) return "HadDeltaPT" ;
-	if( observable == "HadDeltaPT" || observable == "DeltaPT") return "ECal" ;
-	if( observable == "HadAlphaT"  || observable == "AlphaT" ) return "ECal" ;
+	else if( observable == "HadDeltaPT" || observable == "DeltaPT") return "ECal" ;
+	else if( observable == "HadAlphaT"  || observable == "AlphaT" ) return "ECal" ;
+	return "";
+}
+
+std::string GetObsName( std::string observable ){
+	if( observable == "ECal" ) return "E_{Cal}" ;
+	else if( observable == "HadDeltaPT" ) return "#deltap^{had}_{T}" ;
+	else if( observable == "HadAlphaT"  ) return "#alpha^{had}_{T}" ;
+	return "";
+}
+
+std::string GetUnit( std::string observable ){
+	if( observable == "ECal" ) return "[GeV]" ;
+	else if( observable == "HadDeltaPT" ) return "[GeV/c]" ;
+	else if( observable == "HadAlphaT"  ) return "[deg]" ;
 	return "";
 }
 
@@ -264,8 +279,6 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
 	// Get energy from tree to define range
 	double BeamE ;
 
-	// New approach
-	std::vector<TEfficiency*> new_ratio;
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
     files_mcrecoacc.push_back(new TFile((input_MC_location+mc_files[i]+"_truereco.root").c_str(),"ROOT"));
     files_mctrueacc.push_back(new TFile((input_MC_location+mc_files[i]+"_true.root").c_str(),"ROOT"));
@@ -422,10 +435,16 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
 				hists[j+initial_size_hists-initial_size_trees] -> Fill( content, w ) ;
         hists[j+initial_size_hists-initial_size_trees] -> SetLineWidth(3);
 
+				std::string alt_obs = GetAlternativeObs(observable) ;
+				double content_2 ;
+				if ( alt_obs == "ECal" ) content_2 = ECal ;
+				else if ( alt_obs == "HadAlphaT" ) content_2 = HadAlphaT ;
+				else if ( alt_obs == "HadDeltaPT" ) content_2 = HadDeltaPT ;
+
         // Fill sliced histogram
 				if( addbinning.size() != 0 ) {
 					for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
-						if( ECal > addbinning[l] && ECal < addbinning[l+1] ){
+						if( content_2 > addbinning[l] && content_2 < addbinning[l+1] ){
 							if( j == initial_size_trees ) hists_recoacc_slices[i][l] -> Fill( content, w ) ;
 							else if( j == initial_size_trees + 1 ) hists_trueacc_slices[i][l] -> Fill( content, w ) ;
 						}
@@ -433,12 +452,7 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
       	}
 			}
     }
-    // if( i == 0 ){
-		// 	std::cout << (*hists_recoacc[0]).Integral()<<std::endl;
-		// 	std::cout << (*hists_trueacc[0]).Integral()<<std::endl;
-		// 	//if( TEfficiency::CheckConsistency(*hists_recoacc[i],*hists_trueacc[i])){
-		// 	TEfficiency * teff =  new TEfficiency(*hists_trueacc[0],*hists_recoacc[0] );
-		// }
+
     ratios.push_back( (TH1D*)hists_trueacc[i]->Clone() ) ;
     ratios[i] -> Divide( hists_recoacc[i] );
     ratios[i] -> SetName(("Acceptance_model_"+std::to_string(i)).c_str());
@@ -620,10 +634,6 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   pad1->cd();
   pad1->SetBottomMargin(0.15);
   pad1->SetLeftMargin(0.15);
-
-	//teff->Write();
-	//new_ratio[i] -> SetName(("NEW_Acceptance_model_"+std::to_string(i)).c_str());
-	//}
 
 	// Store total contribution (averaged)
   ratio->Write();
@@ -808,7 +818,23 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   TH1D * h_acceptance_3 = (TH1D*)file_acceptance->Get("Acceptance_3");
   TH1D * h_acceptance_4 = (TH1D*)file_acceptance->Get("Acceptance_4");
   TH1D * h_acceptance_5 = (TH1D*)file_acceptance->Get("Acceptance_5");
+
+	// Get Tree for main model
   TTree * tree_true = (TTree*)files_true_MC[0]->Get("MCCLAS6Tree");
+	// Get configured energy, used for plotting
+	double BeamE ;
+	tree_true->SetBranchAddress("BeamE",&BeamE);
+	tree_true->GetEntry(0);
+
+	// Get Acceptance for slices
+	std::vector<TH1D*> h_acc_slices ;
+	std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE ) ;
+	if ( addbinning.size() > 0 ) {
+		for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
+			h_acc_slices.push_back( (TH1D*)file_acceptance->Get(("Acceptance_Slice_"+std::to_string(k)).c_str() ) ) ;
+			if( !h_acc_slices[k] ) { std::cout << "ERROR: Slice acceptance empty"<<std::endl;return;}
+		}
+	}
 
   // For submodels only total prediction is plotted
   std::vector<TTree*> tree_submodels ;
@@ -871,6 +897,32 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
     hists_true_submodel[id - 1] -> SetLineWidth(3);
   }
 
+  // Create hist for each slice on true
+	std::vector<TH1D*> h_total_slices, h_QEL_slices, h_RES_slices, h_DIS_slices, h_MEC_slices, h_SIS_slices ;
+	if ( addbinning.size() > 0 ) {
+		for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
+			h_total_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_total_slices[k] -> SetName( ("MC True Slice "+std::to_string(k)).c_str() ) ;
+		  h_total_slices[k] -> Reset("ICE");
+			h_QEL_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_QEL_slices[k] -> SetName( ("MC True QEL Slice "+std::to_string(k)).c_str() ) ;
+		  h_QEL_slices[k] -> Reset("ICE");
+			h_RES_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_RES_slices[k] -> SetName( ("MC True RES Slice "+std::to_string(k)).c_str() ) ;
+		  h_RES_slices[k] -> Reset("ICE");
+			h_SIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_SIS_slices[k] -> SetName( ("MC True SIS Slice "+std::to_string(k)).c_str() ) ;
+		  h_SIS_slices[k] -> Reset("ICE");
+			h_MEC_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_MEC_slices[k] -> SetName( ("MC True MEC Slice "+std::to_string(k)).c_str() ) ;
+		  h_MEC_slices[k] -> Reset("ICE");
+			h_DIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_DIS_slices[k] -> SetName( ("MC True DIS Slice "+std::to_string(k)).c_str() ) ;
+		  h_DIS_slices[k] -> Reset("ICE");
+		}
+	}
+
+
   // total and per sector
   TH1D * hist_data = (TH1D*) h_acceptance ->Clone();
   hist_data -> SetName( "Data") ;
@@ -893,6 +945,16 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   TH1D * hist_data_5 = (TH1D*) h_acceptance_5 ->Clone();
   hist_data_5 -> SetName( "Data Sector  5") ;
   hist_data_5 -> Reset("ICE");
+
+	// Create hist for each slice on data
+	std::vector<TH1D*> h_data_slices  ;
+	if ( addbinning.size() > 0 ) {
+		for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
+			h_data_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_data_slices[k] -> SetName( ("Data Slice "+std::to_string(k)).c_str() ) ;
+		  h_data_slices[k] -> Reset("ICE");
+		}
+	}
 
   std::vector<TTree*> trees = { tree_true, tree_data };
   std::vector<TH1D*> hists = { hist_true, hist_data, hist_true_0, hist_data_0,
@@ -1020,6 +1082,33 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
         }
         if( MEC ) hist_true_MEC -> Fill( content, w ) ;
       }
+
+			// Fill slices
+			if( addbinning.size() != 0 ) {
+				std::string alt_obs = GetAlternativeObs(observable) ;
+				double content_2 ;
+				if ( alt_obs == "ECal" ) content_2 = ECal ;
+				else if ( alt_obs == "HadAlphaT" ) content_2 = HadAlphaT ;
+				else if ( alt_obs == "HadDeltaPT" ) content_2 = HadDeltaPT ;
+
+				for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+					if( content_2 > addbinning[l] && content_2 < addbinning[l+1] ){
+						if( i == 0 /* MC */ ) {
+							h_total_slices[l] -> Fill( content, w ) ;
+							// Fill also breakdown for slice
+							if( QEL ) h_QEL_slices[l] -> Fill( content, w ) ;
+			        if( RES ) {
+			          h_RES_slices[l] -> Fill( content, w ) ;
+			        }
+			        if( DIS ) {
+			          if( RecoW < 1.7 ) h_SIS_slices[l] -> Fill( content, w ) ;
+			          else h_DIS_slices[l] -> Fill( content, w ) ;
+			        }
+			        if( MEC ) h_MEC_slices[l] -> Fill( content, w ) ;
+						} else if( i == 1 /* Data */ ) h_data_slices[l] -> Fill( content, w ) ;
+					}
+				}
+			}
     }
   }
 
@@ -1057,6 +1146,14 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   CorrectData(hist_data_4, h_acceptance_4);
   CorrectData(hist_data_5, h_acceptance_5);
 
+	// Normalize data from slices
+	if( addbinning.size() != 0 ) {
+		for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+			NormalizeHist(h_data_slices[l], DataNormalization );
+			CorrectData(h_data_slices[l], h_acc_slices[l] );
+		}
+	}
+
   // Normalize MC
   NormalizeHist(hist_true, MCNormalization);
   NormalizeHist(hist_true_0, MCNormalization);
@@ -1073,8 +1170,50 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
 
   for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
     NormalizeHist( hists_true_submodel[id], MCNormalization);
-    StandardFormat( hists_true_submodel[id], title, kBlack, 2+id, observable ) ;
+		StandardFormat( hists_true_submodel[id], title, kBlack, 2+id, observable ) ;
   }
+
+	// Normalize true from slices
+	if( addbinning.size() != 0 ) {
+		for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+			NormalizeHist(h_total_slices[l], MCNormalization );
+			NormalizeHist(h_QEL_slices[l], MCNormalization );
+			NormalizeHist(h_RES_slices[l], MCNormalization );
+			NormalizeHist(h_SIS_slices[l], MCNormalization );
+			NormalizeHist(h_DIS_slices[l], MCNormalization );
+			NormalizeHist(h_MEC_slices[l], MCNormalization );
+
+			std::vector<TH1D*> all_slices{h_total_slices[l],h_data_slices[l]};
+			double y_max_total = GetMaximum( all_slices );
+
+      // Add Slice information in title
+			std::string title_subname = title ;
+			std::string alt_obs = GetAlternativeObs(observable);
+			if ( l == 0 ) {
+        std::ostringstream o1 ;
+				o1 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
+				title_subname += " " + GetObsName(alt_obs) + "<" + o1.str() +" "+GetUnit(alt_obs) ;
+			} else if ( l == addbinning.size()-2 ) {
+				std::ostringstream o1 ;
+				o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
+				title_subname += " " + GetObsName(alt_obs) + ">" + o1.str() +" "+GetUnit(alt_obs) ;
+			} else {
+				std::ostringstream o1, o2 ;
+				o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
+				o2 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
+				title_subname += " " + o1.str() + "<"+ GetObsName(alt_obs) + "<" + o2.str()+" "+GetUnit(alt_obs) ;
+      }
+
+			StandardFormat( h_total_slices[l], title_subname, kBlack, 1, observable, y_max_total ) ;
+			StandardFormat( h_QEL_slices[l], title_subname, kBlue-3, 1, observable, y_max_total ) ;
+			StandardFormat( h_RES_slices[l], title_subname, kGreen+2, 1, observable, y_max_total ) ;
+			StandardFormat( h_SIS_slices[l], title_subname, kOrange, 1, observable, y_max_total ) ;
+			StandardFormat( h_MEC_slices[l], title_subname, kMagenta-3, 1, observable, y_max_total ) ;
+			StandardFormat( h_DIS_slices[l], title_subname, kCyan+1, 1, observable, y_max_total ) ;
+			StandardFormat( h_data_slices[l], title_subname, kBlack, 8, observable, y_max_total ) ;
+
+		}
+	}
 
   // Find absolute y max
 	std::vector<TH1D*> temp_check = {hist_true,hist_data};
@@ -1134,6 +1273,39 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   delete c1 ;
+
+	TCanvas* c_slices = new TCanvas("c_slices","c_slices",200,10,700,500);
+	c_slices->cd();
+  TPad *pad_slices = new TPad("pad1","",0,0,1,1);
+  pad_slices->Draw();
+  pad_slices->cd();
+  pad_slices->SetBottomMargin(0.15);
+  pad_slices->SetLeftMargin(0.15);
+
+	// Normalize true from slices
+	if( addbinning.size() != 0 ) {
+		pad_slices->Divide(addbinning.size()-1,0);
+		for( unsigned int l = 0 ; l < addbinning.size()-1 ; ++l ){
+			TPad *pad_slice_i = (TPad*)pad_slices->cd(1+l);
+		  pad_slice_i -> cd();
+		  pad_slice_i -> SetBottomMargin(0.15);
+		  pad_slice_i -> SetLeftMargin(0.15);
+		  h_total_slices[l] -> GetYaxis()->SetTitleOffset(1.2);
+
+			h_total_slices[l]->Draw("hist");
+			h_QEL_slices[l]->Draw("hist same ");
+			h_RES_slices[l]->Draw("hist same ");
+			h_SIS_slices[l]->Draw("hist same ");
+			h_MEC_slices[l]->Draw("hist same ");
+			h_DIS_slices[l]->Draw("hist same ");
+			h_data_slices[l]->Draw("err same ");
+
+		}
+	}
+	output_name = output_file_name+"_dxsec_d"+observable+"_"+GetAlternativeObs(observable)+"Slices" ;
+  c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+  c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
+	delete c_slices;
 
   // Draw total xsec per sectors
   TCanvas * c_sector = new TCanvas("c_sector","c_sector",200,10,700,500);
@@ -1257,7 +1429,7 @@ void Plot1DXSec(){
 
 	//std::vector<std::string> observables = {"RecoW","pfl","pfl_theta","pim_mom","pim_theta","pip_mom","pip_theta","proton_mom","proton_theta",
   //                                        "HadAlphaT","HadDeltaPT","HadDeltaPhiT","ECal","RecoQ2","RecoEnergyTransfer","RecoXBJK","HadSystemMass"};
-	std::vector<std::string> observables = {"HadAlphaT"};
+	std::vector<std::string> observables = {"HadAlphaT", "HadDeltaPT", "ECal"};
 
   // To be defined in loop
 	std::vector<double> binning;

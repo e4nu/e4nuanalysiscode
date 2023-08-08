@@ -644,7 +644,7 @@ Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, TVector3 mome
 
   if ( ! apply_fiducial )  {
     if ( pdg == conf::kPdgElectron ) {
-      if( momentum.Theta() * TMath::RadToDeg() < conf::kMinThetaElectron || momentum.Theta() > conf::kMaxThetaElectron * TMath::RadToDeg() ) return false ; 
+      if( momentum.Theta() * TMath::RadToDeg() < conf::kMinThetaElectron || momentum.Theta() * TMath::RadToDeg() > conf::kMaxThetaElectron ) return false ; 
       return true ; 
     }
     else if ( pdg == conf::kPdgProton ) return PFiducialCutExtra( beam_en, momentum ) ;

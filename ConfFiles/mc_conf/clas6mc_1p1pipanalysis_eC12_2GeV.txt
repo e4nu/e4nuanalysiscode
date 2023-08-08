@@ -25,7 +25,7 @@ FirstEvent		0
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
-Toplogy 		11:1,2212:1,211:1,-221:0,22:0,111:0
+Toplogy 		11:1,2212:1,211:1,-221:0,22:0
 MaxBackgroundMultiplicity 4
 NRotations 1000
 
@@ -37,23 +37,27 @@ ComputeTrueAccCorr true
 ComputeTrueRecoAccCorr false
 
 # G18_10a_00_000:
-InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad.gst.root
-XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_04_total_xsec.root
-OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pim/e4nuanalysis_1p1pipanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad
+# InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad.gst.root
+# XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_04_total_xsec.root
+# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pip/e4nuanalysis_1p1pipanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad
 
 # G18_10b_00_000:
 # InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10b_00_000/G18_10b_Q2_04_e_on_1000060120_2261MeV_NoRad.gst.root
 # XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_04_total_xsec.root
-# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pim/e4nuanalysis_1p1pipanalysis_G18_10b_Q2_04_e_on_1000060120_2261MeV_NoRad
+# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pip/e4nuanalysis_1p1pipanalysis_G18_10b_Q2_04_e_on_1000060120_2261MeV_NoRad
 
-# GEM21_22a_00_000:
-# InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/GEM21_22a/GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad.gst.root
+# GEM21_11a_00_000:
+# InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/GEM21_11a/GEM21_11a_Q2_04_e_on_1000060120_2216MeV_NoRad.gst.root
 # XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/GEM21_11a_00_000/GEM21_11a_00_000_eC12_Q2min_04_total_xsec.root
-# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pim/e4nuanalysis_1p1pipanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad
+# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pip/e4nuanalysis_1p1pipanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad
 
 # GEM21_11b_00_000:
 # InputFile
 # XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/GEM21_11a_00_000/GEM21_11a_00_000_eC12_Q2min_04_total_xsec.root
 # OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pim/e4nuanalysis_1p1pipanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad
 
+# G18_10a_00_000 No FSI:
+InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_04_NoFSI_e_on_1000060120_2261MeV_NoRad.gst.root
+XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_04_total_xsec.root
+OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pip/e4nuanalysis_1p1pipanalysis_G18_10a_NoFSI_Q2_04_e_on_1000060120_2261MeV_NoRad
 

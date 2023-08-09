@@ -1,4 +1,5 @@
 #!/bin/bash
+
 declare -a InputFiles=("/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_01_e_on_1000060120_1161MeV_NoRad.gst.root"
                        "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10b_00_000/G18_10b_Q2_01_e_on_1000060120_1161MeV_NoRad.gst.root"
 		       "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_01_NoFSI_e_on_1000060120_1161MeV_NoRad.gst.root"
@@ -15,6 +16,8 @@ declare -a XSecFiles=("/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Fi
 		      "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/GEM21_11a_00_000/GEM21_11a_00_000_eC12_Q2min_01_total_xsec.root")
 
 cd $E4NUANALYSIS
+source e4nu_gpvm_env.sh
+
 number_inputs=${#InputFiles[@]}
 for (( i=0; i<${number_inputs}; i++ ));
 do

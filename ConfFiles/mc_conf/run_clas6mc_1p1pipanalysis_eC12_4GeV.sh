@@ -10,6 +10,8 @@ declare -a XSecFiles=("/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Fi
                       "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_08_total_xsec.root")
 
 cd $E4NUANALYSIS
+source e4nu_gpvm_env.sh
+
 number_inputs=${#InputFiles[@]}
 for (( i=0; i<${number_inputs}; i++ ));
 do

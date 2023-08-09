@@ -16,6 +16,8 @@ declare -a XSecFiles=("/pnfs/genie/persistent/users/jtenavid/e4nu_files/Analised
                       "/pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1pim/e4nuanalysis_1pimanalysis_GEM21_11a_Q2_01_e_on_1000060120_1161MeV_NoRad")
 
 cd $E4NUANALYSIS
+source e4nu_gpvm_env.sh
+
 number_inputs=${#InputFiles[@]}
 for (( i=0; i<${number_inputs}; i++ ));
 do

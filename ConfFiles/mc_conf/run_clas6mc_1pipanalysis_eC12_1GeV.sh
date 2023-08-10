@@ -18,8 +18,8 @@ declare -a XSecFiles=("/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Fi
                       "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_01_total_xsec.root"
                       "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_01_total_xsec.root"
 		      "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/GEM21_11a_00_000/GEM21_11a_00_000_eC12_Q2min_01_total_xsec.root"
-                      "/pnfs/genie/persistent/users/apapadop/mySplines/master_Q2_0_1/v3_0_6_WithSuSav2/RootFiles/xsec_carbon12_spline_CCMEC_GTEST19_10b_00_000_Q2_0_1.root"
-                      "/pnfs/genie/persistent/users/apapadop/mySplines/master_Q2_0_1/v3_0_6_WithSuSav2/RootFiles/xsec_carbon12_spline_CCMEC_G18_10a_02_11a_Q2_0_1.root")
+		      "/pnfs/genie/persistent/users/apapadop/mySplines/master_Q2_0_1/v3_2/xsec_11_1000060120_EM_GTEST19_10b_00_000_Q2_0_1.root"
+		      "/pnfs/genie/persistent/users/apapadop/mySplines/master_Q2_0_1/v3_2/xsec_11_1000060120_EM_G18_10a_02_11a_Q2_0_1.root")
 
 cd $E4NUANALYSIS
 source e4nu_gpvm_env.sh

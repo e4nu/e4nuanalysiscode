@@ -14,7 +14,21 @@
 using namespace std; 
 using namespace e4nu;
 
+/////////////////////////////////////////////////////////////////
+// Options:                                                    //
+/////////////////////////////////////////////////////////////////
+// 1) Configuration file location                              //   
+// 2) InputFile                                                // 
+// 3) OutputFile                                               //
+// 4) Type of analysis:                                        // 
+//    - ComputeTrueAccCorr                                     // 
+//    - ComputeTrueRecoAccCorr                                 //
+//    - IsData                                                 //   
+// 5) XSecFile (only for MC)                                   //
+/////////////////////////////////////////////////////////////////
+
 int main( int argc, char* argv[] ) {
+
   std::cout << "E4Nu analysis ongoing..." << std::endl;
 
   // This object can be initialized with a configuration file which contains information on the event run, 
@@ -24,15 +38,57 @@ int main( int argc, char* argv[] ) {
   path += "/" ;
   std::string config_file = "ConfFiles/example_configuration.txt" ;
   if ( argv[1] ) config_file = argv[1] ;
-  
+
   E4NuAnalysis * analysis = new E4NuAnalysis((path+config_file).c_str()) ;
   if( ! analysis ) return 0 ; 
+
+  if( argv[2] ) { 
+    analysis -> SetInputFile( argv[2] ) ;
+  } else { 
+    std::cout << " ERR: Input file not specified. Abort... " << std::endl;
+    return 0 ; 
+  }
+
+  if( argv[3] ) { 
+    analysis ->SetOutputFile( argv[3] ) ; 
+  } else { 
+    std::cout << " ERR: Output file not specified. Abort... " << std::endl;
+    return 0 ; 
+  }
 
   // Compute acceptance correction files
   bool compute_trueacc = analysis -> ComputeTrueAccCorrection() ; 
   bool compute_truerecoacc = analysis -> ComputeTrueRecoAccCorrection() ; 
+  bool is_data = analysis -> IsData() ; 
 
-  if ( analysis -> IsData() ) {   
+  if( argv[4] ) {
+    
+    if ( strcmp( argv[4], "ComputeTrueAccCorr" ) == 0 ) { 
+      std::cout << " ComputeTrueAccCorr = True " <<std::endl;
+      compute_trueacc = true ; compute_truerecoacc = false ; 
+    }
+    else if ( strcmp( argv[4], "ComputeTrueRecoAccCorr" ) == 0 ) { 
+      std::cout << " ComputeRecoAccCorr = True " <<std::endl;
+      compute_trueacc = false ; compute_truerecoacc = true ; 
+    }
+    else if ( strcmp( argv[4], "IsData" ) == 0 ) { is_data = true ; compute_trueacc = false ; compute_truerecoacc = false ; }
+    else { 
+      std::cout << " The second argument defines the type of run: (1) ComputeTrueAccCorr: Analyse using true information,\n" 
+		<< "  (2) ComputeTrueRecoAccCorr: Analyse using True events + detector effects,\n"
+		<< "  (3) IsData: Analyse data. \n Set one of the correct options\n"
+		<< " You can also simply disable this option. In this case, the default from the configuration file will be used.\n";
+      return 0 ; 
+    }
+  }
+
+  if( argv[5] && !is_data ) { 
+    analysis -> SetXSecFile( argv[5] ) ; 
+  } else { 
+    std::cout << " Input file not specified. Abort... " << std::endl;
+    return 0 ; 
+  }
+
+  if ( is_data ) {   
       compute_trueacc = false ; 
       compute_truerecoacc = false ; 
       analysis -> SetApplyFiducial( true ) ; 
@@ -40,11 +96,6 @@ int main( int argc, char* argv[] ) {
       analysis -> SetApplyReso( true ) ;  
       std::string OutputFile_data = analysis->GetOutputFile() + "_clas6data" ;
       analysis -> SetOutputFile( OutputFile_data ) ; 
-  }
-
-  if( compute_trueacc && compute_truerecoacc ) { 
-    std::cout << " Due to ROOT related issues, the code can only compute one at the time... Abort." <<std::endl;
-    return 0 ; 
   }
 
   if ( compute_trueacc ) {

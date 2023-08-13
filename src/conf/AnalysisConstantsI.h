@@ -16,6 +16,8 @@ namespace e4nu {
     static const double kMaxEePrime = 2.5 ;
     static const double kPhiOpeningAngle = 6 ; 
     
+    static const double kMinThetaElectron = 15.;
+    static const double kMaxThetaElectron = 45.;
     static const double kMinThetaProton = 12.;
     static const double kMinThetaPiPlus = 12.;
     static const double kMinThetaPiMinus = 0.;

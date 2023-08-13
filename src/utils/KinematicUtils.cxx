@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <cmath>
 #include "TVector3.h"
@@ -111,7 +110,7 @@ TVector3 utils::DeltaPT( const TLorentzVector out_electron , const std::map<int,
   TLorentzVector tot_hadron ; 
   for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
     for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
-      tot_hadron += (it->second)[i] ; 
+      tot_hadron += (it->second)[i] ;
     }
   }
   TVector3 P2_T = utils::GetPT(tot_hadron.Vect());
@@ -137,6 +136,23 @@ double utils::DeltaPhiT( const TLorentzVector out_electron , const std::map<int,
   return acos(-P1T_dir.Dot(P2T_dir)) * TMath::RadToDeg() ; 
 }
 
+double utils::HadSystemMass( const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+  TLorentzVector tot_hadron ; 
+  for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
+    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
+      tot_hadron += (it->second)[i] ;
+    }
+  }
+  return tot_hadron.Mag();
+}
 
-
-
+TLorentzVector utils::MissingEnergy( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+  TLorentzVector beam ( 0,0,EBeam,EBeam) ;
+  TLorentzVector tot_hadron ; 
+  for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
+    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
+      tot_hadron += (it->second)[i] ;
+    }
+  }
+  return ( out_electron + tot_hadron - beam ) ;
+}

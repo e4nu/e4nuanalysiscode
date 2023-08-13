@@ -242,6 +242,11 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double pim_momz = pim_max.Pz() ;
   double pim_theta = pim_max.Theta() * TMath::RadToDeg() ;
   double pim_phi = pim_max.Phi() * TMath::RadToDeg() ;
+  double HadSystemMass = utils::HadSystemMass( hadron_map ) ; 
+
+  double MissingEnergy = utils::MissingEnergy( BeamE, out_mom, hadron_map ).E(); 
+  double MissingMomentum = utils::MissingEnergy( BeamE, out_mom, hadron_map ).P(); 
+  double MissingAngle = utils::MissingEnergy( BeamE, out_mom, hadron_map ).Theta(); 
 
   unsigned int MassNumber = utils::GetMassNumber( TargetPdg ) ;
   double IntegratedCharge = conf::GetIntegratedCharge( TargetPdg, BeamE ); 
@@ -251,9 +256,16 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double ConversionFactor = kConversionFactorCm2ToMicroBarn / kOverallUnitConversionFactor ;
   double DataNormalization = kConversionFactorCm2ToMicroBarn * MassNumber / ( IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor );
 
+  // Store name of files used
+  const char* InputROOTFile = kInputFile.c_str() ;
+  const char* OutputROOTFile = kOutputFile.c_str() ;
+  const char* InputXSecFile = kXSecFile.c_str() ;
 
   bool IsBkg = event.IsBkg() ; 
   if( n == true ) {
+    kAnalysisTree -> Branch( "InputROOTFile", &InputROOTFile, "InputROOTFile/C"); 
+    kAnalysisTree -> Branch( "OutputROOTFile", &OutputROOTFile, "OutputROOTFile/C"); 
+    kAnalysisTree -> Branch( "InputXSecFile", &InputXSecFile, "InputXSecFile/C"); 
     kAnalysisTree -> Branch( "ID", &ID, "ID/I"); 
     kAnalysisTree -> Branch( "TargetPdg", &TargetPdg, "TargetPdg/I");
     kAnalysisTree -> Branch( "InLeptonPdg", &InLeptonPdg, "InLeptonPdg/I");
@@ -286,6 +298,11 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "RecoW", &RecoW, "RecoW/D");
     kAnalysisTree -> Branch( "RecoXBJK", &RecoXBJK, "RecoXBJK/D");
     kAnalysisTree -> Branch( "ElectronSector", &ElectronSector, "ElectronSector/I");
+    kAnalysisTree -> Branch( "MissingEnergy", &MissingEnergy, "MissingEnergy/D");
+    kAnalysisTree -> Branch( "MissingMomentum", &MissingMomentum, "MissingMomentum/D");
+    kAnalysisTree -> Branch( "MissingAngle", &MissingAngle, "MissingAngle/D");
+    kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
+    
     if( topology_has_protons ) {
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");
       kAnalysisTree -> Branch( "proton_momx", &proton_momx, "proton_momx/D");
@@ -293,7 +310,6 @@ bool CLAS6AnalysisI::StoreTree(Event event){
       kAnalysisTree -> Branch( "proton_momz", &proton_momz, "proton_momz/D");
       kAnalysisTree -> Branch( "proton_theta", &proton_theta, "proton_theta/D");
       kAnalysisTree -> Branch( "proton_phi", &proton_phi, "proton_phi/D");
-      kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
       kAnalysisTree -> Branch( "AlphaT", &AlphaT, "AlphaT/D");
       kAnalysisTree -> Branch( "DeltaPT", &DeltaPT, "DeltaPT/D");
       kAnalysisTree -> Branch( "DeltaPhiT", &DeltaPhiT, "DeltaPhiT/D");
@@ -319,6 +335,7 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "HadAlphaT", &HadAlphaT, "HadAlphaT/D");
     kAnalysisTree -> Branch( "HadDeltaPT", &HadDeltaPT, "HadDeltaPT/D");
     kAnalysisTree -> Branch( "HadDeltaPhiT", &HadDeltaPhiT, "HadDeltaPhiT/D");
+    kAnalysisTree -> Branch( "HadSystemMass", &HadSystemMass, "HadSystemMass/D");
 
     // Adding Normalization information
     kAnalysisTree -> Branch( "MassNumber", &MassNumber, "MassNumber/I");

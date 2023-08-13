@@ -25,7 +25,7 @@ FirstEvent		0
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
-Toplogy 		11:1,2212:1,-211:1,221:0,22:0
+Toplogy 		11:1,211:1,-221:0,22:0
 MaxBackgroundMultiplicity 4
 NRotations 1000
 
@@ -33,33 +33,30 @@ NRotations 1000
 #The following parameters will modify the configuration 
 #TrueAccCorr: by using only true signal events, it provides with the analysed events after momentum cuts. All Sectors are used
 #trueRecoAccCorr: by using only true signal events, it provodes with analysed reconstructed events after momentum, fiducial, acceptance, smearing effects. Sectors 2 and 4 are not used.
-ComputeTrueAccCorr true
-ComputeTrueRecoAccCorr false
+ComputeTrueAccCorr false
+ComputeTrueRecoAccCorr true
 
 # G18_10a_00_000:
 # InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad.gst.root
 # XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_04_total_xsec.root
-# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pim/e4nuanalysis_1p1pimanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad
+# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1pip/e4nuanalysis_1pipanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad
 
 # G18_10b_00_000:
 # InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10b_00_000/G18_10b_Q2_04_e_on_1000060120_2261MeV_NoRad.gst.root
 # XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_04_total_xsec.root
-# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pim/e4nuanalysis_1p1pimanalysis_G18_10b_Q2_04_e_on_1000060120_2261MeV_NoRad
-
-# G18_10a_00_000 No FSI:
-# InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_04_NoFSI_e_on_1000060120_2261MeV_NoRad.gst.root
-# XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_04_total_xsec.root
-# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pim/e4nuanalysis_1p1pimanalysis_G18_10a_NoFSI_Q2_04_e_on_1000060120_2261MeV_NoRad
+# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1pip/e4nuanalysis_1pipanalysis_G18_10b_Q2_04_e_on_1000060120_2261MeV_NoRad
 
 # GEM21_11a_00_000:
 InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/GEM21_11a/GEM21_11a_Q2_04_e_on_1000060120_2216MeV_NoRad.gst.root
 XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/GEM21_11a_00_000/GEM21_11a_00_000_eC12_Q2min_04_total_xsec.root
-OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pim/e4nuanalysis_1p1pimanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad
+OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1pip/e4nuanalysis_1pipanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad
 
 # GEM21_11b_00_000:
 # InputFile
 # XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/GEM21_11a_00_000/GEM21_11a_00_000_eC12_Q2min_04_total_xsec.root
-# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p1pim/e4nuanalysis_1p1pimanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad
+# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1pip/e4nuanalysis_1pipanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad
 
-
-
+# G18_10a_00_000 No FSI:
+# InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_04_NoFSI_e_on_1000060120_2261MeV_NoRad.gst.root
+# XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_04_total_xsec.root
+# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1pip/e4nuanalysis_1pipanalysis_G18_10a_NoFSI_Q2_04_e_on_1000060120_2261MeV_NoRad

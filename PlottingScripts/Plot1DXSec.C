@@ -70,9 +70,9 @@ std::vector<double> GetECalBinning( unsigned int nbins_tail, unsigned int nbins_
 std::vector<double> GetBinning( std::string observable, double EBeam ){
 	std::vector<double> binning ;
 	if( observable == "ECal") {
-    if( EBeam == 1.161 ) binning = GetECalBinning( 20, 10, 0.8, 1.2, EBeam);
+    if( EBeam == 1.161 ) binning = GetECalBinning( 10, 10, 0.8, 1.2, EBeam);
     else if( EBeam == 2.261 ) binning = GetECalBinning( 20, 10, 1, EBeam+0.06, EBeam);
-    else if( EBeam == 4.461 ) binning = GetECalBinning( 15, 10, 1.5, EBeam+0.1, EBeam);
+    else if( EBeam == 4.461 ) binning = GetECalBinning( 8, 10, 1.5, EBeam+0.1, EBeam);
   }	else if ( observable == "pfl_theta") {
     if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 20, 50 );
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 20, 50 );
@@ -90,9 +90,9 @@ std::vector<double> GetBinning( std::string observable, double EBeam ){
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0.2, 2 );
     else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 4 );
   }	else if ( observable == "proton_theta") {
-    if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 110 );
-    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 15, 120 );
-    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 80 );
+    if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 10, 110 );
+    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 10, 110 );
+    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 10, 80 );
   } else if ( observable == "proton_phi") {
     if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 180 );
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 180 );
@@ -102,9 +102,9 @@ std::vector<double> GetBinning( std::string observable, double EBeam ){
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 10, 0, 1.5 );
     else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 1.6 );
   }	else if ( observable == "pim_theta") {
-    if( EBeam == 1.161 ) binning = GetUniformBinning( 15, 0, 140 );
-    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 30, 140 );
-    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 30, 150 );
+    if( EBeam == 1.161 ) binning = GetUniformBinning( 15, 20, 140 );
+    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 20, 140 );
+    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 20, 150 );
   }	else if ( observable == "pip_mom") {
     if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0.1, 0.6);
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 1.2 );
@@ -1285,6 +1285,36 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   }
   hist_data -> Draw(" err same ");
 
+	if( observable=="ECal"){
+		// Add a sub-pad1
+	  TPad * sub_pad = new TPad("subpad","",0.2,0.2,0.85,0.85);
+		sub_pad->SetFillStyle(4000);
+		sub_pad->Draw();
+    sub_pad->cd();
+		sub_pad -> SetBottomMargin(0.15);
+		sub_pad -> SetLeftMargin(0.15);
+
+		TH1D* tmp_hist_true = (TH1D*)hist_true->Clone();
+		TH1D* tmp_hist_data = (TH1D*)hist_data->Clone();
+		tmp_hist_true->SetTitle("");
+
+		//tmp_hist_true->GetXaxis()->SetRangeUser(0,BeamE*(1-0.1));
+		tmp_hist_data->GetXaxis()->SetRangeUser(0,BeamE*(1-0.02));
+		tmp_hist_true->GetYaxis()->SetRangeUser(0,tmp_hist_data->GetBinContent(tmp_hist_data->GetMaximumBin())*(1+0.25));
+
+		tmp_hist_true -> Draw("hist");
+	  hist_true_QEL -> Draw("hist same");
+	  hist_true_RES -> Draw("hist same");
+	  hist_true_SIS -> Draw("hist same");
+	  hist_true_MEC -> Draw("hist same");
+	  hist_true_DIS -> Draw("hist same");
+	  for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
+	    hists_true_submodel[id] -> SetLineWidth(3);
+	    hists_true_submodel[id] -> Draw("hist same");
+	  }
+	  hist_data -> Draw(" err same ");
+
+	}
   std::string output_name = output_file_name+"_dxsec_d"+observable ;
   if( id_sector > 0 ) output_name += "_sector_"+std::to_string(id_sector) ;
 	std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
@@ -1321,9 +1351,11 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
 
 		}
 	}
-	output_name = output_file_name+"_dxsec_d"+observable+"_"+GetAlternativeObs(observable)+"Slices" ;
-  c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
-  c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
+	if( addbinning.size() != 0 ) {
+		output_name = output_file_name+"_dxsec_d"+observable+"_"+GetAlternativeObs(observable)+"_Slices" ;
+  	c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+  	c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
+	}
 	delete c_slices;
 
   // Draw total xsec per sectors

@@ -35,7 +35,7 @@ std::string GetAxisLabel( std::string observable, unsigned int id_axis ){
 	else if ( observable == "AlphaT") { x_axis = "#alpha_{T} [deg]"; y_axis  = "d#sigma/d#alpha_{T} #left[#mub deg^{-1}#right]"; }
 	else if ( observable == "HadAlphaT") { x_axis = "#alpha_{T}^{had} [deg]"; y_axis  = "d#sigma/d#alpha_{T}^{had} #left[#mub deg^{-1}#right]"; }
 	else if ( observable == "RecoEnergyTransfer") { x_axis = "#omega [GeV]"; y_axis  = "d#sigma/d#omega #left[#mub GeV^{-1}#right]"; }
-  else if ( observable == "HadSystemMass") { x_axis = "M_{X}[GeV]"; y_axis = "d#sigma/dM_{X} #left[#mub GeV^{-1}#right]"; }
+  else if ( observable == "HadSystemMass") { x_axis = "M_{R}[GeV]"; y_axis = "d#sigma/dM_{R} #left[#mub GeV^{-1}#right]"; }
 	if( id_axis ==0 ) return x_axis ;
 	return y_axis ;
 }
@@ -50,16 +50,33 @@ std::vector<double> GetUniformBinning( unsigned int nbins, double min, double ma
   return binning ;
 }
 
+std::vector<double> GetECalBinning( unsigned int nbins_tail, unsigned int nbins_peak, double min, double max, double EBeam){
+  std::vector<double> binning ;
+	double temp_min = min ;
+	double temp_max = max ;
+	if( EBeam < max ) temp_max = EBeam*(1-0.05) ;
+	double step = (temp_max-temp_min)/nbins_tail;
+  for( unsigned int i = 0 ; i < nbins_tail + 1 ; ++i ){
+    binning.push_back( temp_min + i * step );
+  }
+
+  step = (max-temp_max)/nbins_peak;
+  for( unsigned int i = 1 ; i < nbins_peak + 1 ; ++i ){
+    binning.push_back( temp_max + i * step ) ;
+  }
+  return binning ;
+}
+
 std::vector<double> GetBinning( std::string observable, double EBeam ){
 	std::vector<double> binning ;
 	if( observable == "ECal") {
-    if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0.8, 1.2 );
-    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 1, EBeam+0.2 );
-    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 1.5, 5 );
+    if( EBeam == 1.161 ) binning = GetECalBinning( 20, 10, 0.8, 1.2, EBeam);
+    else if( EBeam == 2.261 ) binning = GetECalBinning( 20, 10, 1, EBeam+0.06, EBeam);
+    else if( EBeam == 4.461 ) binning = GetECalBinning( 15, 10, 1.5, EBeam+0.1, EBeam);
   }	else if ( observable == "pfl_theta") {
-    if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 20, 45 );
-    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 20, 45 );
-    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 15, 45 );
+    if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 20, 50 );
+    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 20, 50 );
+    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 15, 50 );
   }	else if ( observable == "pfl_phi") {
     if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 180 );
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 180 );
@@ -392,6 +409,7 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
       trees[j] -> SetBranchAddress("HadDeltaPhiT",&HadDeltaPhiT);
       trees[j] -> SetBranchAddress("ElectronSector",&ElectronSector);
       trees[j] -> SetBranchAddress("HadSystemMass", &HadSystemMass);
+
       for( int k = 0 ; k < NEntries; ++k ) {
         trees[j]->GetEntry(k) ;
         double content = 0 ;
@@ -427,12 +445,12 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> Fill( content, w ) ;
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> SetLineWidth(3);
 
-        if( id_sector > 0 ) {
+			  if( id_sector > 0 ) {
           // Compute only for Sector  of interest
           if( id_sector != ElectronSector ) continue ;
         }
 
-				hists[j+initial_size_hists-initial_size_trees] -> Fill( content, w ) ;
+			  hists[j+initial_size_hists-initial_size_trees] -> Fill( content, w ) ;
         hists[j+initial_size_hists-initial_size_trees] -> SetLineWidth(3);
 
 				std::string alt_obs = GetAlternativeObs(observable) ;
@@ -453,7 +471,7 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
 			}
     }
 
-    ratios.push_back( (TH1D*)hists_trueacc[i]->Clone() ) ;
+		ratios.push_back( (TH1D*)hists_trueacc[i]->Clone() ) ;
     ratios[i] -> Divide( hists_recoacc[i] );
     ratios[i] -> SetName(("Acceptance_model_"+std::to_string(i)).c_str());
     StandardFormat( ratios[i], title, kBlack+i+1, 2+i, observable ) ;
@@ -851,49 +869,50 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   // Create histogram for total and total xsec per sector
   TH1D * hist_true = (TH1D*) h_acceptance ->Clone();
   hist_true -> SetName( "MC True") ;
-  hist_true -> Reset("ICE");
+  hist_true -> Reset();
+
   TH1D * hist_true_0 = (TH1D*) h_acceptance_0 ->Clone();
   hist_true_0 -> SetName( "MC True Sector  0") ;
-  hist_true_0 -> Reset("ICE");
+  hist_true_0 -> Reset();
   TH1D * hist_true_1 = (TH1D*) h_acceptance_1 ->Clone();
   hist_true_1 -> SetName( "MC True Sector  1") ;
-  hist_true_1 -> Reset("ICE");
+  hist_true_1 -> Reset();
   TH1D * hist_true_2 = (TH1D*) h_acceptance_2 ->Clone();
   hist_true_2 -> SetName( "MC True Sector  2") ;
-  hist_true_2 -> Reset("ICE");
+  hist_true_2 -> Reset();
   TH1D * hist_true_3 = (TH1D*) h_acceptance_3 ->Clone();
   hist_true_3 -> SetName( "MC True Sector  3") ;
-  hist_true_3 -> Reset("ICE");
+  hist_true_3 -> Reset();
   TH1D * hist_true_4 = (TH1D*) h_acceptance_4 ->Clone();
   hist_true_4 -> SetName( "MC True Sector  4") ;
-  hist_true_4 -> Reset("ICE");
+  hist_true_4 -> Reset();
   TH1D * hist_true_5 = (TH1D*) h_acceptance_5 ->Clone();
   hist_true_5 -> SetName( "MC True Sector  5") ;
-  hist_true_5 -> Reset("ICE");
+  hist_true_5 -> Reset();
 
   // Breakdown histograms for total (all sectors only):
   TH1D * hist_true_QEL = (TH1D*) h_acceptance ->Clone();
   hist_true_QEL -> SetName( "MC True QEL") ;
-  hist_true_QEL -> Reset("ICE");
+  hist_true_QEL -> Reset();
   TH1D * hist_true_RES = (TH1D*) h_acceptance ->Clone();
   hist_true_RES -> SetName( "MC True QEL") ;
-  hist_true_RES -> Reset("ICE");
+  hist_true_RES -> Reset();
   TH1D * hist_true_SIS = (TH1D*) h_acceptance ->Clone();
   hist_true_SIS -> SetName( "MC True QEL") ;
-  hist_true_SIS -> Reset("ICE");
+  hist_true_SIS -> Reset();
   TH1D * hist_true_MEC = (TH1D*) h_acceptance ->Clone();
   hist_true_MEC -> SetName( "MC True QEL") ;
-  hist_true_MEC -> Reset("ICE");
+  hist_true_MEC -> Reset();
   TH1D * hist_true_DIS = (TH1D*) h_acceptance ->Clone();
   hist_true_DIS -> SetName( "MC True QEL") ;
-  hist_true_DIS -> Reset("ICE");
+  hist_true_DIS -> Reset();
 
   // Same per model - only total prediction
   std::vector<TH1D*> hists_true_submodel;
   for( unsigned int id = 1 ; id < MC_files_name.size(); ++id ){
     hists_true_submodel.push_back( (TH1D*) h_acceptance ->Clone() );
     hists_true_submodel[id - 1] -> SetName( ("MC True Model "+std::to_string(id)).c_str()) ;
-    hists_true_submodel[id - 1] -> Reset("ICE");
+    hists_true_submodel[id - 1] -> Reset();
     hists_true_submodel[id - 1] -> SetLineWidth(3);
   }
 
@@ -903,22 +922,22 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
 		for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
 			h_total_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
 			h_total_slices[k] -> SetName( ("MC True Slice "+std::to_string(k)).c_str() ) ;
-		  h_total_slices[k] -> Reset("ICE");
+		  h_total_slices[k] -> Reset();
 			h_QEL_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
 			h_QEL_slices[k] -> SetName( ("MC True QEL Slice "+std::to_string(k)).c_str() ) ;
-		  h_QEL_slices[k] -> Reset("ICE");
+		  h_QEL_slices[k] -> Reset();
 			h_RES_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
 			h_RES_slices[k] -> SetName( ("MC True RES Slice "+std::to_string(k)).c_str() ) ;
-		  h_RES_slices[k] -> Reset("ICE");
+		  h_RES_slices[k] -> Reset();
 			h_SIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
 			h_SIS_slices[k] -> SetName( ("MC True SIS Slice "+std::to_string(k)).c_str() ) ;
-		  h_SIS_slices[k] -> Reset("ICE");
+		  h_SIS_slices[k] -> Reset();
 			h_MEC_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
 			h_MEC_slices[k] -> SetName( ("MC True MEC Slice "+std::to_string(k)).c_str() ) ;
-		  h_MEC_slices[k] -> Reset("ICE");
+		  h_MEC_slices[k] -> Reset();
 			h_DIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
 			h_DIS_slices[k] -> SetName( ("MC True DIS Slice "+std::to_string(k)).c_str() ) ;
-		  h_DIS_slices[k] -> Reset("ICE");
+		  h_DIS_slices[k] -> Reset();
 		}
 	}
 
@@ -926,25 +945,25 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   // total and per sector
   TH1D * hist_data = (TH1D*) h_acceptance ->Clone();
   hist_data -> SetName( "Data") ;
-  hist_data -> Reset("ICE");
+  hist_data -> Reset();
   TH1D * hist_data_0 = (TH1D*) h_acceptance_0 ->Clone();
   hist_data_0 -> SetName( "Data Sector  0") ;
-  hist_data_0 -> Reset("ICE");
+  hist_data_0 -> Reset();
   TH1D * hist_data_1 = (TH1D*) h_acceptance_1 ->Clone();
   hist_data_1 -> SetName( "Data Sector  1") ;
-  hist_data_1 -> Reset("ICE");
+  hist_data_1 -> Reset();
   TH1D * hist_data_2 = (TH1D*) h_acceptance_2 ->Clone();
-  hist_data_2 -> Reset("ICE");
+  hist_data_2 -> Reset();
 	hist_data_2 -> SetName( "Data Sector  2") ;
   TH1D * hist_data_3 = (TH1D*) h_acceptance_3 ->Clone();
   hist_data_3 -> SetName( "Data Sector  3") ;
-  hist_data_3 -> Reset("ICE");
+  hist_data_3 -> Reset();
   TH1D * hist_data_4 = (TH1D*) h_acceptance_4 ->Clone();
   hist_data_4 -> SetName( "Data Sector  4") ;
-  hist_data_4 -> Reset("ICE");
+  hist_data_4 -> Reset();
   TH1D * hist_data_5 = (TH1D*) h_acceptance_5 ->Clone();
   hist_data_5 -> SetName( "Data Sector  5") ;
-  hist_data_5 -> Reset("ICE");
+  hist_data_5 -> Reset();
 
 	// Create hist for each slice on data
 	std::vector<TH1D*> h_data_slices  ;
@@ -952,7 +971,7 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
 		for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
 			h_data_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
 			h_data_slices[k] -> SetName( ("Data Slice "+std::to_string(k)).c_str() ) ;
-		  h_data_slices[k] -> Reset("ICE");
+		  h_data_slices[k] -> Reset();
 		}
 	}
 
@@ -987,7 +1006,6 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   double MCNormalization, DataNormalization ;
 
   for ( unsigned int i = 0 ; i < trees.size() ; ++i ){
-
     NEntries = trees[i] -> GetEntries() ;
     trees[i] -> SetBranchAddress("TotWeight",&TotWeight);
     trees[i] -> SetBranchAddress("IsBkg",&IsBkg);
@@ -1061,6 +1079,7 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
 			else if ( observable == "HadSystemMass") content = HadSystemMass ;
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model
+
       if( i < size_primary_trees ) hists[size_primary_trees*(ElectronSector+1)+i] -> Fill( content, w ) ;
       if( i > size_primary_trees - 1 ) id_hist = size_primary_hists + ( i - size_primary_trees );
 
@@ -1093,7 +1112,7 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
 
 				for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
 					if( content_2 > addbinning[l] && content_2 < addbinning[l+1] ){
-						if( i == 0 /* MC */ ) {
+						if( i == 0 ) { //MC
 							h_total_slices[l] -> Fill( content, w ) ;
 							// Fill also breakdown for slice
 							if( QEL ) h_QEL_slices[l] -> Fill( content, w ) ;
@@ -1105,7 +1124,7 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
 			          else h_DIS_slices[l] -> Fill( content, w ) ;
 			        }
 			        if( MEC ) h_MEC_slices[l] -> Fill( content, w ) ;
-						} else if( i == 1 /* Data */ ) h_data_slices[l] -> Fill( content, w ) ;
+						} else if( i == 1 ) h_data_slices[l] -> Fill( content, w ) ;
 					}
 				}
 			}
@@ -1427,9 +1446,10 @@ void Plot1DXSec(){
   std::string title = "e^{12}C 1p1#pi^{-} at 4.416 GeV";
   std::string data_name = "CLAS6 data";
 
-	//std::vector<std::string> observables = {"RecoW","pfl","pfl_theta","pim_mom","pim_theta","pip_mom","pip_theta","proton_mom","proton_theta",
-  //                                        "HadAlphaT","HadDeltaPT","HadDeltaPhiT","ECal","RecoQ2","RecoEnergyTransfer","RecoXBJK","HadSystemMass"};
-	std::vector<std::string> observables = {"HadAlphaT", "HadDeltaPT", "ECal"};
+	std::vector<std::string> observables = {"ECal"};
+ //{"RecoW","pfl","pfl_theta","pim_mom","pim_theta","pip_mom","pip_theta","proton_mom","proton_theta",
+																				 //"HadAlphaT","HadDeltaPT","HadDeltaPhiT","ECal","RecoQ2","RecoEnergyTransfer","RecoXBJK","HadSystemMass"};
+
 
   // To be defined in loop
 	std::vector<double> binning;
@@ -1442,32 +1462,33 @@ void Plot1DXSec(){
 		output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/output_files_1p1pim_1GeV/";
 		output_path = output_location.c_str();
 		if( ! std::filesystem::exists(output_path) ) std::filesystem::create_directory(output_path);
-		mc_files = {"e4nuanalysis_1p1pimanalysis_GEM21_11a_Q2_01_e_on_1000060120_1161MeV_NoRad",
-		            "e4nuanalysis_1p1pimanalysis_G18_10a_Q2_01_e_on_1000060120_1161MeV_NoRad",
+		mc_files = {"e4nuanalysis_1p1pimanalysis_G18_10a_Q2_01_e_on_1000060120_1161MeV_NoRad",
 							  "e4nuanalysis_1p1pimanalysis_G18_10b_Q2_01_e_on_1000060120_1161MeV_NoRad"};
+								//"e4nuanalysis_1p1pimanalysis_GEM21_11a_Q2_01_e_on_1000060120_1161MeV_NoRad",
 		file_data = "e4nuanalysis_1p1pimanalysis_e_on_1000060120_1161MeV_clas6data";
 		title = "e^{12}C 1p1#pi^{-} at 1.116 GeV";
-		model_names = { "GEM21_11a","G18_10a", "G18_10b" } ;
+		model_names = {"G18_10a", "G18_10b" } ;
 		acceptance_file = compute_acceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
 		model_names.push_back("No FSI");
 		mc_files.push_back("e4nuanalysis_1p1pimanalysis_G18_10a_NoFSI_Q2_01_e_on_1000060120_1161MeV_NoRad");
 		Plot1DXSec( mc_files, file_data, acceptance_file, observables[i], title, data_name, model_names, mc_location, data_location, output_location, output_name, -1 ) ;
 
-/*
 		output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/output_files_1p1pim_2GeV/";
 		output_path = output_location.c_str();
 		if( ! std::filesystem::exists(output_path) ) std::filesystem::create_directory(output_path);
-    mc_files = {"e4nuanalysis_1p1pimanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad",
-		            "e4nuanalysis_1p1pimanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad",
-		            "e4nuanalysis_1p1pimanalysis_G18_10b_Q2_04_e_on_1000060120_2261MeV_NoRad"};
+    mc_files = {"e4nuanalysis_1p1pimanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad",
+		            "e4nuanalysis_1p1pimanalysis_G18_10b_Q2_04_e_on_1000060120_2261MeV_NoRad",
+								"e4nuanalysis_1p1pimanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad"};
+
     file_data = "e4nuanalysis_1p1pimanalysis_e_on_1000060120_2261MeV_clas6data";
     title = "e^{12}C 1p1#pi^{-} at 2.216 GeV";
 		output_name = "e4nuanalysis_1p1pimanalysis_Averaged_Q2_04_e_on_1000060120_2261MeV_NoRad" ;
-    model_names = { "GEM21_11a","G18_10a", "G18_10b" } ;
+    model_names = { "G18_10a", "G18_10b", "GEM21_11a"};
 	  acceptance_file = compute_acceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
 		model_names.push_back("No FSI");
 		mc_files.push_back("e4nuanalysis_1p1pimanalysis_G18_10a_NoFSI_Q2_04_e_on_1000060120_2261MeV_NoRad");
     Plot1DXSec( mc_files, file_data, acceptance_file, observables[i], title, data_name, model_names, mc_location, data_location, output_location, output_name, -1 ) ;
+
 
 		output_name = "e4nuanalysis_1p1pimanalysis_Averaged_Q2_08_e_on_1000060120_4461MeV_NoRad" ;
     output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/output_files_1p1pim_4GeV/";
@@ -1479,7 +1500,7 @@ void Plot1DXSec(){
 		model_names = { "G18_10a", "G18_10b" } ;
 		acceptance_file = compute_acceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
 		Plot1DXSec( mc_files, file_data, acceptance_file, observables[i], title, data_name, model_names, mc_location, data_location, output_location, output_name, -1 ) ;
-
+/*
     // Pi+ Analysis
 		output_name = "e4nuanalysis_1p1pipanalysis_Averaged_Q2_01_e_on_1000060120_1161MeV_NoRad" ;
 		output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/output_files_1p1pip_1GeV/";
@@ -1500,12 +1521,13 @@ void Plot1DXSec(){
 		output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/output_files_1p1pip_2GeV/";
 		output_path = output_location.c_str();
 		if( ! std::filesystem::exists(output_path) ) std::filesystem::create_directory(output_path);
-		mc_files = {"e4nuanalysis_1p1pipanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad",
-		            "e4nuanalysis_1p1pipanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad",
+		mc_files = {"e4nuanalysis_1p1pipanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad",
 							  "e4nuanalysis_1p1pipanalysis_G18_10b_Q2_04_e_on_1000060120_2261MeV_NoRad"};
+								//"e4nuanalysis_1p1pipanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad",
+
     file_data = "e4nuanalysis_1p1pipanalysis_e_on_1000060120_2261MeV_clas6data";
     title = "e^{12}C 1p1#pi^{+} at 2.216 GeV";
-    model_names = { "GEM21_11a", "G18_10a", "G18_10b" } ;
+    model_names = { "G18_10a", "G18_10b" } ;//"GEM21_11a",
 		acceptance_file = compute_acceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
 		model_names.push_back("No FSI");
 		mc_files.push_back("e4nuanalysis_1p1pipanalysis_G18_10a_NoFSI_Q2_04_e_on_1000060120_2261MeV_NoRad");

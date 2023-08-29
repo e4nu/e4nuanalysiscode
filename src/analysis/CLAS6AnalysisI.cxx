@@ -244,9 +244,9 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double pim_phi = pim_max.Phi() * TMath::RadToDeg() ;
   double HadSystemMass = utils::HadSystemMass( hadron_map ) ; 
 
-  double MissingEnergy = utils::MissingEnergy( BeamE, out_mom, hadron_map ).E(); 
-  double MissingMomentum = utils::MissingEnergy( BeamE, out_mom, hadron_map ).P(); 
-  double MissingAngle = utils::MissingEnergy( BeamE, out_mom, hadron_map ).Theta(); 
+  double MissingEnergy = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).E(); 
+  double MissingMomentum = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).P(); 
+  double MissingAngle = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).Theta(); 
 
   unsigned int MassNumber = utils::GetMassNumber( TargetPdg ) ;
   double IntegratedCharge = conf::GetIntegratedCharge( TargetPdg, BeamE ); 

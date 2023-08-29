@@ -453,9 +453,9 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double pim_theta = pim_max.Theta() * TMath::RadToDeg(); 
   double pim_phi = pim_max.Phi() * TMath::RadToDeg(); 
 
-  double MissingEnergy = utils::MissingEnergy( BeamE, out_mom, hadron_map ).E(); 
-  double MissingMomentum = utils::MissingEnergy( BeamE, out_mom, hadron_map ).P(); 
-  double MissingAngle = utils::MissingEnergy( BeamE, out_mom, hadron_map ).Theta(); 
+  double MissingEnergy = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).E(); 
+  double MissingMomentum = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).P(); 
+  double MissingAngle = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).Theta(); 
 
   bool IsBkg = event.IsBkg() ; 
   unsigned int InitialNEvents = GetNEventsToRun() ;

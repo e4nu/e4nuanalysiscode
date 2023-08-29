@@ -146,7 +146,7 @@ double utils::HadSystemMass( const std::map<int,std::vector<TLorentzVector>> had
   return tot_hadron.Mag();
 }
 
-TLorentzVector utils::MissingEnergy( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+TLorentzVector utils::Missing4Momenta( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
   TLorentzVector beam ( 0,0,EBeam,EBeam) ;
   TLorentzVector tot_hadron ; 
   for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
@@ -154,5 +154,7 @@ TLorentzVector utils::MissingEnergy( const double EBeam, const TLorentzVector ou
       tot_hadron += (it->second)[i] ;
     }
   }
-  return ( out_electron + tot_hadron - beam ) ;
+  TLorentzVector q = beam - out_electron; 
+  return ( tot_hadron - q ) ;
 }
+

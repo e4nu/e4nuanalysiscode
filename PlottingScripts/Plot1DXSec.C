@@ -6,6 +6,8 @@
 #include "TH1.h"
 #include "TCanvas.h"
 #include "TTree.h"
+#include "TEfficiency.h"
+#include <iomanip>
 #include <filesystem>
 
 std::string GetAxisLabel( std::string observable, unsigned int id_axis ){
@@ -33,7 +35,7 @@ std::string GetAxisLabel( std::string observable, unsigned int id_axis ){
 	else if ( observable == "AlphaT") { x_axis = "#alpha_{T} [deg]"; y_axis  = "d#sigma/d#alpha_{T} #left[#mub deg^{-1}#right]"; }
 	else if ( observable == "HadAlphaT") { x_axis = "#alpha_{T}^{had} [deg]"; y_axis  = "d#sigma/d#alpha_{T}^{had} #left[#mub deg^{-1}#right]"; }
 	else if ( observable == "RecoEnergyTransfer") { x_axis = "#omega [GeV]"; y_axis  = "d#sigma/d#omega #left[#mub GeV^{-1}#right]"; }
-  else if ( observable == "HadSystemMass") { x_axis = "M_{X}[GeV]"; y_axis = "d#sigma/dM_{X} #left[#mub GeV^{-1}#right]"; }
+  else if ( observable == "HadSystemMass") { x_axis = "M_{R}[GeV]"; y_axis = "d#sigma/dM_{R} #left[#mub GeV^{-1}#right]"; }
 	if( id_axis ==0 ) return x_axis ;
 	return y_axis ;
 }
@@ -48,16 +50,33 @@ std::vector<double> GetUniformBinning( unsigned int nbins, double min, double ma
   return binning ;
 }
 
+std::vector<double> GetECalBinning( unsigned int nbins_tail, unsigned int nbins_peak, double min, double max, double EBeam){
+  std::vector<double> binning ;
+	double temp_min = min ;
+	double temp_max = max ;
+	if( EBeam < max ) temp_max = EBeam*(1-0.05) ;
+	double step = (temp_max-temp_min)/nbins_tail;
+  for( unsigned int i = 0 ; i < nbins_tail + 1 ; ++i ){
+    binning.push_back( temp_min + i * step );
+  }
+
+  step = (max-temp_max)/nbins_peak;
+  for( unsigned int i = 1 ; i < nbins_peak + 1 ; ++i ){
+    binning.push_back( temp_max + i * step ) ;
+  }
+  return binning ;
+}
+
 std::vector<double> GetBinning( std::string observable, double EBeam ){
 	std::vector<double> binning ;
 	if( observable == "ECal") {
-    if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0.8, 1.2 );
-    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 1, EBeam+0.2 );
-    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 1.5, 5 );
+    if( EBeam == 1.161 ) binning = GetECalBinning( 10, 10, 0.8, 1.2, EBeam);
+    else if( EBeam == 2.261 ) binning = GetECalBinning( 20, 10, 1, EBeam+0.06, EBeam);
+    else if( EBeam == 4.461 ) binning = GetECalBinning( 8, 10, 1.5, EBeam+0.1, EBeam);
   }	else if ( observable == "pfl_theta") {
-    if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 20, 45 );
-    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 20, 45 );
-    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 15, 45 );
+    if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 20, 50 );
+    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 20, 50 );
+    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 15, 50 );
   }	else if ( observable == "pfl_phi") {
     if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 180 );
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 180 );
@@ -71,9 +90,9 @@ std::vector<double> GetBinning( std::string observable, double EBeam ){
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0.2, 2 );
     else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 4 );
   }	else if ( observable == "proton_theta") {
-    if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 110 );
-    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 15, 120 );
-    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 80 );
+    if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 10, 110 );
+    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 10, 110 );
+    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 10, 80 );
   } else if ( observable == "proton_phi") {
     if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 180 );
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 180 );
@@ -83,9 +102,9 @@ std::vector<double> GetBinning( std::string observable, double EBeam ){
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 10, 0, 1.5 );
     else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 1.6 );
   }	else if ( observable == "pim_theta") {
-    if( EBeam == 1.161 ) binning = GetUniformBinning( 15, 0, 140 );
-    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 30, 140 );
-    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 30, 150 );
+    if( EBeam == 1.161 ) binning = GetUniformBinning( 15, 20, 140 );
+    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 20, 140 );
+    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 20, 150 );
   }	else if ( observable == "pip_mom") {
     if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0.1, 0.6);
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 1.2 );
@@ -149,6 +168,51 @@ std::vector<double> GetBinning( std::string observable, double EBeam ){
 	}
 
 	return binning ;
+}
+
+std::vector<double> GetAdditionalBinning( std::string second_observable, double EBeam ) {
+	// In some cases, we might want to add additional plots.
+	// In particular, we might want to break the plot into additonal plots as a function of a second observable
+	// This function returns the binning for this second observable.
+	// The "binning" corresponds to the ranges of interest
+	std::vector<double> binning ;
+	std::vector<double> original_binning = GetBinning( second_observable, EBeam ) ;
+	if( second_observable == "ECal" ) {
+		binning.push_back(original_binning[0]);
+		binning.push_back(EBeam*(1-0.05));
+		binning.push_back(original_binning[original_binning.size()-1]);
+	}	else if ( second_observable == "HadDeltaPT" || second_observable == "DeltaPT" ){
+		binning.push_back(original_binning[0]);
+		binning.push_back(0.2);
+		//binning.push_back(0.4);
+		binning.push_back(original_binning[original_binning.size()-1]);
+	} else if ( second_observable == "HadAlphaT" || second_observable == "AlphaT" ){
+		binning.push_back(original_binning[0]);
+		binning.push_back(45);
+		binning.push_back(original_binning[original_binning.size()-1]);
+	}
+	return binning;
+}
+
+std::string GetAlternativeObs( std::string observable ){
+	if( observable == "ECal" ) return "HadDeltaPT" ;
+	else if( observable == "HadDeltaPT" || observable == "DeltaPT") return "ECal" ;
+	else if( observable == "HadAlphaT"  || observable == "AlphaT" ) return "ECal" ;
+	return "";
+}
+
+std::string GetObsName( std::string observable ){
+	if( observable == "ECal" ) return "E_{Cal}" ;
+	else if( observable == "HadDeltaPT" ) return "#deltap^{had}_{T}" ;
+	else if( observable == "HadAlphaT"  ) return "#alpha^{had}_{T}" ;
+	return "";
+}
+
+std::string GetUnit( std::string observable ){
+	if( observable == "ECal" ) return "[GeV]" ;
+	else if( observable == "HadDeltaPT" ) return "[GeV/c]" ;
+	else if( observable == "HadAlphaT"  ) return "[deg]" ;
+	return "";
 }
 
 double GetMaximum( std::vector<TH1D*> predictions){
@@ -224,9 +288,14 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   std::vector<TH1D*>  hists_recoacc, hists_trueacc, hists_recoacc_0, hists_trueacc_0, hists_recoacc_1, hists_trueacc_1,
                       hists_recoacc_2, hists_trueacc_2, hists_recoacc_3, hists_trueacc_3,
                       hists_recoacc_4, hists_trueacc_4, hists_recoacc_5, hists_trueacc_5 ;
+	std::vector<std::vector<TH1D*>> hists_recoacc_slices, hists_trueacc_slices;
   std::vector<TTree*> trees;
   std::vector<TH1D*>  hists, ratios, ratios_0, ratios_1, ratios_2, ratios_3, ratios_4, ratios_5 ;
+	std::vector<std::vector<TH1D*>> ratios_slices ;
   std::vector<double> binning ;
+	// Get energy from tree to define range
+	double BeamE ;
+
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
     files_mcrecoacc.push_back(new TFile((input_MC_location+mc_files[i]+"_truereco.root").c_str(),"ROOT"));
     files_mctrueacc.push_back(new TFile((input_MC_location+mc_files[i]+"_true.root").c_str(),"ROOT"));
@@ -236,27 +305,41 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
     trees_mctrueacc.push_back( (TTree*)files_mctrueacc[i]->Get("MCCLAS6Tree"));
     if( !trees_mctrueacc[i] || !trees_mcrecoacc[i] ) { std::cout << "ERROR: the threes do not exist." <<std::endl; return "";}
 
-
-		// Get energy from tree to define range
-		double BeamE ;
 		trees_mctrueacc[0]->SetBranchAddress("BeamE",&BeamE);
 		trees_mctrueacc[0]->GetEntry(0);
 		binning = GetBinning(observable,BeamE);
 
     hists_recoacc.push_back( new TH1D( ("Reco MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
     hists_trueacc.push_back( new TH1D( ("True MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
-    hists_recoacc_0.push_back( new TH1D( ("Reco MC ACC Sector 0 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
-    hists_trueacc_0.push_back( new TH1D( ("True MC ACC Sector 0 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
-    hists_recoacc_1.push_back( new TH1D( ("Reco MC ACC Sector 1 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
-    hists_trueacc_1.push_back( new TH1D( ("True MC ACC Sector 1 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
-    hists_recoacc_2.push_back( new TH1D( ("Reco MC ACC Sector 2 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
-    hists_trueacc_2.push_back( new TH1D( ("True MC ACC Sector 2 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
-    hists_recoacc_3.push_back( new TH1D( ("Reco MC ACC Sector 3 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
-    hists_trueacc_3.push_back( new TH1D( ("True MC ACC Sector 3 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
-    hists_recoacc_4.push_back( new TH1D( ("Reco MC ACC Sector 4 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
-    hists_trueacc_4.push_back( new TH1D( ("True MC ACC Sector 4 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
-    hists_recoacc_5.push_back( new TH1D( ("Reco MC ACC Sector 5 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
-    hists_trueacc_5.push_back( new TH1D( ("True MC ACC Sector 5 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_recoacc_0.push_back( new TH1D( ("Reco MC ACC Sector  0 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_trueacc_0.push_back( new TH1D( ("True MC ACC Sector  0 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_recoacc_1.push_back( new TH1D( ("Reco MC ACC Sector  1 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_trueacc_1.push_back( new TH1D( ("True MC ACC Sector  1 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_recoacc_2.push_back( new TH1D( ("Reco MC ACC Sector  2 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_trueacc_2.push_back( new TH1D( ("True MC ACC Sector  2 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_recoacc_3.push_back( new TH1D( ("Reco MC ACC Sector  3 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_trueacc_3.push_back( new TH1D( ("True MC ACC Sector  3 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_recoacc_4.push_back( new TH1D( ("Reco MC ACC Sector  4 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_trueacc_4.push_back( new TH1D( ("True MC ACC Sector  4 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_recoacc_5.push_back( new TH1D( ("Reco MC ACC Sector  5 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_trueacc_5.push_back( new TH1D( ("True MC ACC Sector  5 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+
+		std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE );
+		if ( addbinning.size() > 0 ) {
+			// Adding additional histograms for slices calculation
+			std::vector<TH1D*> temp_reco_slices, temp_true_slices ;
+			for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
+				std::string name = "MC Acceptance for " ;
+				if ( k == 0 ) name += GetAlternativeObs(observable) + " < " + std::to_string(addbinning[k+1]) ;
+				else if ( k == addbinning.size()-2 ) name += GetAlternativeObs(observable) + " > " + std::to_string(addbinning[k]) ;
+				else name += std::to_string(addbinning[k]) + " < " +  GetAlternativeObs(observable) + " < " + std::to_string(addbinning[k]) ;
+				name += ". Model "+std::to_string(i);
+				temp_reco_slices.push_back( new TH1D( ("Reco " + name).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+				temp_true_slices.push_back( new TH1D( ("True " + name).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+			}
+			hists_recoacc_slices.push_back(temp_reco_slices);
+			hists_trueacc_slices.push_back(temp_true_slices);
+		}
 
     unsigned int initial_size_trees = trees.size();
     unsigned int initial_size_hists = hists.size();
@@ -276,6 +359,11 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
     hists.push_back(hists_trueacc_4[i]); //11
     hists.push_back(hists_recoacc_5[i]); //12
     hists.push_back(hists_trueacc_5[i]); //13
+
+    // Set condition for new hists
+		for( unsigned int id = initial_size_hists ; id < hists.size(); id++ ){
+			hists[id] -> Sumw2() ;
+		}
 
     // OBSERVABLE DEFINITION:
     double TotWeight ;
@@ -321,6 +409,7 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
       trees[j] -> SetBranchAddress("HadDeltaPhiT",&HadDeltaPhiT);
       trees[j] -> SetBranchAddress("ElectronSector",&ElectronSector);
       trees[j] -> SetBranchAddress("HadSystemMass", &HadSystemMass);
+
       for( int k = 0 ; k < NEntries; ++k ) {
         trees[j]->GetEntry(k) ;
         double content = 0 ;
@@ -352,21 +441,37 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
         else if ( observable == "DeltaPhiT") content = DeltaPhiT ;
         else if ( observable == "HadDeltaPhiT") content = HadDeltaPhiT ;
         else if ( observable == "HadSystemMass") content = HadSystemMass ;
-        // Fill the per sector histogram
+        // Fill the per Sector  histogram
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> Fill( content, w ) ;
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> SetLineWidth(3);
 
-        if( id_sector > 0 ) {
-          // Compute only for sector of interest
+			  if( id_sector > 0 ) {
+          // Compute only for Sector  of interest
           if( id_sector != ElectronSector ) continue ;
         }
 
-        hists[j+initial_size_hists-initial_size_trees] -> Fill( content, w ) ;
+			  hists[j+initial_size_hists-initial_size_trees] -> Fill( content, w ) ;
         hists[j+initial_size_hists-initial_size_trees] -> SetLineWidth(3);
-      }
+
+				std::string alt_obs = GetAlternativeObs(observable) ;
+				double content_2 ;
+				if ( alt_obs == "ECal" ) content_2 = ECal ;
+				else if ( alt_obs == "HadAlphaT" ) content_2 = HadAlphaT ;
+				else if ( alt_obs == "HadDeltaPT" ) content_2 = HadDeltaPT ;
+
+        // Fill sliced histogram
+				if( addbinning.size() != 0 ) {
+					for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+						if( content_2 > addbinning[l] && content_2 < addbinning[l+1] ){
+							if( j == initial_size_trees ) hists_recoacc_slices[i][l] -> Fill( content, w ) ;
+							else if( j == initial_size_trees + 1 ) hists_trueacc_slices[i][l] -> Fill( content, w ) ;
+						}
+					}
+      	}
+			}
     }
 
-    ratios.push_back( (TH1D*)hists_trueacc[i]->Clone() ) ;
+		ratios.push_back( (TH1D*)hists_trueacc[i]->Clone() ) ;
     ratios[i] -> Divide( hists_recoacc[i] );
     ratios[i] -> SetName(("Acceptance_model_"+std::to_string(i)).c_str());
     StandardFormat( ratios[i], title, kBlack+i+1, 2+i, observable ) ;
@@ -378,42 +483,55 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
     ratios_0[i] -> SetName(("Acceptance_model_"+std::to_string(i)+"_sector_0").c_str());
     StandardFormat( ratios_0[i], title, kOrange+1+i, 2+i, observable ) ;
     ratios_0[i] -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-    ratios_0[i] -> GetYaxis()->SetTitle("Acceptance correction Sector 0");
+    ratios_0[i] -> GetYaxis()->SetTitle("Acceptance correction e-Sector  0");
 
     ratios_1.push_back( (TH1D*)hists_trueacc_1[i]->Clone() ) ;
     ratios_1[i] -> Divide( hists_recoacc_1[i] );
     ratios_1[i] -> SetName(("Acceptance_model_"+std::to_string(i)+"_sector_1").c_str());
     StandardFormat( ratios_1[i], title, kPink+4-i, 2+i, observable ) ;
     ratios_1[i] -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-    ratios_1[i] -> GetYaxis()->SetTitle("Acceptance correction Sector 1");
+    ratios_1[i] -> GetYaxis()->SetTitle("Acceptance correction e-Sector 1");
 
     ratios_2.push_back( (TH1D*)hists_trueacc_2[i]->Clone() ) ;
     ratios_2[i] -> Divide( hists_recoacc_2[i] );
     ratios_2[i] -> SetName(("Acceptance_model_"+std::to_string(i)+"_sector_2").c_str());
     StandardFormat( ratios_2[i], title, kViolet+5-i, 2+i, observable ) ;
     ratios_2[i] -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-    ratios_2[i] -> GetYaxis()->SetTitle("Acceptance correction Sector 2");
+    ratios_2[i] -> GetYaxis()->SetTitle("Acceptance correction e-Sector 2");
 
     ratios_3.push_back( (TH1D*)hists_trueacc_3[i]->Clone() ) ;
     ratios_3[i] -> Divide( hists_recoacc_3[i] );
     ratios_3[i] -> SetName(("Acceptance_model_"+std::to_string(i)+"_sector_3").c_str());
     StandardFormat( ratios_3[i], title, kAzure-5+i, 2+i, observable ) ;
     ratios_3[i] -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-    ratios_3[i] -> GetYaxis()->SetTitle("Acceptance_model sector_3");
+    ratios_3[i] -> GetYaxis()->SetTitle("Acceptance correction e-Sector 3");
 
     ratios_4.push_back( (TH1D*)hists_trueacc_4[i]->Clone() ) ;
     ratios_4[i] -> Divide( hists_recoacc_4[i] );
     ratios_4[i] -> SetName(("Acceptance_model_"+std::to_string(i)+"_sector_4").c_str());
     StandardFormat( ratios_4[i], title, kTeal-7-i, 2+i, observable ) ;
     ratios_4[i] -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-    ratios_4[i] -> GetYaxis()->SetTitle("Acceptance correction Sector 4");
+    ratios_4[i] -> GetYaxis()->SetTitle("Acceptance correction e-Sector 4");
 
     ratios_5.push_back( (TH1D*)hists_trueacc_5[i]->Clone() ) ;
     ratios_5[i] -> Divide( hists_recoacc_5[i] );
     ratios_5[i] -> SetName(("Acceptance_model_"+std::to_string(i)+"_sector_5").c_str());
     StandardFormat( ratios_5[i], title, kGreen-3-i, 2+i, observable ) ;
     ratios_5[i] -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-    ratios_5[i] -> GetYaxis()->SetTitle("Acceptance correction Sector 5");
+    ratios_5[i] -> GetYaxis()->SetTitle("Acceptance correction e-Sector 5");
+
+		std::vector<TH1D*> temp_ratios_slices ;
+		if( hists_trueacc_slices.size() != 0 ) {
+			for( unsigned int l = 0 ; l < hists_trueacc_slices[i].size() ; ++l ){
+					temp_ratios_slices.push_back( (TH1D*)hists_trueacc_slices[i][l]->Clone() );
+					temp_ratios_slices[l] -> Divide( hists_recoacc_slices[i][l] );
+					StandardFormat( temp_ratios_slices[l], title, kGreen-3-i, 2+i, observable ) ;
+					std::string name = "Acceptance for slice " + std::to_string(l) ;
+		    	temp_ratios_slices[l] -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
+		    	temp_ratios_slices[l] -> GetYaxis()->SetTitle(name.c_str());
+			}
+		}
+		ratios_slices.push_back(temp_ratios_slices);
   }
 
   TH1D* ratio = (TH1D*)ratios[0]->Clone();
@@ -434,7 +552,7 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   ratio_0 -> Scale( 1./mc_files.size() );
   StandardFormat( ratio_0, title, kOrange+1, 1, observable ) ;
   ratio_0 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-  ratio_0 -> GetYaxis()->SetTitle("Acceptance correction Sector 0");
+  ratio_0 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 0");
 
   TH1D* ratio_1 = (TH1D*)ratios_1[0]->Clone();
   ratio_1 -> SetName("Acceptance_1");
@@ -444,7 +562,7 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   ratio_1 -> Scale( 1./mc_files.size() );
   StandardFormat( ratio_1, title, kPink+4, 1, observable ) ;
   ratio_1 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-  ratio_1 -> GetYaxis()->SetTitle("Acceptance correction Sector 1");
+  ratio_1 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 1");
 
   TH1D* ratio_2 = (TH1D*)ratios_2[0]->Clone();
   ratio_2 -> SetName("Acceptance_2");
@@ -454,7 +572,7 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   ratio_2 -> Scale( 1./mc_files.size() );
   StandardFormat( ratio_2, title, kViolet+5, 1, observable ) ;
   ratio_2 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-  ratio_2 -> GetYaxis()->SetTitle("Acceptance correction Sector 2");
+  ratio_2 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 2");
 
   TH1D* ratio_3 = (TH1D*)ratios_3[0]->Clone();
   ratio_3 -> SetName("Acceptance_3");
@@ -464,7 +582,7 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   ratio_3 -> Scale( 1./mc_files.size() );
   StandardFormat( ratio_3, title, kAzure-5, 1, observable ) ;
   ratio_3 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-  ratio_3 -> GetYaxis()->SetTitle("Acceptance correction Sector 3");
+  ratio_3 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 3");
 
   TH1D* ratio_4 = (TH1D*)ratios_4[0]->Clone();
   ratio_4 -> SetName("Acceptance_4");
@@ -474,7 +592,7 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   ratio_4 -> Scale( 1./mc_files.size() );
   StandardFormat( ratio_4, title, kTeal-7, 1, observable ) ;
   ratio_4 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-  ratio_4 -> GetYaxis()->SetTitle("Acceptance correction Sector 4");
+  ratio_4 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 4");
 
   TH1D* ratio_5 = (TH1D*)ratios_5[0]->Clone();
   ratio_5 -> SetName("Acceptance_5");
@@ -484,8 +602,41 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   ratio_5 -> Scale( 1./mc_files.size() );
   StandardFormat( ratio_5, title, kGreen-3, 1, observable ) ;
   ratio_5 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-  ratio_5 -> GetYaxis()->SetTitle("Acceptance correction Sector 5");
+  ratio_5 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 5");
 
+	std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE ) ;
+	if ( addbinning.size() > 0 ) {
+		// Adding additional histograms for slices calculation
+		std::vector<TH1D*> temp_reco_slices, temp_true_slices ;
+		for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
+			std::string name = "MC Acceptance for " ;
+			if ( k == 0 ) name += GetAlternativeObs(observable) + " < " + std::to_string(addbinning[k+1]) ;
+			else if ( k == addbinning.size()-2 ) name += GetAlternativeObs(observable) + " > " + std::to_string(addbinning[k]) ;
+			else name += std::to_string(addbinning[k]) + " < " +  GetAlternativeObs(observable) + " < " + std::to_string(addbinning[k]) ;
+		}
+	}
+
+	std::vector<TH1D*> ratio_slices ;
+	if( ratios_slices.size() != 0 ) {
+		for( unsigned l = 0 ; l < ratios_slices[0].size(); ++l ){
+			std::string name = "MC Acceptance for " ;
+			if ( l == 0 ) name += GetAlternativeObs(observable) + " < " + std::to_string(addbinning[l+1]) ;
+			else if ( l == addbinning.size()-2 ) name += GetAlternativeObs(observable) + " > " + std::to_string(addbinning[l]) ;
+			else name += std::to_string(addbinning[l]) + " < " +  GetAlternativeObs(observable) + " < " + std::to_string(addbinning[l]) ;
+
+			TH1D * temp_slice_ratio = (TH1D*)ratios_slices[0][l]->Clone();
+			temp_slice_ratio -> SetName(("Acceptance_Slice_"+std::to_string(l)).c_str());
+			for( unsigned int i = 1 ; i < mc_files.size() ; ++i ) {
+			 	temp_slice_ratio->Add(ratios_slices[i][l]);
+			}
+			temp_slice_ratio -> Scale( 1./mc_files.size() );
+			StandardFormat( temp_slice_ratio, title, kGreen-3, 1, observable ) ;
+			temp_slice_ratio -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
+			temp_slice_ratio -> GetYaxis()->SetTitle("Acceptance");
+			temp_slice_ratio ->SetTitle((name+". Slice "+std::to_string(l)).c_str());
+			ratio_slices.push_back(temp_slice_ratio);
+		}
+  }
   std::string output_name = output_file_name+"_acceptance_correction_"+observable ;
   if( id_sector > 0 ) output_name += "_sector_"+std::to_string(id_sector) ;
   std::string acc_file = "/AcceptanceFiles/"+output_name ;
@@ -502,6 +653,7 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   pad1->SetBottomMargin(0.15);
   pad1->SetLeftMargin(0.15);
 
+	// Store total contribution (averaged)
   ratio->Write();
   ratio_0->Write();
   ratio_1->Write();
@@ -509,6 +661,8 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   ratio_3->Write();
   ratio_4->Write();
   ratio_5->Write();
+
+	// Store per model
 	for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
     ratios_0[i] -> Write();
     ratios_1[i] -> Write();
@@ -518,12 +672,18 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
     ratios_5[i] -> Write();
   }
 
+	for ( unsigned int i = 0 ; i < ratio_slices.size(); ++i ){
+		ratio_slices[i] -> Write() ;
+	}
+
+	// Plot it
 	ratio->Draw("hist err");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
     ratios[i]->Draw("hist err same");
     ratios[i]->Write();
   }
-  ratio->Draw("hist same");
+  ratio->Draw("hist err same");
+  //teff->Draw("AP");
 
   c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());
   c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.pdf").c_str());
@@ -544,9 +704,9 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   pad_sector_0 -> SetBottomMargin(0.15);
   pad_sector_0 -> SetLeftMargin(0.15);
   ratio_0 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_0 -> Draw("hist");
+  ratio_0 -> Draw("hist err");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-     ratios_0[i] -> Draw("hist same");
+     ratios_0[i] -> Draw("hist err same");
 	}
 
   TPad *pad_sector_1 = (TPad*)pad_sector->cd(2);
@@ -554,9 +714,9 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   pad_sector_1 -> SetBottomMargin(0.15);
   pad_sector_1 -> SetLeftMargin(0.15);
   ratio_1 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_1 -> Draw("hist");
+  ratio_1 -> Draw("hist err");
 	for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-		 ratios_1[i] -> Draw("hist same");
+		 ratios_1[i] -> Draw("hist err same");
 	}
 
   TPad *pad_sector_2 = (TPad*)pad_sector->cd(3);
@@ -574,9 +734,9 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   pad_sector_3 -> SetBottomMargin(0.15);
   pad_sector_3 -> SetLeftMargin(0.15);
   ratio_3 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_3 -> Draw("hist");
+  ratio_3 -> Draw("hist err");
 	for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-		 ratios_3[i] -> Draw("hist same");
+		 ratios_3[i] -> Draw("hist err same");
 	}
 
   TPad *pad_sector_4 = (TPad*)pad_sector->cd(5);
@@ -584,9 +744,9 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   pad_sector_4 -> SetBottomMargin(0.15);
   pad_sector_4 -> SetLeftMargin(0.15);
   ratio_4 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_4 -> Draw("hist");
+  ratio_4 -> Draw("hist err");
 	for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-		 ratios_4[i] -> Draw("hist same");
+		 ratios_4[i] -> Draw("hist err same");
 	}
 
   TPad *pad_sector_5 = (TPad*)pad_sector->cd(6);
@@ -594,9 +754,9 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
   pad_sector_5 -> SetBottomMargin(0.15);
   pad_sector_5 -> SetLeftMargin(0.15);
   ratio_5 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_5 -> Draw("hist");
+  ratio_5 -> Draw("hist err");
 	for( unsigned int i = 1 ; i < mc_files.size() ; ++i ) {
-		 ratios_5[i] -> Draw("hist same");
+		 ratios_5[i] -> Draw("hist err same");
 	}
 
   c_sector_2->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_persector.root").c_str());
@@ -644,7 +804,7 @@ void CorrectData(TH1D* h, TH1D* acc) {
 // target target_pdg
 // beam energy
 // Number of events in original MC file (pre-analysis)
-// id_secotr: ID of the sector of interest
+// id_secotr: ID of the Sector  of interest
 
 void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_name,
                 std::string acceptance_file_name, std::string observable,
@@ -676,7 +836,23 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   TH1D * h_acceptance_3 = (TH1D*)file_acceptance->Get("Acceptance_3");
   TH1D * h_acceptance_4 = (TH1D*)file_acceptance->Get("Acceptance_4");
   TH1D * h_acceptance_5 = (TH1D*)file_acceptance->Get("Acceptance_5");
+
+	// Get Tree for main model
   TTree * tree_true = (TTree*)files_true_MC[0]->Get("MCCLAS6Tree");
+	// Get configured energy, used for plotting
+	double BeamE ;
+	tree_true->SetBranchAddress("BeamE",&BeamE);
+	tree_true->GetEntry(0);
+
+	// Get Acceptance for slices
+	std::vector<TH1D*> h_acc_slices ;
+	std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE ) ;
+	if ( addbinning.size() > 0 ) {
+		for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
+			h_acc_slices.push_back( (TH1D*)file_acceptance->Get(("Acceptance_Slice_"+std::to_string(k)).c_str() ) ) ;
+			if( !h_acc_slices[k] ) { std::cout << "ERROR: Slice acceptance empty"<<std::endl;return;}
+		}
+	}
 
   // For submodels only total prediction is plotted
   std::vector<TTree*> tree_submodels ;
@@ -693,74 +869,111 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   // Create histogram for total and total xsec per sector
   TH1D * hist_true = (TH1D*) h_acceptance ->Clone();
   hist_true -> SetName( "MC True") ;
-  hist_true -> Reset("ICE");
+  hist_true -> Reset();
+
   TH1D * hist_true_0 = (TH1D*) h_acceptance_0 ->Clone();
-  hist_true_0 -> SetName( "MC True Sector 0") ;
-  hist_true_0 -> Reset("ICE");
+  hist_true_0 -> SetName( "MC True Sector  0") ;
+  hist_true_0 -> Reset();
   TH1D * hist_true_1 = (TH1D*) h_acceptance_1 ->Clone();
-  hist_true_1 -> SetName( "MC True Sector 1") ;
-  hist_true_1 -> Reset("ICE");
+  hist_true_1 -> SetName( "MC True Sector  1") ;
+  hist_true_1 -> Reset();
   TH1D * hist_true_2 = (TH1D*) h_acceptance_2 ->Clone();
-  hist_true_2 -> SetName( "MC True Sector 2") ;
-  hist_true_2 -> Reset("ICE");
+  hist_true_2 -> SetName( "MC True Sector  2") ;
+  hist_true_2 -> Reset();
   TH1D * hist_true_3 = (TH1D*) h_acceptance_3 ->Clone();
-  hist_true_3 -> SetName( "MC True Sector 3") ;
-  hist_true_3 -> Reset("ICE");
+  hist_true_3 -> SetName( "MC True Sector  3") ;
+  hist_true_3 -> Reset();
   TH1D * hist_true_4 = (TH1D*) h_acceptance_4 ->Clone();
-  hist_true_4 -> SetName( "MC True Sector 4") ;
-  hist_true_4 -> Reset("ICE");
+  hist_true_4 -> SetName( "MC True Sector  4") ;
+  hist_true_4 -> Reset();
   TH1D * hist_true_5 = (TH1D*) h_acceptance_5 ->Clone();
-  hist_true_5 -> SetName( "MC True Sector 5") ;
-  hist_true_5 -> Reset("ICE");
+  hist_true_5 -> SetName( "MC True Sector  5") ;
+  hist_true_5 -> Reset();
 
   // Breakdown histograms for total (all sectors only):
   TH1D * hist_true_QEL = (TH1D*) h_acceptance ->Clone();
   hist_true_QEL -> SetName( "MC True QEL") ;
-  hist_true_QEL -> Reset("ICE");
+  hist_true_QEL -> Reset();
   TH1D * hist_true_RES = (TH1D*) h_acceptance ->Clone();
   hist_true_RES -> SetName( "MC True QEL") ;
-  hist_true_RES -> Reset("ICE");
+  hist_true_RES -> Reset();
   TH1D * hist_true_SIS = (TH1D*) h_acceptance ->Clone();
   hist_true_SIS -> SetName( "MC True QEL") ;
-  hist_true_SIS -> Reset("ICE");
+  hist_true_SIS -> Reset();
   TH1D * hist_true_MEC = (TH1D*) h_acceptance ->Clone();
   hist_true_MEC -> SetName( "MC True QEL") ;
-  hist_true_MEC -> Reset("ICE");
+  hist_true_MEC -> Reset();
   TH1D * hist_true_DIS = (TH1D*) h_acceptance ->Clone();
   hist_true_DIS -> SetName( "MC True QEL") ;
-  hist_true_DIS -> Reset("ICE");
+  hist_true_DIS -> Reset();
 
   // Same per model - only total prediction
   std::vector<TH1D*> hists_true_submodel;
   for( unsigned int id = 1 ; id < MC_files_name.size(); ++id ){
     hists_true_submodel.push_back( (TH1D*) h_acceptance ->Clone() );
     hists_true_submodel[id - 1] -> SetName( ("MC True Model "+std::to_string(id)).c_str()) ;
-    hists_true_submodel[id - 1] -> Reset("ICE");
+    hists_true_submodel[id - 1] -> Reset();
     hists_true_submodel[id - 1] -> SetLineWidth(3);
   }
+
+  // Create hist for each slice on true
+	std::vector<TH1D*> h_total_slices, h_QEL_slices, h_RES_slices, h_DIS_slices, h_MEC_slices, h_SIS_slices ;
+	if ( addbinning.size() > 0 ) {
+		for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
+			h_total_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_total_slices[k] -> SetName( ("MC True Slice "+std::to_string(k)).c_str() ) ;
+		  h_total_slices[k] -> Reset();
+			h_QEL_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_QEL_slices[k] -> SetName( ("MC True QEL Slice "+std::to_string(k)).c_str() ) ;
+		  h_QEL_slices[k] -> Reset();
+			h_RES_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_RES_slices[k] -> SetName( ("MC True RES Slice "+std::to_string(k)).c_str() ) ;
+		  h_RES_slices[k] -> Reset();
+			h_SIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_SIS_slices[k] -> SetName( ("MC True SIS Slice "+std::to_string(k)).c_str() ) ;
+		  h_SIS_slices[k] -> Reset();
+			h_MEC_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_MEC_slices[k] -> SetName( ("MC True MEC Slice "+std::to_string(k)).c_str() ) ;
+		  h_MEC_slices[k] -> Reset();
+			h_DIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_DIS_slices[k] -> SetName( ("MC True DIS Slice "+std::to_string(k)).c_str() ) ;
+		  h_DIS_slices[k] -> Reset();
+		}
+	}
+
 
   // total and per sector
   TH1D * hist_data = (TH1D*) h_acceptance ->Clone();
   hist_data -> SetName( "Data") ;
-  hist_data -> Reset("ICE");
+  hist_data -> Reset();
   TH1D * hist_data_0 = (TH1D*) h_acceptance_0 ->Clone();
-  hist_data_0 -> SetName( "Data Sector 0") ;
-  hist_data_0 -> Reset("ICE");
+  hist_data_0 -> SetName( "Data Sector  0") ;
+  hist_data_0 -> Reset();
   TH1D * hist_data_1 = (TH1D*) h_acceptance_1 ->Clone();
-  hist_data_1 -> SetName( "Data Sector 1") ;
-  hist_data_1 -> Reset("ICE");
+  hist_data_1 -> SetName( "Data Sector  1") ;
+  hist_data_1 -> Reset();
   TH1D * hist_data_2 = (TH1D*) h_acceptance_2 ->Clone();
-  hist_data_2 -> SetName( "Data Sector 2") ;
-  hist_data_2 -> Reset("ICE");
+  hist_data_2 -> Reset();
+	hist_data_2 -> SetName( "Data Sector  2") ;
   TH1D * hist_data_3 = (TH1D*) h_acceptance_3 ->Clone();
-  hist_data_3 -> SetName( "Data Sector 3") ;
-  hist_data_3 -> Reset("ICE");
+  hist_data_3 -> SetName( "Data Sector  3") ;
+  hist_data_3 -> Reset();
   TH1D * hist_data_4 = (TH1D*) h_acceptance_4 ->Clone();
-  hist_data_4 -> SetName( "Data Sector 4") ;
-  hist_data_4 -> Reset("ICE");
+  hist_data_4 -> SetName( "Data Sector  4") ;
+  hist_data_4 -> Reset();
   TH1D * hist_data_5 = (TH1D*) h_acceptance_5 ->Clone();
-  hist_data_5 -> SetName( "Data Sector 5") ;
-  hist_data_5 -> Reset("ICE");
+  hist_data_5 -> SetName( "Data Sector  5") ;
+  hist_data_5 -> Reset();
+
+	// Create hist for each slice on data
+	std::vector<TH1D*> h_data_slices  ;
+	if ( addbinning.size() > 0 ) {
+		for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
+			h_data_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+			h_data_slices[k] -> SetName( ("Data Slice "+std::to_string(k)).c_str() ) ;
+		  h_data_slices[k] -> Reset();
+		}
+	}
 
   std::vector<TTree*> trees = { tree_true, tree_data };
   std::vector<TH1D*> hists = { hist_true, hist_data, hist_true_0, hist_data_0,
@@ -793,7 +1006,6 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   double MCNormalization, DataNormalization ;
 
   for ( unsigned int i = 0 ; i < trees.size() ; ++i ){
-
     NEntries = trees[i] -> GetEntries() ;
     trees[i] -> SetBranchAddress("TotWeight",&TotWeight);
     trees[i] -> SetBranchAddress("IsBkg",&IsBkg);
@@ -866,12 +1078,13 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
       else if ( observable == "HadDeltaPhiT") content = HadDeltaPhiT ;
 			else if ( observable == "HadSystemMass") content = HadSystemMass ;
       unsigned int id_hist = i ;
-      // Fill the per sector histogram. Only for primary model
+      // Fill the per Sector  histogram. Only for primary model
+
       if( i < size_primary_trees ) hists[size_primary_trees*(ElectronSector+1)+i] -> Fill( content, w ) ;
       if( i > size_primary_trees - 1 ) id_hist = size_primary_hists + ( i - size_primary_trees );
 
       if( id_sector > 0 ) {
-      	// Compute only for sector of interest
+      	// Compute only for Sector  of interest
 	      if( id_sector != ElectronSector ) continue ;
       }
       hists[id_hist] -> Fill( content, w ) ;
@@ -888,6 +1101,33 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
         }
         if( MEC ) hist_true_MEC -> Fill( content, w ) ;
       }
+
+			// Fill slices
+			if( addbinning.size() != 0 ) {
+				std::string alt_obs = GetAlternativeObs(observable) ;
+				double content_2 ;
+				if ( alt_obs == "ECal" ) content_2 = ECal ;
+				else if ( alt_obs == "HadAlphaT" ) content_2 = HadAlphaT ;
+				else if ( alt_obs == "HadDeltaPT" ) content_2 = HadDeltaPT ;
+
+				for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+					if( content_2 > addbinning[l] && content_2 < addbinning[l+1] ){
+						if( i == 0 ) { //MC
+							h_total_slices[l] -> Fill( content, w ) ;
+							// Fill also breakdown for slice
+							if( QEL ) h_QEL_slices[l] -> Fill( content, w ) ;
+			        if( RES ) {
+			          h_RES_slices[l] -> Fill( content, w ) ;
+			        }
+			        if( DIS ) {
+			          if( RecoW < 1.7 ) h_SIS_slices[l] -> Fill( content, w ) ;
+			          else h_DIS_slices[l] -> Fill( content, w ) ;
+			        }
+			        if( MEC ) h_MEC_slices[l] -> Fill( content, w ) ;
+						} else if( i == 1 ) h_data_slices[l] -> Fill( content, w ) ;
+					}
+				}
+			}
     }
   }
 
@@ -904,17 +1144,17 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   TH1D * hist_data_uncorr = (TH1D*) hist_data ->Clone();
   hist_data_uncorr -> SetName( "Uncorrected Data") ;
   TH1D * hist_data_uncorr_0 = (TH1D*) hist_data_0 ->Clone();
-  hist_data_uncorr_0 -> SetName( "Uncorrected Data Sector 0") ;
+  hist_data_uncorr_0 -> SetName( "Uncorrected Data Sector  0") ;
   TH1D * hist_data_uncorr_1 = (TH1D*) hist_data_1 ->Clone();
-  hist_data_uncorr_1 -> SetName( "Uncorrected Data Sector 1") ;
+  hist_data_uncorr_1 -> SetName( "Uncorrected Data Sector  1") ;
   TH1D * hist_data_uncorr_2 = (TH1D*) hist_data_2 ->Clone();
-  hist_data_uncorr_2 -> SetName( "Uncorrected Data Sector 2") ;
+  hist_data_uncorr_2 -> SetName( "Uncorrected Data Sector  2") ;
   TH1D * hist_data_uncorr_3 = (TH1D*) hist_data_3 ->Clone();
-  hist_data_uncorr_3 -> SetName( "Uncorrected Data Sector 3") ;
+  hist_data_uncorr_3 -> SetName( "Uncorrected Data Sector  3") ;
   TH1D * hist_data_uncorr_4 = (TH1D*) hist_data_4 ->Clone();
-  hist_data_uncorr_4 -> SetName( "Uncorrected Data Sector 4") ;
+  hist_data_uncorr_4 -> SetName( "Uncorrected Data Sector  4") ;
   TH1D * hist_data_uncorr_5 = (TH1D*) hist_data_5 ->Clone();
-  hist_data_uncorr_5 -> SetName( "Uncorrected Data Sector 5") ;
+  hist_data_uncorr_5 -> SetName( "Uncorrected Data Sector  5") ;
 
   // Correct data for detector acceptance :
   CorrectData(hist_data, h_acceptance);
@@ -924,6 +1164,14 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   CorrectData(hist_data_3, h_acceptance_3);
   CorrectData(hist_data_4, h_acceptance_4);
   CorrectData(hist_data_5, h_acceptance_5);
+
+	// Normalize data from slices
+	if( addbinning.size() != 0 ) {
+		for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+			NormalizeHist(h_data_slices[l], DataNormalization );
+			CorrectData(h_data_slices[l], h_acc_slices[l] );
+		}
+	}
 
   // Normalize MC
   NormalizeHist(hist_true, MCNormalization);
@@ -941,8 +1189,50 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
 
   for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
     NormalizeHist( hists_true_submodel[id], MCNormalization);
-    StandardFormat( hists_true_submodel[id], title, kBlack, 2+id, observable ) ;
+		StandardFormat( hists_true_submodel[id], title, kBlack, 2+id, observable ) ;
   }
+
+	// Normalize true from slices
+	if( addbinning.size() != 0 ) {
+		for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+			NormalizeHist(h_total_slices[l], MCNormalization );
+			NormalizeHist(h_QEL_slices[l], MCNormalization );
+			NormalizeHist(h_RES_slices[l], MCNormalization );
+			NormalizeHist(h_SIS_slices[l], MCNormalization );
+			NormalizeHist(h_DIS_slices[l], MCNormalization );
+			NormalizeHist(h_MEC_slices[l], MCNormalization );
+
+			std::vector<TH1D*> all_slices{h_total_slices[l],h_data_slices[l]};
+			double y_max_total = GetMaximum( all_slices );
+
+      // Add Slice information in title
+			std::string title_subname = title ;
+			std::string alt_obs = GetAlternativeObs(observable);
+			if ( l == 0 ) {
+        std::ostringstream o1 ;
+				o1 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
+				title_subname += " " + GetObsName(alt_obs) + "<" + o1.str() +" "+GetUnit(alt_obs) ;
+			} else if ( l == addbinning.size()-2 ) {
+				std::ostringstream o1 ;
+				o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
+				title_subname += " " + GetObsName(alt_obs) + ">" + o1.str() +" "+GetUnit(alt_obs) ;
+			} else {
+				std::ostringstream o1, o2 ;
+				o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
+				o2 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
+				title_subname += " " + o1.str() + "<"+ GetObsName(alt_obs) + "<" + o2.str()+" "+GetUnit(alt_obs) ;
+      }
+
+			StandardFormat( h_total_slices[l], title_subname, kBlack, 1, observable, y_max_total ) ;
+			StandardFormat( h_QEL_slices[l], title_subname, kBlue-3, 1, observable, y_max_total ) ;
+			StandardFormat( h_RES_slices[l], title_subname, kGreen+2, 1, observable, y_max_total ) ;
+			StandardFormat( h_SIS_slices[l], title_subname, kOrange, 1, observable, y_max_total ) ;
+			StandardFormat( h_MEC_slices[l], title_subname, kMagenta-3, 1, observable, y_max_total ) ;
+			StandardFormat( h_DIS_slices[l], title_subname, kCyan+1, 1, observable, y_max_total ) ;
+			StandardFormat( h_data_slices[l], title_subname, kBlack, 8, observable, y_max_total ) ;
+
+		}
+	}
 
   // Find absolute y max
 	std::vector<TH1D*> temp_check = {hist_true,hist_data};
@@ -952,29 +1242,29 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
 	double y_max_total = GetMaximum( temp_check );
   // Format plots
   StandardFormat( hist_data, title, kBlack, 8, observable, y_max_total ) ;
-  StandardFormat( hist_data_0, title+" Sector 0", kOrange+1, 8, observable ) ;
-  StandardFormat( hist_data_1, title+" Sector 1", kPink+4, 8, observable ) ;
-  StandardFormat( hist_data_2, title+" Sector 2", kViolet+5, 8, observable ) ;
-  StandardFormat( hist_data_3, title+" Sector 3", kAzure-5, 8, observable ) ;
-  StandardFormat( hist_data_4, title+" Sector 4", kTeal-7, 8, observable ) ;
-  StandardFormat( hist_data_5, title+" Sector 5", kGreen-3, 8, observable ) ;
+  StandardFormat( hist_data_0, title+" Sector  0", kOrange+1, 8, observable ) ;
+  StandardFormat( hist_data_1, title+" Sector  1", kPink+4, 8, observable ) ;
+  StandardFormat( hist_data_2, title+" Sector  2", kViolet+5, 8, observable ) ;
+  StandardFormat( hist_data_3, title+" Sector  3", kAzure-5, 8, observable ) ;
+  StandardFormat( hist_data_4, title+" Sector  4", kTeal-7, 8, observable ) ;
+  StandardFormat( hist_data_5, title+" Sector  5", kGreen-3, 8, observable ) ;
   hist_data -> SetLineWidth(0);
 
   StandardFormat( hist_data_uncorr, title, kRed, 8, observable, y_max_total ) ;
-  StandardFormat( hist_data_uncorr_0, title+" Sector 0", kRed, 8, observable ) ;
-  StandardFormat( hist_data_uncorr_1, title+" Sector 1", kRed, 8, observable ) ;
-  StandardFormat( hist_data_uncorr_2, title+" Sector 2", kRed, 8, observable ) ;
-  StandardFormat( hist_data_uncorr_3, title+" Sector 3", kRed, 8, observable ) ;
-  StandardFormat( hist_data_uncorr_4, title+" Sector 4", kRed, 8, observable ) ;
-  StandardFormat( hist_data_uncorr_5, title+" Sector 5", kRed, 8, observable ) ;
+  StandardFormat( hist_data_uncorr_0, title+" Sector  0", kRed, 8, observable ) ;
+  StandardFormat( hist_data_uncorr_1, title+" Sector  1", kRed, 8, observable ) ;
+  StandardFormat( hist_data_uncorr_2, title+" Sector  2", kRed, 8, observable ) ;
+  StandardFormat( hist_data_uncorr_3, title+" Sector  3", kRed, 8, observable ) ;
+  StandardFormat( hist_data_uncorr_4, title+" Sector  4", kRed, 8, observable ) ;
+  StandardFormat( hist_data_uncorr_5, title+" Sector  5", kRed, 8, observable ) ;
 
   StandardFormat( hist_true, title, kBlack, 1, observable, y_max_total ) ;
-  StandardFormat( hist_true_0, title+" Sector 0", kBlack, 1, observable ) ;
-  StandardFormat( hist_true_1, title+" Sector 1", kBlack, 1, observable ) ;
-  StandardFormat( hist_true_2, title+" Sector 2", kBlack, 1, observable ) ;
-  StandardFormat( hist_true_3, title+" Sector 3", kBlack, 1, observable ) ;
-  StandardFormat( hist_true_4, title+" Sector 4", kBlack, 1, observable ) ;
-  StandardFormat( hist_true_5, title+" Sector 5", kBlack, 1, observable ) ;
+  StandardFormat( hist_true_0, title+" Sector  0", kBlack, 1, observable ) ;
+  StandardFormat( hist_true_1, title+" Sector  1", kBlack, 1, observable ) ;
+  StandardFormat( hist_true_2, title+" Sector  2", kBlack, 1, observable ) ;
+  StandardFormat( hist_true_3, title+" Sector  3", kBlack, 1, observable ) ;
+  StandardFormat( hist_true_4, title+" Sector  4", kBlack, 1, observable ) ;
+  StandardFormat( hist_true_5, title+" Sector  5", kBlack, 1, observable ) ;
 
 	StandardFormat( hist_true_QEL, title, kBlue-3, 1, observable ) ;
 	StandardFormat( hist_true_RES, title, kGreen+2, 1, observable ) ;
@@ -995,6 +1285,36 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   }
   hist_data -> Draw(" err same ");
 
+	if( observable=="ECal"){
+		// Add a sub-pad1
+	  TPad * sub_pad = new TPad("subpad","",0.2,0.2,0.85,0.85);
+		sub_pad->SetFillStyle(4000);
+		sub_pad->Draw();
+    sub_pad->cd();
+		sub_pad -> SetBottomMargin(0.15);
+		sub_pad -> SetLeftMargin(0.15);
+
+		TH1D* tmp_hist_true = (TH1D*)hist_true->Clone();
+		TH1D* tmp_hist_data = (TH1D*)hist_data->Clone();
+		tmp_hist_true->SetTitle("");
+
+		//tmp_hist_true->GetXaxis()->SetRangeUser(0,BeamE*(1-0.1));
+		tmp_hist_data->GetXaxis()->SetRangeUser(0,BeamE*(1-0.02));
+		tmp_hist_true->GetYaxis()->SetRangeUser(0,tmp_hist_data->GetBinContent(tmp_hist_data->GetMaximumBin())*(1+0.25));
+
+		tmp_hist_true -> Draw("hist");
+	  hist_true_QEL -> Draw("hist same");
+	  hist_true_RES -> Draw("hist same");
+	  hist_true_SIS -> Draw("hist same");
+	  hist_true_MEC -> Draw("hist same");
+	  hist_true_DIS -> Draw("hist same");
+	  for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
+	    hists_true_submodel[id] -> SetLineWidth(3);
+	    hists_true_submodel[id] -> Draw("hist same");
+	  }
+	  hist_data -> Draw(" err same ");
+
+	}
   std::string output_name = output_file_name+"_dxsec_d"+observable ;
   if( id_sector > 0 ) output_name += "_sector_"+std::to_string(id_sector) ;
 	std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
@@ -1002,6 +1322,41 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   delete c1 ;
+
+	TCanvas* c_slices = new TCanvas("c_slices","c_slices",200,10,700,500);
+	c_slices->cd();
+  TPad *pad_slices = new TPad("pad1","",0,0,1,1);
+  pad_slices->Draw();
+  pad_slices->cd();
+  pad_slices->SetBottomMargin(0.15);
+  pad_slices->SetLeftMargin(0.15);
+
+	// Normalize true from slices
+	if( addbinning.size() != 0 ) {
+		pad_slices->Divide(addbinning.size()-1,0);
+		for( unsigned int l = 0 ; l < addbinning.size()-1 ; ++l ){
+			TPad *pad_slice_i = (TPad*)pad_slices->cd(1+l);
+		  pad_slice_i -> cd();
+		  pad_slice_i -> SetBottomMargin(0.15);
+		  pad_slice_i -> SetLeftMargin(0.15);
+		  h_total_slices[l] -> GetYaxis()->SetTitleOffset(1.2);
+
+			h_total_slices[l]->Draw("hist");
+			h_QEL_slices[l]->Draw("hist same ");
+			h_RES_slices[l]->Draw("hist same ");
+			h_SIS_slices[l]->Draw("hist same ");
+			h_MEC_slices[l]->Draw("hist same ");
+			h_DIS_slices[l]->Draw("hist same ");
+			h_data_slices[l]->Draw("err same ");
+
+		}
+	}
+	if( addbinning.size() != 0 ) {
+		output_name = output_file_name+"_dxsec_d"+observable+"_"+GetAlternativeObs(observable)+"_Slices" ;
+  	c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+  	c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
+	}
+	delete c_slices;
 
   // Draw total xsec per sectors
   TCanvas * c_sector = new TCanvas("c_sector","c_sector",200,10,700,500);
@@ -1123,9 +1478,10 @@ void Plot1DXSec(){
   std::string title = "e^{12}C 1p1#pi^{-} at 4.416 GeV";
   std::string data_name = "CLAS6 data";
 
-	//std::vector<std::string> observables = {"RecoW","pfl","pfl_theta","pim_mom","pim_theta","pip_mom","pip_theta","proton_mom","proton_theta",
-  //                                        "HadAlphaT","HadDeltaPT","HadDeltaPhiT","ECal","RecoQ2","RecoEnergyTransfer","RecoXBJK","HadSystemMass"};
-	std::vector<std::string> observables = {"RecoQELEnu","DeltaPT", "AlphaT","DeltaPhiT"};
+	std::vector<std::string> observables = {"ECal"};
+ //{"RecoW","pfl","pfl_theta","pim_mom","pim_theta","pip_mom","pip_theta","proton_mom","proton_theta",
+																				 //"HadAlphaT","HadDeltaPT","HadDeltaPhiT","ECal","RecoQ2","RecoEnergyTransfer","RecoXBJK","HadSystemMass"};
+
 
   // To be defined in loop
 	std::vector<double> binning;
@@ -1133,37 +1489,38 @@ void Plot1DXSec(){
 	std::string output_name;
 
   for( unsigned int i = 0 ; i < observables.size(); ++i ){
-    /*
+
 		output_name = "e4nuanalysis_1p1pimanalysis_Averaged_Q2_01_e_on_1000060120_1161MeV_NoRad" ;
 		output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/output_files_1p1pim_1GeV/";
 		output_path = output_location.c_str();
 		if( ! std::filesystem::exists(output_path) ) std::filesystem::create_directory(output_path);
-		mc_files = {"e4nuanalysis_1p1pimanalysis_GEM21_11a_Q2_01_e_on_1000060120_1161MeV_NoRad",
-		            "e4nuanalysis_1p1pimanalysis_G18_10a_Q2_01_e_on_1000060120_1161MeV_NoRad",
+		mc_files = {"e4nuanalysis_1p1pimanalysis_G18_10a_Q2_01_e_on_1000060120_1161MeV_NoRad",
 							  "e4nuanalysis_1p1pimanalysis_G18_10b_Q2_01_e_on_1000060120_1161MeV_NoRad"};
+								//"e4nuanalysis_1p1pimanalysis_GEM21_11a_Q2_01_e_on_1000060120_1161MeV_NoRad",
 		file_data = "e4nuanalysis_1p1pimanalysis_e_on_1000060120_1161MeV_clas6data";
 		title = "e^{12}C 1p1#pi^{-} at 1.116 GeV";
-		model_names = { "GEM21_11a","G18_10a", "G18_10b" } ;
+		model_names = {"G18_10a", "G18_10b" } ;
 		acceptance_file = compute_acceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
 		model_names.push_back("No FSI");
 		mc_files.push_back("e4nuanalysis_1p1pimanalysis_G18_10a_NoFSI_Q2_01_e_on_1000060120_1161MeV_NoRad");
 		Plot1DXSec( mc_files, file_data, acceptance_file, observables[i], title, data_name, model_names, mc_location, data_location, output_location, output_name, -1 ) ;
 
-
 		output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/output_files_1p1pim_2GeV/";
 		output_path = output_location.c_str();
 		if( ! std::filesystem::exists(output_path) ) std::filesystem::create_directory(output_path);
-    mc_files = {"e4nuanalysis_1p1pimanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad",
-		            "e4nuanalysis_1p1pimanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad",
-		            "e4nuanalysis_1p1pimanalysis_G18_10b_Q2_04_e_on_1000060120_2261MeV_NoRad"};
+    mc_files = {"e4nuanalysis_1p1pimanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad",
+		            "e4nuanalysis_1p1pimanalysis_G18_10b_Q2_04_e_on_1000060120_2261MeV_NoRad",
+								"e4nuanalysis_1p1pimanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad"};
+
     file_data = "e4nuanalysis_1p1pimanalysis_e_on_1000060120_2261MeV_clas6data";
     title = "e^{12}C 1p1#pi^{-} at 2.216 GeV";
 		output_name = "e4nuanalysis_1p1pimanalysis_Averaged_Q2_04_e_on_1000060120_2261MeV_NoRad" ;
-    model_names = { "GEM21_11a","G18_10a", "G18_10b" } ;
+    model_names = { "G18_10a", "G18_10b", "GEM21_11a"};
 	  acceptance_file = compute_acceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
 		model_names.push_back("No FSI");
 		mc_files.push_back("e4nuanalysis_1p1pimanalysis_G18_10a_NoFSI_Q2_04_e_on_1000060120_2261MeV_NoRad");
     Plot1DXSec( mc_files, file_data, acceptance_file, observables[i], title, data_name, model_names, mc_location, data_location, output_location, output_name, -1 ) ;
+
 
 		output_name = "e4nuanalysis_1p1pimanalysis_Averaged_Q2_08_e_on_1000060120_4461MeV_NoRad" ;
     output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/output_files_1p1pim_4GeV/";
@@ -1175,7 +1532,7 @@ void Plot1DXSec(){
 		model_names = { "G18_10a", "G18_10b" } ;
 		acceptance_file = compute_acceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
 		Plot1DXSec( mc_files, file_data, acceptance_file, observables[i], title, data_name, model_names, mc_location, data_location, output_location, output_name, -1 ) ;
-
+/*
     // Pi+ Analysis
 		output_name = "e4nuanalysis_1p1pipanalysis_Averaged_Q2_01_e_on_1000060120_1161MeV_NoRad" ;
 		output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/output_files_1p1pip_1GeV/";
@@ -1196,12 +1553,13 @@ void Plot1DXSec(){
 		output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/output_files_1p1pip_2GeV/";
 		output_path = output_location.c_str();
 		if( ! std::filesystem::exists(output_path) ) std::filesystem::create_directory(output_path);
-		mc_files = {"e4nuanalysis_1p1pipanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad",
-		            "e4nuanalysis_1p1pipanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad",
+		mc_files = {"e4nuanalysis_1p1pipanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad",
 							  "e4nuanalysis_1p1pipanalysis_G18_10b_Q2_04_e_on_1000060120_2261MeV_NoRad"};
+								//"e4nuanalysis_1p1pipanalysis_GEM21_11a_Q2_04_e_on_1000060120_2261MeV_NoRad",
+
     file_data = "e4nuanalysis_1p1pipanalysis_e_on_1000060120_2261MeV_clas6data";
     title = "e^{12}C 1p1#pi^{+} at 2.216 GeV";
-    model_names = { "GEM21_11a", "G18_10a", "G18_10b" } ;
+    model_names = { "G18_10a", "G18_10b" } ;//"GEM21_11a",
 		acceptance_file = compute_acceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
 		model_names.push_back("No FSI");
 		mc_files.push_back("e4nuanalysis_1p1pipanalysis_G18_10a_NoFSI_Q2_04_e_on_1000060120_2261MeV_NoRad");
@@ -1248,7 +1606,7 @@ void Plot1DXSec(){
     model_names.push_back("No FSI");
     mc_files.push_back("e4nuanalysis_1pipanalysis_G18_10a_NoFSI_Q2_04_e_on_1000060120_2261MeV_NoRad");
     Plot1DXSec( mc_files, file_data, acceptance_file, observables[i], title, data_name, model_names, mc_location, data_location, output_location, output_name, -1 ) ;
-*/
+
 
     output_name = "e4nuanalysis_1pipanalysis_Averaged_Q2_01_e_on_1000060120_1161MeV_NoRad" ;
     output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/output_files_1pim_1GeV/";
@@ -1260,6 +1618,6 @@ void Plot1DXSec(){
     model_names = { "G18_10a" } ;
     acceptance_file = compute_acceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
     Plot1DXSec( mc_files, file_data, acceptance_file, observables[i], title, data_name, model_names, mc_location, data_location, output_location, output_name, -1 ) ;
-
+   */
   }
 }

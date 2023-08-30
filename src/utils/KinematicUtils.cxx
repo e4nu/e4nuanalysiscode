@@ -118,6 +118,18 @@ TVector3 utils::DeltaPT( const TLorentzVector out_electron , const std::map<int,
   return P1_T + P2_T;
 }
 
+double DeltaPTx(  const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+  TVector3 deltapt = utils::DeltaPT(out_electron,hadrons);
+  double dalphat = utils::DeltaAlphaT( out_electron , hadrons ) ;
+  return deltapt.Mag()*TMath::Sin(dalphat) ;
+}
+
+double DeltaPTy(  const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+  TVector3 deltapt = utils::DeltaPT(out_electron,hadrons);
+  double dalphat = utils::DeltaAlphaT( out_electron , hadrons ) ;
+  return deltapt.Mag()*TMath::Cos(dalphat) ;
+}
+
 double utils::DeltaPhiT( const TVector3 p1 , const TVector3 p2 ) {
   TVector3 P1T_dir = utils::GetPT(p1).Unit();
   TVector3 P2T_dir = utils::GetPT(p2).Unit();

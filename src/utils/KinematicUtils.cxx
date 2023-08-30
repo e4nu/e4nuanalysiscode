@@ -7,6 +7,7 @@
 #include "conf/ParticleI.h"
 #include "utils/TargetUtils.h"
 #include "utils/ParticleUtils.h"
+#include "utils/TargetUtils.h"
 
 using namespace e4nu ;
 
@@ -170,3 +171,26 @@ TLorentzVector utils::Missing4Momenta( const double EBeam, const TLorentzVector 
   return ( tot_hadron - q ) ;
 }
 
+double InferedNucleonMom( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons, const int tgt ) {
+  double BindingE = utils::GetBindingEnergy( tgt );
+  double Mn = 0.5*(conf::kProtonMass+conf::kNeutronMass);
+  double MA = utils::GetTargetMass(tgt);
+  double Ep = out_electron.E();
+  TLorentzVector tot_hadron ;
+  for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
+    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
+      tot_hadron += (it->second)[i] ;
+    }
+  }
+  double E_had = tot_hadron.E();
+  TLorentzVector beam ( 0,0,EBeam,EBeam) ; 
+  TVector3 beam_dir = beam.Vect().Unit();
+  double pl_e = (out_electron.Vect()).Dot(beam_dir);  
+  double pl_had = (tot_hadron.Vect()).Dot(beam_dir);  
+  double R = MA + pl_e + pl_had - Ep - E_had ;
+  double MA_f = MA - Mn + BindingE ;
+  TVector3 vect_dpt = utils::DeltaPT( out_electron, hadrons );
+  double dpl = 0.5 * ( R - ( pow( MA_f, 2 ) + vect_dpt.Mag2() ) / R ) ;
+  double pn = sqrt( vect_dpt.Mag2() + pow( dpl, 2 ) ) ; 
+  return pn ; 
+}

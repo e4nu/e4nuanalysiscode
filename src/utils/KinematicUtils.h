@@ -27,7 +27,7 @@ namespace e4nu {
     double DeltaPhiT(  const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) ; 
     double HadSystemMass( const std::map<int,std::vector<TLorentzVector>> hadrons ) ;
     TLorentzVector Missing4Momenta( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons );
-    //TVector3 InferedNucleonMom(  const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) ;
+    double InferedNucleonMom( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons, const int tgt ) ;
   }
 }
 

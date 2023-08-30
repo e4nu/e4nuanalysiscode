@@ -387,9 +387,6 @@ bool Fiducial::SetFiducialCutParameters(double beam_en){
 
     //reads pimi fiducial cut parameters at 1GeV
 
-
-
-
     if (fTorusCurrent< 1510 && fTorusCurrent > 1490)
       {
 	for(Int_t sector=0;sector<6;sector++)
@@ -635,7 +632,8 @@ Bool_t Fiducial::GetEPhiLimits(double beam_en, Float_t momentum, Float_t theta, 
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, TVector3 momentum, const bool is_data, const bool apply_fiducial ) {
+Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, TVector3 momentum, const bool is_data, 
+			      const bool apply_fiducial ) {
   
   if( !is_data ) {
     // Electron fiducial cut, return kTRUE if pass or kFALSE if not

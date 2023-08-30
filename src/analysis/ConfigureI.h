@@ -86,7 +86,11 @@ namespace e4nu {
     unsigned int GetNRotations(void) const { return kNRotations ; } 
     bool GetSubtractBkg(void) const { return kSubtractBkg ; }
     bool GetDebugBkg(void) const { return kDebugBkg ; } 
-    
+
+    // Systematics configurables
+    bool ComputeSystFiducial( double angle_shift ) ; 
+    bool GetConfigurationFidAngleShift(void) { return fFidAngleShift; }
+
     // Histogram Configurables
     std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }
     std::vector<unsigned int> GetNBins(void) const { return kNBins ; }
@@ -167,6 +171,9 @@ namespace e4nu {
     // Configuration validity checks:
     bool kIsDataLoaded = false ;
     bool kIsConfigured = true ; 
+
+    // Systematics
+    double fFidAngleShift = 0 ; 
 
     // Analysis ID 
     unsigned int kAnalysisTypeID = 0 ;  // 0 -> Generic 

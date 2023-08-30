@@ -206,6 +206,8 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double DeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ; 
   double HadAlphaT = utils::DeltaAlphaT( out_mom, hadron_map ) ; 
   double HadDeltaPT = utils::DeltaPT( out_mom, hadron_map ).Mag() ; 
+double HadDeltaPTx = utils::DeltaPTx( out_mom, hadron_map ) ; 
+double HadDeltaPTy = utils::DeltaPTy( out_mom, hadron_map ) ; 
   double HadDeltaPhiT = utils::DeltaPhiT( out_mom, hadron_map ) ; 
 
   TLorentzVector pip_max(0,0,0,0) ;
@@ -334,6 +336,8 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     }
     kAnalysisTree -> Branch( "HadAlphaT", &HadAlphaT, "HadAlphaT/D");
     kAnalysisTree -> Branch( "HadDeltaPT", &HadDeltaPT, "HadDeltaPT/D");
+    kAnalysisTree -> Branch( "HadDeltaPTx", &HadDeltaPTx, "HadDeltaPTx/D");
+    kAnalysisTree -> Branch( "HadDeltaPTy", &HadDeltaPTy, "HadDeltaPTy/D");
     kAnalysisTree -> Branch( "HadDeltaPhiT", &HadDeltaPhiT, "HadDeltaPhiT/D");
     kAnalysisTree -> Branch( "HadSystemMass", &HadSystemMass, "HadSystemMass/D");
 

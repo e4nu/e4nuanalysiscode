@@ -119,13 +119,13 @@ TVector3 utils::DeltaPT( const TLorentzVector out_electron , const std::map<int,
   return P1_T + P2_T;
 }
 
-double DeltaPTx(  const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+double utils::DeltaPTx(  const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
   TVector3 deltapt = utils::DeltaPT(out_electron,hadrons);
   double dalphat = utils::DeltaAlphaT( out_electron , hadrons ) ;
   return deltapt.Mag()*TMath::Sin(dalphat) ;
 }
 
-double DeltaPTy(  const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+double utils::DeltaPTy(  const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
   TVector3 deltapt = utils::DeltaPT(out_electron,hadrons);
   double dalphat = utils::DeltaAlphaT( out_electron , hadrons ) ;
   return deltapt.Mag()*TMath::Cos(dalphat) ;
@@ -171,7 +171,7 @@ TLorentzVector utils::Missing4Momenta( const double EBeam, const TLorentzVector 
   return ( tot_hadron - q ) ;
 }
 
-double InferedNucleonMom( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons, const int tgt ) {
+double utils::InferedNucleonMom( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons, const int tgt ) {
   double BindingE = utils::GetBindingEnergy( tgt );
   double Mn = 0.5*(conf::kProtonMass+conf::kNeutronMass);
   double MA = utils::GetTargetMass(tgt);

@@ -416,8 +416,8 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double HadDeltaPTx = utils::DeltaPTx( out_mom, hadron_map ) ; 
   double HadDeltaPTy = utils::DeltaPTy( out_mom, hadron_map ) ; 
   double HadDeltaPhiT = utils::DeltaPhiT( out_mom, hadron_map ) ; 
+  double InferedNucleonMom = utils::InferedNucleonMom( BeamE, out_mom, hadron_map, TargetPdg ) ;
 
-  //const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons 
   TLorentzVector pip_max(0,0,0,0) ;
   if( topology_has_pip ) {
     double max_mom = 0 ; 
@@ -573,6 +573,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "HadDeltaPTx", &HadDeltaPTx, "HadDeltaPTx/D");
     kAnalysisTree -> Branch( "HadDeltaPTy", &HadDeltaPTy, "HadDeltaPTy/D");
     kAnalysisTree -> Branch( "HadDeltaPhiT", &HadDeltaPhiT, "HadDeltaPhiT/D");
+    kAnalysisTree -> Branch( "InferedNucleonMom", &InferedNucleonMom, "InferedNucleonMom/D");
 
     // Add normaization information 
     kAnalysisTree -> Branch( "InitialNEvents", &InitialNEvents, "InitialNEvents/I" );

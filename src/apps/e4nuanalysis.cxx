@@ -83,10 +83,7 @@ int main( int argc, char* argv[] ) {
 
   if( argv[5] && !is_data ) { 
     analysis -> SetXSecFile( argv[5] ) ; 
-  } else { 
-    std::cout << " Input file not specified. Abort... " << std::endl;
-    return 0 ; 
-  }
+  } 
 
   if ( is_data ) {   
       compute_trueacc = false ; 

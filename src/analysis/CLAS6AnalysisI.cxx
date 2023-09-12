@@ -206,7 +206,10 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double DeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ; 
   double HadAlphaT = utils::DeltaAlphaT( out_mom, hadron_map ) ; 
   double HadDeltaPT = utils::DeltaPT( out_mom, hadron_map ).Mag() ; 
+  double HadDeltaPTx = utils::DeltaPTx( out_mom, hadron_map ) ; 
+  double HadDeltaPTy = utils::DeltaPTy( out_mom, hadron_map ) ; 
   double HadDeltaPhiT = utils::DeltaPhiT( out_mom, hadron_map ) ; 
+  double InferedNucleonMom = utils::InferedNucleonMom( BeamE, out_mom, hadron_map, TargetPdg ) ;
 
   TLorentzVector pip_max(0,0,0,0) ;
   if( topology_has_pip ) {
@@ -244,9 +247,9 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double pim_phi = pim_max.Phi() * TMath::RadToDeg() ;
   double HadSystemMass = utils::HadSystemMass( hadron_map ) ; 
 
-  double MissingEnergy = utils::MissingEnergy( BeamE, out_mom, hadron_map ).E(); 
-  double MissingMomentum = utils::MissingEnergy( BeamE, out_mom, hadron_map ).P(); 
-  double MissingAngle = utils::MissingEnergy( BeamE, out_mom, hadron_map ).Theta(); 
+  double MissingEnergy = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).E(); 
+  double MissingMomentum = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).P(); 
+  double MissingAngle = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).Theta() * TMath::RadToDeg() ; 
 
   unsigned int MassNumber = utils::GetMassNumber( TargetPdg ) ;
   double IntegratedCharge = conf::GetIntegratedCharge( TargetPdg, BeamE ); 
@@ -334,8 +337,11 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     }
     kAnalysisTree -> Branch( "HadAlphaT", &HadAlphaT, "HadAlphaT/D");
     kAnalysisTree -> Branch( "HadDeltaPT", &HadDeltaPT, "HadDeltaPT/D");
+    kAnalysisTree -> Branch( "HadDeltaPTx", &HadDeltaPTx, "HadDeltaPTx/D");
+    kAnalysisTree -> Branch( "HadDeltaPTy", &HadDeltaPTy, "HadDeltaPTy/D");
     kAnalysisTree -> Branch( "HadDeltaPhiT", &HadDeltaPhiT, "HadDeltaPhiT/D");
     kAnalysisTree -> Branch( "HadSystemMass", &HadSystemMass, "HadSystemMass/D");
+    kAnalysisTree -> Branch( "InferedNucleonMom", &InferedNucleonMom, "InferedNucleonMom/D");
 
     // Adding Normalization information
     kAnalysisTree -> Branch( "MassNumber", &MassNumber, "MassNumber/I");

@@ -203,6 +203,8 @@ ConfigureI::ConfigureI( const std::string input_file ) {
       kInputFile = value[i] ;
     } else if ( param[i] == "XSecFile" ) {
       kXSecFile = value[i] ;
+    } else if ( param[i] == "SystFidAngleShift" ) { 
+      fFidAngleShift = stod(value[i]) ;
     }
   }
 
@@ -234,7 +236,7 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     std::cout << " ERROR : CLAS12 analysis not available yet..."<<std::endl;
     kIsConfigured = false ;
   }
-
+    
   this->Initialize();
 }
 

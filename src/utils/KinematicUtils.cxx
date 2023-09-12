@@ -7,6 +7,7 @@
 #include "conf/ParticleI.h"
 #include "utils/TargetUtils.h"
 #include "utils/ParticleUtils.h"
+#include "utils/TargetUtils.h"
 
 using namespace e4nu ;
 
@@ -118,6 +119,18 @@ TVector3 utils::DeltaPT( const TLorentzVector out_electron , const std::map<int,
   return P1_T + P2_T;
 }
 
+double utils::DeltaPTx(  const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+  TVector3 deltapt = utils::DeltaPT(out_electron,hadrons);
+  double dalphat = utils::DeltaAlphaT( out_electron , hadrons ) ;
+  return deltapt.Mag()*TMath::Sin(dalphat) ;
+}
+
+double utils::DeltaPTy(  const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+  TVector3 deltapt = utils::DeltaPT(out_electron,hadrons);
+  double dalphat = utils::DeltaAlphaT( out_electron , hadrons ) ;
+  return deltapt.Mag()*TMath::Cos(dalphat) ;
+}
+
 double utils::DeltaPhiT( const TVector3 p1 , const TVector3 p2 ) {
   TVector3 P1T_dir = utils::GetPT(p1).Unit();
   TVector3 P2T_dir = utils::GetPT(p2).Unit();
@@ -146,7 +159,7 @@ double utils::HadSystemMass( const std::map<int,std::vector<TLorentzVector>> had
   return tot_hadron.Mag();
 }
 
-TLorentzVector utils::MissingEnergy( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+TLorentzVector utils::Missing4Momenta( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
   TLorentzVector beam ( 0,0,EBeam,EBeam) ;
   TLorentzVector tot_hadron ; 
   for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
@@ -154,5 +167,30 @@ TLorentzVector utils::MissingEnergy( const double EBeam, const TLorentzVector ou
       tot_hadron += (it->second)[i] ;
     }
   }
-  return ( out_electron + tot_hadron - beam ) ;
+  TLorentzVector q = beam - out_electron; 
+  return ( tot_hadron - q ) ;
+}
+
+double utils::InferedNucleonMom( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons, const int tgt ) {
+  double BindingE = utils::GetBindingEnergy( tgt );
+  double Mn = 0.5*(conf::kProtonMass+conf::kNeutronMass);
+  double MA = utils::GetTargetMass(tgt);
+  double Ep = out_electron.E();
+  TLorentzVector tot_hadron ;
+  for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
+    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
+      tot_hadron += (it->second)[i] ;
+    }
+  }
+  double E_had = tot_hadron.E();
+  TLorentzVector beam ( 0,0,EBeam,EBeam) ; 
+  TVector3 beam_dir = beam.Vect().Unit();
+  double pl_e = (out_electron.Vect()).Dot(beam_dir);  
+  double pl_had = (tot_hadron.Vect()).Dot(beam_dir);  
+  double R = MA + pl_e + pl_had - Ep - E_had ;
+  double MA_f = MA - Mn + BindingE ;
+  TVector3 vect_dpt = utils::DeltaPT( out_electron, hadrons );
+  double dpl = 0.5 * ( R - ( pow( MA_f, 2 ) + vect_dpt.Mag2() ) / R ) ;
+  double pn = sqrt( vect_dpt.Mag2() + pow( dpl, 2 ) ) ; 
+  return pn ; 
 }

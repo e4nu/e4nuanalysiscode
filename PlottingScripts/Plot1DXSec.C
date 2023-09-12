@@ -184,9 +184,9 @@ std::vector<double> GetBinning( std::string observable, double EBeam ){
 		else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 1 );
 		else if( EBeam == 4.461 ) binning = GetUniformBinning( 20, 0, 1 );
 	} else if ( observable == "MissingAngle"){
-		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 4 );
-    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 4 );
-    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 15, 50 );
+		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 180 );
+    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 180 );
+    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 15, 180 );
 	} else if ( observable == "MissingMomentum"){
 		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 1.2 );
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 2 );

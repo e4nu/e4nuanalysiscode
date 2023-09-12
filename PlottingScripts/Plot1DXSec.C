@@ -180,21 +180,21 @@ std::vector<double> GetBinning( std::string observable, double EBeam ){
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 1, 2 );
     else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 2.7 );
 	} else if ( observable == "MissingEnergy"){
-		if( EBeam == 1.161 ) binning = GetECalBinning( 10, 10, 0.8, 1.2, EBeam);
-		else if( EBeam == 2.261 ) binning = GetECalBinning( 20, 10, 1, EBeam+0.06, EBeam);
-		else if( EBeam == 4.461 ) binning = GetECalBinning( 8, 10, 1.5, EBeam+0.1, EBeam);
+		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 1 );
+		else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 1 );
+		else if( EBeam == 4.461 ) binning = GetUniformBinning( 20, 0, 1 );
 	} else if ( observable == "MissingAngle"){
-		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 20, 50 );
-    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 20, 50 );
+		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 4 );
+    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 4 );
     else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 15, 50 );
 	} else if ( observable == "MissingMomentum"){
 		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 1.2 );
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 2 );
     else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 2 );
 	} else if ( observable == "InferedNucleonMom"){
-		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 1 );
-		else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 1 );
-		else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 1 );
+		if( EBeam == 1.161 ) binning = GetUniformBinning( 30, 0, 1 );
+		else if( EBeam == 2.261 ) binning = GetUniformBinning( 30, 0, 1 );
+		else if( EBeam == 4.461 ) binning = GetUniformBinning( 30, 0, 1 );
 	}
 
 	return binning ;
@@ -395,57 +395,65 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
 			hists[id] -> Sumw2() ;
 		}
 
-    // OBSERVABLE DEFINITION:
-    double TotWeight ;
-    double ECal,Recoq3,RecoW;
-    double pfl,pfl_theta,pfl_phi;
-    double proton_mom,proton_phi,proton_theta;
-    double pim_mom,pim_theta,pim_phi;
-    double pip_mom,pip_theta,pip_phi;
-    double HadAlphaT, HadDeltaPT, HadDeltaPhiT ;
-    double AlphaT, DeltaPT, DeltaPhiT ;
-    double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
-    long NEntries ;
-    bool IsBkg ;
-    int ElectronSector ;
-    for ( unsigned int j = initial_size_trees ; j < trees.size() ; ++j ){
-      NEntries = trees[j] -> GetEntries() ;
-      trees[j] -> SetBranchAddress("TotWeight",&TotWeight);
-      trees[j] -> SetBranchAddress("IsBkg",&IsBkg);
-      trees[j] -> SetBranchAddress("ECal",&ECal);
-      trees[j] -> SetBranchAddress("pfl_theta",&pfl_theta);
-      trees[j] -> SetBranchAddress("pfl_phi",&pfl_phi);
-      trees[j] -> SetBranchAddress("pfl",&pfl);
-      trees[j] -> SetBranchAddress("proton_mom",&proton_mom);
-      trees[j] -> SetBranchAddress("proton_theta",&proton_theta);
-      trees[j] -> SetBranchAddress("proton_phi",&proton_phi);
-      trees[j] -> SetBranchAddress("pim_mom",&pim_mom);
-      trees[j] -> SetBranchAddress("pim_theta",&pim_theta);
-      trees[j] -> SetBranchAddress("pim_phi",&pim_phi);
-      trees[j] -> SetBranchAddress("pip_mom",&pip_mom);
-      trees[j] -> SetBranchAddress("pip_theta",&pip_theta);
-      trees[j] -> SetBranchAddress("pip_phi",&pip_phi);
-      trees[j] -> SetBranchAddress("RecoW",&RecoW);
+		// OBSERVABLE DEFINITION:
+		double TotWeight ;
+		double ECal,Recoq3,RecoW;
+		double pfl,pfl_theta,pfl_phi;
+		double proton_mom,proton_phi,proton_theta;
+		double pim_mom,pim_theta,pim_phi;
+		double pip_mom,pip_theta,pip_phi;
+		double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT ;
+		double AlphaT, DeltaPT, DeltaPhiT ;
+		double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
+		double MissingEnergy, MissingAngle, MissingMomentum ;
+		double InferedNucleonMom ;
+		long NEntries ;
+		bool IsBkg ;
+		int ElectronSector ;
+		for ( unsigned int j = initial_size_trees ; j < trees.size() ; ++j ){
+			NEntries = trees[j] -> GetEntries() ;
+			trees[j] -> SetBranchAddress("TotWeight",&TotWeight);
+			trees[j] -> SetBranchAddress("IsBkg",&IsBkg);
+			trees[j] -> SetBranchAddress("ECal",&ECal);
+			trees[j] -> SetBranchAddress("pfl_theta",&pfl_theta);
+			trees[j] -> SetBranchAddress("pfl_phi",&pfl_phi);
+			trees[j] -> SetBranchAddress("pfl",&pfl);
+			trees[j] -> SetBranchAddress("proton_mom",&proton_mom);
+			trees[j] -> SetBranchAddress("proton_theta",&proton_theta);
+			trees[j] -> SetBranchAddress("proton_phi",&proton_phi);
+			trees[j] -> SetBranchAddress("pim_mom",&pim_mom);
+			trees[j] -> SetBranchAddress("pim_theta",&pim_theta);
+			trees[j] -> SetBranchAddress("pim_phi",&pim_phi);
+			trees[j] -> SetBranchAddress("pip_mom",&pip_mom);
+			trees[j] -> SetBranchAddress("pip_theta",&pip_theta);
+			trees[j] -> SetBranchAddress("pip_phi",&pip_phi);
+			trees[j] -> SetBranchAddress("RecoW",&RecoW);
 			trees[j] -> SetBranchAddress("RecoQELEnu",&RecoQELEnu);
-      trees[j] -> SetBranchAddress("Recoq3",&Recoq3);
-      trees[j] -> SetBranchAddress("RecoXBJK",&RecoXBJK);
-      trees[j] -> SetBranchAddress("RecoQ2",&RecoQ2);
-      trees[j] -> SetBranchAddress("RecoEnergyTransfer",&RecoEnergyTransfer);
-      trees[j] -> SetBranchAddress("AlphaT",&AlphaT);
-      trees[j] -> SetBranchAddress("HadAlphaT",&HadAlphaT);
-      trees[j] -> SetBranchAddress("DeltaPT",&DeltaPT);
-      trees[j] -> SetBranchAddress("HadDeltaPT",&HadDeltaPT);
-      trees[j] -> SetBranchAddress("DeltaPhiT",&DeltaPhiT);
-      trees[j] -> SetBranchAddress("HadDeltaPhiT",&HadDeltaPhiT);
-      trees[j] -> SetBranchAddress("ElectronSector",&ElectronSector);
-      trees[j] -> SetBranchAddress("HadSystemMass", &HadSystemMass);
+			trees[j] -> SetBranchAddress("Recoq3",&Recoq3);
+			trees[j] -> SetBranchAddress("RecoXBJK",&RecoXBJK);
+			trees[j] -> SetBranchAddress("RecoQ2",&RecoQ2);
+			trees[j] -> SetBranchAddress("RecoEnergyTransfer",&RecoEnergyTransfer);
+			trees[j] -> SetBranchAddress("AlphaT",&AlphaT);
+			trees[j] -> SetBranchAddress("HadAlphaT",&HadAlphaT);
+			trees[j] -> SetBranchAddress("DeltaPT",&DeltaPT);
+			trees[j] -> SetBranchAddress("HadDeltaPT",&HadDeltaPT);
+			trees[j] -> SetBranchAddress("HadDeltaPTx",&HadDeltaPTx);
+			trees[j] -> SetBranchAddress("HadDeltaPTy",&HadDeltaPTy);
+			trees[j] -> SetBranchAddress("DeltaPhiT",&DeltaPhiT);
+			trees[j] -> SetBranchAddress("HadDeltaPhiT",&HadDeltaPhiT);
+			trees[j] -> SetBranchAddress("ElectronSector",&ElectronSector);
+			trees[j] -> SetBranchAddress("HadSystemMass", &HadSystemMass);
+			trees[j] -> SetBranchAddress("MissingEnergy", &MissingEnergy);
+			trees[j] -> SetBranchAddress("MissingAngle", &MissingAngle);
+			trees[j] -> SetBranchAddress("MissingMomentum", &MissingMomentum);
+			trees[j] -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
 
       for( int k = 0 ; k < NEntries; ++k ) {
         trees[j]->GetEntry(k) ;
         double content = 0 ;
         double w = TotWeight ;
 
-        if( observable == "ECal") content = ECal ;
+				if( observable == "ECal") content = ECal ;
         else if ( observable == "pfl") content = pfl ;
         else if ( observable == "pfl_theta") content = pfl_theta ;
         else if ( observable == "pfl_phi") content = pfl_phi ;
@@ -468,9 +476,16 @@ std::string compute_acceptance(std::vector<std::string> mc_files, std::string ob
         else if ( observable == "HadAlphaT") content = HadAlphaT ;
         else if ( observable == "DeltaPT") content = DeltaPT ;
         else if ( observable == "HadDeltaPT") content = HadDeltaPT ;
+				else if ( observable == "HadDeltaPTx") content = HadDeltaPTx ;
+				else if ( observable == "HadDeltaPTy") content = HadDeltaPTy ;
         else if ( observable == "DeltaPhiT") content = DeltaPhiT ;
         else if ( observable == "HadDeltaPhiT") content = HadDeltaPhiT ;
         else if ( observable == "HadSystemMass") content = HadSystemMass ;
+				else if ( observable == "MissingEnergy") content = MissingEnergy ;
+				else if ( observable == "MissingMomentum") content = MissingMomentum ;
+				else if ( observable == "MissingAngle") content = MissingAngle ;
+				else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
+
         // Fill the per Sector  histogram
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> Fill( content, w ) ;
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> SetLineWidth(3);
@@ -1020,15 +1035,17 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   }
 
   // OBSERVABLE DEFINITION:
-  double TotWeight ;
+	double TotWeight ;
   double ECal,Recoq3,RecoW;
   double pfl,pfl_theta,pfl_phi;
   double proton_mom,proton_phi,proton_theta;
   double pim_mom,pim_theta,pim_phi;
   double pip_mom,pip_theta,pip_phi;
-  double HadAlphaT, HadDeltaPT, HadDeltaPhiT ;
+  double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT ;
   double AlphaT, DeltaPT, DeltaPhiT ;
   double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
+	double MissingEnergy, MissingAngle, MissingMomentum ;
+	double InferedNucleonMom ;
   long NEntries ;
   bool IsBkg ;
   int ElectronSector ;
@@ -1037,35 +1054,42 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
 
   for ( unsigned int i = 0 ; i < trees.size() ; ++i ){
     NEntries = trees[i] -> GetEntries() ;
-    trees[i] -> SetBranchAddress("TotWeight",&TotWeight);
-    trees[i] -> SetBranchAddress("IsBkg",&IsBkg);
-    trees[i] -> SetBranchAddress("ECal",&ECal);
-    trees[i] -> SetBranchAddress("pfl_theta",&pfl_theta);
-    trees[i] -> SetBranchAddress("pfl_phi",&pfl_phi);
-    trees[i] -> SetBranchAddress("pfl",&pfl);
-    trees[i] -> SetBranchAddress("proton_mom",&proton_mom);
-    trees[i] -> SetBranchAddress("proton_theta",&proton_theta);
-    trees[i] -> SetBranchAddress("proton_phi",&proton_phi);
-    trees[i] -> SetBranchAddress("pim_mom",&pim_mom);
-    trees[i] -> SetBranchAddress("pim_theta",&pim_theta);
-    trees[i] -> SetBranchAddress("pim_phi",&pim_phi);
-    trees[i] -> SetBranchAddress("pip_mom",&pip_mom);
-    trees[i] -> SetBranchAddress("pip_theta",&pip_theta);
-    trees[i] -> SetBranchAddress("pip_phi",&pip_phi);
-    trees[i] -> SetBranchAddress("RecoW",&RecoW);
-    trees[i] -> SetBranchAddress("Recoq3",&Recoq3);
+		trees[i] -> SetBranchAddress("TotWeight",&TotWeight);
+		trees[i] -> SetBranchAddress("IsBkg",&IsBkg);
+		trees[i] -> SetBranchAddress("ECal",&ECal);
+		trees[i] -> SetBranchAddress("pfl_theta",&pfl_theta);
+		trees[i] -> SetBranchAddress("pfl_phi",&pfl_phi);
+		trees[i] -> SetBranchAddress("pfl",&pfl);
+		trees[i] -> SetBranchAddress("proton_mom",&proton_mom);
+		trees[i] -> SetBranchAddress("proton_theta",&proton_theta);
+		trees[i] -> SetBranchAddress("proton_phi",&proton_phi);
+		trees[i] -> SetBranchAddress("pim_mom",&pim_mom);
+		trees[i] -> SetBranchAddress("pim_theta",&pim_theta);
+		trees[i] -> SetBranchAddress("pim_phi",&pim_phi);
+		trees[i] -> SetBranchAddress("pip_mom",&pip_mom);
+		trees[i] -> SetBranchAddress("pip_theta",&pip_theta);
+		trees[i] -> SetBranchAddress("pip_phi",&pip_phi);
+		trees[i] -> SetBranchAddress("RecoW",&RecoW);
+		trees[i] -> SetBranchAddress("Recoq3",&Recoq3);
 		trees[i] -> SetBranchAddress("RecoQELEnu",&RecoQELEnu);
-    trees[i] -> SetBranchAddress("RecoXBJK",&RecoXBJK);
-    trees[i] -> SetBranchAddress("RecoQ2",&RecoQ2);
-    trees[i] -> SetBranchAddress("RecoEnergyTransfer",&RecoEnergyTransfer);
-    trees[i] -> SetBranchAddress("AlphaT",&AlphaT);
-    trees[i] -> SetBranchAddress("HadAlphaT",&HadAlphaT);
-    trees[i] -> SetBranchAddress("DeltaPT",&DeltaPT);
-    trees[i] -> SetBranchAddress("HadDeltaPT",&HadDeltaPT);
-    trees[i] -> SetBranchAddress("DeltaPhiT",&DeltaPhiT);
-    trees[i] -> SetBranchAddress("HadDeltaPhiT",&HadDeltaPhiT);
-    trees[i] -> SetBranchAddress("ElectronSector",&ElectronSector);
+		trees[i] -> SetBranchAddress("RecoXBJK",&RecoXBJK);
+		trees[i] -> SetBranchAddress("RecoQ2",&RecoQ2);
+		trees[i] -> SetBranchAddress("RecoEnergyTransfer",&RecoEnergyTransfer);
+		trees[i] -> SetBranchAddress("AlphaT",&AlphaT);
+		trees[i] -> SetBranchAddress("HadAlphaT",&HadAlphaT);
+		trees[i] -> SetBranchAddress("DeltaPT",&DeltaPT);
+		trees[i] -> SetBranchAddress("HadDeltaPT",&HadDeltaPT);
+		trees[i] -> SetBranchAddress("HadDeltaPTx",&HadDeltaPTx);
+		trees[i] -> SetBranchAddress("HadDeltaPTy",&HadDeltaPTy);
+		trees[i] -> SetBranchAddress("DeltaPhiT",&DeltaPhiT);
+		trees[i] -> SetBranchAddress("HadDeltaPhiT",&HadDeltaPhiT);
+		trees[i] -> SetBranchAddress("ElectronSector",&ElectronSector);
 		trees[i] -> SetBranchAddress("HadSystemMass", &HadSystemMass);
+		trees[i] -> SetBranchAddress("MissingEnergy", &MissingEnergy);
+		trees[i] -> SetBranchAddress("MissingAngle", &MissingAngle);
+		trees[i] -> SetBranchAddress("MissingMomentum", &MissingMomentum);
+		trees[i] -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
+
 		// Only fill true info for the first model:
     if( i == 0 ) trees[i] -> SetBranchAddress("QEL",&QEL);
     if( i == 0 ) trees[i] -> SetBranchAddress("RES",&RES);
@@ -1081,7 +1105,7 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
       double content = 0 ;
       double w = TotWeight ;
 
-      if( observable == "ECal") content = ECal ;
+			if( observable == "ECal") content = ECal ;
       else if ( observable == "pfl") content = pfl ;
       else if ( observable == "pfl_theta") content = pfl_theta ;
       else if ( observable == "pfl_phi") content = pfl_phi ;
@@ -1104,9 +1128,17 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
       else if ( observable == "HadAlphaT") content = HadAlphaT ;
       else if ( observable == "DeltaPT") content = DeltaPT ;
       else if ( observable == "HadDeltaPT") content = HadDeltaPT ;
+			else if ( observable == "HadDeltaPTx") content = HadDeltaPTx ;
+			else if ( observable == "HadDeltaPTy") content = HadDeltaPTy ;
       else if ( observable == "DeltaPhiT") content = DeltaPhiT ;
       else if ( observable == "HadDeltaPhiT") content = HadDeltaPhiT ;
 			else if ( observable == "HadSystemMass") content = HadSystemMass ;
+			else if ( observable == "MissingEnergy") content = MissingEnergy ;
+			else if ( observable == "MissingEnergy") content = MissingEnergy ;
+			else if ( observable == "MissingAngle") content = MissingAngle ;
+			else if ( observable == "MissingMomentum") content = MissingMomentum ;
+			else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
+
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model
 
@@ -1482,9 +1514,13 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
   leg->AddEntry(hist_true_SIS,(model[0]+" EMSIS").c_str(),"l");
   leg->AddEntry(hist_true_MEC,(model[0]+" EMMEC").c_str(),"l");
   leg->AddEntry(hist_true_DIS,(model[0]+" EMDIS").c_str(),"l");
-  for( unsigned int id = 1 ; id < model.size() ; ++id ){
-     leg->AddEntry(hists_true_submodel[id-1],("GENIE "+model[id]).c_str(),"l");
-  }
+
+	if( model.size() > 1 ) {
+		for( unsigned int id = 1 ; id < model.size() -1 ; ++id ){
+			 leg->AddEntry(hists_true_submodel[id-1],("GENIE "+model[id]).c_str(),"l");
+		}
+	}
+
   leg->AddEntry(hist_data, data_name.c_str(), "lp");
   leg->Draw();
   output_name = MC_files_name[0] ;
@@ -1496,6 +1532,42 @@ void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_na
 
 void Plot1DXSec(){
 
+
+		// Add without the .root
+	  std::string mc_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/Reanalysis1p0pi/Plots/";
+	  std::string data_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/Reanalysis1p0pi/Plots/";
+	  std::string output_location ;
+		std::filesystem::path output_path ;
+	  std::vector<std::string> mc_files;
+	  std::vector<std::string> model_names ;
+
+	  std::string file_data = "e4nuanalysis_1p0pianalysis_e_on_1000060120_1161MeV_clas6data";
+	  std::string title = "e^{12}C 1p0#pi^{#pm} at 1.116 GeV";
+	  std::string data_name = "CLAS6 data";
+
+		std::vector<std::string> observables = {"InferedNucleonMom","MissingEnergy","MissingAngle","MissingMomentum","InferedNucleonMom"};
+
+	  // To be defined in loop
+		std::vector<double> binning;
+		std::string acceptance_file;
+		std::string output_name;
+
+	  for( unsigned int i = 0 ; i < observables.size(); ++i ){
+
+			output_name = "e4nuanalysis_1p0pianalysis_Averaged_Q2_01_e_on_1000060120_1161MeV_NoRad" ;
+			output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/Reanalysis1p0pi/Plots/output_files_1p0pi_1GeV/";
+			output_path = output_location.c_str();
+			if( ! std::filesystem::exists(output_path) ) std::filesystem::create_directory(output_path);
+			mc_files = {"e4nuanalysis_1p0pianalysis_G18_10a_Q2_01_e_on_1000060120_1161MeV_NoRad"};
+			file_data = "e4nuanalysis_1p0pianalysis_e_on_1000060120_1161MeV_clas6data";
+			title = "e^{12}C 1p1#pi^{-} at 1.116 GeV";
+			model_names = {"G18_10a", "G18_10b" } ;
+			acceptance_file = compute_acceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
+			Plot1DXSec( mc_files, file_data, acceptance_file, observables[i], title, data_name, model_names, mc_location, data_location, output_location, output_name, -1 ) ;
+
+	  }
+
+/*
 	// Add without the .root
   std::string mc_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/mc_files/";
   std::string data_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/data_files/";
@@ -1562,7 +1634,7 @@ void Plot1DXSec(){
 		model_names = { "G18_10a", "G18_10b" } ;
 		acceptance_file = compute_acceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
 		Plot1DXSec( mc_files, file_data, acceptance_file, observables[i], title, data_name, model_names, mc_location, data_location, output_location, output_name, -1 ) ;
-/*
+
     // Pi+ Analysis
 		output_name = "e4nuanalysis_1p1pipanalysis_Averaged_Q2_01_e_on_1000060120_1161MeV_NoRad" ;
 		output_location = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/PionAnalysis/1p1pi/output_files_1p1pip_1GeV/";
@@ -1648,6 +1720,7 @@ void Plot1DXSec(){
     model_names = { "G18_10a" } ;
     acceptance_file = compute_acceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
     Plot1DXSec( mc_files, file_data, acceptance_file, observables[i], title, data_name, model_names, mc_location, data_location, output_location, output_name, -1 ) ;
-   */
-  }
+	}
+	*/
+
 }

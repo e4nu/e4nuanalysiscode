@@ -196,7 +196,6 @@ std::vector<double> GetBinning( std::string observable, double EBeam ){
 		else if( EBeam == 2.261 ) binning = GetUniformBinning( 30, 0, 1 );
 		else if( EBeam == 4.461 ) binning = GetUniformBinning( 30, 0, 1 );
 	}
-
 	return binning ;
 }
 

@@ -29,13 +29,19 @@ std::string GetAxisLabel( std::string observable, unsigned int id_axis ){
 	else if ( observable == "RecoQ2") { x_axis = "Q^{2} [GeV]"; y_axis  = "d#sigma/dQ^{2}} #left[#mub GeV^{-1}#right]"; }
 	else if ( observable == "Recoq3") { x_axis = "q_{3} [GeV]"; y_axis  = "d#sigma/dq_{3} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
 	else if ( observable == "DeltaPT") { x_axis = "#deltap_{T} [GeV]"; y_axis  = "d#sigma/d#deltap_{T} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
-	else if ( observable == "HadDeltaPT") { x_axis = "#deltap_{T}^{had} [GeV]"; y_axis  = "d#sigma/d#deltap_{T}^{had} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
+	else if ( observable == "HadDeltaPT") { x_axis = "#deltap_{T} [GeV]"; y_axis  = "d#sigma/d#deltap_{T} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
+	else if ( observable == "HadDeltaPTx") { x_axis = "#deltap_{Tx} [GeV]"; y_axis  = "d#sigma/d#deltap_{Tx} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
+	else if ( observable == "HadDeltaPTy") { x_axis = "#deltap_{Ty} [GeV]"; y_axis  = "d#sigma/d#deltap_{Ty} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
+	else if ( observable == "InferedNucleonMom") { x_axis = "p_{N,proxi} [GeV]"; y_axis  = "d#sigma/dp_{N,proxy} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
 	else if ( observable == "DeltaPhiT") { x_axis = "#delta#phi_{T} [deg]"; y_axis  = "d#sigma/d#delta#phi_{T} #left[#mub deg^{-1}#right]"; }
 	else if ( observable == "HadDeltaPhiT") { x_axis = "#delta#phi_{T}^{had} [deg]"; y_axis  = "d#sigma/d#delta#phi_{T}^{had} #left[#mub deg^{-1}#right]"; }
 	else if ( observable == "AlphaT") { x_axis = "#alpha_{T} [deg]"; y_axis  = "d#sigma/d#alpha_{T} #left[#mub deg^{-1}#right]"; }
 	else if ( observable == "HadAlphaT") { x_axis = "#alpha_{T}^{had} [deg]"; y_axis  = "d#sigma/d#alpha_{T}^{had} #left[#mub deg^{-1}#right]"; }
 	else if ( observable == "RecoEnergyTransfer") { x_axis = "#omega [GeV]"; y_axis  = "d#sigma/d#omega #left[#mub GeV^{-1}#right]"; }
   else if ( observable == "HadSystemMass") { x_axis = "M_{R}[GeV]"; y_axis = "d#sigma/dM_{R} #left[#mub GeV^{-1}#right]"; }
+	else if ( observable == "MissingEnergy") { x_axis = "E_{miss}[GeV]"; y_axis = "d#sigma/dE_{miss} #left[#mub GeV^{-1}#right]"; }
+	else if ( observable == "MissingAngle") { x_axis = "#theta_{miss}[deg]"; y_axis = "d#sigma/d#theta_{miss} #left[#mub deg^{-1}#right]"; }
+	else if ( observable == "MissingMomentum") { x_axis = "p_{miss}[GeV/c]"; y_axis = "d#sigma/dp_{miss} #left[#mub (GeV/c)^{-1}#right]"; }
 	if( id_axis ==0 ) return x_axis ;
 	return y_axis ;
 }
@@ -137,10 +143,18 @@ std::vector<double> GetBinning( std::string observable, double EBeam ){
     if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, EBeam+0.2 );
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, EBeam+0.2 );
     else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, EBeam+0.2 );
-  }	else if ( observable == "HadDeltaPT") {
+	}	else if ( observable == "HadDeltaPT") {
     if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 1);
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 1 );
     else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 1 );
+	}	else if ( observable == "HadDeltaPTx") {
+		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, -1, 1);
+		else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, -1, 1 );
+		else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, -1, 1 );
+	}	else if ( observable == "HadDeltaPTy") {
+		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, -1, 1);
+		else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, -1, 1 );
+		else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, -1, 1 );
   }	else if ( observable == "DeltaPhiT") {
     if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0,180 );
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 100 );
@@ -165,6 +179,22 @@ std::vector<double> GetBinning( std::string observable, double EBeam ){
 		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 1, 1.6 );
     else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 1, 2 );
     else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 2.7 );
+	} else if ( observable == "MissingEnergy"){
+		if( EBeam == 1.161 ) binning = GetECalBinning( 10, 10, 0.8, 1.2, EBeam);
+		else if( EBeam == 2.261 ) binning = GetECalBinning( 20, 10, 1, EBeam+0.06, EBeam);
+		else if( EBeam == 4.461 ) binning = GetECalBinning( 8, 10, 1.5, EBeam+0.1, EBeam);
+	} else if ( observable == "MissingAngle"){
+		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 20, 50 );
+    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 20, 50 );
+    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 15, 50 );
+	} else if ( observable == "MissingMomentum"){
+		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 1.2 );
+    else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 2 );
+    else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 2 );
+	} else if ( observable == "InferedNucleonMom"){
+		if( EBeam == 1.161 ) binning = GetUniformBinning( 20, 0, 1 );
+		else if( EBeam == 2.261 ) binning = GetUniformBinning( 20, 0, 1 );
+		else if( EBeam == 4.461 ) binning = GetUniformBinning( 10, 0, 1 );
 	}
 
 	return binning ;

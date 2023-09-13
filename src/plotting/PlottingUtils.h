@@ -13,6 +13,8 @@
 
 namespace e4nu {
   namespace plotting {
+    void NormalizeHist( TH1D * h, double normalization_factor );
+    void CorrectData(TH1D* h, TH1D* acc);
     std::string GetAxisLabel( std::string observable, unsigned int id_axis );
     std::vector<double> GetUniformBinning( unsigned int nbins, double min, double max);
     std::vector<double> GetECalBinning( unsigned int nbins_tail, unsigned int nbins_peak, double min, double max, double EBeam);

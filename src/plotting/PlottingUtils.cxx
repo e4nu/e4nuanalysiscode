@@ -2,6 +2,30 @@
 
 using namespace e4nu ;
 
+void plotting::NormalizeHist( TH1D * h, double normalization_factor ){
+  // Data normalization
+  h -> Scale( normalization_factor );
+  double NBins = h->GetNbinsX();
+
+  for (int i = 1; i <= NBins; i++) {
+    double content = h->GetBinContent(i);
+    double error = h->GetBinError(i);
+    double width = h->GetBinWidth(i);
+    double newcontent = content / width;
+    double newerror = error / width;
+    h->SetBinContent(i,newcontent);
+    h->SetBinError(i,newerror);
+  }
+}
+
+void plotting::CorrectData(TH1D* h, TH1D* acc) {
+  double NBins = h->GetNbinsX();
+  for (int i = 1; i <= NBins; i++) {
+    double content = h->GetBinContent(i);
+    if( h->GetBinContent(i) != 0 ) h->SetBinContent(i, content * acc->GetBinContent(i));
+  }
+}
+
 std::string plotting::GetAxisLabel( std::string observable, unsigned int id_axis ){
   std::string x_axis, y_axis ;
   if( observable == "ECal") { x_axis = "E_{Cal} [GeV]"; y_axis  = "d#sigma/dE_{Cal} #left[#mub GeV^{-1}#right]"; }

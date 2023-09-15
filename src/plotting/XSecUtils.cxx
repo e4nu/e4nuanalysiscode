@@ -2,6 +2,9 @@
 #include "TLegend.h"
 #include <iomanip>
 #include <filesystem>
+#include <sstream>
+#include <iostream>
+#include <string>
 
 using namespace e4nu ;
 using namespace e4nu::plotting ;
@@ -444,16 +447,16 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       if ( l == 0 ) {
 	std::ostringstream o1 ;
 	o1 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
-	title_subname += " " + GetObsName(alt_obs) + "<" + o1.str() +" "+GetUnit(alt_obs) ;
+	title_subname += " " + plotting::GetObsName(alt_obs) + "<" + o1.str() +" "+plotting::GetUnit(alt_obs) ;
       } else if ( l == addbinning.size()-2 ) {
 	std::ostringstream o1 ;
 	o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
-	title_subname += " " + GetObsName(alt_obs) + ">" + o1.str() +" "+GetUnit(alt_obs) ;
+	title_subname += " " + plotting::GetObsName(alt_obs) + ">" + o1.str() +" "+plotting::GetUnit(alt_obs) ;
       } else {
 	std::ostringstream o1, o2 ;
 	o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
 	o2 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
-	title_subname += " " + o1.str() + "<"+ GetObsName(alt_obs) + "<" + o2.str()+" "+GetUnit(alt_obs) ;
+	title_subname += " " + o1.str() + "<"+ plotting::GetObsName(alt_obs) + "<" + o2.str()+" "+plotting::GetUnit(alt_obs) ;
       }
 
       StandardFormat( h_total_slices[l], title_subname, kBlack, 1, observable, y_max_total ) ;

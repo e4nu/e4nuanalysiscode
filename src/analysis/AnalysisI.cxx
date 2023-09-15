@@ -147,7 +147,7 @@ void AnalysisI::CookEvent( Event & event ) {
   // No Cuts are applied on those
   TLorentzVector out_mom = event.GetOutLepton4Mom() ; 
   std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticlesUnCorr4Mom() ;
-  if( part_map.find(conf::kPdgPi0) != part_map.end() ) std::cout << "NOTICE: Pi0 present in generation file. They should be decayed" <<std::endl;
+  //  if( part_map.find(conf::kPdgPi0) != part_map.end() ) std::cout << "NOTICE: Pi0 present in generation file. They should be decayed" <<std::endl;
   std::map<int,unsigned int> Topology = GetTopology();
   std::map<int,std::vector<TLorentzVector>> cooked_part_map ; 
   for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {

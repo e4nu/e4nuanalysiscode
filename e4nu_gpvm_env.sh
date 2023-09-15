@@ -2,7 +2,8 @@
 
 # Set up the UPS products needed to build and use GENIE
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh && retval="$?"
-setup root v6_12_06a -q e17:debug
+setup root v6_26_06b -q e26:p3913:prof
+
 
 echo "Setting E4NU environment variables..."
 

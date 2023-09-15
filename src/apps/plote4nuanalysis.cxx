@@ -75,7 +75,7 @@ int main( int argc, char* argv[] ) {
     } else PrintFormat("input_mc_files") ; 
 
     if( ExistArg("input_data_file",argc,argv)) {
-      data_file = GetArg("data_file",argc,argv) ;
+      data_file = GetArg("input_data_file",argc,argv) ;
       cout << "Reading data file from " << data_location << data_file << std::endl; 
     } else plot_data = false ; 
 

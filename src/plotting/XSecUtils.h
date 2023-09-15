@@ -17,7 +17,7 @@ namespace e4nu {
 		    std::string acceptance_file_name, std::string observable,
 		    std::string title, std::string data_name, std::vector<std::string> model,
 		    std::string input_MC_location, std::string input_data_location, std::string output_location,
-		    std::string output_file_name ) ; 
+		    std::string output_file_name, bool plot_data ) ; 
   }
 }
 

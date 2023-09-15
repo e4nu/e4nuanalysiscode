@@ -11,7 +11,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 			  std::string acceptance_file_name, std::string observable,
 			  std::string title, std::string data_name, std::vector<std::string> model,
 			  std::string input_MC_location, std::string input_data_location, std::string output_location,
-			  std::string output_file_name){
+			  std::string output_file_name, bool plot_data ){
 
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
@@ -27,7 +27,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
   TFile * file_data = new TFile((input_data_location+data_file_name+".root").c_str(),"READ");
   TFile * file_acceptance = new TFile((output_location+acceptance_file_name+".root").c_str(),"READ");
-  if( !file_data ) { std::cout << "ERROR: the "<< input_data_location << data_file_name << ".root does not exist." <<std::endl; return ;}
+  if( !file_data && plot_data ) { std::cout << "ERROR: the "<< input_data_location << data_file_name << ".root does not exist." <<std::endl; return ;}
   if( !file_acceptance ) { std::cout << "ERROR: the "<< output_location << acceptance_file_name << ".root does not exist." <<std::endl; return ;}
 
   TH1D * h_acceptance = (TH1D*)file_acceptance->Get("Acceptance");
@@ -62,10 +62,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     if( !tree_submodels[id - 1] ) { std::cout << "ERROR: the threes do not exist." <<std::endl; return ;}
   }
 
-  TTree * tree_data = (TTree*)file_data->Get("CLAS6Tree");
+  TTree * tree_data ;
+  if( plot_data ) tree_data = (TTree*)file_data->Get("CLAS6Tree");
 
   if( !h_acceptance ) { std::cout << "ERROR: Acceptance is not defined"<<std::endl; return ; }
-  if( !tree_true || !tree_data ) { std::cout << "ERROR: the threes do not exist." <<std::endl; return ;}
+  if( !tree_true || (!tree_data && plot_data ) ) { std::cout << "ERROR: the threes do not exist." <<std::endl; return ;}
 
   // Create histogram for total and total xsec per sector
   TH1D * hist_true = (TH1D*) h_acceptance ->Clone();
@@ -126,57 +127,62 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       h_total_slices[k] -> Reset();
       h_QEL_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
       h_QEL_slices[k] -> SetName( ("MC True QEL Slice "+std::to_string(k)).c_str() ) ;
-  h_QEL_slices[k] -> Reset();
-h_RES_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-h_RES_slices[k] -> SetName( ("MC True RES Slice "+std::to_string(k)).c_str() ) ;
-  h_RES_slices[k] -> Reset();
-h_SIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-h_SIS_slices[k] -> SetName( ("MC True SIS Slice "+std::to_string(k)).c_str() ) ;
-  h_SIS_slices[k] -> Reset();
-h_MEC_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-h_MEC_slices[k] -> SetName( ("MC True MEC Slice "+std::to_string(k)).c_str() ) ;
-  h_MEC_slices[k] -> Reset();
-h_DIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-h_DIS_slices[k] -> SetName( ("MC True DIS Slice "+std::to_string(k)).c_str() ) ;
-  h_DIS_slices[k] -> Reset();
-}
-}
+      h_QEL_slices[k] -> Reset();
+      h_RES_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+      h_RES_slices[k] -> SetName( ("MC True RES Slice "+std::to_string(k)).c_str() ) ;
+      h_RES_slices[k] -> Reset();
+      h_SIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+      h_SIS_slices[k] -> SetName( ("MC True SIS Slice "+std::to_string(k)).c_str() ) ;
+      h_SIS_slices[k] -> Reset();
+      h_MEC_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+      h_MEC_slices[k] -> SetName( ("MC True MEC Slice "+std::to_string(k)).c_str() ) ;
+      h_MEC_slices[k] -> Reset();
+      h_DIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+      h_DIS_slices[k] -> SetName( ("MC True DIS Slice "+std::to_string(k)).c_str() ) ;
+      h_DIS_slices[k] -> Reset();
+    }
+  }
 
 
   // total and per sector
-  TH1D * hist_data = (TH1D*) h_acceptance ->Clone();
-  hist_data -> SetName( "Data") ;
-  hist_data -> Reset();
-  TH1D * hist_data_0 = (TH1D*) h_acceptance_0 ->Clone();
-  hist_data_0 -> SetName( "Data Sector  0") ;
-  hist_data_0 -> Reset();
-  TH1D * hist_data_1 = (TH1D*) h_acceptance_1 ->Clone();
-  hist_data_1 -> SetName( "Data Sector  1") ;
-  hist_data_1 -> Reset();
-  TH1D * hist_data_2 = (TH1D*) h_acceptance_2 ->Clone();
-  hist_data_2 -> Reset();
-hist_data_2 -> SetName( "Data Sector  2") ;
-  TH1D * hist_data_3 = (TH1D*) h_acceptance_3 ->Clone();
-  hist_data_3 -> SetName( "Data Sector  3") ;
-  hist_data_3 -> Reset();
-  TH1D * hist_data_4 = (TH1D*) h_acceptance_4 ->Clone();
-  hist_data_4 -> SetName( "Data Sector  4") ;
-  hist_data_4 -> Reset();
-  TH1D * hist_data_5 = (TH1D*) h_acceptance_5 ->Clone();
-  hist_data_5 -> SetName( "Data Sector  5") ;
-  hist_data_5 -> Reset();
+  TH1D * hist_data=nullptr, * hist_data_0=nullptr, * hist_data_1=nullptr, * hist_data_2=nullptr, * hist_data_3=nullptr, * hist_data_4=nullptr, * hist_data_5 =nullptr;
+  if( plot_data ) { 
+    hist_data = (TH1D*) h_acceptance ->Clone();
+    hist_data -> SetName( "Data") ;
+    hist_data -> Reset();
 
-// Create hist for each slice on data
-std::vector<TH1D*> h_data_slices  ;
-if ( addbinning.size() > 0 ) {
-for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
-h_data_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-h_data_slices[k] -> SetName( ("Data Slice "+std::to_string(k)).c_str() ) ;
-  h_data_slices[k] -> Reset();
-}
-}
+    hist_data_0 = (TH1D*) h_acceptance_0 ->Clone();
+    hist_data_0 -> SetName( "Data Sector  0") ;
+    hist_data_0 -> Reset();
+    hist_data_1 = (TH1D*) h_acceptance_1 ->Clone();
+    hist_data_1 -> SetName( "Data Sector  1") ;
+    hist_data_1 -> Reset();
+    hist_data_2 = (TH1D*) h_acceptance_2 ->Clone();
+    hist_data_2 -> Reset();
+    hist_data_2 -> SetName( "Data Sector  2") ;
+    hist_data_3 = (TH1D*) h_acceptance_3 ->Clone();
+    hist_data_3 -> SetName( "Data Sector  3") ;
+    hist_data_3 -> Reset();
+    hist_data_4 = (TH1D*) h_acceptance_4 ->Clone();
+    hist_data_4 -> SetName( "Data Sector  4") ;
+    hist_data_4 -> Reset();
+    hist_data_5 = (TH1D*) h_acceptance_5 ->Clone();
+    hist_data_5 -> SetName( "Data Sector  5") ;
+    hist_data_5 -> Reset();
+  }
+  // Create hist for each slice on data
+  std::vector<TH1D*> h_data_slices  ;
+  if ( addbinning.size() > 0 && plot_data ) {
+    for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
+      h_data_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+      h_data_slices[k] -> SetName( ("Data Slice "+std::to_string(k)).c_str() ) ;
+      h_data_slices[k] -> Reset();
+    }
+  }
 
-  std::vector<TTree*> trees = { tree_true, tree_data };
+  std::vector<TTree*> trees = { tree_true } ; 
+  if( plot_data ) trees.push_back( tree_data );
+
   std::vector<TH1D*> hists = { hist_true, hist_data, hist_true_0, hist_data_0,
                                hist_true_1, hist_data_1, hist_true_2, hist_data_2,
                                hist_true_3, hist_data_3, hist_true_4, hist_data_4,
@@ -186,12 +192,12 @@ h_data_slices[k] -> SetName( ("Data Slice "+std::to_string(k)).c_str() ) ;
   unsigned int size_primary_hists = hists.size();
   // Adding total predictions for alternative models
   for( unsigned int id = 1 ; id < MC_files_name.size(); ++id ){
-      trees.push_back( tree_submodels[id - 1] );
-      hists.push_back( hists_true_submodel[id - 1] );
+    trees.push_back( tree_submodels[id - 1] );
+    hists.push_back( hists_true_submodel[id - 1] );
   }
 
   // OBSERVABLE DEFINITION:
-double TotWeight ;
+  double TotWeight ;
   double ECal,Recoq3,RecoW;
   double pfl,pfl_theta,pfl_phi;
   double proton_mom,proton_phi,proton_theta;
@@ -210,6 +216,7 @@ double TotWeight ;
 
   for ( unsigned int i = 0 ; i < trees.size() ; ++i ){
     NEntries = trees[i] -> GetEntries() ;
+    if( !trees[i] ) continue ; 
     trees[i] -> SetBranchAddress("TotWeight",&TotWeight);
     trees[i] -> SetBranchAddress("IsBkg",&IsBkg);
     trees[i] -> SetBranchAddress("ECal",&ECal);
@@ -254,7 +261,9 @@ double TotWeight ;
 
     // Only second tree corresponds to data
     if( i != 1 ) trees[i] -> SetBranchAddress("MCNormalization", &MCNormalization );
-    else trees[i] -> SetBranchAddress("DataNormalization",&DataNormalization );
+    else {
+      if( plot_data ) trees[i] -> SetBranchAddress("DataNormalization",&DataNormalization );
+    }
 
     for( int j = 0 ; j < NEntries ; ++j ) {
       trees[i]->GetEntry(j) ;
@@ -297,12 +306,15 @@ double TotWeight ;
 
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model
-
-      if( i < size_primary_trees ) hists[size_primary_trees*(ElectronSector+1)+i] -> Fill( content, w ) ;
+      if( hists[size_primary_trees*(ElectronSector+1)+i] ) { 
+	if( i < size_primary_trees ) hists[size_primary_trees*(ElectronSector+1)+i] -> Fill( content, w ) ;
+      }
       if( i > size_primary_trees - 1 ) id_hist = size_primary_hists + ( i - size_primary_trees );
 
-      hists[id_hist] -> Fill( content, w ) ;
-      hists[id_hist] -> SetLineWidth(3);
+      if( hists[id_hist] ) { 
+	hists[id_hist] -> Fill( content, w ) ;
+	hists[id_hist] -> SetLineWidth(3);
+      }
 
       if( i == 0 ){
         if( QEL ) hist_true_QEL -> Fill( content, w ) ;
@@ -338,7 +350,7 @@ double TotWeight ;
 		else h_DIS_slices[l] -> Fill( content, w ) ;
 	      }
 	      if( MEC ) h_MEC_slices[l] -> Fill( content, w ) ;
-	    } else if( i == 1 ) h_data_slices[l] -> Fill( content, w ) ;
+	    } else if( i == 1 && plot_data ) h_data_slices[l] -> Fill( content, w ) ;
 	  }
 	}
       }
@@ -346,44 +358,50 @@ double TotWeight ;
   }
 
   // Normalize data
-  NormalizeHist(hist_data, DataNormalization );
-  NormalizeHist(hist_data_0, DataNormalization );
-  NormalizeHist(hist_data_1, DataNormalization );
-  NormalizeHist(hist_data_2, DataNormalization );
-  NormalizeHist(hist_data_3, DataNormalization );
-  NormalizeHist(hist_data_4, DataNormalization );
-  NormalizeHist(hist_data_5, DataNormalization );
+  if( plot_data ) { 
+    NormalizeHist(hist_data, DataNormalization );
+    NormalizeHist(hist_data_0, DataNormalization );
+    NormalizeHist(hist_data_1, DataNormalization );
+    NormalizeHist(hist_data_2, DataNormalization );
+    NormalizeHist(hist_data_3, DataNormalization );
+    NormalizeHist(hist_data_4, DataNormalization );
+    NormalizeHist(hist_data_5, DataNormalization );
+  }
 
   // Store uncorrected data
-  TH1D * hist_data_uncorr = (TH1D*) hist_data ->Clone();
-  hist_data_uncorr -> SetName( "Uncorrected Data") ;
-  TH1D * hist_data_uncorr_0 = (TH1D*) hist_data_0 ->Clone();
-  hist_data_uncorr_0 -> SetName( "Uncorrected Data Sector  0") ;
-  TH1D * hist_data_uncorr_1 = (TH1D*) hist_data_1 ->Clone();
-  hist_data_uncorr_1 -> SetName( "Uncorrected Data Sector  1") ;
-  TH1D * hist_data_uncorr_2 = (TH1D*) hist_data_2 ->Clone();
-  hist_data_uncorr_2 -> SetName( "Uncorrected Data Sector  2") ;
-  TH1D * hist_data_uncorr_3 = (TH1D*) hist_data_3 ->Clone();
-  hist_data_uncorr_3 -> SetName( "Uncorrected Data Sector  3") ;
-  TH1D * hist_data_uncorr_4 = (TH1D*) hist_data_4 ->Clone();
-  hist_data_uncorr_4 -> SetName( "Uncorrected Data Sector  4") ;
-  TH1D * hist_data_uncorr_5 = (TH1D*) hist_data_5 ->Clone();
-  hist_data_uncorr_5 -> SetName( "Uncorrected Data Sector  5") ;
+  TH1D * hist_data_uncorr=nullptr, * hist_data_uncorr_0=nullptr, * hist_data_uncorr_1=nullptr, * hist_data_uncorr_2=nullptr, * hist_data_uncorr_3=nullptr, * hist_data_uncorr_4=nullptr, * hist_data_uncorr_5=nullptr ;
+  if( plot_data ) { 
+    hist_data_uncorr = (TH1D*) hist_data ->Clone();
+    hist_data_uncorr -> SetName( "Uncorrected Data") ;
+    hist_data_uncorr_0 = (TH1D*) hist_data_0 ->Clone();
+    hist_data_uncorr_0 -> SetName( "Uncorrected Data Sector  0") ;
+    hist_data_uncorr_1 = (TH1D*) hist_data_1 ->Clone();
+    hist_data_uncorr_1 -> SetName( "Uncorrected Data Sector  1") ;
+    hist_data_uncorr_2 = (TH1D*) hist_data_2 ->Clone();
+    hist_data_uncorr_2 -> SetName( "Uncorrected Data Sector  2") ;
+    hist_data_uncorr_3 = (TH1D*) hist_data_3 ->Clone();
+    hist_data_uncorr_3 -> SetName( "Uncorrected Data Sector  3") ;
+    hist_data_uncorr_4 = (TH1D*) hist_data_4 ->Clone();
+    hist_data_uncorr_4 -> SetName( "Uncorrected Data Sector  4") ;
+    hist_data_uncorr_5 = (TH1D*) hist_data_5 ->Clone();
+    hist_data_uncorr_5 -> SetName( "Uncorrected Data Sector  5") ;
 
-  // Correct data for detector acceptance :
-  CorrectData(hist_data, h_acceptance);
-  CorrectData(hist_data_0, h_acceptance_0);
-  CorrectData(hist_data_1, h_acceptance_1);
-  CorrectData(hist_data_2, h_acceptance_2);
-  CorrectData(hist_data_3, h_acceptance_3);
-  CorrectData(hist_data_4, h_acceptance_4);
-  CorrectData(hist_data_5, h_acceptance_5);
 
-  // Normalize data from slices
-  if( addbinning.size() != 0 ) {
-    for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
-      NormalizeHist(h_data_slices[l], DataNormalization );
-      CorrectData(h_data_slices[l], h_acc_slices[l] );
+    // Correct data for detector acceptance :
+    CorrectData(hist_data, h_acceptance);
+    CorrectData(hist_data_0, h_acceptance_0);
+    CorrectData(hist_data_1, h_acceptance_1);
+    CorrectData(hist_data_2, h_acceptance_2);
+    CorrectData(hist_data_3, h_acceptance_3);
+    CorrectData(hist_data_4, h_acceptance_4);
+    CorrectData(hist_data_5, h_acceptance_5);
+    
+    // Normalize data from slices
+    if( addbinning.size() != 0 ) {
+      for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+	NormalizeHist(h_data_slices[l], DataNormalization );
+	CorrectData(h_data_slices[l], h_acc_slices[l] );
+      }
     }
   }
 
@@ -416,7 +434,8 @@ double TotWeight ;
       NormalizeHist(h_DIS_slices[l], MCNormalization );
       NormalizeHist(h_MEC_slices[l], MCNormalization );
 
-      std::vector<TH1D*> all_slices{h_total_slices[l],h_data_slices[l]};
+      std::vector<TH1D*> all_slices{h_total_slices[l]};
+      if( plot_data ) all_slices.push_back(h_data_slices[l]);
       double y_max_total = GetMaximum( all_slices );
 
       // Add Slice information in title
@@ -443,34 +462,38 @@ double TotWeight ;
       StandardFormat( h_SIS_slices[l], title_subname, kOrange, 1, observable, y_max_total ) ;
       StandardFormat( h_MEC_slices[l], title_subname, kMagenta-3, 1, observable, y_max_total ) ;
       StandardFormat( h_DIS_slices[l], title_subname, kCyan+1, 1, observable, y_max_total ) ;
-      StandardFormat( h_data_slices[l], title_subname, kBlack, 8, observable, y_max_total ) ;
+      if( plot_data ) StandardFormat( h_data_slices[l], title_subname, kBlack, 8, observable, y_max_total ) ;
 
     }
   }
 
   // Find absolute y max
-  std::vector<TH1D*> temp_check = {hist_true,hist_data};
+  std::vector<TH1D*> temp_check = {hist_true};
+  if(plot_data) temp_check.push_back(hist_data);
+
   for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
     temp_check.push_back(hists_true_submodel[id]);
   }
   double y_max_total = GetMaximum( temp_check );
   // Format plots
-  StandardFormat( hist_data, title, kBlack, 8, observable, y_max_total ) ;
-  StandardFormat( hist_data_0, title+" Sector  0", kOrange+1, 8, observable ) ;
-  StandardFormat( hist_data_1, title+" Sector  1", kPink+4, 8, observable ) ;
-  StandardFormat( hist_data_2, title+" Sector  2", kViolet+5, 8, observable ) ;
-  StandardFormat( hist_data_3, title+" Sector  3", kAzure-5, 8, observable ) ;
-  StandardFormat( hist_data_4, title+" Sector  4", kTeal-7, 8, observable ) ;
-  StandardFormat( hist_data_5, title+" Sector  5", kGreen-3, 8, observable ) ;
-  hist_data -> SetLineWidth(0);
-
-  StandardFormat( hist_data_uncorr, title, kRed, 8, observable, y_max_total ) ;
-  StandardFormat( hist_data_uncorr_0, title+" Sector  0", kRed, 8, observable ) ;
-  StandardFormat( hist_data_uncorr_1, title+" Sector  1", kRed, 8, observable ) ;
-  StandardFormat( hist_data_uncorr_2, title+" Sector  2", kRed, 8, observable ) ;
-  StandardFormat( hist_data_uncorr_3, title+" Sector  3", kRed, 8, observable ) ;
-  StandardFormat( hist_data_uncorr_4, title+" Sector  4", kRed, 8, observable ) ;
-  StandardFormat( hist_data_uncorr_5, title+" Sector  5", kRed, 8, observable ) ;
+  if( plot_data ) { 
+    StandardFormat( hist_data, title, kBlack, 8, observable, y_max_total ) ;
+    StandardFormat( hist_data_0, title+" Sector  0", kOrange+1, 8, observable ) ;
+    StandardFormat( hist_data_1, title+" Sector  1", kPink+4, 8, observable ) ;
+    StandardFormat( hist_data_2, title+" Sector  2", kViolet+5, 8, observable ) ;
+    StandardFormat( hist_data_3, title+" Sector  3", kAzure-5, 8, observable ) ;
+    StandardFormat( hist_data_4, title+" Sector  4", kTeal-7, 8, observable ) ;
+    StandardFormat( hist_data_5, title+" Sector  5", kGreen-3, 8, observable ) ;
+    hist_data -> SetLineWidth(0);
+    
+    StandardFormat( hist_data_uncorr, title, kRed, 8, observable, y_max_total ) ;
+    StandardFormat( hist_data_uncorr_0, title+" Sector  0", kRed, 8, observable ) ;
+    StandardFormat( hist_data_uncorr_1, title+" Sector  1", kRed, 8, observable ) ;
+    StandardFormat( hist_data_uncorr_2, title+" Sector  2", kRed, 8, observable ) ;
+    StandardFormat( hist_data_uncorr_3, title+" Sector  3", kRed, 8, observable ) ;
+    StandardFormat( hist_data_uncorr_4, title+" Sector  4", kRed, 8, observable ) ;
+    StandardFormat( hist_data_uncorr_5, title+" Sector  5", kRed, 8, observable ) ;
+  }
 
   StandardFormat( hist_true, title, kBlack, 1, observable, y_max_total ) ;
   StandardFormat( hist_true_0, title+" Sector  0", kBlack, 1, observable ) ;
@@ -497,8 +520,8 @@ double TotWeight ;
     hists_true_submodel[id] -> SetLineWidth(3);
     hists_true_submodel[id] -> Draw("hist same");
   }
-  hist_data -> Draw(" err same ");
-
+  if( plot_data ) hist_data -> Draw(" err same ");
+ 
   if( observable=="ECal"){
     // Add a sub-pad1
     TPad * sub_pad = new TPad("subpad","",0.2,0.2,0.85,0.85);
@@ -526,7 +549,7 @@ double TotWeight ;
       hists_true_submodel[id] -> SetLineWidth(3);
       hists_true_submodel[id] -> Draw("hist same");
     }
-    hist_data -> Draw(" err same ");
+    if( plot_data ) hist_data -> Draw(" err same ");
 
   }
   std::string output_name = output_file_name+"_dxsec_d"+observable ;
@@ -561,7 +584,7 @@ double TotWeight ;
       h_SIS_slices[l]->Draw("hist same ");
       h_MEC_slices[l]->Draw("hist same ");
       h_DIS_slices[l]->Draw("hist same ");
-      h_data_slices[l]->Draw("err same ");
+      if( plot_data ) h_data_slices[l]->Draw("err same ");
 
     }
   }
@@ -587,60 +610,72 @@ double TotWeight ;
   pad_sector_0 -> SetBottomMargin(0.15);
   pad_sector_0 -> SetLeftMargin(0.15);
   hist_true_0 -> GetYaxis()->SetTitleOffset(1.2);
-  hist_data_0 -> SetMarkerSize(0.7);
   hist_true_0 -> Draw("hist");
-  hist_data_0 -> Draw(" err same ");
-  //hist_data_uncorr_0 -> Draw(" err same ");
+  if(plot_data) {
+    hist_data_0 -> SetMarkerSize(0.7);
+    hist_data_0 -> Draw(" err same ");
+    //hist_data_uncorr_0 -> Draw(" err same ");
+  }
 
   TPad *pad_sector_1 = (TPad*)pad_sector->cd(2);
   pad_sector_1 -> cd();
   pad_sector_1 -> SetBottomMargin(0.15);
   pad_sector_1 -> SetLeftMargin(0.15);
   hist_true_1 -> GetYaxis()->SetTitleOffset(1.2);
-  hist_data_1 -> SetMarkerSize(0.7);
   hist_true_1 -> Draw("hist");
-  hist_data_1 -> Draw(" err same ");
-  //hist_data_uncorr_1 -> Draw(" err same ");
+  if(plot_data) {
+    hist_data_1 -> SetMarkerSize(0.7);
+    hist_data_1 -> Draw(" err same ");
+    //hist_data_uncorr_1 -> Draw(" err same ");
+  }
 
   TPad *pad_sector_2 = (TPad*)pad_sector->cd(3);
   pad_sector_2 -> cd();
   pad_sector_2 -> SetBottomMargin(0.15);
   pad_sector_2 -> SetLeftMargin(0.15);
   hist_true_2 -> GetYaxis()->SetTitleOffset(1.2);
-  hist_data_2 -> SetMarkerSize(0.7);
   hist_true_2 -> Draw("hist");
-  hist_data_2 -> Draw(" err same ");
-  //hist_data_uncorr_2 -> Draw(" err same ");
+  if(plot_data) {
+    hist_data_2 -> SetMarkerSize(0.7);
+    hist_data_2 -> Draw(" err same ");
+    //hist_data_uncorr_2 -> Draw(" err same ");
+  }
 
   TPad *pad_sector_3 = (TPad*)pad_sector->cd(4);
   pad_sector_3 -> cd();
   pad_sector_3 -> SetBottomMargin(0.15);
   pad_sector_3 -> SetLeftMargin(0.15);
   hist_true_3 -> GetYaxis()->SetTitleOffset(1.2);
-  hist_data_3 -> SetMarkerSize(0.7);
   hist_true_3 -> Draw("hist");
-  hist_data_3 -> Draw(" err same ");
-  //hist_data_uncorr_3 -> Draw(" err same ");
+  if(plot_data) {
+    hist_data_3 -> SetMarkerSize(0.7);
+    hist_data_3 -> Draw(" err same ");
+    //hist_data_uncorr_3 -> Draw(" err same ");
+  }
 
   TPad *pad_sector_4 = (TPad*)pad_sector->cd(5);
   pad_sector_4 -> cd();
   pad_sector_4 -> SetBottomMargin(0.15);
   pad_sector_4 -> SetLeftMargin(0.15);
   hist_true_4 -> GetYaxis()->SetTitleOffset(1.2);
-  hist_data_4 -> SetMarkerSize(0.7);
   hist_true_4 -> Draw("hist");
-  hist_data_4 -> Draw(" err same ");
-  //hist_data_uncorr_4 -> Draw(" err same ");
+  if(plot_data) {
+    hist_data_4 -> SetMarkerSize(0.7);
+    hist_data_4 -> Draw(" err same ");
+    //hist_data_uncorr_4 -> Draw(" err same ");
+  }
 
   TPad *pad_sector_5 = (TPad*)pad_sector->cd(6);
   pad_sector_5 -> cd();
   pad_sector_5 -> SetBottomMargin(0.15);
   pad_sector_5 -> SetLeftMargin(0.15);
   hist_true_5 -> GetYaxis()->SetTitleOffset(1.2);
-  hist_data_5 -> SetMarkerSize(0.7);
   hist_true_5 -> Draw("hist");
-  hist_data_5 -> Draw(" err same ");
-  //hist_data_uncorr_5 -> Draw(" err same ");
+  if(plot_data) {
+      hist_data_5 -> SetMarkerSize(0.7);
+      hist_data_5 -> Draw(" err same ");
+      //hist_data_uncorr_5 -> Draw(" err same ");
+  }
 
   output_name = MC_files_name[0]+"_dxsec_d"+observable+"_persector" ;
   std::filesystem::path xsecpersector_path{(output_location+"XSecPerSector/").c_str()};
@@ -673,7 +708,7 @@ double TotWeight ;
     }
   }
 
-  leg->AddEntry(hist_data, data_name.c_str(), "lp");
+  if(plot_data)  leg->AddEntry(hist_data, data_name.c_str(), "lp");
   leg->Draw();
   output_name = MC_files_name[0] ;
   c_leg->SaveAs((output_location+output_name+"_legend.root").c_str());

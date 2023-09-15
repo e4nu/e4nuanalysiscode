@@ -36,8 +36,8 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 
     trees_mctrueacc[0]->SetBranchAddress("BeamE",&BeamE);
     trees_mctrueacc[0]->GetEntry(0);
-    binning = GetBinning(observable,BeamE);
-
+    binning = plotting::GetBinning(observable,BeamE);
+    
     hists_recoacc.push_back( new TH1D( ("Reco MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
     hists_trueacc.push_back( new TH1D( ("True MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
     hists_recoacc_0.push_back( new TH1D( ("Reco MC ACC Sector  0 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
@@ -193,7 +193,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
         hists[j+initial_size_hists-initial_size_trees] -> SetLineWidth(3);
 
 	std::string alt_obs = GetAlternativeObs(observable) ;
-	double content_2 ;
+	double content_2 = 0 ;
 	if ( alt_obs == "ECal" ) content_2 = ECal ;
 	else if ( alt_obs == "HadAlphaT" ) content_2 = HadAlphaT ;
 	else if ( alt_obs == "HadDeltaPT" ) content_2 = HadDeltaPT ;

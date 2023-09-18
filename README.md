@@ -12,10 +12,25 @@ To configure the software:
 2. Compile the code "make" from the E4NUANALYSIS directory: `cd $E4NUANALYSIS; make;`
 4. If a previous installation exists, `cd $E4NUANALYSIS; make clean ; make;`
 3. Run the main application, `./e4nuanalysis`. You can pass a different configuration file by passing the name to `./e4nuanalysis my_config.txt`. The configuration file must live in ConfigFiles.
+4. There's some configurable options that can be passed to the main analysis app. This enables the user to write a simple bash script that runs the whole analysis. For instance,  you can run the 1p1pim analysis at 2 GeV on carbon using ```ConfFiles/mc_conf/run_clas6mc_1pimanalysis_eC12_2GeV.sh```.
 
 After each run, you will get a new root file containing information from the valid analysed events. The information stored in this file, as well as it's name, can be configured from a configuration file (see Configuration guide Wiki).
 
-NOTICE: as of now, the code only works at the gpvms. 
+The user might want to obtain the cross section from the output files. ```src/apps/plote4nuanalysis.cxx``` is responsible to plot the cross section for a given list of observables. This app takes into account the acceptance correction. The input options are: 
+- monte carlo files location
+- data files location. This is optional in case you only want to see the mc predictions.
+- output location is the directory where all plots will be stored
+- name of input mc files, without the extension (_true.reco or _truereco.root). It will be used to compute the distributions for the true distribution, and the true+reconstructed distributions. These are used for the acceptance calculation. The user can specify a list of MC files in case they want to compare against more than one model. The acceptance correction in that case is the average of all models.
+- input data file, without the _class6data.root extension
+- Comma separated list of observables. I.e ECal,proton_mom,...,HadAlphaT
+- Optional list for the models name. Its size must be the same as the number of mc files
+- Optional title for the plots
+- Name for the data legend
+- No FSI root file. This file is separate because it should not be used to compute the acceptance. 
+- Bool to decide where to compute additional systematics (sector by sector, fiducial systematics, etc.) [To Be Added]
+- Add Systematics list of name and percentage corresponding to overall normalization systematics
+It is useful to store all the commands in a bash script. An example can be found in ```Documentation/run_1p1pi_plotting.sh```
+
 
 ---------------
 
@@ -42,10 +57,10 @@ The structure of the src directory is as follows:
 The analysis app [e4nuanalysis.cxx](https://github.com/e4nu/e4nuanalysiscode/blob/master/src/apps/e4nuanalysis.cxx) is the main executable. It's content is simple: it instiantates an E4NuAnalysis object (see below details on inheritance chain), configured with `ConfigFiles/example_configuration`. This object is then used to load the data from an input root file ([analysis -> LoadData()](https://github.com/e4nu/e4nuanalysiscode/blob/master/src/apps/e4nuanalysis.cxx#L28)), run the analysis and background subtraction methods, and finally, store the analized information in a TTree as well as Histograms.
 
 The main analysis flow is as follows:
-![e4nu flow](https://github.com/e4nu/e4nuanalysiscode/blob/master/PlottingScripts/e4nu_analysis_flow.png)
+![e4nu flow](https://github.com/e4nu/e4nuanalysiscode/blob/master/PlottingScripts/Documentation/e4nu_analysis_flow.png)
 
 The e4nu analysis code is highly factorized into different classes, which inherit from each other. ConfigureI is the base class, E4NuAnalyisis is the top derived class. The main structure is depicted in the diagram below:
-![e4nu diagram](https://github.com/e4nu/e4nuanalysiscode/blob/master/PlottingScripts/e4nuanalysis_diagram.png)
+![e4nu diagram](https://github.com/e4nu/e4nuanalysiscode/blob/master/PlottingScripts/Documentation/e4nuanalysis_diagram.png)
 The (...) boxes indicate that new classes might be added to accomodate new analysis cuts, specific to a new analysis (see user gide section below).
 
 Each class has a specific role within the e4nu analysis:

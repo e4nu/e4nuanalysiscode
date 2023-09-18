@@ -48,7 +48,7 @@ std::string plotting::GetAxisLabel( std::string observable, unsigned int id_axis
   else if ( observable == "HadDeltaPT") { x_axis = "#deltap_{T} [GeV]"; y_axis  = "d#sigma/d#deltap_{T} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
   else if ( observable == "HadDeltaPTx") { x_axis = "#deltap_{Tx} [GeV]"; y_axis  = "d#sigma/d#deltap_{Tx} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
   else if ( observable == "HadDeltaPTy") { x_axis = "#deltap_{Ty} [GeV]"; y_axis  = "d#sigma/d#deltap_{Ty} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
-  else if ( observable == "InferedNucleonMom") { x_axis = "p_{N,proxi} [GeV]"; y_axis  = "d#sigma/dp_{N,proxy} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
+  else if ( observable == "InferedNucleonMom") { x_axis = "p_{N,proxy} [GeV]"; y_axis  = "d#sigma/dp_{N,proxy} #left[#mub #left(GeV/c#right)^{-1}#right]"; }
   else if ( observable == "DeltaPhiT") { x_axis = "#delta#phi_{T} [deg]"; y_axis  = "d#sigma/d#delta#phi_{T} #left[#mub deg^{-1}#right]"; }
   else if ( observable == "HadDeltaPhiT") { x_axis = "#delta#phi_{T}^{had} [deg]"; y_axis  = "d#sigma/d#delta#phi_{T}^{had} #left[#mub deg^{-1}#right]"; }
   else if ( observable == "AlphaT") { x_axis = "#alpha_{T} [deg]"; y_axis  = "d#sigma/d#alpha_{T} #left[#mub deg^{-1}#right]"; }

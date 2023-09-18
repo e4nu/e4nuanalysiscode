@@ -209,11 +209,11 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam )
   } else if ( observable == "MissingMomentum"){
     if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 20, 0, 1.2 );
     else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 20, 0, 2 );
-    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 10, 0, 2 );
+    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 0, 4 );
   } else if ( observable == "InferedNucleonMom"){
     if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 0, 1 );
     else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 0, 1 );
-    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 30, 0, 1 );
+    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 0, 1 );
   }
 
   return binning ;

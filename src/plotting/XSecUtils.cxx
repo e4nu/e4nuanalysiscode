@@ -681,10 +681,10 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   output_name = MC_files_name[0]+"_dxsec_d"+observable+"_persector" ;
-  std::filesystem::path xsecpersector_path{(output_location+"XSecPerSector/").c_str()};
+  std::filesystem::path xsecpersector_path{(output_location+"/XSecPerSector/").c_str()};
   if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
-  c_sector->SaveAs((output_location+"XSecPerSector/"+output_name+".root").c_str());
-  c_sector->SaveAs((output_location+"XSecPerSector/"+output_name+".pdf").c_str());
+  c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
+  c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
   delete c_sector ;
 
   // Store legend in separate file

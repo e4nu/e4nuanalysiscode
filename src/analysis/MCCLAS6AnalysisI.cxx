@@ -343,6 +343,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double TrueW = event.GetTrueW();
   double Truex = event.GetTruex();
   double Truey = event.GetTruey();
+  int resid = event.GetRESID();
 
   TLorentzVector out_mom = event.GetOutLepton4Mom();
   double Efl = out_mom.E();
@@ -538,6 +539,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "MissingMomentum", &MissingMomentum, "MissingMomentum/D");
     kAnalysisTree -> Branch( "MissingAngle", &MissingAngle, "MissingAngle/D");
     kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
+    kAnalysisTree -> Branch( "resid", &resid, "resid/I");
 
     if( topology_has_protons ) {
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");

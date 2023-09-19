@@ -249,6 +249,7 @@ void Event::Initialize() {
   fTrueW = 0 ; 
   fTruex = 0 ; 
   fTruey = 0 ; 
+  fresid = -1000; 
 
   fInLepton.SetPxPyPzE( 0,0,0,0 ) ;
   fOutLepton.SetPxPyPzE( 0,0,0,0 ) ;

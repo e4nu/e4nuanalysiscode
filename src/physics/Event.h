@@ -109,6 +109,8 @@ namespace e4nu {
     double GetTrueW(void) const { return fTrueW ; }
     double GetTruex(void) const { return fTruex ; }
     double GetTruey(void) const { return fTruey ; }
+    int GetRESID(void) const { return fresid ; }
+
     unsigned int GetTrueNProtons(void) const { return fNP ; }
     unsigned int GetTrueNNeutrons(void) const { return fNN ; }
     unsigned int GetTrueNPiP(void) const { return fNPiP ; }
@@ -136,6 +138,7 @@ namespace e4nu {
     void SetTrueW( const double W ) { fTrueW = W ; }
     void SetTruex( const double x ) { fTruex = x ; }
     void SetTruey( const double y ) { fTruey = y ; } 
+    void SetRESID( const int resid ) { fresid = resid ; } 
     
   protected : 
     // Common funtionalities which depend on MC or data 
@@ -180,6 +183,7 @@ namespace e4nu {
     double fTrueW ; 
     double fTruex ; 
     double fTruey ; 
+    int fresid ; 
 
     // Background ID
     bool fIsBkg = false ; 

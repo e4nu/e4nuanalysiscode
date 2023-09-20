@@ -194,3 +194,7 @@ double utils::InferedNucleonMom( const double EBeam, const TLorentzVector out_el
   double pn = sqrt( vect_dpt.Mag2() + pow( dpl, 2 ) ) ; 
   return pn ; 
 }
+
+double utils::Angle( const TVector3 p1, const TVector3 p2 ){
+  return p1.Angle(p2);
+}

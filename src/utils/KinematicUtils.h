@@ -28,6 +28,7 @@ namespace e4nu {
     double HadSystemMass( const std::map<int,std::vector<TLorentzVector>> hadrons ) ;
     TLorentzVector Missing4Momenta( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons );
     double InferedNucleonMom( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons, const int tgt ) ;
+    double Angle( const TVector3 p1, const TVector3 p2 );
   }
 }
 

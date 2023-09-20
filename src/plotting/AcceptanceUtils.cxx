@@ -106,6 +106,8 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
     double MissingEnergy, MissingAngle, MissingMomentum ;
     double InferedNucleonMom ;
+    double HadronsAngle;
+
     long NEntries ;
     bool IsBkg ;
     int ElectronSector ;
@@ -146,6 +148,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       trees[j] -> SetBranchAddress("MissingAngle", &MissingAngle);
       trees[j] -> SetBranchAddress("MissingMomentum", &MissingMomentum);
       trees[j] -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
+      trees[j] -> SetBranchAddress("HadronsAngle",&HadronsAngle);
 
       for( int k = 0 ; k < NEntries; ++k ) {
         trees[j]->GetEntry(k) ;
@@ -184,6 +187,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 	else if ( observable == "MissingMomentum") content = MissingMomentum ;
 	else if ( observable == "MissingAngle") content = MissingAngle ;
 	else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
+	else if ( observable == "HadronsAngle" ) content = HadronsAngle ; 
 
         // Fill the per Sector  histogram
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> Fill( content, w ) ;

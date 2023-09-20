@@ -217,6 +217,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
   double MissingEnergy, MissingAngle, MissingMomentum ;
   double InferedNucleonMom ;
+  double HadronsAngle ; 
   long NEntries ;
   bool IsBkg ;
   int ElectronSector ;
@@ -262,6 +263,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     trees[i] -> SetBranchAddress("MissingAngle", &MissingAngle);
     trees[i] -> SetBranchAddress("MissingMomentum", &MissingMomentum);
     trees[i] -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
+    trees[i] -> SetBranchAddress("HadronsAngle", &HadronsAngle);
 
     // Only fill true info for the first model:
     if( i == 0 ) trees[i] -> SetBranchAddress("QEL",&QEL);
@@ -314,6 +316,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       else if ( observable == "MissingAngle") content = MissingAngle ;
       else if ( observable == "MissingMomentum") content = MissingMomentum ;
       else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
+      else if ( observable == "HadronsAngle") content = HadronsAngle ;
 
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model

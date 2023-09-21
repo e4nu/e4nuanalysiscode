@@ -20,7 +20,7 @@ namespace e4nu {
     static const double kMaxThetaElectron = 45.;
     static const double kMinThetaProton = 12.;
     static const double kMinThetaPiPlus = 12.;
-    static const double kMinThetaPiMinus = 0.;
+    static const double kMinThetaPiMinus = 22.;
     static const double kMinThetaGamma = 8.;
 
     static const double kMinEThetaSlice = 36 ;

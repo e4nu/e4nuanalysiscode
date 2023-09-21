@@ -75,8 +75,8 @@ int main( int argc, char* argv[] ) {
 
     if( ExistArg("input_data_file",argc,argv)) {
       data_file = GetArg("input_data_file",argc,argv) ;
-      cout << "Reading data file from " << data_location << data_file << std::endl;
-    } else plot_data = false ;
+      cout << "Reading data file from " << data_location << data_file << std::endl; 
+    } else plot_data = false ; 
 
     string obs ;
     if( ExistArg("observable_list",argc,argv)) {
@@ -134,9 +134,11 @@ int main( int argc, char* argv[] ) {
 
   // Loop over observables
   for( unsigned int i = 0 ; i < observables.size(); ++i ){
-    string acceptance_file = plotting::ComputeAcceptance( mc_files, observables[i], title, mc_location, output_location, output_name ) ;
-    if( nofsi_file != "" ) { mc_files.push_back(nofsi_file); model_names.push_back("No FSI");}
-    plotting::Plot1DXSec( mc_files, data_file, acceptance_file, observables[i], title, data_name, model_names, mc_location, data_location, output_location, output_name, plot_data ) ;
+    vector<string> root_files = mc_files;
+    vector<string> names = model_names ; 
+    string acceptance_file = plotting::ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name ) ;
+    if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
+    plotting::Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data ) ;
   }
 
   return 0 ;

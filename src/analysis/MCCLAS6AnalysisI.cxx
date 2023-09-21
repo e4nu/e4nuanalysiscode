@@ -343,6 +343,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double TrueW = event.GetTrueW();
   double Truex = event.GetTruex();
   double Truey = event.GetTruey();
+  int resid = event.GetRESID();
 
   TLorentzVector out_mom = event.GetOutLepton4Mom();
   double Efl = out_mom.E();
@@ -400,6 +401,20 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
       }
     }
   }
+
+  double HadronsAngle = 0 ;
+  std::vector<TLorentzVector> particles; 
+  for( auto it = hadron_map.begin() ; it!=hadron_map.end() ; ++it ) {
+    if( (it->second).size() != 1 ) continue ;
+    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
+      particles.push_back((it->second)[i]) ;
+      particles[i].SetPhi( (it->second)[i].Phi() + TMath::Pi() );
+    }
+  }
+  if( particles.size() == 2 ) { 
+    HadronsAngle = utils::Angle( particles[0].Vect(), particles[1].Vect() ) * TMath::RadToDeg() ;
+  }
+  
 
   double proton_mom = p_max.P() ; 
   double proton_momx = p_max.Px() ; 
@@ -538,7 +553,8 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "MissingMomentum", &MissingMomentum, "MissingMomentum/D");
     kAnalysisTree -> Branch( "MissingAngle", &MissingAngle, "MissingAngle/D");
     kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
-
+    kAnalysisTree -> Branch( "resid", &resid, "resid/I");
+    kAnalysisTree -> Branch( "HadronsAngle",&HadronsAngle, "HadronsAngle/D");
     if( topology_has_protons ) {
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");
       kAnalysisTree -> Branch( "proton_momx", &proton_momx, "proton_momx/D");

@@ -94,6 +94,7 @@ namespace e4nu {
     Double_t vtxy = 0 ;
     Double_t vtxz = 0 ;
     Double_t vtxt = 0 ;
+    Int_t resid = -1000; 
 
     TBranch * b_iev = nullptr ;   
     TBranch * b_tgt = nullptr ;   
@@ -159,6 +160,7 @@ namespace e4nu {
     TBranch * b_vtxy = nullptr ;   
     TBranch * b_vtxz = nullptr ;   
     TBranch * b_vtxt = nullptr ;   
+    TBranch * b_resid = nullptr ;   
   } ;
 }
 

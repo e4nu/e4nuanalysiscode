@@ -88,6 +88,7 @@ bool MCEventHolder::LoadBranch(void) {
   fEventHolderChain->SetBranchAddress("vtxy", &vtxy, &b_vtxy);
   fEventHolderChain->SetBranchAddress("vtxz", &vtxz, &b_vtxz);
   fEventHolderChain->SetBranchAddress("vtxt", &vtxt, &b_vtxt);
+  fEventHolderChain->SetBranchAddress("resid", &resid, &b_resid);
 
   return true ;
 }
@@ -137,6 +138,7 @@ Event * MCEventHolder::GetEvent(const unsigned int event_id) {
   event -> SetTrueW( W ) ;
   event -> SetTruex( x ) ; 
   event -> SetTruey( y ) ; 
+  event -> SetRESID( resid ) ; 
 
   // Set final state particle kinematics
   for ( unsigned int p = 0 ; p < (unsigned int) nf ; ++p ) {
@@ -247,4 +249,5 @@ void MCEventHolder::Clear() {
   delete b_vtxy ;   
   delete b_vtxz ;   
   delete b_vtxt ;   
+  delete b_resid ;   
 }

@@ -99,17 +99,20 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   TH1D * hist_true_QEL = (TH1D*) h_acceptance ->Clone();
   hist_true_QEL -> SetName( "MC True QEL") ;
   hist_true_QEL -> Reset();
+  TH1D * hist_true_RES_Delta = (TH1D*) h_acceptance ->Clone();
+  hist_true_RES_Delta -> SetName( "MC True RES Delta") ;
+  hist_true_RES_Delta -> Reset();
   TH1D * hist_true_RES = (TH1D*) h_acceptance ->Clone();
-  hist_true_RES -> SetName( "MC True QEL") ;
+  hist_true_RES -> SetName( "MC True RES") ;
   hist_true_RES -> Reset();
   TH1D * hist_true_SIS = (TH1D*) h_acceptance ->Clone();
-  hist_true_SIS -> SetName( "MC True QEL") ;
+  hist_true_SIS -> SetName( "MC True SIS") ;
   hist_true_SIS -> Reset();
   TH1D * hist_true_MEC = (TH1D*) h_acceptance ->Clone();
-  hist_true_MEC -> SetName( "MC True QEL") ;
+  hist_true_MEC -> SetName( "MC True MEC") ;
   hist_true_MEC -> Reset();
   TH1D * hist_true_DIS = (TH1D*) h_acceptance ->Clone();
-  hist_true_DIS -> SetName( "MC True QEL") ;
+  hist_true_DIS -> SetName( "MC True DIS") ;
   hist_true_DIS -> Reset();
 
   // Same per model - only total prediction
@@ -122,7 +125,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   // Create hist for each slice on true
-  std::vector<TH1D*> h_total_slices, h_QEL_slices, h_RES_slices, h_DIS_slices, h_MEC_slices, h_SIS_slices ;
+  std::vector<TH1D*> h_total_slices, h_QEL_slices, h_RES_Delta_slices, h_RES_slices, h_DIS_slices, h_MEC_slices, h_SIS_slices ;
   if ( addbinning.size() > 0 ) {
     for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
       h_total_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
@@ -134,6 +137,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       h_RES_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
       h_RES_slices[k] -> SetName( ("MC True RES Slice "+std::to_string(k)).c_str() ) ;
       h_RES_slices[k] -> Reset();
+      h_RES_Delta_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
+      h_RES_Delta_slices[k] -> SetName( ("MC True RES Delta Slice "+std::to_string(k)).c_str() ) ;
+      h_RES_Delta_slices[k] -> Reset();
       h_SIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
       h_SIS_slices[k] -> SetName( ("MC True SIS Slice "+std::to_string(k)).c_str() ) ;
       h_SIS_slices[k] -> Reset();
@@ -211,11 +217,13 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
   double MissingEnergy, MissingAngle, MissingMomentum ;
   double InferedNucleonMom ;
+  double HadronsAngle ; 
   long NEntries ;
   bool IsBkg ;
   int ElectronSector ;
   bool QEL, RES, DIS, MEC;
   double MCNormalization, DataNormalization ;
+  int resid; 
 
   for ( unsigned int i = 0 ; i < trees.size() ; ++i ){
     NEntries = trees[i] -> GetEntries() ;
@@ -255,12 +263,14 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     trees[i] -> SetBranchAddress("MissingAngle", &MissingAngle);
     trees[i] -> SetBranchAddress("MissingMomentum", &MissingMomentum);
     trees[i] -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
+    trees[i] -> SetBranchAddress("HadronsAngle", &HadronsAngle);
 
     // Only fill true info for the first model:
     if( i == 0 ) trees[i] -> SetBranchAddress("QEL",&QEL);
     if( i == 0 ) trees[i] -> SetBranchAddress("RES",&RES);
     if( i == 0 ) trees[i] -> SetBranchAddress("MEC",&MEC);
     if( i == 0 ) trees[i] -> SetBranchAddress("DIS",&DIS);
+    if( i == 0 ) trees[i] -> SetBranchAddress("resid", &resid);
 
     // Only second tree corresponds to data
     if( i != 1 ) trees[i] -> SetBranchAddress("MCNormalization", &MCNormalization );
@@ -306,6 +316,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       else if ( observable == "MissingAngle") content = MissingAngle ;
       else if ( observable == "MissingMomentum") content = MissingMomentum ;
       else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
+      else if ( observable == "HadronsAngle") content = HadronsAngle ;
 
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model
@@ -322,7 +333,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       if( i == 0 ){
         if( QEL ) hist_true_QEL -> Fill( content, w ) ;
         if( RES ) {
-          hist_true_RES -> Fill( content, w ) ;
+	  if( resid == 0 ) hist_true_RES_Delta -> Fill( content, w ) ;
+          else hist_true_RES -> Fill( content, w ) ;
         }
         if( DIS ) {
           if( RecoW < 1.7 ) hist_true_SIS -> Fill( content, w ) ;
@@ -346,7 +358,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 	      // Fill also breakdown for slice
 	      if( QEL ) h_QEL_slices[l] -> Fill( content, w ) ;
 	      if( RES ) {
-		h_RES_slices[l] -> Fill( content, w ) ;
+		if( resid == 0 ) h_RES_Delta_slices[l] -> Fill( content, w ) ;
+		else h_RES_slices[l] -> Fill( content, w ) ;
 	      }
 	      if( DIS ) {
 		if( RecoW < 1.7 ) h_SIS_slices[l] -> Fill( content, w ) ;
@@ -418,6 +431,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   NormalizeHist(hist_true_5, MCNormalization);
   NormalizeHist(hist_true_QEL, MCNormalization);
   NormalizeHist(hist_true_RES, MCNormalization);
+  NormalizeHist(hist_true_RES_Delta, MCNormalization);
   NormalizeHist(hist_true_SIS, MCNormalization);
   NormalizeHist(hist_true_MEC, MCNormalization);
   NormalizeHist(hist_true_DIS, MCNormalization);
@@ -432,6 +446,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
       NormalizeHist(h_total_slices[l], MCNormalization );
       NormalizeHist(h_QEL_slices[l], MCNormalization );
+      NormalizeHist(h_RES_Delta_slices[l], MCNormalization );
       NormalizeHist(h_RES_slices[l], MCNormalization );
       NormalizeHist(h_SIS_slices[l], MCNormalization );
       NormalizeHist(h_DIS_slices[l], MCNormalization );
@@ -461,6 +476,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
       StandardFormat( h_total_slices[l], title_subname, kBlack, 1, observable, y_max_total ) ;
       StandardFormat( h_QEL_slices[l], title_subname, kBlue-3, 1, observable, y_max_total ) ;
+      StandardFormat( h_RES_Delta_slices[l], title_subname, kRed-4, 1, observable, y_max_total ) ;
       StandardFormat( h_RES_slices[l], title_subname, kGreen+2, 1, observable, y_max_total ) ;
       StandardFormat( h_SIS_slices[l], title_subname, kOrange, 1, observable, y_max_total ) ;
       StandardFormat( h_MEC_slices[l], title_subname, kMagenta-3, 1, observable, y_max_total ) ;
@@ -507,6 +523,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   StandardFormat( hist_true_5, title+" Sector  5", kBlack, 1, observable ) ;
 
   StandardFormat( hist_true_QEL, title, kBlue-3, 1, observable ) ;
+  StandardFormat( hist_true_RES_Delta, title, kRed-4, 1, observable ) ;
   StandardFormat( hist_true_RES, title, kGreen+2, 1, observable ) ;
   StandardFormat( hist_true_SIS, title, kOrange, 1, observable ) ;
   StandardFormat( hist_true_MEC, title, kMagenta-3, 1, observable ) ;
@@ -515,6 +532,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   // Draw total xsec (all sectors):
   hist_true -> Draw("hist");
   hist_true_QEL -> Draw("hist same");
+  hist_true_RES_Delta -> Draw("hist same");
   hist_true_RES -> Draw("hist same");
   hist_true_SIS -> Draw("hist same");
   hist_true_MEC -> Draw("hist same");
@@ -544,6 +562,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
     tmp_hist_true -> Draw("hist");
     hist_true_QEL -> Draw("hist same");
+    hist_true_RES_Delta -> Draw("hist same");
     hist_true_RES -> Draw("hist same");
     hist_true_SIS -> Draw("hist same");
     hist_true_MEC -> Draw("hist same");
@@ -583,6 +602,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
       h_total_slices[l]->Draw("hist");
       h_QEL_slices[l]->Draw("hist same ");
+      h_RES_Delta_slices[l]->Draw("hist same ");
       h_RES_slices[l]->Draw("hist same ");
       h_SIS_slices[l]->Draw("hist same ");
       h_MEC_slices[l]->Draw("hist same ");
@@ -675,16 +695,16 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   hist_true_5 -> GetYaxis()->SetTitleOffset(1.2);
   hist_true_5 -> Draw("hist");
   if(plot_data) {
-      hist_data_5 -> SetMarkerSize(0.7);
-      hist_data_5 -> Draw(" err same ");
-      //hist_data_uncorr_5 -> Draw(" err same ");
+    hist_data_5 -> SetMarkerSize(0.7);
+    hist_data_5 -> Draw(" err same ");
+    //hist_data_uncorr_5 -> Draw(" err same ");
   }
 
   output_name = MC_files_name[0]+"_dxsec_d"+observable+"_persector" ;
-  std::filesystem::path xsecpersector_path{(output_location+"XSecPerSector/").c_str()};
+  std::filesystem::path xsecpersector_path{(output_location+"/XSecPerSector/").c_str()};
   if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
-  c_sector->SaveAs((output_location+"XSecPerSector/"+output_name+".root").c_str());
-  c_sector->SaveAs((output_location+"XSecPerSector/"+output_name+".pdf").c_str());
+  c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
+  c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
   delete c_sector ;
 
   // Store legend in separate file
@@ -700,7 +720,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   leg->SetTextSize(0.03);
   leg->AddEntry(hist_true,("GENIE "+model[0]).c_str(),"l");
   leg->AddEntry(hist_true_QEL,(model[0]+" EMQEL").c_str(),"l");
-  leg->AddEntry(hist_true_RES,(model[0]+" EMRES").c_str(),"l");
+  leg->AddEntry(hist_true_RES_Delta,(model[0]+" EMRES P33(1232)").c_str(),"l");
+  leg->AddEntry(hist_true_RES,(model[0]+" EMRES Others").c_str(),"l");
   leg->AddEntry(hist_true_SIS,(model[0]+" EMSIS").c_str(),"l");
   leg->AddEntry(hist_true_MEC,(model[0]+" EMMEC").c_str(),"l");
   leg->AddEntry(hist_true_DIS,(model[0]+" EMDIS").c_str(),"l");
@@ -714,8 +735,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   if(plot_data)  leg->AddEntry(hist_data, data_name.c_str(), "lp");
   leg->Draw();
   output_name = MC_files_name[0] ;
-  c_leg->SaveAs((output_location+output_name+"_legend.root").c_str());
-  c_leg->SaveAs((output_location+output_name+"_legend.pdf").c_str());
+  c_leg->SaveAs((output_location+"/"+output_name+"_legend.root").c_str());
+  c_leg->SaveAs((output_location+"/"+output_name+"_legend.pdf").c_str());
 
   delete c_leg;
 }

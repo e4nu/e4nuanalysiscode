@@ -2476,7 +2476,6 @@ Bool_t Fiducial::PimiFiducialCutExtra(double beam_en, TVector3 momentum) {
   double mom = momentum.Mag();
   double theta_min = myPiMinusFit->Eval(mom);
 
-  return status ; 
   if (theta < theta_min) { status = false; }
 
   return status;

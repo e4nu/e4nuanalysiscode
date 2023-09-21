@@ -476,7 +476,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
       StandardFormat( h_total_slices[l], title_subname, kBlack, 1, observable, y_max_total ) ;
       StandardFormat( h_QEL_slices[l], title_subname, kBlue-3, 1, observable, y_max_total ) ;
-      StandardFormat( h_RES_Delta_slices[l], title_subname, kGreen+4, 1, observable, y_max_total ) ;
+      StandardFormat( h_RES_Delta_slices[l], title_subname, kRed-4, 1, observable, y_max_total ) ;
       StandardFormat( h_RES_slices[l], title_subname, kGreen+2, 1, observable, y_max_total ) ;
       StandardFormat( h_SIS_slices[l], title_subname, kOrange, 1, observable, y_max_total ) ;
       StandardFormat( h_MEC_slices[l], title_subname, kMagenta-3, 1, observable, y_max_total ) ;
@@ -523,7 +523,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   StandardFormat( hist_true_5, title+" Sector  5", kBlack, 1, observable ) ;
 
   StandardFormat( hist_true_QEL, title, kBlue-3, 1, observable ) ;
-  StandardFormat( hist_true_RES_Delta, title, kGreen+4, 1, observable ) ;
+  StandardFormat( hist_true_RES_Delta, title, kRed-4, 1, observable ) ;
   StandardFormat( hist_true_RES, title, kGreen+2, 1, observable ) ;
   StandardFormat( hist_true_SIS, title, kOrange, 1, observable ) ;
   StandardFormat( hist_true_MEC, title, kMagenta-3, 1, observable ) ;
@@ -733,8 +733,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   if(plot_data)  leg->AddEntry(hist_data, data_name.c_str(), "lp");
   leg->Draw();
   output_name = MC_files_name[0] ;
-  c_leg->SaveAs((output_location+output_name+"_legend.root").c_str());
-  c_leg->SaveAs((output_location+output_name+"_legend.pdf").c_str());
+  c_leg->SaveAs((output_location+"/"+output_name+"_legend.root").c_str());
+  c_leg->SaveAs((output_location+"/"+output_name+"_legend.pdf").c_str());
 
   delete c_leg;
 }

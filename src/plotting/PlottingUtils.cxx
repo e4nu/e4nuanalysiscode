@@ -58,6 +58,7 @@ std::string plotting::GetAxisLabel( std::string observable, unsigned int id_axis
   else if ( observable == "MissingEnergy") { x_axis = "E_{miss}[GeV]"; y_axis = "d#sigma/dE_{miss} #left[#mub GeV^{-1}#right]"; }
   else if ( observable == "MissingAngle") { x_axis = "#theta_{miss}[deg]"; y_axis = "d#sigma/d#theta_{miss} #left[#mub deg^{-1}#right]"; }
   else if ( observable == "MissingMomentum") { x_axis = "p_{miss}[GeV/c]"; y_axis = "d#sigma/dp_{miss} #left[#mub (GeV/c)^{-1}#right]"; }
+  else if ( observable == "HadronsAngle") { x_axis = "#theta_{had}[deg]"; y_axis = "d#sigma/d#theta_{had} #left[#mub (had)^{-1}#right]"; }
   if( id_axis ==0 ) return x_axis ;
   return y_axis ;
 }
@@ -214,6 +215,10 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam )
     if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 0, 1 );
     else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 0, 1 );
     else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 0, 1 );
+  } else if ( observable == "HadronsAngle"){
+    if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 0, 180 );
+    else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 0, 180 );
+    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 0, 180 );
   }
 
   return binning ;

@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <filesystem>
 
-using namespace std; 
+using namespace std;
 using namespace e4nu;
 using namespace e4nu::plotting;
 
@@ -18,7 +18,7 @@ using namespace e4nu::plotting;
 // 2) Data files location (*)                                  //
 // 3) OutputLocation                                           //
 // 4) Input MC Files                                           //
-// 5) Input data file (*)                                      // 
+// 5) Input data file (*)                                      //
 // 6) Observables List                                         //
 // 7) Input Model Names (*)                                    //
 // 8) Title (*)                                                //
@@ -32,54 +32,53 @@ string mc_location="", data_location="", output_location ="", output_name ="";
 vector<string> mc_files, observables, model_names ;
 string data_file ="", nofsi_file="", title="", data_name="" ;
 bool compute_systematics ;
-map<string,double> systematic_map ; 
-bool plot_data = true ; 
+map<string,double> systematic_map ;
+bool plot_data = true ;
 
 void PrintFormat(string s);
 string GetArg(string op, int argc, char ** argv );
 bool ExistArg(string op, int argc, char ** argv );
-vector<string> SplitString(string s,char d=',') ; 
+vector<string> SplitString(string s,char d=',') ;
 int main( int argc, char* argv[] ) {
 
   std::cout << "Plotting e4nu analysis..." << std::endl;
 
-  if( argc <= 1 ) { 
+  if( argc <= 1 ) {
     PrintFormat("");
-    return 0 ; 
-  } else { 
+    return 0 ;
+  } else {
     //Loading configuration
-   
-    if( ExistArg("mc_location",argc,argv)) {
-      mc_location = GetArg("mc_location",argc,argv) ;
-      cout << "Reading MC files from " << mc_location << std::endl; 
-    } else PrintFormat("mc_location") ; 
-      
     if( ExistArg("data_location",argc,argv)) {
       data_location = GetArg("data_location",argc,argv) ;
-    } else plot_data = false ; 
-      
+    } else plot_data = false ;
+
     if( ExistArg("output_location",argc,argv)) {
       output_location = GetArg("output_location",argc,argv) ;
 
       if( ! std::filesystem::exists(output_location) ) std::filesystem::create_directory(output_location);
-    } else PrintFormat("output_location") ; 
+    } else PrintFormat("output_location") ;
 
     if( ExistArg("output_name",argc,argv)) {
       output_name = GetArg("output_name",argc,argv) ;
-    } else PrintFormat("output_name") ; 
-      
-    string files ; 
+    } else PrintFormat("output_name") ;
+
+    if( ExistArg("mc_location",argc,argv)) {
+      mc_location = GetArg("mc_location",argc,argv) ;
+      cout << "Reading MC files from " << mc_location << std::endl;
+    } else PrintFormat("mc_location") ;
+    
+    string files ;
     if( ExistArg("input_mc_files",argc,argv)) {
       files = GetArg("input_mc_files",argc,argv) ;
       mc_files = SplitString(files);
-    } else PrintFormat("input_mc_files") ; 
+    } else PrintFormat("input_mc_files") ;
 
     if( ExistArg("input_data_file",argc,argv)) {
       data_file = GetArg("input_data_file",argc,argv) ;
       cout << "Reading data file from " << data_location << data_file << std::endl; 
     } else plot_data = false ; 
 
-    string obs ; 
+    string obs ;
     if( ExistArg("observable_list",argc,argv)) {
       obs = GetArg("observable_list",argc,argv) ;
       observables = SplitString(obs);
@@ -87,9 +86,9 @@ int main( int argc, char* argv[] ) {
       for( unsigned s = 0 ; s<observables.size();++s ) {
 	cout << observables[s] << std::endl;
       }
-    } else PrintFormat("observable_list") ; 
+    } else PrintFormat("observable_list") ;
 
-    string mdl ; 
+    string mdl ;
     if( ExistArg("model_names",argc,argv)) {
       mdl = GetArg("model_names",argc,argv) ;
       model_names = SplitString(mdl);
@@ -97,15 +96,15 @@ int main( int argc, char* argv[] ) {
 	std::cout << "Number of mc files does not match the number of models"<< std::endl;
 	return 0;
       }
-    } 
+    }
 
     cout<<"Loading MC Files:"<<endl;
-    for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) { 
+    for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
       cout << " -> " ;
       if( model_names.size() != 0 ) cout << model_names[i] << ": " ;
       cout << mc_files[i] << endl;
     }
-    
+
     if( ExistArg("title",argc,argv)) {
       title = GetArg("title",argc,argv) ;
     }
@@ -119,18 +118,18 @@ int main( int argc, char* argv[] ) {
       cout << "Adding No FSI file: " << nofsi_file << endl;
     }
 
-    string sys ; 
+    string sys ;
     if( ExistArg("add-systematics",argc,argv)) {
       sys = GetArg("add-systematics",argc,argv) ;
       vector<string> sys_names = SplitString(sys,':');
-      for( unsigned s = 0 ; s < sys_names.size() ; ++s ) { 
+      for( unsigned s = 0 ; s < sys_names.size() ; ++s ) {
 	std::cout << sys_names[s]<<std::endl;
-	vector<string> tmpsys = SplitString(sys_names[s]) ; 
-	if( tmpsys.size() != 2 ) continue ; 
+	vector<string> tmpsys = SplitString(sys_names[s]) ;
+	if( tmpsys.size() != 2 ) continue ;
 	systematic_map[tmpsys[0]] = stod(tmpsys[1]);
       }
-    } 
-	
+    }
+
   }
 
   // Loop over observables
@@ -142,7 +141,7 @@ int main( int argc, char* argv[] ) {
     plotting::Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data ) ;
   }
 
-  return 0 ; 
+  return 0 ;
 }
 
 void PrintFormat(string s){
@@ -158,7 +157,7 @@ vector<string> SplitString(string s, char d ) {
   vector<string> strings;
   int startIndex = 0, endIndex = 0;
   for (unsigned int i = 0; i <= s.size(); i++) {
-        
+
     // If we reached the end of the word or the end of the input.
     if (s[i] ==d || i == s.size()) {
       endIndex = i;
@@ -168,7 +167,7 @@ vector<string> SplitString(string s, char d ) {
       startIndex = endIndex + 1;
     }
   }
-  return strings ;   
+  return strings ;
 }
 
 string GetArg(string op, int argc, char ** argv )
@@ -187,7 +186,7 @@ string GetArg(string op, int argc, char ** argv )
 	if (strcmp(op.c_str(),op_cur)==0) {
 	  if (strlen(&argv[2][0]) ) {
             strcpy(argument,&argv[2][0]);
-	  } 
+	  }
 	}
       }
       argc--;
@@ -197,7 +196,7 @@ string GetArg(string op, int argc, char ** argv )
 
   string value = string(argument);
   delete [] argument;
-  return value ; 
+  return value ;
 }
 
 
@@ -215,13 +214,13 @@ bool ExistArg(string op, int argc, char ** argv )
 	strcpy(op_cur,&argv[1][2]);
 
 	if (strcmp(op.c_str(),op_cur)==0) {
-	  return true ; 
-	} 
+	  return true ;
+	}
       }
       argc--;
       argv++;
 
     }
-  delete [] argument ; 
+  delete [] argument ;
   return false;
 }

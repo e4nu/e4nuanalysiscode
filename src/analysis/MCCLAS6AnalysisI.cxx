@@ -408,7 +408,6 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     if( (it->second).size() != 1 ) continue ;
     for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
       particles.push_back((it->second)[i]) ;
-      particles[i].SetPhi( (it->second)[i].Phi() + TMath::Pi() );
     }
   }
   if( particles.size() == 2 ) { 

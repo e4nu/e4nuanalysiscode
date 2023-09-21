@@ -532,6 +532,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   // Draw total xsec (all sectors):
   hist_true -> Draw("hist");
   hist_true_QEL -> Draw("hist same");
+  hist_true_RES_Delta -> Draw("hist same");
   hist_true_RES -> Draw("hist same");
   hist_true_SIS -> Draw("hist same");
   hist_true_MEC -> Draw("hist same");
@@ -561,6 +562,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
     tmp_hist_true -> Draw("hist");
     hist_true_QEL -> Draw("hist same");
+    hist_true_RES_Delta -> Draw("hist same");
     hist_true_RES -> Draw("hist same");
     hist_true_SIS -> Draw("hist same");
     hist_true_MEC -> Draw("hist same");

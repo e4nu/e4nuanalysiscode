@@ -106,8 +106,8 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
     double MissingEnergy, MissingAngle, MissingMomentum ;
     double InferedNucleonMom ;
-    double HadronsAngle;
-
+    double HadronsAngle, Angleqvshad;
+    double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ; 
     long NEntries ;
     bool IsBkg ;
     int ElectronSector ;
@@ -149,6 +149,11 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       trees[j] -> SetBranchAddress("MissingMomentum", &MissingMomentum);
       trees[j] -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
       trees[j] -> SetBranchAddress("HadronsAngle",&HadronsAngle);
+      trees[j] -> SetBranchAddress("AdlerAngleThetaP",&AdlerAngleThetaP);
+      trees[j] -> SetBranchAddress("AdlerAnglePhiP",&AdlerAnglePhiP);
+      trees[j] -> SetBranchAddress("AdlerAngleThetaP",&AdlerAngleThetaPi);
+      trees[j] -> SetBranchAddress("AdlerAnglePhiP",&AdlerAnglePhiPi);
+      trees[j] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
 
       for( int k = 0 ; k < NEntries; ++k ) {
         trees[j]->GetEntry(k) ;
@@ -188,6 +193,11 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 	else if ( observable == "MissingAngle") content = MissingAngle ;
 	else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
 	else if ( observable == "HadronsAngle" ) content = HadronsAngle ; 
+	else if ( observable == "AdlerAngleThetaP" ) content = AdlerAngleThetaP ; 
+	else if ( observable == "AdlerAnglePhiP" ) content = AdlerAnglePhiP ; 
+	else if ( observable == "AdlerAngleThetaPi" ) content = AdlerAngleThetaPi ; 
+	else if ( observable == "AdlerAnglePhiPi" ) content = AdlerAnglePhiPi ; 
+	else if ( observable == "Angleqvshad" ) content = Angleqvshad ; 
 
         // Fill the per Sector  histogram
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> Fill( content, w ) ;

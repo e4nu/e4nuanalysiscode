@@ -217,7 +217,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
   double MissingEnergy, MissingAngle, MissingMomentum ;
   double InferedNucleonMom ;
-  double HadronsAngle ; 
+  double HadronsAngle,Angleqvshad ; 
+  double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
   long NEntries ;
   bool IsBkg ;
   int ElectronSector ;
@@ -264,6 +265,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     trees[i] -> SetBranchAddress("MissingMomentum", &MissingMomentum);
     trees[i] -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
     trees[i] -> SetBranchAddress("HadronsAngle", &HadronsAngle);
+    trees[i] -> SetBranchAddress("AdlerAngleThetaP", &AdlerAngleThetaP);
+    trees[i] -> SetBranchAddress("AdlerAnglePhiP", &AdlerAnglePhiP);
+    trees[i] -> SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
+    trees[i] -> SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
+    trees[i] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
 
     // Only fill true info for the first model:
     if( i == 0 ) trees[i] -> SetBranchAddress("QEL",&QEL);
@@ -317,6 +323,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       else if ( observable == "MissingMomentum") content = MissingMomentum ;
       else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
       else if ( observable == "HadronsAngle") content = HadronsAngle ;
+      else if ( observable == "AdlerAngleThetaP") content = AdlerAngleThetaP ; 
+      else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiP ; 
+      else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ; 
+      else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiPi ; 
+      else if ( observable == "Angleqvshad") content = Angleqvshad ; 
 
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model

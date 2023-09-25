@@ -59,6 +59,11 @@ std::string plotting::GetAxisLabel( std::string observable, unsigned int id_axis
   else if ( observable == "MissingAngle") { x_axis = "#theta_{miss}[deg]"; y_axis = "d#sigma/d#theta_{miss} #left[#mub deg^{-1}#right]"; }
   else if ( observable == "MissingMomentum") { x_axis = "p_{miss}[GeV/c]"; y_axis = "d#sigma/dp_{miss} #left[#mub (GeV/c)^{-1}#right]"; }
   else if ( observable == "HadronsAngle") { x_axis = "#theta_{had}[deg]"; y_axis = "d#sigma/d#theta_{had} #left[#mub (deg)^{-1}#right]"; }
+  else if ( observable == "AdlerAngleThetaP") { x_axis = "#theta_{p}^{*}[deg]"; y_axis = "d#sigma/d#theta_{p}^{*} #left[#mub (deg)^{-1}#right]"; }
+  else if ( observable == "AdlerAnglePhiP") { x_axis = "#phi_{p}^{*}[deg]"; y_axis = "d#sigma/d#phi_{p}^{*} #left[#mub (deg)^{-1}#right]"; }
+  else if ( observable == "AdlerAngleThetaPi") { x_axis = "#theta_{#pi}^{*}[deg]"; y_axis = "d#sigma/d#theta_{#pi}^{*} #left[#mub (deg)^{-1}#right]"; }
+  else if ( observable == "AdlerAnglePhiPi") { x_axis = "#phi_{#pi}^{*}[deg]"; y_axis = "d#sigma/d#pi_{#pi}^{*} #left[#mub (deg)^{-1}#right]"; }
+  else if ( observable == "Angleqvshad") { x_axis = "#theta_{#vect{q}#cdot#vect{p}_{had}[deg]"; y_axis = "d#sigma/d#vect{q}#cdot#vect{p}_{had} #left[#mub (deg)^{-1}#right]"; }
   if( id_axis ==0 ) return x_axis ;
   return y_axis ;
 }
@@ -216,6 +221,26 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam )
     else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 0, 1 );
     else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 0, 1 );
   } else if ( observable == "HadronsAngle"){
+    if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
+    else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
+    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 20, 180 );
+  } else if ( observable == "AdlerAngleThetaP"){
+    if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
+    else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
+    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 20, 180 );
+  } else if ( observable == "AdlerAnglePhiP"){
+    if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
+    else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
+    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 20, 180 );
+  } else if ( observable == "AdlerAngleThetaPi"){
+    if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
+    else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
+    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 20, 180 );
+  } else if ( observable == "AdlerAnglePhiPi"){
+    if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
+    else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
+    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 20, 180 );
+  } else if ( observable == "Angleqvshad"){
     if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
     else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
     else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 20, 180 );

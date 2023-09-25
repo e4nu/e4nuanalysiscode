@@ -466,6 +466,9 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double AdlerAngleThetaPi= utils::GetAdlerAngleTheta( BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg(); 
   double AdlerAnglePhiPi= utils::GetAdlerAnglePhi( BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg() ;
 
+  // Angle between q and had system
+  double Angleqvshad = utils::Angle( utils::GetRecoq3( out_mom, BeamE), utils::TotHadron(hadron_map).Vect() ) * TMath::RadToDeg() ;
+
   double HadSystemMass = utils::HadSystemMass( hadron_map ) ;  
   double pim_mom = pim_max.P() ;
   double pim_momx = pim_max.Px() ;
@@ -559,6 +562,8 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
     kAnalysisTree -> Branch( "resid", &resid, "resid/I");
     kAnalysisTree -> Branch( "HadronsAngle",&HadronsAngle, "HadronsAngle/D");
+    kAnalysisTree -> Branch( "Angleqvshad",&Angleqvshad,"Angleqvshad/D");
+
     if( topology_has_protons ) {
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");
       kAnalysisTree -> Branch( "proton_momx", &proton_momx, "proton_momx/D");

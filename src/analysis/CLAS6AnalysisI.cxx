@@ -278,6 +278,8 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double AdlerAngleThetaPi= utils::GetAdlerAngleTheta( BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg(); 
   double AdlerAnglePhiPi= utils::GetAdlerAnglePhi( BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg() ; 
 
+  double Angleqvshad = utils::Angle( utils::GetRecoq3( out_mom, BeamE), utils::TotHadron(hadron_map).Vect() ) * TMath::RadToDeg() ;
+
   // Store name of files used
   const char* InputROOTFile = kInputFile.c_str() ;
   const char* OutputROOTFile = kOutputFile.c_str() ;
@@ -325,6 +327,7 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "MissingAngle", &MissingAngle, "MissingAngle/D");
     kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
     kAnalysisTree -> Branch( "HadronsAngle", &HadronsAngle, "HadronsAngle/D");
+    kAnalysisTree -> Branch( "Angleqvshad",&Angleqvshad,"Angleqvshad/D");
 
     if( topology_has_protons ) {
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");

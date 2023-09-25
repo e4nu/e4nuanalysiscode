@@ -63,7 +63,7 @@ std::string plotting::GetAxisLabel( std::string observable, unsigned int id_axis
   else if ( observable == "AdlerAnglePhiP") { x_axis = "#phi_{p}^{*}[deg]"; y_axis = "d#sigma/d#phi_{p}^{*} #left[#mub (deg)^{-1}#right]"; }
   else if ( observable == "AdlerAngleThetaPi") { x_axis = "#theta_{#pi}^{*}[deg]"; y_axis = "d#sigma/d#theta_{#pi}^{*} #left[#mub (deg)^{-1}#right]"; }
   else if ( observable == "AdlerAnglePhiPi") { x_axis = "#phi_{#pi}^{*}[deg]"; y_axis = "d#sigma/d#pi_{#pi}^{*} #left[#mub (deg)^{-1}#right]"; }
-  else if ( observable == "Angleqvshad") { x_axis = "#theta_{#vect{q}#cdot#vect{p}_{had}[deg]"; y_axis = "d#sigma/d#vect{q}#cdot#vect{p}_{had} #left[#mub (deg)^{-1}#right]"; }
+  else if ( observable == "Angleqvshad") { x_axis = "#theta_{#vect{q} #cdot #vect{p}_{had}}[deg]"; y_axis = "d#sigma/d#theta_{#vect{q} #cdot #vect{p}_{had}} #left[#mub (deg)^{-1}#right]"; }
   if( id_axis ==0 ) return x_axis ;
   return y_axis ;
 }

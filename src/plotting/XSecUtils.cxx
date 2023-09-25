@@ -326,7 +326,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       else if ( observable == "AdlerAngleThetaP") content = AdlerAngleThetaP ; 
       else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiP ; 
       else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ; 
-      else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiPi ; 
+      else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ; 
       else if ( observable == "Angleqvshad") content = Angleqvshad ; 
 
       unsigned int id_hist = i ;

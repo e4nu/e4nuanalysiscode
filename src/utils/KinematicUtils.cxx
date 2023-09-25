@@ -247,13 +247,12 @@ double utils::GetAdlerAnglePhi( const double EBeam, const TLorentzVector leptonf
   TLorentzVector q = beam - leptonf ;  
 
   // Boost to tot hadron frame
-  TVector3 in_lep = utils::VectorInHadFrame(beam,hadrons).Vect();
   TVector3 particle_dir = utils::VectorInHadFrame(particle,hadrons).Vect();
   TVector3 leptonf_hadframe = utils::VectorInHadFrame( leptonf, hadrons ).Vect() ; 
   
   // Axis definition 
   TVector3 z_axis = utils::VectorInHadFrame(q,hadrons).Vect().Unit() ;
-  TVector3 y_axis = in_lep.Cross( leptonf_hadframe ).Unit();   //z_axis.Cross( leptonf_hadframe ).Unit();
+  TVector3 y_axis = z_axis.Cross( leptonf_hadframe ).Unit();
   TVector3 x_axis = y_axis.Cross( z_axis );
 
   TVector3 particle_perp( z_axis.Cross( particle_dir.Cross(z_axis).Unit() ) ) ; 

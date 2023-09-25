@@ -10,6 +10,7 @@ namespace e4nu {
     double GetECal( const double Ef, const std::map<int,std::vector<TLorentzVector>> particle_map, const int tgt ) ;
     double GetRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) ;
     double GetQELRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) ;
+    double GetRecoEBeamPion( const TLorentzVector leptonf, const std::map<int,std::vector<TLorentzVector>> particle_map, const int tgt ) ;
     double GetEnergyTransfer( const TLorentzVector & leptonf, const double Ebeam ) ;
     double GetNuECal( const TLorentzVector & leptonf, const double ECal ) ;
     TVector3 GetRecoq3( const TLorentzVector & leptonf, const double EBeam ) ;
@@ -29,6 +30,12 @@ namespace e4nu {
     TLorentzVector Missing4Momenta( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons );
     double InferedNucleonMom( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons, const int tgt ) ;
     double Angle( const TVector3 p1, const TVector3 p2 );
+    double AngleBeamDir( TVector3 vector ) ;
+    TLorentzVector TotHadron( const std::map<int,std::vector<TLorentzVector>> hadrons ) ;
+    TLorentzVector VectorInHadFrame( TLorentzVector vector, const std::map<int,std::vector<TLorentzVector>> hadrons ) ;
+    TLorentzVector FindParticle( const unsigned int particle_pdg, const std::map<int,std::vector<TLorentzVector>> hadrons ) ;
+    double GetAdlerAngleTheta( const double EBeam, const TLorentzVector leptonf, const std::map<int,std::vector<TLorentzVector>> hadrons, const unsigned int particle_pdg ) ;
+    double GetAdlerAnglePhi( const double EBeam, const TLorentzVector leptonf, const std::map<int,std::vector<TLorentzVector>> hadrons, const unsigned int particle_pdg ) ;
   }
 }
 

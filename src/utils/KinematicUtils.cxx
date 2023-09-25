@@ -24,6 +24,23 @@ double utils::GetECal( const double Ef, const std::map<int,std::vector<TLorentzV
   return ECal ;
 }
 
+double utils::GetRecoEBeamPion( const TLorentzVector leptonf, const std::map<int,std::vector<TLorentzVector>> particle_map, const int tgt ) {
+  double nucleon_mass = 0.5 * ( conf::kProtonMass + conf::kNeutronMass ) ;
+  double BindingE = utils::GetBindingEnergy( tgt );
+  TLorentzVector out_pi =  utils::FindParticle( abs(conf::kPdgPiM), particle_map ) ; 
+  TVector3 beam_dir (0,0,1);
+  if( out_pi.E() == 0 ) return 0 ; 
+
+  // https://arxiv.org/pdf/1511.00501.pdf
+  // Calculation ignores fermi momentum, known beam direction
+  double Ap = nucleon_mass - BindingE - leptonf.E() - out_pi.E();
+  TVector3 sum_mom = (leptonf+out_pi).Vect();
+
+  double RecoE = pow(nucleon_mass,2) - pow(Ap,2) + sum_mom.Mag2();
+  RecoE /= 2*(Ap + beam_dir.Dot(sum_mom));
+  return RecoE;
+}
+
 double utils::GetRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) {
   return (conf::kProtonMass * utils::GetBindingEnergy( target_pdg ) +conf::kProtonMass * leptonf.E() ) / ( conf::kProtonMass - leptonf.E() + leptonf.Rho() * TMath::Cos( leptonf.Theta() ));
 }
@@ -108,12 +125,7 @@ TVector3 utils::DeltaPT( const TVector3 p1 , const TVector3 p2 ) {
 
 TVector3 utils::DeltaPT( const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
   TVector3 P1_T = utils::GetPT(out_electron.Vect());
-  TLorentzVector tot_hadron ; 
-  for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
-    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
-      tot_hadron += (it->second)[i] ;
-    }
-  }
+  TLorentzVector tot_hadron = utils::TotHadron( hadrons ) ;
   TVector3 P2_T = utils::GetPT(tot_hadron.Vect());
 
   return P1_T + P2_T;
@@ -139,34 +151,19 @@ double utils::DeltaPhiT( const TVector3 p1 , const TVector3 p2 ) {
 
 double utils::DeltaPhiT( const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
   TVector3 P1T_dir = utils::GetPT(out_electron.Vect()).Unit();
-  TLorentzVector tot_hadron ;
-  for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
-    for( unsigned int i= 0 ; i< (it->second).size() ; ++i ) {
-      tot_hadron += (it->second)[i] ;
-    }
-  }
+  TLorentzVector tot_hadron = utils::TotHadron( hadrons ) ;
   TVector3 P2T_dir = utils::GetPT(tot_hadron.Vect()).Unit();
   return acos(-P1T_dir.Dot(P2T_dir)) * TMath::RadToDeg() ; 
 }
 
 double utils::HadSystemMass( const std::map<int,std::vector<TLorentzVector>> hadrons ) {
-  TLorentzVector tot_hadron ; 
-  for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
-    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
-      tot_hadron += (it->second)[i] ;
-    }
-  }
+  TLorentzVector tot_hadron = utils::TotHadron( hadrons ) ;
   return tot_hadron.Mag();
 }
 
 TLorentzVector utils::Missing4Momenta( const double EBeam, const TLorentzVector out_electron , const std::map<int,std::vector<TLorentzVector>> hadrons ) {
   TLorentzVector beam ( 0,0,EBeam,EBeam) ;
-  TLorentzVector tot_hadron ; 
-  for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
-    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
-      tot_hadron += (it->second)[i] ;
-    }
-  }
+  TLorentzVector tot_hadron = utils::TotHadron( hadrons ) ;
   TLorentzVector q = beam - out_electron; 
   return ( tot_hadron - q ) ;
 }
@@ -176,12 +173,7 @@ double utils::InferedNucleonMom( const double EBeam, const TLorentzVector out_el
   double Mn = 0.5*(conf::kProtonMass+conf::kNeutronMass);
   double MA = utils::GetTargetMass(tgt);
   double Ep = out_electron.E();
-  TLorentzVector tot_hadron ;
-  for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
-    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
-      tot_hadron += (it->second)[i] ;
-    }
-  }
+  TLorentzVector tot_hadron = utils::TotHadron( hadrons ) ;
   double E_had = tot_hadron.E();
   TLorentzVector beam ( 0,0,EBeam,EBeam) ; 
   TVector3 beam_dir = beam.Vect().Unit();
@@ -197,4 +189,65 @@ double utils::InferedNucleonMom( const double EBeam, const TLorentzVector out_el
 
 double utils::Angle( const TVector3 p1, const TVector3 p2 ){
   return p1.Angle(p2);
+}
+
+double utils::AngleBeamDir( TVector3 vector ) { 
+  TVector3 beam_dir (0,0,1);
+  return vector.Angle(beam_dir);
+}
+
+TLorentzVector utils::TotHadron( const std::map<int,std::vector<TLorentzVector>> hadrons ) {
+  TLorentzVector tot_hadron ;
+  for( auto it = hadrons.begin() ; it!=hadrons.end() ; ++it ) {
+    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
+      tot_hadron += (it->second)[i] ;
+    }
+  }
+  return tot_hadron ; 
+}
+
+TLorentzVector utils::VectorInHadFrame( TLorentzVector vector, const std::map<int,std::vector<TLorentzVector>> hadrons ) { 
+  TLorentzVector tot_hadron = utils::TotHadron( hadrons ) ;
+  vector.Boost(-tot_hadron.BoostVector());
+  return vector; 
+}
+
+TLorentzVector utils::FindParticle( const unsigned int particle_pdg, const std::map<int,std::vector<TLorentzVector>> hadrons ) { 
+  TLorentzVector particle(0,0,0,0) ;
+  for( auto it = hadrons.begin() ; it != hadrons.end() ; ++it ) {
+    // Find particle pdg
+    if( abs(it->first) == particle_pdg ) {
+      if( (it->second).size() != 1 ) return particle ;
+      for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
+	particle = (it->second)[i];
+      }
+    }
+  }
+  return particle ; 
+}
+
+double utils::GetAdlerAngleTheta( const double EBeam, const TLorentzVector leptonf, const std::map<int,std::vector<TLorentzVector>> hadrons, const unsigned int particle_pdg ) { 
+  //https://arxiv.org/pdf/1511.00501.pdf
+  TLorentzVector beam ( 0,0,EBeam,EBeam) ;
+  TLorentzVector q = beam - leptonf ;  
+  TVector3 q_dir_hadframe = utils::VectorInHadFrame(q,hadrons).Vect().Unit() ; 
+  TVector3 particle_dir_hadframe = utils::VectorInHadFrame(utils::FindParticle(particle_pdg,hadrons),hadrons).Vect().Unit();
+  
+  return particle_dir_hadframe.Angle(q_dir_hadframe); // theta 
+}
+
+double utils::GetAdlerAnglePhi( const double EBeam, const TLorentzVector leptonf, const std::map<int,std::vector<TLorentzVector>> hadrons,const unsigned int particle_pdg ) { 
+  //https://arxiv.org/pdf/1511.00501.pdf
+  TVector3 particle_dir = VectorInHadFrame(utils::FindParticle(particle_pdg,hadrons),hadrons).Unit();
+  TLorentzVector beam ( 0,0,EBeam,EBeam) ;
+  TLorentzVector q = beam - leptonf ;  
+  TVector3 leptonf_hadframe = utils::VectorInHadFrame( leptonf, hadrons ).Vect() ; 
+
+  // Axis definition 
+  TVector3 z_axis = VectorInHadFrame(q,hadrons).Vect().Unit() ;
+  TVector3 y_axis = z_dir.Cross( leptonf_hadframe ).Vect().Unit();
+  TVector3 x_axis = y_axis.Cross( z_dir );
+
+  TVector3 particle_perp( z_axis.Cross( particle_dir.Cross(z_axis).Unit() ) ) ; 
+  return particle_perp.Angle(x_axis); // phi 
 }

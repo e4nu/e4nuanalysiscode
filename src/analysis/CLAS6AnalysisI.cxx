@@ -272,6 +272,12 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double ConversionFactor = kConversionFactorCm2ToMicroBarn / kOverallUnitConversionFactor ;
   double DataNormalization = kConversionFactorCm2ToMicroBarn * MassNumber / ( IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor );
 
+  //Adler angles
+  double AdlerAngleThetaP= utils::GetAdlerAngleTheta( BeamE, out_mom, hadron_map, conf::kPdgProton) * TMath::RadToDeg(); 
+  double AdlerAnglePhiP= utils::GetAdlerAnglePhi( BeamE, out_mom, hadron_map, conf::kPdgProton) * TMath::RadToDeg(); 
+  double AdlerAngleThetaPi= utils::GetAdlerAngleTheta( BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg(); 
+  double AdlerAnglePhiPi= utils::GetAdlerAnglePhi( BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg() ; 
+
   // Store name of files used
   const char* InputROOTFile = kInputFile.c_str() ;
   const char* OutputROOTFile = kOutputFile.c_str() ;
@@ -330,7 +336,8 @@ bool CLAS6AnalysisI::StoreTree(Event event){
       kAnalysisTree -> Branch( "AlphaT", &AlphaT, "AlphaT/D");
       kAnalysisTree -> Branch( "DeltaPT", &DeltaPT, "DeltaPT/D");
       kAnalysisTree -> Branch( "DeltaPhiT", &DeltaPhiT, "DeltaPhiT/D");
-    }
+      kAnalysisTree -> Branch( "AdlerAngleThetaP", &AdlerAngleThetaP, "AdlerAngleThetaP/D");
+      kAnalysisTree -> Branch( "AdlerAnglePhiP", &AdlerAnglePhiP, "AdlerAnglePhiP/D");    }
 
     if( topology_has_pip ) {
       kAnalysisTree -> Branch( "pip_mom", &pip_mom, "pip_mom/D");
@@ -349,6 +356,12 @@ bool CLAS6AnalysisI::StoreTree(Event event){
       kAnalysisTree -> Branch( "pim_theta", &pim_theta, "pim_theta/D");
       kAnalysisTree -> Branch( "pim_phi", &pim_phi, "pim_phi/D");
     }
+
+    if( topology_has_pip || topology_has_pim ) {
+      kAnalysisTree -> Branch( "AdlerAngleThetaPi", &AdlerAngleThetaPi, "AdlerAngleThetaPi/D");
+      kAnalysisTree -> Branch( "AdlerAnglePhiPi", &AdlerAnglePhiPi, "AdlerAnglePhiPi/D");
+    }
+
     kAnalysisTree -> Branch( "HadAlphaT", &HadAlphaT, "HadAlphaT/D");
     kAnalysisTree -> Branch( "HadDeltaPT", &HadDeltaPT, "HadDeltaPT/D");
     kAnalysisTree -> Branch( "HadDeltaPTx", &HadDeltaPTx, "HadDeltaPTx/D");

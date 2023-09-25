@@ -464,8 +464,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double AdlerAngleThetaP= utils::GetAdlerAngleTheta( BeamE, out_mom, hadron_map, conf::kPdgProton) * TMath::RadToDeg(); 
   double AdlerAnglePhiP= utils::GetAdlerAnglePhi( BeamE, out_mom, hadron_map, conf::kPdgProton) * TMath::RadToDeg(); 
   double AdlerAngleThetaPi= utils::GetAdlerAngleTheta( BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg(); 
-  double AdlerAnglePhiPi= utils::GetAdlerAnglePhi( BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg() ; 
-
+  double AdlerAnglePhiPi= utils::GetAdlerAnglePhi( BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg() ;
 
   double HadSystemMass = utils::HadSystemMass( hadron_map ) ;  
   double pim_mom = pim_max.P() ;
@@ -591,6 +590,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
       kAnalysisTree -> Branch( "pim_theta", &pim_theta, "pim_theta/D");
       kAnalysisTree -> Branch( "pim_phi", &pim_phi, "pim_phi/D");
     }
+
     if( topology_has_pip || topology_has_pim ) {
       kAnalysisTree -> Branch( "AdlerAngleThetaPi", &AdlerAngleThetaPi, "AdlerAngleThetaPi/D");
       kAnalysisTree -> Branch( "AdlerAnglePhiPi", &AdlerAnglePhiPi, "AdlerAnglePhiPi/D");

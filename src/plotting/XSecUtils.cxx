@@ -289,6 +289,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       trees[i]->GetEntry(j) ;
       double content = 0 ;
       double w = TotWeight ;
+      if( i != 1 ) w/=MCNormalization ; 
+      else w/=DataNormalization;
 
       if( observable == "ECal") content = ECal ;
       else if ( observable == "pfl") content = pfl ;
@@ -386,6 +388,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     }
   }
 
+  DataNormalization = 1 ; 
+  MCNormalization=1;
   // Normalize data
   if( plot_data ) { 
     NormalizeHist(hist_data, DataNormalization );

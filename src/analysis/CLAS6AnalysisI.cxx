@@ -263,6 +263,7 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double MissingEnergy = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).E(); 
   double MissingMomentum = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).P(); 
   double MissingAngle = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).Theta() * TMath::RadToDeg() ; 
+  double RecoEBeamPion = utils::GetRecoEBeamPion(out_mom,hadron_map,TargetPdg);
 
   unsigned int MassNumber = utils::GetMassNumber( TargetPdg ) ;
   double IntegratedCharge = conf::GetIntegratedCharge( TargetPdg, BeamE ); 
@@ -361,6 +362,7 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     }
 
     if( topology_has_pip || topology_has_pim ) {
+      kAnalysisTree -> Branch( "RecoEBeamPion", &RecoEBeamPion, "RecoEBeamPion/D");
       kAnalysisTree -> Branch( "AdlerAngleThetaPi", &AdlerAngleThetaPi, "AdlerAngleThetaPi/D");
       kAnalysisTree -> Branch( "AdlerAnglePhiPi", &AdlerAnglePhiPi, "AdlerAnglePhiPi/D");
     }

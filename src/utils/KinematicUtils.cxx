@@ -230,24 +230,30 @@ double utils::GetAdlerAngleTheta( const double EBeam, const TLorentzVector lepto
   //https://arxiv.org/pdf/1511.00501.pdf
   TLorentzVector beam ( 0,0,EBeam,EBeam) ;
   TLorentzVector q = beam - leptonf ;  
-  TVector3 q_dir_hadframe = utils::VectorInHadFrame(q,hadrons).Vect() ; 
   TLorentzVector particle = utils::FindParticle(particle_pdg,hadrons);
-  TVector3 particle_dir_hadframe = utils::VectorInHadFrame(particle,hadrons).Vect();
   
-  return particle_dir_hadframe.Angle(q_dir_hadframe); // theta 
+  // In tot hadron reference frame
+  TVector3 z_axis = utils::VectorInHadFrame(q,hadrons).Vect().Unit() ; 
+  TVector3 particle_dir_hadframe = utils::VectorInHadFrame(particle,hadrons).Vect().Unit();
+ 
+  return particle_dir_hadframe.Angle(z_axis); // theta 
 }
 
 double utils::GetAdlerAnglePhi( const double EBeam, const TLorentzVector leptonf, const std::map<int,std::vector<TLorentzVector>> hadrons,const unsigned int particle_pdg ) { 
   //https://arxiv.org/pdf/1511.00501.pdf
+
   TLorentzVector particle = utils::FindParticle(particle_pdg,hadrons);
-  TVector3 particle_dir = utils::VectorInHadFrame(particle,hadrons).Vect();
   TLorentzVector beam ( 0,0,EBeam,EBeam) ;
   TLorentzVector q = beam - leptonf ;  
-  TVector3 leptonf_hadframe = utils::VectorInHadFrame( leptonf, hadrons ).Vect() ; 
 
+  // Boost to tot hadron frame
+  TVector3 in_lep = utils::VectorInHadFrame(beam,hadrons).Vect();
+  TVector3 particle_dir = utils::VectorInHadFrame(particle,hadrons).Vect();
+  TVector3 leptonf_hadframe = utils::VectorInHadFrame( leptonf, hadrons ).Vect() ; 
+  
   // Axis definition 
   TVector3 z_axis = utils::VectorInHadFrame(q,hadrons).Vect().Unit() ;
-  TVector3 y_axis = z_axis.Cross( leptonf_hadframe ).Unit();
+  TVector3 y_axis = in_lep.Cross( leptonf_hadframe ).Unit();   //z_axis.Cross( leptonf_hadframe ).Unit();
   TVector3 x_axis = y_axis.Cross( z_axis );
 
   TVector3 particle_perp( z_axis.Cross( particle_dir.Cross(z_axis).Unit() ) ) ; 

@@ -216,7 +216,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   double AlphaT, DeltaPT, DeltaPhiT ;
   double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
   double MissingEnergy, MissingAngle, MissingMomentum ;
-  double InferedNucleonMom ;
+  double InferedNucleonMom, RecoEBeamPion ;
   double HadronsAngle,Angleqvshad ; 
   double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
   long NEntries ;
@@ -270,6 +270,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     trees[i] -> SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
     trees[i] -> SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
     trees[i] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
+    trees[i] -> SetBranchAddress("RecoEBeamPion",&RecoEBeamPion);
 
     // Only fill true info for the first model:
     if( i == 0 ) trees[i] -> SetBranchAddress("QEL",&QEL);
@@ -328,6 +329,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ; 
       else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ; 
       else if ( observable == "Angleqvshad") content = Angleqvshad ; 
+      else if ( observable == "RecoEBeamPion") content = RecoEBeamPion ; 
 
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model

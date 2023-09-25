@@ -105,7 +105,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double AlphaT, DeltaPT, DeltaPhiT ;
     double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
     double MissingEnergy, MissingAngle, MissingMomentum ;
-    double InferedNucleonMom ;
+    double InferedNucleonMom, RecoEBeamPion ;
     double HadronsAngle, Angleqvshad;
     double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ; 
     long NEntries ;
@@ -151,9 +151,10 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       trees[j] -> SetBranchAddress("HadronsAngle",&HadronsAngle);
       trees[j] -> SetBranchAddress("AdlerAngleThetaP",&AdlerAngleThetaP);
       trees[j] -> SetBranchAddress("AdlerAnglePhiP",&AdlerAnglePhiP);
-      trees[j] -> SetBranchAddress("AdlerAngleThetaP",&AdlerAngleThetaPi);
-      trees[j] -> SetBranchAddress("AdlerAnglePhiP",&AdlerAnglePhiPi);
+      trees[j] -> SetBranchAddress("AdlerAngleThetaPi",&AdlerAngleThetaPi);
+      trees[j] -> SetBranchAddress("AdlerAnglePhiPi",&AdlerAnglePhiPi);
       trees[j] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
+      trees[j] -> SetBranchAddress("RecoEBeamPion",&RecoEBeamPion);
 
       for( int k = 0 ; k < NEntries; ++k ) {
         trees[j]->GetEntry(k) ;
@@ -198,6 +199,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 	else if ( observable == "AdlerAngleThetaPi" ) content = AdlerAngleThetaPi ; 
 	else if ( observable == "AdlerAnglePhiPi" ) content = AdlerAnglePhiPi ; 
 	else if ( observable == "Angleqvshad" ) content = Angleqvshad ; 
+	else if ( observable == "RecoEBeamPion" ) content = RecoEBeamPion ; 
 
         // Fill the per Sector  histogram
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> Fill( content, w ) ;

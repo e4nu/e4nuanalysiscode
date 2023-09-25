@@ -362,6 +362,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double RecoQ2 = utils::GetRecoQ2( out_mom, BeamE ) ; 
   double RecoXBJK = utils::GetRecoXBJK( out_mom, BeamE ) ; 
   double RecoW = utils::GetRecoW(out_mom, BeamE ) ;
+
   double MottXSecScale = event.GetMottXSecWeight();
 
   std::map<int,unsigned int> topology = GetTopology() ;
@@ -414,6 +415,8 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     HadronsAngle = utils::Angle( particles[0].Vect(), particles[1].Vect() ) * TMath::RadToDeg() ;
   }
   
+
+  double RecoEBeamPion = utils::GetRecoEBeamPion(out_mom,hadron_map,TargetPdg);
   double proton_mom = p_max.P() ; 
   double proton_momx = p_max.Px() ; 
   double proton_momy = p_max.Py() ; 
@@ -599,6 +602,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     if( topology_has_pip || topology_has_pim ) {
       kAnalysisTree -> Branch( "AdlerAngleThetaPi", &AdlerAngleThetaPi, "AdlerAngleThetaPi/D");
       kAnalysisTree -> Branch( "AdlerAnglePhiPi", &AdlerAnglePhiPi, "AdlerAnglePhiPi/D");
+      kAnalysisTree -> Branch( "RecoEBeamPion", &RecoEBeamPion, "RecoEBeamPion/D");
     }
 
     kAnalysisTree -> Branch( "HadAlphaT", &HadAlphaT, "HadAlphaT/D");

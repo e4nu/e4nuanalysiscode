@@ -56,9 +56,6 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("root-file",argc,argv)) {
       analysis -> SetInputFile( GetArg("root-file",argc,argv)); 
     }
-    if( ExistArg("output-file",argc,argv)) {
-      analysis -> SetOutputFile( GetArg("output-file",argc,argv));
-    }
     if( ExistArg("analysis-type",argc,argv)) {
       if ( GetArg("analysis-type",argc,argv) == "ComputeTrueAccCorr" ) { 
 	std::cout << " ComputeTrueAccCorr = True " <<std::endl;
@@ -75,6 +72,14 @@ int main( int argc, char* argv[] ) {
     } 
     if( ExistArg("bkg-mult",argc,argv) && is_data ) {
       analysis -> SetMaxBkgMult( atoi(GetArg("bkg-mult",argc,argv).c_str()) ) ;
+    }
+    if( ExistArg("output-file",argc,argv)) {
+      std::string final_name = GetArg("output-file",argc,argv) ; 
+      if( is_data ) {
+	unsigned int max_mult = analysis->GetMaxBkgMult() ; 
+	final_name += "_"+std::to_string(max_mult)+"MaxBkgMult";
+      }
+      analysis -> SetOutputFile( final_name );
     }
   }
 

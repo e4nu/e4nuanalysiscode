@@ -224,6 +224,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   int ElectronSector ;
   bool QEL, RES, DIS, MEC;
   double MCNormalization, DataNormalization ;
+  std::vector<double> mc_norm ; 
   int resid; 
 
   for ( unsigned int i = 0 ; i < trees.size() ; ++i ){
@@ -280,8 +281,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     if( i == 0 ) trees[i] -> SetBranchAddress("resid", &resid);
 
     // Only second tree corresponds to data
-    if( i != 1 ) trees[i] -> SetBranchAddress("MCNormalization", &MCNormalization );
-    else {
+    if( i != 1 ) {
+      trees[i] -> SetBranchAddress("MCNormalization", &MCNormalization );    
+    } else {
       if( plot_data ) trees[i] -> SetBranchAddress("DataNormalization",&DataNormalization );
     }
 
@@ -289,9 +291,10 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       trees[i]->GetEntry(j) ;
       double content = 0 ;
       double w = TotWeight ;
-      if( i != 1 ) w/=MCNormalization ; 
-      else w/=DataNormalization;
-
+      if( i != 1 && j == 0 ){
+	mc_norm.push_back(MCNormalization);
+	std::cout << MCNormalization << std::endl;
+      }
       if( observable == "ECal") content = ECal ;
       else if ( observable == "pfl") content = pfl ;
       else if ( observable == "pfl_theta") content = pfl_theta ;
@@ -388,8 +391,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     }
   }
 
-  DataNormalization = 1 ; 
-  MCNormalization=1;
   // Normalize data
   if( plot_data ) { 
     NormalizeHist(hist_data, DataNormalization );
@@ -439,35 +440,35 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   // Normalize MC
-  NormalizeHist(hist_true, MCNormalization);
-  NormalizeHist(hist_true_0, MCNormalization);
-  NormalizeHist(hist_true_1, MCNormalization);
-  NormalizeHist(hist_true_2, MCNormalization);
-  NormalizeHist(hist_true_3, MCNormalization);
-  NormalizeHist(hist_true_4, MCNormalization);
-  NormalizeHist(hist_true_5, MCNormalization);
-  NormalizeHist(hist_true_QEL, MCNormalization);
-  NormalizeHist(hist_true_RES, MCNormalization);
-  NormalizeHist(hist_true_RES_Delta, MCNormalization);
-  NormalizeHist(hist_true_SIS, MCNormalization);
-  NormalizeHist(hist_true_MEC, MCNormalization);
-  NormalizeHist(hist_true_DIS, MCNormalization);
+  NormalizeHist(hist_true, mc_norm[0]);
+  NormalizeHist(hist_true_0, mc_norm[0]);
+  NormalizeHist(hist_true_1, mc_norm[0]);
+  NormalizeHist(hist_true_2, mc_norm[0]);
+  NormalizeHist(hist_true_3, mc_norm[0]);
+  NormalizeHist(hist_true_4, mc_norm[0]);
+  NormalizeHist(hist_true_5, mc_norm[0]);
+  NormalizeHist(hist_true_QEL, mc_norm[0]);
+  NormalizeHist(hist_true_RES, mc_norm[0]);
+  NormalizeHist(hist_true_RES_Delta, mc_norm[0]);
+  NormalizeHist(hist_true_SIS, mc_norm[0]);
+  NormalizeHist(hist_true_MEC, mc_norm[0]);
+  NormalizeHist(hist_true_DIS, mc_norm[0]);
 
   for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
-    NormalizeHist( hists_true_submodel[id], MCNormalization);
+    NormalizeHist( hists_true_submodel[id], mc_norm[id+1]);
     StandardFormat( hists_true_submodel[id], title, kBlack, 2+id, observable ) ;
   }
 
   // Normalize true from slices
   if( addbinning.size() != 0 ) {
     for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
-      NormalizeHist(h_total_slices[l], MCNormalization );
-      NormalizeHist(h_QEL_slices[l], MCNormalization );
-      NormalizeHist(h_RES_Delta_slices[l], MCNormalization );
-      NormalizeHist(h_RES_slices[l], MCNormalization );
-      NormalizeHist(h_SIS_slices[l], MCNormalization );
-      NormalizeHist(h_DIS_slices[l], MCNormalization );
-      NormalizeHist(h_MEC_slices[l], MCNormalization );
+      NormalizeHist(h_total_slices[l], mc_norm[0] );
+      NormalizeHist(h_QEL_slices[l], mc_norm[0] );
+      NormalizeHist(h_RES_Delta_slices[l], mc_norm[0] );
+      NormalizeHist(h_RES_slices[l], mc_norm[0] );
+      NormalizeHist(h_SIS_slices[l], mc_norm[0] );
+      NormalizeHist(h_DIS_slices[l], mc_norm[0] );
+      NormalizeHist(h_MEC_slices[l], mc_norm[0] );
 
       std::vector<TH1D*> all_slices{h_total_slices[l]};
       if( plot_data ) all_slices.push_back(h_data_slices[l]);

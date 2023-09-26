@@ -294,7 +294,7 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
       else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 0, 100 );
     }
   }
- 
+  std::cout << " BINNING SIZE " << binning.size() << std::endl; 
   return binning ;
 }
 
@@ -319,6 +319,8 @@ std::vector<double> plotting::GetAdditionalBinning( std::string second_observabl
     binning.push_back(45);
     binning.push_back(original_binning[original_binning.size()-1]);
   }
+
+  std::cout << " ADD BINNING SIZE " << binning.size() << std::endl; 
   return binning;
 }
 

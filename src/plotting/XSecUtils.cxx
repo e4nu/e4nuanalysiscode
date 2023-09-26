@@ -28,7 +28,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     files_true_MC.push_back(new TFile((input_MC_location+MC_files_name[id]+"_true.root").c_str(),"ROOT"));
     if( !files_true_MC[id] ) { std::cout << "ERROR: the "<< input_MC_location<<MC_files_name[id]<<"_true.root does not exist." << std::endl; return ;}
   }
-  TFile * file_data = new TFile((input_data_location+data_file_name+".root").c_str(),"READ");
+  TFile * file_data ;
+  if( plot_data ) file_data = new TFile((input_data_location+data_file_name+".root").c_str(),"READ");
+  
   TFile * file_acceptance = new TFile((output_location+acceptance_file_name+".root").c_str(),"READ");
   if( !file_data && plot_data ) { std::cout << "ERROR: the "<< input_data_location << data_file_name << ".root does not exist." <<std::endl; return ;}
   if( !file_acceptance ) { std::cout << "ERROR: the "<< output_location << acceptance_file_name << ".root does not exist." <<std::endl; return ;}

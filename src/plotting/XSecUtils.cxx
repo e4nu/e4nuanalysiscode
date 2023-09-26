@@ -223,7 +223,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   double AlphaT, DeltaPT, DeltaPhiT ;
   double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
   double MissingEnergy, MissingAngle, MissingMomentum ;
-  double InferedNucleonMom, RecoEBeamPion ;
+  double InferedNucleonMom ;
   double HadronsAngle,Angleqvshad ; 
   double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
   long NEntries ;

@@ -105,7 +105,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double AlphaT, DeltaPT, DeltaPhiT ;
     double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
     double MissingEnergy, MissingAngle, MissingMomentum ;
-    double InferedNucleonMom, RecoEBeamPion ;
+    double InferedNucleonMom ;
     double HadronsAngle, Angleqvshad;
     double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ; 
     long NEntries ;

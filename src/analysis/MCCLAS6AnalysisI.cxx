@@ -416,7 +416,6 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   }
   
 
-  double RecoEBeamPion = utils::GetRecoEBeamPion(out_mom,hadron_map,TargetPdg);
   double proton_mom = p_max.P() ; 
   double proton_momx = p_max.Px() ; 
   double proton_momy = p_max.Py() ; 
@@ -602,7 +601,6 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     if( topology_has_pip || topology_has_pim ) {
       kAnalysisTree -> Branch( "AdlerAngleThetaPi", &AdlerAngleThetaPi, "AdlerAngleThetaPi/D");
       kAnalysisTree -> Branch( "AdlerAnglePhiPi", &AdlerAnglePhiPi, "AdlerAnglePhiPi/D");
-      kAnalysisTree -> Branch( "RecoEBeamPion", &RecoEBeamPion, "RecoEBeamPion/D");
     }
 
     kAnalysisTree -> Branch( "HadAlphaT", &HadAlphaT, "HadAlphaT/D");

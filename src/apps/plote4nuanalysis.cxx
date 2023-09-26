@@ -26,9 +26,10 @@ using namespace e4nu::plotting;
 // 10) Compute systematics (* def false )                      //
 // 11) AddSystematics                                          //
 // 12) NoFSI ROOT file                                         //
+// 13) analysis id - used to set the ranges. default none      //
 /////////////////////////////////////////////////////////////////
 
-string mc_location="", data_location="", output_location ="", output_name ="";
+string mc_location="", data_location="", output_location ="", output_name ="", analysis_id="default";
 vector<string> mc_files, observables, model_names ;
 string data_file ="", nofsi_file="", title="", data_name="" ;
 bool compute_systematics ;
@@ -74,6 +75,10 @@ int main( int argc, char* argv[] ) {
       data_file = GetArg("input_data_file",argc,argv) ;
       cout << "Reading data file from " << data_location << data_file << std::endl; 
     } else plot_data = false ; 
+
+    if( ExistArg("analysis_id",argc,argv)){
+      analysis_id = GetArg("analysis_id",argc,argv);
+    }
 
     string obs ;
     if( ExistArg("observable_list",argc,argv)) {
@@ -133,9 +138,9 @@ int main( int argc, char* argv[] ) {
   for( unsigned int i = 0 ; i < observables.size(); ++i ){
     vector<string> root_files = mc_files;
     vector<string> names = model_names ; 
-    string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name ) ;
+    string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name, analysis_id ) ;
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
-    Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data ) ;
+    Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data, analysis_id ) ;
   }
 
   return 0 ;

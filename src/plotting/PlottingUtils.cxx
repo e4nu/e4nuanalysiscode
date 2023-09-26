@@ -298,13 +298,13 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
   return binning ;
 }
 
-std::vector<double> plotting::GetAdditionalBinning( std::string second_observable, double EBeam ) {
+std::vector<double> plotting::GetAdditionalBinning( std::string second_observable, double EBeam, std::string analysis_id ) {
   // In some cases, we might want to add additional plots.
   // In particular, we might want to break the plot into additonal plots as a function of a second observable
   // This function returns the binning for this second observable.
   // The "binning" corresponds to the ranges of interest
   std::vector<double> binning ;
-  std::vector<double> original_binning = plotting::GetBinning( second_observable, EBeam ) ;
+  std::vector<double> original_binning = plotting::GetBinning( second_observable, EBeam, analysis_id ) ;
   if( second_observable == "ECal" ) {
     binning.push_back(original_binning[0]);
     binning.push_back(EBeam*(1-0.05));
@@ -475,4 +475,10 @@ bool plotting::ExistArg(std::string op, int argc, char ** argv )
     }
   delete [] argument ;
   return false;
+}
+
+bool plotting::PlotZoomIn(std::string analysis_id){
+  if( analysis_id == "1p1pim" ) return true ; 
+  else if ( analysis_id == "1p1pip" || analysis_id == "1pim" || analysis_id == "1pip" ) return false ; 
+  return true ; 
 }

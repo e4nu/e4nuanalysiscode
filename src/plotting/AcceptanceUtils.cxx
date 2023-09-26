@@ -6,7 +6,7 @@ using namespace e4nu ;
 using namespace e4nu::plotting ;
 
 std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::string observable, std::string title,
-					std::string input_MC_location, std::string output_location,  std::string output_file_name ) {
+					std::string input_MC_location, std::string output_location,  std::string output_file_name, std::string analysis_id ) {
 
   // Define trees
   std::vector<TFile*> files_mcrecoacc, files_mctrueacc;
@@ -36,7 +36,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 
     trees_mctrueacc[0]->SetBranchAddress("BeamE",&BeamE);
     trees_mctrueacc[0]->GetEntry(0);
-    binning = plotting::GetBinning(observable,BeamE);
+    binning = plotting::GetBinning(observable,BeamE,analysis_id);
     
     hists_recoacc.push_back( new TH1D( ("Reco MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
     hists_trueacc.push_back( new TH1D( ("True MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
@@ -53,7 +53,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     hists_recoacc_5.push_back( new TH1D( ("Reco MC ACC Sector  5 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
     hists_trueacc_5.push_back( new TH1D( ("True MC ACC Sector  5 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
 
-    std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE );
+    std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE, analysis_id );
     if ( addbinning.size() > 0 ) {
       // Adding additional histograms for slices calculation
       std::vector<TH1D*> temp_reco_slices, temp_true_slices ;
@@ -357,7 +357,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   ratio_5 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_5 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 5");
 
-  std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE ) ;
+  std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE, analysis_id ) ;
   if ( addbinning.size() > 0 ) {
     // Adding additional histograms for slices calculation
     std::vector<TH1D*> temp_reco_slices, temp_true_slices ;

@@ -19,11 +19,12 @@ namespace e4nu {
     std::vector<double> GetUniformBinning( unsigned int nbins, double min, double max);
     std::vector<double> GetECalBinning( unsigned int nbins_tail, unsigned int nbins_peak, double min, double max, double EBeam);
     std::vector<double> GetBinning( std::string observable, double EBeam, std::string analysis_key="default" );
-    std::vector<double> GetAdditionalBinning( std::string second_observable, double EBeam ) ;
+    std::vector<double> GetAdditionalBinning( std::string second_observable, double EBeam, std::string analysis_id ) ;
     std::string GetAlternativeObs( std::string observable );
     std::string GetObsName( std::string observable );
     std::string GetUnit( std::string observable );
     double GetMaximum( std::vector<TH1D*> predictions);
+    bool PlotZoomIn(std::string analysis_id="default");
     void StandardFormat( TH1D * prediction, std::string title, int color, int style, std::string observable, double y_max = 0 );
     std::vector<std::string> SplitString(std::string s, char d=',' ) ;
     std::string GetArg(std::string op, int argc, char ** argv );

@@ -14,7 +14,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 			  std::string acceptance_file_name, std::string observable,
 			  std::string title, std::string data_name, std::vector<std::string> model,
 			  std::string input_MC_location, std::string input_data_location, std::string output_location,
-			  std::string output_file_name, bool plot_data ){
+			  std::string output_file_name, bool plot_data, std::string analysis_id ){
 
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
@@ -52,7 +52,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // Get Acceptance for slices
   std::vector<TH1D*> h_acc_slices ;
-  std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE ) ;
+  std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE, analysis_id ) ;
   if ( addbinning.size() > 0 ) {
     for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
       h_acc_slices.push_back( (TH1D*)file_acceptance->Get(("Acceptance_Slice_"+std::to_string(k)).c_str() ) ) ;
@@ -563,7 +563,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
   if( plot_data ) hist_data -> Draw(" err same ");
  
-  if( observable=="ECal"){
+  if( observable=="ECal" && plotting::PlotZoomIn(analysis_id) ){
     // Add a sub-pad1
     TPad * sub_pad = new TPad("subpad","",0.2,0.2,0.85,0.85);
     sub_pad->SetFillStyle(4000);

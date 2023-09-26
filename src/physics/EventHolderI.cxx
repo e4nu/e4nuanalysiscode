@@ -33,7 +33,7 @@ EventHolderI::EventHolderI( const std::string file, const unsigned int first_eve
 EventHolderI::EventHolderI( const std::vector<std::string> files ) { 
   this->Initialize() ; 
   for ( unsigned int file_id = 0 ; file_id < files.size() ; ++file_id ) {
-    fIsConfigured *= this->LoadMembers( files[file_id] ) ; 
+    if( !LoadMembers( files[file_id] ) ) fIsConfigured=false ; 
   }
   if( fIsConfigured ) { 
     fMaxEvents = fEventHolderChain -> GetEntries() ; 

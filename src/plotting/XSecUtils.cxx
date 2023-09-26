@@ -28,7 +28,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     files_true_MC.push_back(new TFile((input_MC_location+MC_files_name[id]+"_true.root").c_str(),"ROOT"));
     if( !files_true_MC[id] ) { std::cout << "ERROR: the "<< input_MC_location<<MC_files_name[id]<<"_true.root does not exist." << std::endl; return ;}
   }
-  TFile * file_data ;
+  TFile * file_data = nullptr ;
   if( plot_data ) file_data = new TFile((input_data_location+data_file_name+".root").c_str(),"READ");
   
   TFile * file_acceptance = new TFile((output_location+acceptance_file_name+".root").c_str(),"READ");
@@ -67,7 +67,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     if( !tree_submodels[id - 1] ) { std::cout << "ERROR: the threes do not exist." <<std::endl; return ;}
   }
 
-  TTree * tree_data ;
+  TTree * tree_data = nullptr ;
   if( plot_data ) tree_data = (TTree*)file_data->Get("CLAS6Tree");
 
   if( !h_acceptance ) { std::cout << "ERROR: Acceptance is not defined"<<std::endl; return ; }
@@ -209,7 +209,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // If data is plot, the position of its trees and histograms is 1. 
   // Otherwise we set it to a big number so it is ignored
-  int id_data = 9999;
+  unsigned int id_data = 9999;
   if( plot_data ) id_data = 1 ;
   
   // OBSERVABLE DEFINITION:

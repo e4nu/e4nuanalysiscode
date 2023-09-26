@@ -60,21 +60,21 @@ int main( int argc, char* argv[] ) {
       analysis -> SetOutputFile( GetArg("output-file",argc,argv));
     }
     if( ExistArg("analysis-type",argc,argv)) {
-      if ( strcmp(  GetArg("analysis-type",argc,argv) , "ComputeTrueAccCorr" ) == 0 ) { 
+      if ( GetArg("analysis-type",argc,argv) == "ComputeTrueAccCorr" ) { 
 	std::cout << " ComputeTrueAccCorr = True " <<std::endl;
 	compute_trueacc = true ; compute_truerecoacc = false ; 
       }
-      else if ( strcmp(  GetArg("analysis-type",argc,argv) , "ComputeTrueRecoAccCorr" ) == 0 ) {
+      else if ( GetArg("analysis-type",argc,argv) == "ComputeTrueRecoAccCorr" ) {
 	std::cout << " ComputeRecoAccCorr = True " <<std::endl;
 	compute_trueacc = false ; compute_truerecoacc = true ; 
       }
-      else if ( strcmp(  GetArg("analysis-type",argc,argv) , "IsData" ) == 0 ) { is_data = true ; compute_trueacc = false ; compute_truerecoacc = false ; }
+      else if ( GetArg("analysis-type",argc,argv) == "IsData" ) { is_data = true ; compute_trueacc = false ; compute_truerecoacc = false ; }
     }
     if( ExistArg("xsec-file",argc,argv) && !is_data ) { 
       analysis -> SetXSecFile( GetArg("xsec-file",argc,argv) ) ; 
     } 
     if( ExistArg("bkg-mult",argc,argv) && is_data ) {
-      analysis -> SetMaxBkgMult( atoi(GetArg("bkg-mult",argc,argv)) ) ;
+      analysis -> SetMaxBkgMult( atoi(GetArg("bkg-mult",argc,argv).c_str()) ) ;
     }
   }
 

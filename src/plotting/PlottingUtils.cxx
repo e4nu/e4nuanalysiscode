@@ -357,15 +357,15 @@ void plotting::StandardFormat( TH1D * prediction, std::string title, int color, 
   return;
 }
 
-vector<string> utils::SplitString(string s, char d ) {
-  vector<string> strings;
+std::vector<std::string> plotting::SplitString(std::string s, char d ) {
+  std::vector<std::string> strings;
   int startIndex = 0, endIndex = 0;
   for (unsigned int i = 0; i <= s.size(); i++) {
 
     // If we reached the end of the word or the end of the input.
     if (s[i] ==d || i == s.size()) {
       endIndex = i;
-      string temp;
+      std::string temp;
       temp.append(s, startIndex, endIndex - startIndex);
       strings.push_back(temp);
       startIndex = endIndex + 1;
@@ -374,7 +374,7 @@ vector<string> utils::SplitString(string s, char d ) {
   return strings ;
 }
 
-string utils::GetArg(string op, int argc, char ** argv )
+std::string plotting::GetArg(std::string op, int argc, char ** argv )
 {
   const int buf_size = 2048*128;
   char *  argument   = new char[buf_size];
@@ -398,13 +398,13 @@ string utils::GetArg(string op, int argc, char ** argv )
 
     }
 
-  string value = string(argument);
+  std::string value = std::string(argument);
   delete [] argument;
   return value ;
 }
 
 
-bool utils::ExistArg(string op, int argc, char ** argv )
+bool plotting::ExistArg(std::string op, int argc, char ** argv )
 {
   const int buf_size = 2048*128;
   char *  argument   = new char[buf_size];

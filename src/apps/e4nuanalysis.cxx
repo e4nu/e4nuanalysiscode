@@ -10,21 +10,24 @@
 #include <cstdlib>
 #include "TH1D.h"
 #include "analysis/E4NuAnalysis.h"
+#include "plotting/PlottingUtils.h"
 
 using namespace std; 
 using namespace e4nu;
+using namespace e4nu::plotting;
 
 /////////////////////////////////////////////////////////////////
 // Options:                                                    //
 /////////////////////////////////////////////////////////////////
-// 1) Configuration file location                              //   
-// 2) InputFile                                                // 
-// 3) OutputFile                                               //
-// 4) Type of analysis:                                        // 
+// --conf-file) Configuration file location                    //   
+// --root-file) InputFile                                      // 
+// --output-file) OutputFile                                   //
+// --analysis-type) Type of analysis:                          // 
 //    - ComputeTrueAccCorr                                     // 
 //    - ComputeTrueRecoAccCorr                                 //
 //    - IsData                                                 //   
-// 5) XSecFile (only for MC)                                   //
+// --xsec-file) XSecFile (only for MC)                         //
+// --bkg-mult) Add multiplicity                                //
 /////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
@@ -37,62 +40,57 @@ int main( int argc, char* argv[] ) {
   std::string path( env ) ; 
   path += "/" ;
   std::string config_file = "ConfFiles/example_configuration.txt" ;
-  if ( argv[1] ) config_file = argv[1] ;
+
+  if( argc > 1 && ExistArg("conf-file",argc,argv)) {
+    config_file = GetArg("conf-file",argc,argv) ;
+  }
 
   E4NuAnalysis * analysis = new E4NuAnalysis((path+config_file).c_str()) ;
   if( ! analysis ) return 0 ; 
-
-  if( argv[2] ) { 
-    analysis -> SetInputFile( argv[2] ) ;
-  } else { 
-    std::cout << " ERR: Input file not specified. Abort... " << std::endl;
-    return 0 ; 
-  }
-
-  if( argv[3] ) { 
-    analysis ->SetOutputFile( argv[3] ) ; 
-  } else { 
-    std::cout << " ERR: Output file not specified. Abort... " << std::endl;
-    return 0 ; 
-  }
-
   // Compute acceptance correction files
   bool compute_trueacc = analysis -> ComputeTrueAccCorrection() ; 
   bool compute_truerecoacc = analysis -> ComputeTrueRecoAccCorrection() ; 
-  bool is_data = analysis -> IsData() ; 
-
-  if( argv[4] ) {
-    
-    if ( strcmp( argv[4], "ComputeTrueAccCorr" ) == 0 ) { 
-      std::cout << " ComputeTrueAccCorr = True " <<std::endl;
-      compute_trueacc = true ; compute_truerecoacc = false ; 
+  bool is_data = analysis -> IsData() ;
+ 
+  if( argc > 1 ) { // configure rest of analysis
+    if( ExistArg("root-file",argc,argv)) {
+      analysis -> SetInputFile( GetArg("root-file",argc,argv)); 
     }
-    else if ( strcmp( argv[4], "ComputeTrueRecoAccCorr" ) == 0 ) { 
-      std::cout << " ComputeRecoAccCorr = True " <<std::endl;
-      compute_trueacc = false ; compute_truerecoacc = true ; 
+    if( ExistArg("analysis-type",argc,argv)) {
+      if ( GetArg("analysis-type",argc,argv) == "ComputeTrueAccCorr" ) { 
+	std::cout << " ComputeTrueAccCorr = True " <<std::endl;
+	compute_trueacc = true ; compute_truerecoacc = false ; 
+      }
+      else if ( GetArg("analysis-type",argc,argv) == "ComputeTrueRecoAccCorr" ) {
+	std::cout << " ComputeRecoAccCorr = True " <<std::endl;
+	compute_trueacc = false ; compute_truerecoacc = true ; 
+      }
+      else if ( GetArg("analysis-type",argc,argv) == "IsData" ) { is_data = true ; compute_trueacc = false ; compute_truerecoacc = false ; }
     }
-    else if ( strcmp( argv[4], "IsData" ) == 0 ) { is_data = true ; compute_trueacc = false ; compute_truerecoacc = false ; }
-    else { 
-      std::cout << " The second argument defines the type of run: (1) ComputeTrueAccCorr: Analyse using true information,\n" 
-		<< "  (2) ComputeTrueRecoAccCorr: Analyse using True events + detector effects,\n"
-		<< "  (3) IsData: Analyse data. \n Set one of the correct options\n"
-		<< " You can also simply disable this option. In this case, the default from the configuration file will be used.\n";
-      return 0 ; 
+    if( ExistArg("xsec-file",argc,argv) && !is_data ) { 
+      analysis -> SetXSecFile( GetArg("xsec-file",argc,argv) ) ; 
+    } 
+    if( ExistArg("bkg-mult",argc,argv) && is_data ) {
+      analysis -> SetMaxBkgMult( atoi(GetArg("bkg-mult",argc,argv).c_str()) ) ;
+    }
+    if( ExistArg("output-file",argc,argv)) {
+      std::string final_name = GetArg("output-file",argc,argv) ; 
+      if( is_data ) {
+	unsigned int max_mult = analysis->GetMaxBkgMult() ; 
+	final_name += "_"+std::to_string(max_mult)+"MaxBkgMult";
+      }
+      analysis -> SetOutputFile( final_name );
     }
   }
 
-  if( argv[5] && !is_data ) { 
-    analysis -> SetXSecFile( argv[5] ) ; 
-  } 
-
   if ( is_data ) {   
-      compute_trueacc = false ; 
-      compute_truerecoacc = false ; 
-      analysis -> SetApplyFiducial( true ) ; 
-      analysis -> SetApplyAccWeights( true ) ; 
-      analysis -> SetApplyReso( true ) ;  
-      std::string OutputFile_data = analysis->GetOutputFile() + "_clas6data" ;
-      analysis -> SetOutputFile( OutputFile_data ) ; 
+    compute_trueacc = false ; 
+    compute_truerecoacc = false ; 
+    analysis -> SetApplyFiducial( true ) ; 
+    analysis -> SetApplyAccWeights( true ) ; 
+    analysis -> SetApplyReso( true ) ;  
+    std::string OutputFile_data = analysis->GetOutputFile() + "_clas6data" ;
+    analysis -> SetOutputFile( OutputFile_data ) ; 
   }
 
   if ( compute_trueacc ) {

@@ -14,7 +14,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 			  std::string acceptance_file_name, std::string observable,
 			  std::string title, std::string data_name, std::vector<std::string> model,
 			  std::string input_MC_location, std::string input_data_location, std::string output_location,
-			  std::string output_file_name, bool plot_data ){
+			  std::string output_file_name, bool plot_data, std::string analysis_id, bool store_root ){
 
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
@@ -28,7 +28,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     files_true_MC.push_back(new TFile((input_MC_location+MC_files_name[id]+"_true.root").c_str(),"ROOT"));
     if( !files_true_MC[id] ) { std::cout << "ERROR: the "<< input_MC_location<<MC_files_name[id]<<"_true.root does not exist." << std::endl; return ;}
   }
-  TFile * file_data = new TFile((input_data_location+data_file_name+".root").c_str(),"READ");
+  TFile * file_data = nullptr ;
+  if( plot_data ) file_data = new TFile((input_data_location+data_file_name+".root").c_str(),"READ");
+  
   TFile * file_acceptance = new TFile((output_location+acceptance_file_name+".root").c_str(),"READ");
   if( !file_data && plot_data ) { std::cout << "ERROR: the "<< input_data_location << data_file_name << ".root does not exist." <<std::endl; return ;}
   if( !file_acceptance ) { std::cout << "ERROR: the "<< output_location << acceptance_file_name << ".root does not exist." <<std::endl; return ;}
@@ -50,7 +52,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // Get Acceptance for slices
   std::vector<TH1D*> h_acc_slices ;
-  std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE ) ;
+  std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE, analysis_id ) ;
   if ( addbinning.size() > 0 ) {
     for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
       h_acc_slices.push_back( (TH1D*)file_acceptance->Get(("Acceptance_Slice_"+std::to_string(k)).c_str() ) ) ;
@@ -65,7 +67,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     if( !tree_submodels[id - 1] ) { std::cout << "ERROR: the threes do not exist." <<std::endl; return ;}
   }
 
-  TTree * tree_data ;
+  TTree * tree_data = nullptr ;
   if( plot_data ) tree_data = (TTree*)file_data->Get("CLAS6Tree");
 
   if( !h_acceptance ) { std::cout << "ERROR: Acceptance is not defined"<<std::endl; return ; }
@@ -205,6 +207,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hists.push_back( hists_true_submodel[id - 1] );
   }
 
+  // If data is plot, the position of its trees and histograms is 1. 
+  // Otherwise we set it to a big number so it is ignored
+  unsigned int id_data = 9999;
+  if( plot_data ) id_data = 1 ;
+  
   // OBSERVABLE DEFINITION:
   double TotWeight ;
   double ECal,Recoq3,RecoW;
@@ -217,12 +224,14 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
   double MissingEnergy, MissingAngle, MissingMomentum ;
   double InferedNucleonMom ;
-  double HadronsAngle ; 
+  double HadronsAngle,Angleqvshad ; 
+  double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
   long NEntries ;
   bool IsBkg ;
   int ElectronSector ;
   bool QEL, RES, DIS, MEC;
   double MCNormalization, DataNormalization ;
+  std::vector<double> mc_norm ; 
   int resid; 
 
   for ( unsigned int i = 0 ; i < trees.size() ; ++i ){
@@ -264,6 +273,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     trees[i] -> SetBranchAddress("MissingMomentum", &MissingMomentum);
     trees[i] -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
     trees[i] -> SetBranchAddress("HadronsAngle", &HadronsAngle);
+    trees[i] -> SetBranchAddress("AdlerAngleThetaP", &AdlerAngleThetaP);
+    trees[i] -> SetBranchAddress("AdlerAnglePhiP", &AdlerAnglePhiP);
+    trees[i] -> SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
+    trees[i] -> SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
+    trees[i] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
 
     // Only fill true info for the first model:
     if( i == 0 ) trees[i] -> SetBranchAddress("QEL",&QEL);
@@ -273,16 +287,17 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     if( i == 0 ) trees[i] -> SetBranchAddress("resid", &resid);
 
     // Only second tree corresponds to data
-    if( i != 1 ) trees[i] -> SetBranchAddress("MCNormalization", &MCNormalization );
-    else {
-      if( plot_data ) trees[i] -> SetBranchAddress("DataNormalization",&DataNormalization );
+    if( i != id_data ) {
+      trees[i] -> SetBranchAddress("MCNormalization", &MCNormalization );    
+    } else {
+      trees[i] -> SetBranchAddress("DataNormalization",&DataNormalization );
     }
 
     for( int j = 0 ; j < NEntries ; ++j ) {
       trees[i]->GetEntry(j) ;
       double content = 0 ;
       double w = TotWeight ;
-
+      if( i != id_data && j == 0 ) mc_norm.push_back(MCNormalization);
       if( observable == "ECal") content = ECal ;
       else if ( observable == "pfl") content = pfl ;
       else if ( observable == "pfl_theta") content = pfl_theta ;
@@ -317,6 +332,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       else if ( observable == "MissingMomentum") content = MissingMomentum ;
       else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
       else if ( observable == "HadronsAngle") content = HadronsAngle ;
+      else if ( observable == "AdlerAngleThetaP") content = AdlerAngleThetaP ; 
+      else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiP ; 
+      else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ; 
+      else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ; 
+      else if ( observable == "Angleqvshad") content = Angleqvshad ; 
 
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model
@@ -422,35 +442,35 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   // Normalize MC
-  NormalizeHist(hist_true, MCNormalization);
-  NormalizeHist(hist_true_0, MCNormalization);
-  NormalizeHist(hist_true_1, MCNormalization);
-  NormalizeHist(hist_true_2, MCNormalization);
-  NormalizeHist(hist_true_3, MCNormalization);
-  NormalizeHist(hist_true_4, MCNormalization);
-  NormalizeHist(hist_true_5, MCNormalization);
-  NormalizeHist(hist_true_QEL, MCNormalization);
-  NormalizeHist(hist_true_RES, MCNormalization);
-  NormalizeHist(hist_true_RES_Delta, MCNormalization);
-  NormalizeHist(hist_true_SIS, MCNormalization);
-  NormalizeHist(hist_true_MEC, MCNormalization);
-  NormalizeHist(hist_true_DIS, MCNormalization);
+  NormalizeHist(hist_true, mc_norm[0]);
+  NormalizeHist(hist_true_0, mc_norm[0]);
+  NormalizeHist(hist_true_1, mc_norm[0]);
+  NormalizeHist(hist_true_2, mc_norm[0]);
+  NormalizeHist(hist_true_3, mc_norm[0]);
+  NormalizeHist(hist_true_4, mc_norm[0]);
+  NormalizeHist(hist_true_5, mc_norm[0]);
+  NormalizeHist(hist_true_QEL, mc_norm[0]);
+  NormalizeHist(hist_true_RES, mc_norm[0]);
+  NormalizeHist(hist_true_RES_Delta, mc_norm[0]);
+  NormalizeHist(hist_true_SIS, mc_norm[0]);
+  NormalizeHist(hist_true_MEC, mc_norm[0]);
+  NormalizeHist(hist_true_DIS, mc_norm[0]);
 
   for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
-    NormalizeHist( hists_true_submodel[id], MCNormalization);
+    NormalizeHist( hists_true_submodel[id], mc_norm[id+1]);
     StandardFormat( hists_true_submodel[id], title, kBlack, 2+id, observable ) ;
   }
 
   // Normalize true from slices
   if( addbinning.size() != 0 ) {
     for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
-      NormalizeHist(h_total_slices[l], MCNormalization );
-      NormalizeHist(h_QEL_slices[l], MCNormalization );
-      NormalizeHist(h_RES_Delta_slices[l], MCNormalization );
-      NormalizeHist(h_RES_slices[l], MCNormalization );
-      NormalizeHist(h_SIS_slices[l], MCNormalization );
-      NormalizeHist(h_DIS_slices[l], MCNormalization );
-      NormalizeHist(h_MEC_slices[l], MCNormalization );
+      NormalizeHist(h_total_slices[l], mc_norm[0] );
+      NormalizeHist(h_QEL_slices[l], mc_norm[0] );
+      NormalizeHist(h_RES_Delta_slices[l], mc_norm[0] );
+      NormalizeHist(h_RES_slices[l], mc_norm[0] );
+      NormalizeHist(h_SIS_slices[l], mc_norm[0] );
+      NormalizeHist(h_DIS_slices[l], mc_norm[0] );
+      NormalizeHist(h_MEC_slices[l], mc_norm[0] );
 
       std::vector<TH1D*> all_slices{h_total_slices[l]};
       if( plot_data ) all_slices.push_back(h_data_slices[l]);
@@ -543,7 +563,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
   if( plot_data ) hist_data -> Draw(" err same ");
  
-  if( observable=="ECal"){
+  if( observable=="ECal" && plotting::PlotZoomIn(analysis_id) == true ){
     // Add a sub-pad1
     TPad * sub_pad = new TPad("subpad","",0.2,0.2,0.85,0.85);
     sub_pad->SetFillStyle(4000);
@@ -553,12 +573,13 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     sub_pad -> SetLeftMargin(0.15);
 
     TH1D* tmp_hist_true = (TH1D*)hist_true->Clone();
-    TH1D* tmp_hist_data = (TH1D*)hist_data->Clone();
+    TH1D* tmp_hist_data ;
+    if( plot_data ) tmp_hist_data = (TH1D*)hist_data->Clone();
     tmp_hist_true->SetTitle("");
 
     //tmp_hist_true->GetXaxis()->SetRangeUser(0,BeamE*(1-0.1));
-    tmp_hist_data->GetXaxis()->SetRangeUser(0,BeamE*(1-0.02));
-    tmp_hist_true->GetYaxis()->SetRangeUser(0,tmp_hist_data->GetBinContent(tmp_hist_data->GetMaximumBin())*(1+0.25));
+    if( plot_data ) tmp_hist_data->GetXaxis()->SetRangeUser(0,BeamE*(1-0.02));
+    if( plot_data ) tmp_hist_true->GetYaxis()->SetRangeUser(0,tmp_hist_data->GetBinContent(tmp_hist_data->GetMaximumBin())*(1+0.25));
 
     tmp_hist_true -> Draw("hist");
     hist_true_QEL -> Draw("hist same");
@@ -578,7 +599,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   
   std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
   if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
-  c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+  if( store_root ) c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   delete c1 ;
 
@@ -613,7 +634,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
   if( addbinning.size() != 0 ) {
     output_name = output_file_name+"_dxsec_d"+observable+"_"+GetAlternativeObs(observable)+"_Slices" ;
-    c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+    if( store_root ) c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
     c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   }
   delete c_slices;
@@ -703,7 +724,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   output_name = MC_files_name[0]+"_dxsec_d"+observable+"_persector" ;
   std::filesystem::path xsecpersector_path{(output_location+"/XSecPerSector/").c_str()};
   if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
-  c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
+  if( store_root ) c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
   c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
   delete c_sector ;
 
@@ -735,7 +756,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   if(plot_data)  leg->AddEntry(hist_data, data_name.c_str(), "lp");
   leg->Draw();
   output_name = MC_files_name[0] ;
-  c_leg->SaveAs((output_location+"/"+output_name+"_legend.root").c_str());
+  if( store_root ) c_leg->SaveAs((output_location+"/"+output_name+"_legend.root").c_str());
   c_leg->SaveAs((output_location+"/"+output_name+"_legend.pdf").c_str());
 
   delete c_leg;

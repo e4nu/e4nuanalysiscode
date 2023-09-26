@@ -79,6 +79,7 @@ namespace e4nu {
     void SetUseAllSectors( const bool b ) { kUseAllSectors = b ; }
     void EnableAllSectors( const bool b ) { kEnabledSectors = { b, b, b, b, b, b } ; } 
     void SetSubtractBkg( const bool b ) { kSubtractBkg = b ; }
+    void SetMaxBkgMult( const unsigned int mult ) { kMaxBkgMult = mult; }
 
     // Get information about the background subtraction method
     unsigned int GetMaxBkgMult(void) const { return kMaxBkgMult ; }

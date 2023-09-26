@@ -6,7 +6,8 @@ using namespace e4nu ;
 using namespace e4nu::plotting ;
 
 std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::string observable, std::string title,
-					std::string input_MC_location, std::string output_location,  std::string output_file_name ) {
+					std::string input_MC_location, std::string output_location,  std::string output_file_name, 
+					std::string analysis_id, bool store_root ) {
 
   // Define trees
   std::vector<TFile*> files_mcrecoacc, files_mctrueacc;
@@ -36,7 +37,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 
     trees_mctrueacc[0]->SetBranchAddress("BeamE",&BeamE);
     trees_mctrueacc[0]->GetEntry(0);
-    binning = plotting::GetBinning(observable,BeamE);
+    binning = plotting::GetBinning(observable,BeamE,analysis_id);
     
     hists_recoacc.push_back( new TH1D( ("Reco MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
     hists_trueacc.push_back( new TH1D( ("True MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
@@ -53,7 +54,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     hists_recoacc_5.push_back( new TH1D( ("Reco MC ACC Sector  5 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
     hists_trueacc_5.push_back( new TH1D( ("True MC ACC Sector  5 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
 
-    std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE );
+    std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE, analysis_id );
     if ( addbinning.size() > 0 ) {
       // Adding additional histograms for slices calculation
       std::vector<TH1D*> temp_reco_slices, temp_true_slices ;
@@ -106,8 +107,8 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
     double MissingEnergy, MissingAngle, MissingMomentum ;
     double InferedNucleonMom ;
-    double HadronsAngle;
-
+    double HadronsAngle, Angleqvshad;
+    double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ; 
     long NEntries ;
     bool IsBkg ;
     int ElectronSector ;
@@ -149,6 +150,11 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       trees[j] -> SetBranchAddress("MissingMomentum", &MissingMomentum);
       trees[j] -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
       trees[j] -> SetBranchAddress("HadronsAngle",&HadronsAngle);
+      trees[j] -> SetBranchAddress("AdlerAngleThetaP",&AdlerAngleThetaP);
+      trees[j] -> SetBranchAddress("AdlerAnglePhiP",&AdlerAnglePhiP);
+      trees[j] -> SetBranchAddress("AdlerAngleThetaPi",&AdlerAngleThetaPi);
+      trees[j] -> SetBranchAddress("AdlerAnglePhiPi",&AdlerAnglePhiPi);
+      trees[j] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
 
       for( int k = 0 ; k < NEntries; ++k ) {
         trees[j]->GetEntry(k) ;
@@ -188,6 +194,11 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 	else if ( observable == "MissingAngle") content = MissingAngle ;
 	else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
 	else if ( observable == "HadronsAngle" ) content = HadronsAngle ; 
+	else if ( observable == "AdlerAngleThetaP" ) content = AdlerAngleThetaP ; 
+	else if ( observable == "AdlerAnglePhiP" ) content = AdlerAnglePhiP ; 
+	else if ( observable == "AdlerAngleThetaPi" ) content = AdlerAngleThetaPi ; 
+	else if ( observable == "AdlerAnglePhiPi" ) content = AdlerAnglePhiPi ; 
+	else if ( observable == "Angleqvshad" ) content = Angleqvshad ; 
 
         // Fill the per Sector  histogram
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> Fill( content, w ) ;
@@ -347,7 +358,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   ratio_5 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_5 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 5");
 
-  std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE ) ;
+  std::vector<double> addbinning = GetAdditionalBinning( GetAlternativeObs(observable), BeamE, analysis_id ) ;
   if ( addbinning.size() > 0 ) {
     // Adding additional histograms for slices calculation
     std::vector<TH1D*> temp_reco_slices, temp_true_slices ;
@@ -427,7 +438,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   ratio->Draw("hist err same");
   //teff->Draw("AP");
 
-  c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());
+  if( store_root ) c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());
   c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.pdf").c_str());
   delete c_1 ;
 
@@ -501,7 +512,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratios_5[i] -> Draw("hist err same");
   }
 
-  c_sector_2->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_persector.root").c_str());
+  if( store_root ) c_sector_2->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_persector.root").c_str());
   c_sector_2->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_persector.pdf").c_str());
   delete c_sector_2 ;
 

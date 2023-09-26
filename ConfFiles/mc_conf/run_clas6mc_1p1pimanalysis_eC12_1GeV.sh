@@ -27,6 +27,6 @@ source e4nu_gpvm_env.sh
 number_inputs=${#InputFiles[@]}
 for (( i=0; i<${number_inputs}; i++ ));
 do
-  ./e4nuanalysis ConfFiles/mc_conf/clas6mc_1p1pimanalysis_eC12_1GeV.txt ${InputFiles[$i]} ${OutputFiles[$i]} ComputeTrueAccCorr ${XSecFiles[$i]}
-  ./e4nuanalysis ConfFiles/mc_conf/clas6mc_1p1pimanalysis_eC12_1GeV.txt ${InputFiles[$i]} ${OutputFiles[$i]} ComputeTrueRecoAccCorr ${XSecFiles[$i]}
+  ./e4nuanalysis --conf-file ConfFiles/mc_conf/clas6mc_1p1pimanalysis_eC12_1GeV.txt --root-file ${InputFiles[$i]} --output-file ${OutputFiles[$i]} --analysis-type ComputeTrueAccCorr --xsec-file ${XSecFiles[$i]}
+  ./e4nuanalysis --conf-file ConfFiles/mc_conf/clas6mc_1p1pimanalysis_eC12_1GeV.txt --root-file ${InputFiles[$i]} --output-file ${OutputFiles[$i]} --analysis-type ComputeTrueRecoAccCorr --xsec-file ${XSecFiles[$i]}
 done

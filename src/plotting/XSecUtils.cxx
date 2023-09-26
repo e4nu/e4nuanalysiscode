@@ -207,6 +207,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hists.push_back( hists_true_submodel[id - 1] );
   }
 
+  // If data is plot, the position of its trees and histograms is 1. 
+  // Otherwise we set it to a big number so it is ignored
+  int id_data = 9999;
+  if( plot_data ) id_data = 1 ;
+  
   // OBSERVABLE DEFINITION:
   double TotWeight ;
   double ECal,Recoq3,RecoW;
@@ -282,17 +287,17 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     if( i == 0 ) trees[i] -> SetBranchAddress("resid", &resid);
 
     // Only second tree corresponds to data
-    if( i != 1 ) {
+    if( i != id_data ) {
       trees[i] -> SetBranchAddress("MCNormalization", &MCNormalization );    
     } else {
-      if( plot_data ) trees[i] -> SetBranchAddress("DataNormalization",&DataNormalization );
+      trees[i] -> SetBranchAddress("DataNormalization",&DataNormalization );
     }
 
     for( int j = 0 ; j < NEntries ; ++j ) {
       trees[i]->GetEntry(j) ;
       double content = 0 ;
       double w = TotWeight ;
-      if( i != 1 && j == 0 ){
+      if( i != id_data && j == 0 ){
 	mc_norm.push_back(MCNormalization);
 	std::cout << MCNormalization << std::endl;
       }

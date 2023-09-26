@@ -36,9 +36,6 @@ map<string,double> systematic_map ;
 bool plot_data = true ;
 
 void PrintFormat(string s);
-string GetArg(string op, int argc, char ** argv );
-bool ExistArg(string op, int argc, char ** argv );
-vector<string> SplitString(string s,char d=',') ;
 int main( int argc, char* argv[] ) {
 
   std::cout << "Plotting e4nu analysis..." << std::endl;
@@ -136,9 +133,9 @@ int main( int argc, char* argv[] ) {
   for( unsigned int i = 0 ; i < observables.size(); ++i ){
     vector<string> root_files = mc_files;
     vector<string> names = model_names ; 
-    string acceptance_file = plotting::ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name ) ;
+    string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name ) ;
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
-    plotting::Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data ) ;
+    Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data ) ;
   }
 
   return 0 ;
@@ -151,76 +148,4 @@ void PrintFormat(string s){
   cout << "--input_mc_files <file1,file2,...,fileN> \n --input_data_file <data> --observable_list <obs1,obs2,...,obsM> " << endl;
   cout << " optional arguments are : \n --model_names <name1,name2,...,nameN> \n --title <title> \n --data_name <data> \n --systematics \n";
   cout << " --add-systematics name,value:name2,value2:...:nameK,valueK \n --nofsi_file <rootfile>" << endl;
-}
-
-vector<string> SplitString(string s, char d ) {
-  vector<string> strings;
-  int startIndex = 0, endIndex = 0;
-  for (unsigned int i = 0; i <= s.size(); i++) {
-
-    // If we reached the end of the word or the end of the input.
-    if (s[i] ==d || i == s.size()) {
-      endIndex = i;
-      string temp;
-      temp.append(s, startIndex, endIndex - startIndex);
-      strings.push_back(temp);
-      startIndex = endIndex + 1;
-    }
-  }
-  return strings ;
-}
-
-string GetArg(string op, int argc, char ** argv )
-{
-  const int buf_size = 2048*128;
-  char *  argument   = new char[buf_size];
-  strcpy(argument, "");
-
-  while(argc>2)
-    {
-      if (argv[1][0] == '-' && argv[1][1] == '-') {
-
-	char op_cur[buf_size];
-	strcpy(op_cur,&argv[1][2]);
-
-	if (strcmp(op.c_str(),op_cur)==0) {
-	  if (strlen(&argv[2][0]) ) {
-            strcpy(argument,&argv[2][0]);
-	  }
-	}
-      }
-      argc--;
-      argv++;
-
-    }
-
-  string value = string(argument);
-  delete [] argument;
-  return value ;
-}
-
-
-bool ExistArg(string op, int argc, char ** argv )
-{
-  const int buf_size = 2048*128;
-  char *  argument   = new char[buf_size];
-  strcpy(argument, "");
-
-  while(argc>2)
-    {
-      if (argv[1][0] == '-' && argv[1][1] == '-') {
-
-	char op_cur[buf_size];
-	strcpy(op_cur,&argv[1][2]);
-
-	if (strcmp(op.c_str(),op_cur)==0) {
-	  return true ;
-	}
-      }
-      argc--;
-      argv++;
-
-    }
-  delete [] argument ;
-  return false;
 }

@@ -356,3 +356,75 @@ void plotting::StandardFormat( TH1D * prediction, std::string title, int color, 
 
   return;
 }
+
+vector<string> utils::SplitString(string s, char d ) {
+  vector<string> strings;
+  int startIndex = 0, endIndex = 0;
+  for (unsigned int i = 0; i <= s.size(); i++) {
+
+    // If we reached the end of the word or the end of the input.
+    if (s[i] ==d || i == s.size()) {
+      endIndex = i;
+      string temp;
+      temp.append(s, startIndex, endIndex - startIndex);
+      strings.push_back(temp);
+      startIndex = endIndex + 1;
+    }
+  }
+  return strings ;
+}
+
+string utils::GetArg(string op, int argc, char ** argv )
+{
+  const int buf_size = 2048*128;
+  char *  argument   = new char[buf_size];
+  strcpy(argument, "");
+
+  while(argc>2)
+    {
+      if (argv[1][0] == '-' && argv[1][1] == '-') {
+
+	char op_cur[buf_size];
+	strcpy(op_cur,&argv[1][2]);
+
+	if (strcmp(op.c_str(),op_cur)==0) {
+	  if (strlen(&argv[2][0]) ) {
+            strcpy(argument,&argv[2][0]);
+	  }
+	}
+      }
+      argc--;
+      argv++;
+
+    }
+
+  string value = string(argument);
+  delete [] argument;
+  return value ;
+}
+
+
+bool utils::ExistArg(string op, int argc, char ** argv )
+{
+  const int buf_size = 2048*128;
+  char *  argument   = new char[buf_size];
+  strcpy(argument, "");
+
+  while(argc>2)
+    {
+      if (argv[1][0] == '-' && argv[1][1] == '-') {
+
+	char op_cur[buf_size];
+	strcpy(op_cur,&argv[1][2]);
+
+	if (strcmp(op.c_str(),op_cur)==0) {
+	  return true ;
+	}
+      }
+      argc--;
+      argv++;
+
+    }
+  delete [] argument ;
+  return false;
+}

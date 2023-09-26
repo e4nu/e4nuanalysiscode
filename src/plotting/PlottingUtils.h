@@ -25,6 +25,9 @@ namespace e4nu {
     std::string GetUnit( std::string observable );
     double GetMaximum( std::vector<TH1D*> predictions);
     void StandardFormat( TH1D * prediction, std::string title, int color, int style, std::string observable, double y_max = 0 );
+    vector<string> SplitString(string s, char d ) ;
+    string GetArg(string op, int argc, char ** argv );
+    bool ExistArg(string op, int argc, char ** argv );
   }
 }
 

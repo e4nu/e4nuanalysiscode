@@ -27,6 +27,7 @@ using namespace e4nu::plotting;
 // 11) AddSystematics                                          //
 // 12) NoFSI ROOT file                                         //
 // 13) analysis id - used to set the ranges. default none      //
+// 14) Plot root file output                                   //
 /////////////////////////////////////////////////////////////////
 
 string mc_location="", data_location="", output_location ="", output_name ="", analysis_id="default";
@@ -35,7 +36,7 @@ string data_file ="", nofsi_file="", title="", data_name="" ;
 bool compute_systematics ;
 map<string,double> systematic_map ;
 bool plot_data = true ;
-
+bool store_root = false ; 
 void PrintFormat(string s);
 int main( int argc, char* argv[] ) {
 
@@ -99,6 +100,7 @@ int main( int argc, char* argv[] ) {
 	return 0;
       }
     }
+    if( ExistArg("store_root",argc,argv)) store_root = true ; 
 
     cout<<"Loading MC Files:"<<endl;
     for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
@@ -138,9 +140,9 @@ int main( int argc, char* argv[] ) {
   for( unsigned int i = 0 ; i < observables.size(); ++i ){
     vector<string> root_files = mc_files;
     vector<string> names = model_names ; 
-    string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name, analysis_id ) ;
+    string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name, analysis_id, store_root ) ;
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
-    Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data, analysis_id ) ;
+    Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data, analysis_id, store_root ) ;
   }
 
   return 0 ;

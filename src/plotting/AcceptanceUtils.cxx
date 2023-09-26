@@ -6,7 +6,8 @@ using namespace e4nu ;
 using namespace e4nu::plotting ;
 
 std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::string observable, std::string title,
-					std::string input_MC_location, std::string output_location,  std::string output_file_name, std::string analysis_id ) {
+					std::string input_MC_location, std::string output_location,  std::string output_file_name, 
+					std::string analysis_id, bool store_root ) {
 
   // Define trees
   std::vector<TFile*> files_mcrecoacc, files_mctrueacc;
@@ -437,7 +438,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   ratio->Draw("hist err same");
   //teff->Draw("AP");
 
-  c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());
+  if( store_root ) c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());
   c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.pdf").c_str());
   delete c_1 ;
 
@@ -511,7 +512,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratios_5[i] -> Draw("hist err same");
   }
 
-  c_sector_2->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_persector.root").c_str());
+  if( store_root ) c_sector_2->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_persector.root").c_str());
   c_sector_2->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_persector.pdf").c_str());
   delete c_sector_2 ;
 

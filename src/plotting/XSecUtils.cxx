@@ -14,7 +14,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 			  std::string acceptance_file_name, std::string observable,
 			  std::string title, std::string data_name, std::vector<std::string> model,
 			  std::string input_MC_location, std::string input_data_location, std::string output_location,
-			  std::string output_file_name, bool plot_data, std::string analysis_id ){
+			  std::string output_file_name, bool plot_data, std::string analysis_id, bool store_root ){
 
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
@@ -599,7 +599,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   
   std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
   if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
-  c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+  if( store_root ) c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   delete c1 ;
 
@@ -634,7 +634,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
   if( addbinning.size() != 0 ) {
     output_name = output_file_name+"_dxsec_d"+observable+"_"+GetAlternativeObs(observable)+"_Slices" ;
-    c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+    if( store_root ) c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
     c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   }
   delete c_slices;
@@ -724,7 +724,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   output_name = MC_files_name[0]+"_dxsec_d"+observable+"_persector" ;
   std::filesystem::path xsecpersector_path{(output_location+"/XSecPerSector/").c_str()};
   if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
-  c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
+  if( store_root ) c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
   c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
   delete c_sector ;
 
@@ -756,7 +756,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   if(plot_data)  leg->AddEntry(hist_data, data_name.c_str(), "lp");
   leg->Draw();
   output_name = MC_files_name[0] ;
-  c_leg->SaveAs((output_location+"/"+output_name+"_legend.root").c_str());
+  if( store_root ) c_leg->SaveAs((output_location+"/"+output_name+"_legend.root").c_str());
   c_leg->SaveAs((output_location+"/"+output_name+"_legend.pdf").c_str());
 
   delete c_leg;

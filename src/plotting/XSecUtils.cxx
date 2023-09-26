@@ -576,12 +576,13 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     sub_pad -> SetLeftMargin(0.15);
 
     TH1D* tmp_hist_true = (TH1D*)hist_true->Clone();
-    TH1D* tmp_hist_data = (TH1D*)hist_data->Clone();
+    TH1D* tmp_hist_data ;
+    if( plot_data ) tmp_hist_data = (TH1D*)hist_data->Clone();
     tmp_hist_true->SetTitle("");
 
     //tmp_hist_true->GetXaxis()->SetRangeUser(0,BeamE*(1-0.1));
-    tmp_hist_data->GetXaxis()->SetRangeUser(0,BeamE*(1-0.02));
-    tmp_hist_true->GetYaxis()->SetRangeUser(0,tmp_hist_data->GetBinContent(tmp_hist_data->GetMaximumBin())*(1+0.25));
+    if( plot_data ) tmp_hist_data->GetXaxis()->SetRangeUser(0,BeamE*(1-0.02));
+    if( plot_data ) tmp_hist_true->GetYaxis()->SetRangeUser(0,tmp_hist_data->GetBinContent(tmp_hist_data->GetMaximumBin())*(1+0.25));
 
     tmp_hist_true -> Draw("hist");
     hist_true_QEL -> Draw("hist same");

@@ -10,7 +10,6 @@ namespace e4nu {
     double GetECal( const double Ef, const std::map<int,std::vector<TLorentzVector>> particle_map, const int tgt ) ;
     double GetRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) ;
     double GetQELRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) ;
-    double GetRecoEBeamPion( const TLorentzVector leptonf, const std::map<int,std::vector<TLorentzVector>> particle_map, const int tgt ) ;
     double GetEnergyTransfer( const TLorentzVector & leptonf, const double Ebeam ) ;
     double GetNuECal( const TLorentzVector & leptonf, const double ECal ) ;
     TVector3 GetRecoq3( const TLorentzVector & leptonf, const double EBeam ) ;

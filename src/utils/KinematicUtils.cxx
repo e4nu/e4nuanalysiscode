@@ -24,23 +24,6 @@ double utils::GetECal( const double Ef, const std::map<int,std::vector<TLorentzV
   return ECal ;
 }
 
-double utils::GetRecoEBeamPion( const TLorentzVector leptonf, const std::map<int,std::vector<TLorentzVector>> particle_map, const int tgt ) {
-  double nucleon_mass = 0.5 * ( conf::kProtonMass + conf::kNeutronMass ) ;
-  double BindingE = utils::GetBindingEnergy( tgt );
-  TLorentzVector out_pi =  utils::FindParticle( abs(conf::kPdgPiM), particle_map ) ; 
-  TVector3 beam_dir (0,0,1);
-  if( out_pi.E() == 0 ) return 0 ; 
-
-  // https://arxiv.org/pdf/1511.00501.pdf
-  // Calculation ignores fermi momentum, known beam direction
-  double Ap = nucleon_mass - BindingE - leptonf.E() - out_pi.E();
-  TVector3 sum_mom = (leptonf+out_pi).Vect();
-
-  double RecoE = pow(nucleon_mass,2) - pow(Ap,2) + sum_mom.Mag2();
-  RecoE /= 2*(Ap + beam_dir.Dot(sum_mom));
-  return RecoE;
-}
-
 double utils::GetRecoEnu( const TLorentzVector & leptonf, const unsigned int target_pdg ) {
   return (conf::kProtonMass * utils::GetBindingEnergy( target_pdg ) +conf::kProtonMass * leptonf.E() ) / ( conf::kProtonMass - leptonf.E() + leptonf.Rho() * TMath::Cos( leptonf.Theta() ));
 }

@@ -563,7 +563,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
   if( plot_data ) hist_data -> Draw(" err same ");
  
-  if( observable=="ECal" && plotting::PlotZoomIn(analysis_id) ){
+  if( observable=="ECal" && plotting::PlotZoomIn(analysis_id) == true ){
     // Add a sub-pad1
     TPad * sub_pad = new TPad("subpad","",0.2,0.2,0.85,0.85);
     sub_pad->SetFillStyle(4000);

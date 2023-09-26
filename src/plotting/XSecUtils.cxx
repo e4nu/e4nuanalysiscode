@@ -297,10 +297,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       trees[i]->GetEntry(j) ;
       double content = 0 ;
       double w = TotWeight ;
-      if( i != id_data && j == 0 ){
-	mc_norm.push_back(MCNormalization);
-	std::cout << MCNormalization << std::endl;
-      }
+      if( i != id_data && j == 0 ) mc_norm.push_back(MCNormalization);
       if( observable == "ECal") content = ECal ;
       else if ( observable == "pfl") content = pfl ;
       else if ( observable == "pfl_theta") content = pfl_theta ;

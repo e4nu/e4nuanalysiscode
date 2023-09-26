@@ -19,7 +19,7 @@ namespace e4nu {
     std::vector<double> GetUniformBinning( unsigned int nbins, double min, double max);
     std::vector<double> GetECalBinning( unsigned int nbins_tail, unsigned int nbins_peak, double min, double max, double EBeam);
     std::vector<double> GetBinning( std::string observable, double EBeam, std::string analysis_key="default" );
-    std::vector<double> GetAdditionalBinning( std::string second_observable, double EBeam, std::string analysis_id ) ;
+    std::vector<double> GetAdditionalBinning( std::string second_observable, double EBeam, std::string analysis_id="default" ) ;
     std::string GetAlternativeObs( std::string observable );
     std::string GetObsName( std::string observable );
     std::string GetUnit( std::string observable );

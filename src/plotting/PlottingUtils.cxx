@@ -242,7 +242,7 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
   if( analysis_key == "1p1pim" ) return binning ;
   else if( analysis_key == "1p1pip" ) {
     if( observable == "ECal") {
-      if( EBeam == 1.161 ) binning = plotting::GetECalBinning( 15, 10, 0.8 1.2, EBeam);
+      if( EBeam == 1.161 ) binning = plotting::GetECalBinning( 15, 10, 0.8, 1.2, EBeam);
       else if( EBeam == 2.261 ) binning = plotting::GetECalBinning( 15, 10, 1.2, EBeam+0.06, EBeam);
       else if( EBeam == 4.461 ) binning = plotting::GetECalBinning( 15, 10, 2, EBeam+0.1, EBeam);
     } else if ( observable == "proton_mom") {

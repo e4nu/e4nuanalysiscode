@@ -234,9 +234,9 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
     else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 20, 180 );
     else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 20, 180 );
   } else if ( observable == "Angleqvshad"){
-    if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 0, 180 );
-    else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 0, 180 );
-    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 0, 180 );
+    if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 0, 70 );
+    else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 0, 70 );
+    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 0, 70 );
   }
 
   if( analysis_key == "1p1pim" ) return binning ;
@@ -271,6 +271,10 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
       if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 0, 0.8 );
       else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 0, 1 );
       else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 0, 1 );
+    } else if ( observable == "Angleqvshad"){
+      if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 0, 120 );
+      else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 0, 120 );
+      else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 0, 120 );
     }
   } else if( analysis_key == "1pim" ) {
     if( observable == "ECal") {

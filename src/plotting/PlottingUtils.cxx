@@ -279,15 +279,15 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
   } else if( analysis_key == "1pim" ) {
     if( observable == "ECal") {
       if( EBeam == 1.161 ) binning = plotting::GetECalBinning( 10, 10, 0.6, 1.2, EBeam);
-      else if( EBeam == 2.261 ) binning = plotting::GetECalBinning( 20, 10, 1, EBeam+0.06, EBeam);
-      else if( EBeam == 4.461 ) binning = plotting::GetECalBinning( 8, 10, 1.5, EBeam+0.1, EBeam);
+      else if( EBeam == 2.261 ) binning = plotting::GetECalBinning( 20, 10, 0, EBeam+0.06, EBeam);
+      else if( EBeam == 4.461 ) binning = plotting::GetECalBinning( 8, 10, 0, EBeam+0.1, EBeam);
     }
   }
   else if( analysis_key == "1pip" ) {
     if( observable == "ECal") {
       if( EBeam == 1.161 ) binning = plotting::GetECalBinning( 10, 10, 0.6, 1.2, EBeam);
-      else if( EBeam == 2.261 ) binning = plotting::GetECalBinning( 20, 10, 1, EBeam+0.06, EBeam);
-      else if( EBeam == 4.461 ) binning = plotting::GetECalBinning( 8, 10, 1.5, EBeam+0.1, EBeam);
+      else if( EBeam == 2.261 ) binning = plotting::GetECalBinning( 20, 10, 0, EBeam+0.06, EBeam);
+      else if( EBeam == 4.461 ) binning = plotting::GetECalBinning( 8, 10, 0, EBeam+0.1, EBeam);
     }else if ( observable == "pip_mom") {
       if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 20, 0.15, 0.6);
       else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 20, 0.3, 1.2 );

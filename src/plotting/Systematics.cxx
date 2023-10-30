@@ -30,13 +30,16 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
   for( unsigned int i = 0 ; i < input_files.size(); ++i ) {
     double BeamE ; 
     TTree * tree = (TTree*)ifiles[i]->Get(treename.c_str());
+    if( !tree ) return ;
     tree ->SetBranchAddress("BeamE",&BeamE);
     tree->GetEntry(0);
     std::vector<double> binning = plotting::GetBinning(observable,BeamE,analysis_id);
-    
+    if( binning.size()==0 ) return ; 
+
     // Create histogram for total and total xsec per sector
     TH1D * hist = new TH1D( tags[i].c_str(), tags[i].c_str(), binning.size()-1, &binning[0] ) ;
-    
+    if( !hist ) return ;
+
     // OBSERVABLE DEFINITION:
     double TotWeight ;
     double ECal,Recoq3,RecoW;

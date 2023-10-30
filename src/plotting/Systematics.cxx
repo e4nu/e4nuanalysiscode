@@ -13,7 +13,7 @@ using namespace e4nu::systematics ;
 void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::vector<std::string> tags, std::string observable, bool is_data, 
 				   std::string input_location, std::string output_location, std::string analysis_id ){
 
-  std::string name_fullpath = output_location+"systematics.root";
+  std::string name_fullpath = output_location+"/systematics.root";
   std::unique_ptr<TFile> myFile( TFile::Open(name_fullpath.c_str(), "RECREATE") );
 
   std::vector<TFile*> ifiles ;

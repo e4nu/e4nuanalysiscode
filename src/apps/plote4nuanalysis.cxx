@@ -4,6 +4,7 @@
 
 #include "plotting/AcceptanceUtils.h"
 #include "plotting/XSecUtils.h"
+#include "plotting/Systematics.h"
 #include <iomanip>
 #include <filesystem>
 
@@ -148,8 +149,8 @@ int main( int argc, char* argv[] ) {
     string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name, analysis_id, store_root ) ;
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
 
-    string bkg_syst_files = {data_file};
-    string bkg_syst_tag = {data_name};
+    vector<string> bkg_syst_files = {data_file};
+    vector<string> bkg_syst_tag = {data_name};
     for( unsigned int j = 0 ; j < bkg_syst.size(); ++j ){
       bkg_syst_files.push_back(bkg_syst[j]); 
       bkg_syst_tag.push_back(to_string(j+1));

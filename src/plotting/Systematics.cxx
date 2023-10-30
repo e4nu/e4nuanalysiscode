@@ -18,7 +18,7 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
 
   std::vector<TFile*> ifiles ;
   for( unsigned int id = 0 ; id < input_files.size(); ++id ){
-    ifiles.push_back(new TFile((input_location+input_files[id]).c_str(),"ROOT"));
+    ifiles.push_back(new TFile((input_location+"/"+input_files[id]).c_str(),"ROOT"));
     if( !ifiles[id] ) { std::cout << "ERROR: the "<< input_location<<input_files[id]<<" does not exist." << std::endl; return ;}
   }
   
@@ -26,6 +26,7 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
   std::string treename = "MCCLAS6Tree";
   if( is_data ) treename = "CLAS6Tree";
 
+  std::vector<TH1D*> hists;
   for( unsigned int i = 0 ; i < input_files.size(); ++i ) {
     double BeamE ; 
     TTree * tree = (TTree*)ifiles[i]->Get(treename.c_str());
@@ -160,7 +161,17 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
 
     plotting::NormalizeHist(hist,norm);
     myFile->WriteObject(hist,tags[i].c_str());
+    hists.push_back(hist);
+    
   } // input files
 
-  
+  if( hists.size() > 1 ) { 
+    for( unsigned int i = 1 ; i < hists.size() ; ++i ) {
+      TH1D * diff = (TH1D*) hists[0]->Clone();
+      diff -> Add( hists[i], -1);
+      diff -> SetName( ("diff_def_vs_"+std::to_string(i)).c_str()) ;
+      myFile->WriteObject(diff, ("diff_def_vs_"+std::to_string(i)).c_str() );
+    }
+  }
+
 }

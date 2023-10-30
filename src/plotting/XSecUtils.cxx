@@ -567,7 +567,7 @@ void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakd
 			  std::string title, std::string data_name, std::vector<std::string> model,
 			  std::string input_MC_location, std::string input_data_location, std::string output_location,
 			  std::string output_file_name, std::string analysis_id, bool store_root ) {
-  
+  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);  
   // Find absolute y max
   std::vector<TH1D*> temp_check = {mc_hists[0]};
   if(data) temp_check.push_back(data);
@@ -625,7 +625,7 @@ void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakd
   
   std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
   if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
-  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
+
   if( store_root ) c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   delete c1 ;

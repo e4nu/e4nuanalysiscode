@@ -1,5 +1,6 @@
 #include "plotting/Systematics.h"
 #include "plotting/PlottingUtils.h"
+#include "plotting/XSecUtils.h"
 #include "TLegend.h"
 #include <iomanip>
 #include <filesystem>

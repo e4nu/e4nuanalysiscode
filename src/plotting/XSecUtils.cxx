@@ -9,7 +9,6 @@
 using namespace e4nu ;
 using namespace e4nu::plotting ;
 
-
 void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_name,
 			  std::string acceptance_file_name, std::string observable,
 			  std::string title, std::string data_name, std::vector<std::string> model,
@@ -471,87 +470,18 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       NormalizeHist(h_SIS_slices[l], mc_norm[0] );
       NormalizeHist(h_DIS_slices[l], mc_norm[0] );
       NormalizeHist(h_MEC_slices[l], mc_norm[0] );
-
-      std::vector<TH1D*> all_slices{h_total_slices[l]};
-      if( plot_data ) all_slices.push_back(h_data_slices[l]);
-      double y_max_total = GetMaximum( all_slices );
-
-      // Add Slice information in title
-      std::string title_subname = title ;
-      std::string alt_obs = GetAlternativeObs(observable);
-      if ( l == 0 ) {
-	std::ostringstream o1 ;
-	o1 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
-	title_subname += " " + plotting::GetObsName(alt_obs) + "<" + o1.str() +" "+plotting::GetUnit(alt_obs) ;
-      } else if ( l == addbinning.size()-2 ) {
-	std::ostringstream o1 ;
-	o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
-	title_subname += " " + plotting::GetObsName(alt_obs) + ">" + o1.str() +" "+plotting::GetUnit(alt_obs) ;
-      } else {
-	std::ostringstream o1, o2 ;
-	o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
-	o2 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
-	title_subname += " " + o1.str() + "<"+ plotting::GetObsName(alt_obs) + "<" + o2.str()+" "+plotting::GetUnit(alt_obs) ;
-      }
-
-      StandardFormat( h_total_slices[l], title_subname, kBlack, 1, observable, y_max_total ) ;
-      StandardFormat( h_QEL_slices[l], title_subname, kBlue-3, 1, observable, y_max_total ) ;
-      StandardFormat( h_RES_Delta_slices[l], title_subname, kRed-4, 1, observable, y_max_total ) ;
-      StandardFormat( h_RES_slices[l], title_subname, kGreen+2, 1, observable, y_max_total ) ;
-      StandardFormat( h_SIS_slices[l], title_subname, kOrange, 1, observable, y_max_total ) ;
-      StandardFormat( h_MEC_slices[l], title_subname, kMagenta-3, 1, observable, y_max_total ) ;
-      StandardFormat( h_DIS_slices[l], title_subname, kCyan+1, 1, observable, y_max_total ) ;
-      if( plot_data ) StandardFormat( h_data_slices[l], title_subname, kBlack, 8, observable, y_max_total ) ;
-
     }
   }
-
-  TCanvas* c_slices = new TCanvas("c_slices","c_slices",200,10,700,500);
-  c_slices->cd();
-  TPad *pad_slices = new TPad("pad1","",0,0,1,1);
-  pad_slices->Draw();
-  pad_slices->cd();
-  pad_slices->SetBottomMargin(0.15);
-  pad_slices->SetLeftMargin(0.15);
-
-  // Normalize true from slices
-  if( addbinning.size() != 0 ) {
-    pad_slices->Divide(addbinning.size()-1,0);
-    for( unsigned int l = 0 ; l < addbinning.size()-1 ; ++l ){
-      TPad *pad_slice_i = (TPad*)pad_slices->cd(1+l);
-      pad_slice_i -> cd();
-      pad_slice_i -> SetBottomMargin(0.15);
-      pad_slice_i -> SetLeftMargin(0.15);
-      h_total_slices[l] -> GetYaxis()->SetTitleOffset(1.2);
-
-      h_total_slices[l]->Draw("hist");
-      h_QEL_slices[l]->Draw("hist same ");
-      h_RES_Delta_slices[l]->Draw("hist same ");
-      h_RES_slices[l]->Draw("hist same ");
-      h_SIS_slices[l]->Draw("hist same ");
-      h_MEC_slices[l]->Draw("hist same ");
-      h_DIS_slices[l]->Draw("hist same ");
-      if( plot_data ) h_data_slices[l]->Draw("err same ");
-
-    }
-  }
-  if( addbinning.size() != 0 ) {
-    std::string output_name = output_file_name+"_dxsec_d"+observable+"_"+GetAlternativeObs(observable)+"_Slices" ;
-    if( store_root ) c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
-    c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
-  }
-  delete c_slices;
 
   // Store histograms for plotting
   std::vector<TH1D*> mc_hists = {hist_true};
   for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
     mc_hists.push_back(hists_true_submodel[id]);
   }
-
   std::vector<TH1D*> breakdown = {hist_true_QEL,hist_true_RES_Delta,hist_true_RES,hist_true_SIS,hist_true_MEC,hist_true_DIS};
   std::vector<TH1D*> mc_per_sector = {hist_true_0,hist_true_1,hist_true_2,hist_true_3,hist_true_4,hist_true_5};
   std::vector<TH1D*> data_per_sector = {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5};
-
+  std::vector<std::vector<TH1D*>> all_slices = {h_total_slices,h_QEL_slices,h_RES_Delta_slices,h_RES_slices,h_SIS_slices,h_MEC_slices,h_DIS_slices,h_data_slices};
   // Plot Total, XSector, Legend
   plotting::PlotTotal( mc_hists, breakdown, hist_data, observable, title, data_name, model, input_MC_location,
 		       input_data_location, output_location, output_file_name,analysis_id,store_root);
@@ -561,6 +491,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   plotting::PlotLegend( mc_hists, breakdown, hist_data, observable, data_name, model, output_location, output_file_name,store_root );
 
+  plotting::PlotSlices(  all_slices, addbinning, observable, title, data_name, model, input_MC_location, input_data_location, 
+			 output_location, output_file_name,  analysis_id, store_root ) ;
 }
 
 void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,
@@ -733,4 +665,73 @@ void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*
   if( store_root ) c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
   c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
   delete c_sector ;
+}
+
+void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vector<double> addbinning, std::string observable,
+			   std::string title, std::string data_name, std::vector<std::string> model,
+			   std::string input_MC_location, std::string input_data_location, std::string output_location,
+			   std::string output_file_name, std::string analysis_id, bool store_root ) {
+  
+  for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+    double y_max_total = GetMaximum( all_slices[0] );
+    
+    // Add Slice information in title
+    std::string title_subname = title ;
+    std::string alt_obs = GetAlternativeObs(observable);
+    if ( l == 0 ) {
+      std::ostringstream o1 ;
+      o1 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
+      title_subname += " " + plotting::GetObsName(alt_obs) + "<" + o1.str() +" "+plotting::GetUnit(alt_obs) ;
+    } else if ( l == addbinning.size()-2 ) {
+      std::ostringstream o1 ;
+      o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
+      title_subname += " " + plotting::GetObsName(alt_obs) + ">" + o1.str() +" "+plotting::GetUnit(alt_obs) ;
+    } else {
+      std::ostringstream o1, o2 ;
+      o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
+      o2 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
+      title_subname += " " + o1.str() + "<"+ plotting::GetObsName(alt_obs) + "<" + o2.str()+" "+plotting::GetUnit(alt_obs) ;
+    }
+    
+    StandardFormat( all_slices[0][l], title_subname, kBlack, 1, observable, y_max_total ) ;
+    StandardFormat( all_slices[1][l], title_subname, kBlue-3, 1, observable, y_max_total ) ;
+    StandardFormat( all_slices[2][l], title_subname, kRed-4, 1, observable, y_max_total ) ;
+    StandardFormat( all_slices[3][l], title_subname, kGreen+2, 1, observable, y_max_total ) ;
+    StandardFormat( all_slices[4][l], title_subname, kOrange, 1, observable, y_max_total ) ;
+    StandardFormat( all_slices[5][l], title_subname, kMagenta-3, 1, observable, y_max_total ) ;
+    StandardFormat( all_slices[6][l], title_subname, kCyan+1, 1, observable, y_max_total ) ;
+    if( all_slices.size() == 8 ) StandardFormat( all_slices[7][l], title_subname, kBlack, 8, observable, y_max_total ) ;
+  }
+
+  TCanvas* c_slices = new TCanvas("c_slices","c_slices",200,10,700,500);
+  c_slices->cd();
+  TPad *pad_slices = new TPad("pad1","",0,0,1,1);
+  pad_slices->Draw();
+  pad_slices->cd();
+  pad_slices->SetBottomMargin(0.15);
+  pad_slices->SetLeftMargin(0.15);
+  
+  // Normalize true from slices
+  if( addbinning.size() != 0 ) {
+    pad_slices->Divide(addbinning.size()-1,0);
+    for( unsigned int l = 0 ; l < addbinning.size()-1 ; ++l ){
+      TPad *pad_slice_i = (TPad*)pad_slices->cd(1+l);
+      pad_slice_i -> cd();
+      pad_slice_i -> SetBottomMargin(0.15);
+      pad_slice_i -> SetLeftMargin(0.15);
+      all_slices[0][l] -> GetYaxis()->SetTitleOffset(1.2);
+      
+      all_slices[0][l]->Draw("hist");
+      for( unsigned i = 1 ; i < all_slices.size() -1 ; ++i ) { 
+	all_slices[i][l] ->Draw("same");
+      }
+      if( all_slices.size() == 8 ) all_slices[8][l] -> Draw("err same ");
+    }
+  }
+  
+  std::string output_name = output_file_name+"_dxsec_d"+observable+"_"+GetAlternativeObs(observable)+"_Slices" ;
+  if( store_root ) c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+  c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
+
+  delete c_slices;
 }

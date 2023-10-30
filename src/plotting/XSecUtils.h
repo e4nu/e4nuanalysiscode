@@ -33,6 +33,11 @@ namespace e4nu {
 			std::string title, std::string data_name, std::vector<std::string> model,
 			std::string input_MC_location, std::string input_data_location, std::string output_location,
 			std::string output_file_name, std::string analysis_id = "default", bool store_root = false) ;
+
+    void PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vector<double> addbinning, std::string observable,
+		     std::string title, std::string data_name, std::vector<std::string> model,
+		     std::string input_MC_location, std::string input_data_location, std::string output_location,
+		     std::string output_file_name, std::string analysis_id = "default", bool store_root = false ) ;
   }
 }
 

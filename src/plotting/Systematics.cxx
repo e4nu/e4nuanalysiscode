@@ -19,8 +19,8 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
 
   std::vector<TFile*> ifiles ;
   for( unsigned int id = 0 ; id < input_files.size(); ++id ){
-    ifiles.push_back(new TFile((input_location+"/"+input_files[id]).c_str(),"ROOT"));
-    if( !ifiles[id] ) { std::cout << "ERROR: the "<< input_location<<input_files[id]<<" does not exist." << std::endl; return ;}
+    ifiles.push_back(new TFile((input_location+"/"+input_files[id]+".root").c_str(),"ROOT"));
+    if( !ifiles[id] ) { std::cout << "ERROR: the "<< input_location<<input_files[id]<<".root does not exist." << std::endl; return ;}
   }
   
   // Get Tree for main model

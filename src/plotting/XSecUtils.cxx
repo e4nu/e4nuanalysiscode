@@ -482,6 +482,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   std::vector<TH1D*> mc_per_sector = {hist_true_0,hist_true_1,hist_true_2,hist_true_3,hist_true_4,hist_true_5};
   std::vector<TH1D*> data_per_sector = {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5};
   std::vector<std::vector<TH1D*>> all_slices = {h_total_slices,h_QEL_slices,h_RES_Delta_slices,h_RES_slices,h_SIS_slices,h_MEC_slices,h_DIS_slices,h_data_slices};
+
   // Plot Total, XSector, Legend
   plotting::PlotTotal( mc_hists, breakdown, hist_data, observable, title, data_name, model, input_MC_location,
 		       input_data_location, output_location, output_file_name,analysis_id,store_root);

@@ -492,8 +492,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   plotting::PlotLegend( mc_hists, breakdown, hist_data, observable, data_name, model, output_location, output_file_name,store_root );
 
-  plotting::PlotSlices(  all_slices, addbinning, observable, title, data_name, model, input_MC_location, input_data_location, 
-			 output_location, output_file_name,  analysis_id, store_root ) ;
+  //plotting::PlotSlices(  all_slices, addbinning, observable, title, data_name, model, input_MC_location, input_data_location, 
+  //output_location, output_file_name,  analysis_id, store_root ) ;
 }
 
 void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,

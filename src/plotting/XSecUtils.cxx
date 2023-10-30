@@ -568,6 +568,12 @@ void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakd
 			  std::string input_MC_location, std::string input_data_location, std::string output_location,
 			  std::string output_file_name, std::string analysis_id, bool store_root ) {
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);  
+  TPad *pad1 = new TPad("pad1","",0,0,1,1);
+  pad1->Draw();
+  pad1->cd();
+  pad1->SetBottomMargin(0.15);
+  pad1->SetLeftMargin(0.15);
+
   // Find absolute y max
   std::vector<TH1D*> temp_check = {mc_hists[0]};
   if(data) temp_check.push_back(data);
@@ -639,6 +645,12 @@ void plotting::PlotLegend( std::vector<TH1D*> mc_hists, std::vector<TH1D*> break
   // Store legend in separate file
   TCanvas * c_leg = new TCanvas("c_leg","c_leg");
   c_leg->cd();
+  TPad *pad1 = new TPad("pad1","",0,0,1,1);
+  pad1->Draw();
+  pad1->cd();
+  pad1->SetBottomMargin(0.15);
+  pad1->SetLeftMargin(0.15);
+
   double LegXmin = 0.1, LegYmin = 0.65, YSpread = 0.25;
   TLegend* leg = new TLegend(LegXmin,LegYmin,LegXmin+0.9,LegYmin+YSpread);
   leg->SetBorderSize(0);

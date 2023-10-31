@@ -150,14 +150,16 @@ int main( int argc, char* argv[] ) {
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
 
     vector<string> bkg_syst_files = {data_file};
-    vector<string> bkg_syst_tag = {data_name};
+    vector<string> bkg_syst_tag = {data_name+"_"+observables[i]};
     for( unsigned int j = 0 ; j < bkg_syst.size(); ++j ){
       bkg_syst_files.push_back(bkg_syst[j]); 
-      bkg_syst_tag.push_back(to_string(j+1));
+      bkg_syst_tag.push_back(data_name+"_"+observables[i]+"_"+to_string(j+1));
     }
-    systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables[i], true, data_location, output_location, analysis_id );
 
-    Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data, analysis_id, store_root ) ;
+    if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables[i], true, data_location, output_location, analysis_id );
+
+    Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location,
+		output_location, output_name, plot_data, analysis_id, store_root ) ;
   }
 
   return 0 ;

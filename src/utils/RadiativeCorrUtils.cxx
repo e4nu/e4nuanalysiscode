@@ -1,0 +1,120 @@
+/**
+ * This file contains utils which aim to study the effect of radiative corrections
+ * qualitively before included in the GENIE event generator
+ * It computes the correction factors to the cross section due to vertex, vacum or radiative effects
+ * The methods used depend on the exclusive final state measured
+ * References are provided for each case
+ * \author Julia Tena Vidal \at Tel Aviv University                                                                                                                                                                 
+ * \date Nov 2023                                                                                                                                                                                              
+ **/
+#include <iostream>
+#include <TMath.h>
+#include <TF1.h>
+#include "utils/RadiativeCorrUtils.h"
+#include "conf/ConstantsI.h"
+#include "conf/ParticleI.h"
+
+using namespace e4nu;
+using namespace conf;
+
+double VanderhagenELoss( const double Q2 , const double Ee ) {
+  double e_gamma_min = 1E-25;
+  double e_gamma_max = 0.2*Ee ;
+  TF1 *f = new TF1("f","([0]/x)*TMath::Power(x/[1],[0])",e_gamma_min,e_gamma_max);
+  double a = (kAem/kPi)*(TMath::Log(Q2)/pow(kElectronMass,2) - 1.);
+  f->SetParameter(0,a);
+  f->SetParameter(1,Ee);
+  double energyLoss = f->GetRandom();
+  delete f;
+  return energyLoss ; 
+}
+
+double utils::RadCorrQELVertex( const double Q2 ) {
+  // https://journals.aps.org/prc/pdf/10.1103/PhysRevC.62.025501
+  // A67 equation
+  double log = TMath::Log(Q2/pow(kElectronMass,2)) ;
+  double dvertex = (3./2.)*log-2-0.5*pow(log,2)+pow(kPi,2)/6.;
+  dvertex *= (kAem/kPi);
+  return dvertex;
+}
+ 
+double utils::RadCorrQELVacumm( const double Q2 ) {
+  // https://journals.aps.org/prc/pdf/10.1103/PhysRevC.62.025501
+  // A69 equation
+  double log = TMath::Log(Q2/pow(kElectronMass,2)) ;
+  double dvaccumm = log - 5./3.;
+  dvaccumm *= (kAem/kPi)*2./3.;
+  return dvaccumm;  
+}
+
+double utils::RadCorrQELRealRad( const double Q2, const double E, const double Ep, const double theta ) {
+  // https://journals.aps.org/prc/pdf/10.1103/PhysRevC.62.025501
+  // A65 equation
+  double e_gamma_min = 1E-25;
+  TF1 * fsp = new TF1("fsp","TMath::Log(1-x)* (1./x)");
+  double SP = -1*fsp->Integral(e_gamma_min,pow(cos(theta)/2,2.));
+  delete fsp ; 
+
+  double log = TMath::Log(Q2/pow(kElectronMass,2)) ;
+  double deltaE = VanderhagenELoss( Q2, E );
+  double dreal =TMath::Log(pow(deltaE,2)/(E*Ep))*(log - 1); 
+  dreal -= 0.5 * pow(TMath::Log(E/Ep),2);
+  dreal += 0.5 * pow(log,2);
+  dreal -= pow(kPi,2)/3. ;
+  dreal += SP;
+  dreal *= kAem/kPi;
+  return dreal ; 
+}
+
+double utils::RadCorrQELRealProtonD1( const double Q2, const double E, const double Ep, const double theta ) {
+  // https://journals.aps.org/prc/pdf/10.1103/PhysRevC.62.025501  
+  double rho = Q2 + 4 * pow( kNucleonMass,2 ) ; 
+  double x   = pow( sqrt(Q2) + rho ,2 ) * 0.25 / pow( kNucleonMass,2 ) ;
+  double ELab = (kNucleonMass*E-0.5*Q2)/kNucleonMass; // A43 // Eetilde
+  double EpLab = (kNucleonMass*Ep+0.5*Q2)/kNucleonMass; // A43 // Eetilde
+
+  // Epel denotes the elastic scattered electron lab energy to distinguish from Ep
+  double deltaEp = VanderhagenELoss( Q2, Ep );  
+  double Epel = Ep + deltaEp ;
+  double deltaELab = E - Ep - (E-Epel)*Ep/Epel; // A47, in terms of lab quantities 
+  double eta = deltaELab / (Epel-Ep); //A48
+  double DeltaEs = eta*( Epel - Ep ); 
+
+  double e_gamma_min = 1E-25;
+  TF1 * fsp = new TF1("fsp","TMath::Log(1-x)* (1./x)");
+  double Sp = -1*fsp->Integral(e_gamma_min,pow(cos(theta)/2,2.));
+  delete fsp ;
+
+  double delta1 = TMath::Log(4*pow(DeltaEs,2)/Q2/x)*TMath::Log(eta) + Sp * (1-eta/x) - Sp * ( 1-1/eta/x) ; 
+  delta1 *= 2*kAem/kPi;
+  return delta1; 
+}
+
+double utils::RadCorrQELRealProtonD20( const double Q2, const double E, const double Ep, const double theta, const double deltaE, const TLorentzVector nucleon ) {
+  // https://journals.aps.org/prc/pdf/10.1103/PhysRevC.62.025501  
+  double rho = Q2 + 4 * pow( kNucleonMass,2 ) ; 
+  double x   = pow( sqrt(Q2) + rho ,2 ) * 0.25 / pow( kNucleonMass,2 ) ;
+  double ELab = (kNucleonMass*E-0.5*Q2)/kNucleonMass; // A43 // Eetilde
+  double EpLab = (kNucleonMass*Ep+0.5*Q2)/kNucleonMass; // A43 // Eetilde
+
+  // Epel denotes the elastic scattered electron lab energy to distinguish from Ep
+  double deltaEp = VanderhagenELoss( Q2, Ep );  
+  double Epel = Ep + deltaEp ;
+  double deltaELab = E-Ep - (E-Epel)*Ep/Epel; // A47, in terms of lab quantities 
+  double eta = deltaELab / (Epel-Ep); //A48
+  double DeltaEs = eta*( Epel - Ep ); 
+
+  double e_gamma_min = 1E-25;
+  TF1 * fsp = new TF1("fsp","TMath::Log(1-x)* (1./x)");
+  double Sp = -1*fsp->Integral(e_gamma_min,pow(cos(theta)/2,2.));
+  delete fsp ;
+
+  double delta20 = TMath::Log(4*pow(DeltaEs,2)/pow(kNucleonMass,2))*((nucleon.E()/nucleon.Mag())*TMath::Log(x)-1) + 1 ;
+  delta20 += (nucleon.E()/nucleon.Mag()) *(-0.5*pow(TMath::Log(x),2)- TMath::Log(x) * TMath::Log(pow(rho,2)/pow(kNucleonMass,2)) + TMath::Log(x) - Sp *( 1- 1/pow(x,2)) -2*Sp/x +pow(kPi,2)/6. );  
+  delta20 *= kAem/kPi;
+  return delta20;
+}
+ 
+double utils::RadCorrQELRealProtonD21( const double Q2, const double E, const double Ep, const double theta) {
+  return 0; 
+}

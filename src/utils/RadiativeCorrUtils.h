@@ -13,6 +13,9 @@ namespace e4nu {
     double RadCorrQELRealProtonD20( const double Q2, const double E, const double Ep, const double theta, const double deltaE, const TLorentzVector nucleon ) ;
     double RadCorrQELRealProtonD21( const double Q2, const double E, const double Ep, const double theta) ; 
 
+    // Probability funcitons
+    double SIMCEnergyLoss(double EBeam, TLorentzVector particle, int p_pdg, double tgt_pdg, double Thickness) ;
+    double VanderhagenELoss( const double Q2 , const double Ee ) ;
   }
 }
 

@@ -104,16 +104,15 @@ int main( int argc, char* argv[] ) {
     analysis -> SetOutputFile( OutputFile_true ) ;
     std::cout << " Computing true analysis distributions for acceptance correction..."<<std::endl;
   } else if ( compute_truerecoacc ) { 
-    //    analysis -> SetTrueSignal( true ) ; 
+    analysis -> SetTrueSignal( true ) ; 
     analysis -> SetApplyFiducial( true ) ; 
     analysis -> SetApplyAccWeights( true ) ; 
     analysis -> SetApplyReso( true ) ; 
-    //analysis -> SetSubtractBkg( false ) ; 
+    analysis -> SetSubtractBkg( false ) ; 
     std::string OutputFile_reco = analysis->GetOutputFile() + "_truereco" ;
     analysis -> SetOutputFile( OutputFile_reco ) ; 
     std::cout << " Computing true reconstructed analysis distributions for acceptance correction..."<<std::endl;
   }
-  analysis -> SetSubtractBkg(true ) ;  
   analysis -> PrintConfiguration() ;
   analysis -> Initialize() ;
 

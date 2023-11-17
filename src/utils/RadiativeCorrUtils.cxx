@@ -29,8 +29,10 @@ double utils::SIMCEnergyLoss(double EBeam, TLorentzVector particle, int p_pdg, d
     L2 = 6.144;
   }
   double b = (1./9)*(12 + (Z+1)/(Z*L1 + L2));
-  double lambda = (kAem/kPi)*( 2*TMath::Log(2*TMath::Sqrt(pow(EBeam,2)-pow(kElectronMass,2))/utils::GetParticleMass(p_pdg)) - 1 + TMath::Log(0.5*(1-particle.CosTheta())) ) ;
-  if( p_pdg == kPdgProton ) (kAem/kPi)*( TMath::Log((particle.E()+particle.P())/(particle.E()-particle.P())) - 2 ) ;
+
+
+  double lambda = (kAem/kPi)*( 2*TMath::Log(2*TMath::Sqrt(pow(EBeam,2)-pow(kElectronMass,2))/utils::GetParticleMass(p_pdg)) - 1 );//+ TMath::Log(0.5*(1-particle.CosTheta())) ) ;
+  if( p_pdg == kPdgProton ) lambda = (kAem/kPi)*( TMath::Log((particle.E()+particle.P())/(particle.E()-particle.P())) - 2 ) ;
   lambda += b*GetThickness(tgt_pdg);
 
   double e_gamma_max = 0.2*EBeam ;

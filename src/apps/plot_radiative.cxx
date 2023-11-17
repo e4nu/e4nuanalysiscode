@@ -24,7 +24,6 @@ int main( int argc, char* argv[] ) {
   std::cout << "Plotting e4nu analysis radiative corrections..." << std::endl;
 
   vector<double> EBeam = {1,2,4};
-  double W = kNucleonMass;
   double minQ2 = 0.01;
   double nbins = 100;
   int Z = 1 ; // To change

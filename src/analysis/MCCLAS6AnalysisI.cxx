@@ -77,11 +77,7 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
     this -> SmearParticles( *event ) ; 
   }
 
-  // Step 4: Apply Acceptance Correction (Efficiency correction)
-  // This takes into account the efficiency detection of each particle in theta and phi
-  this->ApplyAcceptanceCorrection( *event ) ; 
-
-  // Step 5 : Remove true Bkg events if requested : 
+  // Step 4 : Remove true Bkg events if requested : 
   if( IsTrueSignal() ) {
     // Apply theta cut on hadrons:
     if ( ! this->ApplyFiducialCut( *event, false ) ) { delete event; return nullptr ; }
@@ -93,7 +89,7 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
     }
   }
 
-  // Step 6: Apply fiducials
+  // Step 5: Apply fiducials
   // The detector has gaps where the particles cannot be detected
   // We need to account for these with fiducial cuts
   // It also takes into account angle cuts for particles
@@ -101,6 +97,10 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
     delete event; 
     return nullptr ; 
   }
+
+  // Step 6: Apply Acceptance Correction (Efficiency correction)
+  // This takes into account the efficiency detection of each particle in theta and phi
+  this->ApplyAcceptanceCorrection( *event ) ; 
 
   // Store analysis record after fiducial cut and acceptance correction (2):
   event->StoreAnalysisRecord(kid_fid);

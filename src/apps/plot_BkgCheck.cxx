@@ -26,7 +26,7 @@ using namespace e4nu::plotting;
 // * input-file : root file containing histograms              //
 // * output-file : file to store plots (in root, pdf... format)//
 // * observable : observable used for the x axis definition    //
-// * bkg-string : defaulted to Total only                      //
+// * bkg-string : defaulted to _TotTrueBkg                     //
 /////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
@@ -74,10 +74,10 @@ int main( int argc, char* argv[] ) {
 
   TH1D * h_tot_true = (TH1D*) in_root_file->Get( (observable+"_TotTrueBkg"+bkg_string).c_str() ) ;
   TH1D * h_tot_est = (TH1D*) in_root_file->Get( (observable+"_TotEstBkg"+bkg_string).c_str() ) ;
-  TH1D * h_diff_true = (TH1D*) h_tot_est->Clone();
+  TH1D * h_diff_true = (TH1D*) h_tot_true->Clone();
   h_diff_true->Scale(-1.);
-  h_diff_true->Add(h_tot_true);
-  h_diff_true->Divide(h_tot_true);
+  h_diff_true->Add(h_tot_est);
+  h_diff_true->Divide(h_tot_est);
   h_diff_true->Scale(100.); // Relative error in %
 
   // Setting formatt
@@ -124,7 +124,7 @@ int main( int argc, char* argv[] ) {
 
   h_diff_true -> SetTitle("");
   h_diff_true -> GetXaxis()->SetTitle(plotting::GetAxisLabel(observable,0).c_str());
-  h_diff_true -> GetYaxis()->SetTitle("Error [%]");
+  h_diff_true -> GetYaxis()->SetTitle("(True-Est)/Est[%]");
   h_diff_true -> GetXaxis()->CenterTitle();
   h_diff_true -> GetYaxis()->CenterTitle();
   h_diff_true->GetYaxis()->SetNdivisions(6);

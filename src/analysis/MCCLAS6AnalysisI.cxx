@@ -98,10 +98,6 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
     return nullptr ; 
   }
 
-  // Step 6: Apply Acceptance Correction (Efficiency correction)
-  // This takes into account the efficiency detection of each particle in theta and phi
-  this->ApplyAcceptanceCorrection( *event ) ; 
-
   // Store analysis record after fiducial cut and acceptance correction (2):
   event->StoreAnalysisRecord(kid_fid);
 
@@ -257,9 +253,14 @@ bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event>> & event_
 
   if( !AnalysisI::Finalise() ) return false ; 
 
-  // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult() ; 
   for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) {
+    // Step 6: Apply Acceptance Correction (Efficiency correction)
+    // This takes into account the efficiency detection of each particle in theta and phi
+    // We want to apply it at the end to correctly account for the acceptance in background substracted events
+    this->ApplyAcceptanceCorrection( event_holder[min_mult][k] ) ; 
+  
+    // Store corrected background in event sample
     StoreTree( event_holder[min_mult][k] );
 
     double norm_weight = event_holder[min_mult][k].GetTotalWeight() ;

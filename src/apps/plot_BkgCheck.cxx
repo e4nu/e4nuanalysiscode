@@ -26,7 +26,7 @@ using namespace e4nu::plotting;
 // * input-file : root file containing histograms              //
 // * output-file : file to store plots (in root, pdf... format)//
 // * observable : observable used for the x axis definition    //
-// * bkg-string : defaulted to _TotTrueBkg                     //
+// * bkg-string : defaulted to Total only                      //
 /////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
@@ -41,7 +41,7 @@ int main( int argc, char* argv[] ) {
   std::string input_file ;
   std::string output_file = "bakground_debug.root";
   std::string observable = "ECal";
-  std::string bkg_string = "_TotTrueBkg";
+  std::string bkg_string = "";
   if( argc > 1 ) { // configure rest of analysis
     if( ExistArg("input-file",argc,argv)) {
       input_file = GetArg("input-file",argc,argv);
@@ -72,8 +72,8 @@ int main( int argc, char* argv[] ) {
   TPad *pad1 = new TPad("pad1","",0,0.4,1,1);
   TPad *pad2 = new TPad("pad2","",0,0,1,0.4);
 
-  TH1D * h_tot_true = (TH1D*) in_root_file->Get( (observable+bkg_string).c_str() ) ;
-  TH1D * h_tot_est = (TH1D*) in_root_file->Get( (observable+bkg_string).c_str() ) ;
+  TH1D * h_tot_true = (TH1D*) in_root_file->Get( (observable+"_TotTrueBkg"+bkg_string).c_str() ) ;
+  TH1D * h_tot_est = (TH1D*) in_root_file->Get( (observable+"_TotEstBkg"+bkg_string).c_str() ) ;
   TH1D * h_diff_true = (TH1D*) h_tot_est->Clone();
   h_diff_true->Scale(-1.);
   h_diff_true->Add(h_tot_true);

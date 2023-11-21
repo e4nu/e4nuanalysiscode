@@ -44,16 +44,13 @@ int main( int argc, char* argv[] ) {
       QELVertexv.push_back(utils::RadCorrQELVertex(Q2));
       QELVaummv.push_back(utils::RadCorrQELVacumm(Q2));
       QELRealRadv.push_back(utils::RadCorrQELRealRad(Q2,EBeam[i],EBeam[i]-0.1,0));
-      QELRealP1v.push_back(utils::RadCorrQELRealProtonD1(Q2,EBeam[i],EBeam[i]-0.1,0));
-      QEL_totalv.push_back(1+QELVertexv[j]+QELVaummv[j]+QELRealRadv[i]+Z*QELRealP1v[i]);
+      QEL_totalv.push_back(1+QELVertexv[j]+QELVaummv[j]+QELRealRadv[i]);
     }
     Q2bins.push_back(Q2v);
     Epbins.push_back(Epv);
     QELVaumm.push_back(QELVaummv);
     QELVertex.push_back(QELVertexv);
     RadCorrQELRealRad.push_back(QELRealRadv);
-    QELP1.push_back(QELRealRadv);
-    QEL_Total.push_back(QELRealP1v);
   }
 
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
@@ -61,7 +58,6 @@ int main( int argc, char* argv[] ) {
   TGraph* gRadCorrQELVertex_1=new TGraph( nbins, &Q2bins[0][0], &QELVertex[0][0]);
   TGraph* gRadCorrQELVacumm_1=new TGraph( nbins, &Q2bins[0][0], &QELVaumm[0][0]);
   TGraph* gRadCorrQELRealRad_1=new TGraph( nbins, &Q2bins[0][0], &RadCorrQELRealRad[0][0]);
-  TGraph* gRadCorrQELP1_1=new TGraph( nbins, &Q2bins[0][0], &QELP1[0][0]);
 
   TGraph* gRadCorrQELTotal_Ep_1=new TGraph( nbins, &Epbins[0][0], &QEL_Total[0][0]);
   TGraph* gRadCorrQELVertex_Ep_1=new TGraph( nbins, &Epbins[0][0], &QELVertex[0][0]);
@@ -153,7 +149,5 @@ int main( int argc, char* argv[] ) {
   gRadCorrQELRealRad_4->Draw("same");
   c1->SaveAs("gRadCorrQELRealRad.pdf");
 
-  gRadCorrQELP1_1->Draw("AC");
-  c1->SaveAs("RadCorrP1.pdf");
   return 0 ;
 }

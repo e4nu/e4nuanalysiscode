@@ -86,7 +86,12 @@ int main( int argc, char* argv[] ) {
     double egamma = 0 ; 
     if( rad_model == "simc" ) egamma = SIMCEnergyLoss( EBeam, V4_beam, 11, tgt, thickness, MaxEPhoton ) ;
     else if ( rad_model == "simple" ) egamma = SimpleEnergyLoss( EBeam, tgt, thickness, MaxEPhoton ) ; 
-    hradflux -> Fill( EBeam - egamma ) ; 
+    double Ee = EBeam - egamma ;
+    hradflux -> Fill( Ee ) ; 
+    TLorentzVector electron;
+    electron.SetPxPyPzE(0,0,Ee,Ee);
+    std::cout << SIMCRadCorrQELRadInElectron( EBeam, electron, tgt, thickness, MaxEPhoton ) <<std::endl;
+
   }
   hradflux->Scale(1./hradflux->GetEntries());
   myFile->WriteObject(hradflux,"hradflux");

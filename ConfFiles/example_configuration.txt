@@ -20,7 +20,7 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			1000000
+NEvents			1000000000
 FirstEvent		0
 
 #Topology definition
@@ -28,7 +28,7 @@ IsData			false
 IsCLAS6Analysis		true
 Toplogy 		11:1,2212:1,-211:0,221:0,22:0
 MaxBackgroundMultiplicity 4
-NRotations 500
+NRotations 1000
 
 #Acceptance correction
 #The following parameters will modify the configuration 
@@ -46,6 +46,11 @@ DebugBkg true
 
 InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_01_e_on_1000060120_1161MeV_NoRad.gst.root
 XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_01_total_xsec.root
+
 #InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad.gst.root
 #XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_04_total_xsec.root
-OutputFile /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/test
+
+# InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_08_e_1000060120_4461MeV_NoRad.gst.root
+# XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_08_total_xsec.root
+
+OutputFile /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/test_pion

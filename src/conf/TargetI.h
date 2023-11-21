@@ -9,6 +9,7 @@
 namespace e4nu {
   namespace conf { 
 
+    static const unsigned int kPdgH   = 1000010010; 
     static const unsigned int kPdgHe3 = 1000020030; 
     static const unsigned int kPdgHe4 = 1000020040; 
     static const unsigned int kPdgC12 = 1000060120 ; 

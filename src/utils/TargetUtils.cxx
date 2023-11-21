@@ -28,8 +28,10 @@ double utils::GetBindingEnergy( const unsigned int target_pdg ) {
 }
 
 unsigned int utils::GetTargetNProtons( const unsigned int target_pdg ) {
-  if ( target_pdg == conf::kPdgHe3 || target_pdg == conf::kPdgHe4 ) return 2 ; 
+  if ( target_pdg == conf::kPdgH ) return 1 ;
+  else if ( target_pdg == conf::kPdgHe3 || target_pdg == conf::kPdgHe4 ) return 2 ; 
   else if ( target_pdg == conf::kPdgC12 ) return 6 ; 
+  else if ( target_pdg == conf::kPdgH ) return 6 ; 
   else if ( target_pdg == conf::kPdgFe56) return 26 ; 
   return 0;
 }

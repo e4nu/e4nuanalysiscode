@@ -26,12 +26,15 @@ using namespace e4nu::plotting;
 // --Nbins : number of bins for radiated flux histogram        //
 // --Emin : minimum energy for your histogram axis             //
 // --Emax : maximum energy for your histogram axis             //
+// --rad-model : model used for external radiation of in e-    //
+//               simc or simple                                //
+// --max-Ephoton : defaulted to 0.2 (of beam energy)           //
 //                                                             //
 /////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
 
-  std::cout << "Generating radiated flux..." << std::endl;
+  cout << "Generating radiated flux..." << endl;
   string output_file = "radiatedflux.root";
   double EBeam = 1 ; 
   int tgt = 1000060120 ;
@@ -39,9 +42,14 @@ int main( int argc, char* argv[] ) {
   double Emin = 0.75 ;
   double Emax = EBeam+0.02 ;
   double thickness = e4nu::conf::GetThickness(tgt); // Defaulted to CLAS6
+  string rad_model = "simc";
+  double MaxEPhoton = 0.2 ;
   if( argc > 1 ) { // configure rest of analysis
     if( ExistArg("output-file",argc,argv)) {
       output_file = GetArg("output-file",argc,argv); 
+    }
+    if( ExistArg("rad-model",argc,argv)) {
+      rad_model = GetArg("rad-model",argc,argv); 
     }
     if( ExistArg("ebeam",argc,argv)) {
       EBeam = stod(GetArg("ebeam",argc,argv)); 
@@ -50,6 +58,7 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("target",argc,argv)) {
       tgt = stoi(GetArg("target",argc,argv)); 
       thickness = e4nu::conf::GetThickness(tgt); // Defaulted to CLAS6
+      std::cout << thickness << std::endl;
     }
     if( ExistArg("thickness",argc,argv)) {
       thickness = stoi(GetArg("thickness",argc,argv)); 
@@ -63,6 +72,9 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("Emax",argc,argv)) {
       Emax = stod(GetArg("Emax",argc,argv)); 
     }
+    if( ExistArg("max-Ephoton",argc,argv)) {
+      MaxEPhoton = stod(GetArg("max-Ephoton",argc,argv)); 
+    }
   }
 
   std::unique_ptr<TFile> myFile( TFile::Open(output_file.c_str(), "RECREATE") );
@@ -71,7 +83,9 @@ int main( int argc, char* argv[] ) {
   TLorentzVector V4_beam(0,0,EBeam,EBeam);
   unsigned int nentries = 10000; 
   for( unsigned int i = 0 ; i < nentries ; ++i ) { 
-    double egamma = SIMCEnergyLoss( EBeam, V4_beam, 11, tgt, thickness ) ;
+    double egamma = 0 ; 
+    if( rad_model == "simc" ) egamma = SIMCEnergyLoss( EBeam, V4_beam, 11, tgt, thickness, MaxEPhoton ) ;
+    else if ( rad_model == "simple" ) egamma = SimpleEnergyLoss( EBeam, tgt, thickness, MaxEPhoton ) ; 
     hradflux -> Fill( EBeam - egamma ) ; 
   }
   hradflux->Scale(1./hradflux->GetEntries());

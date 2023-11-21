@@ -15,12 +15,12 @@
 #include "utils/ParticleUtils.h"
 #include "conf/ConstantsI.h"
 #include "conf/ParticleI.h"
-#include "conf/RadConstants.h"
 
 using namespace e4nu;
 using namespace conf;
 
-double utils::SIMCEnergyLoss(double EBeam, TLorentzVector particle, int p_pdg, double tgt_pdg ) {
+double utils::SIMCEnergyLoss(const double EBeam, const TLorentzVector particle, const int p_pdg, const double tgt_pdg, const double thickness, const double max_Ephoton ) {
+  // https://journals.aps.org/prc/abstract/10.1103/PhysRevC.64.054610
   double Z = utils::GetTargetNProtons(tgt_pdg);
   double L1 = TMath::Log(184.15) - (1./3)*TMath::Log(Z);
   double L2 = TMath::Log(1194.) - (2./3)*TMath::Log(Z);
@@ -29,13 +29,12 @@ double utils::SIMCEnergyLoss(double EBeam, TLorentzVector particle, int p_pdg, d
     L2 = 6.144;
   }
   double b = (1./9)*(12 + (Z+1)/(Z*L1 + L2));
-
-
+  
   double lambda = (kAem/kPi)*( 2*TMath::Log(2*TMath::Sqrt(pow(EBeam,2)-pow(kElectronMass,2))/utils::GetParticleMass(p_pdg)) - 1 );//+ TMath::Log(0.5*(1-particle.CosTheta())) ) ;
   if( p_pdg == kPdgProton ) lambda = (kAem/kPi)*( TMath::Log((particle.E()+particle.P())/(particle.E()-particle.P())) - 2 ) ;
-  lambda += b*GetThickness(tgt_pdg);
+  lambda += b*thickness;
 
-  double e_gamma_max = 0.2*EBeam ;
+  double e_gamma_max = max_Ephoton*EBeam ;
   double e_gamma_min = 1E-25;
   double power_hi = pow(e_gamma_max,lambda);
   double power_lo  = pow(e_gamma_min,lambda);
@@ -45,6 +44,33 @@ double utils::SIMCEnergyLoss(double EBeam, TLorentzVector particle, int p_pdg, d
   f->SetParameter(1,power_hi - power_lo);
   double energyLoss = f->GetRandom();
   delete f;
+  return energyLoss ; 
+}
+
+double utils::SimpleEnergyLoss(const double EBeam, const double tgt_pdg, const double thickness, const double max_Ephoton ) {
+  // Reference https://github.com/adishka/Generator/blob/adi_radcorr/src/Physics/Common/RadiativeCorrector.cxx
+  double Z = utils::GetTargetNProtons(tgt_pdg);
+  double L1 = TMath::Log(184.15) - (1./3)*TMath::Log(Z);
+  double L2 = TMath::Log(1194.) - (2./3)*TMath::Log(Z);
+  if( Z ==1 ) { 
+    L1 = 5.31;
+    L2 = 6.144;
+  }
+  double b = (1./9)*(12 + (Z+1)/(Z*L1 + L2));
+  
+  double lambda = (kAem/kPi)*( 2*TMath::Log(2*EBeam)/kElectronMass - 1 ) + b*thickness;
+
+  double e_gamma_max = max_Ephoton*EBeam ;
+  double e_gamma_min = 1E-25;
+  double power_hi = pow(e_gamma_max,lambda);
+  double power_lo  = pow(e_gamma_min,lambda);
+
+  TF1 *f = new TF1("f","[0]*pow(x,[0]-1)/[1]",e_gamma_min,e_gamma_max);
+  f->SetParameter(0,lambda);
+  f->SetParameter(1,pow(EBeam,-1.*lambda));
+  double energyLoss = f->GetRandom();
+  delete f;
+  std::cout << energyLoss << std::endl;
   return energyLoss ; 
 }
 

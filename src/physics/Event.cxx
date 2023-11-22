@@ -211,6 +211,18 @@ TVector3 Event::GetRecoq3() const {
   return utils::GetRecoq3( fOutLepton, fInLepton.E() ) ; 
 }
 
+// Radiative correction utils
+void Event::SetInCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) {
+  fInCorrLepton.SetPxPyPzE( px, py, pz, energy ) ;
+  return ;
+} 
+void Event::SetOutCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) {
+  fOutCorrLepton.SetPxPyPzE( px, py, pz, energy ) ;
+  return ;
+}
+
+//
+
 void Event::Initialize() { 
   fFinalParticles.clear() ; 
   fFinalParticlesUnCorr.clear() ; 
@@ -253,6 +265,8 @@ void Event::Initialize() {
 
   fInLepton.SetPxPyPzE( 0,0,0,0 ) ;
   fOutLepton.SetPxPyPzE( 0,0,0,0 ) ;
+  fInCorrLepton.SetPxPyPzE( 0,0,0,0 ) ;
+  fOutCorrLepton.SetPxPyPzE( 0,0,0,0 ) ;
   fInLeptonUnCorr.SetPxPyPzE( 0,0,0,0 ) ;
   fOutLeptonUnCorr.SetPxPyPzE( 0,0,0,0 ) ;
   

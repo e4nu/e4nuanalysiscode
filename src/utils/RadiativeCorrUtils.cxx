@@ -84,9 +84,12 @@ double utils::SIMCBFactor( const double tgt_pdg ) {
 double utils::SIMCEnergyLoss(const double EBeam, const TLorentzVector particle, const int p_pdg, const double tgt_pdg, const double thickness, const double max_Ephoton ) {
   // https://journals.aps.org/prc/abstract/10.1103/PhysRevC.64.054610
   double b = SIMCBFactor( tgt_pdg );
-  double lambda = (kAem/kPi)*( 2*TMath::Log(2*EBeam)/kElectronMass - 1 );//+ TMath::Log(0.5*(1-particle.CosTheta())) ) ;
-  if( p_pdg == kPdgProton ) lambda = (kAem/kPi)*( TMath::Log((particle.E()+particle.P())/(particle.E()-particle.P())) - 2 ) ;
+  double lambda = 2*TMath::Log(2*EBeam)/kElectronMass - 1 ;
+  if( particle.Pz() != particle.E() ) lambda += TMath::Log(0.5*(1-particle.CosTheta())) ;
+  if( p_pdg == kPdgProton ) lambda = ( TMath::Log((particle.E()+particle.P())/(particle.E()-particle.P())) - 2 ) ;
+  lambda *= (kAem/kPi) ;
   lambda += b*thickness;
+  if( lambda < 0 ) return 0; 
 
   double e_gamma_max = max_Ephoton*EBeam ;
   double e_gamma_min = 1E-25;
@@ -159,4 +162,24 @@ double utils::SIMCRadCorrQELRadOutElectron( const TLorentzVector electron_vertex
   double Phi_ext_el = 1. - ( (b*thickness) / electron_vertex.E() / g * photon.E()) ;
   
   return W_rad_el*Phi_ext_el*(1-delta_hard);
+} 
+
+TLorentzVector utils::GetEmittedHardPhoton( TLorentzVector electron, double eloss ) {
+
+  double ptLoss;
+  double pzLoss;
+  if (electron.Pz()==electron.E()) // for the z direction going probe theta = -nan 
+    {
+      ptLoss = 0.;
+      pzLoss = eloss;
+    }
+  else
+    {
+      ptLoss = eloss*sin(electron.Theta()); 
+      pzLoss = eloss*cos(electron.Theta());
+    }
+
+  TLorentzVector p4RadGamma;
+  p4RadGamma.SetPxPyPzE(ptLoss*cos(electron.Phi()),ptLoss*sin(electron.Phi()),pzLoss,eloss);
+  return p4RadGamma ;
 } 

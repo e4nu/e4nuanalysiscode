@@ -17,6 +17,8 @@ namespace e4nu {
     double SimpleEnergyLoss(const double EBeam, const double tgt_pdg, const double thickness, const double max_Ephoton ) ;
     double VanderhagenELoss( const double Q2 , const double Ee ) ;
 
+    // Compute TLorentzVector for emited photon
+    TLorentzVector GetEmittedHardPhoton( TLorentzVector electron, double eloss ) ; 
   }
 }
 

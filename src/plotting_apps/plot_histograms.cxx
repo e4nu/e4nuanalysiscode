@@ -68,7 +68,7 @@ int main( int argc, char* argv[] ) {
 	  legend_list.push_back( substr );
 	}
       if( input_files.size() == 0 ) return 0;
-    } else { return 0 ;}
+    }
 
     if( ExistArg("output-file",argc,argv)) {
       output_file = GetArg("output-file",argc,argv);
@@ -116,7 +116,9 @@ int main( int argc, char* argv[] ) {
     hists_diff[i]->Add(hists[i]);
     hists_diff[i]->Divide(hists[i]);
     hists_diff[i]->Scale(100.); // Relative error in %
-    
+
+    int color = kBlue +i ; 
+    if( colors.size() == input_files.size() ) color = colors[i];
     // Setting formatt
     gStyle->SetFrameBorderMode(0);
     gStyle->SetCanvasBorderMode(0);
@@ -135,9 +137,9 @@ int main( int argc, char* argv[] ) {
     gStyle->SetPadTickX(1);
     gStyle->SetPadTickY(1);
 
-    hists[i] -> SetLineColor(kBlue+i);
+    hists[i] -> SetLineColor(color);
     hists[i] -> SetMarkerStyle(8);
-    hists[i] -> SetMarkerColor(kBlue+i);
+    hists[i] -> SetMarkerColor(color);
     hists[i] -> SetLineWidth(2);
     hists[i]->GetYaxis()->SetLabelSize(0.06);
     hists[i]->GetYaxis()->SetTitleSize(0.06);

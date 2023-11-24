@@ -28,6 +28,7 @@ using namespace e4nu::plotting;
 // * output-file : file to store plots (in root, pdf... format)//
 // * observable : observable used for the x axis definition    //
 // * legend-list : tags for the legend                         //
+// * color-list : list of colors for each hist                 //
 /////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
@@ -40,6 +41,7 @@ int main( int argc, char* argv[] ) {
   }
 
   std::vector<string> input_files, legend_list ;
+  std::vector<int> colors;
   std::string output_file = "histograms.root";
   std::string observable = "ECal";
 
@@ -74,6 +76,17 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("observable",argc,argv)) {
       observable = GetArg("observable",argc,argv);
     }
+    if( ExistArg("color-list",argc,argv)) {
+      string input = GetArg("color-list",argc,argv);
+      stringstream ss(input);
+      while( ss.good() )
+	{
+	  string substr;
+	  getline( ss, substr, ',' );
+	  colors.push_back( stoi(substr) );
+	}
+    }
+
   }
 
   TCanvas * c  = new TCanvas("","",800,800);

@@ -102,6 +102,7 @@ int main( int argc, char* argv[] ) {
   vector<TH1D*> hists_diff ;
   TFile * def = new TFile( input_files[0].c_str(), "ROOTFile" );
   TH1D* hist_def = (TH1D*) def -> Get( observable.c_str() ) ; 
+  if(! hist_def ) return 0;
 
   for( unsigned int i = 0 ; i < input_files.size() ; ++i ) { 
     in_root_files.push_back(new TFile( input_files[i].c_str(), "ROOTFile" )) ;
@@ -111,6 +112,7 @@ int main( int argc, char* argv[] ) {
     }
     std::cout <<input_files[i]<<std::endl;
     hists.push_back( (TH1D*) in_root_files[i]->Get( observable.c_str() ) ) ;
+    if( !hists[i] ) return 0;
     hists_diff.push_back( (TH1D*) hist_def->Clone() ) ;
     hists_diff[i]->Scale(-1.);
     hists_diff[i]->Add(hists[i]);
@@ -119,23 +121,6 @@ int main( int argc, char* argv[] ) {
 
     int color = kBlue +i ; 
     if( colors.size() == input_files.size() ) color = colors[i];
-    // Setting formatt
-    gStyle->SetFrameBorderMode(0);
-    gStyle->SetCanvasBorderMode(0);
-    gStyle->SetPadBorderMode(0);
-    gStyle->SetPadColor(0);
-    gStyle->SetCanvasColor(0);
-    gStyle->SetStatColor(0);
-    gStyle->SetFillColor(0);
-    gStyle->SetLegendBorderSize(1);
-    gStyle->SetPaperSize(20,26);
-    gStyle->SetTitleFont(132,"pad");
-    gStyle->SetMarkerStyle(20);
-    gStyle->SetLineStyleString(2,"[12 12]");
-    gStyle->SetOptStat(0);
-    gStyle->SetOptFit(0);
-    gStyle->SetPadTickX(1);
-    gStyle->SetPadTickY(1);
 
     hists[i] -> SetLineColor(color);
     hists[i] -> SetMarkerStyle(8);
@@ -149,23 +134,43 @@ int main( int argc, char* argv[] ) {
     hists[i] -> GetXaxis()->CenterTitle();
     hists[i] -> GetYaxis()->CenterTitle();
 
-    hists_diff[i] -> SetLineColor(kBlue+i);
+    hists_diff[i] -> SetLineColor(color);
     hists_diff[i] -> SetMarkerStyle(8);
-    hists_diff[i] -> SetMarkerColor(kBlue+i);
+    hists_diff[i] -> SetMarkerColor(color);
     hists_diff[i] -> SetLineWidth(2);
-    hists_diff[i]->GetYaxis()->SetLabelSize(0.06);
-    hists_diff[i]->GetYaxis()->SetTitleSize(0.06);
+    hists_diff[i]->GetYaxis()->SetLabelSize(0.08);
+    hists_diff[i]->GetXaxis()->SetLabelSize(0.08);
+    hists_diff[i]->GetXaxis()->SetTitleSize(0.08);
+    hists_diff[i]->GetYaxis()->SetTitleSize(0.08);
     hists_diff[i] -> SetTitle("");
     hists_diff[i] -> GetXaxis()->SetTitle(plotting::GetAxisLabel(observable,0).c_str());
     hists_diff[i] -> GetYaxis()->SetTitle(plotting::GetAxisLabel(observable,1).c_str());
     hists_diff[i] -> GetXaxis()->CenterTitle();
     hists_diff[i] -> GetYaxis()->CenterTitle();
     hists_diff[i] -> GetYaxis()->SetTitle("Rel.Diff");
-  
+    hists_diff[i]->GetYaxis()->SetRangeUser(-50,50);
     if( legend_list.size() == input_files.size() ) legend->AddEntry(hists[i], legend_list[i].c_str());
     hists[i] -> GetYaxis()->SetTitle("#Events");
   }
 
+  // Setting formatt
+  gStyle->SetFrameBorderMode(0);
+  gStyle->SetCanvasBorderMode(0);
+  gStyle->SetPadBorderMode(0);
+  gStyle->SetPadColor(0);
+  gStyle->SetCanvasColor(0);
+  gStyle->SetStatColor(0);
+  gStyle->SetFillColor(0);
+  gStyle->SetLegendBorderSize(1);
+  gStyle->SetPaperSize(20,26);
+  gStyle->SetTitleFont(132,"pad");
+  gStyle->SetMarkerStyle(20);
+  gStyle->SetLineStyleString(2,"[12 12]");
+  gStyle->SetOptStat(0);
+  gStyle->SetOptFit(0);
+  gStyle->SetPadTickX(1);
+  gStyle->SetPadTickY(1);
+  
   pad1->Draw();
   pad1->cd();
   pad1->SetBottomMargin(0.015);

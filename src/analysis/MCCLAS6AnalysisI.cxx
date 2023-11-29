@@ -103,9 +103,8 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
   // We want to apply it at the end to correctly account for the acceptance in background substracted events
   this->ApplyAcceptanceCorrection( *event ) ; 
   
-  // Store analysis record after fiducial cut and acceptance correction (2):
+  //Store analysis record after fiducial cut and acceptance correction (2):
   event->StoreAnalysisRecord(kid_fid);
-
   return event ; 
 }
 

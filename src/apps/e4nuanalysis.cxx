@@ -106,7 +106,7 @@ int main( int argc, char* argv[] ) {
   } else if ( compute_truerecoacc ) { 
     analysis -> SetTrueSignal( true ) ; 
     analysis -> SetApplyFiducial( true ) ; 
-    //    analysis -> SetApplyAccWeights( true ) ; 
+    analysis -> SetApplyAccWeights( true ) ; 
     analysis -> SetApplyReso( true ) ; 
     analysis -> SetSubtractBkg( false ) ; 
     std::string OutputFile_reco = analysis->GetOutputFile() + "_truereco" ;

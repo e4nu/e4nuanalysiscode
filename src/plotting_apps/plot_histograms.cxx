@@ -29,6 +29,7 @@ using namespace e4nu::plotting;
 // * observable : observable used for the x axis definition    //
 // * legend-list : tags for the legend                         //
 // * color-list : list of colors for each hist                 //
+// * plot-diff: plots difference with default                  //
 /////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
@@ -44,7 +45,7 @@ int main( int argc, char* argv[] ) {
   std::vector<int> colors;
   std::string output_file = "histograms.root";
   std::string observable = "ECal";
-
+  bool plot_diff = false;
   if( argc > 1 ) { // configure rest of analysis
     if( ExistArg("input-files",argc,argv)) {
       string input = GetArg("input-files",argc,argv);
@@ -86,6 +87,7 @@ int main( int argc, char* argv[] ) {
 	  colors.push_back( stoi(substr) );
 	}
     }
+    if( ExistArg("plot-diff",argc,argv)) plot_diff = true ;
 
   }
 
@@ -171,29 +173,33 @@ int main( int argc, char* argv[] ) {
   gStyle->SetPadTickX(1);
   gStyle->SetPadTickY(1);
   
-  pad1->Draw();
-  pad1->cd();
-  pad1->SetBottomMargin(0.015);
-  pad1->SetLeftMargin(0.1);
-  for( unsigned int i = 0 ; i < input_files.size() ; ++i ) {   
-    if( i ==0 ) hists[i] -> Draw("hist ERR");
-    else  hists[i] -> Draw("hist ERR same");
+  if( plot_diff ) { 
+    pad1->Draw();
+    pad1->cd();
+    pad1->SetBottomMargin(0.015);
+    pad1->SetLeftMargin(0.1);
+  }
+
+ for( unsigned int i = 0 ; i < input_files.size() ; ++i ) {   
+    if( i ==0 ) hists[i] -> Draw("ERR");
+    else  hists[i] -> Draw("ERR same");
   }
 
   if( legend_list.size() != 0) legend->Draw();
   // Top canvas - distribution
   // Bottom canvas - relative difference
-  c->cd();
-  pad2->Draw();
-  pad2->cd();
-  pad2->SetBottomMargin(0.25);
-  pad2->SetLeftMargin(0.1);
-  pad2->SetTopMargin(0.05);
-  for( unsigned int i = 0 ; i < input_files.size() ; ++i ) {   
-    if( i ==0 ) hists_diff[i]->Draw("hist ERR");
-    else  hists_diff[i]->Draw("hist ERR same");
+  if( plot_diff ) { 
+    c->cd();
+    pad2->Draw();
+    pad2->cd();
+    pad2->SetBottomMargin(0.25);
+    pad2->SetLeftMargin(0.1);
+    pad2->SetTopMargin(0.05);
+    for( unsigned int i = 0 ; i < input_files.size() ; ++i ) {   
+      if( i ==0 ) hists_diff[i]->Draw("hist ERR");
+      else  hists_diff[i]->Draw("hist ERR same");
+    }
   }
-
   c->SaveAs(output_file.c_str());
   return 0 ;
 }

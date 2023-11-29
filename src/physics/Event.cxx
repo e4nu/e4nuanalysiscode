@@ -194,6 +194,8 @@ double Event::GetObservable( const std::string observable ) {
     return utils::DeltaPhiT( ef4mom, GetFinalParticles4Mom() ) ;
   } else if ( observable == "HadSystemDeltaPT" ) {
     return utils::DeltaPT( ef4mom, GetFinalParticles4Mom() ).Mag() ;
+  } else if ( observable == "ElectronSector" ) {
+    return utils::GetSector( ef4mom.Phi() );
   }
 
   std::cout << observable << " is NOT defined " << std::endl;

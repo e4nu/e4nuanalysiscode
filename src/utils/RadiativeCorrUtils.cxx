@@ -84,7 +84,7 @@ double utils::SIMCBFactor( const double tgt_pdg ) {
 double utils::SIMCEnergyLoss(const double EBeam, const TLorentzVector particle, const int p_pdg, const double tgt_pdg, const double thickness, const double max_Ephoton ) {
   // https://journals.aps.org/prc/abstract/10.1103/PhysRevC.64.054610
   double b = SIMCBFactor( tgt_pdg );
-  double lambda = 2*TMath::Log(2*EBeam)/kElectronMass - 1 ;
+  double lambda = 2*TMath::Log(2*TMath::Sqrt(pow(EBeam,2)-pow(kElectronMass,2))/utils::GetParticleMass(p_pdg)) - 1 ;
   if( particle.Pz() != particle.E() ) lambda += TMath::Log(0.5*(1-particle.CosTheta())) ;
   if( p_pdg == kPdgProton ) lambda = ( TMath::Log((particle.E()+particle.P())/(particle.E()-particle.P())) - 2 ) ;
   lambda *= (kAem/kPi) ;
@@ -100,6 +100,7 @@ double utils::SIMCEnergyLoss(const double EBeam, const TLorentzVector particle, 
   f->SetParameter(0,lambda);
   f->SetParameter(1,power_hi - power_lo);
   double energyLoss = f->GetRandom();
+
   delete f;
   return energyLoss ; 
 }
@@ -108,7 +109,6 @@ double utils::SimpleEnergyLoss(const double EBeam, const double tgt_pdg, const d
   // Reference https://github.com/adishka/Generator/blob/adi_radcorr/src/Physics/Common/RadiativeCorrector.cxx
   double b = SIMCBFactor( tgt_pdg );  
   double lambda = (kAem/kPi)*( 2*TMath::Log(2*EBeam)/kElectronMass - 1 ) + b*thickness;
-
   double e_gamma_max = max_Ephoton*EBeam ;
   double e_gamma_min = 1E-25;
   double power_hi = pow(e_gamma_max,lambda);

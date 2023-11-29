@@ -57,8 +57,17 @@ int main( int argc, char* argv[] ) {
 
   // Compute prediction
   string input_file = "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/MonoFlux_G18_10a_H_4320MeV.gst.root";
-  int nevents = 100;
-  TH1D * h_sim1 = new TH1D( "hsim1","hsim3", 27, 4.3, 4.33 );
+  int nevents = 1000;
+  TH1D * h_sim1 = new TH1D( "hsim1","hsim1", 27,4.3, 4.33 );
+
+  h_sim1->SetLineWidth(2);
+  h_sim1->SetLineColor(kBlue);
+  h_sim1->GetXaxis()->SetTitle("^{1}H(e,e'p)E_{Cal}[GeV]");
+  h_sim1->GetYaxis()->SetTitle("#events");
+  h_sim1->GetXaxis()->CenterTitle();
+  h_sim1->GetYaxis()->CenterTitle();
+  h_sim1->SetLineWidth(4);
+
   MCEventHolder * event_holder = new MCEventHolder( input_file, 0, nevents ) ; 
   if( !event_holder ) {
     std::cout << "Failed to instiantize event holder" << std::endl;
@@ -85,20 +94,61 @@ int main( int argc, char* argv[] ) {
     }
 
     if (!is_1p) continue ;
-    h_sim1 -> Fill( ECal );
+    h_sim1 -> Fill( ECal, event.GetEventWeight() );
   }
   
   double integral_sim1 = h_sim1->Integral();
   h_sim1->Scale(data_integral/integral_sim1);
-  
+
+  TH1D * h_sim2 = new TH1D( "hsim2","hsim2", 27,4.3, 4.33 );  
+  h_sim2->SetLineWidth(2);
+  h_sim2->SetLineColor(kRed);
+  h_sim2->GetXaxis()->SetTitle("^{1}H(e,e'p)E_{Cal}[GeV]");
+  h_sim2->GetYaxis()->SetTitle("#events");
+  h_sim2->GetXaxis()->CenterTitle();
+  h_sim2->GetYaxis()->CenterTitle();
+  h_sim2->SetLineWidth(4);
+
+  //  string input_file_2 = "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/RadFlux_G18_10a_H_4320MeV.gst.root";
+  string input_file_2 = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/radiated.gst.root";
+  MCEventHolder * event_holder_2 = new MCEventHolder( input_file_2, 0, nevents ) ; 
+  if( !event_holder_2 ) {
+    std::cout << "Failed to instiantize event holder" << std::endl;
+    return 0;
+  }
+
+  event_holder_2 -> LoadBranch();
+  for ( unsigned int i = 0 ; i < event_holder_2->GetNEvents() ; ++i ) { 
+    e4nu::Event & event = *event_holder_2->GetEvent(i);
+    std::map<int,std::vector<TLorentzVector>> particle_map = event.GetFinalParticles4Mom();
+    std::map<int,std::vector<TLorentzVector>> new_particle_map;
+    bool is_1p = true ;
+    
+    double ECal = event.GetOutLepton4Mom().E();
+    for( auto it = particle_map.begin() ; it != particle_map.end() ; ++it ) {
+      // Calculate ECal for visible particles
+      
+      if( it-> first == kPdgPiM && it->second.size() != 0 ) break ;
+      if( it-> first == kPdgProton && it->second.size() ==1 ) {
+	for( unsigned int j = 0 ; j < (it->second).size() ; ++j ) {
+	  ECal += (it->second)[j].E() + utils::GetBindingEnergy( kPdgH ) - utils::GetParticleMass( it->first ) ; // Correct for proton binding energy
+	}
+      } else is_1p = false ;
+    }
+    
+    ///    if (!is_1p) continue ;
+    std::cout << ECal << std::endl;
+    h_sim2 -> Fill( ECal, event.GetEventWeight() );
+  }
+
+  double integral_sim2 = h_sim2->Integral();
+  h_sim2->Scale(data_integral/integral_sim2);
 
   g_data->Draw("AP");
-  h_data->Draw("hist same");
+  //  //  h_data->Draw("hist same");
   h_sim1->Draw("hist same");
+  h_sim2->Draw("hist same");
   c1->SaveAs("RadValidation_H_4320MeV_1p0pi.pdf");
-
-  TH1D * h_sim2 = new TH1D( "hsim2","hsim2", 27, 4.3, 4.33 );
-
 
   return 0;
 }

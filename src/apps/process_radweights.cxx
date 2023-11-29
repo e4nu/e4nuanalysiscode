@@ -13,7 +13,6 @@
 #include "TBranch.h"
 #include "TH1D.h"
 #include "analysis/MCCLAS6AnalysisI.h"
-#include "analysis/E4NuAnalysis.h"
 #include "plotting/PlottingUtils.h"
 #include "utils/RadiativeCorrUtils.h"
 #include "conf/RadConstants.h"
@@ -52,9 +51,6 @@ int main( int argc, char* argv[] ) {
   double nevents = 10000000;
   double true_beam_energy = 1; 
   int tgt = 1000060120 ;
-  int nbins = 50 ; 
-  double Emin = 0.75 ;
-  double Emax = true_beam_energy+0.02 ;
   double thickness = e4nu::conf::GetThickness(tgt); // Defaulted to CLAS6
   string rad_model = "simc";
   double MaxEPhoton = 0.2 ;
@@ -71,8 +67,8 @@ int main( int argc, char* argv[] ) {
       cout << " Please, specify input gst file. Abort. " << endl;
       return 0;
     }
-    if( ExistArg("true-Ebeam",argc,argv)){
-      true_beam_energy = stod(GetArg("true-Ebeam",argc,argv));
+    if( ExistArg("true-EBeam",argc,argv)){
+      true_beam_energy = stod(GetArg("true-EBeam",argc,argv));
     } else { 
       cout << " Please specify true beam energy used for flux generation" << endl;
       return 0;
@@ -96,14 +92,8 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("thickness",argc,argv)) {
       thickness = stoi(GetArg("thickness",argc,argv)); 
     }
-    if( ExistArg("Nbins",argc,argv)) {
-      nbins = stoi(GetArg("Nbins",argc,argv)); 
-    }
-    if( ExistArg("Emin",argc,argv)) {
-      Emin = stod(GetArg("Emin",argc,argv)); 
-    }
-    if( ExistArg("Emax",argc,argv)) {
-      Emax = stod(GetArg("Emax",argc,argv)); 
+    if( ExistArg("MaxEPhoton",argc,argv)) {
+      MaxEPhoton = stod(GetArg("MaxEPhoton",argc,argv)); 
     }
     if( ExistArg("max-Ephoton",argc,argv)) {
       MaxEPhoton = stod(GetArg("max-Ephoton",argc,argv)); 
@@ -143,19 +133,20 @@ int main( int argc, char* argv[] ) {
 
     // Compute true detected outgoing electron kinematics with energy loss method
     double egamma = 0 ; 
-    if( rad_model == "simc" ) egamma = SIMCEnergyLoss( CorrOutElectron.E(), event.GetInLepton4Mom(), 11, tgt, thickness, MaxEPhoton ) ;
+    TLorentzVector V4_beam(0,0,true_beam_energy,true_beam_energy);
+    //CorrOutElectron.E()
+    if( rad_model == "simc" ) egamma = SIMCEnergyLoss( V4_beam.E(),V4_beam, 11, tgt, thickness, MaxEPhoton ) ;
     else if ( rad_model == "simple" ) egamma = SimpleEnergyLoss( CorrOutElectron.E(), tgt, thickness, MaxEPhoton ) ; 
     if( egamma < 0 ) egamma = 0 ;
-
     TLorentzVector OutGamma = GetEmittedHardPhoton( CorrOutElectron, egamma ) ;
-    if( OutGamma.E() < 0 ) OutGamma.SetPxPyPzE(0,0,0,0);
+    if( OutGamma.E() < 0 )  OutGamma.SetPxPyPzE(0,0,0,0);
     TLorentzVector detected_electron = CorrOutElectron - OutGamma ;
 
     // Set true outcoming electron kinematics from configuration  
-    event.SetOutLeptonKinematics( detected_electron.E(), detected_electron.Px(), detected_electron.Py(), detected_electron.Pz() ) ;
+    event.SetOutLeptonKinematics( detected_electron ) ;
 
     // Compute correction weights due to in- and out- coming electron
-    double weight_in_electron  = SIMCRadCorrQELRadInElectron( true_beam_energy, CorrInElectron, tgt, thickness, MaxEPhoton ) ;
+    double weight_in_electron  = SIMCRadCorrQELRadInElectron( true_beam_energy, CorrOutElectron, tgt, thickness, MaxEPhoton ) ;
     double weight_out_electron = SIMCRadCorrQELRadOutElectron( CorrOutElectron, detected_electron, true_beam_energy, event.GetTrueQ2(), tgt, thickness, MaxEPhoton );
 
     event.SetEventWeight ( weight_in_electron * weight_out_electron ) ; 
@@ -245,7 +236,22 @@ void StoreToGstFormat( Event & event, string output_file ) {
   Double_t vtxz = 0 ;
   Double_t vtxt = 0 ;
   Int_t resid = -1000; 
-  
+  Int_t nin = 0 ; 
+  Int_t nipip = 0 ; 
+  Int_t nipim = 0 ; 
+  Int_t nipi0 = 0 ; 
+  Int_t nikp = 0 ; 
+  Int_t nikm = 0 ; 
+  Int_t nik0 = 0 ; 
+  Int_t niem = 0 ; 
+  Int_t niother = 0 ; 
+  Int_t ni = 0 ; 
+  Int_t pdgi[120] ; 
+  Double_t Ei[120] ;
+  Double_t pxi[120] ;
+  Double_t pyi[120] ;
+  Double_t pzi[120] ;
+
   // Create tree branches
   //
   if( event.GetEventID() == 0 ){
@@ -296,7 +302,7 @@ void StoreToGstFormat( Event & event, string output_file ) {
     s_tree->Branch("nfem", &nfem, "nfem/I");
     s_tree->Branch("nfother", &nfother, "nfother/I");
     s_tree->Branch("nf", &nf, "nf/I");
-    s_tree->Branch("Ef", Ef, "Ef/I");
+    s_tree->Branch("Ef", Ef, "Ef/D");
     s_tree->Branch("pxf", pxf, "pxf/D");
     s_tree->Branch("pyf", pyf, "pyf/D");
     s_tree->Branch("pzf", pzf, "pzf/D");
@@ -306,6 +312,21 @@ void StoreToGstFormat( Event & event, string output_file ) {
     s_tree->Branch("vtxz", &vtxz, "vtxz/D");
     s_tree->Branch("vtxt", &vtxt, "vtxt/D");
     s_tree->Branch("resid", &resid, "resid/I");
+    s_tree->Branch("nin", &nin, "nin/I");
+    s_tree->Branch("nipip", &nipip, "nipip/I");
+    s_tree->Branch("nipim", &nipim, "nipim/I");
+    s_tree->Branch("nipi0", &nipi0, "nipi0/I");
+    s_tree->Branch("nikp", &nikp, "nikp/I");
+    s_tree->Branch("nikm", &nikm, "nikm/I");
+    s_tree->Branch("nik0", &nik0, "nik0/I");
+    s_tree->Branch("niem", &niem, "niem/I");
+    s_tree->Branch("niother", &niother, "niother/I");
+    s_tree->Branch("ni", &ni, "ni/I");
+    s_tree->Branch("pdgi", &pdgi, "pdgi/I");
+    s_tree->Branch("Ei", &Ei, "Ei/D");
+    s_tree->Branch("pxi", &pxi, "pxi/D");
+    s_tree->Branch("pyi", &pyi, "pyi/D");
+    s_tree->Branch("pzi", &pzi, "pzi/D");
   }
   iev = event.GetEventID();
   tgt = event.GetTargetPdg();

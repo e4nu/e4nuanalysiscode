@@ -58,7 +58,6 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("target",argc,argv)) {
       tgt = stoi(GetArg("target",argc,argv)); 
       thickness = e4nu::conf::GetThickness(tgt); // Defaulted to CLAS6
-      std::cout << thickness << std::endl;
     }
     if( ExistArg("thickness",argc,argv)) {
       thickness = stoi(GetArg("thickness",argc,argv)); 
@@ -88,10 +87,6 @@ int main( int argc, char* argv[] ) {
     else if ( rad_model == "simple" ) egamma = SimpleEnergyLoss( EBeam, tgt, thickness, MaxEPhoton ) ; 
     double Ee = EBeam - egamma ;
     hradflux -> Fill( Ee ) ; 
-    TLorentzVector electron;
-    electron.SetPxPyPzE(0,0,Ee,Ee);
-    std::cout << SIMCRadCorrQELRadInElectron( EBeam, electron, tgt, thickness, MaxEPhoton ) <<std::endl;
-
   }
   hradflux->Scale(1./hradflux->GetEntries());
   myFile->WriteObject(hradflux,"hradflux");

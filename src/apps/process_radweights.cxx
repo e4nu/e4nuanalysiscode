@@ -87,7 +87,6 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("target",argc,argv)) {
       tgt = stoi(GetArg("target",argc,argv)); 
       thickness = e4nu::conf::GetThickness(tgt); // Defaulted to CLAS6
-      std::cout << thickness << std::endl;
     }
     if( ExistArg("thickness",argc,argv)) {
       thickness = stoi(GetArg("thickness",argc,argv)); 
@@ -302,11 +301,11 @@ void StoreToGstFormat( Event & event, string output_file ) {
     s_tree->Branch("nfem", &nfem, "nfem/I");
     s_tree->Branch("nfother", &nfother, "nfother/I");
     s_tree->Branch("nf", &nf, "nf/I");
-    s_tree->Branch("Ef", Ef, "Ef/D");
-    s_tree->Branch("pxf", pxf, "pxf/D");
-    s_tree->Branch("pyf", pyf, "pyf/D");
-    s_tree->Branch("pzf", pzf, "pzf/D");
-    s_tree->Branch("pdgf", pdgf, "pdgf/I");
+    s_tree->Branch("pdgf", pdgf, "pdgf[nf]/I");
+    s_tree->Branch("Ef", Ef, "Ef[nf]/D");
+    s_tree->Branch("pxf", pxf, "pxf[nf]/D");
+    s_tree->Branch("pyf", pyf, "pyf[nf]/D");
+    s_tree->Branch("pzf", pzf, "pzf[nf]/D");
     s_tree->Branch("vtxx", &vtxx, "vtxx/D");
     s_tree->Branch("vtxy", &vtxy, "vtxy/D");
     s_tree->Branch("vtxz", &vtxz, "vtxz/D");
@@ -322,11 +321,11 @@ void StoreToGstFormat( Event & event, string output_file ) {
     s_tree->Branch("niem", &niem, "niem/I");
     s_tree->Branch("niother", &niother, "niother/I");
     s_tree->Branch("ni", &ni, "ni/I");
-    s_tree->Branch("pdgi", &pdgi, "pdgi/I");
-    s_tree->Branch("Ei", &Ei, "Ei/D");
-    s_tree->Branch("pxi", &pxi, "pxi/D");
-    s_tree->Branch("pyi", &pyi, "pyi/D");
-    s_tree->Branch("pzi", &pzi, "pzi/D");
+    s_tree->Branch("pdgi", &pdgi, "pdgi[ni]/I");
+    s_tree->Branch("Ei", &Ei, "Ei[ni]/D");
+    s_tree->Branch("pxi", &pxi, "pxi[ni]/D");
+    s_tree->Branch("pyi", &pyi, "pyi[ni]/D");
+    s_tree->Branch("pzi", &pzi, "pzi[ni]/D");
   }
   iev = event.GetEventID();
   tgt = event.GetTargetPdg();
@@ -374,15 +373,32 @@ void StoreToGstFormat( Event & event, string output_file ) {
   nfother = event.GetTrueNOther();
 
   nf = 0;
+  for( auto k = 0 ; k < 120 ; ++k ) {
+    pdgf[k] = 0;
+    Ef[k] = 0;
+    pxf[k] = 0;
+    pyf[k] = 0; 
+    pzf[k] =  0;
+  }
+
+  ni = 0 ;
+  for( auto k = 0 ; k < 120 ; ++k ) {
+    pdgi[k] = 0;
+    Ei[k] = 0;
+    pxi[k] = 0;
+    pyi[k] = 0; 
+    pzi[k] =  0;
+  }
+
   std::map<int,std::vector<TLorentzVector>> final_particles = event.GetFinalParticles4Mom();
   for ( auto it = final_particles.begin(); it != final_particles.end(); it++) {
     for ( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
-      ++nf ;
       pdgf[nf] = it->first;
       Ef[nf] = (it->second)[i].E();
       pxf[nf] = (it->second)[i].Px();
       pyf[nf] = (it->second)[i].Py();
       pzf[nf] = (it->second)[i].Pz();
+      ++nf ;
     }
   }
     

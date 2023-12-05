@@ -84,8 +84,8 @@ int main( int argc, char* argv[] ) {
     double ECal = event.GetOutLepton4Mom().E();
     for( auto it = particle_map.begin() ; it != particle_map.end() ; ++it ) {
       // Calculate ECal for visible particles
-      
-      if( it-> first == kPdgPiM && it->second.size() != 0 ) break ;
+      if( is_1p == false ) break;
+      if( it-> first == kPdgPiM && it->second.size() != 0 ) is_1p = false ;
       if( it-> first == kPdgProton && it->second.size() ==1 ) {
 	for( unsigned int j = 0 ; j < (it->second).size() ; ++j ) {
 	  ECal += (it->second)[j].E() + utils::GetBindingEnergy( kPdgH ) - utils::GetParticleMass( it->first ) ; // Correct for proton binding energy
@@ -109,8 +109,9 @@ int main( int argc, char* argv[] ) {
   h_sim2->GetYaxis()->CenterTitle();
   h_sim2->SetLineWidth(4);
 
-  //string input_file_2 = "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/RadFlux_G18_10a_H_4320MeV.gst.root";
-  string input_file_2 = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/radiated.gst.root";
+  // string input_file_2 = "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/RadFlux_G18_10a_H_4320MeV.gst.root";
+  //  string input_file_2 = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/radiated.gst.root";
+  string input_file_2 = "/pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_4461GeV/apapadop_UpdatedSchwingerRad_SuSav2_C12_4461GeV.root";
   MCEventHolder * event_holder_2 = new MCEventHolder( input_file_2, 0, nevents ) ; 
   if( !event_holder_2 ) {
     std::cout << "Failed to instiantize event holder" << std::endl;
@@ -127,27 +128,25 @@ int main( int argc, char* argv[] ) {
     double ECal = event.GetOutLepton4Mom().E();
     for( auto it = particle_map.begin() ; it != particle_map.end() ; ++it ) {
       // Calculate ECal for visible particles
-      std::cout << it->first<< std::endl;
-      if( it-> first == kPdgPiM && it->second.size() != 0 ) break ;
+      if( is_1p == false ) break;
+      if( it-> first == kPdgPiM && it->second.size() != 0 ) is_1p = false ;
       if( it-> first == kPdgProton && it->second.size() ==1 ) {
 	for( unsigned int j = 0 ; j < (it->second).size() ; ++j ) {
 	  ECal += (it->second)[j].E() + utils::GetBindingEnergy( kPdgH ) - utils::GetParticleMass( it->first ) ; // Correct for proton binding energy
-	  std::cout << "proton = " << (it->second)[j].E() << std::endl;
 	}
       } else is_1p = false ;
     }
     
-    ///    if (!is_1p) continue ;
-    std::cout << ECal << " mom " << event.GetOutLepton4Mom().E() <<std::endl;
+    //    if (!is_1p) continue ;
     h_sim2 -> Fill( ECal, event.GetEventWeight() );
+    std::cout << " w " << event.GetEventWeight() << std::endl;
   }
 
   double integral_sim2 = h_sim2->Integral();
-  h_sim2->Scale(data_integral/integral_sim2);
+  //  h_sim2->Scale(data_integral/integral_sim2);
 
-  g_data->Draw("AP");
-  //  //  h_data->Draw("hist same");
-  h_sim1->Draw("hist same");
+  //g_data->Draw("AP");
+  //  h_sim1->Draw("hist same");
   h_sim2->Draw("hist same");
   c1->SaveAs("RadValidation_H_4320MeV_1p0pi.pdf");
 

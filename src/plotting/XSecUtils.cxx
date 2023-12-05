@@ -697,14 +697,14 @@ void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vect
       title_subname += " " + o1.str() + "<"+ plotting::GetObsName(alt_obs) + "<" + o2.str()+" "+plotting::GetUnit(alt_obs) ;
     }
     
-    StandardFormat( all_slices[0][l], title_subname, kBlack, 1, observable, y_max_total ) ;
-    StandardFormat( all_slices[1][l], title_subname, kBlue-3, 1, observable, y_max_total ) ;
-    StandardFormat( all_slices[2][l], title_subname, kRed-4, 1, observable, y_max_total ) ;
-    StandardFormat( all_slices[3][l], title_subname, kGreen+2, 1, observable, y_max_total ) ;
-    StandardFormat( all_slices[4][l], title_subname, kOrange, 1, observable, y_max_total ) ;
-    StandardFormat( all_slices[5][l], title_subname, kMagenta-3, 1, observable, y_max_total ) ;
-    StandardFormat( all_slices[6][l], title_subname, kCyan+1, 1, observable, y_max_total ) ;
-    if( all_slices.size() == 8 ) StandardFormat( all_slices[7][l], title_subname, kBlack, 8, observable, y_max_total ) ;
+    if( all_slices[0][l]) StandardFormat( all_slices[0][l], title_subname, kBlack, 1, observable, y_max_total ) ;
+    if( all_slices[1][l]) StandardFormat( all_slices[1][l], title_subname, kBlue-3, 1, observable, y_max_total ) ;
+    if( all_slices[2][l]) StandardFormat( all_slices[2][l], title_subname, kRed-4, 1, observable, y_max_total ) ;
+    if( all_slices[3][l]) StandardFormat( all_slices[3][l], title_subname, kGreen+2, 1, observable, y_max_total ) ;
+    if( all_slices[4][l]) StandardFormat( all_slices[4][l], title_subname, kOrange, 1, observable, y_max_total ) ;
+    if( all_slices[5][l]) StandardFormat( all_slices[5][l], title_subname, kMagenta-3, 1, observable, y_max_total ) ;
+    if( all_slices[6][l]) StandardFormat( all_slices[6][l], title_subname, kCyan+1, 1, observable, y_max_total ) ;
+    if( all_slices.size() == 8 && all_slices[7][l]) StandardFormat( all_slices[7][l], title_subname, kBlack, 8, observable, y_max_total ) ;
   }
 
   TCanvas* c_slices = new TCanvas("c_slices","c_slices",200,10,700,500);
@@ -723,13 +723,15 @@ void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vect
       pad_slice_i -> cd();
       pad_slice_i -> SetBottomMargin(0.15);
       pad_slice_i -> SetLeftMargin(0.15);
-      all_slices[0][l] -> GetYaxis()->SetTitleOffset(1.2);
-      
-      all_slices[0][l]->Draw("hist");
-      for( unsigned i = 1 ; i < all_slices.size() -1 ; ++i ) { 
-	all_slices[i][l] ->Draw("same");
+      if( all_slices[0][l]) {
+	all_slices[0][l] -> GetYaxis()->SetTitleOffset(1.2);
+	all_slices[0][l]->Draw("hist");
       }
-      if( all_slices.size() == 8 ) all_slices[8][l] -> Draw("err same ");
+
+      for( unsigned i = 1 ; i < all_slices.size() -1 ; ++i ) { 
+	if( all_slices[i][l] ) all_slices[i][l] ->Draw("same");
+      }
+      if( all_slices.size() == 8 && all_slices[8][l] ) all_slices[8][l] -> Draw("err same ");
     }
   }
   

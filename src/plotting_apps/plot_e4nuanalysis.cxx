@@ -18,16 +18,17 @@ using namespace e4nu::plotting;
 // 1) MC files location                                        //
 // 2) Data files location (*)                                  //
 // 3) OutputLocation                                           //
-// 4) Input MC Files                                           //
-// 5) Input data file (*)                                      //
+// 4) Input MC Files (without .root extension)                 //
+// 5) Input data file (without .root extension) (*)            //
 // 6) Observables List                                         //
 // 7) Input Model Names (*)                                    //
 // 8) Title (*)                                                //
 // 9) Data Name (*)                                            //
 // 10) Compute systematics (* def false )                      //
 // 11) AddSystematics                                          //
-// 12) NoFSI ROOT file                                         //
-// 13) analysis id - used to set the ranges. default none      //
+// 12) NoFSI ROOT file (without .root extension)               //
+// 13) Analysis id - used to set the ranges. default none      //
+//     i.e. 1p1pim                                             //
 // 14) Plot root file output                                   //
 /////////////////////////////////////////////////////////////////
 

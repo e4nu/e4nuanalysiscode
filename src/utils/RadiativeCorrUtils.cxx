@@ -16,6 +16,7 @@
 #include "conf/ConstantsI.h"
 #include "conf/ParticleI.h"
 
+using namespace std;
 using namespace e4nu;
 using namespace conf;
 
@@ -111,8 +112,6 @@ double utils::SimpleEnergyLoss(const double EBeam, const double tgt_pdg, const d
   double lambda = (kAem/kPi)*( 2*TMath::Log(2*EBeam)/kElectronMass - 1 ) + b*thickness;
   double e_gamma_max = max_Ephoton*EBeam ;
   double e_gamma_min = 1E-25;
-  double power_hi = pow(e_gamma_max,lambda);
-  double power_lo  = pow(e_gamma_min,lambda);
 
   TF1 *f = new TF1("f","[0]*pow(x,[0]-1)/[1]",e_gamma_min,e_gamma_max);
   f->SetParameter(0,lambda);
@@ -123,14 +122,15 @@ double utils::SimpleEnergyLoss(const double EBeam, const double tgt_pdg, const d
 }
 
 
-double utils::SIMCRadCorrQELRadInElectron( const double EBeam, const TLorentzVector electron, const int tgt, const double thickness, const double max_Ephoton ) {
+double utils::SIMCRadCorrQELRadInElectron( const double EBeam, const TLorentzVector electron_vertex, const int tgt, const double thickness, const double max_Ephoton ) {
   // This takes into account the radiation weight due to external and internal radiation of the incoming electron
   // https://journals.aps.org/prc/pdf/10.1103/PhysRevC.64.054610
-  double EPhoton = EBeam - electron.E();
+  double EPhoton = EBeam - electron_vertex.E();
   double b = SIMCBFactor( tgt );
-  double lambda_e = (kAem/kPi)*( 2*TMath::Log(2*EBeam/kElectronMass) - 1 ) ;
+  double e_mom = TMath::Sqrt(pow(EBeam,2)-pow(kElectronMass,2)) ; 
+  double lambda_e = (kAem/kPi)*( 2*TMath::Log(2*e_mom/kElectronMass) - 1 ) ;
   double g = lambda_e + b*thickness;
-  double C = g/(TMath::Gamma(1+b*thickness)*pow(EBeam,b*thickness)*pow(electron.P()*EBeam,lambda_e/2)); 
+  double C = g/(TMath::Gamma(1+b*thickness)*pow(e_mom,b*thickness)*pow(e_mom*electron_vertex,lambda_e/2)); 
   double e_gamma_max = max_Ephoton*EBeam ;
   double e_gamma_min = 1E-25;
   double power_hi = pow(e_gamma_max,lambda_e);
@@ -142,14 +142,24 @@ double utils::SIMCRadCorrQELRadInElectron( const double EBeam, const TLorentzVec
 } 
 
 
-double utils::SIMCRadCorrQELRadOutElectron( const TLorentzVector electron_vertex, TLorentzVector & out_electron, const double EBeam, const double Q2, const int tgt, const double thickness, const double max_Ephoton ) {
+double utils::SIMCRadCorrQELRadOutElectron( const TLorentzVector electron_vertex, TLorentzVector & out_electron, const double EBeam, const double Q2, const int tgt, const double thickness, const double max_Ephoton, const string model ) {
   // This takes into account the radiation weight due to external and internal radiation of the incoming electron
   // https://journals.aps.org/prc/pdf/10.1103/PhysRevC.64.054610
-  double delta_hard = -1.*(kAem/kPi)*(-28./9.+(13./6.)*TMath::Log(Q2/pow(kElectronMass,2)));
-  // decay electron here 
+  double delta_hard = -1.*(kAem/kPi)*(-28./9.+(13./6.)*TMath::Log(Q2/pow(kElectronMass,2))); // Is this ok?
+  // Compute true detected outgoing electron kinematics with energy loss method
+  double egamma = 0 ; 
+  double e_mom = TMath::Sqrt(pow(EBeam,2)-pow(kElectronMass,2)) ; 
+  TLorentzVector V4_beam(0,0,e_mom,EBeam);
 
-  TLorentzVector photon = electron_vertex - out_electron ;
+  if( model == "simc" ) egamma = SIMCEnergyLoss( electron_vertex.E(), electron_vertex, 11, tgt, thickness, max_Ephoton ) ;
+  else if ( model == "simple" ) egamma = SimpleEnergyLoss( out_electron.E(), tgt, thickness, max_Ephoton ) ; 
+  if( egamma < 0 ) egamma = 0 ;
 
+  TLorentzVector photon = GetEmittedHardPhoton( electron_vertex, egamma ) ;
+  if( photon.E() < 0 )  photon.SetPxPyPzE(0,0,0,0);
+  out_electron = electron_vertex - photon;
+
+  // Compute weight
   double lambda_e = (kAem/kPi)*( 2*TMath::Log(2*electron_vertex.P()/kElectronMass) - 1 + TMath::Log(0.5*(1-electron_vertex.CosTheta()))) ;
   double b = SIMCBFactor( tgt );
   double g = lambda_e + b*thickness;

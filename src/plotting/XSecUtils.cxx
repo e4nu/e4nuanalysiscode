@@ -340,7 +340,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model
       if( hists[size_primary_trees*(ElectronSector+1)+i] ) { 
-	if( i < size_primary_trees ) hists[size_primary_trees*(ElectronSector+1)+i] -> Fill( content, w ) ;
+	if( i < size_primary_trees ) {
+	  hists[size_primary_trees*(ElectronSector+1)+i] -> Fill( content, w ) ;
+	}
       }
       if( i > size_primary_trees - 1 ) id_hist = size_primary_hists + ( i - size_primary_trees );
 
@@ -478,6 +480,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
     mc_hists.push_back(hists_true_submodel[id]);
   }
+
   std::vector<TH1D*> breakdown = {hist_true_QEL,hist_true_RES_Delta,hist_true_RES,hist_true_SIS,hist_true_MEC,hist_true_DIS};
   std::vector<TH1D*> mc_per_sector = {hist_true_0,hist_true_1,hist_true_2,hist_true_3,hist_true_4,hist_true_5};
   std::vector<TH1D*> data_per_sector = {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5};
@@ -492,8 +495,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   plotting::PlotLegend( mc_hists, breakdown, hist_data, observable, data_name, model, output_location, output_file_name,store_root );
 
-  //plotting::PlotSlices(  all_slices, addbinning, observable, title, data_name, model, input_MC_location, input_data_location, 
-  //output_location, output_file_name,  analysis_id, store_root ) ;
+  plotting::PlotSlices(  all_slices, addbinning, observable, title, data_name, model, input_MC_location, input_data_location, 
+			 output_location, output_file_name,  analysis_id, store_root ) ;
 }
 
 void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,
@@ -622,12 +625,12 @@ void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*
   
   // Format plots
   if( data_per_sector.size()!=0 ) { 
-    StandardFormat( data_per_sector[0], title+" Sector  0", kOrange+1, 8, observable ) ;
-    StandardFormat( data_per_sector[1], title+" Sector  1", kPink+4, 8, observable ) ;
-    StandardFormat( data_per_sector[2], title+" Sector  2", kViolet+5, 8, observable ) ;
-    StandardFormat( data_per_sector[3], title+" Sector  3", kAzure-5, 8, observable ) ;
-    StandardFormat( data_per_sector[4], title+" Sector  4", kTeal-7, 8, observable ) ;
-    StandardFormat( data_per_sector[5], title+" Sector  5", kGreen-3, 8, observable ) ;
+    if( data_per_sector[0] ) StandardFormat( data_per_sector[0], title+" Sector  0", kOrange+1, 8, observable ) ;
+    if( data_per_sector[1] ) StandardFormat( data_per_sector[1], title+" Sector  1", kPink+4, 8, observable ) ;
+    if( data_per_sector[2] ) StandardFormat( data_per_sector[2], title+" Sector  2", kViolet+5, 8, observable ) ;
+    if( data_per_sector[3] ) StandardFormat( data_per_sector[3], title+" Sector  3", kAzure-5, 8, observable ) ;
+    if( data_per_sector[4] ) StandardFormat( data_per_sector[4], title+" Sector  4", kTeal-7, 8, observable ) ;
+    if( data_per_sector[5] ) StandardFormat( data_per_sector[5], title+" Sector  5", kGreen-3, 8, observable ) ;
   }
 
   StandardFormat( mc_per_sector[0], title+" Sector  0", kBlack, 1, observable ) ;
@@ -654,7 +657,7 @@ void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*
     pad_sector_i -> SetLeftMargin(0.15);
     mc_per_sector[i] -> GetYaxis()->SetTitleOffset(1.2);
     mc_per_sector[i] -> Draw("hist");
-    if(data_per_sector.size()!=0) {
+    if(data_per_sector.size()!=0 && data_per_sector[i]) {
       data_per_sector[i] -> SetMarkerSize(0.7);
       data_per_sector[i] -> Draw(" err same ");
     }

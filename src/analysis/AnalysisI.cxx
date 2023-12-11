@@ -33,10 +33,10 @@ bool AnalysisI::Analyse( Event & event ) {
   // Step 1 : Apply generic cuts
   // Check run is correct
   double EBeam = GetConfiguredEBeam() ; 
-  if ( in_mom.E() != EBeam ) {
+  /*  if ( in_mom.E() != EBeam ) {
     std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
     exit(11); 
-  }
+    }*/
   
   if ( (unsigned int) event.GetTargetPdg() != GetConfiguredTarget() ) {
     std::cout << "Target is " << event.GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;

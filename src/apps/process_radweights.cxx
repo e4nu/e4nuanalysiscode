@@ -132,23 +132,21 @@ int main( int argc, char* argv[] ) {
 
     // Compute true detected outgoing electron kinematics with energy loss method
     double egamma = 0 ; 
-    TLorentzVector V4_beam(0,0,true_beam_energy,true_beam_energy);
-    //CorrOutElectron.E()
-    if( rad_model == "simc" ) egamma = SIMCEnergyLoss( V4_beam.E(),V4_beam, 11, tgt, thickness, MaxEPhoton ) ;
+    if( rad_model == "simc" ) egamma = SIMCEnergyLoss( CorrOutElectron.E(),CorrOutElectron, 11, tgt, thickness, MaxEPhoton ) ;
     else if ( rad_model == "simple" ) egamma = SimpleEnergyLoss( CorrOutElectron.E(), tgt, thickness, MaxEPhoton ) ; 
     if( egamma < 0 ) egamma = 0 ;
     TLorentzVector OutGamma = GetEmittedHardPhoton( CorrOutElectron, egamma ) ;
     if( OutGamma.E() < 0 )  OutGamma.SetPxPyPzE(0,0,0,0);
-    TLorentzVector detected_electron = CorrOutElectron - OutGamma ;
+
+    // Compute correction weights due to in- and out- coming electron
+    TLorentzVector detected_electron; // will be set in SIMCRadCorrQELRadOutElectron
+    double weight_in_electron  = SIMCRadCorrQELRadInElectron( true_beam_energy, event.GetInCorrLepton4Mom(), tgt, thickness, MaxEPhoton ) ;
+    double weight_out_electron = SIMCRadCorrQELRadOutElectron( CorrOutElectron, detected_electron, true_beam_energy, event.GetTrueQ2(), tgt, thickness, MaxEPhoton, rad_model );
+    std::cout << "weight_in_electron = " << weight_in_electron << " weight_out_electron = " << weight_out_electron << std::endl; 
+    event.SetEventWeight ( weight_in_electron * weight_out_electron * event.GetEventWeight() ) ; 
 
     // Set true outcoming electron kinematics from configuration  
     event.SetOutLeptonKinematics( detected_electron ) ;
-
-    // Compute correction weights due to in- and out- coming electron
-    double weight_in_electron  = SIMCRadCorrQELRadInElectron( true_beam_energy, CorrOutElectron, tgt, thickness, MaxEPhoton ) ;
-    double weight_out_electron = SIMCRadCorrQELRadOutElectron( CorrOutElectron, detected_electron, true_beam_energy, event.GetTrueQ2(), tgt, thickness, MaxEPhoton );
-
-    event.SetEventWeight ( weight_in_electron * weight_out_electron ) ; 
 
     // Store emited photons in event record
     std::map<int,std::vector<TLorentzVector>> event_record = event.GetFinalParticles4Mom();

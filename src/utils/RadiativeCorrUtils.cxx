@@ -129,16 +129,20 @@ double utils::SIMCRadCorrQELRadInElectron( const double EBeam, const TLorentzVec
   double b = SIMCBFactor( tgt );
   double e_mom = TMath::Sqrt(pow(EBeam,2)-pow(kElectronMass,2)) ; 
   double lambda_e = (kAem/kPi)*( 2*TMath::Log(2*e_mom/kElectronMass) - 1 ) ;
-  double g = lambda_e + b*thickness;
-  double C = g/(TMath::Gamma(1+b*thickness)*pow(e_mom,b*thickness)*pow(e_mom*electron_vertex,lambda_e/2)); 
+  double bt = b*thickness;
+  double g = lambda_e + bt;
+  double C = 1/(TMath::Gamma(1+bt)*pow(e_mom,bt)*pow(e_mom*electron_vertex.P(),lambda_e/2)); 
   double e_gamma_max = max_Ephoton*EBeam ;
   double e_gamma_min = 1E-25;
-  double power_hi = pow(e_gamma_max,lambda_e);
-  double power_lo  = pow(e_gamma_min,lambda_e);
-  double W_rad_e = (C/g)*(power_hi-power_lo);
-  double Phi_ext_e = 1. - ( (b*thickness) / EBeam / g * EPhoton) ;
+  double power_hi = pow(e_gamma_max,g);
+  double power_lo  = pow(e_gamma_min,g);
+  double W_rad_e = C*(power_hi-power_lo);
+  double Phi_ext_e = 1. ;
+  if( EPhoton != 0 ) Phi_ext_e -= ( (b*thickness) / EBeam / g * EPhoton) ;
+  
+  std::cout << C * (power_hi-power_lo)<< " " << C/(power_hi-power_lo)<<std::endl;
   double radcor_weight = W_rad_e*Phi_ext_e;
-  return radcor_weight ;
+  return Phi_ext_e;
 } 
 
 
@@ -166,12 +170,13 @@ double utils::SIMCRadCorrQELRadOutElectron( const TLorentzVector electron_vertex
   double C = g/(TMath::Gamma(1+b*thickness)*pow(electron_vertex.P(),b*thickness)*pow(electron_vertex.P()*out_electron.P(),lambda_e/2)); 
   double e_gamma_max = max_Ephoton*EBeam ;
   double e_gamma_min = 1E-25;
-  double power_hi = pow(e_gamma_max,lambda_e);
-  double power_lo  = pow(e_gamma_min,lambda_e);
+  double power_hi = pow(e_gamma_max,g);
+  double power_lo  = pow(e_gamma_min,g);
   double W_rad_el = (C/g)*(power_hi-power_lo);
-  double Phi_ext_el = 1. - ( (b*thickness) / electron_vertex.E() / g * photon.E()) ;
-  
-  return W_rad_el*Phi_ext_el*(1-delta_hard);
+  double Phi_ext_el = 1. ;
+  if( photon.E() != 0 ) Phi_ext_el -= ( (b*thickness) / EBeam / g * photon.E()) ;  
+  //  return W_rad_el*Phi_ext_el*(1-delta_hard);
+  return W_rad_el;
 } 
 
 TLorentzVector utils::GetEmittedHardPhoton( TLorentzVector electron, double eloss ) {

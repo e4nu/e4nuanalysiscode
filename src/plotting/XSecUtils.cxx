@@ -614,24 +614,30 @@ void plotting::PlotLegend( std::vector<TH1D*> mc_hists, std::vector<TH1D*> break
   leg->SetFillStyle(0);
   leg->SetNColumns(2);
   leg->SetTextSize(0.03);
+  std::string model_def = "MC";
+  if ( model.size() > 0 ) model_def = model[0]; 
   if( mc_hists[0] ) { 
-    leg->AddEntry(mc_hists[0],("GENIE "+model[0]).c_str(),"l");
-    leg->AddEntry(breakdown[0],(model[0]+" EMQEL").c_str(),"l");
-    leg->AddEntry(breakdown[1],(model[0]+" EMRES P33(1232)").c_str(),"l");
-    leg->AddEntry(breakdown[2],(model[0]+" EMRES Others").c_str(),"l");
-    leg->AddEntry(breakdown[3],(model[0]+" EMSIS").c_str(),"l");
-    leg->AddEntry(breakdown[4],(model[0]+" EMMEC").c_str(),"l");
-    leg->AddEntry(breakdown[5],(model[0]+" EMDIS").c_str(),"l");
+    leg->AddEntry(mc_hists[0],("GENIE "+model_def).c_str(),"l");
+    leg->AddEntry(breakdown[0],(model_def+" EMQEL").c_str(),"l");
+    leg->AddEntry(breakdown[1],(model_def+" EMRES P33(1232)").c_str(),"l");
+    leg->AddEntry(breakdown[2],(model_def+" EMRES Others").c_str(),"l");
+    leg->AddEntry(breakdown[3],(model_def+" EMSIS").c_str(),"l");
+    leg->AddEntry(breakdown[4],(model_def+" EMMEC").c_str(),"l");
+    leg->AddEntry(breakdown[5],(model_def+" EMDIS").c_str(),"l");
   }
 
-  if( model.size() > 1 ) {
+  if( mc_hists.size() > 1 ) {
     for( unsigned int id = 1 ; id < model.size() ; ++id ){
-      if( !mc_hists[id] ) continue ; 
-      leg->AddEntry(mc_hists[id],("GENIE "+model[id]).c_str(),"l");
+      if( !mc_hists[id] ) continue ;
+      std::string model_id = "Model " + std::to_string(id) ;
+      if( model[id] != "" ) model_id = model[id];
+      leg->AddEntry(mc_hists[id],("GENIE "+model_id).c_str(),"l");
     }
   }
 
-  if(data)  leg->AddEntry(data, data_name.c_str(), "lp");
+  std::string data_def = "CLAS6 data";
+  if( data_name!="") data_def = data_name ;
+  if(data)  leg->AddEntry(data, data_def.c_str(), "lp");
   leg->Draw();
   std::string output_name = output_file_name ;
   if( store_root ) c_leg->SaveAs((output_location+"/"+output_name+"_legend.root").c_str());

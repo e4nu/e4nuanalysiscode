@@ -208,7 +208,7 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
   } else if ( observable == "MissingMomentum"){
     if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 25, 0, 1 );
     else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 25, 0, 2 );
-    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 15, 0, 3 );
+    else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 25, 0, 1.5 );
   } else if ( observable == "InferedNucleonMom"){
     if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 0, 0.8 );
     else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 0, 1 );
@@ -270,7 +270,7 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
     } else if ( observable == "MissingMomentum"){
       if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 25, 0, 1 );
       else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 25, 0, 1.8 );
-      else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 10, 0, 3 );
+      else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 25, 0,1.5); 
     } else if ( observable == "InferedNucleonMom"){
       if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 0, 0.8 );
       else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 0, 1 );

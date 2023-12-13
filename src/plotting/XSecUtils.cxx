@@ -539,7 +539,7 @@ void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakd
   // Format plots
   if( data ) { 
     StandardFormat( data, title, kBlack, 8, observable, y_max_total ) ;
-    data -> SetLineWidth(0);
+    data -> SetLineStyle(1);
   }
   
   StandardFormat( mc_hists[0], title, kBlack, 1, observable, y_max_total ) ;

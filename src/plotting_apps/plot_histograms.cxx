@@ -6,6 +6,8 @@
 // __________________________________________________________________________
 #include <iostream>
 #include <vector>
+#include <string>
+#include <sstream>
 #include "utils/RadiativeCorrUtils.h"
 #include "plotting/PlottingUtils.h"
 #include "conf/ConstantsI.h"

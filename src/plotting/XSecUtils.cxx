@@ -629,7 +629,7 @@ void plotting::PlotLegend( std::vector<TH1D*> mc_hists, std::vector<TH1D*> break
     for( unsigned int id = 1 ; id < mc_hists.size() ; ++id ){
       if( !mc_hists[id] ) continue ;
       std::string model_id = "Model " + std::to_string(id) ;
-      if( model[id] != "" ) model_id = model[id];
+      if( model.size() == mc_hists.size() ) model_id = model[id];
       leg->AddEntry(mc_hists[id],("GENIE "+model_id).c_str(),"l");
     }
   }

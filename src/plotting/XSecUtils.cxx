@@ -17,7 +17,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 			  std::string output_file_name, bool plot_data, std::map<string,double> systematic_map, 
 			  std::string analysis_id, bool store_root ){
 
-  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
   pad1->Draw();
   pad1->cd();
@@ -627,7 +626,7 @@ void plotting::PlotLegend( std::vector<TH1D*> mc_hists, std::vector<TH1D*> break
   }
 
   if( mc_hists.size() > 1 ) {
-    for( unsigned int id = 1 ; id < model.size() ; ++id ){
+    for( unsigned int id = 1 ; id < mc_hists.size() ; ++id ){
       if( !mc_hists[id] ) continue ;
       std::string model_id = "Model " + std::to_string(id) ;
       if( model[id] != "" ) model_id = model[id];

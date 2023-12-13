@@ -1,4 +1,5 @@
 #include "plotting/XSecUtils.h"
+#include "plotting/Systematics.h"
 #include "TLegend.h"
 #include <iomanip>
 #include <filesystem>
@@ -13,7 +14,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 			  std::string acceptance_file_name, std::string observable,
 			  std::string title, std::string data_name, std::vector<std::string> model,
 			  std::string input_MC_location, std::string input_data_location, std::string output_location,
-			  std::string output_file_name, bool plot_data, std::string analysis_id, bool store_root ){
+			  std::string output_file_name, bool plot_data, std::map<string,double> systematic_map, 
+			  std::string analysis_id, bool store_root ){
 
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
@@ -403,6 +405,18 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_3, DataNormalization );
     NormalizeHist(hist_data_4, DataNormalization );
     NormalizeHist(hist_data_5, DataNormalization );
+    
+    //adding systematics from systematic map
+    for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
+      std::cout << " Adding " << it->second*100 << " % systematic on " << it->first << std::endl;
+      systematics::AddSystematic(*hist_data, it->second, it->first) ;
+      systematics::AddSystematic(*hist_data_0, it->second, it->first) ;
+      systematics::AddSystematic(*hist_data_1, it->second, it->first) ;
+      systematics::AddSystematic(*hist_data_2, it->second, it->first) ;
+      systematics::AddSystematic(*hist_data_3, it->second, it->first) ;
+      systematics::AddSystematic(*hist_data_4, it->second, it->first) ;
+      systematics::AddSystematic(*hist_data_5, it->second, it->first) ;
+    }
   }
 
   // Store uncorrected data
@@ -438,6 +452,10 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
 	NormalizeHist(h_data_slices[l], DataNormalization );
 	CorrectData(h_data_slices[l], h_acc_slices[l] );
+     
+	for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
+	  systematics::AddSystematic(*h_data_slices[l], it->second, it->first) ;
+	}
       }
     }
   }
@@ -488,10 +506,10 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // Plot Total, XSector, Legend
   plotting::PlotTotal( mc_hists, breakdown, hist_data, observable, title, data_name, model, input_MC_location,
-		       input_data_location, output_location, output_file_name,analysis_id,store_root);
+		       input_data_location, output_location, output_file_name,systematic_map,analysis_id,store_root);
 
   plotting::PlotPerSector( mc_per_sector, data_per_sector, observable, title, data_name, model,input_MC_location, 
-			   input_data_location, output_location, output_file_name, analysis_id, store_root ) ;
+			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root ) ;
 
   plotting::PlotLegend( mc_hists, breakdown, hist_data, observable, data_name, model, output_location, output_file_name,store_root );
 
@@ -502,7 +520,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,
 			  std::string title, std::string data_name, std::vector<std::string> model,
 			  std::string input_MC_location, std::string input_data_location, std::string output_location,
-			  std::string output_file_name, std::string analysis_id, bool store_root ) {
+			  std::string output_file_name, std::map<string,double> systematic_map, 
+			  std::string analysis_id, bool store_root ) {
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);  
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
   pad1->Draw();
@@ -595,16 +614,19 @@ void plotting::PlotLegend( std::vector<TH1D*> mc_hists, std::vector<TH1D*> break
   leg->SetFillStyle(0);
   leg->SetNColumns(2);
   leg->SetTextSize(0.03);
-  leg->AddEntry(mc_hists[0],("GENIE "+model[0]).c_str(),"l");
-  leg->AddEntry(breakdown[0],(model[0]+" EMQEL").c_str(),"l");
-  leg->AddEntry(breakdown[1],(model[0]+" EMRES P33(1232)").c_str(),"l");
-  leg->AddEntry(breakdown[2],(model[0]+" EMRES Others").c_str(),"l");
-  leg->AddEntry(breakdown[3],(model[0]+" EMSIS").c_str(),"l");
-  leg->AddEntry(breakdown[4],(model[0]+" EMMEC").c_str(),"l");
-  leg->AddEntry(breakdown[5],(model[0]+" EMDIS").c_str(),"l");
+  if( mc_hists[0] ) { 
+    leg->AddEntry(mc_hists[0],("GENIE "+model[0]).c_str(),"l");
+    leg->AddEntry(breakdown[0],(model[0]+" EMQEL").c_str(),"l");
+    leg->AddEntry(breakdown[1],(model[0]+" EMRES P33(1232)").c_str(),"l");
+    leg->AddEntry(breakdown[2],(model[0]+" EMRES Others").c_str(),"l");
+    leg->AddEntry(breakdown[3],(model[0]+" EMSIS").c_str(),"l");
+    leg->AddEntry(breakdown[4],(model[0]+" EMMEC").c_str(),"l");
+    leg->AddEntry(breakdown[5],(model[0]+" EMDIS").c_str(),"l");
+  }
 
   if( model.size() > 1 ) {
-    for( unsigned int id = 1 ; id < model.size() -1 ; ++id ){
+    for( unsigned int id = 1 ; id < model.size() ; ++id ){
+      if( !mc_hists[id] ) continue ; 
       leg->AddEntry(mc_hists[id],("GENIE "+model[id]).c_str(),"l");
     }
   }
@@ -621,7 +643,7 @@ void plotting::PlotLegend( std::vector<TH1D*> mc_hists, std::vector<TH1D*> break
 void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*> data_per_sector, std::string observable,
 			      std::string title, std::string data_name, std::vector<std::string> model,
 			      std::string input_MC_location, std::string input_data_location, std::string output_location,
-			      std::string output_file_name, std::string analysis_id, bool store_root ) {
+			      std::string output_file_name, std::map<string,double> systematic_map, std::string analysis_id, bool store_root ) {
   
   // Format plots
   if( data_per_sector.size()!=0 ) { 
@@ -674,7 +696,7 @@ void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*
 void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vector<double> addbinning, std::string observable,
 			   std::string title, std::string data_name, std::vector<std::string> model,
 			   std::string input_MC_location, std::string input_data_location, std::string output_location,
-			   std::string output_file_name, std::string analysis_id, bool store_root ) {
+			   std::string output_file_name, std::map<string,double> systematic_map, std::string analysis_id, bool store_root ) {
   
   for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
     double y_max_total = GetMaximum( all_slices[0] );

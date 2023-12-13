@@ -9,6 +9,7 @@ namespace e4nu {
     // No acceptance correction is used
     void ComputeHistSyst( std::vector<std::string> input_files, std::vector<std::string> tags, std::string observable, bool is_data, 
 			  std::string input_location, std::string output_location, std::string analysis_id );
+    void AddSystematic( TH1D & hist, const double rel_error, const std::string name ) ; 
   }
 }
 

@@ -160,7 +160,7 @@ int main( int argc, char* argv[] ) {
     if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables[i], true, data_location, output_location, analysis_id );
 
     Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location,
-		output_location, output_name, plot_data, analysis_id, store_root ) ;
+		output_location, output_name, plot_data, systematic_map, analysis_id, store_root ) ;
   }
 
   return 0 ;

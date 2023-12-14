@@ -97,7 +97,7 @@ int main( int argc, char* argv[] ) {
     analysis -> SetTrueSignal( true ) ;
     analysis -> SetApplyFiducial( false ) ;
     analysis -> SetApplyAccWeights( false ) ;
-    analysis -> SetApplyReso( false ) ;
+    //    analysis -> SetApplyReso( false ) ;
     analysis -> SetUseAllSectors( true ) ;
     analysis -> EnableAllSectors( true ) ;
     std::string OutputFile_true = analysis->GetOutputFile() + "_true" ;
@@ -131,7 +131,5 @@ int main( int argc, char* argv[] ) {
   analysis -> Finalise();
 
   delete analysis ;
- 
-
   return 0 ; 
 }

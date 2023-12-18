@@ -12,6 +12,7 @@
 #include "TFile.h"
 #include "TBranch.h"
 #include "TH1D.h"
+#include "TLegend.h"
 #include "analysis/MCCLAS6AnalysisI.h"
 #include "plotting/PlottingUtils.h"
 #include "utils/RadiativeCorrUtils.h"
@@ -39,6 +40,7 @@ using namespace e4nu::plotting;
 // --rad-model : model used for external radiation of in e-    //
 //               simc or simple                                //
 // --max-Ephoton : defaulted to 0.2 (of beam energy)           //
+// --output-hist : name of output file with histograms         //
 /////////////////////////////////////////////////////////////////
 TTree * s_tree ;
 void StoreToGstFormat( Event & event, string output_file ) ;
@@ -48,6 +50,7 @@ int main( int argc, char* argv[] ) {
   std::cout << "Processing GENIE gst file. Adding radiation weights and correcting electron kinematics..." << std::endl;
 
   string input_file, output_file = "radiated.gst.root";
+  string output_hist = "" ; 
   double nevents = 10000000;
   double true_beam_energy = 1; 
   int tgt = 1000060120 ;
@@ -79,6 +82,9 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("nevents",argc,argv)) {
       nevents = stoi(GetArg("nevents",argc,argv));
     }
+    if( ExistArg("output-hist",argc,argv)) {
+      output_hist = GetArg("output-hist",argc,argv);
+    }
 
     // Radiative specific options
     if( ExistArg("rad-model",argc,argv)) {
@@ -109,6 +115,11 @@ int main( int argc, char* argv[] ) {
     return 0;
   }
 
+  // Initialize histograms for debugging
+  TH1D * h_outemom = new TH1D( "h_outemom", "h_outemom", 100, 0, true_beam_energy) ; 
+  TH1D * h_outcorremom = new TH1D( "h_outcorremom", "h_outcorremom", 100, 0, true_beam_energy) ; 
+  TH1D * h_outgammamom = new TH1D( "h_outgammamom", "h_outgammamom", 100, 0, true_beam_energy) ; 
+  
   event_holder -> LoadBranch();
   for ( unsigned int i = 0 ; i < event_holder->GetNEvents() ; ++i ) { 
     if( i==0 || i % 10000 == 0 ) utils::PrintProgressBar( i, event_holder->GetNEvents() ) ;
@@ -131,22 +142,21 @@ int main( int argc, char* argv[] ) {
     if( InGamma.E() < 0 ) InGamma.SetPxPyPzE(0,0,0,0);
 
     // Compute true detected outgoing electron kinematics with energy loss method
-    double egamma = 0 ; 
-    if( rad_model == "simc" ) egamma = SIMCEnergyLoss( CorrOutElectron.E(),CorrOutElectron, 11, tgt, thickness, MaxEPhoton ) ;
-    else if ( rad_model == "simple" ) egamma = SimpleEnergyLoss( CorrOutElectron.E(), tgt, thickness, MaxEPhoton ) ; 
-    if( egamma < 0 ) egamma = 0 ;
-    TLorentzVector OutGamma = GetEmittedHardPhoton( CorrOutElectron, egamma ) ;
-    if( OutGamma.E() < 0 )  OutGamma.SetPxPyPzE(0,0,0,0);
-
-    // Compute correction weights due to in- and out- coming electron
     TLorentzVector detected_electron; // will be set in SIMCRadCorrQELRadOutElectron
-    double weight_in_electron  = SIMCRadCorrQELRadInElectron( true_beam_energy, event.GetInCorrLepton4Mom(), tgt, thickness, MaxEPhoton ) ;
-    double weight_out_electron = SIMCRadCorrQELRadOutElectron( CorrOutElectron, detected_electron, true_beam_energy, event.GetTrueQ2(), tgt, thickness, MaxEPhoton, rad_model );
-    std::cout << "weight_in_electron = " << weight_in_electron << " weight_out_electron = " << weight_out_electron << std::endl; 
-    event.SetEventWeight ( weight_in_electron * weight_out_electron * event.GetEventWeight() ) ; 
+    TLorentzVector OutGamma = SIMCRadCorrQELRadOutElectron( CorrOutElectron, detected_electron,tgt, thickness, MaxEPhoton, rad_model );
+
+    h_outgammamom->Fill(OutGamma.E()); 
+    h_outcorremom->Fill(CorrOutElectron.E());
+    h_outemom->Fill(detected_electron.E());
 
     // Set true outcoming electron kinematics from configuration  
     event.SetOutLeptonKinematics( detected_electron ) ;
+
+    // Compute correction weight
+    double weight = SIMCRadCorrWeight( CorrOutElectron, detected_electron, true_beam_energy, event.GetTrueQ2(), tgt, thickness, MaxEPhoton, "simc");
+    //rad_model ) ;
+    
+    event.SetEventWeight ( weight * event.GetEventWeight() ) ; 
 
     // Store emited photons in event record
     std::map<int,std::vector<TLorentzVector>> event_record = event.GetFinalParticles4Mom();
@@ -163,7 +173,53 @@ int main( int argc, char* argv[] ) {
   }
 
   s_tree ->Write();
+
+  // Store debug info in histogram 
+  if( output_hist != "" ) {
+    TCanvas * c  = new TCanvas("","",800,800);
+    c->SetFillColor(0);
+
+    gStyle->SetFrameBorderMode(0);
+    gStyle->SetCanvasBorderMode(0);
+    gStyle->SetPadBorderMode(0);
+    gStyle->SetPadColor(0);
+    gStyle->SetCanvasColor(0);
+    gStyle->SetStatColor(0);
+    gStyle->SetFillColor(0);
+    gStyle->SetLegendBorderSize(1);
+    gStyle->SetPaperSize(20,26);
+    gStyle->SetTitleFont(132,"pad");
+    gStyle->SetMarkerStyle(20);
+    gStyle->SetLineStyleString(2,"[12 12]");
+    gStyle->SetOptStat(0);
+    gStyle->SetOptFit(0);
+    gStyle->SetPadTickX(1);
+    gStyle->SetPadTickY(1);
+        
+    h_outemom->SetLineColor(kRed);
+    h_outemom->SetLineWidth(2);
+    h_outcorremom->SetLineColor(kBlue);
+    h_outcorremom->SetLineWidth(2);
+
+    h_outcorremom -> GetXaxis()->SetTitle("E_{e}^{det}[GeV]");
+    h_outcorremom -> GetYaxis()->SetTitle("#Events");
+    h_outcorremom -> GetXaxis()->CenterTitle();
+    h_outcorremom -> GetYaxis()->CenterTitle();
+    
+    h_outcorremom->Draw("hist");
+    h_outemom->Draw("hist same");
+
+    double LegXmin = 0.1, LegYmin = 0.65, YSpread = 0.25;
+    TLegend* leg = new TLegend(LegXmin,LegYmin,LegXmin+0.9,LegYmin+YSpread);
+    leg->AddEntry(h_outcorremom, "Vertex Electron");
+    leg->AddEntry(h_outemom, "Detected Electron");
+    leg->Draw();
+    c->SaveAs(output_hist.c_str());
+    delete c ;	       
+  }
+
   out_file -> Close();
+  
   delete out_file;
   delete event_holder;
   return 0 ; 

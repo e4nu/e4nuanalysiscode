@@ -33,7 +33,7 @@ namespace e4nu {
     TVector3 GetRecoq3(void) const ; 
 
     void SetEventID( const unsigned int id ) { fEventID = id ; }
-    void SetTargetPdg( const int target_pdg ) { fTargetPdg = target_pdg ; } 
+    void SetTargetPdg( int target_pdg ) ;
     void SetInLeptPdg( const int pdg ) { fInLeptPdg = pdg ; }
     void SetOutLeptPdg( const int pdg ) { fOutLeptPdg = pdg ; }
     void SetInLeptonKinematics( const double energy, const double px, const double py, const double pz ) ; 

@@ -83,7 +83,7 @@ int main( int argc, char* argv[] ) {
   unsigned int nentries = 10000; 
   for( unsigned int i = 0 ; i < nentries ; ++i ) { 
     double egamma = 0 ; 
-    if( rad_model == "simc" ) egamma = SIMCEnergyLoss( EBeam, V4_beam, 11, tgt, thickness, MaxEPhoton ) ;
+    if( rad_model == "simc" ) egamma = SIMCEnergyLoss( V4_beam, 11, tgt, thickness, MaxEPhoton ) ;
     else if ( rad_model == "simple" ) egamma = SimpleEnergyLoss( EBeam, tgt, thickness, MaxEPhoton ) ; 
     double Ee = EBeam - egamma ;
     hradflux -> Fill( Ee ) ; 

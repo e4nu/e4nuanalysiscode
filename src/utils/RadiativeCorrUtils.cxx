@@ -82,17 +82,17 @@ double utils::SIMCBFactor( const double tgt_pdg ) {
   return b ;
 }
 
-double utils::SIMCEnergyLoss(const double EBeam, const TLorentzVector particle, const int p_pdg, const double tgt_pdg, const double thickness, const double max_Ephoton ) {
+double utils::SIMCEnergyLoss(const TLorentzVector particle, const int p_pdg, const double tgt_pdg, const double thickness, const double max_Ephoton ) {
   // https://journals.aps.org/prc/abstract/10.1103/PhysRevC.64.054610
   double b = SIMCBFactor( tgt_pdg );
-  double lambda = 2*TMath::Log(2*TMath::Sqrt(pow(EBeam,2)-pow(kElectronMass,2))/utils::GetParticleMass(p_pdg)) - 1 ;
+  double lambda = 2*TMath::Log(2*particle.P()/utils::GetParticleMass(p_pdg)) - 1 ;
   if( particle.Pz() != particle.E() ) lambda += TMath::Log(0.5*(1-particle.CosTheta())) ;
   if( p_pdg == kPdgProton ) lambda = ( TMath::Log((particle.E()+particle.P())/(particle.E()-particle.P())) - 2 ) ;
   lambda *= (kAem/kPi) ;
   lambda += b*thickness;
   if( lambda < 0 ) return 0; 
 
-  double e_gamma_max = max_Ephoton*EBeam ;
+  double e_gamma_max = max_Ephoton*particle.E() ;
   double e_gamma_min = 1E-25;
   double power_hi = pow(e_gamma_max,lambda);
   double power_lo  = pow(e_gamma_min,lambda);
@@ -121,10 +121,10 @@ double utils::SimpleEnergyLoss(const double EBeam, const double tgt_pdg, const d
   return energyLoss ; 
 }
 
-TLorentzVector utils::SIMCRadCorrQELRadOutElectron( const TLorentzVector electron_vertex, TLorentzVector & out_electron, const int tgt, const double thickness, const double max_Ephoton, const string model ) {
+TLorentzVector utils::RadOutElectron( const TLorentzVector electron_vertex, TLorentzVector & out_electron, const int tgt, const double thickness, const double max_Ephoton, const string model ) {
   // Compute true detected outgoing electron kinematics with energy loss method
   double egamma = 0 ; 
-  if( model == "simc" ) egamma = SIMCEnergyLoss( electron_vertex.E(),electron_vertex, 11, tgt, thickness, max_Ephoton ) ;
+  if( model == "simc" ) egamma = SIMCEnergyLoss( electron_vertex, 11, tgt, thickness, max_Ephoton ) ;
   else if ( model == "simple" ) egamma = SimpleEnergyLoss( electron_vertex.E(), tgt, thickness, max_Ephoton ) ; 
   if( egamma < 0 ) egamma = 0 ;
   TLorentzVector OutGamma = GetEmittedHardPhoton( electron_vertex, egamma ) ;
@@ -133,51 +133,75 @@ TLorentzVector utils::SIMCRadCorrQELRadOutElectron( const TLorentzVector electro
   return OutGamma;
 } 
 
-double utils::SIMCRadCorrWeight( const TLorentzVector corr_electron, const TLorentzVector detected_electron, const double EBeam, const double Q2, const int tgt, const double thickness, const double max_Ephoton, const std::string model ) {
+double utils::SIMCRadCorrWeight( const e4nu::Event & event, const double thickness, const double max_Ephoton, const std::string model ) {
 
   double weight = 1; 
+  TLorentzVector Beam  = event.GetInLepton4Mom() ;
+  TLorentzVector Detected = event.GetOutLepton4Mom() ;
+  TLorentzVector InRad = event.GetInCorrLepton4Mom() ; 
+  TLorentzVector OutRad = event.GetOutCorrLepton4Mom();
+  double Q2 = event.GetTrueQ2s();
+  unsigned int tgt = event.GetTargetPdg();
+  
   if( model == "simple") { 
     // Reference ?
     weight = 1 + (2*kAem /kPi) * ( (13./12.)* (TMath::Log(Q2/pow(kElectronMass,2)) - 1) - (17./36.)
-				   - (1./4.) * pow(TMath::Log(corr_electron.E()*detected_electron.E()),2)
-				   - (1./2.) * ( (pow(kPi,2)/6) -  TMath::DiLog(TMath::Power(TMath::Cos(0.5*detected_electron.Theta()),2.)) ) );
+				   - (1./4.) * pow(TMath::Log(OutRad.E()*Detected.E()),2)
+				   - (1./2.) * ( (pow(kPi,2)/6) -  TMath::DiLog(TMath::Power(TMath::Cos(0.5*Detected.Theta()),2.)) ) );
   } else if ( "simc" ) { 
-    
     // This takes into account the radiation weight due to external and internal radiation of the incoming electron
     // https://journals.aps.org/prc/pdf/10.1103/PhysRevC.64.054610
-    double EPhoton = EBeam - corr_electron.E();
+    double delta_hard = 2.*(kAem/kPi)*(-3./4*TMath::Log(Q2/pow(kElectronMass,2))+1+5./9.-1./3.*TMath::Log(Q2/pow(kElectronMass,2))); 
+
     double b = SIMCBFactor( tgt );
-    double e_mom = TMath::Sqrt(pow(EBeam,2)-pow(kElectronMass,2)) ; 
-    double lambda_e = (kAem/kPi)*( 2*TMath::Log(2*e_mom/kElectronMass) - 1 ) ;
     double bt = b*thickness;
-    double g = lambda_e + bt;
-    double C = 1/(TMath::Gamma(1+bt)*pow(e_mom,bt)*pow(e_mom*corr_electron.P(),lambda_e/2)); 
-    double e_gamma_max = max_Ephoton*EBeam ;
-    double e_gamma_min = 1E-25;
-    double power_hi = pow(e_gamma_max,g);
-    double power_lo  = pow(e_gamma_min,g);
-    double W_rad_e = C*(power_hi-power_lo);
+
+    // Calculate correction for external radiation
+    //double lambda_0 = (kAem/kPi)*(2*TMath::Log(Beam.P()/Detected.P())+TMath::Log(0.5*(1-TMath::Cos(Detected.Theta()))));
+    double lambda_0_e = (kAem/kPi)*(2*TMath::Log(Beam.P()/InRad.P()));
+    //+TMath::Log(0.5*(1-TMath::Cos(InRad.Theta()))));
+    double lambda_0_el = (kAem/kPi)*(2*TMath::Log(OutRad.P()/Detected.P())+TMath::Log(0.5*(1-TMath::Cos(Detected.Theta()))));
+    double lambda_e = (kAem/kPi)*(TMath::Log(pow(2*Beam.P()/kElectronMass,2)-1))+lambda_0_e;
+    double lambda_el = (kAem/kPi)*(TMath::Log(pow(2*Detected.P()/kElectronMass,2)-1))+lambda_0_el;
+    double g_e = lambda_e + bt;
+    double g_el = lambda_el + bt;
+
     double Phi_ext_e = 1. ;
-    if( EPhoton != 0 ) Phi_ext_e -= ( (b*thickness) / EBeam / g * EPhoton) ;
-  
-    std::cout <<  " W_rad_e = " << W_rad_e <<  " Phi_ext_e = " << Phi_ext_e << std::endl;
-
-    // This takes into account the radiation weight due to external and internal radiation of the incoming electron
-    // https://journals.aps.org/prc/pdf/10.1103/PhysRevC.64.054610
-    //double delta_hard = -1.*(kAem/kPi)*(-28./9.+(13./6.)*TMath::Log(Q2/pow(kElectronMass,2))); // Is this ok?
-    double delta_hard = 2.*(kAem/kPi)*(-3./4*TMath::Log(Q2/pow(kElectronMass,2))+1+5./9.-1./3.*TMath::Log(Q2/pow(kElectronMass,2))); // Is this ok?
-    std::cout << (1-delta_hard)<<std::endl;
-    // Compute weight
-    lambda_e = (kAem/kPi)*( 2*TMath::Log(2*corr_electron.P()/kElectronMass) - 1 + TMath::Log(0.5*(1-corr_electron.CosTheta()))) ;
-    g = lambda_e + b*thickness;
-    C = g/(TMath::Gamma(1+b*thickness)*pow(corr_electron.P(),b*thickness)*pow(corr_electron.P()*detected_electron.P(),lambda_e/2)); 
-    double W_rad_el = (C/g)*(power_hi-power_lo);
     double Phi_ext_el = 1. ;
-    if( EPhoton != 0 ) Phi_ext_el -= ( (b*thickness) / EBeam / g * EPhoton) ;  
+    double EPhoton_i = Beam.E() - InRad.E() ; // should be energy of decayed electron
+    if( EPhoton_i != 0 ) Phi_ext_e -= bt * EPhoton_i / Beam.P() / g_e ;  
+    double EPhoton_f = OutRad.E() - Detected.E();
+    if( EPhoton_f != 0 ) Phi_ext_el -= bt * EPhoton_f / OutRad.P() / g_el ;  
 
-    weight= W_rad_e*Phi_ext_e*W_rad_el*Phi_ext_el*(1-delta_hard);
+    double e_gamma_max_e = max_Ephoton*Beam.E() ;
+    double e_gamma_max_el = max_Ephoton*OutRad.E() ;
+    double e_gamma_min = 1E-25;
+    double power_hi_e = pow(e_gamma_max_e,g_e);
+    double power_lo_e  = pow(e_gamma_min,g_e);
+    double power_hi_el = pow(e_gamma_max_el,g_el);
+    double power_lo_el  = pow(e_gamma_min,g_el);
 
+    //    double C_e = g_e/(TMath::Gamma(1+bt)*pow(Beam.P(),bt)*pow(Beam.P()*Detected.P(),lambda_e/2)); 
+    double C_e = g_e/(TMath::Gamma(1+bt)*pow(Beam.P(),bt)*pow(Beam.P()*InRad.P(),lambda_e/2)); 
+    double C_el = g_el/(TMath::Gamma(1+bt)*pow(OutRad.P(),bt)*pow(OutRad.P()*Detected.P(),lambda_el/2)); 
+
+    double W_e = (C_e/g_e)*(power_hi_e-power_lo_e);
+    double W_el = (C_el/g_el)*(power_hi_el-power_lo_el);
+
+    /*
+    std::cout << " EPhoton_i " << EPhoton_i << " EPhoton_f <" << EPhoton_f<< std::endl;
+    std::cout << " lambda_0 " << lambda_0_e << " lambda_0_el" <<lambda_0_el << " TMath::Log(pow(2*Beam.P()/kElectronMass,2)-1) " <<TMath::Log(pow(2*Beam.P()/kElectronMass,2)-1) << std::endl;    
+    std::cout << " lambda_e " << lambda_e << " lambda_el " << lambda_el << " bt = " << bt <<std::endl;
+    std::cout << " Detected.P() = " << Detected.P() << " TMath::Cos(Detected.Theta() " <<TMath::Cos(Detected.Theta()) <<std::endl;
+    std::cout << " Beam.P() = " << Beam.P() << " g_e " << g_e << " g_el " << g_el << std::endl;
+    std::cout << " Phi_ext_e = " << Phi_ext_e << " Phi_ext_el " << Phi_ext_el<< std::endl;
+    std::cout << " C_e " << C_e << " C_el " << C_el << std::endl;
+    std::cout << " W_e " << W_e << "W_el" << W_el<<std::endl;
+    std::cout << " tot weight  " << W_e*W_el*Phi_ext_e*Phi_ext_el*(1-delta_hard)<<std::endl;
+    */
+    weight= W_e*W_el*Phi_ext_e*Phi_ext_el*(1-delta_hard);
   }
+
   return weight;
 }
 

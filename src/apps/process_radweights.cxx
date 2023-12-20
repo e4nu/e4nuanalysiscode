@@ -124,7 +124,7 @@ int main( int argc, char* argv[] ) {
   for ( unsigned int i = 0 ; i < event_holder->GetNEvents() ; ++i ) { 
     if( i==0 || i % 10000 == 0 ) utils::PrintProgressBar( i, event_holder->GetNEvents() ) ;
     e4nu::Event & event = *event_holder->GetEvent(i);
-
+    
     // Store the in and out going electron kinematics at the interaction vertex
     // We refer to these as corrected electrons
     // Detected electrons correspond to the beam electron and final detected electron
@@ -142,9 +142,8 @@ int main( int argc, char* argv[] ) {
     if( InGamma.E() < 0 ) InGamma.SetPxPyPzE(0,0,0,0);
 
     // Compute true detected outgoing electron kinematics with energy loss method
-    TLorentzVector detected_electron; // will be set in SIMCRadCorrQELRadOutElectron
-    TLorentzVector OutGamma = SIMCRadCorrQELRadOutElectron( CorrOutElectron, detected_electron,tgt, thickness, MaxEPhoton, rad_model );
-
+    TLorentzVector detected_electron; // will be set in RadOutElectron
+    TLorentzVector OutGamma = RadOutElectron( CorrOutElectron, detected_electron,tgt, thickness, MaxEPhoton, rad_model );
     h_outgammamom->Fill(OutGamma.E()); 
     h_outcorremom->Fill(CorrOutElectron.E());
     h_outemom->Fill(detected_electron.E());
@@ -153,7 +152,7 @@ int main( int argc, char* argv[] ) {
     event.SetOutLeptonKinematics( detected_electron ) ;
 
     // Compute correction weight
-    double weight = SIMCRadCorrWeight( CorrOutElectron, detected_electron, true_beam_energy, event.GetTrueQ2(), tgt, thickness, MaxEPhoton, "simc");
+    double weight = SIMCRadCorrWeight( event, thickness, MaxEPhoton, "simc");
     //rad_model ) ;
     
     event.SetEventWeight ( weight * event.GetEventWeight() ) ; 

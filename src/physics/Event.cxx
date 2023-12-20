@@ -202,6 +202,10 @@ double Event::GetObservable( const std::string observable ) {
   return 0 ; 
 }
 
+void Event::SetTargetPdg( int target_pdg ) { 
+  if( target_pdg == 2212 ) target_pdg = 1000010010 ;  
+  fTargetPdg = target_pdg ; 
+} 
 
 void Event::SetMottXSecWeight(void) { 
   // Set Mott XSec

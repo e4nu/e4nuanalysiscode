@@ -194,12 +194,18 @@ double Event::GetObservable( const std::string observable ) {
     return utils::DeltaPhiT( ef4mom, GetFinalParticles4Mom() ) ;
   } else if ( observable == "HadSystemDeltaPT" ) {
     return utils::DeltaPT( ef4mom, GetFinalParticles4Mom() ).Mag() ;
+  } else if ( observable == "ElectronSector" ) {
+    return utils::GetSector( ef4mom.Phi() );
   }
 
   std::cout << observable << " is NOT defined " << std::endl;
   return 0 ; 
 }
 
+void Event::SetTargetPdg( int target_pdg ) { 
+  if( target_pdg == 2212 ) target_pdg = 1000010010 ;  
+  fTargetPdg = target_pdg ; 
+} 
 
 void Event::SetMottXSecWeight(void) { 
   // Set Mott XSec
@@ -210,6 +216,18 @@ void Event::SetMottXSecWeight(void) {
 TVector3 Event::GetRecoq3() const { 
   return utils::GetRecoq3( fOutLepton, fInLepton.E() ) ; 
 }
+
+// Radiative correction utils
+void Event::SetInCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) {
+  fInCorrLepton.SetPxPyPzE( px, py, pz, energy ) ;
+  return ;
+} 
+void Event::SetOutCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) {
+  fOutCorrLepton.SetPxPyPzE( px, py, pz, energy ) ;
+  return ;
+}
+
+//
 
 void Event::Initialize() { 
   fFinalParticles.clear() ; 
@@ -253,6 +271,8 @@ void Event::Initialize() {
 
   fInLepton.SetPxPyPzE( 0,0,0,0 ) ;
   fOutLepton.SetPxPyPzE( 0,0,0,0 ) ;
+  fInCorrLepton.SetPxPyPzE( 0,0,0,0 ) ;
+  fOutCorrLepton.SetPxPyPzE( 0,0,0,0 ) ;
   fInLeptonUnCorr.SetPxPyPzE( 0,0,0,0 ) ;
   fOutLeptonUnCorr.SetPxPyPzE( 0,0,0,0 ) ;
   

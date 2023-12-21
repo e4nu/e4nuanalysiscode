@@ -77,11 +77,7 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
     this -> SmearParticles( *event ) ; 
   }
 
-  // Step 4: Apply Acceptance Correction (Efficiency correction)
-  // This takes into account the efficiency detection of each particle in theta and phi
-  this->ApplyAcceptanceCorrection( *event ) ; 
-
-  // Step 5 : Remove true Bkg events if requested : 
+  // Step 4 : Remove true Bkg events if requested : 
   if( IsTrueSignal() ) {
     // Apply theta cut on hadrons:
     if ( ! this->ApplyFiducialCut( *event, false ) ) { delete event; return nullptr ; }
@@ -93,7 +89,7 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
     }
   }
 
-  // Step 6: Apply fiducials
+  // Step 5: Apply fiducials
   // The detector has gaps where the particles cannot be detected
   // We need to account for these with fiducial cuts
   // It also takes into account angle cuts for particles
@@ -102,9 +98,13 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
     return nullptr ; 
   }
 
-  // Store analysis record after fiducial cut and acceptance correction (2):
+  // Step 6: Apply Acceptance Correction (Efficiency correction)
+  // This takes into account the efficiency detection of each particle in theta and phi
+  // We want to apply it at the end to correctly account for the acceptance in background substracted events
+  this->ApplyAcceptanceCorrection( *event ) ; 
+  
+  //Store analysis record after fiducial cut and acceptance correction (2):
   event->StoreAnalysisRecord(kid_fid);
-
   return event ; 
 }
 
@@ -257,9 +257,9 @@ bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event>> & event_
 
   if( !AnalysisI::Finalise() ) return false ; 
 
-  // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult() ; 
-  for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) {
+  for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) { 
+    // Store corrected background in event sample
     StoreTree( event_holder[min_mult][k] );
 
     double norm_weight = event_holder[min_mult][k].GetTotalWeight() ;

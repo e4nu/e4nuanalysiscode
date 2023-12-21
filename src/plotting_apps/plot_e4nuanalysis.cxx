@@ -4,6 +4,7 @@
 
 #include "plotting/AcceptanceUtils.h"
 #include "plotting/XSecUtils.h"
+#include "plotting/Systematics.h"
 #include <iomanip>
 #include <filesystem>
 
@@ -17,16 +18,17 @@ using namespace e4nu::plotting;
 // 1) MC files location                                        //
 // 2) Data files location (*)                                  //
 // 3) OutputLocation                                           //
-// 4) Input MC Files                                           //
-// 5) Input data file (*)                                      //
+// 4) Input MC Files (without .root extension)                 //
+// 5) Input data file (without .root extension) (*)            //
 // 6) Observables List                                         //
 // 7) Input Model Names (*)                                    //
 // 8) Title (*)                                                //
 // 9) Data Name (*)                                            //
 // 10) Compute systematics (* def false )                      //
 // 11) AddSystematics                                          //
-// 12) NoFSI ROOT file                                         //
-// 13) analysis id - used to set the ranges. default none      //
+// 12) NoFSI ROOT file (without .root extension)               //
+// 13) Analysis id - used to set the ranges. default none      //
+//     i.e. 1p1pim                                             //
 // 14) Plot root file output                                   //
 /////////////////////////////////////////////////////////////////
 
@@ -34,6 +36,7 @@ string mc_location="", data_location="", output_location ="", output_name ="", a
 vector<string> mc_files, observables, model_names ;
 string data_file ="", nofsi_file="", title="", data_name="" ;
 bool compute_systematics ;
+vector<string> bkg_syst;
 map<string,double> systematic_map ;
 bool plot_data = true ;
 bool store_root = false ; 
@@ -134,6 +137,10 @@ int main( int argc, char* argv[] ) {
       }
     }
 
+    if( ExistArg("bkg-systematics",argc,argv)) {
+      string bkgsys = GetArg("bkg-systematics",argc,argv) ;
+      bkg_syst = SplitString(bkgsys,',');
+    }
   }
 
   // Loop over observables
@@ -142,7 +149,18 @@ int main( int argc, char* argv[] ) {
     vector<string> names = model_names ; 
     string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name, analysis_id, store_root ) ;
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
-    Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data, analysis_id, store_root ) ;
+
+    vector<string> bkg_syst_files = {data_file};
+    vector<string> bkg_syst_tag = {data_name+"_"+observables[i]};
+    for( unsigned int j = 0 ; j < bkg_syst.size(); ++j ){
+      bkg_syst_files.push_back(bkg_syst[j]); 
+      bkg_syst_tag.push_back(data_name+"_"+observables[i]+"_"+to_string(j+1));
+    }
+
+    if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables[i], true, data_location, output_location, analysis_id );
+
+    Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location,
+		output_location, output_name, plot_data, systematic_map, analysis_id, store_root ) ;
   }
 
   return 0 ;

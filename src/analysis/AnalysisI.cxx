@@ -33,10 +33,10 @@ bool AnalysisI::Analyse( Event & event ) {
   // Step 1 : Apply generic cuts
   // Check run is correct
   double EBeam = GetConfiguredEBeam() ; 
-  if ( in_mom.E() != EBeam ) {
+  /*  if ( in_mom.E() != EBeam ) {
     std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
     exit(11); 
-  }
+    }*/
   
   if ( (unsigned int) event.GetTargetPdg() != GetConfiguredTarget() ) {
     std::cout << "Target is " << event.GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
@@ -167,7 +167,7 @@ void AnalysisI::PlotBkgInformation( Event event ) {
  
   if( ! GetDebugBkg() ) return ;
  
-  // Store plots for Bakcground debugging
+  // Store plots for Background debugging
   std::map<unsigned int,std::pair<std::vector<int>,double>> AnalysisRecord = event.GetAnalysisRecord() ;
  
   // Signal multiplicity
@@ -183,10 +183,11 @@ void AnalysisI::PlotBkgInformation( Event event ) {
       || !kHistograms[kid_2p0pitruebkg] || !kHistograms[kid_1p1pitruebkg] || !kHistograms[kid_2p1pitruebkg] || !kHistograms[kid_1p2pitruebkg] 
       || !kHistograms[kid_2p0piestbkg] || !kHistograms[kid_1p1piestbkg] || !kHistograms[kid_2p1piestbkg] || !kHistograms[kid_1p2piestbkg] ) return ;
 
-  if( (record_afiducials.first).size() > min_mult ) {
+  if( event.IsBkg() == true ) { 
     // This is used to estimate the total background contribution 
     kHistograms[kid_totestbkg]->Fill( event.GetObservable("ECal"), - event.GetTotalWeight() ) ; 
-
+   
+    ///    std::cout << event.GetTotalWeight()  << std::endl;
     // Store contributions from different multiplicities 
     // Check only direct contribution : 
     unsigned int original_mult = min_mult + 1 ; 
@@ -234,15 +235,14 @@ void AnalysisI::PlotBkgInformation( Event event ) {
     // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
     if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() == 0 ) {
       kHistograms[kid_signal]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
-    } else if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() != 0 ) {
-      kHistograms[kid_acccorr]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
+      //      std::cout << " Is bkg = : " << event.IsBkg() << std::endl;
     } else { 
       kHistograms[kid_tottruebkg]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
-     
+
       // Fill each multiplicity contribution 
       unsigned int id = (record_amomcuts.first).size() - min_mult ; 
       if( kHistograms[kid_tottruebkg+id] ) kHistograms[kid_tottruebkg+id]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
-
+      
       // Count number of protons and pions
       unsigned int nprotons = 0 ; 
       unsigned int npions = 0 ;

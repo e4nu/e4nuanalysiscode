@@ -33,11 +33,11 @@ namespace e4nu {
     TVector3 GetRecoq3(void) const ; 
 
     void SetEventID( const unsigned int id ) { fEventID = id ; }
-    void SetTargetPdg( const int target_pdg ) { fTargetPdg = target_pdg ; } 
+    void SetTargetPdg( int target_pdg ) ;
     void SetInLeptPdg( const int pdg ) { fInLeptPdg = pdg ; }
     void SetOutLeptPdg( const int pdg ) { fOutLeptPdg = pdg ; }
-    void SetOutLeptonKinematics( const double energy, const double px, const double py, const double pz ) ;
     void SetInLeptonKinematics( const double energy, const double px, const double py, const double pz ) ; 
+    void SetOutLeptonKinematics( const double energy, const double px, const double py, const double pz ) ;
     void SetFinalParticle( const int pdg, const double E, const double px, const double py, const double pz ) ; 
     void SetOutUnCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) ;
     void SetInUnCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) ; 
@@ -140,11 +140,19 @@ namespace e4nu {
     void SetTruey( const double y ) { fTruey = y ; } 
     void SetRESID( const int resid ) { fresid = resid ; } 
     
+    // Radiative correction utils
+    TLorentzVector GetInCorrLepton4Mom(void) const { return fInCorrLepton ; }
+    TLorentzVector GetOutCorrLepton4Mom(void) const { return fOutCorrLepton ; }
+    void SetInCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) ; 
+    void SetOutCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) ;
+
   protected : 
     // Common funtionalities which depend on MC or data 
     bool fIsMC ;
     TLorentzVector fInLepton ; 
+    TLorentzVector fInCorrLepton ;  // Only used in radiative corrections app 
     TLorentzVector fOutLepton ; 
+    TLorentzVector fOutCorrLepton ; // Only used in radiative corrections app 
     std::map<int,std::vector<TLorentzVector>> fFinalParticles ; 
 
     // Store uncorrected kinematics

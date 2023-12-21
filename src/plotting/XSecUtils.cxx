@@ -1,4 +1,5 @@
 #include "plotting/XSecUtils.h"
+#include "plotting/Systematics.h"
 #include "TLegend.h"
 #include <iomanip>
 #include <filesystem>
@@ -9,14 +10,13 @@
 using namespace e4nu ;
 using namespace e4nu::plotting ;
 
-
 void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_name,
 			  std::string acceptance_file_name, std::string observable,
 			  std::string title, std::string data_name, std::vector<std::string> model,
 			  std::string input_MC_location, std::string input_data_location, std::string output_location,
-			  std::string output_file_name, bool plot_data, std::string analysis_id, bool store_root ){
+			  std::string output_file_name, bool plot_data, std::map<string,double> systematic_map, 
+			  std::string analysis_id, bool store_root ){
 
-  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
   pad1->Draw();
   pad1->cd();
@@ -341,7 +341,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model
       if( hists[size_primary_trees*(ElectronSector+1)+i] ) { 
-	if( i < size_primary_trees ) hists[size_primary_trees*(ElectronSector+1)+i] -> Fill( content, w ) ;
+	if( i < size_primary_trees ) {
+	  hists[size_primary_trees*(ElectronSector+1)+i] -> Fill( content, w ) ;
+	}
       }
       if( i > size_primary_trees - 1 ) id_hist = size_primary_hists + ( i - size_primary_trees );
 
@@ -402,6 +404,18 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_3, DataNormalization );
     NormalizeHist(hist_data_4, DataNormalization );
     NormalizeHist(hist_data_5, DataNormalization );
+    
+    //adding systematics from systematic map
+    for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
+      std::cout << " Adding " << it->second*100 << " % systematic on " << it->first << std::endl;
+      systematics::AddSystematic(*hist_data, it->second, it->first) ;
+      systematics::AddSystematic(*hist_data_0, it->second, it->first) ;
+      systematics::AddSystematic(*hist_data_1, it->second, it->first) ;
+      systematics::AddSystematic(*hist_data_2, it->second, it->first) ;
+      systematics::AddSystematic(*hist_data_3, it->second, it->first) ;
+      systematics::AddSystematic(*hist_data_4, it->second, it->first) ;
+      systematics::AddSystematic(*hist_data_5, it->second, it->first) ;
+    }
   }
 
   // Store uncorrected data
@@ -437,6 +451,10 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
 	NormalizeHist(h_data_slices[l], DataNormalization );
 	CorrectData(h_data_slices[l], h_acc_slices[l] );
+     
+	for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
+	  systematics::AddSystematic(*h_data_slices[l], it->second, it->first) ;
+	}
       }
     }
   }
@@ -471,97 +489,74 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       NormalizeHist(h_SIS_slices[l], mc_norm[0] );
       NormalizeHist(h_DIS_slices[l], mc_norm[0] );
       NormalizeHist(h_MEC_slices[l], mc_norm[0] );
-
-      std::vector<TH1D*> all_slices{h_total_slices[l]};
-      if( plot_data ) all_slices.push_back(h_data_slices[l]);
-      double y_max_total = GetMaximum( all_slices );
-
-      // Add Slice information in title
-      std::string title_subname = title ;
-      std::string alt_obs = GetAlternativeObs(observable);
-      if ( l == 0 ) {
-	std::ostringstream o1 ;
-	o1 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
-	title_subname += " " + plotting::GetObsName(alt_obs) + "<" + o1.str() +" "+plotting::GetUnit(alt_obs) ;
-      } else if ( l == addbinning.size()-2 ) {
-	std::ostringstream o1 ;
-	o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
-	title_subname += " " + plotting::GetObsName(alt_obs) + ">" + o1.str() +" "+plotting::GetUnit(alt_obs) ;
-      } else {
-	std::ostringstream o1, o2 ;
-	o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
-	o2 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
-	title_subname += " " + o1.str() + "<"+ plotting::GetObsName(alt_obs) + "<" + o2.str()+" "+plotting::GetUnit(alt_obs) ;
-      }
-
-      StandardFormat( h_total_slices[l], title_subname, kBlack, 1, observable, y_max_total ) ;
-      StandardFormat( h_QEL_slices[l], title_subname, kBlue-3, 1, observable, y_max_total ) ;
-      StandardFormat( h_RES_Delta_slices[l], title_subname, kRed-4, 1, observable, y_max_total ) ;
-      StandardFormat( h_RES_slices[l], title_subname, kGreen+2, 1, observable, y_max_total ) ;
-      StandardFormat( h_SIS_slices[l], title_subname, kOrange, 1, observable, y_max_total ) ;
-      StandardFormat( h_MEC_slices[l], title_subname, kMagenta-3, 1, observable, y_max_total ) ;
-      StandardFormat( h_DIS_slices[l], title_subname, kCyan+1, 1, observable, y_max_total ) ;
-      if( plot_data ) StandardFormat( h_data_slices[l], title_subname, kBlack, 8, observable, y_max_total ) ;
-
     }
   }
 
-  // Find absolute y max
-  std::vector<TH1D*> temp_check = {hist_true};
-  if(plot_data) temp_check.push_back(hist_data);
-
+  // Store histograms for plotting
+  std::vector<TH1D*> mc_hists = {hist_true};
   for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
-    temp_check.push_back(hists_true_submodel[id]);
+    mc_hists.push_back(hists_true_submodel[id]);
+  }
+
+  std::vector<TH1D*> breakdown = {hist_true_QEL,hist_true_RES_Delta,hist_true_RES,hist_true_SIS,hist_true_MEC,hist_true_DIS};
+  std::vector<TH1D*> mc_per_sector = {hist_true_0,hist_true_1,hist_true_2,hist_true_3,hist_true_4,hist_true_5};
+  std::vector<TH1D*> data_per_sector = {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5};
+  std::vector<std::vector<TH1D*>> all_slices = {h_total_slices,h_QEL_slices,h_RES_Delta_slices,h_RES_slices,h_SIS_slices,h_MEC_slices,h_DIS_slices,h_data_slices};
+
+  // Plot Total, XSector, Legend
+  plotting::PlotTotal( mc_hists, breakdown, hist_data, observable, title, data_name, model, input_MC_location,
+		       input_data_location, output_location, output_file_name,systematic_map,analysis_id,store_root);
+
+  plotting::PlotPerSector( mc_per_sector, data_per_sector, observable, title, data_name, model,input_MC_location, 
+			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root ) ;
+
+  plotting::PlotLegend( mc_hists, breakdown, hist_data, observable, data_name, model, output_location, output_file_name,store_root );
+
+  //  plotting::PlotSlices(  all_slices, addbinning, observable, title, data_name, model, input_MC_location, input_data_location, 
+  //			 output_location, output_file_name,  analysis_id, store_root ) ;
+}
+
+void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,
+			  std::string title, std::string data_name, std::vector<std::string> model,
+			  std::string input_MC_location, std::string input_data_location, std::string output_location,
+			  std::string output_file_name, std::map<string,double> systematic_map, 
+			  std::string analysis_id, bool store_root ) {
+  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);  
+  TPad *pad1 = new TPad("pad1","",0,0,1,1);
+  pad1->Draw();
+  pad1->cd();
+  pad1->SetBottomMargin(0.15);
+  pad1->SetLeftMargin(0.15);
+
+  // Find absolute y max
+  std::vector<TH1D*> temp_check = {mc_hists[0]};
+  if(data) temp_check.push_back(data);
+
+  for( unsigned int id = 1 ; id < mc_hists.size() ; ++id ){
+    temp_check.push_back(mc_hists[id]);
   }
   double y_max_total = GetMaximum( temp_check );
   // Format plots
-  if( plot_data ) { 
-    StandardFormat( hist_data, title, kBlack, 8, observable, y_max_total ) ;
-    StandardFormat( hist_data_0, title+" Sector  0", kOrange+1, 8, observable ) ;
-    StandardFormat( hist_data_1, title+" Sector  1", kPink+4, 8, observable ) ;
-    StandardFormat( hist_data_2, title+" Sector  2", kViolet+5, 8, observable ) ;
-    StandardFormat( hist_data_3, title+" Sector  3", kAzure-5, 8, observable ) ;
-    StandardFormat( hist_data_4, title+" Sector  4", kTeal-7, 8, observable ) ;
-    StandardFormat( hist_data_5, title+" Sector  5", kGreen-3, 8, observable ) ;
-    hist_data -> SetLineWidth(0);
-    
-    StandardFormat( hist_data_uncorr, title, kRed, 8, observable, y_max_total ) ;
-    StandardFormat( hist_data_uncorr_0, title+" Sector  0", kRed, 8, observable ) ;
-    StandardFormat( hist_data_uncorr_1, title+" Sector  1", kRed, 8, observable ) ;
-    StandardFormat( hist_data_uncorr_2, title+" Sector  2", kRed, 8, observable ) ;
-    StandardFormat( hist_data_uncorr_3, title+" Sector  3", kRed, 8, observable ) ;
-    StandardFormat( hist_data_uncorr_4, title+" Sector  4", kRed, 8, observable ) ;
-    StandardFormat( hist_data_uncorr_5, title+" Sector  5", kRed, 8, observable ) ;
+  if( data ) { 
+    StandardFormat( data, title, kBlack, 8, observable, y_max_total ) ;
+    data -> SetLineStyle(1);
   }
-
-  StandardFormat( hist_true, title, kBlack, 1, observable, y_max_total ) ;
-  StandardFormat( hist_true_0, title+" Sector  0", kBlack, 1, observable ) ;
-  StandardFormat( hist_true_1, title+" Sector  1", kBlack, 1, observable ) ;
-  StandardFormat( hist_true_2, title+" Sector  2", kBlack, 1, observable ) ;
-  StandardFormat( hist_true_3, title+" Sector  3", kBlack, 1, observable ) ;
-  StandardFormat( hist_true_4, title+" Sector  4", kBlack, 1, observable ) ;
-  StandardFormat( hist_true_5, title+" Sector  5", kBlack, 1, observable ) ;
-
-  StandardFormat( hist_true_QEL, title, kBlue-3, 1, observable ) ;
-  StandardFormat( hist_true_RES_Delta, title, kRed-4, 1, observable ) ;
-  StandardFormat( hist_true_RES, title, kGreen+2, 1, observable ) ;
-  StandardFormat( hist_true_SIS, title, kOrange, 1, observable ) ;
-  StandardFormat( hist_true_MEC, title, kMagenta-3, 1, observable ) ;
-  StandardFormat( hist_true_DIS, title, kCyan+1, 1, observable ) ;
+  
+  StandardFormat( mc_hists[0], title, kBlack, 1, observable, y_max_total ) ;
+  if( breakdown.size() == 6 ) { 
+    StandardFormat( breakdown[0], title, kBlue-3, 1, observable ) ;
+    StandardFormat( breakdown[1], title, kRed-4, 1, observable ) ;
+    StandardFormat( breakdown[2], title, kGreen+2, 1, observable ) ;
+    StandardFormat( breakdown[3], title, kOrange, 1, observable ) ;
+    StandardFormat( breakdown[4], title, kMagenta-3, 1, observable ) ;
+    StandardFormat( breakdown[5], title, kCyan+1, 1, observable ) ;
+  }
 
   // Draw total xsec (all sectors):
-  hist_true -> Draw("hist");
-  hist_true_QEL -> Draw("hist same");
-  hist_true_RES_Delta -> Draw("hist same");
-  hist_true_RES -> Draw("hist same");
-  hist_true_SIS -> Draw("hist same");
-  hist_true_MEC -> Draw("hist same");
-  hist_true_DIS -> Draw("hist same");
-  for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
-    hists_true_submodel[id] -> SetLineWidth(3);
-    hists_true_submodel[id] -> Draw("hist same");
-  }
-  if( plot_data ) hist_data -> Draw(" err same ");
+  mc_hists[0] -> Draw("hist");
+  for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i] -> Draw("hist same");
+  for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Draw("hist same");
+  if( data ) data -> Draw(" err same ");
  
   if( observable=="ECal" && plotting::PlotZoomIn(analysis_id) == true ){
     // Add a sub-pad1
@@ -572,72 +567,105 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     sub_pad -> SetBottomMargin(0.15);
     sub_pad -> SetLeftMargin(0.15);
 
-    TH1D* tmp_hist_true = (TH1D*)hist_true->Clone();
+    TH1D* tmp_hist_true = (TH1D*)mc_hists[0]->Clone();
     TH1D* tmp_hist_data ;
-    if( plot_data ) tmp_hist_data = (TH1D*)hist_data->Clone();
+    if( data ) tmp_hist_data = (TH1D*)data->Clone();
     tmp_hist_true->SetTitle("");
 
     //tmp_hist_true->GetXaxis()->SetRangeUser(0,BeamE*(1-0.1));
-    if( plot_data ) tmp_hist_data->GetXaxis()->SetRangeUser(0,BeamE*(1-0.02));
-    if( plot_data ) tmp_hist_true->GetYaxis()->SetRangeUser(0,tmp_hist_data->GetBinContent(tmp_hist_data->GetMaximumBin())*(1+0.25));
+    if( data ) tmp_hist_true->GetYaxis()->SetRangeUser(0,tmp_hist_data->GetBinContent(tmp_hist_data->GetMaximumBin())*(1+0.25));
 
     tmp_hist_true -> Draw("hist");
-    hist_true_QEL -> Draw("hist same");
-    hist_true_RES_Delta -> Draw("hist same");
-    hist_true_RES -> Draw("hist same");
-    hist_true_SIS -> Draw("hist same");
-    hist_true_MEC -> Draw("hist same");
-    hist_true_DIS -> Draw("hist same");
-    for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
-      hists_true_submodel[id] -> SetLineWidth(3);
-      hists_true_submodel[id] -> Draw("hist same");
-    }
-    if( plot_data ) hist_data -> Draw(" err same ");
+    for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i] -> Draw("hist same");
+    for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Draw("hist same");
+    if( data ) data -> Draw(" err same ");
 
   }
   std::string output_name = output_file_name+"_dxsec_d"+observable ;
   
   std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
   if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
+
   if( store_root ) c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   delete c1 ;
 
-  TCanvas* c_slices = new TCanvas("c_slices","c_slices",200,10,700,500);
-  c_slices->cd();
-  TPad *pad_slices = new TPad("pad1","",0,0,1,1);
-  pad_slices->Draw();
-  pad_slices->cd();
-  pad_slices->SetBottomMargin(0.15);
-  pad_slices->SetLeftMargin(0.15);
+}
 
-  // Normalize true from slices
-  if( addbinning.size() != 0 ) {
-    pad_slices->Divide(addbinning.size()-1,0);
-    for( unsigned int l = 0 ; l < addbinning.size()-1 ; ++l ){
-      TPad *pad_slice_i = (TPad*)pad_slices->cd(1+l);
-      pad_slice_i -> cd();
-      pad_slice_i -> SetBottomMargin(0.15);
-      pad_slice_i -> SetLeftMargin(0.15);
-      h_total_slices[l] -> GetYaxis()->SetTitleOffset(1.2);
+void plotting::PlotLegend( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,
+			   std::string data_name, std::vector<std::string> model,std::string output_location,
+			   std::string output_file_name, bool store_root ) {
 
-      h_total_slices[l]->Draw("hist");
-      h_QEL_slices[l]->Draw("hist same ");
-      h_RES_Delta_slices[l]->Draw("hist same ");
-      h_RES_slices[l]->Draw("hist same ");
-      h_SIS_slices[l]->Draw("hist same ");
-      h_MEC_slices[l]->Draw("hist same ");
-      h_DIS_slices[l]->Draw("hist same ");
-      if( plot_data ) h_data_slices[l]->Draw("err same ");
+  // Store legend in separate file
+  TCanvas * c_leg = new TCanvas("c_leg","c_leg");
+  c_leg->cd();
+  TPad *pad1 = new TPad("pad1","",0,0,1,1);
+  pad1->Draw();
+  pad1->cd();
+  pad1->SetBottomMargin(0.15);
+  pad1->SetLeftMargin(0.15);
 
+  double LegXmin = 0.1, LegYmin = 0.65, YSpread = 0.25;
+  TLegend* leg = new TLegend(LegXmin,LegYmin,LegXmin+0.9,LegYmin+YSpread);
+  leg->SetBorderSize(0);
+  leg->SetTextFont(132);
+  leg->SetTextSize(0.08);
+  leg->SetFillStyle(0);
+  leg->SetNColumns(2);
+  leg->SetTextSize(0.03);
+  std::string model_def = "MC";
+  if ( model.size() > 0 ) model_def = model[0]; 
+  if( mc_hists[0] ) { 
+    leg->AddEntry(mc_hists[0],("GENIE "+model_def).c_str(),"l");
+    leg->AddEntry(breakdown[0],(model_def+" EMQEL").c_str(),"l");
+    leg->AddEntry(breakdown[1],(model_def+" EMRES P33(1232)").c_str(),"l");
+    leg->AddEntry(breakdown[2],(model_def+" EMRES Others").c_str(),"l");
+    leg->AddEntry(breakdown[3],(model_def+" EMSIS").c_str(),"l");
+    leg->AddEntry(breakdown[4],(model_def+" EMMEC").c_str(),"l");
+    leg->AddEntry(breakdown[5],(model_def+" EMDIS").c_str(),"l");
+  }
+
+  if( mc_hists.size() > 1 ) {
+    for( unsigned int id = 1 ; id < mc_hists.size() ; ++id ){
+      if( !mc_hists[id] ) continue ;
+      std::string model_id = "Model " + std::to_string(id) ;
+      if( model.size() == mc_hists.size() ) model_id = model[id];
+      leg->AddEntry(mc_hists[id],("GENIE "+model_id).c_str(),"l");
     }
   }
-  if( addbinning.size() != 0 ) {
-    output_name = output_file_name+"_dxsec_d"+observable+"_"+GetAlternativeObs(observable)+"_Slices" ;
-    if( store_root ) c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
-    c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
+
+  std::string data_def = "CLAS6 data";
+  if( data_name!="") data_def = data_name ;
+  if(data)  leg->AddEntry(data, data_def.c_str(), "lp");
+  leg->Draw();
+  std::string output_name = output_file_name ;
+  if( store_root ) c_leg->SaveAs((output_location+"/"+output_name+"_legend.root").c_str());
+  c_leg->SaveAs((output_location+"/"+output_name+"_legend.pdf").c_str());
+
+  delete c_leg;
+}
+
+void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*> data_per_sector, std::string observable,
+			      std::string title, std::string data_name, std::vector<std::string> model,
+			      std::string input_MC_location, std::string input_data_location, std::string output_location,
+			      std::string output_file_name, std::map<string,double> systematic_map, std::string analysis_id, bool store_root ) {
+  
+  // Format plots
+  if( data_per_sector.size()!=0 ) { 
+    if( data_per_sector[0] ) StandardFormat( data_per_sector[0], title+" Sector  0", kOrange+1, 8, observable ) ;
+    if( data_per_sector[1] ) StandardFormat( data_per_sector[1], title+" Sector  1", kPink+4, 8, observable ) ;
+    if( data_per_sector[2] ) StandardFormat( data_per_sector[2], title+" Sector  2", kViolet+5, 8, observable ) ;
+    if( data_per_sector[3] ) StandardFormat( data_per_sector[3], title+" Sector  3", kAzure-5, 8, observable ) ;
+    if( data_per_sector[4] ) StandardFormat( data_per_sector[4], title+" Sector  4", kTeal-7, 8, observable ) ;
+    if( data_per_sector[5] ) StandardFormat( data_per_sector[5], title+" Sector  5", kGreen-3, 8, observable ) ;
   }
-  delete c_slices;
+
+  StandardFormat( mc_per_sector[0], title+" Sector  0", kBlack, 1, observable ) ;
+  StandardFormat( mc_per_sector[1], title+" Sector  1", kBlack, 1, observable ) ;
+  StandardFormat( mc_per_sector[2], title+" Sector  2", kBlack, 1, observable ) ;
+  StandardFormat( mc_per_sector[3], title+" Sector  3", kBlack, 1, observable ) ;
+  StandardFormat( mc_per_sector[4], title+" Sector  4", kBlack, 1, observable ) ;
+  StandardFormat( mc_per_sector[5], title+" Sector  5", kBlack, 1, observable ) ;
 
   // Draw total xsec per sectors
   TCanvas * c_sector = new TCanvas("c_sector","c_sector",200,10,700,500);
@@ -649,115 +677,94 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   pad_sector->SetLeftMargin(0.15);
   pad_sector->Divide(3,2);
 
-  TPad *pad_sector_0 = (TPad*)pad_sector->cd(1);
-  pad_sector_0 -> cd();
-  pad_sector_0 -> SetBottomMargin(0.15);
-  pad_sector_0 -> SetLeftMargin(0.15);
-  hist_true_0 -> GetYaxis()->SetTitleOffset(1.2);
-  hist_true_0 -> Draw("hist");
-  if(plot_data) {
-    hist_data_0 -> SetMarkerSize(0.7);
-    hist_data_0 -> Draw(" err same ");
-    //hist_data_uncorr_0 -> Draw(" err same ");
+  for( unsigned int i = 0 ; i < 6 ; ++i ) { 
+    TPad *pad_sector_i = (TPad*)pad_sector->cd(i+1);
+    pad_sector_i -> cd();
+    pad_sector_i -> SetBottomMargin(0.15);
+    pad_sector_i -> SetLeftMargin(0.15);
+    mc_per_sector[i] -> GetYaxis()->SetTitleOffset(1.2);
+    mc_per_sector[i] -> Draw("hist");
+    if(data_per_sector.size()!=0 && data_per_sector[i]) {
+      data_per_sector[i] -> SetMarkerSize(0.7);
+      data_per_sector[i] -> Draw(" err same ");
+    }
   }
 
-  TPad *pad_sector_1 = (TPad*)pad_sector->cd(2);
-  pad_sector_1 -> cd();
-  pad_sector_1 -> SetBottomMargin(0.15);
-  pad_sector_1 -> SetLeftMargin(0.15);
-  hist_true_1 -> GetYaxis()->SetTitleOffset(1.2);
-  hist_true_1 -> Draw("hist");
-  if(plot_data) {
-    hist_data_1 -> SetMarkerSize(0.7);
-    hist_data_1 -> Draw(" err same ");
-    //hist_data_uncorr_1 -> Draw(" err same ");
-  }
-
-  TPad *pad_sector_2 = (TPad*)pad_sector->cd(3);
-  pad_sector_2 -> cd();
-  pad_sector_2 -> SetBottomMargin(0.15);
-  pad_sector_2 -> SetLeftMargin(0.15);
-  hist_true_2 -> GetYaxis()->SetTitleOffset(1.2);
-  hist_true_2 -> Draw("hist");
-  if(plot_data) {
-    hist_data_2 -> SetMarkerSize(0.7);
-    hist_data_2 -> Draw(" err same ");
-    //hist_data_uncorr_2 -> Draw(" err same ");
-  }
-
-  TPad *pad_sector_3 = (TPad*)pad_sector->cd(4);
-  pad_sector_3 -> cd();
-  pad_sector_3 -> SetBottomMargin(0.15);
-  pad_sector_3 -> SetLeftMargin(0.15);
-  hist_true_3 -> GetYaxis()->SetTitleOffset(1.2);
-  hist_true_3 -> Draw("hist");
-  if(plot_data) {
-    hist_data_3 -> SetMarkerSize(0.7);
-    hist_data_3 -> Draw(" err same ");
-    //hist_data_uncorr_3 -> Draw(" err same ");
-  }
-
-  TPad *pad_sector_4 = (TPad*)pad_sector->cd(5);
-  pad_sector_4 -> cd();
-  pad_sector_4 -> SetBottomMargin(0.15);
-  pad_sector_4 -> SetLeftMargin(0.15);
-  hist_true_4 -> GetYaxis()->SetTitleOffset(1.2);
-  hist_true_4 -> Draw("hist");
-  if(plot_data) {
-    hist_data_4 -> SetMarkerSize(0.7);
-    hist_data_4 -> Draw(" err same ");
-    //hist_data_uncorr_4 -> Draw(" err same ");
-  }
-
-  TPad *pad_sector_5 = (TPad*)pad_sector->cd(6);
-  pad_sector_5 -> cd();
-  pad_sector_5 -> SetBottomMargin(0.15);
-  pad_sector_5 -> SetLeftMargin(0.15);
-  hist_true_5 -> GetYaxis()->SetTitleOffset(1.2);
-  hist_true_5 -> Draw("hist");
-  if(plot_data) {
-    hist_data_5 -> SetMarkerSize(0.7);
-    hist_data_5 -> Draw(" err same ");
-    //hist_data_uncorr_5 -> Draw(" err same ");
-  }
-
-  output_name = MC_files_name[0]+"_dxsec_d"+observable+"_persector" ;
+  std::string output_name = output_file_name+"_dxsec_d"+observable+"_persector" ;
   std::filesystem::path xsecpersector_path{(output_location+"/XSecPerSector/").c_str()};
   if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
   if( store_root ) c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
   c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
   delete c_sector ;
+}
 
-  // Store legend in separate file
-  TCanvas * c_leg = new TCanvas("c_leg","c_leg");
-  c_leg->cd();
-  double LegXmin = 0.1, LegYmin = 0.65, YSpread = 0.25;
-  TLegend* leg = new TLegend(LegXmin,LegYmin,LegXmin+0.9,LegYmin+YSpread);
-  leg->SetBorderSize(0);
-  leg->SetTextFont(132);
-  leg->SetTextSize(0.08);
-  leg->SetFillStyle(0);
-  leg->SetNColumns(2);
-  leg->SetTextSize(0.03);
-  leg->AddEntry(hist_true,("GENIE "+model[0]).c_str(),"l");
-  leg->AddEntry(hist_true_QEL,(model[0]+" EMQEL").c_str(),"l");
-  leg->AddEntry(hist_true_RES_Delta,(model[0]+" EMRES P33(1232)").c_str(),"l");
-  leg->AddEntry(hist_true_RES,(model[0]+" EMRES Others").c_str(),"l");
-  leg->AddEntry(hist_true_SIS,(model[0]+" EMSIS").c_str(),"l");
-  leg->AddEntry(hist_true_MEC,(model[0]+" EMMEC").c_str(),"l");
-  leg->AddEntry(hist_true_DIS,(model[0]+" EMDIS").c_str(),"l");
-
-  if( model.size() > 1 ) {
-    for( unsigned int id = 1 ; id < model.size() -1 ; ++id ){
-      leg->AddEntry(hists_true_submodel[id-1],("GENIE "+model[id]).c_str(),"l");
+void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vector<double> addbinning, std::string observable,
+			   std::string title, std::string data_name, std::vector<std::string> model,
+			   std::string input_MC_location, std::string input_data_location, std::string output_location,
+			   std::string output_file_name, std::map<string,double> systematic_map, std::string analysis_id, bool store_root ) {
+  
+  for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+    double y_max_total = GetMaximum( all_slices[0] );
+    
+    // Add Slice information in title
+    std::string title_subname = title ;
+    std::string alt_obs = GetAlternativeObs(observable);
+    if ( l == 0 ) {
+      std::ostringstream o1 ;
+      o1 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
+      title_subname += " " + plotting::GetObsName(alt_obs) + "<" + o1.str() +" "+plotting::GetUnit(alt_obs) ;
+    } else if ( l == addbinning.size()-2 ) {
+      std::ostringstream o1 ;
+      o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
+      title_subname += " " + plotting::GetObsName(alt_obs) + ">" + o1.str() +" "+plotting::GetUnit(alt_obs) ;
+    } else {
+      std::ostringstream o1, o2 ;
+      o1 << std::fixed<< std::setprecision(1) << addbinning[l] ;
+      o2 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
+      title_subname += " " + o1.str() + "<"+ plotting::GetObsName(alt_obs) + "<" + o2.str()+" "+plotting::GetUnit(alt_obs) ;
     }
+    
+    if( all_slices[0][l]) StandardFormat( all_slices[0][l], title_subname, kBlack, 1, observable, y_max_total ) ;
+    if( all_slices[1][l]) StandardFormat( all_slices[1][l], title_subname, kBlue-3, 1, observable, y_max_total ) ;
+    if( all_slices[2][l]) StandardFormat( all_slices[2][l], title_subname, kRed-4, 1, observable, y_max_total ) ;
+    if( all_slices[3][l]) StandardFormat( all_slices[3][l], title_subname, kGreen+2, 1, observable, y_max_total ) ;
+    if( all_slices[4][l]) StandardFormat( all_slices[4][l], title_subname, kOrange, 1, observable, y_max_total ) ;
+    if( all_slices[5][l]) StandardFormat( all_slices[5][l], title_subname, kMagenta-3, 1, observable, y_max_total ) ;
+    if( all_slices[6][l]) StandardFormat( all_slices[6][l], title_subname, kCyan+1, 1, observable, y_max_total ) ;
+    if( all_slices.size() == 8 && all_slices[7][l]) StandardFormat( all_slices[7][l], title_subname, kBlack, 8, observable, y_max_total ) ;
   }
 
-  if(plot_data)  leg->AddEntry(hist_data, data_name.c_str(), "lp");
-  leg->Draw();
-  output_name = MC_files_name[0] ;
-  if( store_root ) c_leg->SaveAs((output_location+"/"+output_name+"_legend.root").c_str());
-  c_leg->SaveAs((output_location+"/"+output_name+"_legend.pdf").c_str());
+  TCanvas* c_slices = new TCanvas("c_slices","c_slices",200,10,700,500);
+  c_slices->cd();
+  TPad *pad_slices = new TPad("pad1","",0,0,1,1);
+  pad_slices->Draw();
+  pad_slices->cd();
+  pad_slices->SetBottomMargin(0.15);
+  pad_slices->SetLeftMargin(0.15);
+  
+  // Normalize true from slices
+  if( addbinning.size() != 0 ) {
+    pad_slices->Divide(addbinning.size()-1,0);
+    for( unsigned int l = 0 ; l < addbinning.size()-1 ; ++l ){
+      TPad *pad_slice_i = (TPad*)pad_slices->cd(1+l);
+      pad_slice_i -> cd();
+      pad_slice_i -> SetBottomMargin(0.15);
+      pad_slice_i -> SetLeftMargin(0.15);
+      if( all_slices[0][l]) {
+	all_slices[0][l] -> GetYaxis()->SetTitleOffset(1.2);
+	all_slices[0][l]->Draw("hist");
+      }
 
-  delete c_leg;
+      for( unsigned i = 1 ; i < all_slices.size() -1 ; ++i ) { 
+	if( all_slices[i][l] ) all_slices[i][l] ->Draw("same");
+      }
+      if( all_slices.size() == 8 && all_slices[8][l] ) all_slices[8][l] -> Draw("err same ");
+    }
+  }
+  
+  std::string output_name = output_file_name+"_dxsec_d"+observable+"_"+GetAlternativeObs(observable)+"_Slices" ;
+  if( store_root ) c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+  c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
+
+  delete c_slices;
 }

@@ -27,6 +27,7 @@ namespace e4nu {
     static const double kPiMMass = 0.139570 ; 
     static const double kPi0Mass = 0.139570 ;
     static const double kElectronMass = 0.000510998 ; 
+    static const double kNucleonMass    =  (kProtonMass+kNeutronMass)/2.;  //GeV
 
     // Detector resolution for each particle 
     static const double kProtonRes = 0.01 ; 

@@ -6,5 +6,6 @@
 
 #pragma link C++ namespace e4nu;
 #pragma link C++ namespace e4nu::plotting;
+#pragma link C++ namespace e4nu::systematics;
 
 #endif

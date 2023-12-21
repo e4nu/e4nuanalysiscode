@@ -22,7 +22,7 @@ TString FSIModel = "hA2018_LFG";
 TString WhichSample = "EMradcorrLarryWeights";
 TString graphstring = "";
 
-TString file_name = "e4nu_radiative_1H_4_325GeV";
+TString file_name = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/src/plotting_apps/rad_corr/RadFlux_G18_10a_H_4320MeV.gst.root";//"e4nu_radiative_1H_4_325GeV";
 
 TString FullPath = "./mySamples";
 
@@ -385,6 +385,10 @@ class treeProducer_simulation {
 #ifdef treeProducer_simulation_cxx
 treeProducer_simulation::treeProducer_simulation(TTree *tree) : fChain(0) 
 {
+
+  TFile * mcfile = new TFile( file_name,"ROOT");
+  tree = (TTree*)mcfile->Get("gst");
+
   // if parameter tree is not specified (or zero), connect the file
   // used to generate this class and read the Tree.
   if (tree == 0) {

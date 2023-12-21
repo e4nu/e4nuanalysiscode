@@ -51,7 +51,7 @@ void treeProducer_simulation::Loop() {
   TH3D* h3_p = (TH3D*)(acc_p->Get("h3"));
 
   TFile* file = new TFile(file_name+"_em.root","recreate");
-  std::cout << std::endl << "File " << file_name << ".root will be created" << std::endl << std::endl; 
+  std::cout << "File " << file_name << ".root will be created" << std::endl << std::endl; 
   double Weight = 1.;
   double Ebeam = 4.325;
   double Pbeam = 4.325;

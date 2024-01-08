@@ -47,7 +47,7 @@ void treeProducer_simulation::Loop() {
   string acc_path = e4nu_path+"/data/AcceptanceMaps/CLAS6";
   TFile* acc_e = new TFile((acc_path+"/AcceptanceMap_e_TH3D.root").c_str() );
   TH3D* h3_e = (TH3D*)(acc_e->Get("h3"));
-  TFile* acc_p = new TFile((acc_path+"./AcceptanceMap/AcceptanceMap_p_TH3D.root").c_str() );
+  TFile* acc_p = new TFile((acc_path+"/AcceptanceMap_p_TH3D.root").c_str() );
   TH3D* h3_p = (TH3D*)(acc_p->Get("h3"));
 
   TFile* file = new TFile(file_name+"_em.root","recreate");

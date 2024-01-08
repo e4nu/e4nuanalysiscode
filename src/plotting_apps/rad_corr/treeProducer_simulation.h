@@ -22,13 +22,12 @@ TString FSIModel = "hA2018_LFG";
 TString WhichSample = "EMradcorrLarryWeights";
 TString graphstring = "";
 
-TString file_name = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/src/plotting_apps/rad_corr/RadFlux_G18_10a_H_4320MeV.gst.root";//"e4nu_radiative_1H_4_325GeV";
-
 TString FullPath = "./mySamples";
 
 char * env = std::getenv("E4NUANALYSIS") ; 
 std::string path = env ;
 std::string FullInputName = path+"/data/1H_4_325_Data_Plots_FSI_em.root"; 
+TString file_name = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/src/plotting_apps/rad_corr/RadFlux_G18_10a_H_4320MeV.gst.root";
 
 bool SCpdcut = true;
 

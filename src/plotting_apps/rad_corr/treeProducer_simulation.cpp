@@ -50,8 +50,9 @@ void treeProducer_simulation::Loop() {
   TFile* acc_p = new TFile((acc_path+"/AcceptanceMap_p_TH3D.root").c_str() );
   TH3D* h3_p = (TH3D*)(acc_p->Get("h3"));
 
-  TFile* file = new TFile(file_name+"_em.root","recreate");
-  std::cout << "File " << file_name << ".root will be created" << std::endl << std::endl; 
+  TString out_file_name = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/src/plotting_apps/rad_corr/rad_w_acc";
+  TFile* file = new TFile(out_file_name+"_em.root","recreate");
+  std::cout << "File " << out_file_name << "_em.root will be created" << std::endl << std::endl; 
   double Weight = 1.;
   double Ebeam = 4.325;
   double Pbeam = 4.325;
@@ -269,10 +270,10 @@ void treeProducer_simulation::Loop() {
     double AccWeight_e = h3_e->GetBinContent(IDeTrial+1,YPTarETrial+1,ZvertETrial+1);
     double AccWeight_p = h3_p->GetBinContent(IDpTrial+1,YPTarPTrial+1,ZvertPTrial+1);
 
-    if (Weight > 1.  && Weight * (AccWeight_e * AccWeight_p) > 0) std::cout<<"Weight "<<Weight<<" AccWeight_e "<<AccWeight_e<<" AccWeight_p "<<AccWeight_p<<std::endl;
+    //if (Weight > 1.  && Weight * (AccWeight_e * AccWeight_p) > 0) std::cout<<"Weight "<<Weight<<" AccWeight_e "<<AccWeight_e<<" AccWeight_p "<<AccWeight_p<<std::endl;
 
     Weight = Weight * (AccWeight_e * AccWeight_p);
-    if (Weight >0 ) std::cout<<"Final Weight "<<Weight<<std::endl;
+    //if (Weight >0 ) std::cout<<"Final Weight "<<Weight<<std::endl;
 
     counter ++;
 
@@ -397,7 +398,6 @@ void treeProducer_simulation::Loop() {
 
   std::cout << std::endl;
   std::cout << "counter = "<< counter << std::endl; 
-  std::cout << "File " << file_name << ".root created " << std::endl; 
   std::cout << std::endl;
   std::cout << "countQEL "<<countQEL<<" countRES "<<countRES<<" countDIS "<<countDIS<<std::endl;
   file->Write(); file->Close(); 

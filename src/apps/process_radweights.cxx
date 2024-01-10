@@ -143,7 +143,7 @@ int main( int argc, char* argv[] ) {
 
     // Compute true detected outgoing electron kinematics with energy loss method
     TLorentzVector detected_electron; // will be set in RadOutElectron
-    TLorentzVector OutGamma = RadOutElectron( CorrOutElectron, detected_electron,tgt, thickness, MaxEPhoton, rad_model );
+    TLorentzVector OutGamma = RadOutElectron( CorrOutElectron, detected_electron,tgt, thickness, MaxEPhoton, "simc");//rad_model );
     h_outgammamom->Fill(OutGamma.E()); 
     h_outcorremom->Fill(CorrOutElectron.E());
     h_outemom->Fill(detected_electron.E());
@@ -152,8 +152,7 @@ int main( int argc, char* argv[] ) {
     event.SetOutLeptonKinematics( detected_electron ) ;
 
     // Compute correction weight
-    double weight = SIMCRadCorrWeight( event, thickness, MaxEPhoton, "simc");
-    //rad_model ) ;
+    double weight = SIMCRadCorrWeight( event, thickness, MaxEPhoton, "simple");//rad_model ) ;
     
     event.SetEventWeight ( weight * event.GetEventWeight() ) ; 
 

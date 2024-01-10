@@ -38,7 +38,7 @@ int main( int argc, char* argv[] ) {
   string output_file = "radiatedflux.root";
   double EBeam = 1 ; 
   int tgt = 1000060120 ;
-  int nbins = 50 ; 
+  int nbins = 400 ; 
   double Emin = 0.75 ;
   double Emax = EBeam+0.02 ;
   double thickness = e4nu::conf::GetThickness(tgt); // Defaulted to CLAS6

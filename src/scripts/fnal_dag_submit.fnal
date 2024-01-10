@@ -1,0 +1,4 @@
+#!/bin/bash
+source /cvmfs/fermilab.opensciencegrid.org/products/common/etc/setups ;
+setup fife_utils ;
+jobsub_submit -G genie --OS=SL7 --memory=10GB --disk=10GB --expected-lifetime=25h -N 1 --role=Analysis --dag file:///genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/src/scripts/grid_submission.xml;

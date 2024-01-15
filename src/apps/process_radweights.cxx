@@ -35,9 +35,6 @@ using namespace e4nu::plotting;
 // --first-event      Default 0                                //
 // --target : target pdg                                       //
 // --thickness : thickness of your experiment target           //
-// --Nbins : number of bins for radiated flux histogram        //
-// --Emin : minimum energy for your histogram axis             //
-// --Emax : maximum energy for your histogram axis             //
 // --rad-model : model used for external radiation of in e-    //
 //               simc or simple                                //
 // --max-Ephoton : defaulted to 0.2 (of beam energy)           //

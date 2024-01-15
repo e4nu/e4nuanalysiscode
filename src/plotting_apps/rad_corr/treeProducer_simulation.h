@@ -27,7 +27,23 @@ TString FullPath = "./mySamples";
 char * env = std::getenv("E4NUANALYSIS") ; 
 std::string path = env ;
 std::string FullInputName = path+"/data/1H_4_325_Data_Plots_FSI_em.root"; 
-TString file_name = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/src/plotting_apps/rad_corr/RadFlux_G18_10a_H_4320MeV.gst.root";
+//TString file_name = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/src/plotting_apps/rad_corr/RadFlux_G18_10a_H_4320MeV.gst.root";
+TString file_name = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/e_on_1000010010_4325MeV_H_G18_10a_radiated.gst.root";
+//"/pnfs/genie/scratch/users/jtenavid/GENIE_e4nu_Generations/2024Generation/G18_10a/MonoFlux/master-routine_validation_01-eScattering/G18_10a_H_4325MeV_MonoFlux.gst.root";
+//
+//"/pnfs/genie/scratch/users/jtenavid/GENIE_e4nu_Generations/G18_10a/MonoFlux/master-routine_validation_01-eScattering/e_on_1000010010_4325MeV_H_G18_10a_radiated.gst.root";
+//"/pnfs/genie/scratch/users/jtenavid/GENIE_e4nu_Generations/2024Generation/G18_10a/MonoFlux/master-routine_validation_01-eScattering/G18_10a_H_4325MeV_MonoFlux.gst.root"; 
+//"/pnfs/genie/scratch/users/jtenavid/GENIE_e4nu_Generations/2024Generation/G18_10a/RadCorr/master-routine_validation_01-eScattering/G18_10a_H_4325MeV_RadFlux.gst.root";
+  //
+//"/pnfs/genie/scratch/users/jtenavid/GENIE_e4nu_Generations/2024Generation/G18_10a/AdiMethod_simple/master-routine_validation_01-eScattering/G18_10a_H_4325MeV_AdiSimple.gst.root";
+  //"/pnfs/genie/scratch/users/jtenavid/GENIE_e4nu_Generations/2024Generation/G18_10a/AdiMethod/master-routine_validation_01-eScattering/G18_10a_Adi_simc_H_4325MeV.gst.root";
+  //
+
+  //"/pnfs/genie/scratch/users/jtenavid/GENIE_e4nu_Generations/2024Generation/G18_10a/RadCorr/master-routine_validation_01-eScattering/G18_10a_H_4325MeV_RadFlux.gst.root";
+  //
+  //
+//TString file_name = "/genie/app/users/jtenavid/Software/genie-v3/GeneratorRad/e_on_1000010010_4325MeV_simple.gst.root";
+
 
 bool SCpdcut = true;
 

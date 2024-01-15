@@ -38,7 +38,7 @@ int main( int argc, char* argv[] ) {
   string output_file = "radiatedflux.root";
   double EBeam = 1 ; 
   int tgt = 1000060120 ;
-  int nbins = 400 ; 
+  int nbins = 1000 ; 
   double Emin = 0.75 ;
   double Emax = EBeam+0.02 ;
   double thickness = e4nu::conf::GetThickness(tgt); // Defaulted to CLAS6
@@ -80,7 +80,7 @@ int main( int argc, char* argv[] ) {
   TH1D * hradflux = new TH1D( "hradflux", "Radiated Flux", nbins, Emin, Emax) ;   
 
   TLorentzVector V4_beam(0,0,EBeam,EBeam);
-  unsigned int nentries = 10000; 
+  unsigned int nentries = 100000; 
   for( unsigned int i = 0 ; i < nentries ; ++i ) { 
     double egamma = 0 ; 
     if( rad_model == "simc" ) egamma = SIMCEnergyLoss( V4_beam, 11, tgt, thickness, MaxEPhoton ) ;

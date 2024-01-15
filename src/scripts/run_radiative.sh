@@ -15,5 +15,5 @@ cd e4nuanalysiscode ;
 source e4nu_gpvm_env.sh ;
 make;
 
-./process_radweights --input-gst-file $CONDOR_DIR_INPUT/G18_10a_H_4325MeV_RadFlux.gst.root --output-gst-file $CONDOR_DIR_INPUT/e_on_1000010010_4325MeV_H_G18_10a_radiated.gst.root --true-EBeam 4.325 --nevents 1000 --target 1000010010 --rad-model simple
+./process_radweights --input-gst-file $CONDOR_DIR_INPUT/G18_10a_H_4325MeV_RadFlux.gst.root --output-gst-file $CONDOR_DIR_INPUT/e_on_1000010010_4325MeV_H_G18_10a_radiated.gst.root --true-EBeam 4.325 --target 1000010010 --rad-model simple
 ifdh cp -D $CONDOR_DIR_INPUT/e_on_1000010010_4325MeV_H_G18_10a_radiated.gst.root /pnfs/genie/scratch/users/jtenavid/GENIE_e4nu_Generations/G18_10a/MonoFlux/master-routine_validation_01-eScattering/ ;

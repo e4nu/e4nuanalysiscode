@@ -197,7 +197,6 @@ void treeProducer_simulation::Loop() {
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     // Proton
-
     double pp_smeared = gRandom->Gaus(pf[ProtonID[0]],ResoP*pf[ProtonID[0]]);
     double thetap_smeared = gRandom->Gaus(TMath::ACos(cthf[ProtonID[0]]),ResoTheta);
     double phip_smeared = gRandom->Gaus(TMath::ATan2(pyf[ProtonID[0]],pxf[ProtonID[0]]),ResoPhi);
@@ -244,6 +243,7 @@ void treeProducer_simulation::Loop() {
 
     double EQE = (2 * ProtonMass * FSElectron4Vector.E() - pow(ElectronMass,2) ) / 2 / ( ProtonMass - FSElectron4Vector.E() + FSElectronMag * FSElectronCosTheta); 
     double ECal = FSElectron4Vector.E() + FSProton4Vector.E() - ProtonMass + BE;
+    std::cout << - ProtonMass + BE << std::endl;
     //if (ECal > 4.32) std::cout<<"El "<<FSElectron4Vector.E()<<" Ep "<<FSProton4Vector.E()<<" Ecal "<<ECal<<" EQE "<<EQE<<std::endl;
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -274,15 +274,20 @@ void treeProducer_simulation::Loop() {
 
     Weight = Weight * (AccWeight_e * AccWeight_p);
     //if (Weight >0 ) std::cout<<"Final Weight "<<Weight<<std::endl;
-
+    if( Weight != 0 )    std::cout << Weight << " acc e " << AccWeight_e << " acc p " << AccWeight_p<< std::endl;
+    
     counter ++;
+    //    std::cout << " delta_e " << delta_e << " DeltaP_CV " << DeltaP_CV << std::endl;
+    //std::cout << " delta_e " << delta_p << " DeltaP_CV " << DeltaP_CV << std::endl;
 
     if ( fabs(delta_e) > DeltaP_CV) { continue; }
     if ( fabs(delta_p) > DeltaP_CV) { continue; }
 
+    //std::cout << " YPTarE " << YPTarE << " YPTarP " << YPTarP << std::endl;
+
     if ( fabs(YPTarE) > YPTarAcceptance ) { continue; }
     if ( fabs(YPTarP) > YPTarAcceptance ) { continue; }
-
+    if( Weight != 0 ) std::cout << " hello " << std::endl;
     if (Weight == 0) continue;
     //if ( fabs(FSElectronPhi) > XPTarAcceptance ) { continue; }
     //if ( fabs(FSProtonPhi) > XPTarAcceptance ) { continue; }
@@ -383,7 +388,7 @@ void treeProducer_simulation::Loop() {
       nPhotons->Fill(nphotons,Weight);
       EISR->Fill(eISR,Weight);
       EFSR->Fill(eFSR,Weight);
-
+      if( Weight != 0 ) std::cout << " HERE " << std::endl;
       if (res) countRES++; 
       if (qel) countQEL++; 
       if (dis) countDIS++; 

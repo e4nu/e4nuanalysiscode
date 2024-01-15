@@ -32,6 +32,7 @@ using namespace e4nu::plotting;
 // --output-gst-file) OutputFile in GENIE gst format           //
 // --true-EBeam)      True beam energy used for flux generation//
 // --nevents          Number of events to process              //
+// --first-event      Default 0                                //
 // --target : target pdg                                       //
 // --thickness : thickness of your experiment target           //
 // --Nbins : number of bins for radiated flux histogram        //
@@ -52,6 +53,7 @@ int main( int argc, char* argv[] ) {
   string input_file, output_file = "radiated.gst.root";
   string output_hist = "" ; 
   double nevents = 10000000;
+  double first_event = 0 ;
   double true_beam_energy = 1; 
   int tgt = 1000060120 ;
   double thickness = e4nu::conf::GetThickness(tgt); // Defaulted to CLAS6
@@ -82,6 +84,9 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("nevents",argc,argv)) {
       nevents = stoi(GetArg("nevents",argc,argv));
     }
+    if( ExistArg("first-event",argc,argv)) {
+      first_event = stoi(GetArg("first-event",argc,argv));
+    }
     if( ExistArg("output-hist",argc,argv)) {
       output_hist = GetArg("output-hist",argc,argv);
     }
@@ -109,7 +114,7 @@ int main( int argc, char* argv[] ) {
   TFile * out_file = TFile::Open(output_file.c_str(),"RECREATE");
   s_tree = new TTree("gst","GENIE Summary Event Tree");
 
-  MCEventHolder * event_holder = new MCEventHolder( input_file, 0, nevents ) ; 
+  MCEventHolder * event_holder = new MCEventHolder( input_file, first_event, nevents ) ; 
   if( !event_holder ) {
     std::cout << "Failed to instiantize event holder" << std::endl;
     return 0;
@@ -152,7 +157,7 @@ int main( int argc, char* argv[] ) {
     event.SetOutLeptonKinematics( detected_electron ) ;
 
     // Compute correction weight
-    double weight = SIMCRadCorrWeight( event, thickness, MaxEPhoton, "simple");//rad_model ) ;
+    double weight = SIMCRadCorrWeight( event, thickness, MaxEPhoton, rad_model ) ;
     
     event.SetEventWeight ( weight * event.GetEventWeight() ) ; 
 
@@ -164,10 +169,10 @@ int main( int argc, char* argv[] ) {
     } else { 
       event_record[kPdgPhoton] = { InGamma, OutGamma } ;
     }  
+    event.SetFinalParticlesKinematics(event_record);
 
     // Store back to gst format
     StoreToGstFormat( event, output_file ) ;
-
   }
 
   s_tree ->Write();
@@ -230,7 +235,7 @@ void StoreToGstFormat( Event & event, string output_file ) {
   //____________________________________________________________________________________
   
   // Members for root file
-  Int_t iev = 0 ;
+  Int_t iev = event.GetEventID();
   Int_t neu = 0 ;
   Int_t fspl = 0 ;
   Int_t tgt = 0 ;
@@ -326,7 +331,6 @@ void StoreToGstFormat( Event & event, string output_file ) {
 
 
   // Create tree branches
-  //
   if( event.GetEventID() == 0 ){
     s_tree->Branch("iev", &iev, "iev/I");
     s_tree->Branch("neu", &neu, "neu/I");
@@ -422,7 +426,7 @@ void StoreToGstFormat( Event & event, string output_file ) {
     s_tree->Branch("pyi", &pyi, "pyi[ni]/D");
     s_tree->Branch("pzi", &pzi, "pzi[ni]/D");
   }
-  iev = event.GetEventID();
+
   tgt = event.GetTargetPdg();
   qel = event.IsQEL();
   mec = event.IsMEC();
@@ -493,6 +497,7 @@ void StoreToGstFormat( Event & event, string output_file ) {
   for ( auto it = final_particles.begin(); it != final_particles.end(); it++) {
     for ( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
       pdgf[nf] = it->first;
+      std::cout << pdgf[nf] << std::endl;
       Ef[nf] = (it->second)[i].E();
       pxf[nf] = (it->second)[i].Px();
       pyf[nf] = (it->second)[i].Py();

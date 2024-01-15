@@ -497,7 +497,6 @@ void StoreToGstFormat( Event & event, string output_file ) {
   for ( auto it = final_particles.begin(); it != final_particles.end(); it++) {
     for ( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
       pdgf[nf] = it->first;
-      std::cout << pdgf[nf] << std::endl;
       Ef[nf] = (it->second)[i].E();
       pxf[nf] = (it->second)[i].Px();
       pyf[nf] = (it->second)[i].Py();

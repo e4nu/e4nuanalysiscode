@@ -9,7 +9,7 @@ Author:
       Julia Tena Vidal <jtenavidal \st tauex.tau.ac.il>
       Tel Aviv University
 """
-import os, optparse, glob, tarfile
+import os, optparse, glob, tarfile, re
 
 op = optparse.OptionParser(usage=__doc__)
 op.add_option("--git-location", dest="GIT_LOCATION", default="https://github.com/e4nu/e4nuanalysiscode.git", help="e4nu code location in github. Defaulted to %default")
@@ -42,9 +42,9 @@ if os.path.exists(e4nu_pnfs_setup) :
     os.remove(e4nu_pnfs_setup)
 
 # Configure additional optional options
-options = ""
-if( opts.THICKNESS ) options += " --thickness "+str(opts.THICKNESS)
-if( opts.EMAX ) options += " --Emax "+str(opts.EMAX)
+options = "" 
+#if( opts.THICKNESS ) options_str = options + " --thickness "+str(opts.THICKNESS)
+#if( opts.EMAX ) options_str = options + " --Emax "+str(opts.EMAX)
 
 os.system('cp '+e4nu_setup_file+' '+opts.JOBSTD )
 
@@ -63,11 +63,16 @@ grid = open( rad_dir+"grid_submission.xml", 'w' )
 grid.write("<parallel>\n")
 
 for x in gst_file_names:
-    if os.path.exists(rad_dir+name_out_file+"_"+str(counter)+".sh"):
-        os.remove(rad_dir+name_out_file+"_"+str(counter)+".sh")
-
     genie_file=os.path.basename(gst_file_names[counter])
+
+    number = re.findall(r'\d+',gst_file_names[counter])[-1:][0]
+
+    if os.path.exists(rad_dir+name_out_file+"_"+str(number)+".sh"):
+        os.remove(rad_dir+name_out_file+"_"+str(number)+".sh")
     script = open( rad_dir+name_out_file+"_"+str(counter)+".sh", 'w' ) 
+
+    print(number)
+
     script.write("#!/bin/bash \n")
     script.write("source /cvmfs/fermilab.opensciencegrid.org/products/common/etc/setups \n")
     script.write("setup ifdhc v2_6_6 \n")
@@ -79,10 +84,10 @@ for x in gst_file_names:
     script.write("git clone "+opts.GIT_LOCATION+" -b "+opts.BRANCH+" ;\n")
     script.write("cd e4nuanalysiscode ; source e4nu_gpvm_env.sh ; make ;\n")
     #write main command
-    script.write("./process_radweights --input-gst-file $CONDOR_DIR_INPUT/"+genie_file+" --output-gst-file $CONDOR_DIR_INPUT/rad_corr_"+str(counter)+".gst.root --true-EBeam "+str(opts.EnergyBeam)+" --target "+str(opts.TARGET)+" --rad-model "+opts.MODEL+options+" ; \n\n")
-    script.write("ifdh cp -D $CONDOR_DIR_INPUT/rad_corr_"+str(counter)+".gst.root "+rad_dir+" \n")
+    script.write("./process_radweights --input-gst-file $CONDOR_DIR_INPUT/"+genie_file+" --output-gst-file $CONDOR_DIR_INPUT/rad_corr_"+str(number)+".gst.root --true-EBeam "+str(opts.EnergyBeam)+" --target "+str(opts.TARGET)+" --rad-model "+opts.MODEL+options+" ; \n\n")
+    script.write("ifdh cp -D $CONDOR_DIR_INPUT/rad_corr_"+str(number)+".gst.root "+rad_dir+" \n")
 
-    grid.write("jobsub_submit  -n --memory=4GB --disk=4GB --expected-lifetime=4h  --OS=SL7 --mail_on_error file://"+rad_dir+name_out_file+"_"+str(counter)+".sh \n")
+    grid.write("jobsub_submit  -n --memory=4GB --disk=4GB --expected-lifetime=4h  --OS=SL7 --mail_on_error file://"+rad_dir+name_out_file+"_"+str(number)+".sh \n")
 
     counter += 1
 

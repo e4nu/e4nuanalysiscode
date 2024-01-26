@@ -64,14 +64,12 @@ grid.write("<parallel>\n")
 
 for x in gst_file_names:
     genie_file=os.path.basename(gst_file_names[counter])
-
+    
     number = re.findall(r'\d+',gst_file_names[counter])[-1:][0]
-
+    
     if os.path.exists(rad_dir+name_out_file+"_"+str(number)+".sh"):
         os.remove(rad_dir+name_out_file+"_"+str(number)+".sh")
-    script = open( rad_dir+name_out_file+"_"+str(counter)+".sh", 'w' ) 
-
-    print(number)
+    script = open( rad_dir+name_out_file+"_"+str(number)+".sh", 'w' ) 
 
     script.write("#!/bin/bash \n")
     script.write("source /cvmfs/fermilab.opensciencegrid.org/products/common/etc/setups \n")

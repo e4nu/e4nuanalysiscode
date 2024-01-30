@@ -14,7 +14,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 			  std::string acceptance_file_name, std::string observable,
 			  std::string title, std::string data_name, std::vector<std::string> model,
 			  std::string input_MC_location, std::string input_data_location, std::string output_location,
-			  std::string output_file_name, bool plot_mc, bool plot_data, std::map<string,double> systematic_map, 
+			  std::string output_file_name, bool normalise, bool plot_mc, bool plot_data, std::map<string,double> systematic_map, 
 			  std::string analysis_id, bool store_root ){
 
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
@@ -397,14 +397,16 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // Normalize data
   if( plot_data ) { 
-    NormalizeHist(hist_data, DataNormalization );
-    NormalizeHist(hist_data_0, DataNormalization );
-    NormalizeHist(hist_data_1, DataNormalization );
-    NormalizeHist(hist_data_2, DataNormalization );
-    NormalizeHist(hist_data_3, DataNormalization );
-    NormalizeHist(hist_data_4, DataNormalization );
-    NormalizeHist(hist_data_5, DataNormalization );
-    
+    if( normalise ) { 
+      NormalizeHist(hist_data, DataNormalization );
+      NormalizeHist(hist_data_0, DataNormalization );
+      NormalizeHist(hist_data_1, DataNormalization );
+      NormalizeHist(hist_data_2, DataNormalization );
+      NormalizeHist(hist_data_3, DataNormalization );
+      NormalizeHist(hist_data_4, DataNormalization );
+      NormalizeHist(hist_data_5, DataNormalization );
+    }
+
     //adding systematics from systematic map
     for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
       std::cout << " Adding " << it->second*100 << " % systematic on " << it->first << std::endl;
@@ -449,7 +451,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     // Normalize data from slices
     if( addbinning.size() != 0 ) {
       for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
-	NormalizeHist(h_data_slices[l], DataNormalization );
+	if(normalise) NormalizeHist(h_data_slices[l], DataNormalization );
 	CorrectData(h_data_slices[l], h_acc_slices[l] );
      
 	for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
@@ -460,22 +462,24 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   // Normalize MC
-  NormalizeHist(hist_true, mc_norm[0]);
-  NormalizeHist(hist_true_0, mc_norm[0]);
-  NormalizeHist(hist_true_1, mc_norm[0]);
-  NormalizeHist(hist_true_2, mc_norm[0]);
-  NormalizeHist(hist_true_3, mc_norm[0]);
-  NormalizeHist(hist_true_4, mc_norm[0]);
-  NormalizeHist(hist_true_5, mc_norm[0]);
-  NormalizeHist(hist_true_QEL, mc_norm[0]);
-  NormalizeHist(hist_true_RES, mc_norm[0]);
-  NormalizeHist(hist_true_RES_Delta, mc_norm[0]);
-  NormalizeHist(hist_true_SIS, mc_norm[0]);
-  NormalizeHist(hist_true_MEC, mc_norm[0]);
-  NormalizeHist(hist_true_DIS, mc_norm[0]);
+  if( normalise ) { 
+    NormalizeHist(hist_true, mc_norm[0]);
+    NormalizeHist(hist_true_0, mc_norm[0]);
+    NormalizeHist(hist_true_1, mc_norm[0]);
+    NormalizeHist(hist_true_2, mc_norm[0]);
+    NormalizeHist(hist_true_3, mc_norm[0]);
+    NormalizeHist(hist_true_4, mc_norm[0]);
+    NormalizeHist(hist_true_5, mc_norm[0]);
+    NormalizeHist(hist_true_QEL, mc_norm[0]);
+    NormalizeHist(hist_true_RES, mc_norm[0]);
+    NormalizeHist(hist_true_RES_Delta, mc_norm[0]);
+    NormalizeHist(hist_true_SIS, mc_norm[0]);
+    NormalizeHist(hist_true_MEC, mc_norm[0]);
+    NormalizeHist(hist_true_DIS, mc_norm[0]);
+  }
 
   for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
-    NormalizeHist( hists_true_submodel[id], mc_norm[id+1]);
+    if( normalise ) NormalizeHist( hists_true_submodel[id], mc_norm[id+1]);
     StandardFormat( hists_true_submodel[id], title, kBlack, 2+id, observable ) ;
   }
 
@@ -557,10 +561,12 @@ void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakd
     mc_hists[0] -> Draw("hist");
     for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i] -> Draw("hist same");
     for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Draw("hist same");
-  }
+  } 
 
-  if( data ) data -> Draw(" err same ");
- 
+  if( data ) {
+    if( ! plot_mc ) data -> Draw(" err ");
+    else data -> Draw(" err same ");
+  }
   if( observable=="ECal" && plotting::PlotZoomIn(analysis_id) == true ){
     // Add a sub-pad1
     TPad * sub_pad = new TPad("subpad","",0.2,0.2,0.85,0.85);
@@ -583,8 +589,10 @@ void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakd
       for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i] -> Draw("hist same");
       for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Draw("hist same");
     }
-    if( data ) data -> Draw(" err same ");
-
+    if( data ) {
+      if( !plot_mc ) data -> Draw(" err same ");
+      else data -> Draw(" err ");
+    }
   }
   std::string output_name = output_file_name+"_dxsec_d"+observable ;
   

@@ -505,12 +505,12 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // Plot Total, XSector, Legend
   plotting::PlotTotal( mc_hists, breakdown, hist_data, observable, title, data_name, model, input_MC_location,
-		       input_data_location, output_location, output_file_name, systematic_map ,analysis_id, store_root);
+		       input_data_location, output_location, output_file_name, systematic_map, plot_mc, analysis_id, store_root);
 
   plotting::PlotPerSector( mc_per_sector, data_per_sector, observable, title, data_name, model,input_MC_location, 
-			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root ) ;
+			   input_data_location, output_location, output_file_name, systematic_map, plot_mc, analysis_id, store_root ) ;
 
-  plotting::PlotLegend( mc_hists, breakdown, hist_data, observable, data_name, model, output_location, output_file_name,store_root );
+  plotting::PlotLegend( mc_hists, breakdown, hist_data, observable, data_name, model, output_location, output_file_name, plot_mc, store_root );
 
   //  plotting::PlotSlices(  all_slices, addbinning, observable, title, data_name, model, input_MC_location, input_data_location, 
   //			 output_location, output_file_name,  analysis_id, store_root ) ;

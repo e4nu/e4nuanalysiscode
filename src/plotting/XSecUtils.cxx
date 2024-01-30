@@ -484,7 +484,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   // Normalize true from slices
-  if( addbinning.size() != 0 ) {
+  if( addbinning.size() != 0 && normalise ) {
     for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
       NormalizeHist(h_total_slices[l], mc_norm[0] );
       NormalizeHist(h_QEL_slices[l], mc_norm[0] );
@@ -508,6 +508,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   std::vector<std::vector<TH1D*>> all_slices = {h_total_slices,h_QEL_slices,h_RES_Delta_slices,h_RES_slices,h_SIS_slices,h_MEC_slices,h_DIS_slices,h_data_slices};
 
   // Plot Total, XSector, Legend
+  plotting::PlotTotal( mc_hists, breakdown, hist_data_uncorr, observable, title, data_name, model, input_MC_location,
+		       input_data_location, output_location, output_file_name+"_uncorrected", systematic_map, false, analysis_id, store_root);
+
   plotting::PlotTotal( mc_hists, breakdown, hist_data, observable, title, data_name, model, input_MC_location,
 		       input_data_location, output_location, output_file_name, systematic_map, plot_mc, analysis_id, store_root);
 

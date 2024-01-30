@@ -36,6 +36,23 @@ double utils::GetAcceptanceMapWeight( TH3D & acc, TH3D & gen, const TLorentzVect
   return acc_w ; 
 } 
 
+double utils::GetAcceptanceMapWeight( TH3D & acc, const TLorentzVector p4mom ){
+
+  double phi = p4mom.Phi() + TMath::Pi() ; 
+  if(phi > (2*TMath::Pi() - TMath::Pi()/6.) ) { phi -= 2*TMath::Pi(); }
+  phi *= 180/TMath::Pi() ;
+
+  //Redefinition of the phi angle
+  //because the acceptance maps are defined between (-30,330)
+  //  phi -= 30 ; 
+  double pbin_acc = acc.GetXaxis()->FindBin(p4mom.P());
+  double tbin_acc = acc.GetYaxis()->FindBin(p4mom.CosTheta());
+  double phibin_acc = acc.GetZaxis()->FindBin(phi);
+  double num_acc = acc.GetBinContent(pbin_acc, tbin_acc, phibin_acc);
+
+  return num_acc ; 
+} 
+
 unsigned int utils::GetSector( double phi ) {
   phi *= TMath::RadToDeg() ; 
   phi += 30 ; //Add 30 degree for plotting and photon phi cut

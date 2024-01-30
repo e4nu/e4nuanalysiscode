@@ -23,7 +23,7 @@ AnalysisI::AnalysisI( const std::string input_file ) : BackgroundI( input_file )
 
 AnalysisI::AnalysisI( const double EBeam, const unsigned int TargetPdg ) : BackgroundI( EBeam, TargetPdg ) { this->Initialize();}    
 
-AnalysisI::~AnalysisI() { this->Initialize();}
+AnalysisI::~AnalysisI() { this->Finalise();}
 
 bool AnalysisI::Analyse( Event & event ) {
 
@@ -49,7 +49,7 @@ bool AnalysisI::Analyse( Event & event ) {
     return false ; 
   }
 
-  if( out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) return false ;
+  if( kElectronFit && out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) return false ;
 
   // GENIE coordinate system flipped with respect to CLAS
   if( !IsData() ) out_mom.SetPhi( out_mom.Phi() + TMath::Pi() );
@@ -235,7 +235,6 @@ void AnalysisI::PlotBkgInformation( Event event ) {
     // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
     if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() == 0 ) {
       kHistograms[kid_signal]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
-      //      std::cout << " Is bkg = : " << event.IsBkg() << std::endl;
     } else { 
       kHistograms[kid_tottruebkg]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
 
@@ -267,6 +266,7 @@ void AnalysisI::PlotBkgInformation( Event event ) {
 }
 
 double AnalysisI::GetElectronMinTheta( TLorentzVector emom ) {
+  if( !kElectronFit ) return -999. ; 
   return kElectronFit ->Eval(emom.P()) ; 
 }
 
@@ -277,8 +277,9 @@ void AnalysisI::Initialize(void) {
   if( !kElectronFit ) kIsConfigured = false ; 
   else {
     if( Ebeam == 1.161 ) { kElectronFit -> SetParameters(17,7) ; }
-    if( Ebeam == 2.261 ) { kElectronFit -> SetParameters(16,10.5) ; }
-    if( Ebeam == 4.461 ) { kElectronFit -> SetParameters(13.5,15) ; }
+    else if( Ebeam == 2.261 ) { kElectronFit -> SetParameters(16,10.5) ; }
+    else if( Ebeam == 4.461 ) { kElectronFit -> SetParameters(13.5,15) ; }
+    else { kElectronFit -> SetParameters(13.5,15) ; }
     kIsConfigured = InitializeFiducial() ; 
   }
 

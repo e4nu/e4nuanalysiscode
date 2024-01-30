@@ -32,6 +32,7 @@ MCCLAS6AnalysisI::~MCCLAS6AnalysisI() {
   kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
+  std::cout << " delete MC " << std::endl;
 }
 
 bool MCCLAS6AnalysisI::LoadData( void ) {
@@ -116,6 +117,8 @@ void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event & event ) {
     std::map<int,unsigned int> Topology = GetTopology();
     // Electron acceptance
     if( kAccMap[conf::kPdgElectron] && kGenMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], *kGenMap[conf::kPdgElectron], out_mom ) ; 
+    else if( kAccMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], out_mom ) ; 
+
     // Others
     for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
       if ( part_map.find(it->first) == part_map.end()) continue ;
@@ -123,6 +126,7 @@ void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event & event ) {
       else { 
 	for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
 	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
+	  else if( kAccMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], part_map[it->first][i] ) ; 
 	}
       }
     }
@@ -154,6 +158,7 @@ void MCCLAS6AnalysisI::SmearParticles( Event & event ) {
 } 
 
 bool MCCLAS6AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) { 
+  if( !apply_fiducial ) return true ; 
   // First, we apply it to the electron
   // Apply fiducial cut to electron
   Fiducial * fiducial = GetFiducialCut() ; 
@@ -202,55 +207,62 @@ void MCCLAS6AnalysisI::Initialize() {
   if( ApplyAccWeights() ) { 
     kAcceptanceMap = conf::GetAcceptanceFileMap2( Target, EBeam ) ; 
 
-    kAccMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ) ) ;
-    kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ) );
-    kAccMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ) );
-    kAccMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ) );
+    if( Target == conf::kPdgH && EBeam == 4.325 /*GeV*/ ) { 
+      kAccMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("h3") ) ) ;
+      kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("h3") ) ) ;
+    } else { 
+      kAccMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ) ) ;
+      kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ) );
+      kAccMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ) );
+      kAccMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ) );
+      
+      kGenMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ) );
+      kGenMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ) ) ;
+      kGenMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ) ) ;
+      kGenMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ) ) ;
 
-    kGenMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ) );
-    kGenMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ) ) ;
-    kGenMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ) ) ;
-    kGenMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ) ) ;
-    
-    for( auto it = kAccMap.begin() ; it != kAccMap.end(); ++it ) {
-      kAccMap[it->first]->SetDirectory(nullptr);
-      kGenMap[it->first]->SetDirectory(nullptr);
+      for( auto it = kAccMap.begin() ; it != kAccMap.end(); ++it ) {
+	kAccMap[it->first]->SetDirectory(nullptr);
+	kGenMap[it->first]->SetDirectory(nullptr);
+      } 
     }
+
   }  
 
-  // Get xsec from cross section spline
-  std::string target_tag = "" ;
-  if( GetConfiguredTarget() == conf::kPdgC12 ) target_tag = "e-_C12" ; 
-  if( GetConfiguredTarget() == conf::kPdgHe3 ) target_tag = "e-_He3" ;
-  if( GetConfiguredTarget() == conf::kPdgHe4 ) target_tag = "e-_He4" ;
-  if( GetConfiguredTarget() == conf::kPdgFe56 ) target_tag = "e-_Fe56" ;
-  if( GetConfiguredTarget() == conf::kPdgO16 ) target_tag = "e-_O16" ;
+  if( NormalizeHist() ) { 
+    // Get xsec from cross section spline
+    std::string target_tag = "" ;
+    if( GetConfiguredTarget() == conf::kPdgC12 ) target_tag = "e-_C12" ; 
+    if( GetConfiguredTarget() == conf::kPdgHe3 ) target_tag = "e-_He3" ;
+    if( GetConfiguredTarget() == conf::kPdgHe4 ) target_tag = "e-_He4" ;
+    if( GetConfiguredTarget() == conf::kPdgFe56 ) target_tag = "e-_Fe56" ;
+    if( GetConfiguredTarget() == conf::kPdgO16 ) target_tag = "e-_O16" ;
 
-  std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>( new TFile( ( GetXSecFile() ).c_str(),"READ") );
-  if( !xsec_file ) {
-    std::cout << " ERROR: Xsec file does not exist: " << GetXSecFile() << std::endl;
-    kIsConfigured = false ; 
-    return ; 
-   }
-  
-  TDirectoryFile * xsec_dir = (TDirectoryFile *) xsec_file -> Get(target_tag.c_str());
-  if( !xsec_dir ) {
-    std::cout << " ERROR: Xsec dir does not exist: " << target_tag << std::endl;
-    kIsConfigured = false ; 
-    return ; 
-  }
+    std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>( new TFile( ( GetXSecFile() ).c_str(),"READ") );
+    if( !xsec_file ) {
+      std::cout << " ERROR: Xsec file does not exist: " << GetXSecFile() << std::endl;
+      kIsConfigured = false ; 
+      return ; 
+    }
     
-  TGraph * gxsec  = (TGraph*) xsec_dir  -> Get("tot_em");
-  if( !gxsec ) {
-    std::cout << " ERROR: Cannot create graph for " << "tot_em" << std::endl;
-    kIsConfigured = false; 
-    return ; 
+    TDirectoryFile * xsec_dir = (TDirectoryFile *) xsec_file -> Get(target_tag.c_str());
+    if( !xsec_dir ) {
+      std::cout << " ERROR: Xsec dir does not exist: " << target_tag << std::endl;
+      kIsConfigured = false ; 
+      return ; 
+    }
+    
+    TGraph * gxsec  = (TGraph*) xsec_dir  -> Get("tot_em");
+    if( !gxsec ) {
+      std::cout << " ERROR: Cannot create graph for " << "tot_em" << std::endl;
+      kIsConfigured = false; 
+      return ; 
+    }
+    
+    kXSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
+    std::cout << " Total XSec ("<< GetConfiguredEBeam()<<") = " << kXSec<< std::endl;
+    xsec_file->Close();
   }
-
-  kXSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
-  std::cout << " Total XSec ("<< GetConfiguredEBeam()<<") = " << kXSec<< std::endl;
-  xsec_file->Close();
-
 }
 
 bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event>> & event_holder ) {

@@ -21,21 +21,22 @@ using namespace e4nu::plotting;
 // 4) Input MC Files (without .root extension)                 //
 // 5) Input data file (without .root extension) (*)            //
 // 6) Observables List                                         //
-// 7) Input Model Names (*)                                    //
-// 8) Title (*)                                                //
-// 9) Data Name (*)                                            //
-// 10) Compute systematics (* def false )                      //
-// 11) AddSystematics                                          //
-// 12) NoFSI ROOT file (without .root extension)               //
-// 13) Analysis id - used to set the ranges. default none      //
+// 7) Plot MC, default true                                    //
+// 8) Input Model Names (*)                                    //
+// 9) Title (*)                                                //
+// 10) Data Name (*)                                           //
+// 11) Compute systematics (* def false )                      //
+// 12) AddSystematics                                          //
+// 13) NoFSI ROOT file (without .root extension)               //
+// 14) Analysis id - used to set the ranges. default none      //
 //     i.e. 1p1pim                                             //
-// 14) Plot root file output                                   //
+// 15) Plot root file output                                   //
 /////////////////////////////////////////////////////////////////
 
 string mc_location="", data_location="", output_location ="", output_name ="", analysis_id="default";
 vector<string> mc_files, observables, model_names ;
 string data_file ="", nofsi_file="", title="", data_name="" ;
-bool compute_systematics ;
+bool compute_systematics, plot_mc = true ;
 vector<string> bkg_syst;
 map<string,double> systematic_map ;
 bool plot_data = true ;
@@ -141,6 +142,10 @@ int main( int argc, char* argv[] ) {
       string bkgsys = GetArg("bkg-systematics",argc,argv) ;
       bkg_syst = SplitString(bkgsys,',');
     }
+
+    if( ExistArg("hide-MC", argc,argv)) { 
+      plot_mc = false ; 
+    }
   }
 
   // Loop over observables
@@ -160,7 +165,7 @@ int main( int argc, char* argv[] ) {
     if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables[i], true, data_location, output_location, analysis_id );
 
     Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location,
-		output_location, output_name, plot_data, systematic_map, analysis_id, store_root ) ;
+		output_location, output_name, plot_mc, plot_data, systematic_map, analysis_id, store_root ) ;
   }
 
   return 0 ;

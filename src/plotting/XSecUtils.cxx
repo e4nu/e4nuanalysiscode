@@ -397,6 +397,26 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // Normalize data
   if( plot_data ) { 
+
+
+  // Store uncorrected data
+  TH1D * hist_data_eventrate=nullptr, * hist_data_eventrate_0=nullptr, * hist_data_eventrate_1=nullptr, * hist_data_eventrate_2=nullptr, * hist_data_eventrate_3=nullptr, * hist_data_eventrate_4=nullptr, * hist_data_eventrate_5=nullptr ;
+  if( plot_data ) { 
+    hist_data_eventrate = (TH1D*) hist_data ->Clone();
+    hist_data_eventrate -> SetName( "Data") ;
+    hist_data_eventrate_0 = (TH1D*) hist_data_0 ->Clone();
+    hist_data_eventrate_0 -> SetName( "Data Sector  0") ;
+    hist_data_eventrate_1 = (TH1D*) hist_data_1 ->Clone();
+    hist_data_eventrate_1 -> SetName( "Data Sector  1") ;
+    hist_data_eventrate_2 = (TH1D*) hist_data_2 ->Clone();
+    hist_data_eventrate_2 -> SetName( "Data Sector  2") ;
+    hist_data_eventrate_3 = (TH1D*) hist_data_3 ->Clone();
+    hist_data_eventrate_3 -> SetName( "Data Sector  3") ;
+    hist_data_eventrate_4 = (TH1D*) hist_data_4 ->Clone();
+    hist_data_eventrate_4 -> SetName( "Data Sector  4") ;
+    hist_data_eventrate_5 = (TH1D*) hist_data_5 ->Clone();
+    hist_data_eventrate_5 -> SetName( "Data Sector  5") ;
+
     if( normalise ) { 
       NormalizeHist(hist_data, DataNormalization );
       NormalizeHist(hist_data_0, DataNormalization );
@@ -420,6 +440,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     }
   }
 
+
   // Store uncorrected data
   TH1D * hist_data_uncorr=nullptr, * hist_data_uncorr_0=nullptr, * hist_data_uncorr_1=nullptr, * hist_data_uncorr_2=nullptr, * hist_data_uncorr_3=nullptr, * hist_data_uncorr_4=nullptr, * hist_data_uncorr_5=nullptr ;
   if( plot_data ) { 
@@ -437,7 +458,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_uncorr_4 -> SetName( "Uncorrected Data Sector  4") ;
     hist_data_uncorr_5 = (TH1D*) hist_data_5 ->Clone();
     hist_data_uncorr_5 -> SetName( "Uncorrected Data Sector  5") ;
-
 
     // Correct data for detector acceptance :
     CorrectData(hist_data, h_acceptance);
@@ -508,6 +528,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   std::vector<std::vector<TH1D*>> all_slices = {h_total_slices,h_QEL_slices,h_RES_Delta_slices,h_RES_slices,h_SIS_slices,h_MEC_slices,h_DIS_slices,h_data_slices};
 
   // Plot Total, XSector, Legend
+  plotting::PlotTotal( mc_hists, breakdown, hist_data_eventrate, observable, title, data_name, model, input_MC_location,
+		       input_data_location, output_location, output_file_name+"_eventrate", systematic_map, false, analysis_id, store_root);
+
   plotting::PlotTotal( mc_hists, breakdown, hist_data_uncorr, observable, title, data_name, model, input_MC_location,
 		       input_data_location, output_location, output_file_name+"_uncorrected", systematic_map, false, analysis_id, store_root);
 

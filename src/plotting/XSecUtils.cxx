@@ -395,12 +395,10 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     }
   }
 
-  // Normalize data
-  if( plot_data ) { 
-
 
   // Store uncorrected data
   TH1D * hist_data_eventrate=nullptr, * hist_data_eventrate_0=nullptr, * hist_data_eventrate_1=nullptr, * hist_data_eventrate_2=nullptr, * hist_data_eventrate_3=nullptr, * hist_data_eventrate_4=nullptr, * hist_data_eventrate_5=nullptr ;
+  //Store before normalising  
   if( plot_data ) { 
     hist_data_eventrate = (TH1D*) hist_data ->Clone();
     hist_data_eventrate -> SetName( "Data") ;
@@ -416,7 +414,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_eventrate_4 -> SetName( "Data Sector  4") ;
     hist_data_eventrate_5 = (TH1D*) hist_data_5 ->Clone();
     hist_data_eventrate_5 -> SetName( "Data Sector  5") ;
-
+  
     if( normalise ) { 
       NormalizeHist(hist_data, DataNormalization );
       NormalizeHist(hist_data_0, DataNormalization );

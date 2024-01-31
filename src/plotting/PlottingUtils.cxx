@@ -407,9 +407,8 @@ void plotting::StandardFormat( TH1D * prediction, std::string title, int color, 
   prediction -> GetXaxis()->CenterTitle();
   prediction -> GetYaxis()->CenterTitle();
 
+  prediction->BufferEmpty(-1);
   if( y_max == 0 ) y_max = (prediction -> GetMaximum()) * ( 1+0.2 );
-  std::cout << prediction -> GetMaximum() << std::endl;
-  std::cout << " y_max " << y_max << std::endl;
 
   int FontStyle = 132;
   prediction->GetXaxis()->SetTitleOffset(0.8);

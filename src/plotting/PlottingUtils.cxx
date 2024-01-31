@@ -408,8 +408,15 @@ void plotting::StandardFormat( TH1D * prediction, std::string title, int color, 
   prediction -> GetYaxis()->CenterTitle();
 
   prediction->BufferEmpty(-1);
-  if( y_max == 0 ) y_max = (prediction -> GetMaximum()) * ( 1+0.2 );
-
+  if( y_max == 0 ) {
+    double max = -999 ;
+    for( unsigned int k = 0 ; k < prediction->GetNbinsX() ; ++k ) {
+      if ( prediction->GetBinContent(k) > max ) max = prediction->GetBinContent(k) ;
+    }
+    //y_max = (prediction -> GetMaximum()) * ( 1+0.2 );
+    y_max = max * ( 1+0.2 ) ; 
+  }
+  
   int FontStyle = 132;
   prediction->GetXaxis()->SetTitleOffset(0.8);
   prediction->GetXaxis()->SetLabelSize(0.04);

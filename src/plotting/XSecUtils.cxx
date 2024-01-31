@@ -420,6 +420,15 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   // Store uncorrected data
   TH1D * hist_data_correventrate=nullptr, * hist_data_correventrate_0=nullptr, * hist_data_correventrate_1=nullptr, * hist_data_correventrate_2=nullptr, * hist_data_correventrate_3=nullptr, * hist_data_correventrate_4=nullptr, * hist_data_correventrate_5=nullptr ;
   if( plot_data ) { 
+    // Correct data for detector acceptance :
+    CorrectData(hist_data, h_acceptance);
+    CorrectData(hist_data_0, h_acceptance_0);
+    CorrectData(hist_data_1, h_acceptance_1);
+    CorrectData(hist_data_2, h_acceptance_2);
+    CorrectData(hist_data_3, h_acceptance_3);
+    CorrectData(hist_data_4, h_acceptance_4);
+    CorrectData(hist_data_5, h_acceptance_5);
+
     hist_data_correventrate = (TH1D*) hist_data ->Clone();
     hist_data_correventrate -> SetName( "Corrected Event Rate Data") ;
     hist_data_correventrate_0 = (TH1D*) hist_data_0 ->Clone();
@@ -434,15 +443,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_correventrate_4 -> SetName( "Corrected Event Rate Data Sector  4") ;
     hist_data_correventrate_5 = (TH1D*) hist_data_5 ->Clone();
     hist_data_correventrate_5 -> SetName( "Corrected Event Rate Data Sector  5") ;
-
-    // Correct data for detector acceptance :
-    CorrectData(hist_data, h_acceptance);
-    CorrectData(hist_data_0, h_acceptance_0);
-    CorrectData(hist_data_1, h_acceptance_1);
-    CorrectData(hist_data_2, h_acceptance_2);
-    CorrectData(hist_data_3, h_acceptance_3);
-    CorrectData(hist_data_4, h_acceptance_4);
-    CorrectData(hist_data_5, h_acceptance_5);
     
     // Normalize data from slices
     if( addbinning.size() != 0 ) {

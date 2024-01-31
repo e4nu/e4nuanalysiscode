@@ -630,12 +630,9 @@ void plotting::PlotEventRate( TH1D * data, std::string observable, std::string t
   pad1->SetBottomMargin(0.15);
   pad1->SetLeftMargin(0.15);
 
-  // Find absolute y max
-  std::vector<TH1D*> temp_check = {data};
-  double y_max_total = GetMaximum( temp_check );
   // Format plots
   if( data ) { 
-    StandardFormat( data, title, kBlack, 8, observable, y_max_total ) ;
+    StandardFormat( data, title, kBlack, 8, observable ) ;
     data -> SetLineStyle(1);
   }
 

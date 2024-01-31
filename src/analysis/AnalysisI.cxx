@@ -286,6 +286,6 @@ void AnalysisI::Initialize(void) {
 }
 
 bool AnalysisI::Finalise(void) {
-  if( kElectronFit ) delete kElectronFit ;
+  //  if( kElectronFit ) delete kElectronFit ;
   return true ; 
 }

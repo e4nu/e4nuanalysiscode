@@ -37,11 +37,10 @@ using namespace e4nu::plotting;
 string mc_location="", data_location="", output_location ="", output_name ="", analysis_id="default";
 vector<string> mc_files, observables, model_names ;
 string data_file ="", nofsi_file="", title="", data_name="" ;
-bool compute_systematics, plot_mc = true ;
+bool compute_systematics ;
 vector<string> bkg_syst;
 map<string,double> systematic_map ;
 bool plot_data = true ;
-bool normalise = true ; 
 bool store_root = false ; 
 void PrintFormat(string s);
 int main( int argc, char* argv[] ) {
@@ -144,14 +143,6 @@ int main( int argc, char* argv[] ) {
       string bkgsys = GetArg("bkg-systematics",argc,argv) ;
       bkg_syst = SplitString(bkgsys,',');
     }
-
-    if( ExistArg("hide-MC", argc,argv)) { 
-      plot_mc = false ; 
-    }
-
-    if( ExistArg("plot-event-rate", argc,argv)) { 
-      normalise = false ; 
-    }
   }
 
   // Loop over observables
@@ -171,7 +162,7 @@ int main( int argc, char* argv[] ) {
     if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables[i], true, data_location, output_location, analysis_id );
 
     Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location,
-		output_location, output_name, normalise, plot_mc, plot_data, systematic_map, analysis_id, store_root ) ;
+		output_location, output_name, plot_data, systematic_map, analysis_id, store_root ) ;
   }
 
   return 0 ;

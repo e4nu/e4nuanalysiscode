@@ -376,7 +376,7 @@ double plotting::GetMaximum( std::vector<TH1D*> predictions){
   return max*(1 + 0.12);
 }
 
-void plotting::StandardFormat( TH1D * prediction, std::string title, int color, int style, std::string observable, double y_max ) {
+void plotting::StandardFormat( TH1D * prediction, std::string title, int color, int style, std::string observable, double y_max, std::string y_axis_label ) {
   gStyle->SetFrameBorderMode(0);
   gStyle->SetCanvasBorderMode(0);
   gStyle->SetPadBorderMode(0);
@@ -403,7 +403,10 @@ void plotting::StandardFormat( TH1D * prediction, std::string title, int color, 
   prediction -> SetTitle(title.c_str());
   //prediction -> SetTitleFont(13);
   prediction -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-  prediction -> GetYaxis()->SetTitle(GetAxisLabel(observable,1).c_str());
+
+  if( y_axis_label == "" ) prediction -> GetYaxis()->SetTitle(GetAxisLabel(observable,1).c_str());
+  else prediction -> GetYaxis()->SetTitle(y_axis_label.c_str());
+
   prediction -> GetXaxis()->CenterTitle();
   prediction -> GetYaxis()->CenterTitle();
 

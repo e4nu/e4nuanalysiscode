@@ -20,6 +20,7 @@ std::string conf::GetAcceptanceFile( const int particle, const unsigned int targ
   if( target == conf::kPdgHe3 )file += "3He_" ;
   else if ( target == conf::kPdgHe4 ) file += "4He_" ;
   else if ( target == conf::kPdgC12 ) file += "12C_";
+  else if ( target == conf::kPdgFe56 ) file += "12C_"; // Using same as carbon for Iron target
   
   if ( E == 1.161 ) file += "E_1_161";
   else if ( E == 2.261 ) file+= "E_2_261" ; 

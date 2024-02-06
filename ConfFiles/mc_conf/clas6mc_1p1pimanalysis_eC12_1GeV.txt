@@ -1,4 +1,4 @@
-B1;95;0c#Analysis Cuts
+#Analysis Cuts
 DisableSector   2,4
 ApplyFiducial   true
 ApplyAccWeights true
@@ -38,7 +38,6 @@ ComputeTrueRecoAccCorr false
 
 InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root
 XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/G18_10a_Dipole_Q2_01_eCarbon.root
-OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1p1pimanalysis_G18_10a_Dipole_LFG_Q2_01_1G\
-eV_eCarbon_NoRad
+OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1p1pimanalysis_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad
 
 

@@ -414,6 +414,15 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_eventrate_4 -> SetName( "Data Sector  4") ;
     hist_data_eventrate_5 = (TH1D*) hist_data_5 ->Clone();
     hist_data_eventrate_5 -> SetName( "Data Sector  5") ;
+    
+    // Normaize by bin width
+    NormalizeHist(hist_data_eventrate, 1 );
+    NormalizeHist(hist_data_eventrate_0, 1 );
+    NormalizeHist(hist_data_eventrate_1, 1 );
+    NormalizeHist(hist_data_eventrate_2, 1 );
+    NormalizeHist(hist_data_eventrate_3, 1 );
+    NormalizeHist(hist_data_eventrate_4, 1 );
+    NormalizeHist(hist_data_eventrate_5, 1 );
   }
 
 
@@ -443,7 +452,16 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_correventrate_4 -> SetName( "Corrected Event Rate Data Sector  4") ;
     hist_data_correventrate_5 = (TH1D*) hist_data_5 ->Clone();
     hist_data_correventrate_5 -> SetName( "Corrected Event Rate Data Sector  5") ;
-    
+   
+    // Normaize by bin width
+    NormalizeHist(hist_data_correventrate, 1 );
+    NormalizeHist(hist_data_correventrate_0, 1 );
+    NormalizeHist(hist_data_correventrate_1, 1 );
+    NormalizeHist(hist_data_correventrate_2, 1 );
+    NormalizeHist(hist_data_correventrate_3, 1 );
+    NormalizeHist(hist_data_correventrate_4, 1 );
+    NormalizeHist(hist_data_correventrate_5, 1 );
+   
     // Normalize data from slices
     if( addbinning.size() != 0 ) {
       for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){

@@ -48,7 +48,7 @@ int main( int argc, char* argv[] ) {
   std::string observable = "ECal";
   int sector = -9999 ; // all
   std::string analysis_key = "1p1pim";
-  double EBeam = 4.461 ;
+  double EBeam = 1 ;
   if( argc > 1 ) { // configure rest of analysis
     if( ExistArg("input-files",argc,argv)) {
       string input = GetArg("input-files",argc,argv);
@@ -80,11 +80,14 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("observable",argc,argv)) {
       observable = GetArg("observable",argc,argv);
     }
+    double energy = 0 ;
     if( ExistArg("beam-energy",argc,argv)) {
-      EBeam = stof(GetArg("beam-energy",argc,argv));
-      std::cout << EBeam << std::endl;
+       energy = stof(GetArg("beam-energy",argc,argv));
     }
 
+    if( energy > 0  && energy < 1.5 ) EBeam = 1.161 ;
+    else if( energy >1.5 && energy < 3 ) EBeam = 2.261 ;
+    else if( energy >3 && energy < 5 ) EBeam = 4.461 ;
   }
 
   // Color palette

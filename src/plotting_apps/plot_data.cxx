@@ -17,6 +17,7 @@
 #include "TPad.h"
 #include "TAxis.h"
 #include "TLegend.h"
+#include "TGaxis.h"
 
 using namespace std;
 using namespace e4nu;
@@ -29,7 +30,6 @@ using namespace e4nu::plotting;
 // * output-file : file to store plots (in root, pdf... format)//
 // * observable : observable used for the x axis definition    //
 // * legend-list : tags for the legend                         //
-// * color-list : list of colors for each hist                 //
 // * analysis-key: i.e. 1p1pim                                 //
 // * sector : default all                                      //
 /////////////////////////////////////////////////////////////////
@@ -44,12 +44,11 @@ int main( int argc, char* argv[] ) {
   }
 
   std::vector<string> input_files, legend_list ;
-  std::vector<int> colors;
   std::string output_file = "histogram_data";
   std::string observable = "ECal";
-  int sector = -9999 ; // all 
+  int sector = -9999 ; // all
   std::string analysis_key = "1p1pim";
-  double EBeam = 2.216 ; 
+  double EBeam = 2.261 ;
   if( argc > 1 ) { // configure rest of analysis
     if( ExistArg("input-files",argc,argv)) {
       string input = GetArg("input-files",argc,argv);
@@ -81,23 +80,27 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("observable",argc,argv)) {
       observable = GetArg("observable",argc,argv);
     }
-    if( ExistArg("color-list",argc,argv)) {
-      string input = GetArg("color-list",argc,argv);
-      stringstream ss(input);
-      while( ss.good() )
-	{
-	  string substr;
-	  getline( ss, substr, ',' );
-	  colors.push_back( stoi(substr) );
-	}
-    }
 
   }
 
+  // Color palette
+  std::vector<int> color_list = {kBlack,kBlue-4,kOrange+1,kGreen+3,kMagenta+2,kRed-4,kSpring+7,kTeal-6,kCyan+3,kAzure-1,kBlue-8,kViolet-4,kMagenta-10,kPink-9} ;
+
   TCanvas * c  = new TCanvas("","",800,800);
   c->SetFillColor(0);
+  TPad *pad1 = new TPad("pad1","",0,0,1,1);
+  pad1->Draw();
+  pad1->cd();
+  pad1->SetBottomMargin(0.15);
+  pad1->SetLeftMargin(0.15);
 
-  auto legend = new TLegend(0.15,0.6,0.35,0.8);
+  auto legend = new TLegend(0.2,0.65,0.55,0.85);
+  legend->SetBorderSize(0);
+  legend->SetTextFont(132);
+  legend->SetTextSize(0.08);
+  legend->SetFillStyle(0);
+  legend->SetTextSize(0.03);
+
   std::vector<TFile*> in_root_files ;
   std::vector<TTree*> in_trees;
   std::vector<TH1D*> hists;
@@ -112,8 +115,8 @@ int main( int argc, char* argv[] ) {
   }
 
   std::vector<double> binning = plotting::GetBinning( observable, EBeam, analysis_key );
-  for( unsigned int id = 0 ; id < input_files.size(); ++id ){
-    hists.push_back( new TH1D( ("Dataset "+std::to_string(id)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+  for( unsigned int i = 0 ; i < input_files.size(); ++i ){
+    hists.push_back( new TH1D( ("Dataset "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
   }
 
   // OBSERVABLE DEFINITION:
@@ -128,7 +131,7 @@ int main( int argc, char* argv[] ) {
   double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
   double MissingEnergy, MissingAngle, MissingMomentum ;
   double InferedNucleonMom ;
-  double HadronsAngle,Angleqvshad ; 
+  double HadronsAngle,Angleqvshad ;
   double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
   long NEntries ;
   bool IsBkg ;
@@ -136,7 +139,7 @@ int main( int argc, char* argv[] ) {
 
   for ( unsigned int i = 0 ; i < in_trees.size() ; ++i ){
     NEntries = in_trees[i] -> GetEntries() ;
-    if( !in_trees[i] ) continue ; 
+    if( !in_trees[i] ) continue ;
     in_trees[i] -> SetBranchAddress("TotWeight",&TotWeight);
     in_trees[i] -> SetBranchAddress("IsBkg",&IsBkg);
     in_trees[i] -> SetBranchAddress("ECal",&ECal);
@@ -217,25 +220,43 @@ int main( int argc, char* argv[] ) {
       else if ( observable == "MissingMomentum") content = MissingMomentum ;
       else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
       else if ( observable == "HadronsAngle") content = HadronsAngle ;
-      else if ( observable == "AdlerAngleThetaP") content = AdlerAngleThetaP ; 
-      else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiP ; 
-      else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ; 
-      else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ; 
-      else if ( observable == "Angleqvshad") content = Angleqvshad ; 
+      else if ( observable == "AdlerAngleThetaP") content = AdlerAngleThetaP ;
+      else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiP ;
+      else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ;
+      else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ;
+      else if ( observable == "Angleqvshad") content = Angleqvshad ;
       hists[i]->Fill(content,w);
     }
   }
 
+  double ymax = 0 ;
+  for( unsigned int i = 0 ; i < input_files.size(); ++i ){
+    double max = 0 ;
+    for( unsigned int k = 0 ; k < hists[i]->GetNbinsX() ; ++k ) {
+      if ( hists[i]->GetBinContent(k) > max ) max = hists[i]->GetBinContent(k) ;
+    }
+    if( max > ymax ) ymax = max;
+  }
+  ymax *= ( 1+0.2 ) ;
+
   // Normalise for bin size
   for( unsigned int i = 0 ; i < input_files.size(); ++i ){
-    plotting::StandardFormat( hists[i], ("Data "+to_string(i)).c_str(), kRed, 1, observable, 1000, "Event Rate");
+    plotting::StandardFormat( hists[i], "", color_list[i], 1, observable, ymax, "Event Rate");
     hists[i] -> SetLineStyle(1);
+    hists[i] -> SetMarkerStyle(8);
+    hists[i] -> GetYaxis() -> TAxis::SetMaxDigits(3);
     if( i == 0 ) hists[i] -> Draw("err");
     else hists[i] -> Draw("err same");
+
+    if ( legend_list.size() == input_files.size()){
+      legend->AddEntry(hists[i],(legend_list[i]).c_str());
+    }
   }
-  
+  hists[0] -> Draw("err same");
+  if ( legend_list.size() == input_files.size()) legend->Draw();
+
   std::string output_name = output_file+"_Nevents_"+observable ;
-  
+
   c->SaveAs((output_file+".root").c_str());
   c->SaveAs((output_file+".pdf").c_str());
 

@@ -48,7 +48,7 @@ int main( int argc, char* argv[] ) {
   std::string observable = "ECal";
   int sector = -9999 ; // all
   std::string analysis_key = "1p1pim";
-  double EBeam = 2.261 ;
+  double EBeam = 4.461 ;
   if( argc > 1 ) { // configure rest of analysis
     if( ExistArg("input-files",argc,argv)) {
       string input = GetArg("input-files",argc,argv);
@@ -79,6 +79,10 @@ int main( int argc, char* argv[] ) {
     }
     if( ExistArg("observable",argc,argv)) {
       observable = GetArg("observable",argc,argv);
+    }
+    if( ExistArg("beam-energy",argc,argv)) {
+      EBeam = stof(GetArg("beam-energy",argc,argv));
+      std::cout << EBeam << std::endl;
     }
 
   }
@@ -241,10 +245,11 @@ int main( int argc, char* argv[] ) {
 
   // Normalise for bin size
   for( unsigned int i = 0 ; i < input_files.size(); ++i ){
-    plotting::StandardFormat( hists[i], "", color_list[i], 1, observable, ymax, "Event Rate");
+    plotting::StandardFormat( hists[i], "", color_list[i], 1, observable, ymax, "Counts/Bin Width");
     hists[i] -> SetLineStyle(1);
     hists[i] -> SetMarkerStyle(8);
     hists[i] -> GetYaxis() -> TAxis::SetMaxDigits(3);
+    plotting::NormalizeHist(hists[i], 1 );
     if( i == 0 ) hists[i] -> Draw("err");
     else hists[i] -> Draw("err same");
 

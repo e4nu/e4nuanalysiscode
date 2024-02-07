@@ -63,6 +63,10 @@ plot_histograms: $(SRCDIR)/plotting_apps/plot_histograms.cxx $(UTILS_OBJS) $(PLO
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(ROOTLIBS) $(OBJDIR)/utils/*.o  $(OBJDIR)/plotting/*.o $(OBJDIR)/physics/*.o $(OBJDIR)/conf/*.o $(OBJDIR)/analysis/*.o $< -o $@
 
+plot_data: $(SRCDIR)/plotting_apps/plot_data.cxx $(UTILS_OBJS) $(PLOTTING_OBJS) $(CONF_OBJS) $(PHYSICS_OBJS) $(ANALYSIS_OBJS) $(APP_OBJS)
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) $(ROOTLIBS) $(OBJDIR)/utils/*.o  $(OBJDIR)/plotting/*.o $(OBJDIR)/physics/*.o $(OBJDIR)/conf/*.o $(OBJDIR)/analysis/*.o $< -o $@
+
 plot_validationrad: $(SRCDIR)/plotting_apps/plot_validationrad.cxx $(UTILS_OBJS) $(PLOTTING_OBJS) $(CONF_OBJS) $(PHYSICS_OBJS) $(ANALYSIS_OBJS) $(APP_OBJS)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(ROOTLIBS) $(OBJDIR)/utils/*.o  $(OBJDIR)/plotting/*.o $(OBJDIR)/physics/*.o $(OBJDIR)/conf/*.o $(OBJDIR)/analysis/*.o $< -o $@

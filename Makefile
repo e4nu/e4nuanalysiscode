@@ -33,7 +33,7 @@ PHYSICS_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(PHYSICS_SRCS))
 ANALYSIS_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(ANALYSIS_SRCS))
 APP_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(APP_SRCS)) 
 
-all: e4nuanalysis plot_e4nuanalysis plot_radiative radiate_flux process_radweights plot_bkg plot_histograms plot_validationrad
+all: e4nuanalysis plot_e4nuanalysis plot_radiative radiate_flux process_radweights plot_bkg plot_histograms plot_validationrad plot_data
  
 e4nuanalysis: $(SRCDIR)/apps/e4nuanalysis.cxx $(UTILS_OBJS) $(PLOTTING_OBJS) $(CONF_OBJS) $(PHYSICS_OBJS) $(ANALYSIS_OBJS) $(APP_OBJS)
 	@mkdir -p $(@D)

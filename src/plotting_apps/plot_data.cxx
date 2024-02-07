@@ -96,8 +96,6 @@ int main( int argc, char* argv[] ) {
 
   TCanvas * c  = new TCanvas("","",800,800);
   c->SetFillColor(0);
-  // Top canvas - distribution
-  TPad *pad1 = new TPad("pad1","",0,0.4,1,1);
 
   auto legend = new TLegend(0.15,0.6,0.35,0.8);
   std::vector<TFile*> in_root_files ;
@@ -105,12 +103,12 @@ int main( int argc, char* argv[] ) {
   std::vector<TH1D*> hists;
   for( unsigned int id = 0 ; id < input_files.size(); ++id ){
     in_root_files.push_back(new TFile((input_files[id]).c_str(),"ROOT"));
-    if( !files_true_MC[id] ) { std::cout << "ERROR: the "<< input_files[id]<<" does not exist." << std::endl; return ;}
+    if( !in_root_files[id] ) { std::cout << "ERROR: the "<< input_files[id]<<" does not exist." << std::endl; return 0;}
   }
 
   for( unsigned int id = 0 ; id < input_files.size() ; ++id ){
     in_trees.push_back( (TTree*)in_root_files[id]->Get("CLAS6Tree") );
-    if( !in_trees[id] ) { std::cout << "ERROR: the threes do not exist." <<std::endl; return ;}
+    if( !in_trees[id] ) { std::cout << "ERROR: the threes do not exist." <<std::endl; return 0;}
   }
 
   std::vector<double> binning = plotting::GetBinning( observable, EBeam, analysis_key );
@@ -185,7 +183,6 @@ int main( int argc, char* argv[] ) {
       in_trees[i]->GetEntry(j) ;
       double content = 0 ;
       double w = TotWeight ;
-      if( i != id_data && j == 0 ) mc_norm.push_back(MCNormalization);
       if( observable == "ECal") content = ECal ;
       else if ( observable == "pfl") content = pfl ;
       else if ( observable == "pfl_theta") content = pfl_theta ;
@@ -239,8 +236,8 @@ int main( int argc, char* argv[] ) {
   
   std::string output_name = output_file+"_Nevents_"+observable ;
   
-  c1->SaveAs((output_file+".root").c_str());
-  c1->SaveAs((output_file".pdf").c_str());
+  c->SaveAs((output_file+".root").c_str());
+  c->SaveAs((output_file+".pdf").c_str());
 
   return 0 ;
 

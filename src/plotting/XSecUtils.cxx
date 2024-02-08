@@ -650,7 +650,7 @@ void plotting::PlotEventRate( TH1D * data, std::string observable, std::string t
 
   // Format plots
   if( data ) { 
-    StandardFormat( data, title, kBlack, 8, observable, 0, "Event Rate/Bin Width" ) ;
+    StandardFormat( data, title, kBlack, 8, observable, 0, "Counts/Bin Width" ) ;
     data -> SetLineStyle(1);
   }
 

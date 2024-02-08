@@ -431,7 +431,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 
   // Plot it
   ratio->Draw("hist");
-  for( unsigned int i = 1 ; i < mc_files.size() ; ++i ) {
+  for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
     ratios[i]->Draw("hist same");
     ratios[i]->Write();
   }

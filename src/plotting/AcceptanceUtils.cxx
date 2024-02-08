@@ -430,12 +430,12 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   }
 
   // Plot it
-  ratio->Draw("hist err");
+  ratio->Draw("hist");
   for( unsigned int i = -1 ; i < mc_files.size() ; ++i ) {
-    ratios[i]->Draw("hist err same");
+    ratios[i]->Draw("hist same");
     ratios[i]->Write();
   }
-  ratio->Draw("hist err same");
+  ratio->Draw("hist same");
   //teff->Draw("AP");
 
   if( store_root ) c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());
@@ -457,9 +457,9 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_0 -> SetBottomMargin(0.15);
   pad_sector_0 -> SetLeftMargin(0.15);
   ratio_0 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_0 -> Draw("hist err");
+  ratio_0 -> Draw("hist");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_0[i] -> Draw("hist err same");
+    ratios_0[i] -> Draw("hist same");
   }
 
   TPad *pad_sector_1 = (TPad*)pad_sector->cd(2);
@@ -467,9 +467,9 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_1 -> SetBottomMargin(0.15);
   pad_sector_1 -> SetLeftMargin(0.15);
   ratio_1 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_1 -> Draw("hist err");
+  ratio_1 -> Draw("hist");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_1[i] -> Draw("hist err same");
+    ratios_1[i] -> Draw("hist same");
   }
 
   TPad *pad_sector_2 = (TPad*)pad_sector->cd(3);
@@ -487,9 +487,9 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_3 -> SetBottomMargin(0.15);
   pad_sector_3 -> SetLeftMargin(0.15);
   ratio_3 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_3 -> Draw("hist err");
+  ratio_3 -> Draw("hist");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_3[i] -> Draw("hist err same");
+    ratios_3[i] -> Draw("hist same");
   }
 
   TPad *pad_sector_4 = (TPad*)pad_sector->cd(5);
@@ -497,9 +497,9 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_4 -> SetBottomMargin(0.15);
   pad_sector_4 -> SetLeftMargin(0.15);
   ratio_4 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_4 -> Draw("hist err");
+  ratio_4 -> Draw("hist");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_4[i] -> Draw("hist err same");
+    ratios_4[i] -> Draw("hist same");
   }
 
   TPad *pad_sector_5 = (TPad*)pad_sector->cd(6);
@@ -507,9 +507,9 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_5 -> SetBottomMargin(0.15);
   pad_sector_5 -> SetLeftMargin(0.15);
   ratio_5 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_5 -> Draw("hist err");
+  ratio_5 -> Draw("hist");
   for( unsigned int i = 1 ; i < mc_files.size() ; ++i ) {
-    ratios_5[i] -> Draw("hist err same");
+    ratios_5[i] -> Draw("hist same");
   }
 
   if( store_root ) c_sector_2->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_persector.root").c_str());

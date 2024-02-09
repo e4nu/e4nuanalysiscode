@@ -809,6 +809,25 @@ void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*
   if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
   if( store_root ) c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
   c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
+
+
+  for( unsigned int i = 0 ; i < 6 ; ++i ) { 
+    TPad *pad_sector_i = (TPad*)pad_sector->cd(i+1);
+    pad_sector_i -> cd();
+    pad_sector_i -> SetBottomMargin(0.15);
+    pad_sector_i -> SetLeftMargin(0.15);
+  
+    if(data_per_sector.size()!=0 && data_per_sector[i]) {
+      data_per_sector[i] -> SetMarkerSize(0.7);
+      data_per_sector[i] -> Draw(" err ");
+    }
+  }
+
+  output_name = output_file_name+"_dataonly_dxsec_d"+observable+"_persector" ;
+  xsecpersector_path =(output_location+"/XSecPerSector/").c_str();
+  if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
+  if( store_root ) c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
+  c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
   delete c_sector ;
 }
 

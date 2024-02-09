@@ -668,8 +668,8 @@ void plotting::PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> br
 
   // Print out integral for debugging
   double data_integral ;
-  if( data ) data_integral= data->Integral() ; 
-  double mc_integral = mc_hists[0]->Integral() ; 
+  if( data ) data_integral= data->Integral("width") ; 
+  double mc_integral = mc_hists[0]->Integral("width") ; 
   if( data ) std::cout << " Total integrated cross section (data) " << data_integral << std::endl;
   std::cout << " Total integrated cross section (mc) " << mc_integral << std::endl;
 
@@ -699,7 +699,7 @@ void plotting::PlotEventRate( TH1D * data, std::string observable, std::string t
   }
 
   double data_integral ;
-  if( data ) data_integral= data->Integral() ; 
+  if( data ) data_integral= data->Integral("width") ; 
   if( data ) std::cout << " Total integrated event rate (data) " << data_integral << std::endl;
 
   std::string output_name = output_file_name+"_Nevents_"+observable ;

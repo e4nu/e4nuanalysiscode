@@ -550,8 +550,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   plotting::PlotEventRate( hist_data_correventrate, observable, title, data_name, input_data_location, output_location, 
 			   output_file_name+"_correventrate", analysis_id, store_root ) ;
 
-  plotting::PlotTotal( mc_hists, breakdown, hist_data, observable, title, data_name, model, input_MC_location,
-		       input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root);
+  plotting::PlotXsecDataTotal( hist_data, observable, title, data_name, input_data_location, output_location, output_file_name, 
+			       systematic_map, analysis_id, store_root);
+
+  plotting::PlotTotalXSec( mc_hists, breakdown, hist_data, observable, title, data_name, model, input_MC_location,
+			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root);
 
   plotting::PlotPerSector( mc_per_sector, data_per_sector, observable, title, data_name, model,input_MC_location, 
 			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root ) ;
@@ -562,11 +565,41 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   //			 output_location, output_file_name,  analysis_id, store_root ) ;
 }
 
-void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,
-			  std::string title, std::string data_name, std::vector<std::string> model,
-			  std::string input_MC_location, std::string input_data_location, std::string output_location,
-			  std::string output_file_name, std::map<string,double> systematic_map,
-			  std::string analysis_id, bool store_root ) {
+void plotting::PlotXsecDataTotal( TH1D * data, std::string observable, std::string title, std::string data_name,
+				  std::string input_data_location, std::string output_location,
+				  std::string output_file_name, std::map<string,double> systematic_map,
+				  std::string analysis_id, bool store_root ) {
+  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);  
+  TPad *pad1 = new TPad("pad1","",0,0,1,1);
+  pad1->Draw();
+  pad1->cd();
+  pad1->SetBottomMargin(0.15);
+  pad1->SetLeftMargin(0.15);
+
+  // Format plots
+  if( data ) { 
+    StandardFormat( data, title, kBlack, 8, observable ) ;
+    data -> SetLineStyle(1);
+  }
+  
+  if( data ) data -> Draw(" err ");
+ 
+  std::string output_name = output_file_name+"_onlydata_dxsec_d"+observable ;
+  
+  std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
+  if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
+
+  if( store_root ) c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+  c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
+  delete c1 ;
+
+}
+
+void plotting::PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,
+			      std::string title, std::string data_name, std::vector<std::string> model,
+			      std::string input_MC_location, std::string input_data_location, std::string output_location,
+			      std::string output_file_name, std::map<string,double> systematic_map,
+			      std::string analysis_id, bool store_root ) {
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);  
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
   pad1->Draw();

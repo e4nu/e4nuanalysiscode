@@ -666,6 +666,13 @@ void plotting::PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> br
   std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
   if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
 
+  // Print out integral for debugging
+  double data_integral ;
+  if( data ) data_integral= data->Integral() ; 
+  double mc_integral = mc_hists[0]->Integral() ; 
+  if( data ) std::cout << " Total integrated cross section (data) " << data_integral << std::endl;
+  std::cout << " Total integrated cross section (mc) " << mc_integral << std::endl;
+
   if( store_root ) c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   delete c1 ;
@@ -690,6 +697,10 @@ void plotting::PlotEventRate( TH1D * data, std::string observable, std::string t
   if( data ) {
     data -> Draw(" err ");
   }
+
+  double data_integral ;
+  if( data ) data_integral= data->Integral() ; 
+  if( data ) std::cout << " Total integrated event rate (data) " << data_integral << std::endl;
 
   std::string output_name = output_file_name+"_Nevents_"+observable ;
   

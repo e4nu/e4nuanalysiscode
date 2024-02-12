@@ -426,6 +426,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double proton_theta = p_max.Theta() * TMath::RadToDeg() ;
   double proton_phi = p_max.Phi() * TMath::RadToDeg() ;
   double ECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg ) ; 
+  double DiffECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg ) - BeamE ; 
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
   double DeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ; 
@@ -567,6 +568,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "MissingMomentum", &MissingMomentum, "MissingMomentum/D");
     kAnalysisTree -> Branch( "MissingAngle", &MissingAngle, "MissingAngle/D");
     kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
+    kAnalysisTree -> Branch( "DiffECal", &DiffECal, "DiffECal/D");
     kAnalysisTree -> Branch( "resid", &resid, "resid/I");
     kAnalysisTree -> Branch( "HadronsAngle",&HadronsAngle, "HadronsAngle/D");
     kAnalysisTree -> Branch( "Angleqvshad",&Angleqvshad,"Angleqvshad/D");

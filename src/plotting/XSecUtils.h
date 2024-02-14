@@ -22,12 +22,20 @@ namespace e4nu {
 		    std::string input_MC_location, std::string input_data_location, std::string output_location,
 		    std::string output_file_name, bool plot_data, std::map<string,double> systematic_map, 
 		    std::string analysis_id = "default", bool store_root = false) ; 
+
+    void PlotXsecDataTotal( TH1D * data, std::string observable, std::string title, std::string data_name,
+			    std::string input_data_location, std::string output_location,
+			    std::string output_file_name, std::map<string,double> systematic_map,
+			    std::string analysis_id, bool store_root = false ) ;
  
-    void PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, 
-		    std::string observable, std::string title, std::string data_name, std::vector<std::string> model,
-		    std::string input_MC_location, std::string input_data_location, std::string output_location,
-		    std::string output_file_name, std::map<string,double> systematic_map, 
-		    std::string analysis_id = "default", bool store_root = false) ;
+    void PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, 
+			std::string observable, std::string title, std::string data_name, std::vector<std::string> model,
+			std::string input_MC_location, std::string input_data_location, std::string output_location,
+			std::string output_file_name, std::map<string,double> systematic_map, 
+			std::string analysis_id = "default", bool store_root = false) ;
+    
+    void PlotEventRate( TH1D * data, std::string observable, std::string title, std::string data_name, std::string input_data_location, 
+			std::string output_location, std::string output_file_name, std::string analysis_id, bool store_root ) ;
 
     void PlotLegend( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,
 		     std::string data_name, std::vector<std::string> model,std::string output_location,
@@ -37,13 +45,13 @@ namespace e4nu {
     void PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*> data_per_sector, std::string observable,
 			std::string title, std::string data_name, std::vector<std::string> model,
 			std::string input_MC_location, std::string input_data_location, std::string output_location,
-			std::string output_file_name, std::map<string,double> systematic_map, 
+			std::string output_file_name, std::map<string,double> systematic_map,
 			std::string analysis_id = "default", bool store_root = false) ;
 
     void PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vector<double> addbinning, std::string observable,
 		     std::string title, std::string data_name, std::vector<std::string> model,
 		     std::string input_MC_location, std::string input_data_location, std::string output_location,
-		     std::string output_file_name, std::map<string,double> systematic_map, 
+		     std::string output_file_name, std::map<string,double> systematic_map,
 		     std::string analysis_id = "default", bool store_root = false ) ;
   }
 }

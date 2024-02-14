@@ -116,6 +116,7 @@ void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event & event ) {
     std::map<int,unsigned int> Topology = GetTopology();
     // Electron acceptance
     if( kAccMap[conf::kPdgElectron] && kGenMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], *kGenMap[conf::kPdgElectron], out_mom ) ; 
+
     // Others
     for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
       if ( part_map.find(it->first) == part_map.end()) continue ;
@@ -206,51 +207,52 @@ void MCCLAS6AnalysisI::Initialize() {
     kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ) );
     kAccMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ) );
     kAccMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ) );
-
+      
     kGenMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ) );
     kGenMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ) ) ;
     kGenMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ) ) ;
     kGenMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ) ) ;
-    
+      
     for( auto it = kAccMap.begin() ; it != kAccMap.end(); ++it ) {
       kAccMap[it->first]->SetDirectory(nullptr);
       kGenMap[it->first]->SetDirectory(nullptr);
-    }
+    } 
   }  
-
-  // Get xsec from cross section spline
-  std::string target_tag = "" ;
-  if( GetConfiguredTarget() == conf::kPdgC12 ) target_tag = "e-_C12" ; 
-  if( GetConfiguredTarget() == conf::kPdgHe3 ) target_tag = "e-_He3" ;
-  if( GetConfiguredTarget() == conf::kPdgHe4 ) target_tag = "e-_He4" ;
-  if( GetConfiguredTarget() == conf::kPdgFe56 ) target_tag = "e-_Fe56" ;
-  if( GetConfiguredTarget() == conf::kPdgO16 ) target_tag = "e-_O16" ;
-
-  std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>( new TFile( ( GetXSecFile() ).c_str(),"READ") );
-  if( !xsec_file ) {
-    std::cout << " ERROR: Xsec file does not exist: " << GetXSecFile() << std::endl;
-    kIsConfigured = false ; 
-    return ; 
-   }
   
-  TDirectoryFile * xsec_dir = (TDirectoryFile *) xsec_file -> Get(target_tag.c_str());
-  if( !xsec_dir ) {
-    std::cout << " ERROR: Xsec dir does not exist: " << target_tag << std::endl;
-    kIsConfigured = false ; 
-    return ; 
-  }
+  if( NormalizeHist() ) { 
+    // Get xsec from cross section spline
+    std::string target_tag = "" ;
+    if( GetConfiguredTarget() == conf::kPdgC12 ) target_tag = "e-_C12" ; 
+    if( GetConfiguredTarget() == conf::kPdgHe3 ) target_tag = "e-_He3" ;
+    if( GetConfiguredTarget() == conf::kPdgHe4 ) target_tag = "e-_He4" ;
+    if( GetConfiguredTarget() == conf::kPdgFe56 ) target_tag = "e-_Fe56" ;
+    if( GetConfiguredTarget() == conf::kPdgO16 ) target_tag = "e-_O16" ;
+
+    std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>( new TFile( ( GetXSecFile() ).c_str(),"READ") );
+    if( !xsec_file ) {
+      std::cout << " ERROR: Xsec file does not exist: " << GetXSecFile() << std::endl;
+      kIsConfigured = false ; 
+      return ; 
+    }
     
-  TGraph * gxsec  = (TGraph*) xsec_dir  -> Get("tot_em");
-  if( !gxsec ) {
-    std::cout << " ERROR: Cannot create graph for " << "tot_em" << std::endl;
-    kIsConfigured = false; 
-    return ; 
+    TDirectoryFile * xsec_dir = (TDirectoryFile *) xsec_file -> Get(target_tag.c_str());
+    if( !xsec_dir ) {
+      std::cout << " ERROR: Xsec dir does not exist: " << target_tag << std::endl;
+      kIsConfigured = false ; 
+      return ; 
+    }
+    
+    TGraph * gxsec  = (TGraph*) xsec_dir  -> Get("tot_em");
+    if( !gxsec ) {
+      std::cout << " ERROR: Cannot create graph for " << "tot_em" << std::endl;
+      kIsConfigured = false; 
+      return ; 
+    }
+    
+    kXSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
+    std::cout << " Total XSec ("<< GetConfiguredEBeam()<<") = " << kXSec<< std::endl;
+    xsec_file->Close();
   }
-
-  kXSec = gxsec->Eval( GetConfiguredEBeam() ) ; 
-  std::cout << " Total XSec ("<< GetConfiguredEBeam()<<") = " << kXSec<< std::endl;
-  xsec_file->Close();
-
 }
 
 bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event>> & event_holder ) {
@@ -416,6 +418,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   }
   
 
+  double proton_E = p_max.E() ; 
   double proton_mom = p_max.P() ; 
   double proton_momx = p_max.Px() ; 
   double proton_momy = p_max.Py() ; 
@@ -423,6 +426,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double proton_theta = p_max.Theta() * TMath::RadToDeg() ;
   double proton_phi = p_max.Phi() * TMath::RadToDeg() ;
   double ECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg ) ; 
+  double DiffECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg ) - BeamE ; 
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
   double DeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ; 
@@ -444,6 +448,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     }
   }
   
+  double pip_E = pip_max.E() ;
   double pip_mom = pip_max.P() ;
   double pip_momx = pip_max.Px() ;
   double pip_momy = pip_max.Py() ;
@@ -472,6 +477,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double Angleqvshad = utils::Angle( utils::GetRecoq3( out_mom, BeamE), utils::TotHadron(hadron_map).Vect() ) * TMath::RadToDeg() ;
 
   double HadSystemMass = utils::HadSystemMass( hadron_map ) ;  
+  double pim_E = pim_max.E() ;
   double pim_mom = pim_max.P() ;
   double pim_momx = pim_max.Px() ;
   double pim_momy = pim_max.Py() ;
@@ -562,11 +568,13 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "MissingMomentum", &MissingMomentum, "MissingMomentum/D");
     kAnalysisTree -> Branch( "MissingAngle", &MissingAngle, "MissingAngle/D");
     kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
+    kAnalysisTree -> Branch( "DiffECal", &DiffECal, "DiffECal/D");
     kAnalysisTree -> Branch( "resid", &resid, "resid/I");
     kAnalysisTree -> Branch( "HadronsAngle",&HadronsAngle, "HadronsAngle/D");
     kAnalysisTree -> Branch( "Angleqvshad",&Angleqvshad,"Angleqvshad/D");
 
     if( topology_has_protons ) {
+      kAnalysisTree -> Branch( "proton_E", &proton_E, "proton_E/D");
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");
       kAnalysisTree -> Branch( "proton_momx", &proton_momx, "proton_momx/D");
       kAnalysisTree -> Branch( "proton_momy", &proton_momy, "proton_momy/D");
@@ -581,6 +589,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     }
 
     if( topology_has_pip ) {
+      kAnalysisTree -> Branch( "pip_E", &pip_E, "pip_E/D");
       kAnalysisTree -> Branch( "pip_mom", &pip_mom, "pip_mom/D");
       kAnalysisTree -> Branch( "pip_momx", &pip_momx, "pip_momx/D");
       kAnalysisTree -> Branch( "pip_momy", &pip_momy, "pip_momy/D");
@@ -590,6 +599,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     }
 
     if( topology_has_pim ) {
+      kAnalysisTree -> Branch( "pim_E", &pim_E, "pim_E/D");
       kAnalysisTree -> Branch( "pim_mom", &pim_mom, "pim_mom/D");
       kAnalysisTree -> Branch( "pim_momx", &pim_momx, "pim_momx/D");
       kAnalysisTree -> Branch( "pim_momy", &pim_momy, "pim_momy/D");

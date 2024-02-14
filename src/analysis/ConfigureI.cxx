@@ -8,6 +8,7 @@
 #include <fstream>
 #include "analysis/ConfigureI.h"
 #include "conf/ParticleI.h"
+#include "conf/TargetI.h"
 #include "conf/AnalysisConstantsI.h"
 #include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
@@ -35,7 +36,7 @@ ConfigureI::~ConfigureI() {
   kObservables.clear();
   kNBins.clear();
   kRanges.clear();
-  delete kFiducialCut ;
+  if( kFiducialCut ) delete kFiducialCut ;
 }
 
 ConfigureI::ConfigureI( const std::string input_file ) {
@@ -335,6 +336,7 @@ bool ConfigureI::InitializeFiducial(void) {
   kFiducialCut -> InitEClimits(); 
   kFiducialCut -> up_lim1_ec -> Eval(60) ;
   kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), Target , EBeam ) ;
+
   kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
   if( !kFiducialCut ) return false ; 
 

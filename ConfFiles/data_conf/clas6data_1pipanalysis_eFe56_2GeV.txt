@@ -1,0 +1,34 @@
+#Analysis Cuts
+DisableSector   2,3,4
+ApplyFiducial   true
+ApplyAccWeights true
+ApplyReso	true
+ApplyMomCut     true
+ApplyMottWeight true
+ApplyOutEMomCut	true
+ApplyQ2Cut	true
+ApplyWCut	true
+SubtractBkg     true
+
+ApplyPhiOpeningAngle	false
+UsePhiThetaBand		false
+ApplyThetaSlice		false
+ApplyGoodSectorPhiSlice	false
+offset			0
+
+#Run Configurables
+EBeam			2.261
+TargetPdg		1000260560
+NEvents			1000000000
+FirstEvent		0
+
+#Topology definition
+IsData			true
+IsCLAS6Analysis		true
+Toplogy 		11:1,-211:0,211:1,22:0
+MaxBackgroundMultiplicity 4
+NRotations 1000
+
+InputFile /w/hallb-scshelf2102/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_56Fe_2261_neutrino6_united4_radphot_test_100M.root
+OutputFile /work/clas12/jtena/e4nuanalysis_1pipanalysis_e_on_1000260560_2261MeV
+

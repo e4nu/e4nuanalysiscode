@@ -207,6 +207,7 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     HadronsAngle = utils::Angle( particles[0].Vect(), particles[1].Vect() ) * TMath::RadToDeg() ;
   }
 
+  double proton_E = p_max.E() ; 
   double proton_mom = p_max.P() ; 
   double proton_momx = p_max.Px() ; 
   double proton_momy = p_max.Py() ; 
@@ -214,6 +215,7 @@ bool CLAS6AnalysisI::StoreTree(Event event){
   double proton_theta = p_max.Theta() * TMath::RadToDeg() ;
   double proton_phi = p_max.Phi() * TMath::RadToDeg() ;
   double ECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg ) ; 
+  double DiffECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg ) - BeamE ; 
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
   double DeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ; 
@@ -234,6 +236,7 @@ bool CLAS6AnalysisI::StoreTree(Event event){
       }
     }
   }
+  double pip_E = pip_max.E() ;
   double pip_mom = pip_max.P() ;
   double pip_momx = pip_max.Px() ;
   double pip_momy = pip_max.Py() ;
@@ -252,6 +255,7 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     }
   }
 
+  double pim_E = pim_max.E() ;
   double pim_mom = pim_max.P() ;
   double pim_momx = pim_max.Px() ;
   double pim_momy = pim_max.Py() ;
@@ -326,10 +330,12 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "MissingMomentum", &MissingMomentum, "MissingMomentum/D");
     kAnalysisTree -> Branch( "MissingAngle", &MissingAngle, "MissingAngle/D");
     kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
+    kAnalysisTree -> Branch( "DiffECal", &DiffECal, "DiffECal/D");
     kAnalysisTree -> Branch( "HadronsAngle", &HadronsAngle, "HadronsAngle/D");
     kAnalysisTree -> Branch( "Angleqvshad",&Angleqvshad,"Angleqvshad/D");
 
     if( topology_has_protons ) {
+      kAnalysisTree -> Branch( "proton_E", &proton_E, "proton_E/D");
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");
       kAnalysisTree -> Branch( "proton_momx", &proton_momx, "proton_momx/D");
       kAnalysisTree -> Branch( "proton_momy", &proton_momy, "proton_momy/D");
@@ -343,6 +349,7 @@ bool CLAS6AnalysisI::StoreTree(Event event){
       kAnalysisTree -> Branch( "AdlerAnglePhiP", &AdlerAnglePhiP, "AdlerAnglePhiP/D");    }
 
     if( topology_has_pip ) {
+      kAnalysisTree -> Branch( "pip_E", &pip_E, "pip_E/D");
       kAnalysisTree -> Branch( "pip_mom", &pip_mom, "pip_mom/D");
       kAnalysisTree -> Branch( "pip_momx", &pip_momx, "pip_momx/D");
       kAnalysisTree -> Branch( "pip_momy", &pip_momy, "pip_momy/D");
@@ -352,6 +359,7 @@ bool CLAS6AnalysisI::StoreTree(Event event){
     }
 
     if( topology_has_pim ) {
+      kAnalysisTree -> Branch( "pim_E", &pim_E, "pim_E/D");
       kAnalysisTree -> Branch( "pim_mom", &pim_mom, "pim_mom/D");
       kAnalysisTree -> Branch( "pim_momx", &pim_momx, "pim_momx/D");
       kAnalysisTree -> Branch( "pim_momy", &pim_momy, "pim_momy/D");

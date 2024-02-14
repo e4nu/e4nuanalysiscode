@@ -36,23 +36,8 @@ NRotations 1000
 ComputeTrueAccCorr true
 ComputeTrueRecoAccCorr false
 
-# G18_10a_00_000:
-# InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_01_e_on_1000060120_1161MeV_NoRad.gst.root
-# XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_01_total_xsec.root
-# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p0pi/e4nuanalysis_1p0pianalysis_G18_10a_Q2_01_e_on_1000060120_1161MeV_NoRad
+InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root
+XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/G18_10a_Dipole_Q2_01_eCarbon.root
+OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1p0pianalysis_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad
 
-# G18_10b_00_000:
-# InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10b_00_000/G18_10b_Q2_01_e_on_1000060120_1161MeV_NoRad.gst.root
-# XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_01_total_xsec.root
-# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p0pi/e4nuanalysis_1p0pianalysis_G18_10b_Q2_01_e_on_1000060120_1161MeV_NoRad
-
-# GEM21_11a_00_000:
-InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/GEM21_11a/GEM21_11a_Q2_01_e_on_1000060120_1161MeV_NoRad.gst.root
-XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/GEM21_11a_00_000/GEM21_11a_00_000_eC12_Q2min_01_total_xsec.root
-OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p0pi/e4nuanalysis_1p0pianalysis_GEM21_11a_Q2_01_e_on_1000060120_1161MeV_NoRad
-
-# GEM21_11b_00_000:
-# InputFile
-# XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/GEM21_11a_00_000/GEM21_11a_00_000_eC12_Q2min_01_total_xsec.root
-# OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/1p0pi/e4nuanalysis_1p0pianalysis_GEM21_11b_Q2_01_e_on_1000060120_1161MeV_NoRad
 

@@ -32,11 +32,9 @@ using namespace e4nu::plotting;
 // --output-gst-file) OutputFile in GENIE gst format           //
 // --true-EBeam)      True beam energy used for flux generation//
 // --nevents          Number of events to process              //
+// --first-event      Default 0                                //
 // --target : target pdg                                       //
 // --thickness : thickness of your experiment target           //
-// --Nbins : number of bins for radiated flux histogram        //
-// --Emin : minimum energy for your histogram axis             //
-// --Emax : maximum energy for your histogram axis             //
 // --rad-model : model used for external radiation of in e-    //
 //               simc or simple                                //
 // --max-Ephoton : defaulted to 0.2 (of beam energy)           //
@@ -52,6 +50,7 @@ int main( int argc, char* argv[] ) {
   string input_file, output_file = "radiated.gst.root";
   string output_hist = "" ; 
   double nevents = 10000000;
+  double first_event = 0 ;
   double true_beam_energy = 1; 
   int tgt = 1000060120 ;
   double thickness = e4nu::conf::GetThickness(tgt); // Defaulted to CLAS6
@@ -82,6 +81,9 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("nevents",argc,argv)) {
       nevents = stoi(GetArg("nevents",argc,argv));
     }
+    if( ExistArg("first-event",argc,argv)) {
+      first_event = stoi(GetArg("first-event",argc,argv));
+    }
     if( ExistArg("output-hist",argc,argv)) {
       output_hist = GetArg("output-hist",argc,argv);
     }
@@ -109,7 +111,7 @@ int main( int argc, char* argv[] ) {
   TFile * out_file = TFile::Open(output_file.c_str(),"RECREATE");
   s_tree = new TTree("gst","GENIE Summary Event Tree");
 
-  MCEventHolder * event_holder = new MCEventHolder( input_file, 0, nevents ) ; 
+  MCEventHolder * event_holder = new MCEventHolder( input_file, first_event, nevents ) ; 
   if( !event_holder ) {
     std::cout << "Failed to instiantize event holder" << std::endl;
     return 0;
@@ -143,7 +145,7 @@ int main( int argc, char* argv[] ) {
 
     // Compute true detected outgoing electron kinematics with energy loss method
     TLorentzVector detected_electron; // will be set in RadOutElectron
-    TLorentzVector OutGamma = RadOutElectron( CorrOutElectron, detected_electron,tgt, thickness, MaxEPhoton, rad_model );
+    TLorentzVector OutGamma = RadOutElectron( CorrOutElectron, detected_electron,tgt, thickness, MaxEPhoton, "simc");//rad_model );
     h_outgammamom->Fill(OutGamma.E()); 
     h_outcorremom->Fill(CorrOutElectron.E());
     h_outemom->Fill(detected_electron.E());
@@ -152,8 +154,7 @@ int main( int argc, char* argv[] ) {
     event.SetOutLeptonKinematics( detected_electron ) ;
 
     // Compute correction weight
-    double weight = SIMCRadCorrWeight( event, thickness, MaxEPhoton, "simc");
-    //rad_model ) ;
+    double weight = SIMCRadCorrWeight( event, thickness, MaxEPhoton, rad_model ) ;
     
     event.SetEventWeight ( weight * event.GetEventWeight() ) ; 
 
@@ -165,10 +166,10 @@ int main( int argc, char* argv[] ) {
     } else { 
       event_record[kPdgPhoton] = { InGamma, OutGamma } ;
     }  
+    event.SetFinalParticlesKinematics(event_record);
 
     // Store back to gst format
     StoreToGstFormat( event, output_file ) ;
-
   }
 
   s_tree ->Write();
@@ -231,8 +232,14 @@ void StoreToGstFormat( Event & event, string output_file ) {
   //____________________________________________________________________________________
   
   // Members for root file
-  Int_t iev = 0 ;
+  Int_t iev = event.GetEventID();
+  Int_t neu = 0 ;
+  Int_t fspl = 0 ;
   Int_t tgt = 0 ;
+  Int_t A = 0 ;
+  Int_t Z = 0 ;
+  Int_t hitnuc = 0 ;
+  Int_t hitqrk = 0 ;
   Bool_t qel = false ;
   Bool_t mec = false ;
   Bool_t res = false ;
@@ -240,6 +247,13 @@ void StoreToGstFormat( Event & event, string output_file ) {
   Bool_t em = false ;
   Bool_t cc = false ;
   Bool_t nc = false ;
+  Bool_t coh = false ;
+  Bool_t dfr = false ;
+  Bool_t imd = false ;
+  Bool_t norm = false ; 
+  Bool_t imdanh = false ;
+  Bool_t singlek = false ;
+  Bool_t nuel = false ;
   Double_t wght = 0 ;
   Double_t xs = 0 ;
   Double_t ys = 0 ;
@@ -255,10 +269,16 @@ void StoreToGstFormat( Event & event, string output_file ) {
   Double_t pxv = 0 ;
   Double_t pyv = 0 ;
   Double_t pzv = 0 ;
+  Double_t En = 0 ;
+  Double_t pxn = 0 ;
+  Double_t pyn = 0 ;
+  Double_t pzn = 0 ;
   Double_t El = 0 ;
   Double_t pxl = 0 ;
-  Double_t pyl  = 0 ;
+  Double_t pyl = 0 ;
   Double_t pzl = 0 ;
+  Double_t pl = 0 ;
+  Double_t cthl = 0 ;
   Double_t Evcorr = 0 ;
   Double_t pxvcorr = 0 ;
   Double_t pyvcorr = 0 ;
@@ -283,6 +303,8 @@ void StoreToGstFormat( Event & event, string output_file ) {
   Double_t pxf[120] ;
   Double_t pyf[120] ;
   Double_t pzf[120] ;
+  Double_t pf[120]; 
+  Double_t cthf[120] ;
   Double_t vtxx = 0 ;
   Double_t vtxy = 0 ;
   Double_t vtxz = 0 ;
@@ -304,11 +326,17 @@ void StoreToGstFormat( Event & event, string output_file ) {
   Double_t pyi[120] ;
   Double_t pzi[120] ;
 
+
   // Create tree branches
-  //
   if( event.GetEventID() == 0 ){
     s_tree->Branch("iev", &iev, "iev/I");
+    s_tree->Branch("neu", &neu, "neu/I");
+    s_tree->Branch("fspl", &fspl, "fspl/I");
     s_tree->Branch("tgt", &tgt, "tgt/I");
+    s_tree->Branch("A", &A, "A/I");
+    s_tree->Branch("Z", &Z, "Z/I");
+    s_tree->Branch("hitnuc", &hitnuc, "hitnuc/I");
+    s_tree->Branch("hitqrk", &hitqrk, "hitqrk/I");
     s_tree->Branch("qel", &qel, "qel/O");
     s_tree->Branch("mec", &mec, "mec/O");//go down from here
     s_tree->Branch("res", &res, "res/O");
@@ -316,6 +344,13 @@ void StoreToGstFormat( Event & event, string output_file ) {
     s_tree->Branch("em", &em, "em/O");
     s_tree->Branch("cc", &cc, "cc/O");
     s_tree->Branch("nc", &nc, "nc/O");
+    s_tree->Branch("coh", &coh, "coh/O");
+    s_tree->Branch("dfr", &dfr, "dfr/O");
+    s_tree->Branch("imd", &imd, "imd/O");
+    s_tree->Branch("norm", &norm, "norm/O");
+    s_tree->Branch("imdanh", &imdanh, "imdanh/O");
+    s_tree->Branch("singlek", &singlek, "singlek/O");
+    s_tree->Branch("nuel", &nuel, "nuel/O");
     s_tree->Branch("wght", &wght, "wght/D");
     s_tree->Branch("xs", &xs, "xs/D");
     s_tree->Branch("ys", &ys, "ys/D");
@@ -331,10 +366,16 @@ void StoreToGstFormat( Event & event, string output_file ) {
     s_tree->Branch("pxv", &pxv, "pxv/D");
     s_tree->Branch("pyv", &pyv, "pyv/D");
     s_tree->Branch("pzv", &pzv, "pzv/D");
+    s_tree->Branch("En", &En, "En/D");
+    s_tree->Branch("pxn", &pxn, "pxn/D");
+    s_tree->Branch("pyn", &pyn, "pyn/D");
+    s_tree->Branch("pzn", &pzn, "pzn/D");
     s_tree->Branch("El", &El, "El/D");
     s_tree->Branch("pxl", &pxl, "pxl/D");
     s_tree->Branch("pyl", &pyl, "pyl/D");
     s_tree->Branch("pzl", &pzl, "pzl/D");
+    s_tree->Branch("pl", &pl, "pl/D");
+    s_tree->Branch("cthl", &cthl, "cthl/D");
     s_tree->Branch("Evcorr", &Evcorr, "Evcorr/D");
     s_tree->Branch("pxvcorr", &pxvcorr, "pxvcorr/D");
     s_tree->Branch("pyvcorr", &pyvcorr, "pyvcorr/D");
@@ -356,6 +397,8 @@ void StoreToGstFormat( Event & event, string output_file ) {
     s_tree->Branch("nf", &nf, "nf/I");
     s_tree->Branch("pdgf", pdgf, "pdgf[nf]/I");
     s_tree->Branch("Ef", Ef, "Ef[nf]/D");
+    s_tree->Branch("pf", pf, "pf[nf]/D");
+    s_tree->Branch("cthf", cthf, "cthf[nf]/D");
     s_tree->Branch("pxf", pxf, "pxf[nf]/D");
     s_tree->Branch("pyf", pyf, "pyf[nf]/D");
     s_tree->Branch("pzf", pzf, "pzf[nf]/D");
@@ -380,7 +423,7 @@ void StoreToGstFormat( Event & event, string output_file ) {
     s_tree->Branch("pyi", &pyi, "pyi[ni]/D");
     s_tree->Branch("pzi", &pzi, "pzi[ni]/D");
   }
-  iev = event.GetEventID();
+
   tgt = event.GetTargetPdg();
   qel = event.IsQEL();
   mec = event.IsMEC();
@@ -403,6 +446,8 @@ void StoreToGstFormat( Event & event, string output_file ) {
   pyv  = event.GetInLepton4Mom().Py();
   pyv  = event.GetInLepton4Mom().Pz();
   El   = event.GetOutLepton4Mom().E();
+  pl   = event.GetOutLepton4Mom().P();
+  cthl = event.GetOutLepton4Mom().CosTheta();  
   pxl  = event.GetOutLepton4Mom().Px();
   pyl  = event.GetOutLepton4Mom().Py();
   pzl  = event.GetOutLepton4Mom().Pz();
@@ -431,7 +476,9 @@ void StoreToGstFormat( Event & event, string output_file ) {
     Ef[k] = 0;
     pxf[k] = 0;
     pyf[k] = 0; 
-    pzf[k] =  0;
+    pzf[k] = 0;
+    pf[k] = 0;
+    cthf[k] = 0;
   }
 
   ni = 0 ;
@@ -440,7 +487,7 @@ void StoreToGstFormat( Event & event, string output_file ) {
     Ei[k] = 0;
     pxi[k] = 0;
     pyi[k] = 0; 
-    pzi[k] =  0;
+    pzi[k] = 0;
   }
 
   std::map<int,std::vector<TLorentzVector>> final_particles = event.GetFinalParticles4Mom();
@@ -451,6 +498,8 @@ void StoreToGstFormat( Event & event, string output_file ) {
       pxf[nf] = (it->second)[i].Px();
       pyf[nf] = (it->second)[i].Py();
       pzf[nf] = (it->second)[i].Pz();
+      pf[nf] = (it->second)[i].P();
+      cthf[nf] = (it->second)[i].CosTheta();
       ++nf ;
     }
   }

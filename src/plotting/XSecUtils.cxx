@@ -14,7 +14,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 			  std::string acceptance_file_name, std::string observable,
 			  std::string title, std::string data_name, std::vector<std::string> model,
 			  std::string input_MC_location, std::string input_data_location, std::string output_location,
-			  std::string output_file_name, bool plot_data, std::map<string,double> systematic_map, 
+			  std::string output_file_name, bool plot_data, std::map<string,double> systematic_map,
 			  std::string analysis_id, bool store_root ){
 
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
@@ -30,7 +30,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
   TFile * file_data = nullptr ;
   if( plot_data ) file_data = new TFile((input_data_location+data_file_name+".root").c_str(),"READ");
-  
+
   TFile * file_acceptance = new TFile((output_location+acceptance_file_name+".root").c_str(),"READ");
   if( !file_data && plot_data ) { std::cout << "ERROR: the "<< input_data_location << data_file_name << ".root does not exist." <<std::endl; return ;}
   if( !file_acceptance ) { std::cout << "ERROR: the "<< output_location << acceptance_file_name << ".root does not exist." <<std::endl; return ;}
@@ -75,53 +75,53 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // Create histogram for total and total xsec per sector
   TH1D * hist_true = (TH1D*) h_acceptance ->Clone();
-  hist_true -> SetName( "MC True") ;
+  hist_true -> SetName( "MC_True") ;
   hist_true -> Reset();
 
   TH1D * hist_true_0 = (TH1D*) h_acceptance_0 ->Clone();
-  hist_true_0 -> SetName( "MC True Sector  0") ;
+  hist_true_0 -> SetName( "MC_True_Sector_0") ;
   hist_true_0 -> Reset();
   TH1D * hist_true_1 = (TH1D*) h_acceptance_1 ->Clone();
-  hist_true_1 -> SetName( "MC True Sector  1") ;
+  hist_true_1 -> SetName( "MC_True_Sector_1") ;
   hist_true_1 -> Reset();
   TH1D * hist_true_2 = (TH1D*) h_acceptance_2 ->Clone();
-  hist_true_2 -> SetName( "MC True Sector  2") ;
+  hist_true_2 -> SetName( "MC_True_Sector_2") ;
   hist_true_2 -> Reset();
   TH1D * hist_true_3 = (TH1D*) h_acceptance_3 ->Clone();
-  hist_true_3 -> SetName( "MC True Sector  3") ;
+  hist_true_3 -> SetName( "MC_True_Sector_3") ;
   hist_true_3 -> Reset();
   TH1D * hist_true_4 = (TH1D*) h_acceptance_4 ->Clone();
-  hist_true_4 -> SetName( "MC True Sector  4") ;
+  hist_true_4 -> SetName( "MC_True_Sector_4") ;
   hist_true_4 -> Reset();
   TH1D * hist_true_5 = (TH1D*) h_acceptance_5 ->Clone();
-  hist_true_5 -> SetName( "MC True Sector  5") ;
+  hist_true_5 -> SetName( "MC_True_Sector_5") ;
   hist_true_5 -> Reset();
 
   // Breakdown histograms for total (all sectors only):
   TH1D * hist_true_QEL = (TH1D*) h_acceptance ->Clone();
-  hist_true_QEL -> SetName( "MC True QEL") ;
+  hist_true_QEL -> SetName( "MC_True_QEL") ;
   hist_true_QEL -> Reset();
   TH1D * hist_true_RES_Delta = (TH1D*) h_acceptance ->Clone();
-  hist_true_RES_Delta -> SetName( "MC True RES Delta") ;
+  hist_true_RES_Delta -> SetName( "MC_True_RES_Delta") ;
   hist_true_RES_Delta -> Reset();
   TH1D * hist_true_RES = (TH1D*) h_acceptance ->Clone();
-  hist_true_RES -> SetName( "MC True RES") ;
+  hist_true_RES -> SetName( "MC_True_RES") ;
   hist_true_RES -> Reset();
   TH1D * hist_true_SIS = (TH1D*) h_acceptance ->Clone();
-  hist_true_SIS -> SetName( "MC True SIS") ;
+  hist_true_SIS -> SetName( "MC_True_SIS") ;
   hist_true_SIS -> Reset();
   TH1D * hist_true_MEC = (TH1D*) h_acceptance ->Clone();
-  hist_true_MEC -> SetName( "MC True MEC") ;
+  hist_true_MEC -> SetName( "MC_True_MEC") ;
   hist_true_MEC -> Reset();
   TH1D * hist_true_DIS = (TH1D*) h_acceptance ->Clone();
-  hist_true_DIS -> SetName( "MC True DIS") ;
+  hist_true_DIS -> SetName( "MC_True_DIS") ;
   hist_true_DIS -> Reset();
 
   // Same per model - only total prediction
   std::vector<TH1D*> hists_true_submodel;
   for( unsigned int id = 1 ; id < MC_files_name.size(); ++id ){
     hists_true_submodel.push_back( (TH1D*) h_acceptance ->Clone() );
-    hists_true_submodel[id - 1] -> SetName( ("MC True Model "+std::to_string(id)).c_str()) ;
+    hists_true_submodel[id - 1] -> SetName( ("MC_True_Model_"+std::to_string(id)).c_str()) ;
     hists_true_submodel[id - 1] -> Reset();
     hists_true_submodel[id - 1] -> SetLineWidth(3);
   }
@@ -131,25 +131,25 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   if ( addbinning.size() > 0 ) {
     for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
       h_total_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-      h_total_slices[k] -> SetName( ("MC True Slice "+std::to_string(k)).c_str() ) ;
+      h_total_slices[k] -> SetName( ("MC_True_Slice"+std::to_string(k)).c_str() ) ;
       h_total_slices[k] -> Reset();
       h_QEL_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-      h_QEL_slices[k] -> SetName( ("MC True QEL Slice "+std::to_string(k)).c_str() ) ;
+      h_QEL_slices[k] -> SetName( ("MC_True_QEL_Slice"+std::to_string(k)).c_str() ) ;
       h_QEL_slices[k] -> Reset();
       h_RES_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-      h_RES_slices[k] -> SetName( ("MC True RES Slice "+std::to_string(k)).c_str() ) ;
+      h_RES_slices[k] -> SetName( ("MC_True_RES_Slice"+std::to_string(k)).c_str() ) ;
       h_RES_slices[k] -> Reset();
       h_RES_Delta_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-      h_RES_Delta_slices[k] -> SetName( ("MC True RES Delta Slice "+std::to_string(k)).c_str() ) ;
+      h_RES_Delta_slices[k] -> SetName( ("MC_True_RES_Delta_Slice"+std::to_string(k)).c_str() ) ;
       h_RES_Delta_slices[k] -> Reset();
       h_SIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-      h_SIS_slices[k] -> SetName( ("MC True SIS Slice "+std::to_string(k)).c_str() ) ;
+      h_SIS_slices[k] -> SetName( ("MC_True_SIS_Slice"+std::to_string(k)).c_str() ) ;
       h_SIS_slices[k] -> Reset();
       h_MEC_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-      h_MEC_slices[k] -> SetName( ("MC True MEC Slice "+std::to_string(k)).c_str() ) ;
+      h_MEC_slices[k] -> SetName( ("MC_True_MEC_Slice"+std::to_string(k)).c_str() ) ;
       h_MEC_slices[k] -> Reset();
       h_DIS_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-      h_DIS_slices[k] -> SetName( ("MC True DIS Slice "+std::to_string(k)).c_str() ) ;
+      h_DIS_slices[k] -> SetName( ("MC_True_DIS_Slice"+std::to_string(k)).c_str() ) ;
       h_DIS_slices[k] -> Reset();
     }
   }
@@ -157,28 +157,28 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // total and per sector
   TH1D * hist_data=nullptr, * hist_data_0=nullptr, * hist_data_1=nullptr, * hist_data_2=nullptr, * hist_data_3=nullptr, * hist_data_4=nullptr, * hist_data_5 =nullptr;
-  if( plot_data ) { 
+  if( plot_data ) {
     hist_data = (TH1D*) h_acceptance ->Clone();
     hist_data -> SetName( "Data") ;
     hist_data -> Reset();
 
     hist_data_0 = (TH1D*) h_acceptance_0 ->Clone();
-    hist_data_0 -> SetName( "Data Sector  0") ;
+    hist_data_0 -> SetName( "Data_Sector_0") ;
     hist_data_0 -> Reset();
     hist_data_1 = (TH1D*) h_acceptance_1 ->Clone();
-    hist_data_1 -> SetName( "Data Sector  1") ;
+    hist_data_1 -> SetName( "Data_Sector_1") ;
     hist_data_1 -> Reset();
     hist_data_2 = (TH1D*) h_acceptance_2 ->Clone();
     hist_data_2 -> Reset();
-    hist_data_2 -> SetName( "Data Sector  2") ;
+    hist_data_2 -> SetName( "Data_Sector_2") ;
     hist_data_3 = (TH1D*) h_acceptance_3 ->Clone();
-    hist_data_3 -> SetName( "Data Sector  3") ;
+    hist_data_3 -> SetName( "Data_Sector_3") ;
     hist_data_3 -> Reset();
     hist_data_4 = (TH1D*) h_acceptance_4 ->Clone();
-    hist_data_4 -> SetName( "Data Sector  4") ;
+    hist_data_4 -> SetName( "Data_Sector_4") ;
     hist_data_4 -> Reset();
     hist_data_5 = (TH1D*) h_acceptance_5 ->Clone();
-    hist_data_5 -> SetName( "Data Sector  5") ;
+    hist_data_5 -> SetName( "Data_Sector_5") ;
     hist_data_5 -> Reset();
   }
   // Create hist for each slice on data
@@ -186,12 +186,12 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   if ( addbinning.size() > 0 && plot_data ) {
     for( unsigned int k = 0 ; k < addbinning.size()-1 ; k++ ){
       h_data_slices.push_back( (TH1D*) h_acc_slices[k] ->Clone() ) ;
-      h_data_slices[k] -> SetName( ("Data Slice "+std::to_string(k)).c_str() ) ;
+      h_data_slices[k] -> SetName( ("Data_Slice_"+std::to_string(k)).c_str() ) ;
       h_data_slices[k] -> Reset();
     }
   }
 
-  std::vector<TTree*> trees = { tree_true } ; 
+  std::vector<TTree*> trees = { tree_true } ;
   if( plot_data ) trees.push_back( tree_data );
 
   std::vector<TH1D*> hists = { hist_true, hist_data, hist_true_0, hist_data_0,
@@ -207,11 +207,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hists.push_back( hists_true_submodel[id - 1] );
   }
 
-  // If data is plot, the position of its trees and histograms is 1. 
+  // If data is plot, the position of its trees and histograms is 1.
   // Otherwise we set it to a big number so it is ignored
   unsigned int id_data = 9999;
   if( plot_data ) id_data = 1 ;
-  
+
   // OBSERVABLE DEFINITION:
   double TotWeight ;
   double ECal,Recoq3,RecoW;
@@ -224,19 +224,19 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
   double MissingEnergy, MissingAngle, MissingMomentum ;
   double InferedNucleonMom ;
-  double HadronsAngle,Angleqvshad ; 
+  double HadronsAngle,Angleqvshad ;
   double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
   long NEntries ;
   bool IsBkg ;
   int ElectronSector ;
   bool QEL, RES, DIS, MEC;
   double MCNormalization, DataNormalization ;
-  std::vector<double> mc_norm ; 
-  int resid; 
+  std::vector<double> mc_norm ;
+  int resid;
 
   for ( unsigned int i = 0 ; i < trees.size() ; ++i ){
     NEntries = trees[i] -> GetEntries() ;
-    if( !trees[i] ) continue ; 
+    if( !trees[i] ) continue ;
     trees[i] -> SetBranchAddress("TotWeight",&TotWeight);
     trees[i] -> SetBranchAddress("IsBkg",&IsBkg);
     trees[i] -> SetBranchAddress("ECal",&ECal);
@@ -288,7 +288,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
     // Only second tree corresponds to data
     if( i != id_data ) {
-      trees[i] -> SetBranchAddress("MCNormalization", &MCNormalization );    
+      trees[i] -> SetBranchAddress("MCNormalization", &MCNormalization );
     } else {
       trees[i] -> SetBranchAddress("DataNormalization",&DataNormalization );
     }
@@ -332,22 +332,22 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       else if ( observable == "MissingMomentum") content = MissingMomentum ;
       else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
       else if ( observable == "HadronsAngle") content = HadronsAngle ;
-      else if ( observable == "AdlerAngleThetaP") content = AdlerAngleThetaP ; 
-      else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiP ; 
-      else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ; 
-      else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ; 
-      else if ( observable == "Angleqvshad") content = Angleqvshad ; 
+      else if ( observable == "AdlerAngleThetaP") content = AdlerAngleThetaP ;
+      else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiP ;
+      else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ;
+      else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ;
+      else if ( observable == "Angleqvshad") content = Angleqvshad ;
 
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model
-      if( hists[size_primary_trees*(ElectronSector+1)+i] ) { 
+      if( hists[size_primary_trees*(ElectronSector+1)+i] ) {
 	if( i < size_primary_trees ) {
 	  hists[size_primary_trees*(ElectronSector+1)+i] -> Fill( content, w ) ;
 	}
       }
       if( i > size_primary_trees - 1 ) id_hist = size_primary_hists + ( i - size_primary_trees );
 
-      if( hists[id_hist] ) { 
+      if( hists[id_hist] ) {
 	hists[id_hist] -> Fill( content, w ) ;
 	hists[id_hist] -> SetLineWidth(3);
       }
@@ -398,23 +398,23 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // Store uncorrected data
   TH1D * hist_data_eventrate=nullptr, * hist_data_eventrate_0=nullptr, * hist_data_eventrate_1=nullptr, * hist_data_eventrate_2=nullptr, * hist_data_eventrate_3=nullptr, * hist_data_eventrate_4=nullptr, * hist_data_eventrate_5=nullptr ;
-  //Store before normalising  
-  if( plot_data ) { 
+  //Store before normalising
+  if( plot_data ) {
     hist_data_eventrate = (TH1D*) hist_data ->Clone();
     hist_data_eventrate -> SetName( "Data") ;
     hist_data_eventrate_0 = (TH1D*) hist_data_0 ->Clone();
-    hist_data_eventrate_0 -> SetName( "Data Sector  0") ;
+    hist_data_eventrate_0 -> SetName( "Data_Sector_0") ;
     hist_data_eventrate_1 = (TH1D*) hist_data_1 ->Clone();
-    hist_data_eventrate_1 -> SetName( "Data Sector  1") ;
+    hist_data_eventrate_1 -> SetName( "Data_Sector_1") ;
     hist_data_eventrate_2 = (TH1D*) hist_data_2 ->Clone();
-    hist_data_eventrate_2 -> SetName( "Data Sector  2") ;
+    hist_data_eventrate_2 -> SetName( "Data_Sector_2") ;
     hist_data_eventrate_3 = (TH1D*) hist_data_3 ->Clone();
-    hist_data_eventrate_3 -> SetName( "Data Sector  3") ;
+    hist_data_eventrate_3 -> SetName( "Data_Sector_3") ;
     hist_data_eventrate_4 = (TH1D*) hist_data_4 ->Clone();
-    hist_data_eventrate_4 -> SetName( "Data Sector  4") ;
+    hist_data_eventrate_4 -> SetName( "Data_Sector_4") ;
     hist_data_eventrate_5 = (TH1D*) hist_data_5 ->Clone();
-    hist_data_eventrate_5 -> SetName( "Data Sector  5") ;
-    
+    hist_data_eventrate_5 -> SetName( "Data_Sector_5") ;
+
     // Normaize by bin width
     NormalizeHist(hist_data_eventrate, 1 );
     NormalizeHist(hist_data_eventrate_0, 1 );
@@ -428,7 +428,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // Store uncorrected data
   TH1D * hist_data_correventrate=nullptr, * hist_data_correventrate_0=nullptr, * hist_data_correventrate_1=nullptr, * hist_data_correventrate_2=nullptr, * hist_data_correventrate_3=nullptr, * hist_data_correventrate_4=nullptr, * hist_data_correventrate_5=nullptr ;
-  if( plot_data ) { 
+  if( plot_data ) {
     // Correct data for detector acceptance :
     CorrectData(hist_data, h_acceptance);
     CorrectData(hist_data_0, h_acceptance_0);
@@ -439,20 +439,20 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     CorrectData(hist_data_5, h_acceptance_5);
 
     hist_data_correventrate = (TH1D*) hist_data ->Clone();
-    hist_data_correventrate -> SetName( "Corrected Event Rate Data") ;
+    hist_data_correventrate -> SetName( "Corrected_Event_Rate_Data") ;
     hist_data_correventrate_0 = (TH1D*) hist_data_0 ->Clone();
-    hist_data_correventrate_0 -> SetName( "Corrected Event Rate Data Sector  0") ;
+    hist_data_correventrate_0 -> SetName( "Corrected_Event_Rate_Data_Sector_0") ;
     hist_data_correventrate_1 = (TH1D*) hist_data_1 ->Clone();
-    hist_data_correventrate_1 -> SetName( "Corrected Event Rate Data Sector  1") ;
+    hist_data_correventrate_1 -> SetName( "Corrected_Event_Rate_Data_Sector_1") ;
     hist_data_correventrate_2 = (TH1D*) hist_data_2 ->Clone();
-    hist_data_correventrate_2 -> SetName( "Corrected Event Rate Data Sector  2") ;
+    hist_data_correventrate_2 -> SetName( "Corrected_Event_Rate_Data_Sector_2") ;
     hist_data_correventrate_3 = (TH1D*) hist_data_3 ->Clone();
-    hist_data_correventrate_3 -> SetName( "Corrected Event Rate Data Sector  3") ;
+    hist_data_correventrate_3 -> SetName( "Corrected_Event_Rate_Data_Sector_3") ;
     hist_data_correventrate_4 = (TH1D*) hist_data_4 ->Clone();
-    hist_data_correventrate_4 -> SetName( "Corrected Event Rate Data Sector  4") ;
+    hist_data_correventrate_4 -> SetName( "Corrected_Event_Rate_Data_Sector_4") ;
     hist_data_correventrate_5 = (TH1D*) hist_data_5 ->Clone();
-    hist_data_correventrate_5 -> SetName( "Corrected Event Rate Data Sector  5") ;
-   
+    hist_data_correventrate_5 -> SetName( "Corrected_Event_Rate_Data_Sector_5") ;
+
     // Normaize by bin width
     NormalizeHist(hist_data_correventrate, 1 );
     NormalizeHist(hist_data_correventrate_0, 1 );
@@ -461,21 +461,21 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_correventrate_3, 1 );
     NormalizeHist(hist_data_correventrate_4, 1 );
     NormalizeHist(hist_data_correventrate_5, 1 );
-   
+
     // Normalize data from slices
     if( addbinning.size() != 0 ) {
       for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
 	NormalizeHist(h_data_slices[l], DataNormalization );
 	CorrectData(h_data_slices[l], h_acc_slices[l] );
-     
+
 	for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
 	  systematics::AddSystematic(*h_data_slices[l], it->second, it->first) ;
 	}
       }
     }
   }
-  
-  if( plot_data ) { 
+
+  if( plot_data ) {
     NormalizeHist(hist_data, DataNormalization );
     NormalizeHist(hist_data_0, DataNormalization );
     NormalizeHist(hist_data_1, DataNormalization );
@@ -484,7 +484,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_4, DataNormalization );
     NormalizeHist(hist_data_5, DataNormalization );
   }
-  
+
   NormalizeHist(hist_true, mc_norm[0]);
   NormalizeHist(hist_true_0, mc_norm[0]);
   NormalizeHist(hist_true_1, mc_norm[0]);
@@ -500,7 +500,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   NormalizeHist(hist_true_DIS, mc_norm[0]);
 
   // add systematics
-  if( plot_data ) { 
+  if( plot_data ) {
     //adding systematics from systematic map
     for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
       std::cout << " Adding " << it->second*100 << " % systematic on " << it->first << std::endl;
@@ -544,24 +544,24 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   std::vector<std::vector<TH1D*>> all_slices = {h_total_slices,h_QEL_slices,h_RES_Delta_slices,h_RES_slices,h_SIS_slices,h_MEC_slices,h_DIS_slices,h_data_slices};
 
   // Plot Total, XSector, Legend
-  plotting::PlotEventRate( hist_data_eventrate, observable, title, data_name, input_data_location, output_location, 
+  plotting::PlotEventRate( hist_data_eventrate, observable, title, data_name, input_data_location, output_location,
 			   output_file_name+"_eventrate", analysis_id, store_root ) ;
 
-  plotting::PlotEventRate( hist_data_correventrate, observable, title, data_name, input_data_location, output_location, 
+  plotting::PlotEventRate( hist_data_correventrate, observable, title, data_name, input_data_location, output_location,
 			   output_file_name+"_correventrate", analysis_id, store_root ) ;
 
-  plotting::PlotXsecDataTotal( hist_data, observable, title, data_name, input_data_location, output_location, output_file_name, 
+  plotting::PlotXsecDataTotal( hist_data, observable, title, data_name, input_data_location, output_location, output_file_name,
 			       systematic_map, analysis_id, store_root);
 
   plotting::PlotTotalXSec( mc_hists, breakdown, hist_data, observable, title, data_name, model, input_MC_location,
 			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root);
 
-  plotting::PlotPerSector( mc_per_sector, data_per_sector, observable, title, data_name, model,input_MC_location, 
+  plotting::PlotPerSector( mc_per_sector, data_per_sector, observable, title, data_name, model,input_MC_location,
 			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root ) ;
 
   plotting::PlotLegend( mc_hists, breakdown, hist_data, observable, data_name, model, output_location, output_file_name, store_root );
 
-  //  plotting::PlotSlices(  all_slices, addbinning, observable, title, data_name, model, input_MC_location, input_data_location, 
+  //  plotting::PlotSlices(  all_slices, addbinning, observable, title, data_name, model, input_MC_location, input_data_location,
   //			 output_location, output_file_name,  analysis_id, store_root ) ;
 }
 
@@ -569,7 +569,7 @@ void plotting::PlotXsecDataTotal( TH1D * data, std::string observable, std::stri
 				  std::string input_data_location, std::string output_location,
 				  std::string output_file_name, std::map<string,double> systematic_map,
 				  std::string analysis_id, bool store_root ) {
-  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);  
+  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
   pad1->Draw();
   pad1->cd();
@@ -577,19 +577,23 @@ void plotting::PlotXsecDataTotal( TH1D * data, std::string observable, std::stri
   pad1->SetLeftMargin(0.15);
 
   // Format plots
-  if( data ) { 
+  if( data ) {
     StandardFormat( data, title, kBlack, 8, observable ) ;
     data -> SetLineStyle(1);
   }
-  
+
   if( data ) data -> Draw(" err ");
- 
+
   std::string output_name = output_file_name+"_onlydata_dxsec_d"+observable ;
-  
+
   std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
   if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
 
-  if( store_root ) c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+  if( store_root ) {
+		TFile root_file((output_location+"/TotalXSec/"+output_name+".root").c_str(),"recreate");
+		data->Write();
+		c1->Write();
+	}
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   delete c1 ;
 
@@ -600,7 +604,7 @@ void plotting::PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> br
 			      std::string input_MC_location, std::string input_data_location, std::string output_location,
 			      std::string output_file_name, std::map<string,double> systematic_map,
 			      std::string analysis_id, bool store_root ) {
-  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);  
+  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
   pad1->Draw();
   pad1->cd();
@@ -616,13 +620,13 @@ void plotting::PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> br
   }
   double y_max_total = GetMaximum( temp_check );
   // Format plots
-  if( data ) { 
+  if( data ) {
     StandardFormat( data, title, kBlack, 8, observable, y_max_total ) ;
     data -> SetLineStyle(1);
   }
-  
+
   StandardFormat( mc_hists[0], title, kBlack, 1, observable, y_max_total ) ;
-  if( breakdown.size() == 6 ) { 
+  if( breakdown.size() == 6 ) {
     StandardFormat( breakdown[0], title, kBlue-3, 1, observable ) ;
     StandardFormat( breakdown[1], title, kRed-4, 1, observable ) ;
     StandardFormat( breakdown[2], title, kGreen+2, 1, observable ) ;
@@ -637,7 +641,7 @@ void plotting::PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> br
   for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Draw("hist same");
 
   if( data ) data -> Draw(" err same ");
- 
+
   if( data && observable=="ECal" && plotting::PlotZoomIn(analysis_id) == true ){
     // Add a sub-pad1
     TPad * sub_pad = new TPad("subpad","",0.2,0.2,0.85,0.85);
@@ -658,30 +662,36 @@ void plotting::PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> br
     tmp_hist_true -> Draw("hist");
     for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i] -> Draw("hist same");
     for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Draw("hist same");
-    
+
     if( data ) data -> Draw(" err same ");
   }
   std::string output_name = output_file_name+"_dxsec_d"+observable ;
-  
+
   std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
   if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
 
   // Print out integral for debugging
   double data_integral ;
-  if( data ) data_integral= data->Integral("width") ; 
-  double mc_integral = mc_hists[0]->Integral("width") ; 
+  if( data ) data_integral= data->Integral("width") ;
+  double mc_integral = mc_hists[0]->Integral("width") ;
   if( data ) std::cout << " Total integrated cross section (data) " << data_integral << std::endl;
   std::cout << " Total integrated cross section (mc) " << mc_integral << std::endl;
 
-  if( store_root ) c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+  if( store_root ) {
+		TFile root_file((output_location+"/TotalXSec/"+output_name+".root").c_str(),"recreate");
+		data->Write();
+		for( unsigned int i = 0; i < mc_hists.size() ; ++i ) mc_hists[i] -> Write();
+		for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Write();
+		c1->Write();
+	}
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   delete c1 ;
 
 }
 
-void plotting::PlotEventRate( TH1D * data, std::string observable, std::string title, std::string data_name, std::string input_data_location, 
+void plotting::PlotEventRate( TH1D * data, std::string observable, std::string title, std::string data_name, std::string input_data_location,
 			      std::string output_location, std::string output_file_name, std::string analysis_id, bool store_root ) {
-  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);  
+  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
   pad1->Draw();
   pad1->cd();
@@ -689,7 +699,7 @@ void plotting::PlotEventRate( TH1D * data, std::string observable, std::string t
   pad1->SetLeftMargin(0.15);
 
   // Format plots
-  if( data ) { 
+  if( data ) {
     StandardFormat( data, title, kBlack, 8, observable, 0, "Counts/Bin Width" ) ;
     data -> SetLineStyle(1);
   }
@@ -699,15 +709,19 @@ void plotting::PlotEventRate( TH1D * data, std::string observable, std::string t
   }
 
   double data_integral ;
-  if( data ) data_integral= data->Integral("width") ; 
+  if( data ) data_integral= data->Integral("width") ;
   if( data ) std::cout << " Total integrated event rate (data) " << data_integral << std::endl;
 
   std::string output_name = output_file_name+"_Nevents_"+observable ;
-  
+
   std::filesystem::path totalxsec_path{(output_location+"/EventRate/").c_str()};
   if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
 
-  if( store_root ) c1->SaveAs((output_location+"/EventRate/"+output_name+".root").c_str());
+  if( store_root ) {
+		TFile root_file((output_location+"/EventRate/"+output_name+".root").c_str(),"recreate");
+		data->Write();
+		c1->Write();
+	}
   c1->SaveAs((output_location+"/EventRate/"+output_name+".pdf").c_str());
   delete c1 ;
 
@@ -735,8 +749,8 @@ void plotting::PlotLegend( std::vector<TH1D*> mc_hists, std::vector<TH1D*> break
   leg->SetNColumns(2);
   leg->SetTextSize(0.03);
   std::string model_def = "MC";
-  if ( model.size() > 0 ) model_def = model[0]; 
-  if( mc_hists[0] ) { 
+  if ( model.size() > 0 ) model_def = model[0];
+  if( mc_hists[0] ) {
     leg->AddEntry(mc_hists[0],("GENIE "+model_def).c_str(),"l");
     leg->AddEntry(breakdown[0],(model_def+" EMQEL").c_str(),"l");
     leg->AddEntry(breakdown[1],(model_def+" EMRES P33(1232)").c_str(),"l");
@@ -745,7 +759,7 @@ void plotting::PlotLegend( std::vector<TH1D*> mc_hists, std::vector<TH1D*> break
     leg->AddEntry(breakdown[4],(model_def+" EMMEC").c_str(),"l");
     leg->AddEntry(breakdown[5],(model_def+" EMDIS").c_str(),"l");
   }
-    
+
   if( mc_hists.size() > 1 ) {
     for( unsigned int id = 1 ; id < mc_hists.size() ; ++id ){
       if( !mc_hists[id] ) continue ;
@@ -769,11 +783,11 @@ void plotting::PlotLegend( std::vector<TH1D*> mc_hists, std::vector<TH1D*> break
 void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*> data_per_sector, std::string observable,
 			      std::string title, std::string data_name, std::vector<std::string> model,
 			      std::string input_MC_location, std::string input_data_location, std::string output_location,
-			      std::string output_file_name, std::map<string,double> systematic_map, 
+			      std::string output_file_name, std::map<string,double> systematic_map,
 			      std::string analysis_id, bool store_root ) {
-  
+
   // Format plots
-  if( data_per_sector.size()!=0 ) { 
+  if( data_per_sector.size()!=0 ) {
     if( data_per_sector[0] ) StandardFormat( data_per_sector[0], title+" Sector  0", kOrange+1, 8, observable ) ;
     if( data_per_sector[1] ) StandardFormat( data_per_sector[1], title+" Sector  1", kPink+4, 8, observable ) ;
     if( data_per_sector[2] ) StandardFormat( data_per_sector[2], title+" Sector  2", kViolet+5, 8, observable ) ;
@@ -782,7 +796,7 @@ void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*
     if( data_per_sector[5] ) StandardFormat( data_per_sector[5], title+" Sector  5", kGreen-3, 8, observable ) ;
   }
 
-  if( mc_per_sector.size() != 0 ) { 
+  if( mc_per_sector.size() != 0 ) {
     StandardFormat( mc_per_sector[0], title+" Sector  0", kBlack, 1, observable ) ;
     StandardFormat( mc_per_sector[1], title+" Sector  1", kBlack, 1, observable ) ;
     StandardFormat( mc_per_sector[2], title+" Sector  2", kBlack, 1, observable ) ;
@@ -801,14 +815,14 @@ void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*
   pad_sector->SetLeftMargin(0.15);
   pad_sector->Divide(3,2);
 
-  for( unsigned int i = 0 ; i < 6 ; ++i ) { 
+  for( unsigned int i = 0 ; i < 6 ; ++i ) {
     TPad *pad_sector_i = (TPad*)pad_sector->cd(i+1);
     pad_sector_i -> cd();
     pad_sector_i -> SetBottomMargin(0.15);
     pad_sector_i -> SetLeftMargin(0.15);
     mc_per_sector[i] -> GetYaxis()->SetTitleOffset(1.2);
     mc_per_sector[i] -> Draw("hist");
-  
+
     if(data_per_sector.size()!=0 && data_per_sector[i]) {
       data_per_sector[i] -> SetMarkerSize(0.7);
       data_per_sector[i] -> Draw(" err same ");
@@ -822,12 +836,12 @@ void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*
   c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
 
 
-  for( unsigned int i = 0 ; i < 6 ; ++i ) { 
+  for( unsigned int i = 0 ; i < 6 ; ++i ) {
     TPad *pad_sector_i = (TPad*)pad_sector->cd(i+1);
     pad_sector_i -> cd();
     pad_sector_i -> SetBottomMargin(0.15);
     pad_sector_i -> SetLeftMargin(0.15);
-  
+
     if(data_per_sector.size()!=0 && data_per_sector[i]) {
       data_per_sector[i] -> SetMarkerSize(0.7);
       data_per_sector[i] -> Draw(" err ");
@@ -837,7 +851,18 @@ void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*
   output_name = output_file_name+"_dataonly_dxsec_d"+observable+"_persector" ;
   xsecpersector_path =(output_location+"/XSecPerSector/").c_str();
   if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
-  if( store_root ) c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
+
+	if( store_root ) {
+		TFile root_file((output_location+"/XSecPerSector/"+output_name+".root").c_str(),"recreate");
+		for( unsigned int i = 0 ; i < 6 ; ++i ) {
+			mc_per_sector[i] -> Write();
+			if(data_per_sector.size()!=0 && data_per_sector[i]) {
+				data_per_sector[i] -> Write();
+			}
+		}
+		c_sector->Write();
+	}
+
   c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
   delete c_sector ;
 }
@@ -847,10 +872,10 @@ void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vect
 			   std::string input_MC_location, std::string input_data_location, std::string output_location,
 			   std::string output_file_name, std::map<string,double> systematic_map,
 			   std::string analysis_id, bool store_root ) {
-  
+
   for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
     double y_max_total = GetMaximum( all_slices[0] );
-    
+
     // Add Slice information in title
     std::string title_subname = title ;
     std::string alt_obs = GetAlternativeObs(observable);
@@ -868,7 +893,7 @@ void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vect
       o2 << std::fixed<< std::setprecision(1) << addbinning[l+1] ;
       title_subname += " " + o1.str() + "<"+ plotting::GetObsName(alt_obs) + "<" + o2.str()+" "+plotting::GetUnit(alt_obs) ;
     }
-    
+
     if( all_slices[0][l]) StandardFormat( all_slices[0][l], title_subname, kBlack, 1, observable, y_max_total ) ;
     if( all_slices[1][l]) StandardFormat( all_slices[1][l], title_subname, kBlue-3, 1, observable, y_max_total ) ;
     if( all_slices[2][l]) StandardFormat( all_slices[2][l], title_subname, kRed-4, 1, observable, y_max_total ) ;
@@ -886,7 +911,7 @@ void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vect
   pad_slices->cd();
   pad_slices->SetBottomMargin(0.15);
   pad_slices->SetLeftMargin(0.15);
-  
+
   // Normalize true from slices
   if( addbinning.size() != 0 ) {
     pad_slices->Divide(addbinning.size()-1,0);
@@ -900,13 +925,13 @@ void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vect
 	all_slices[0][l]->Draw("hist");
       }
 
-      for( unsigned i = 1 ; i < all_slices.size() -1 ; ++i ) { 
+      for( unsigned i = 1 ; i < all_slices.size() -1 ; ++i ) {
 	if( all_slices[i][l] ) all_slices[i][l] ->Draw("same");
       }
       if( all_slices.size() == 8 && all_slices[8][l] ) all_slices[8][l] -> Draw("err same ");
     }
   }
-  
+
   std::string output_name = output_file_name+"_dxsec_d"+observable+"_"+GetAlternativeObs(observable)+"_Slices" ;
   if( store_root ) c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
   c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());

@@ -42,7 +42,7 @@ int main( int argc, char* argv[] ) {
     std::cout << "Input files not specified. Abort..." << std::endl;
     return 0;
   }
-  /*
+
   std::vector<string> input_files, legend_list ;
   std::vector<int> colors;
   std::string output_file = "histograms.root";
@@ -204,5 +204,5 @@ int main( int argc, char* argv[] ) {
   }
   c->SaveAs(output_file.c_str());
   return 0 ;
-  */
+
 }

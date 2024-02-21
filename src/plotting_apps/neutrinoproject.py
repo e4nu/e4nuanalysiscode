@@ -35,13 +35,14 @@ observable_dict["HadDeltaPhiT"] = c_double(0)
 observable_dict["ElectronSector"] = int(-99)
 
 def compute_event_rate( file_name, hist_name, tree_name, observable_x, observable_y, nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y ):
-    # We want this function to be able to open any root file and loop over the events
+    hist = ROOT.TH2D( hist_name, "", nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y)  # Need to be able to set title
+    # Open root file afer declaring the histogram
+    #We want this function to be able to open any root file and loop over the events
     rootfile = ROOT.TFile.Open(file_name, "READ")
     if not rootfile:
         print("ERROR: the", file_name," does not exist.")
         return
     tree = rootfile.Get(tree_name)  # This will be different for data
-    hist = ROOT.TH2D( hist_name, "", nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y)  # Need to be able to set title
 
     tree.SetBranchAddress( "TotWeight", observable_dict["TotWeight"] )
     tree.SetBranchAddress( "RecoW", observable_dict["RecoW"] )
@@ -77,8 +78,6 @@ def compute_event_rate( file_name, hist_name, tree_name, observable_x, observabl
 def compute_acceptance_2d(file_names, output_name, observable_x, observable_y, nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y):
 
     dict_of_hists = {}
-    hist_recoacc
-    hist_trueacc
 
     for file_name in file_names:
         canvas = ROOT.TCanvas("canvas","canvas", 800, 600)

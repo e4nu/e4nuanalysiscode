@@ -31,6 +31,12 @@ std::string conf::GetAcceptanceFile( const int particle, const unsigned int targ
   else if ( particle == conf::kPdgPiM ) file += "_pim.root" ;
   else file += ".root" ;
 
+  if( target == conf::kPdgH ) { 
+    // This is just for the test of the radiative corrections
+    // Pions don't have a file here but we use the same as electrons
+    if ( particle == conf::kPdgProton ) file = base_dir+"AcceptanceMap_p_TH3D.root";
+    else file = base_dir+"AcceptanceMap_e_TH3D.root";
+  }
   return file ; 
 }
 

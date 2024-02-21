@@ -115,15 +115,20 @@ void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event & event ) {
     std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
     std::map<int,unsigned int> Topology = GetTopology();
     // Electron acceptance
-    if( kAccMap[conf::kPdgElectron] && kGenMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], *kGenMap[conf::kPdgElectron], out_mom ) ; 
-
+    if( kAccMap[conf::kPdgElectron] ) { 
+      if( kGenMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], *kGenMap[conf::kPdgElectron], out_mom ) ; 
+      else acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], out_mom ) ; 
+    }
     // Others
     for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
       if ( part_map.find(it->first) == part_map.end()) continue ;
       if ( it->first == conf::kPdgElectron ) continue ; 
       else { 
 	for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
-	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
+	  if( kAccMap[it->first] ){ 
+	    if( kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
+	    else acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], part_map[it->first][i] ) ;
+	  }
 	}
       }
     }
@@ -202,22 +207,34 @@ void MCCLAS6AnalysisI::Initialize() {
   // Initialize acceptance map histograms from file
   if( ApplyAccWeights() ) { 
     kAcceptanceMap = conf::GetAcceptanceFileMap2( Target, EBeam ) ; 
+    std::cout << " HERE " << std::endl;
+    if( Target == conf::kPdgH ) {
 
-    kAccMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ) ) ;
-    kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ) );
-    kAccMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ) );
-    kAccMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ) );
+      kAccMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("h3") ) ) ;
+      kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("h3") ) );
+          std::cout << " HERE 2" << std::endl;
+      for( auto it = kAccMap.begin() ; it != kAccMap.end(); ++it ) {
+	kAccMap[it->first]->SetDirectory(nullptr);
+      } 
       
-    kGenMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ) );
-    kGenMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ) ) ;
-    kGenMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ) ) ;
-    kGenMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ) ) ;
+    } else { 
+
+      kAccMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ) ) ;
+      kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ) );
+      kAccMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ) );
+      kAccMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ) );
       
-    for( auto it = kAccMap.begin() ; it != kAccMap.end(); ++it ) {
-      kAccMap[it->first]->SetDirectory(nullptr);
-      kGenMap[it->first]->SetDirectory(nullptr);
-    } 
-  }  
+      kGenMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ) );
+      kGenMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ) ) ;
+      kGenMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ) ) ;
+      kGenMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ) ) ;
+      
+      for( auto it = kAccMap.begin() ; it != kAccMap.end(); ++it ) {
+	kAccMap[it->first]->SetDirectory(nullptr);
+	kGenMap[it->first]->SetDirectory(nullptr);
+      } 
+    }  
+  }
   
   if( NormalizeHist() ) { 
     // Get xsec from cross section spline

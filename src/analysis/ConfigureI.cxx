@@ -337,7 +337,7 @@ bool ConfigureI::InitializeFiducial(void) {
   kFiducialCut -> up_lim1_ec -> Eval(60) ;
   kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), Target , EBeam ) ;
 
-  kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
+  if( ApplyFiducial() ) kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
   if( !kFiducialCut ) return false ; 
 
   return true ; 

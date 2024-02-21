@@ -34,75 +34,59 @@ observable_dict["HadDeltaPT"] = c_double(0)
 observable_dict["HadDeltaPhiT"] = c_double(0)
 observable_dict["ElectronSector"] = int(-99)
 
+def compute_event_rate( file_name, hist_name, tree_name, observable_x, observable_y, nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y ):
+    # We want this function to be able to open any root file and loop over the events
+    rootfile = ROOT.TFile.Open(file_name, "READ")
+    if not rootfile:
+        print("ERROR: the", file_name," does not exist.")
+        return
+    tree = rootfile.Get(tree_name)  # This will be different for data
+    hist = ROOT.TH2D( hist_name, "", nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y)  # Need to be able to set title
+
+    tree.SetBranchAddress( "TotWeight", observable_dict["TotWeight"] )
+    tree.SetBranchAddress( "RecoW", observable_dict["RecoW"] )
+    tree.SetBranchAddress( "ECal", observable_dict["ECal"] )
+    tree.SetBranchAddress( "Recoq3", observable_dict["Recoq3"] )
+    tree.SetBranchAddress( "pfl", observable_dict["pfl"] )
+    tree.SetBranchAddress( "pfl_theta", observable_dict["pfl_theta"] )
+    tree.SetBranchAddress( "pfl_phi", observable_dict["pfl_phi"] )
+    tree.SetBranchAddress( "proton_mom", observable_dict["proton_mom"] )
+    tree.SetBranchAddress( "proton_phi", observable_dict["proton_phi"] )
+    tree.SetBranchAddress( "proton_theta", observable_dict["proton_theta"] )
+    tree.SetBranchAddress( "HadAlphaT", observable_dict["HadAlphaT"] )
+    tree.SetBranchAddress( "HadDeltaPT", observable_dict["HadDeltaPT"] )
+    tree.SetBranchAddress( "HadDeltaPhiT", observable_dict["HadDeltaPhiT"] )
+
+    i = 0
+    while tree.GetEntry(i):
+        content_x = 0
+        content_y = 0
+        w = observable_dict["TotWeight"]
+        if observable_x[-4::1] == "_phi" or observable_x[-6::1] == "_theta":
+            content_x = observable_dict[observable_x] * 180 / ROOT.TMath.Pi()
+        else:
+            content_x = observable_dict[observable_x]
+        if observable_y[-4::1] == "_phi" or observable_y[-6::1] == "_theta":
+            content_y = observable_dict[observable_y] * 180 / ROOT.TMath.Pi()
+        else:
+            content_y = observable_dict[observable_y]
+        hist.Fill(observable_dict[observable_x], observable_dict[observable_y], w)
+        i += 1
+    return hist
+
 def compute_acceptance_2d(file_names, output_name, observable_x, observable_y, nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y):
 
     dict_of_hists = {}
+    hist_recoacc
+    hist_trueacc
 
     for file_name in file_names:
-        print (file_name)
-        rootfile_mcrecoacc = ROOT.TFile.Open(file_name+"_truereco.root", "READ")
-        rootfile_mctrueacc = ROOT.TFile.Open(file_name+"_true.root", "READ")
         canvas = ROOT.TCanvas("canvas","canvas", 800, 600)
         canvas.cd()
 
-        if not rootfile_mcrecoacc:
-            print("ERROR: the", file_name, "_truereco.root does not exist.")
-            return
-        if not rootfile_mctrueacc:
-            print("ERROR: the", file_name, "_true.root does not exist.")
-            return
-
-        tree_mcrecoacc = rootfile_mcrecoacc.Get("MCCLAS6Tree")
-        tree_mctrueacc = rootfile_mctrueacc.Get("MCCLAS6Tree")
-
-        hist_recoacc = ROOT.TH2D("Reco MC ACC", "", nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y)
-        hist_trueacc = ROOT.TH2D("True MC ACC", "", nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y)
-
-        trees = [tree_mcrecoacc, tree_mctrueacc]
+        hist_recoacc = compute_event_rate( file_name+"_truereco.root", "Reco MC ACC", "MCCLAS6Tree", observable_x, observable_y, nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y )
+        hist_trueacc = compute_event_rate( file_name+"_true.root", "True MC ACC", "MCCLAS6Tree", observable_x, observable_y, nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y )
         hists = [hist_recoacc, hist_trueacc]
-
-        for j in tqdm(range(len(trees))):
-            content_x = 0
-            content_y = 0
-
-            trees[j].SetBranchAddress( "TotWeight", observable_dict["TotWeight"] )
-            #observable_dict["IsBkg"] = trees[j].SetBranchAddress( "IsBkg", IsBkg )
-            trees[j].SetBranchAddress( "RecoW", observable_dict["RecoW"] )
-            trees[j].SetBranchAddress( "ECal", observable_dict["ECal"] )
-            trees[j].SetBranchAddress( "Recoq3", observable_dict["Recoq3"] )
-            trees[j].SetBranchAddress( "pfl", observable_dict["pfl"] )
-            trees[j].SetBranchAddress( "pfl_theta", observable_dict["pfl_theta"] )
-            trees[j].SetBranchAddress( "pfl_phi", observable_dict["pfl_phi"] )
-            trees[j].SetBranchAddress( "proton_mom", observable_dict["proton_mom"] )
-            trees[j].SetBranchAddress( "proton_phi", observable_dict["proton_phi"] )
-            trees[j].SetBranchAddress( "proton_theta", observable_dict["proton_theta"] )
-            trees[j].SetBranchAddress( "HadAlphaT", observable_dict["HadAlphaT"] )
-            trees[j].SetBranchAddress( "HadDeltaPT", observable_dict["HadDeltaPT"] )
-            trees[j].SetBranchAddress( "HadDeltaPhiT", observable_dict["HadDeltaPhiT"] )
-            #trees[j].SetBranchAddress( "ElectronSector", observable_dict["ElectronSector"] )
-
-            i = 0
-            while trees[j].GetEntry(i):
-                content_x = 0
-                content_y = 0
-
-                w = observable_dict["TotWeight"]
-                if observable_x[-4::1] == "_phi" or observable_x[-6::1] == "_theta":
-                    content_x = observable_dict[observable_x] * 180 / ROOT.TMath.Pi()
-                else:
-                    content_x = observable_dict[observable_x]
-
-                if observable_y[-4::1] == "_phi" or observable_y[-6::1] == "_theta":
-                    content_y = observable_dict[observable_y] * 180 / ROOT.TMath.Pi()
-                else:
-                    content_y = observable_dict[observable_y]
-
-                hists[j].Fill(observable_dict[observable_x], observable_dict[observable_y], w)
-                print( observable_dict[observable_x], observable_dict[observable_y], w)
-                i += 1
-                # print(w, content_x, content_y)
-                # hists[i].SetLineWidth(3)
-
         dict_of_hists[file_name] = hists
 
     output_name = output_name + "_acceptance_correction_" + observable_x + "_vs_" + observable_y
@@ -126,13 +110,15 @@ def compute_acceptance_2d(file_names, output_name, observable_x, observable_y, n
     average = ratios_list[0].Clone()
     for i in range(1,n):
         average.Add(ratios_list[0])
-    #average.Scale(1/float(n))
+    average.Scale(1/float(n))
     ratio.SetName("Total_Acceptance_Correction")
     ratio.GetXaxis().SetTitle(observable_x)
     ratio.GetYaxis().SetTitle(observable_y)
     average.Draw("colz")
     canvas.Write()
     average.Write()
+
+    return n
 
 if __name__ == "__main__":
     file_name = ["/Users/juliatenavidal/Desktop/Postdoc/e4nu/AnalisedFiles/2024Generation/e4nuanalysis_1p0pi_G18_10a_Dipole_CFG_Q2_01_1GeV_eCarbon_NoRad"]
@@ -146,4 +132,5 @@ if __name__ == "__main__":
     min_val_y = 0.6
     max_val_y = 2.3
 
-    compute_acceptance_2d(file_name, output_name, observable_x, observable_y, nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y)
+    n = compute_acceptance_2d(file_name, output_name, observable_x, observable_y, nbins_x, min_val_x, max_val_x, nbins_y, min_val_y, max_val_y)
+    print( n )

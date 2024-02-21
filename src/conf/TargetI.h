@@ -20,7 +20,7 @@ namespace e4nu {
     static const unsigned int kPdgFreeN = 1000000010 ;
 
     // Binding energy in GeV
-    static const double kBEH = 0.008481 ; 
+    static const double kBEH = 0.0004;//0.008481 ; 
     static const double kBEHe3 = 0.0077 ;
     static const double kBEHe4 = 0.0283 ; 
     static const double kBED2 = 0.00222 ; 

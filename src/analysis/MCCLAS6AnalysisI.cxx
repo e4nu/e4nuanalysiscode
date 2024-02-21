@@ -117,7 +117,10 @@ void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event & event ) {
     // Electron acceptance
     if( kAccMap[conf::kPdgElectron] ) { 
       if( kGenMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], *kGenMap[conf::kPdgElectron], out_mom ) ; 
-      else acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], out_mom ) ; 
+      else {
+	acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], out_mom ) ; 
+	std::cout << " electron acceptance " <<  utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], out_mom )<<std::endl;
+      }
     }
     // Others
     for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
@@ -127,11 +130,15 @@ void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event & event ) {
 	for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
 	  if( kAccMap[it->first] ){ 
 	    if( kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
-	    else acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], part_map[it->first][i] ) ;
+	    else {
+	      acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], part_map[it->first][i] ) ;
+	      std::cout << " Other " << utils::GetAcceptanceMapWeight( *kAccMap[it->first], part_map[it->first][i] ) <<std::endl;;
+	    }
 	  }
 	}
       }
     }
+    std::cout << acc_wght << std::endl;
     event.SetAccWght(acc_wght);
   }
   return ; 

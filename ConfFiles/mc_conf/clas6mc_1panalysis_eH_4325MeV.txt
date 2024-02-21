@@ -1,6 +1,6 @@
 #Analysis Cuts
 ApplyFiducial   false
-ApplyAccWeights true
+ApplyAccWeights false
 ApplyReso	true
 ApplyMomCut     true
 ApplyMottWeight true
@@ -24,7 +24,7 @@ FirstEvent		0
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
-Toplogy 		11:1,2212:1
+Toplogy 		11:1,2212:1,-211:0,211:0,22:0
 MaxBackgroundMultiplicity 4
 NRotations 1000
 

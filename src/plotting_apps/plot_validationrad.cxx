@@ -1,154 +1,212 @@
 // __________________________________________________________________________
-/* This app is used to plot the validation plot from the e4nu paper figure 5*/
+/* This app is used to plot the validation figure from the nature paper    */
+/* We use the ConfFiles/mc_conf/clas6mc_1panalysis_eH_4325MeV.txt          */
+/* to compute the MC prediction. The data is stored in a root file         */
 // __________________________________________________________________________
 #include <iostream>
 #include <vector>
+#include <string>
+#include <sstream>
 #include "utils/RadiativeCorrUtils.h"
+#include "plotting/PlottingUtils.h"
 #include "conf/ConstantsI.h"
 #include "conf/ParticleI.h"
-#include "conf/TargetI.h"
-#include "utils/TargetUtils.h"
-#include "utils/ParticleUtils.h"
-#include "utils/KinematicUtils.h"
-#include "analysis/MCCLAS6AnalysisI.h"
 #include "TGraph.h"
-#include "TH1D.h"
 #include "TCanvas.h"
+#include "TPad.h"
 #include "TAxis.h"
+#include "TH3D.h"
+#include "TLegend.h"
+#include <TRandom.h>
 
 using namespace std;
 using namespace e4nu;
 using namespace e4nu::utils;
 using namespace e4nu::conf;
-
+using namespace e4nu::plotting;
 /////////////////////////////////////////////////////////////////
 // Options:                                                    //
+// * input-file : analised MC file                             //
 /////////////////////////////////////////////////////////////////
 
+double DeltaEMin = -4.;// %
+double DeltaEMax = 4.;// %
+double DeltaENBins = 8.;
+double DeltaEStep = fabs(DeltaEMax - DeltaEMin) / DeltaENBins;
+
+double DeltaPMin = -4.;// %
+double DeltaPMax = 4.;// %
+double DeltaPNBins = 8.;
+double DeltaPStep = fabs(DeltaEMax - DeltaEMin) / DeltaENBins;
+
+double YPTarEMin = -0.03;// %
+double YPTarEMax = 0.03;// %
+double YPTarENBins = 6.;
+double YPTarEStep = fabs(YPTarEMax - YPTarEMin) / YPTarENBins;
+
+double YPTarPMin = -0.03;// %
+double YPTarPMax = 0.03;// %
+double YPTarPNBins = 6.;
+double YPTarPStep = fabs(YPTarPMax - YPTarPMin) / YPTarPNBins;
+
+double XPTarEMin = -0.05;// %
+double XPTarEMax = 0.05;// %
+double XPTarENBins = 10.;
+double XPTarEStep = fabs(XPTarEMax - XPTarEMin) / XPTarENBins;
+
+double XPTarPMin = -0.05;// %
+double XPTarPMax = 0.05;// %
+double XPTarPNBins = 10.;
+double XPTarPStep = fabs(XPTarPMax - XPTarPMin) / XPTarPNBins;
+
+double ZvertEMin = -0.09;// m
+double ZvertEMax = 0.09;// m
+double ZvertENBins = 18.;
+double ZvertEStep = fabs(ZvertEMax - ZvertEMin) / ZvertENBins;
+
+double ZvertPMin = -0.09;// m
+double ZvertPMax = 0.09;// m
+double ZvertPNBins = 18.;
+double ZvertPStep = fabs(ZvertPMax - ZvertPMin) / ZvertPNBins;
+
+double ElectronThetaCV = 0.310698;
+double ProtonThetaCV = 0.852082;
+
+double VertexZMin = -0.05; // m
+double VertexZMax = 0.05; // m
+
+//double DeltaP_CV = 2.225;  // 4%
+double DeltaP_CV = 1.75;  // 4%
+
 int main( int argc, char* argv[] ) {
-
-  std::cout << "Plotting e4nu analysis validation plot for radiative corrections..." << std::endl;
-
-  vector<double> x_axis = {4.3005,4.3016,4.3028,4.3039,4.3051,4.3062,4.3074,4.3085,4.3096, 4.3108,4.3119,4.31301,4.31414, 4.3153,4.3164,4.3176,4.3187,4.3198,4.3210,4.3221,4.3232,4.3244,4.3255,4.3267,4.3278,4.3289,4.33};
-  vector<double> y_axis = {142.86,142.86,178.57,214.29,214.29,178.57,214.29,214.29,250,250,285.71,321.43,357.14,392.86,428.57,500,571.43,714.29,821.43,1035.71,1428.57,2607.14,8392.86,6250,321.43,107.14,71.43};
-
-  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
-  TGraph * g_data = new TGraph(x_axis.size(), &x_axis[0], &y_axis[0] );
-
-  g_data->SetLineWidth(2);
-  g_data->SetLineColor(kBlack);
-  g_data->GetXaxis()->SetTitle("^{1}H(e,e'p)E_{Cal}[GeV]");
-  g_data->GetYaxis()->SetTitle("#events");
-  g_data->GetXaxis()->CenterTitle();
-  g_data->GetYaxis()->CenterTitle();
-  g_data->SetLineWidth(4);
-  g_data->SetMarkerColor(kBlack);
-  g_data->SetMarkerSize(2);
-  g_data->SetMarkerStyle(kFullCircle);
-
-  TH1D * h_data = new TH1D( "hdata","hdata", 27, 4.3, 4.33 );
-  auto nPoints = g_data->GetN(); // number of points in your TGraph
-  for(int i=0; i < nPoints; ++i) {
-    double x,y;
-    g_data->GetPoint(i, x, y);
-    h_data->Fill(x,y);
-  }
-  double data_integral = h_data->Integral();
-
-  // Compute prediction
-  string input_file = "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/MonoFlux_G18_10a_H_4320MeV.gst.root";
-  int nevents = 1000;
-  TH1D * h_sim1 = new TH1D( "hsim1","hsim1", 27,4.3, 4.33 );
-
-  h_sim1->SetLineWidth(2);
-  h_sim1->SetLineColor(kBlue);
-  h_sim1->GetXaxis()->SetTitle("^{1}H(e,e'p)E_{Cal}[GeV]");
-  h_sim1->GetYaxis()->SetTitle("#events");
-  h_sim1->GetXaxis()->CenterTitle();
-  h_sim1->GetYaxis()->CenterTitle();
-  h_sim1->SetLineWidth(4);
-
-  MCEventHolder * event_holder = new MCEventHolder( input_file, 0, nevents ) ; 
-  if( !event_holder ) {
-    std::cout << "Failed to instiantize event holder" << std::endl;
-    return 0;
-  }
-
-  event_holder -> LoadBranch();
-  for ( unsigned int i = 0 ; i < event_holder->GetNEvents() ; ++i ) { 
-    e4nu::Event & event = *event_holder->GetEvent(i);
-    std::map<int,std::vector<TLorentzVector>> particle_map = event.GetFinalParticles4Mom();
-    std::map<int,std::vector<TLorentzVector>> new_particle_map;
-    bool is_1p = true ;
-    
-    double ECal = event.GetOutLepton4Mom().E();
-    for( auto it = particle_map.begin() ; it != particle_map.end() ; ++it ) {
-      // Calculate ECal for visible particles
-      if( is_1p == false ) break;
-      if( it-> first == kPdgPiM && it->second.size() != 0 ) is_1p = false ;
-      if( it-> first == kPdgProton && it->second.size() ==1 ) {
-	for( unsigned int j = 0 ; j < (it->second).size() ; ++j ) {
-	  ECal += (it->second)[j].E() + utils::GetBindingEnergy( kPdgH ) - utils::GetParticleMass( it->first ) ; // Correct for proton binding energy
-	}
-      } else is_1p = false ;
-    }
-
-    if (!is_1p) continue ;
-    h_sim1 -> Fill( ECal, event.GetEventWeight() );
-  }
   
-  double integral_sim1 = h_sim1->Integral();
-  h_sim1->Scale(data_integral/integral_sim1);
+  std::cout << "Plot validation of radiative correction using QEL data..." << std::endl;
 
-  TH1D * h_sim2 = new TH1D( "hsim2","hsim2", 27,4.3, 4.33 );  
-  h_sim2->SetLineWidth(2);
-  h_sim2->SetLineColor(kRed);
-  h_sim2->GetXaxis()->SetTitle("^{1}H(e,e'p)E_{Cal}[GeV]");
-  h_sim2->GetYaxis()->SetTitle("#events");
-  h_sim2->GetXaxis()->CenterTitle();
-  h_sim2->GetYaxis()->CenterTitle();
-  h_sim2->SetLineWidth(4);
-
-  // string input_file_2 = "/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/RadFlux_G18_10a_H_4320MeV.gst.root";
-  //  string input_file_2 = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/radiated.gst.root";
-  string input_file_2 = "/pnfs/genie/persistent/users/apapadop/e4v_SuSav2/Exclusive/electrons/C12_4461GeV/apapadop_UpdatedSchwingerRad_SuSav2_C12_4461GeV.root";
-  MCEventHolder * event_holder_2 = new MCEventHolder( input_file_2, 0, nevents ) ; 
-  if( !event_holder_2 ) {
-    std::cout << "Failed to instiantize event holder" << std::endl;
+  if ( argc == 0 ) {
+    std::cout << "Input files not specified. Abort..." << std::endl;
     return 0;
   }
 
-  event_holder_2 -> LoadBranch();
-  for ( unsigned int i = 0 ; i < event_holder_2->GetNEvents() ; ++i ) { 
-    e4nu::Event & event = *event_holder_2->GetEvent(i);
-    std::map<int,std::vector<TLorentzVector>> particle_map = event.GetFinalParticles4Mom();
-    std::map<int,std::vector<TLorentzVector>> new_particle_map;
-    bool is_1p = true ;
-    
-    double ECal = event.GetOutLepton4Mom().E();
-    for( auto it = particle_map.begin() ; it != particle_map.end() ; ++it ) {
-      // Calculate ECal for visible particles
-      if( is_1p == false ) break;
-      if( it-> first == kPdgPiM && it->second.size() != 0 ) is_1p = false ;
-      if( it-> first == kPdgProton && it->second.size() ==1 ) {
-	for( unsigned int j = 0 ; j < (it->second).size() ; ++j ) {
-	  ECal += (it->second)[j].E() + utils::GetBindingEnergy( kPdgH ) - utils::GetParticleMass( it->first ) ; // Correct for proton binding energy
-	}
-      } else is_1p = false ;
-    }
-    
-    //    if (!is_1p) continue ;
-    h_sim2 -> Fill( ECal, event.GetEventWeight() );
-    std::cout << " w " << event.GetEventWeight() << std::endl;
+  string input_file ;
+  std::string output_file = "radcorr_verification.root";
+  std::string observable = "ECal";
+
+  if( argc > 1 ) { // configure rest of analysis
+    if( ExistArg("input-file",argc,argv)) {
+      input_file = GetArg("input-file",argc,argv);
+    } else { return 0 ;}
   }
 
-  double integral_sim2 = h_sim2->Integral();
-  //  h_sim2->Scale(data_integral/integral_sim2);
+  TCanvas * c  = new TCanvas("","",800,800);
+  c->SetFillColor(0);
+  // Top canvas - distribution
+  // Bottom canvas - relative difference
+  TPad *pad1 = new TPad("pad1","",0,0.4,1,1);
 
-  //g_data->Draw("AP");
-  //  h_sim1->Draw("hist same");
-  h_sim2->Draw("hist same");
-  c1->SaveAs("RadValidation_H_4320MeV_1p0pi.pdf");
+  char * env = std::getenv("E4NUANALYSIS") ;
+  std::string path( env ) ;
+  path += "/" ;
 
-  return 0;
+  std::cout << " Data from : "<<path<<"data/1H_4_325_Data_Plots_FSI_em.root" << std::endl;
+  TFile * data = new TFile( (path+"data/1H_4_325_Data_Plots_FSI_em.root").c_str(), "ROOTFile" ); 
+  TFile * mc = new TFile( input_file.c_str(), "ROOTFile" );
+  if( !data ) return 0 ; 
+  if( !mc ) return 0 ; 
+
+  TH1D* hist_data = (TH1D*) data->Get("ECalRecoPlot");
+  if( !hist_data ) return 0 ;
+  
+  TTree * mc_tree = (TTree*) mc->Get("MCCLAS6Tree");
+  TH1D* hist_mc = (TH1D*) hist_data->Clone();
+  hist_mc->Reset();
+
+  // Access acceptance correction
+  string acc_path = path+"/data/AcceptanceMaps/CLAS6";
+  TFile* acc_e = new TFile((acc_path+"/AcceptanceMap_e_TH3D.root").c_str() );
+  TH3D* h3_e = (TH3D*)(acc_e->Get("h3"));
+  TFile* acc_p = new TFile((acc_path+"/AcceptanceMap_p_TH3D.root").c_str() );
+  TH3D* h3_p = (TH3D*)(acc_p->Get("h3"));
+
+  double ECal = 0 ; 
+  double TotWeight = 1 ;
+  bool QEL = false ;
+  long NEntries = mc_tree -> GetEntries() ;
+  double pfl, pfl_phi, pfl_theta ; 
+  double proton_mom, proton_phi, proton_theta ;
+  mc_tree -> SetBranchAddress("TotWeight",&TotWeight);
+  mc_tree -> SetBranchAddress("ECal",&ECal);
+  mc_tree -> SetBranchAddress("QEL",&QEL);
+  mc_tree -> SetBranchAddress("pfl",&pfl);
+  mc_tree -> SetBranchAddress("pfl_theta",&pfl_theta);
+  mc_tree -> SetBranchAddress("pfl_theta",&pfl_theta);
+  mc_tree -> SetBranchAddress("proton_mom",&proton_mom);
+  mc_tree -> SetBranchAddress("proton_theta",&proton_theta);
+  mc_tree -> SetBranchAddress("proton_phi",&proton_phi);
+
+  for( int j = 0 ; j < NEntries ; ++j ) {
+    mc_tree->GetEntry(j) ;
+
+    double FSElectronMag = pfl;
+    double FSElectronTheta = pfl_theta;
+    double FSElectronTheta_Deg = pfl_theta * 180. / TMath::Pi();
+    double FSElectronCosTheta = cos(FSElectronTheta);
+    double FSElectronPhi = pfl_phi;
+    double FSElectronPhi_Deg = FSElectronPhi * 180. / TMath::Pi();
+    //if (FSElectronPhi_Deg < 0 ) { FSElectronPhi_Deg += 360.;}
+    // if (FSElectronPhi_Deg > 360. ) { FSElectronPhi_Deg -= 360.;}
+    
+    double FSProtonMag = proton_mom;
+    double FSProtonTheta = proton_theta ; 
+    double FSProtonTheta_Deg = FSProtonTheta * 180. / TMath::Pi();
+    double FSProtonCosTheta = cos(FSProtonTheta);
+    double FSProtonPhi = proton_phi;
+    double FSProtonPhi_Deg = FSProtonPhi * 180. / TMath::Pi();
+    //    if (FSProtonPhi_Deg < 0 ) { FSProtonPhi_Deg += 360.;}
+    // if (FSProtonPhi_Deg > 360. ) { FSProtonPhi_Deg -= 360.;}
+
+
+    double ElectronCV = 3.54334, ElectronCVReso = 0.045; 
+    double ProtonCV = 1.4805, ProtonCVReso = 0.045;
+    
+    double delta_e = (FSElectronMag - ElectronCV) / ElectronCV * 100; // %
+    double delta_p = (FSProtonMag - ProtonCV) / ProtonCV * 100; // %
+    
+    int IDeTrial = (delta_e - DeltaEMin)/DeltaEStep;
+    int IDpTrial = (delta_p - DeltaPMin)/DeltaPStep;
+    
+    double YPTarE = FSElectronTheta - ElectronThetaCV;
+    double YPTarP = FSProtonTheta - ProtonThetaCV;
+  
+    int YPTarETrial = (YPTarE - YPTarEMin)/YPTarEStep;
+    int YPTarPTrial = (YPTarP - YPTarPMin)/YPTarPStep;
+    
+    //int XPTarETrial = YPTarENBins / 2;
+    //int XPTarPTrial = YPTarPNBins / 2;
+    
+    double ZVertexTrial = gRandom->Uniform(VertexZMin,VertexZMax);
+    
+    int ZvertETrial = (ZVertexTrial - ZvertEMin)/ZvertEStep;
+    int ZvertPTrial = (ZVertexTrial - ZvertPMin)/ZvertPStep;
+    
+    double AccWeight_e = h3_e->GetBinContent(IDeTrial+1,YPTarETrial+1,ZvertETrial+1);
+    double AccWeight_p = h3_p->GetBinContent(IDpTrial+1,YPTarPTrial+1,ZvertPTrial+1);
+        
+    std::cout << " AccWeight_e " << AccWeight_e << std::endl;
+    std::cout << " AccWeight_p " << AccWeight_p << std::endl;
+
+    hist_mc -> Fill( ECal, TotWeight * AccWeight_e * AccWeight_p ) ; 
+    //    std::cout << " ECal " << ECal << " w " << TotWeight << std::endl;
+  }
+  double data_integral = hist_data->Integral();
+  double mc_integral = hist_mc->Integral();
+
+  hist_mc->Scale(data_integral/mc_integral);
+  hist_mc->SetLineColor(kBlue);
+  //  hist_data->Draw("hist");
+  hist_mc->Draw("hist same");
+
+
+  c->SaveAs(output_file.c_str());
+  return 0 ;
+
 }

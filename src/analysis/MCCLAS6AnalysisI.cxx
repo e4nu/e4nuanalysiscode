@@ -32,7 +32,6 @@ MCCLAS6AnalysisI::~MCCLAS6AnalysisI() {
   kAcceptanceMap.clear();
   kAccMap.clear();
   kGenMap.clear();
-  std::cout << " delete MC " << std::endl;
 }
 
 bool MCCLAS6AnalysisI::LoadData( void ) {
@@ -117,7 +116,6 @@ void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event & event ) {
     std::map<int,unsigned int> Topology = GetTopology();
     // Electron acceptance
     if( kAccMap[conf::kPdgElectron] && kGenMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], *kGenMap[conf::kPdgElectron], out_mom ) ; 
-    else if( kAccMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], out_mom ) ; 
 
     // Others
     for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
@@ -126,7 +124,6 @@ void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event & event ) {
       else { 
 	for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
 	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
-	  else if( kAccMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], part_map[it->first][i] ) ; 
 	}
       }
     }
@@ -158,7 +155,6 @@ void MCCLAS6AnalysisI::SmearParticles( Event & event ) {
 } 
 
 bool MCCLAS6AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) { 
-  if( !apply_fiducial ) return true ; 
   // First, we apply it to the electron
   // Apply fiducial cut to electron
   Fiducial * fiducial = GetFiducialCut() ; 
@@ -207,28 +203,22 @@ void MCCLAS6AnalysisI::Initialize() {
   if( ApplyAccWeights() ) { 
     kAcceptanceMap = conf::GetAcceptanceFileMap2( Target, EBeam ) ; 
 
-    if( Target == conf::kPdgH && EBeam == 4.325 /*GeV*/ ) { 
-      kAccMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("h3") ) ) ;
-      kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("h3") ) ) ;
-    } else { 
-      kAccMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ) ) ;
-      kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ) );
-      kAccMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ) );
-      kAccMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ) );
+    kAccMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ) ) ;
+    kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ) );
+    kAccMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ) );
+    kAccMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ) );
       
-      kGenMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ) );
-      kGenMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ) ) ;
-      kGenMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ) ) ;
-      kGenMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ) ) ;
-
-      for( auto it = kAccMap.begin() ; it != kAccMap.end(); ++it ) {
-	kAccMap[it->first]->SetDirectory(nullptr);
-	kGenMap[it->first]->SetDirectory(nullptr);
-      } 
-    }
-
+    kGenMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ) );
+    kGenMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ) ) ;
+    kGenMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ) ) ;
+    kGenMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ) ) ;
+      
+    for( auto it = kAccMap.begin() ; it != kAccMap.end(); ++it ) {
+      kAccMap[it->first]->SetDirectory(nullptr);
+      kGenMap[it->first]->SetDirectory(nullptr);
+    } 
   }  
-
+  
   if( NormalizeHist() ) { 
     // Get xsec from cross section spline
     std::string target_tag = "" ;
@@ -428,6 +418,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   }
   
 
+  double proton_E = p_max.E() ; 
   double proton_mom = p_max.P() ; 
   double proton_momx = p_max.Px() ; 
   double proton_momy = p_max.Py() ; 
@@ -435,6 +426,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double proton_theta = p_max.Theta() * TMath::RadToDeg() ;
   double proton_phi = p_max.Phi() * TMath::RadToDeg() ;
   double ECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg ) ; 
+  double DiffECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg ) - BeamE ; 
   double AlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ; 
   double DeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ; 
   double DeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ; 
@@ -456,6 +448,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     }
   }
   
+  double pip_E = pip_max.E() ;
   double pip_mom = pip_max.P() ;
   double pip_momx = pip_max.Px() ;
   double pip_momy = pip_max.Py() ;
@@ -484,6 +477,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double Angleqvshad = utils::Angle( utils::GetRecoq3( out_mom, BeamE), utils::TotHadron(hadron_map).Vect() ) * TMath::RadToDeg() ;
 
   double HadSystemMass = utils::HadSystemMass( hadron_map ) ;  
+  double pim_E = pim_max.E() ;
   double pim_mom = pim_max.P() ;
   double pim_momx = pim_max.Px() ;
   double pim_momy = pim_max.Py() ;
@@ -574,11 +568,13 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "MissingMomentum", &MissingMomentum, "MissingMomentum/D");
     kAnalysisTree -> Branch( "MissingAngle", &MissingAngle, "MissingAngle/D");
     kAnalysisTree -> Branch( "ECal", &ECal, "ECal/D");
+    kAnalysisTree -> Branch( "DiffECal", &DiffECal, "DiffECal/D");
     kAnalysisTree -> Branch( "resid", &resid, "resid/I");
     kAnalysisTree -> Branch( "HadronsAngle",&HadronsAngle, "HadronsAngle/D");
     kAnalysisTree -> Branch( "Angleqvshad",&Angleqvshad,"Angleqvshad/D");
 
     if( topology_has_protons ) {
+      kAnalysisTree -> Branch( "proton_E", &proton_E, "proton_E/D");
       kAnalysisTree -> Branch( "proton_mom", &proton_mom, "proton_mom/D");
       kAnalysisTree -> Branch( "proton_momx", &proton_momx, "proton_momx/D");
       kAnalysisTree -> Branch( "proton_momy", &proton_momy, "proton_momy/D");
@@ -593,6 +589,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     }
 
     if( topology_has_pip ) {
+      kAnalysisTree -> Branch( "pip_E", &pip_E, "pip_E/D");
       kAnalysisTree -> Branch( "pip_mom", &pip_mom, "pip_mom/D");
       kAnalysisTree -> Branch( "pip_momx", &pip_momx, "pip_momx/D");
       kAnalysisTree -> Branch( "pip_momy", &pip_momy, "pip_momy/D");
@@ -602,6 +599,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     }
 
     if( topology_has_pim ) {
+      kAnalysisTree -> Branch( "pim_E", &pim_E, "pim_E/D");
       kAnalysisTree -> Branch( "pim_mom", &pim_mom, "pim_mom/D");
       kAnalysisTree -> Branch( "pim_momx", &pim_momx, "pim_momx/D");
       kAnalysisTree -> Branch( "pim_momy", &pim_momy, "pim_momy/D");

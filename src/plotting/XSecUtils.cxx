@@ -414,6 +414,15 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_eventrate_4 -> SetName( "Data Sector  4") ;
     hist_data_eventrate_5 = (TH1D*) hist_data_5 ->Clone();
     hist_data_eventrate_5 -> SetName( "Data Sector  5") ;
+    
+    // Normaize by bin width
+    NormalizeHist(hist_data_eventrate, 1 );
+    NormalizeHist(hist_data_eventrate_0, 1 );
+    NormalizeHist(hist_data_eventrate_1, 1 );
+    NormalizeHist(hist_data_eventrate_2, 1 );
+    NormalizeHist(hist_data_eventrate_3, 1 );
+    NormalizeHist(hist_data_eventrate_4, 1 );
+    NormalizeHist(hist_data_eventrate_5, 1 );
   }
 
 
@@ -443,7 +452,16 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_correventrate_4 -> SetName( "Corrected Event Rate Data Sector  4") ;
     hist_data_correventrate_5 = (TH1D*) hist_data_5 ->Clone();
     hist_data_correventrate_5 -> SetName( "Corrected Event Rate Data Sector  5") ;
-    
+   
+    // Normaize by bin width
+    NormalizeHist(hist_data_correventrate, 1 );
+    NormalizeHist(hist_data_correventrate_0, 1 );
+    NormalizeHist(hist_data_correventrate_1, 1 );
+    NormalizeHist(hist_data_correventrate_2, 1 );
+    NormalizeHist(hist_data_correventrate_3, 1 );
+    NormalizeHist(hist_data_correventrate_4, 1 );
+    NormalizeHist(hist_data_correventrate_5, 1 );
+   
     // Normalize data from slices
     if( addbinning.size() != 0 ) {
       for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
@@ -532,8 +550,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   plotting::PlotEventRate( hist_data_correventrate, observable, title, data_name, input_data_location, output_location, 
 			   output_file_name+"_correventrate", analysis_id, store_root ) ;
 
-  plotting::PlotTotal( mc_hists, breakdown, hist_data, observable, title, data_name, model, input_MC_location,
-		       input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root);
+  plotting::PlotXsecDataTotal( hist_data, observable, title, data_name, input_data_location, output_location, output_file_name, 
+			       systematic_map, analysis_id, store_root);
+
+  plotting::PlotTotalXSec( mc_hists, breakdown, hist_data, observable, title, data_name, model, input_MC_location,
+			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root);
 
   plotting::PlotPerSector( mc_per_sector, data_per_sector, observable, title, data_name, model,input_MC_location, 
 			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root ) ;
@@ -544,11 +565,41 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   //			 output_location, output_file_name,  analysis_id, store_root ) ;
 }
 
-void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,
-			  std::string title, std::string data_name, std::vector<std::string> model,
-			  std::string input_MC_location, std::string input_data_location, std::string output_location,
-			  std::string output_file_name, std::map<string,double> systematic_map,
-			  std::string analysis_id, bool store_root ) {
+void plotting::PlotXsecDataTotal( TH1D * data, std::string observable, std::string title, std::string data_name,
+				  std::string input_data_location, std::string output_location,
+				  std::string output_file_name, std::map<string,double> systematic_map,
+				  std::string analysis_id, bool store_root ) {
+  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);  
+  TPad *pad1 = new TPad("pad1","",0,0,1,1);
+  pad1->Draw();
+  pad1->cd();
+  pad1->SetBottomMargin(0.15);
+  pad1->SetLeftMargin(0.15);
+
+  // Format plots
+  if( data ) { 
+    StandardFormat( data, title, kBlack, 8, observable ) ;
+    data -> SetLineStyle(1);
+  }
+  
+  if( data ) data -> Draw(" err ");
+ 
+  std::string output_name = output_file_name+"_onlydata_dxsec_d"+observable ;
+  
+  std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
+  if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
+
+  if( store_root ) c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
+  c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
+  delete c1 ;
+
+}
+
+void plotting::PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,
+			      std::string title, std::string data_name, std::vector<std::string> model,
+			      std::string input_MC_location, std::string input_data_location, std::string output_location,
+			      std::string output_file_name, std::map<string,double> systematic_map,
+			      std::string analysis_id, bool store_root ) {
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);  
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
   pad1->Draw();
@@ -587,7 +638,7 @@ void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakd
 
   if( data ) data -> Draw(" err same ");
  
-  if( observable=="ECal" && plotting::PlotZoomIn(analysis_id) == true ){
+  if( data && observable=="ECal" && plotting::PlotZoomIn(analysis_id) == true ){
     // Add a sub-pad1
     TPad * sub_pad = new TPad("subpad","",0.2,0.2,0.85,0.85);
     sub_pad->SetFillStyle(4000);
@@ -615,6 +666,13 @@ void plotting::PlotTotal( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakd
   std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
   if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
 
+  // Print out integral for debugging
+  double data_integral ;
+  if( data ) data_integral= data->Integral("width") ; 
+  double mc_integral = mc_hists[0]->Integral("width") ; 
+  if( data ) std::cout << " Total integrated cross section (data) " << data_integral << std::endl;
+  std::cout << " Total integrated cross section (mc) " << mc_integral << std::endl;
+
   if( store_root ) c1->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   delete c1 ;
@@ -632,13 +690,17 @@ void plotting::PlotEventRate( TH1D * data, std::string observable, std::string t
 
   // Format plots
   if( data ) { 
-    StandardFormat( data, title, kBlack, 8, observable, 0, "Event Rate" ) ;
+    StandardFormat( data, title, kBlack, 8, observable, 0, "Counts/Bin Width" ) ;
     data -> SetLineStyle(1);
   }
 
   if( data ) {
     data -> Draw(" err ");
   }
+
+  double data_integral ;
+  if( data ) data_integral= data->Integral("width") ; 
+  if( data ) std::cout << " Total integrated event rate (data) " << data_integral << std::endl;
 
   std::string output_name = output_file_name+"_Nevents_"+observable ;
   
@@ -755,6 +817,25 @@ void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*
 
   std::string output_name = output_file_name+"_dxsec_d"+observable+"_persector" ;
   std::filesystem::path xsecpersector_path{(output_location+"/XSecPerSector/").c_str()};
+  if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
+  if( store_root ) c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
+  c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
+
+
+  for( unsigned int i = 0 ; i < 6 ; ++i ) { 
+    TPad *pad_sector_i = (TPad*)pad_sector->cd(i+1);
+    pad_sector_i -> cd();
+    pad_sector_i -> SetBottomMargin(0.15);
+    pad_sector_i -> SetLeftMargin(0.15);
+  
+    if(data_per_sector.size()!=0 && data_per_sector[i]) {
+      data_per_sector[i] -> SetMarkerSize(0.7);
+      data_per_sector[i] -> Draw(" err ");
+    }
+  }
+
+  output_name = output_file_name+"_dataonly_dxsec_d"+observable+"_persector" ;
+  xsecpersector_path =(output_location+"/XSecPerSector/").c_str();
   if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
   if( store_root ) c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
   c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());

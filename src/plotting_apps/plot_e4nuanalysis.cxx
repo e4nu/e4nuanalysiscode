@@ -31,7 +31,7 @@ using namespace e4nu::plotting;
 // 14) NoFSI ROOT file (without .root extension)               //
 // 15) Analysis id - used to set the ranges. default none      //
 //     i.e. 1p1pim                                             //
-// 16) Plot root file output                                   //
+// 16) Plot root file output. Stores individual histograms     //
 /////////////////////////////////////////////////////////////////
 
 string mc_location="", data_location="", output_location ="", output_name ="", analysis_id="default";
@@ -41,7 +41,7 @@ bool compute_systematics ;
 vector<string> bkg_syst;
 map<string,double> systematic_map ;
 bool plot_data = true ;
-bool store_root = false ; 
+bool store_root = false ;
 void PrintFormat(string s);
 int main( int argc, char* argv[] ) {
 
@@ -70,7 +70,7 @@ int main( int argc, char* argv[] ) {
       mc_location = GetArg("mc_location",argc,argv) ;
       cout << "Reading MC files from " << mc_location << std::endl;
     } else PrintFormat("mc_location") ;
-    
+
     string files ;
     if( ExistArg("input_mc_files",argc,argv)) {
       files = GetArg("input_mc_files",argc,argv) ;
@@ -79,8 +79,8 @@ int main( int argc, char* argv[] ) {
 
     if( ExistArg("input_data_file",argc,argv)) {
       data_file = GetArg("input_data_file",argc,argv) ;
-      cout << "Reading data file from " << data_location << data_file << std::endl; 
-    } else plot_data = false ; 
+      cout << "Reading data file from " << data_location << data_file << std::endl;
+    } else plot_data = false ;
 
     if( ExistArg("analysis_id",argc,argv)){
       analysis_id = GetArg("analysis_id",argc,argv);
@@ -148,14 +148,14 @@ int main( int argc, char* argv[] ) {
   // Loop over observables
   for( unsigned int i = 0 ; i < observables.size(); ++i ){
     vector<string> root_files = mc_files;
-    vector<string> names = model_names ; 
+    vector<string> names = model_names ;
     string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name, analysis_id, store_root ) ;
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
 
     vector<string> bkg_syst_files = {data_file};
     vector<string> bkg_syst_tag = {data_name+"_"+observables[i]};
     for( unsigned int j = 0 ; j < bkg_syst.size(); ++j ){
-      bkg_syst_files.push_back(bkg_syst[j]); 
+      bkg_syst_files.push_back(bkg_syst[j]);
       bkg_syst_tag.push_back(data_name+"_"+observables[i]+"_"+to_string(j+1));
     }
 

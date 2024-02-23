@@ -12,9 +12,9 @@
 using namespace e4nu ;
 using namespace e4nu::systematics ;
 
-void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::vector<std::string> tags, std::string observable, bool is_data, 
+void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::vector<std::string> tags, std::string observable, bool is_data,
 				   std::string input_location, std::string output_location, std::string analysis_id ){
-  if( input_files.size() ==0 ) return ; 
+  if( input_files.size() ==0 ) return ;
 
   std::string name_fullpath = output_location+"/"+input_files[0]+"_"+observable+"_systematics.root";
   std::unique_ptr<TFile> myFile( TFile::Open(name_fullpath.c_str(), "RECREATE") );
@@ -24,20 +24,20 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
     ifiles.push_back(new TFile((input_location+"/"+input_files[id]+".root").c_str(),"ROOT"));
     if( !ifiles[id] ) { std::cout << "ERROR: the "<< input_location<<input_files[id]<<".root does not exist." << std::endl; return ;}
   }
-  
+
   // Get Tree for main model
   std::string treename = "MCCLAS6Tree";
   if( is_data ) treename = "CLAS6Tree";
 
   std::vector<TH1D*> hists;
   for( unsigned int i = 0 ; i < input_files.size(); ++i ) {
-    double BeamE ; 
+    double BeamE ;
     TTree * tree = (TTree*)ifiles[i]->Get(treename.c_str());
     if( !tree ) return ;
     tree ->SetBranchAddress("BeamE",&BeamE);
     tree->GetEntry(0);
     std::vector<double> binning = plotting::GetBinning(observable,BeamE,analysis_id);
-    if( binning.size()==0 ) return ; 
+    if( binning.size()==0 ) return ;
 
     // Create histogram for total and total xsec per sector
     TH1D * hist = new TH1D( tags[i].c_str(), tags[i].c_str(), binning.size()-1, &binning[0] ) ;
@@ -55,16 +55,16 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
     double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
     double MissingEnergy, MissingAngle, MissingMomentum ;
     double InferedNucleonMom ;
-    double HadronsAngle,Angleqvshad ; 
+    double HadronsAngle,Angleqvshad ;
     double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
     long NEntries ;
     bool IsBkg ;
     double MCNormalization, DataNormalization ;
-    std::vector<double> mc_norm ; 
-    
-    if( !tree ) continue ; 
+    std::vector<double> mc_norm ;
+
+    if( !tree ) continue ;
     NEntries = tree -> GetEntries() ;
-    
+
     tree -> SetBranchAddress("TotWeight",&TotWeight);
     tree -> SetBranchAddress("IsBkg",&IsBkg);
     tree -> SetBranchAddress("ECal",&ECal);
@@ -108,7 +108,7 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
 
     // Only second tree corresponds to data
     if( !is_data ) {
-      tree -> SetBranchAddress("MCNormalization", &MCNormalization );    
+      tree -> SetBranchAddress("MCNormalization", &MCNormalization );
     } else {
       tree -> SetBranchAddress("DataNormalization",&DataNormalization );
     }
@@ -152,14 +152,14 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
       else if ( observable == "MissingMomentum") content = MissingMomentum ;
       else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
       else if ( observable == "HadronsAngle") content = HadronsAngle ;
-      else if ( observable == "AdlerAngleThetaP") content = AdlerAngleThetaP ; 
-      else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiP ; 
-      else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ; 
-      else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ; 
-      else if ( observable == "Angleqvshad") content = Angleqvshad ; 
+      else if ( observable == "AdlerAngleThetaP") content = AdlerAngleThetaP ;
+      else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiP ;
+      else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ;
+      else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ;
+      else if ( observable == "Angleqvshad") content = Angleqvshad ;
 
-      norm = DataNormalization ; 
-      if( !is_data ) norm = MCNormalization ; 
+      norm = DataNormalization ;
+      if( !is_data ) norm = MCNormalization ;
 
       hist -> Fill( content, w ) ;
       hist -> SetLineWidth(3);
@@ -168,10 +168,10 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
     plotting::NormalizeHist(hist,norm);
     myFile->WriteObject(hist,tags[i].c_str());
     hists.push_back(hist);
-    
+
   } // input files
 
-  if( hists.size() > 1 ) { 
+  if( hists.size() > 1 ) {
     for( unsigned int i = 1 ; i < hists.size() ; ++i ) {
       TH1D * diff = (TH1D*) hists[0]->Clone();
       diff -> Add( hists[i], -1);
@@ -184,11 +184,21 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
 
 
 void systematics::AddSystematic( TH1D & hist, const double rel_error, const std::string name ) {
-  double NBins = hist.GetNbinsX(); 
-  for (int i = 1; i <= NBins; i++) { 
+  double NBins = hist.GetNbinsX();
+  for (int i = 1; i <= NBins; i++) {
     double error = hist.GetBinError(i);
     double content = hist.GetBinContent(i);
     double newerror = TMath::Sqrt( TMath::Power(error,2.) + TMath::Power(rel_error*content,2.));
     hist.SetBinError(i,newerror);
-  }  
+  }
+}
+
+void systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
+  double NBins = hist.GetNbinsX();
+  for (int i = 1; i <= NBins; i++) {
+    double stat_error = hist.GetBinError(i);
+		double syst_error = hist_w_error.GetBinError(i);
+    double newerror = TMath::Sqrt( TMath::Power(stat_error,2.) + TMath::Power(syst_error,2.));
+    hist.SetBinError(i,newerror);
+  }
 }

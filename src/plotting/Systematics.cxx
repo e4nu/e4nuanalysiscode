@@ -202,3 +202,27 @@ void systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
     hist.SetBinError(i,newerror);
   }
 }
+
+void systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> h_per_sector ) {
+
+	double diff = 0 ;
+	double raw_sector_variance = 0;
+
+	for( unsigned j = 0 ; j < hist.GetNbinsX() ; ++j ){
+		double var_j = h_per_sector[0]->GetBinError(j);
+		double content_j = h_per_sector[0]->GetBinContent(j);
+		double var_total_stat = pow(var_j,2);
+		double mean_content = 0 ;
+		for( unsigned int i = 1 ; i < h_per_sector.size() ; ++i ){
+			var_total_stat += h_per_sector[i]->GetBinError(j);
+			content_j = h_per_sector[i]->GetBinContent(j);
+			mean_content += content_j/pow(var_j,2);
+		}
+		mean_content /= (1./var_total_stat);
+		raw_sector_variance = pow( content_j - mean_content, 2 )/(h_per_sector.size()-1);
+		double corrected_sector_variance = raw_sector_variance - pow(var_total_stat,2) ; // need to remove double counting of stat error
+		double hist_error = TMath::Sqrt( pow(hist.GetBinError(j),2) + pow(corrected_sector_variance,2));
+		hist.SetBinError(j,hist_error);
+	}
+
+}

@@ -6,7 +6,7 @@ using namespace e4nu ;
 using namespace e4nu::plotting ;
 
 std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::string observable, std::string title,
-					std::string input_MC_location, std::string output_location,  std::string output_file_name, 
+					std::string input_MC_location, std::string output_location,  std::string output_file_name,
 					std::string analysis_id, bool store_root ) {
 
   // Define trees
@@ -38,7 +38,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     trees_mctrueacc[0]->SetBranchAddress("BeamE",&BeamE);
     trees_mctrueacc[0]->GetEntry(0);
     binning = plotting::GetBinning(observable,BeamE,analysis_id);
-    
+
     hists_recoacc.push_back( new TH1D( ("Reco MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
     hists_trueacc.push_back( new TH1D( ("True MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
     hists_recoacc_0.push_back( new TH1D( ("Reco MC ACC Sector  0 Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
@@ -108,7 +108,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double MissingEnergy, MissingAngle, MissingMomentum ;
     double InferedNucleonMom ;
     double HadronsAngle, Angleqvshad;
-    double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ; 
+    double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
     long NEntries ;
     bool IsBkg ;
     int ElectronSector ;
@@ -193,12 +193,12 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 	else if ( observable == "MissingMomentum") content = MissingMomentum ;
 	else if ( observable == "MissingAngle") content = MissingAngle ;
 	else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
-	else if ( observable == "HadronsAngle" ) content = HadronsAngle ; 
-	else if ( observable == "AdlerAngleThetaP" ) content = AdlerAngleThetaP ; 
-	else if ( observable == "AdlerAnglePhiP" ) content = AdlerAnglePhiP ; 
-	else if ( observable == "AdlerAngleThetaPi" ) content = AdlerAngleThetaPi ; 
-	else if ( observable == "AdlerAnglePhiPi" ) content = AdlerAnglePhiPi ; 
-	else if ( observable == "Angleqvshad" ) content = Angleqvshad ; 
+	else if ( observable == "HadronsAngle" ) content = HadronsAngle ;
+	else if ( observable == "AdlerAngleThetaP" ) content = AdlerAngleThetaP ;
+	else if ( observable == "AdlerAnglePhiP" ) content = AdlerAnglePhiP ;
+	else if ( observable == "AdlerAngleThetaPi" ) content = AdlerAngleThetaPi ;
+	else if ( observable == "AdlerAnglePhiPi" ) content = AdlerAnglePhiPi ;
+	else if ( observable == "Angleqvshad" ) content = Angleqvshad ;
 
         // Fill the per Sector  histogram
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> Fill( content, w ) ;
@@ -294,6 +294,20 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio->Add(ratios[i]);
   }
   ratio -> Scale( 1./mc_files.size() );
+
+	// Compute Acceptance error from model variation
+	for( unsigned int i = 0 ; i < ratio->GetNbinsX() ; ++i ){
+		double bin_cont_max = 0 ;
+		double bin_cont_min = 99999 ;
+		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+			ratios[j]->SetBinError(i,0);
+			if( ratios[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios[j]->GetBinContent(i) ;
+			if( ratios[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios[j]->GetBinContent(i) ;
+		}
+		double error = (bin_cont_max-bin_cont_min)/ratio->GetBinContent(i)/sqrt(12.);
+		ratio->SetBinError(i,error);
+  }
+
   StandardFormat( ratio, title, kBlack, 1, observable ) ;
   ratio -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio -> GetYaxis()->SetTitle("Acceptance correction");
@@ -430,12 +444,12 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   }
 
   // Plot it
-  ratio->Draw("hist");
+  ratio->Draw("hist err");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
     ratios[i]->Draw("hist same");
     ratios[i]->Write();
   }
-  ratio->Draw("hist same");
+  ratio->Draw("hist err same");
   //teff->Draw("AP");
 
   if( store_root ) c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());

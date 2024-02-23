@@ -438,6 +438,15 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     CorrectData(hist_data_4, h_acceptance_4);
     CorrectData(hist_data_5, h_acceptance_5);
 
+		//Adding Acceptance correction systematics from model dependence
+		systematics::AddSystematic( *hist_data, *h_acceptance );
+		systematics::AddSystematic( *hist_data_0, *h_acceptance );
+		systematics::AddSystematic( *hist_data_1, *h_acceptance );
+		systematics::AddSystematic( *hist_data_2, *h_acceptance );
+		systematics::AddSystematic( *hist_data_3, *h_acceptance );
+		systematics::AddSystematic( *hist_data_4, *h_acceptance );
+		systematics::AddSystematic( *hist_data_5, *h_acceptance );
+
     hist_data_correventrate = (TH1D*) hist_data ->Clone();
     hist_data_correventrate -> SetName( "Corrected_Event_Rate_Data") ;
     hist_data_correventrate_0 = (TH1D*) hist_data_0 ->Clone();
@@ -475,16 +484,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     }
   }
 
-  if( plot_data ) {
-    NormalizeHist(hist_data, DataNormalization );
-    NormalizeHist(hist_data_0, DataNormalization );
-    NormalizeHist(hist_data_1, DataNormalization );
-    NormalizeHist(hist_data_2, DataNormalization );
-    NormalizeHist(hist_data_3, DataNormalization );
-    NormalizeHist(hist_data_4, DataNormalization );
-    NormalizeHist(hist_data_5, DataNormalization );
-  }
-
   NormalizeHist(hist_true, mc_norm[0]);
   NormalizeHist(hist_true_0, mc_norm[0]);
   NormalizeHist(hist_true_1, mc_norm[0]);
@@ -501,7 +500,15 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // add systematics
   if( plot_data ) {
-    //adding systematics from systematic map
+		NormalizeHist(hist_data, DataNormalization );
+    NormalizeHist(hist_data_0, DataNormalization );
+    NormalizeHist(hist_data_1, DataNormalization );
+    NormalizeHist(hist_data_2, DataNormalization );
+    NormalizeHist(hist_data_3, DataNormalization );
+    NormalizeHist(hist_data_4, DataNormalization );
+    NormalizeHist(hist_data_5, DataNormalization );
+
+    //adding systematics from systematic map. Relative systematic added to all bins
     for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
       std::cout << " Adding " << it->second*100 << " % systematic on " << it->first << std::endl;
       systematics::AddSystematic(*hist_data, it->second, it->first) ;

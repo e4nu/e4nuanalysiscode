@@ -508,6 +508,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_4, DataNormalization );
     NormalizeHist(hist_data_5, DataNormalization );
 
+		// Add sector variation ERROR
+		systematics::SectorVariationError( *hist_data, {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5}) ;
+
     //adding systematics from systematic map. Relative systematic added to all bins
     for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
       std::cout << " Adding " << it->second*100 << " % systematic on " << it->first << std::endl;

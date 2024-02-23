@@ -211,12 +211,12 @@ void systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> h_
 	for( unsigned j = 0 ; j < hist.GetNbinsX() ; ++j ){
 		double var_j = h_per_sector[0]->GetBinError(j);
 		double content_j = h_per_sector[0]->GetBinContent(j);
-		double var_total_stat = var_j;
+		double var_total_stat = pow(var_j,2);
 		double mean_content = 0 ;
 		for( unsigned int i = 1 ; i < h_per_sector.size() ; ++i ){
 			var_total_stat += h_per_sector[i]->GetBinError(j);
 			content_j = h_per_sector[i]->GetBinContent(j);
-			mean_content += content_j/var_j;
+			mean_content += content_j/pow(var_j,2);
 		}
 		mean_content /= (1./var_total_stat);
 		raw_sector_variance = pow( content_j - mean_content, 2 )/(h_per_sector.size()-1);

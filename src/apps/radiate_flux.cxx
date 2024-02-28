@@ -80,7 +80,7 @@ int main( int argc, char* argv[] ) {
   TH1D * hradflux = new TH1D( "hradflux", "Radiated Flux", nbins, Emin, Emax) ;   
 
   TLorentzVector V4_beam(0,0,EBeam,EBeam);
-  unsigned int nentries = 100000; 
+  unsigned int nentries = 1000000; 
   for( unsigned int i = 0 ; i < nentries ; ++i ) { 
     double egamma = 0 ; 
     if( rad_model == "simc" ) egamma = SIMCEnergyLoss( V4_beam, 11, tgt, thickness, MaxEPhoton ) ;

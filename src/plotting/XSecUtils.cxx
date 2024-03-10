@@ -11,7 +11,7 @@ using namespace e4nu ;
 using namespace e4nu::plotting ;
 
 void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_name,
-			  std::string acceptance_file_name, std::string observable,
+			  std::string acceptance_file_name, std::string radcorr_file, std::string observable,
 			  std::string title, std::string data_name, std::vector<std::string> model,
 			  std::string input_MC_location, std::string input_data_location, std::string output_location,
 			  std::string output_file_name, bool plot_data, std::map<string,double> systematic_map,
@@ -30,8 +30,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
   TFile * file_data = nullptr ;
   if( plot_data ) file_data = new TFile((input_data_location+data_file_name+".root").c_str(),"READ");
-
-  TFile * file_acceptance = new TFile((output_location+acceptance_file_name+".root").c_str(),"READ");
+  
+  TFile * file_acceptance = new TFile((output_location+acceptance_file_name+".root").c_str(),"READ");  
+  TFile * file_radcorr = new TFile((output_location+radcorr_file+".root").c_str(),"READ");
   if( !file_data && plot_data ) { std::cout << "ERROR: the "<< input_data_location << data_file_name << ".root does not exist." <<std::endl; return ;}
   if( !file_acceptance ) { std::cout << "ERROR: the "<< output_location << acceptance_file_name << ".root does not exist." <<std::endl; return ;}
 
@@ -42,6 +43,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   TH1D * h_acceptance_3 = (TH1D*)file_acceptance->Get("Acceptance_3");
   TH1D * h_acceptance_4 = (TH1D*)file_acceptance->Get("Acceptance_4");
   TH1D * h_acceptance_5 = (TH1D*)file_acceptance->Get("Acceptance_5");
+
+  TH1D * h_radcorr = nullptr ; 
+  if( file_radcorr ) { 
+    h_radcorr = (TH1D*)file_radcorr->Get("Acceptance");
+  }
 
   // Get Tree for main model
   TTree * tree_true = (TTree*)files_true_MC[0]->Get("MCCLAS6Tree");
@@ -397,38 +403,26 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
 
   // Store uncorrected data
-  TH1D * hist_data_eventrate=nullptr, * hist_data_eventrate_0=nullptr, * hist_data_eventrate_1=nullptr, * hist_data_eventrate_2=nullptr, * hist_data_eventrate_3=nullptr, * hist_data_eventrate_4=nullptr, * hist_data_eventrate_5=nullptr ;
-  //Store before normalising
-  if( plot_data ) {
-    hist_data_eventrate = (TH1D*) hist_data ->Clone();
-    hist_data_eventrate -> SetName( "Data") ;
-    hist_data_eventrate_0 = (TH1D*) hist_data_0 ->Clone();
-    hist_data_eventrate_0 -> SetName( "Data_Sector_0") ;
-    hist_data_eventrate_1 = (TH1D*) hist_data_1 ->Clone();
-    hist_data_eventrate_1 -> SetName( "Data_Sector_1") ;
-    hist_data_eventrate_2 = (TH1D*) hist_data_2 ->Clone();
-    hist_data_eventrate_2 -> SetName( "Data_Sector_2") ;
-    hist_data_eventrate_3 = (TH1D*) hist_data_3 ->Clone();
-    hist_data_eventrate_3 -> SetName( "Data_Sector_3") ;
-    hist_data_eventrate_4 = (TH1D*) hist_data_4 ->Clone();
-    hist_data_eventrate_4 -> SetName( "Data_Sector_4") ;
-    hist_data_eventrate_5 = (TH1D*) hist_data_5 ->Clone();
-    hist_data_eventrate_5 -> SetName( "Data_Sector_5") ;
+  TH1D * hist_data_uncorr=nullptr, * hist_data_uncorr_0=nullptr, * hist_data_uncorr_1=nullptr, * hist_data_uncorr_2=nullptr, * hist_data_uncorr_3=nullptr, * hist_data_uncorr_4=nullptr, * hist_data_uncorr_5=nullptr ;
+  // Store corrected for acceptance but not for radiation
+  TH1D * hist_data_uncorrrad=nullptr;
 
-    // Normaize by bin width
-    NormalizeHist(hist_data_eventrate, 1 );
-    NormalizeHist(hist_data_eventrate_0, 1 );
-    NormalizeHist(hist_data_eventrate_1, 1 );
-    NormalizeHist(hist_data_eventrate_2, 1 );
-    NormalizeHist(hist_data_eventrate_3, 1 );
-    NormalizeHist(hist_data_eventrate_4, 1 );
-    NormalizeHist(hist_data_eventrate_5, 1 );
-  }
+  if( plot_data ) { 
+    hist_data_uncorr = (TH1D*) hist_data ->Clone();
+    hist_data_uncorr -> SetName( "Uncorrected Data") ;
+    hist_data_uncorr_0 = (TH1D*) hist_data_0 ->Clone();
+    hist_data_uncorr_0 -> SetName( "Uncorrected Data Sector  0") ;
+    hist_data_uncorr_1 = (TH1D*) hist_data_1 ->Clone();
+    hist_data_uncorr_1 -> SetName( "Uncorrected Data Sector  1") ;
+    hist_data_uncorr_2 = (TH1D*) hist_data_2 ->Clone();
+    hist_data_uncorr_2 -> SetName( "Uncorrected Data Sector  2") ;
+    hist_data_uncorr_3 = (TH1D*) hist_data_3 ->Clone();
+    hist_data_uncorr_3 -> SetName( "Uncorrected Data Sector  3") ;
+    hist_data_uncorr_4 = (TH1D*) hist_data_4 ->Clone();
+    hist_data_uncorr_4 -> SetName( "Uncorrected Data Sector  4") ;
+    hist_data_uncorr_5 = (TH1D*) hist_data_5 ->Clone();
+    hist_data_uncorr_5 -> SetName( "Uncorrected Data Sector  5") ;
 
-
-  // Store uncorrected data
-  TH1D * hist_data_correventrate=nullptr, * hist_data_correventrate_0=nullptr, * hist_data_correventrate_1=nullptr, * hist_data_correventrate_2=nullptr, * hist_data_correventrate_3=nullptr, * hist_data_correventrate_4=nullptr, * hist_data_correventrate_5=nullptr ;
-  if( plot_data ) {
     // Correct data for detector acceptance :
     CorrectData(hist_data, h_acceptance);
     CorrectData(hist_data_0, h_acceptance_0);
@@ -438,6 +432,19 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     CorrectData(hist_data_4, h_acceptance_4);
     CorrectData(hist_data_5, h_acceptance_5);
 
+    hist_data_uncorrad = (TH1D*) hist_data ->Clone();
+    hist_data_uncorrad -> SetName( "Uncorrected Data") ;
+
+    if( h_radcorr ) { 
+      CorrectData(hist_data, h_radcorr);
+      CorrectData(hist_data_0, h_radcorr);
+      CorrectData(hist_data_1, h_radcorr);
+      CorrectData(hist_data_2, h_radcorr);
+      CorrectData(hist_data_3, h_radcorr);
+      CorrectData(hist_data_4, h_radcorr);
+      CorrectData(hist_data_5, h_radcorr);
+    }
+    
 		//Adding Acceptance correction systematics from model dependence
 		systematics::AddSystematic( *hist_data, *h_acceptance );
 		systematics::AddSystematic( *hist_data_0, *h_acceptance );
@@ -470,18 +477,20 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_correventrate_3, 1 );
     NormalizeHist(hist_data_correventrate_4, 1 );
     NormalizeHist(hist_data_correventrate_5, 1 );
+    
 
     // Normalize data from slices
     if( addbinning.size() != 0 ) {
       for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
 	NormalizeHist(h_data_slices[l], DataNormalization );
 	CorrectData(h_data_slices[l], h_acc_slices[l] );
-
-	for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
-	  systematics::AddSystematic(*h_data_slices[l], it->second, it->first) ;
-	}
+	CorrectData(h_data_slices[l], h_radcorr );
+      }
+      for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
+	systematics::AddSystematic(*h_data_slices[l], it->second, it->first) ;
       }
     }
+  
   }
 
   NormalizeHist(hist_true, mc_norm[0]);

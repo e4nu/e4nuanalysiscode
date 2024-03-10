@@ -35,7 +35,7 @@ using namespace e4nu::plotting;
 /////////////////////////////////////////////////////////////////
 
 string mc_location="", data_location="", output_location ="", output_name ="", analysis_id="default";
-vector<string> mc_files, observables, model_names ;
+vector<string> mc_files, rad_files,observables, model_names ;
 string data_file ="", nofsi_file="", title="", data_name="" ;
 bool compute_systematics ;
 vector<string> bkg_syst;
@@ -65,17 +65,23 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("output_name",argc,argv)) {
       output_name = GetArg("output_name",argc,argv) ;
     } else PrintFormat("output_name") ;
-
+ 
     if( ExistArg("mc_location",argc,argv)) {
       mc_location = GetArg("mc_location",argc,argv) ;
       cout << "Reading MC files from " << mc_location << std::endl;
     } else PrintFormat("mc_location") ;
-
-    string files ;
+    
     if( ExistArg("input_mc_files",argc,argv)) {
+      string files ;
       files = GetArg("input_mc_files",argc,argv) ;
       mc_files = SplitString(files);
     } else PrintFormat("input_mc_files") ;
+
+    if( ExistArg("input_rad_files",argc,argv)) {
+      string files ;
+      files = GetArg("input_rad_files",argc,argv) ;
+      rad_files = SplitString(files);
+    } else PrintFormat("input_rad_files") ;
 
     if( ExistArg("input_data_file",argc,argv)) {
       data_file = GetArg("input_data_file",argc,argv) ;
@@ -150,6 +156,8 @@ int main( int argc, char* argv[] ) {
     vector<string> root_files = mc_files;
     vector<string> names = model_names ;
     string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name, analysis_id, store_root ) ;
+    string radcorr_file = "";
+    if( rad_files.size() != 0 ) radcorr_fil = ComputeRadCorr( rad_files, observables[i], title, mc_location, output_location, output_name, analysis_id, store_root ) ;
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
 
     vector<string> bkg_syst_files = {data_file};
@@ -161,7 +169,7 @@ int main( int argc, char* argv[] ) {
 
     if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables[i], true, data_location, output_location, analysis_id );
 
-    Plot1DXSec( root_files, data_file, acceptance_file, observables[i], title, data_name, names, mc_location, data_location,
+    Plot1DXSec( root_files, data_file, acceptance_file, radcorr_file, observables[i], title, data_name, names, mc_location, data_location,
 		output_location, output_name, plot_data, systematic_map, analysis_id, store_root ) ;
   }
 

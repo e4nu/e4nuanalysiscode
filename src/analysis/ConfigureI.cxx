@@ -108,6 +108,9 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     } else if ( param[i] == "IsCLAS12Analysis") { 
       if( value[i] == "true" ) { kIsCLAS12Analysis = true ; kIsCLAS6Analysis = false; } 
       else kIsCLAS12Analysis = false ; 
+    } else if ( param[i] == "IsRadiated" ) { 
+      if( value[i] == "true" ) { kIsRadiated = true ; }
+      else kIsRadiated = false ; 
     } else if( param[i] == "ApplyQ2Cut" ) { 
       if( value[i] == "true" ) kQ2Cut = true ; 
       else kQ2Cut = false ; 
@@ -232,6 +235,8 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     std::cout << " WARN : Analysis type not configured. Using CLAS6... " << std::endl;
     kIsCLAS6Analysis = true ;
   }
+
+  if( kIsRadiated ) std::cout << " Using MC file with radiative effects " << std::endl;
 
   if( !kIsCLAS6Analysis && !kIsCLAS6Analysis ) {
     std::cout << " ERROR : CLAS12 analysis not available yet..."<<std::endl;

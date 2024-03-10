@@ -17,7 +17,7 @@ namespace e4nu {
     // beam energy
     // Number of events in original MC file (pre-analysis)
     void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_name,
-		    std::string acceptance_file_name, std::string observable,
+		    std::string acceptance_file_name, std::string radcorr_file, std::string observable,
 		    std::string title, std::string data_name, std::vector<std::string> model,
 		    std::string input_MC_location, std::string input_data_location, std::string output_location,
 		    std::string output_file_name, bool plot_data, std::map<string,double> systematic_map, 

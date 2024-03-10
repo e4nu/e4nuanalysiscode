@@ -495,7 +495,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
 	NormalizeHist(h_data_slices[l], DataNormalization );
 	CorrectData(h_data_slices[l], h_acc_slices[l] );
-	CorrectData(h_data_slices[l], h_radcorr );
+	if( h_radcorr ) CorrectData(h_data_slices[l], h_radcorr );
 	for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
 	  systematics::AddSystematic(*h_data_slices[l], it->second, it->first) ;
 	}

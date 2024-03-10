@@ -26,6 +26,8 @@ using namespace e4nu::plotting;
 //    - ComputeTrueAccCorr                                     // 
 //    - ComputeTrueRecoAccCorr                                 //
 //    - IsData                                                 //   
+// --rad-corr bool ; used to change the output name of file    //
+//                   when radiative corr are used in MC        //
 // --xsec-file) XSecFile (only for MC)                         //
 // --bkg-mult) Add multiplicity                                //
 /////////////////////////////////////////////////////////////////
@@ -66,6 +68,9 @@ int main( int argc, char* argv[] ) {
 	compute_trueacc = false ; compute_truerecoacc = true ; 
       }
       else if ( GetArg("analysis-type",argc,argv) == "IsData" ) { is_data = true ; compute_trueacc = false ; compute_truerecoacc = false ; }
+    }
+    if( ExistArg("rad-corr",argc,argv) && !is_data ) { 
+      analysis -> SetRadCorr( true ) ; 
     }
     if( ExistArg("xsec-file",argc,argv) && !is_data ) { 
       analysis -> SetXSecFile( GetArg("xsec-file",argc,argv) ) ; 

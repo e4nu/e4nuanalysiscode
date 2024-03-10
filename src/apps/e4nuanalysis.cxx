@@ -106,7 +106,7 @@ int main( int argc, char* argv[] ) {
     analysis -> SetUseAllSectors( true ) ;
     analysis -> EnableAllSectors( true ) ;
     std::string OutputFile_true = analysis->GetOutputFile() + "_true" ;
-    if( analysis -> IsRadiated() ) OutputFile_true += "_radiated";
+    if( analysis -> IsRadiated() ) OutputFile_true += "_radcorr";
     analysis -> SetOutputFile( OutputFile_true ) ;
     std::cout << " Computing true analysis distributions for acceptance correction..."<<std::endl;
   } else if ( compute_truerecoacc ) { 

@@ -523,3 +523,202 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   outputFile.Close();
   return acc_file ;
 }
+
+std::string plotting::ComputeRadCorr(std::string mc_files, std::string observable, std::string title,
+				     std::string input_MC_location, std::string output_location,  std::string output_file_name, 
+				     std::string analysis_id, bool store_root ) {
+  
+  // Define trees
+  std::vector<TFile*> files_mctrueacc, files_mcradcorr ;
+  std::vector<TTree*> trees_mctrueacc, trees_mcradcorr ;
+
+  // Define Hists
+  // The _# correspond to histograms for each sector
+  std::vector<TH1D*> ratios, hists_true, hists_radcorr ; 
+  std::vector<double> binning ;
+  // Get energy from tree to define range
+  double BeamE ;
+
+  for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
+    files_mctrueacc.push_back(new TFile((input_MC_location+mc_files[i]+"_true.root").c_str(),"ROOT"));
+    files_mcradcorr.push_back(new TFile((input_MC_location+mc_files[i]+"_true_radcorr.root").c_str(),"ROOT"));
+    if( !files_mctrueacc[i] ) { std::cout << "ERROR: the "<< mc_files[i] << "_true.root  does not exist." <<std::endl; return "";}
+    if( !files_mcradcorr[i] ) { std::cout << "ERROR: the "<< mc_files[i] << "_true_radcorr.root does not exist." <<std::endl; return "";}
+    trees_mctrueacc.push_back( (TTree*)files_mctrueacc[i]->Get("MCCLAS6Tree"));
+    trees_mcradcorr.push_back( (TTree*)files_mcradcorr[i]->Get("MCCLAS6Tree"));
+    if( !trees_mctrueacc[i] || !trees_mcradcorr[i] ) { std::cout << "ERROR: the threes do not exist." <<std::endl; return "";}
+
+    trees_mctrueacc[0]->SetBranchAddress("BeamE",&BeamE);
+    trees_mctrueacc[0]->GetEntry(0);
+    binning = plotting::GetBinning(observable,BeamE,analysis_id);
+    
+    hists_radcorr.push_back( new TH1D( ("Rad Corr MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+    hists_true.push_back( new TH1D( ("True MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
+
+    hists_radcorr[i] -> Sumw2() ;
+    hists_true[i] -> Sumw2() ;
+    
+    std::vector<TTree*> trees = { trees_mctrueacc[i], trees_mcradcorr[i]};
+
+    // OBSERVABLE DEFINITION:
+    double TotWeight ;
+    double ECal,Recoq3,RecoW;
+    double pfl,pfl_theta,pfl_phi;
+    double proton_mom,proton_phi,proton_theta;
+    double pim_mom,pim_theta,pim_phi;
+    double pip_mom,pip_theta,pip_phi;
+    double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT ;
+    double AlphaT, DeltaPT, DeltaPhiT ;
+    double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
+    double MissingEnergy, MissingAngle, MissingMomentum ;
+    double InferedNucleonMom ;
+    double HadronsAngle, Angleqvshad;
+    double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ; 
+    long NEntries ;
+    bool IsBkg ;
+    int ElectronSector ;
+    for ( unsigned int j = 0  ; j < trees.size() ; ++j ){
+      NEntries = trees[j] -> GetEntries() ;
+      trees[j] -> SetBranchAddress("TotWeight",&TotWeight);
+      trees[j] -> SetBranchAddress("IsBkg",&IsBkg);
+      trees[j] -> SetBranchAddress("ECal",&ECal);
+      trees[j] -> SetBranchAddress("pfl_theta",&pfl_theta);
+      trees[j] -> SetBranchAddress("pfl_phi",&pfl_phi);
+      trees[j] -> SetBranchAddress("pfl",&pfl);
+      trees[j] -> SetBranchAddress("proton_mom",&proton_mom);
+      trees[j] -> SetBranchAddress("proton_theta",&proton_theta);
+      trees[j] -> SetBranchAddress("proton_phi",&proton_phi);
+      trees[j] -> SetBranchAddress("pim_mom",&pim_mom);
+      trees[j] -> SetBranchAddress("pim_theta",&pim_theta);
+      trees[j] -> SetBranchAddress("pim_phi",&pim_phi);
+      trees[j] -> SetBranchAddress("pip_mom",&pip_mom);
+      trees[j] -> SetBranchAddress("pip_theta",&pip_theta);
+      trees[j] -> SetBranchAddress("pip_phi",&pip_phi);
+      trees[j] -> SetBranchAddress("RecoW",&RecoW);
+      trees[j] -> SetBranchAddress("RecoQELEnu",&RecoQELEnu);
+      trees[j] -> SetBranchAddress("Recoq3",&Recoq3);
+      trees[j] -> SetBranchAddress("RecoXBJK",&RecoXBJK);
+      trees[j] -> SetBranchAddress("RecoQ2",&RecoQ2);
+      trees[j] -> SetBranchAddress("RecoEnergyTransfer",&RecoEnergyTransfer);
+      trees[j] -> SetBranchAddress("AlphaT",&AlphaT);
+      trees[j] -> SetBranchAddress("HadAlphaT",&HadAlphaT);
+      trees[j] -> SetBranchAddress("DeltaPT",&DeltaPT);
+      trees[j] -> SetBranchAddress("HadDeltaPT",&HadDeltaPT);
+      trees[j] -> SetBranchAddress("HadDeltaPTx",&HadDeltaPTx);
+      trees[j] -> SetBranchAddress("HadDeltaPTy",&HadDeltaPTy);
+      trees[j] -> SetBranchAddress("DeltaPhiT",&DeltaPhiT);
+      trees[j] -> SetBranchAddress("HadDeltaPhiT",&HadDeltaPhiT);
+      trees[j] -> SetBranchAddress("ElectronSector",&ElectronSector);
+      trees[j] -> SetBranchAddress("HadSystemMass", &HadSystemMass);
+      trees[j] -> SetBranchAddress("MissingEnergy", &MissingEnergy);
+      trees[j] -> SetBranchAddress("MissingAngle", &MissingAngle);
+      trees[j] -> SetBranchAddress("MissingMomentum", &MissingMomentum);
+      trees[j] -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
+      trees[j] -> SetBranchAddress("HadronsAngle",&HadronsAngle);
+      trees[j] -> SetBranchAddress("AdlerAngleThetaP",&AdlerAngleThetaP);
+      trees[j] -> SetBranchAddress("AdlerAnglePhiP",&AdlerAnglePhiP);
+      trees[j] -> SetBranchAddress("AdlerAngleThetaPi",&AdlerAngleThetaPi);
+      trees[j] -> SetBranchAddress("AdlerAnglePhiPi",&AdlerAnglePhiPi);
+      trees[j] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
+
+      for( int k = 0 ; k < NEntries; ++k ) {
+        trees[j]->GetEntry(k) ;
+        double content = 0 ;
+        double w = TotWeight ;
+
+	if( observable == "ECal") content = ECal ;
+        else if ( observable == "pfl") content = pfl ;
+        else if ( observable == "pfl_theta") content = pfl_theta ;
+        else if ( observable == "pfl_phi") content = pfl_phi ;
+        else if ( observable == "proton_mom") content = proton_mom ;
+        else if ( observable == "proton_theta") content = proton_theta  ;
+        else if ( observable == "proton_phi") content = proton_phi  ;
+        else if ( observable == "pim_mom") content = pim_mom ;
+        else if ( observable == "pim_theta") content = pim_theta  ;
+        else if ( observable == "pim_phi") content = pim_phi  ;
+        else if ( observable == "pip_mom") content = pip_mom ;
+        else if ( observable == "pip_theta") content = pip_theta  ;
+        else if ( observable == "pip_phi") content = pip_phi  ;
+        else if ( observable == "RecoW") content = RecoW ;
+        else if ( observable == "Recoq3") content = Recoq3 ;
+	else if ( observable == "RecoQELEnu") content = RecoQELEnu ;
+        else if ( observable == "RecoXBJK") content = RecoXBJK ;
+        else if ( observable == "RecoQ2") content = RecoQ2 ;
+        else if ( observable == "RecoEnergyTransfer") content = RecoEnergyTransfer ;
+        else if ( observable == "AlphaT") content = AlphaT ;
+        else if ( observable == "HadAlphaT") content = HadAlphaT ;
+        else if ( observable == "DeltaPT") content = DeltaPT ;
+        else if ( observable == "HadDeltaPT") content = HadDeltaPT ;
+	else if ( observable == "HadDeltaPTx") content = HadDeltaPTx ;
+	else if ( observable == "HadDeltaPTy") content = HadDeltaPTy ;
+        else if ( observable == "DeltaPhiT") content = DeltaPhiT ;
+        else if ( observable == "HadDeltaPhiT") content = HadDeltaPhiT ;
+        else if ( observable == "HadSystemMass") content = HadSystemMass ;
+	else if ( observable == "MissingEnergy") content = MissingEnergy ;
+	else if ( observable == "MissingMomentum") content = MissingMomentum ;
+	else if ( observable == "MissingAngle") content = MissingAngle ;
+	else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
+	else if ( observable == "HadronsAngle" ) content = HadronsAngle ; 
+	else if ( observable == "AdlerAngleThetaP" ) content = AdlerAngleThetaP ; 
+	else if ( observable == "AdlerAnglePhiP" ) content = AdlerAnglePhiP ; 
+	else if ( observable == "AdlerAngleThetaPi" ) content = AdlerAngleThetaPi ; 
+	else if ( observable == "AdlerAnglePhiPi" ) content = AdlerAnglePhiPi ; 
+	else if ( observable == "Angleqvshad" ) content = Angleqvshad ; 
+
+        // Fill the per Sector  histogram
+	if( j == 0 ) hists_true[i]-> Fill( content, w ) ;
+	else if ( j == 1 ) hists_radcorr[i] -> Fill( content, w ) ;
+      }
+    }
+
+    ratios.push_back( (TH1D*)hists_true[i]->Clone() ) ;
+    ratios[i] -> Divide( hists_radcorr[i] );
+    ratios[i] -> SetName(("RadCorrModel_"+std::to_string(i)).c_str());
+    StandardFormat( ratios[i], title, kBlack+i+1, 2+i, observable ) ;
+    ratios[i] -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
+    ratios[i] -> GetYaxis()->SetTitle("Radiation correction");
+
+  }
+
+  // Calculate average correction
+  TH1D* ratio = (TH1D*)ratios[0]->Clone();
+  ratio -> SetName("Acceptance");
+  for( unsigned int i = 1 ; i < mc_files.size() ; ++i ) {
+    ratio->Add(ratios[i]);
+  }
+  ratio -> Scale( 1./mc_files.size() );
+  StandardFormat( ratio, title, kBlack, 1, observable ) ;
+  ratio -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
+  ratio -> GetYaxis()->SetTitle("Acceptance correction");
+
+  std::string output_name = output_file_name+"_acceptance_correction_rad_"+observable ;
+  std::string acc_file = "/AcceptanceFiles/"+output_name ;
+
+  std::filesystem::path acceptance_path{(output_location+"/AcceptanceFiles").c_str()};
+  if( ! std::filesystem::exists(acceptance_path) ) std::filesystem::create_directory(acceptance_path);
+
+  TFile outputFile ((output_location+acc_file+".root").c_str(),"RECREATE");
+
+  TCanvas * c_1 = new TCanvas("c_1","c_1",200,10,700,500);
+  TPad *pad1 = new TPad("pad1","",0,0,1,1);
+  pad1->Draw();
+  pad1->cd();
+  pad1->SetBottomMargin(0.15);
+  pad1->SetLeftMargin(0.15);
+
+  // Store total contribution (averaged)
+  ratio->Write();
+
+  // Plot it
+  ratio->Draw("hist err");
+  for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
+    ratios[i]->Draw("hist err same");
+    ratios[i]->Write();
+  }
+  ratio->Draw("hist err same");
+  //teff->Draw("AP");
+
+  if( store_root ) c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());
+  c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.pdf").c_str());
+  delete c_1 ;
+}

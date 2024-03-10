@@ -39,6 +39,7 @@ namespace e4nu {
     bool IsElectronData(void) const { return kIsElectron ; }
     bool IsConfigured(void) const { return kIsConfigured ; }
     bool IsRadiated(void) const { return kIsRadiated ; }
+    void SetRadCorr(bool rad) { kIsRadiated = rad; }
 
     unsigned int GetAnalysisTypeID(void) const{ return kAnalysisTypeID ; }
     unsigned int GetNEventsToRun(void) const { return kNEvents ; } 

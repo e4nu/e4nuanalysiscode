@@ -735,4 +735,5 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
   if( store_root ) c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());
   c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.pdf").c_str());
   delete c_1 ;
+  return acc_file;
 }

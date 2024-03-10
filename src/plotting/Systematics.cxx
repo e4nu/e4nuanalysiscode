@@ -218,7 +218,7 @@ void systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> h_
 			content_j = h_per_sector[i]->GetBinContent(j);
 			mean_content += content_j/pow(var_j,2);
 		}
-		mean_content /= (1./var_total_stat);
+		mean_content /= (1./pow(var_total_stat,2));
 		raw_sector_variance = pow( content_j - mean_content, 2 )/(h_per_sector.size()-1);
 		double corrected_sector_variance = raw_sector_variance - pow(var_total_stat,2) ; // need to remove double counting of stat error
 		double hist_error = TMath::Sqrt( pow(hist.GetBinError(j),2) + pow(corrected_sector_variance,2));

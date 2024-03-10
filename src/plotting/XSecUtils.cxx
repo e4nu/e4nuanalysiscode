@@ -406,6 +406,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   TH1D * hist_data_uncorr=nullptr, * hist_data_uncorr_0=nullptr, * hist_data_uncorr_1=nullptr, * hist_data_uncorr_2=nullptr, * hist_data_uncorr_3=nullptr, * hist_data_uncorr_4=nullptr, * hist_data_uncorr_5=nullptr ;
   // Store corrected for acceptance but not for radiation
   TH1D * hist_data_uncorrrad=nullptr;
+  // Corr event rate§
+  TH1D * hist_data_correventrate=nullptr, * hist_data_correventrate_0=nullptr, * hist_data_correventrate_1=nullptr, * hist_data_correventrate_2=nullptr, * hist_data_correventrate_3=nullptr, * hist_data_correventrate_4=nullptr, * hist_data_correventrate_5=nullptr ;
 
   if( plot_data ) { 
     hist_data_uncorr = (TH1D*) hist_data ->Clone();
@@ -423,6 +425,15 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_uncorr_5 = (TH1D*) hist_data_5 ->Clone();
     hist_data_uncorr_5 -> SetName( "Uncorrected Data Sector  5") ;
 
+    // Normaize for bin size
+    NormalizeHist(hist_data_uncorr, 1 );
+    NormalizeHist(hist_data_uncorr_0, 1 );
+    NormalizeHist(hist_data_uncorr_1, 1 );
+    NormalizeHist(hist_data_uncorr_2, 1 );
+    NormalizeHist(hist_data_uncorr_3, 1 );
+    NormalizeHist(hist_data_uncorr_4, 1 );
+    NormalizeHist(hist_data_uncorr_5, 1 );
+
     // Correct data for detector acceptance :
     CorrectData(hist_data, h_acceptance);
     CorrectData(hist_data_0, h_acceptance_0);
@@ -431,9 +442,10 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     CorrectData(hist_data_3, h_acceptance_3);
     CorrectData(hist_data_4, h_acceptance_4);
     CorrectData(hist_data_5, h_acceptance_5);
-
-    hist_data_uncorrad = (TH1D*) hist_data ->Clone();
-    hist_data_uncorrad -> SetName( "Uncorrected Data") ;
+    
+    hist_data_uncorrrad = (TH1D*) hist_data ->Clone();
+    hist_data_uncorrrad -> SetName( "Corrected for acceptance before rad corr data") ;
+    NormalizeHist(hist_data_uncorrrad, 1 );
 
     if( h_radcorr ) { 
       CorrectData(hist_data, h_radcorr);
@@ -445,15 +457,15 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       CorrectData(hist_data_5, h_radcorr);
     }
     
-		//Adding Acceptance correction systematics from model dependence
-		systematics::AddSystematic( *hist_data, *h_acceptance );
-		systematics::AddSystematic( *hist_data_0, *h_acceptance );
-		systematics::AddSystematic( *hist_data_1, *h_acceptance );
-		systematics::AddSystematic( *hist_data_2, *h_acceptance );
-		systematics::AddSystematic( *hist_data_3, *h_acceptance );
-		systematics::AddSystematic( *hist_data_4, *h_acceptance );
-		systematics::AddSystematic( *hist_data_5, *h_acceptance );
-
+    //Adding Acceptance correction systematics from model dependence
+    systematics::AddSystematic( *hist_data, *h_acceptance );
+    systematics::AddSystematic( *hist_data_0, *h_acceptance );
+    systematics::AddSystematic( *hist_data_1, *h_acceptance );
+    systematics::AddSystematic( *hist_data_2, *h_acceptance );
+    systematics::AddSystematic( *hist_data_3, *h_acceptance );
+    systematics::AddSystematic( *hist_data_4, *h_acceptance );
+    systematics::AddSystematic( *hist_data_5, *h_acceptance );
+    
     hist_data_correventrate = (TH1D*) hist_data ->Clone();
     hist_data_correventrate -> SetName( "Corrected_Event_Rate_Data") ;
     hist_data_correventrate_0 = (TH1D*) hist_data_0 ->Clone();
@@ -478,19 +490,17 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_correventrate_4, 1 );
     NormalizeHist(hist_data_correventrate_5, 1 );
     
-
     // Normalize data from slices
     if( addbinning.size() != 0 ) {
       for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
 	NormalizeHist(h_data_slices[l], DataNormalization );
 	CorrectData(h_data_slices[l], h_acc_slices[l] );
 	CorrectData(h_data_slices[l], h_radcorr );
-      }
-      for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
-	systematics::AddSystematic(*h_data_slices[l], it->second, it->first) ;
+	for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
+	  systematics::AddSystematic(*h_data_slices[l], it->second, it->first) ;
+	}
       }
     }
-  
   }
 
   NormalizeHist(hist_true, mc_norm[0]);
@@ -509,17 +519,17 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // add systematics
   if( plot_data ) {
-		NormalizeHist(hist_data, DataNormalization );
+    NormalizeHist(hist_data, DataNormalization );
     NormalizeHist(hist_data_0, DataNormalization );
     NormalizeHist(hist_data_1, DataNormalization );
     NormalizeHist(hist_data_2, DataNormalization );
     NormalizeHist(hist_data_3, DataNormalization );
     NormalizeHist(hist_data_4, DataNormalization );
     NormalizeHist(hist_data_5, DataNormalization );
-
-		// Add sector variation ERROR
-		systematics::SectorVariationError( *hist_data, {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5}) ;
-
+    
+    // Add sector variation ERROR
+    systematics::SectorVariationError( *hist_data, {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5}) ;
+    
     //adding systematics from systematic map. Relative systematic added to all bins
     for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
       std::cout << " Adding " << it->second*100 << " % systematic on " << it->first << std::endl;
@@ -563,8 +573,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   std::vector<std::vector<TH1D*>> all_slices = {h_total_slices,h_QEL_slices,h_RES_Delta_slices,h_RES_slices,h_SIS_slices,h_MEC_slices,h_DIS_slices,h_data_slices};
 
   // Plot Total, XSector, Legend
-  plotting::PlotEventRate( hist_data_eventrate, observable, title, data_name, input_data_location, output_location,
+  plotting::PlotEventRate( hist_data_uncorr, observable, title, data_name, input_data_location, output_location,
 			   output_file_name+"_eventrate", analysis_id, store_root ) ;
+
+  plotting::PlotEventRate( hist_data_uncorrrad, observable, title, data_name, input_data_location, output_location,
+			   output_file_name+"_eventrate_corracc_norad", analysis_id, store_root ) ;
 
   plotting::PlotEventRate( hist_data_correventrate, observable, title, data_name, input_data_location, output_location,
 			   output_file_name+"_correventrate", analysis_id, store_root ) ;

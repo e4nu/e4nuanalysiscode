@@ -154,10 +154,11 @@ int main( int argc, char* argv[] ) {
   // Loop over observables
   for( unsigned int i = 0 ; i < observables.size(); ++i ){
     vector<string> root_files = mc_files;
+    vector<string> root_rad_files = rad_files;
     vector<string> names = model_names ;
     string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name, analysis_id, store_root ) ;
     string radcorr_file = "";
-    if( rad_files.size() != 0 ) radcorr_fil = ComputeRadCorr( rad_files, observables[i], title, mc_location, output_location, output_name, analysis_id, store_root ) ;
+    if( rad_files.size() != 0 ) radcorr_file = ComputeRadCorr( root_rad_files, observables[i], title, mc_location, output_location, output_name, analysis_id, store_root ) ;
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
 
     vector<string> bkg_syst_files = {data_file};

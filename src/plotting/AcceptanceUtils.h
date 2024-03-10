@@ -13,7 +13,7 @@ namespace e4nu {
 				  std::string analysis_id = "default", bool store_root=false) ; 
 
 
-    std::string ComputeRadCorr(std::string mc_files, std::string observable, std::string title,
+    std::string ComputeRadCorr(std::vector<std::string> mc_files, std::string observable, std::string title,
 			       std::string input_MC_location, std::string output_location,  std::string output_file_name, 
 			       std::string analysis_id="default", bool store_root=false) ;
       

@@ -538,7 +538,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   return acc_file ;
 }
 
-std::string plotting::ComputeRadCorr(std::string mc_files, std::string observable, std::string title,
+std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::string observable, std::string title,
 				     std::string input_MC_location, std::string output_location,  std::string output_file_name, 
 				     std::string analysis_id, bool store_root ) {
   

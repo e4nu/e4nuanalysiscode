@@ -101,6 +101,7 @@ int main( int argc, char* argv[] ) {
     analysis -> SetUseAllSectors( true ) ;
     analysis -> EnableAllSectors( true ) ;
     std::string OutputFile_true = analysis->GetOutputFile() + "_true" ;
+    if( IsRadiated() ) OutputFile_true += "_radiated";
     analysis -> SetOutputFile( OutputFile_true ) ;
     std::cout << " Computing true analysis distributions for acceptance correction..."<<std::endl;
   } else if ( compute_truerecoacc ) { 
@@ -110,6 +111,7 @@ int main( int argc, char* argv[] ) {
     analysis -> SetApplyReso( true ) ; 
     analysis -> SetSubtractBkg( false ) ; 
     std::string OutputFile_reco = analysis->GetOutputFile() + "_truereco" ;
+    if( IsRadiated() ) OutputFile_reco += "_radiated";
     analysis -> SetOutputFile( OutputFile_reco ) ; 
     std::cout << " Computing true reconstructed analysis distributions for acceptance correction..."<<std::endl;
   }

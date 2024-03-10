@@ -38,6 +38,8 @@ namespace e4nu {
     bool IsCLAS12Analysis(void) const { return kIsCLAS12Analysis ; } 
     bool IsElectronData(void) const { return kIsElectron ; }
     bool IsConfigured(void) const { return kIsConfigured ; }
+    bool IsRadiated(void) const { return kIsRadiated ; }
+
     unsigned int GetAnalysisTypeID(void) const{ return kAnalysisTypeID ; }
     unsigned int GetNEventsToRun(void) const { return kNEvents ; } 
     unsigned int GetFirstEventToRun(void) const { return kFirstEvent ; } 
@@ -87,7 +89,7 @@ namespace e4nu {
     unsigned int GetNRotations(void) const { return kNRotations ; } 
     bool GetSubtractBkg(void) const { return kSubtractBkg ; }
     bool GetDebugBkg(void) const { return kDebugBkg ; } 
-
+    
     // Systematics configurables
     bool ComputeSystFiducial( double angle_shift ) ; 
     bool GetConfigurationFidAngleShift(void) { return fFidAngleShift; }
@@ -139,6 +141,7 @@ namespace e4nu {
     bool kSubtractBkg = false ; // Apply background correction
     bool kNoFSI = false ; // Can be use it to turn off FSI from GENIE files
     bool kTrueSignal = false ; // It removes background events before any cuts are applied. This is used for acceptance calculations
+    bool kIsRadiated = false ; 
 
     double kEBeam = 1.161 ; 
     unsigned int kTargetPdg = 1000060120 ;

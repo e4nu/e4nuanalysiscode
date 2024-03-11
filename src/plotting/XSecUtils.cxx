@@ -563,13 +563,13 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // Store histograms for plotting
   std::vector<TH1D> mc_hists = {*hist_true};
-	std::vector<TH1D*> mc_hists_xsec = {hist_true};
+  std::vector<TH1D*> mc_hists_xsec = {hist_true};
   for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
     mc_hists.push_back(*hists_true_submodel[id]);
-		mc_hists_xsec.push_back(hists_true_submodel[id]);
+    mc_hists_xsec.push_back(hists_true_submodel[id]);
   }
-	std::vector<TH1D> breakdown = {*hist_true_QEL,*hist_true_RES_Delta,*hist_true_RES,*hist_true_SIS,*hist_true_MEC,*hist_true_DIS};
-	std::vector<TH1D*> breakdown_xsec = {hist_true_QEL,hist_true_RES_Delta,hist_true_RES,hist_true_SIS,hist_true_MEC,hist_true_DIS};
+  std::vector<TH1D> breakdown = {*hist_true_QEL,*hist_true_RES_Delta,*hist_true_RES,*hist_true_SIS,*hist_true_MEC,*hist_true_DIS};
+  std::vector<TH1D*> breakdown_xsec = {hist_true_QEL,hist_true_RES_Delta,hist_true_RES,hist_true_SIS,hist_true_MEC,hist_true_DIS};
   std::vector<TH1D*> mc_per_sector = {hist_true_0,hist_true_1,hist_true_2,hist_true_3,hist_true_4,hist_true_5};
   std::vector<TH1D*> data_per_sector = {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5};
   std::vector<std::vector<TH1D*>> all_slices = {h_total_slices,h_QEL_slices,h_RES_Delta_slices,h_RES_slices,h_SIS_slices,h_MEC_slices,h_DIS_slices,h_data_slices};
@@ -584,8 +584,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   plotting::PlotEventRate( hist_data_correventrate, observable, title, data_name, input_data_location, output_location,
 			   output_file_name+"_correventrate", analysis_id, store_root ) ;
 
-	plotting::PlotComparisonDataNormalized( mc_hists, breakdown, hist_data_correventrate, observable, title, data_name, model, input_MC_location,
-	 		   input_data_location, output_location, output_file_name+"_normalizedtodata", systematic_map, analysis_id, store_root);
+  plotting::PlotComparisonDataNormalized( mc_hists, breakdown, hist_data_correventrate, observable, title, data_name, model, input_MC_location,
+					  input_data_location, output_location, output_file_name+"_normalizedtodata", systematic_map, analysis_id, store_root);
 
   plotting::PlotXsecDataTotal( hist_data, observable, title, data_name, input_data_location, output_location, output_file_name,
 			       systematic_map, analysis_id, store_root);
@@ -637,10 +637,10 @@ void plotting::PlotXsecDataTotal( TH1D * data, std::string observable, std::stri
 }
 
 void plotting::PlotComparisonDataNormalized( std::vector<TH1D> mc_hists, std::vector<TH1D> breakdown,
-						TH1D * data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model,
-			      std::string input_MC_location, std::string input_data_location, std::string output_location,
-			      std::string output_file_name, std::map<string,double> systematic_map,
-			      std::string analysis_id, bool store_root ) {
+					     TH1D * data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model,
+					     std::string input_MC_location, std::string input_data_location, std::string output_location,
+					     std::string output_file_name, std::map<string,double> systematic_map,
+					     std::string analysis_id, bool store_root ) {
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
   pad1->Draw();
@@ -672,15 +672,15 @@ void plotting::PlotComparisonDataNormalized( std::vector<TH1D> mc_hists, std::ve
     StandardFormat( &breakdown[5], title, kCyan+1, 1, observable, y_max_total, "Counts/Bin Width"  ) ;
   }
 
-	// Print out integral for debugging
+  // Print out integral for debugging
   double data_integral = 0 ;
   if( data ) data_integral= data->Integral("width") ;
   double mc_integral = mc_hists[0].Integral("width") ;
 
-	// Normalize MC to data
-	mc_hists[0].Scale(data_integral/mc_integral);
-	for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i].Scale(data_integral/mc_integral);
-	for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i].Scale(data_integral/mc_integral);
+  // Normalize MC to data
+  mc_hists[0].Scale(data_integral/mc_integral);
+  for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i].Scale(data_integral/mc_integral);
+  for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i].Scale(data_integral/mc_integral);
 
   // Draw total xsec (all sectors):
   mc_hists[0].Draw("hist");

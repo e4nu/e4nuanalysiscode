@@ -298,7 +298,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 	// Compute Acceptance error from model variation
 	for( unsigned int i = 0 ; i < ratio->GetNbinsX() ; ++i ){
 		double bin_cont_max = 0 ;
-		double bin_cont_min = 99999 ;
+		double bin_cont_min = 999 ;
 		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
 			ratios[j]->SetBinError(i,0);
 			if( ratios[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios[j]->GetBinContent(i) ;
@@ -318,6 +318,18 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio_0->Add(ratios_0[i]);
   }
   ratio_0 -> Scale( 1./mc_files.size() );
+	// Compute Acceptance error from model variation
+	for( unsigned int i = 0 ; i < ratio_0->GetNbinsX() ; ++i ){
+		double bin_cont_max = 0 ;
+		double bin_cont_min = 999 ;
+		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+			ratios_0[j]->SetBinError(i,0);
+			if( ratios_0[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_0[j]->GetBinContent(i) ;
+			if( ratios_0[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_0[j]->GetBinContent(i) ;
+		}
+		double error = (bin_cont_max-bin_cont_min)/ratio_0->GetBinContent(i)/sqrt(12.);
+		ratio_0->SetBinError(i,error);
+  }
   StandardFormat( ratio_0, title, kOrange+1, 1, observable ) ;
   ratio_0 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_0 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 0");
@@ -328,6 +340,18 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio_1->Add(ratios_1[i]);
   }
   ratio_1 -> Scale( 1./mc_files.size() );
+	// Compute Acceptance error from model variation
+	for( unsigned int i = 0 ; i < ratio_1->GetNbinsX() ; ++i ){
+		double bin_cont_max = 0 ;
+		double bin_cont_min = 999 ;
+		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+			ratios_1[j]->SetBinError(i,0);
+			if( ratios_1[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_1[j]->GetBinContent(i) ;
+			if( ratios_1[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_1[j]->GetBinContent(i) ;
+		}
+		double error = (bin_cont_max-bin_cont_min)/ratio_1->GetBinContent(i)/sqrt(12.);
+		ratio_1->SetBinError(i,error);
+	}
   StandardFormat( ratio_1, title, kPink+4, 1, observable ) ;
   ratio_1 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_1 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 1");
@@ -338,6 +362,18 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio_2->Add(ratios_2[i]);
   }
   ratio_2 -> Scale( 1./mc_files.size() );
+	// Compute Acceptance error from model variation
+	for( unsigned int i = 0 ; i < ratio_2->GetNbinsX() ; ++i ){
+		double bin_cont_max = 0 ;
+		double bin_cont_min = 999 ;
+		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+			ratios_2[j]->SetBinError(i,0);
+			if( ratios_2[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_2[j]->GetBinContent(i) ;
+			if( ratios_2[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_2[j]->GetBinContent(i) ;
+		}
+		double error = (bin_cont_max-bin_cont_min)/ratio_2->GetBinContent(i)/sqrt(12.);
+		ratio_2->SetBinError(i,error);
+	}
   StandardFormat( ratio_2, title, kViolet+5, 1, observable ) ;
   ratio_2 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_2 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 2");
@@ -348,6 +384,18 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio_3->Add(ratios_3[i]);
   }
   ratio_3 -> Scale( 1./mc_files.size() );
+	// Compute Acceptance error from model variation
+	for( unsigned int i = 0 ; i < ratio_3->GetNbinsX() ; ++i ){
+		double bin_cont_max = 0 ;
+		double bin_cont_min = 999 ;
+		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+			ratios_3[j]->SetBinError(i,0);
+			if( ratios_3[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_3[j]->GetBinContent(i) ;
+			if( ratios_3[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_3[j]->GetBinContent(i) ;
+		}
+		double error = (bin_cont_max-bin_cont_min)/ratio_3->GetBinContent(i)/sqrt(12.);
+		ratio_3->SetBinError(i,error);
+	}
   StandardFormat( ratio_3, title, kAzure-5, 1, observable ) ;
   ratio_3 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_3 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 3");
@@ -358,6 +406,18 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio_4->Add(ratios_4[i]);
   }
   ratio_4 -> Scale( 1./mc_files.size() );
+	// Compute Acceptance error from model variation
+	for( unsigned int i = 0 ; i < ratio_4->GetNbinsX() ; ++i ){
+		double bin_cont_max = 0 ;
+		double bin_cont_min = 999 ;
+		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+			ratios_4[j]->SetBinError(i,0);
+			if( ratios_4[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_4[j]->GetBinContent(i) ;
+			if( ratios_4[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_4[j]->GetBinContent(i) ;
+		}
+		double error = (bin_cont_max-bin_cont_min)/ratio_4->GetBinContent(i)/sqrt(12.);
+		ratio_4->SetBinError(i,error);
+	}
   StandardFormat( ratio_4, title, kTeal-7, 1, observable ) ;
   ratio_4 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_4 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 4");
@@ -368,6 +428,18 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio_5->Add(ratios_5[i]);
   }
   ratio_5 -> Scale( 1./mc_files.size() );
+	// Compute Acceptance error from model variation
+	for( unsigned int i = 0 ; i < ratio_5->GetNbinsX() ; ++i ){
+		double bin_cont_max = 0 ;
+		double bin_cont_min = 999 ;
+		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+			ratios_5[j]->SetBinError(i,0);
+			if( ratios_5[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_5[j]->GetBinContent(i) ;
+			if( ratios_5[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_5[j]->GetBinContent(i) ;
+		}
+		double error = (bin_cont_max-bin_cont_min)/ratio_5->GetBinContent(i)/sqrt(12.);
+		ratio_5->SetBinError(i,error);
+	}
   StandardFormat( ratio_5, title, kGreen-3, 1, observable ) ;
   ratio_5 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_5 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 5");
@@ -444,14 +516,13 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   }
 
   // Plot it
-  ratio->Draw("AP");
+  ratio->Draw("hist err P");
   ratio->SetMarkerStyle(8);
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios[i]->SetMarkerStyle(8);
-    ratios[i]->Draw("P same");
+    ratios[i]->Draw("hist err same");
     ratios[i]->Write();
   }
-  ratio->Draw("P same");
+  ratio->Draw("hist err P same");
   //teff->Draw("AP");
 
   if( store_root ) c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());
@@ -474,10 +545,9 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_0 -> SetLeftMargin(0.15);
   ratio_0 -> GetYaxis()->SetTitleOffset(1.2);
   ratio_0 ->SetMarkerStyle(8);
-  ratio_0 -> Draw("AP");
+  ratio_0 -> Draw("hist err P ");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_0[i]->SetMarkerStyle(8);
-    ratios_0[i] -> Draw("P same");
+    ratios_0[i] -> Draw("hist err same");
   }
 
   TPad *pad_sector_1 = (TPad*)pad_sector->cd(2);
@@ -486,10 +556,9 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_1 -> SetLeftMargin(0.15);
   ratio_1 -> GetYaxis()->SetTitleOffset(1.2);
   ratio_1->SetMarkerStyle(8);
-  ratio_1 -> Draw("AP");
+  ratio_1 -> Draw("hist err P ");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_1[i]->SetMarkerStyle(8);
-    ratios_1[i] -> Draw("P same");
+    ratios_1[i] -> Draw("hist err same");
   }
 
   TPad *pad_sector_2 = (TPad*)pad_sector->cd(3);
@@ -498,9 +567,9 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_2 -> SetLeftMargin(0.15);
   ratio_2 -> GetYaxis()->SetTitleOffset(1.2);
   ratio_2 ->SetMarkerStyle(8);
-  ratio_2 -> Draw("hist");
+  ratio_2 -> Draw("hist err P");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_2[i] -> Draw("hist same");
+    ratios_2[i] -> Draw("hist err same");
   }
 
   TPad *pad_sector_3 = (TPad*)pad_sector->cd(4);
@@ -509,10 +578,9 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_3 -> SetLeftMargin(0.15);
   ratio_3 -> GetYaxis()->SetTitleOffset(1.2);
   ratio_3 -> SetMarkerStyle(8);
-  ratio_3 -> Draw("AP");
+  ratio_3 -> Draw("hist err P ");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_3[i] -> SetMarkerStyle(8);
-    ratios_3[i] -> Draw("P same");
+    ratios_3[i] -> Draw("hist err same");
   }
 
   TPad *pad_sector_4 = (TPad*)pad_sector->cd(5);
@@ -521,10 +589,9 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_4 -> SetLeftMargin(0.15);
   ratio_4 -> GetYaxis()->SetTitleOffset(1.2);
   ratio_4 -> SetMarkerStyle(8);
-  ratio_4 -> Draw("AP");
+  ratio_4 -> Draw("hist err P");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_4[i] -> SetMarkerStyle(8);
-    ratios_4[i] -> Draw("P same");
+    ratios_4[i] -> Draw("hist err same");
   }
 
   TPad *pad_sector_5 = (TPad*)pad_sector->cd(6);
@@ -533,10 +600,9 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_5 -> SetLeftMargin(0.15);
   ratio_5 -> GetYaxis()->SetTitleOffset(1.2);
   ratio_5 -> SetMarkerStyle(8);
-  ratio_5 -> Draw("AP");
+  ratio_5 -> Draw("hist err P");
   for( unsigned int i = 1 ; i < mc_files.size() ; ++i ) {
-    ratios_5[i] -> SetMarkerStyle(8);
-    ratios_5[i] -> Draw("hist same");
+    ratios_5[i] -> Draw("hist err same");
   }
 
   if( store_root ) c_sector_2->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_persector.root").c_str());
@@ -552,16 +618,16 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 }
 
 std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::string observable, std::string title,
-				     std::string input_MC_location, std::string output_location,  std::string output_file_name, 
+				     std::string input_MC_location, std::string output_location,  std::string output_file_name,
 				     std::string analysis_id, bool store_root ) {
-  
+
   // Define trees
   std::vector<TFile*> files_mctrueacc, files_mcradcorr ;
   std::vector<TTree*> trees_mctrueacc, trees_mcradcorr ;
 
   // Define Hists
   // The _# correspond to histograms for each sector
-  std::vector<TH1D*> ratios, hists_true, hists_radcorr ; 
+  std::vector<TH1D*> ratios, hists_true, hists_radcorr ;
   std::vector<double> binning ;
   // Get energy from tree to define range
   double BeamE ;
@@ -578,13 +644,13 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
     trees_mctrueacc[0]->SetBranchAddress("BeamE",&BeamE);
     trees_mctrueacc[0]->GetEntry(0);
     binning = plotting::GetBinning(observable,BeamE,analysis_id);
-    
+
     hists_radcorr.push_back( new TH1D( ("Rad Corr MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
     hists_true.push_back( new TH1D( ("True MC ACC Model "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
 
     hists_radcorr[i] -> Sumw2() ;
     hists_true[i] -> Sumw2() ;
-    
+
     std::vector<TTree*> trees = { trees_mctrueacc[i], trees_mcradcorr[i]};
 
     // OBSERVABLE DEFINITION:
@@ -600,7 +666,7 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
     double MissingEnergy, MissingAngle, MissingMomentum ;
     double InferedNucleonMom ;
     double HadronsAngle, Angleqvshad;
-    double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ; 
+    double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
     long NEntries ;
     bool IsBkg ;
     int ElectronSector ;
@@ -685,12 +751,12 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
 	else if ( observable == "MissingMomentum") content = MissingMomentum ;
 	else if ( observable == "MissingAngle") content = MissingAngle ;
 	else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
-	else if ( observable == "HadronsAngle" ) content = HadronsAngle ; 
-	else if ( observable == "AdlerAngleThetaP" ) content = AdlerAngleThetaP ; 
-	else if ( observable == "AdlerAnglePhiP" ) content = AdlerAnglePhiP ; 
-	else if ( observable == "AdlerAngleThetaPi" ) content = AdlerAngleThetaPi ; 
-	else if ( observable == "AdlerAnglePhiPi" ) content = AdlerAnglePhiPi ; 
-	else if ( observable == "Angleqvshad" ) content = Angleqvshad ; 
+	else if ( observable == "HadronsAngle" ) content = HadronsAngle ;
+	else if ( observable == "AdlerAngleThetaP" ) content = AdlerAngleThetaP ;
+	else if ( observable == "AdlerAnglePhiP" ) content = AdlerAnglePhiP ;
+	else if ( observable == "AdlerAngleThetaPi" ) content = AdlerAngleThetaPi ;
+	else if ( observable == "AdlerAnglePhiPi" ) content = AdlerAnglePhiPi ;
+	else if ( observable == "Angleqvshad" ) content = Angleqvshad ;
 
         // Fill the per Sector  histogram
 	if( j == 0 ) hists_true[i]-> Fill( content, w ) ;
@@ -738,13 +804,12 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
 
   // Plot it
   ratio->SetMarkerStyle(8);
-  ratio->Draw("AP");
+  ratio->Draw("hist err P ");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios[i]->SetMarkerStyle(8);
-    ratios[i]->Draw("P same");
+    ratios[i]->Draw("hist err same");
     ratios[i]->Write();
   }
-  ratio->Draw("P same");
+  ratio->Draw("hist err P same");
   //teff->Draw("AP");
 
   if( store_root ) c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());

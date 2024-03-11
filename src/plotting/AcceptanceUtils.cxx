@@ -295,17 +295,17 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   }
   ratio -> Scale( 1./mc_files.size() );
 
-	// Compute Acceptance error from model variation
-	for( unsigned int i = 0 ; i < ratio->GetNbinsX() ; ++i ){
-		double bin_cont_max = 0 ;
-		double bin_cont_min = 999 ;
-		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-			ratios[j]->SetBinError(i,0);
-			if( ratios[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios[j]->GetBinContent(i) ;
-			if( ratios[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios[j]->GetBinContent(i) ;
-		}
-		double error = (bin_cont_max-bin_cont_min)/ratio->GetBinContent(i)/sqrt(12.);
-		ratio->SetBinError(i,error);
+  // Compute Acceptance error from model variation
+  for( unsigned int i = 0 ; i < ratio->GetNbinsX() ; ++i ){
+    double bin_cont_max = 0 ;
+    double bin_cont_min = 999 ;
+    for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+      ratios[j]->SetBinError(i,0);
+      if( ratios[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios[j]->GetBinContent(i) ;
+      if( ratios[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios[j]->GetBinContent(i) ;
+    }
+    double error = (bin_cont_max-bin_cont_min)/ratio->GetBinContent(i)/sqrt(12.);
+    ratio->SetBinError(i,error);
   }
 
   StandardFormat( ratio, title, kBlack, 1, observable ) ;
@@ -318,17 +318,17 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio_0->Add(ratios_0[i]);
   }
   ratio_0 -> Scale( 1./mc_files.size() );
-	// Compute Acceptance error from model variation
-	for( unsigned int i = 0 ; i < ratio_0->GetNbinsX() ; ++i ){
-		double bin_cont_max = 0 ;
-		double bin_cont_min = 999 ;
-		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-			ratios_0[j]->SetBinError(i,0);
-			if( ratios_0[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_0[j]->GetBinContent(i) ;
-			if( ratios_0[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_0[j]->GetBinContent(i) ;
-		}
-		double error = (bin_cont_max-bin_cont_min)/ratio_0->GetBinContent(i)/sqrt(12.);
-		ratio_0->SetBinError(i,error);
+  // Compute Acceptance error from model variation
+  for( unsigned int i = 0 ; i < ratio_0->GetNbinsX() ; ++i ){
+    double bin_cont_max = 0 ;
+    double bin_cont_min = 999 ;
+    for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+      ratios_0[j]->SetBinError(i,0);
+      if( ratios_0[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_0[j]->GetBinContent(i) ;
+      if( ratios_0[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_0[j]->GetBinContent(i) ;
+    }
+    double error = (bin_cont_max-bin_cont_min)/ratio_0->GetBinContent(i)/sqrt(12.);
+    ratio_0->SetBinError(i,error);
   }
   StandardFormat( ratio_0, title, kOrange+1, 1, observable ) ;
   ratio_0 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
@@ -340,18 +340,18 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio_1->Add(ratios_1[i]);
   }
   ratio_1 -> Scale( 1./mc_files.size() );
-	// Compute Acceptance error from model variation
-	for( unsigned int i = 0 ; i < ratio_1->GetNbinsX() ; ++i ){
-		double bin_cont_max = 0 ;
-		double bin_cont_min = 999 ;
-		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-			ratios_1[j]->SetBinError(i,0);
-			if( ratios_1[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_1[j]->GetBinContent(i) ;
-			if( ratios_1[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_1[j]->GetBinContent(i) ;
-		}
-		double error = (bin_cont_max-bin_cont_min)/ratio_1->GetBinContent(i)/sqrt(12.);
-		ratio_1->SetBinError(i,error);
-	}
+  // Compute Acceptance error from model variation
+  for( unsigned int i = 0 ; i < ratio_1->GetNbinsX() ; ++i ){
+    double bin_cont_max = 0 ;
+    double bin_cont_min = 999 ;
+    for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+      ratios_1[j]->SetBinError(i,0);
+      if( ratios_1[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_1[j]->GetBinContent(i) ;
+      if( ratios_1[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_1[j]->GetBinContent(i) ;
+    }
+    double error = (bin_cont_max-bin_cont_min)/ratio_1->GetBinContent(i)/sqrt(12.);
+    ratio_1->SetBinError(i,error);
+  }
   StandardFormat( ratio_1, title, kPink+4, 1, observable ) ;
   ratio_1 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_1 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 1");
@@ -362,18 +362,18 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio_2->Add(ratios_2[i]);
   }
   ratio_2 -> Scale( 1./mc_files.size() );
-	// Compute Acceptance error from model variation
-	for( unsigned int i = 0 ; i < ratio_2->GetNbinsX() ; ++i ){
-		double bin_cont_max = 0 ;
-		double bin_cont_min = 999 ;
-		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-			ratios_2[j]->SetBinError(i,0);
-			if( ratios_2[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_2[j]->GetBinContent(i) ;
-			if( ratios_2[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_2[j]->GetBinContent(i) ;
-		}
-		double error = (bin_cont_max-bin_cont_min)/ratio_2->GetBinContent(i)/sqrt(12.);
-		ratio_2->SetBinError(i,error);
-	}
+  // Compute Acceptance error from model variation
+  for( unsigned int i = 0 ; i < ratio_2->GetNbinsX() ; ++i ){
+    double bin_cont_max = 0 ;
+    double bin_cont_min = 999 ;
+    for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+      ratios_2[j]->SetBinError(i,0);
+      if( ratios_2[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_2[j]->GetBinContent(i) ;
+      if( ratios_2[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_2[j]->GetBinContent(i) ;
+    }
+    double error = (bin_cont_max-bin_cont_min)/ratio_2->GetBinContent(i)/sqrt(12.);
+    ratio_2->SetBinError(i,error);
+  }
   StandardFormat( ratio_2, title, kViolet+5, 1, observable ) ;
   ratio_2 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_2 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 2");
@@ -384,18 +384,18 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio_3->Add(ratios_3[i]);
   }
   ratio_3 -> Scale( 1./mc_files.size() );
-	// Compute Acceptance error from model variation
-	for( unsigned int i = 0 ; i < ratio_3->GetNbinsX() ; ++i ){
-		double bin_cont_max = 0 ;
-		double bin_cont_min = 999 ;
-		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-			ratios_3[j]->SetBinError(i,0);
-			if( ratios_3[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_3[j]->GetBinContent(i) ;
-			if( ratios_3[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_3[j]->GetBinContent(i) ;
-		}
-		double error = (bin_cont_max-bin_cont_min)/ratio_3->GetBinContent(i)/sqrt(12.);
-		ratio_3->SetBinError(i,error);
-	}
+  // Compute Acceptance error from model variation
+  for( unsigned int i = 0 ; i < ratio_3->GetNbinsX() ; ++i ){
+    double bin_cont_max = 0 ;
+    double bin_cont_min = 999 ;
+    for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+      ratios_3[j]->SetBinError(i,0);
+      if( ratios_3[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_3[j]->GetBinContent(i) ;
+      if( ratios_3[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_3[j]->GetBinContent(i) ;
+    }
+    double error = (bin_cont_max-bin_cont_min)/ratio_3->GetBinContent(i)/sqrt(12.);
+    ratio_3->SetBinError(i,error);
+  }
   StandardFormat( ratio_3, title, kAzure-5, 1, observable ) ;
   ratio_3 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_3 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 3");
@@ -406,18 +406,18 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio_4->Add(ratios_4[i]);
   }
   ratio_4 -> Scale( 1./mc_files.size() );
-	// Compute Acceptance error from model variation
-	for( unsigned int i = 0 ; i < ratio_4->GetNbinsX() ; ++i ){
-		double bin_cont_max = 0 ;
-		double bin_cont_min = 999 ;
-		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-			ratios_4[j]->SetBinError(i,0);
-			if( ratios_4[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_4[j]->GetBinContent(i) ;
-			if( ratios_4[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_4[j]->GetBinContent(i) ;
-		}
-		double error = (bin_cont_max-bin_cont_min)/ratio_4->GetBinContent(i)/sqrt(12.);
-		ratio_4->SetBinError(i,error);
-	}
+  // Compute Acceptance error from model variation
+  for( unsigned int i = 0 ; i < ratio_4->GetNbinsX() ; ++i ){
+    double bin_cont_max = 0 ;
+    double bin_cont_min = 999 ;
+    for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+      ratios_4[j]->SetBinError(i,0);
+      if( ratios_4[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_4[j]->GetBinContent(i) ;
+      if( ratios_4[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_4[j]->GetBinContent(i) ;
+    }
+    double error = (bin_cont_max-bin_cont_min)/ratio_4->GetBinContent(i)/sqrt(12.);
+    ratio_4->SetBinError(i,error);
+  }
   StandardFormat( ratio_4, title, kTeal-7, 1, observable ) ;
   ratio_4 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_4 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 4");
@@ -428,18 +428,18 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio_5->Add(ratios_5[i]);
   }
   ratio_5 -> Scale( 1./mc_files.size() );
-	// Compute Acceptance error from model variation
-	for( unsigned int i = 0 ; i < ratio_5->GetNbinsX() ; ++i ){
-		double bin_cont_max = 0 ;
-		double bin_cont_min = 999 ;
-		for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-			ratios_5[j]->SetBinError(i,0);
-			if( ratios_5[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_5[j]->GetBinContent(i) ;
-			if( ratios_5[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_5[j]->GetBinContent(i) ;
-		}
-		double error = (bin_cont_max-bin_cont_min)/ratio_5->GetBinContent(i)/sqrt(12.);
-		ratio_5->SetBinError(i,error);
-	}
+  // Compute Acceptance error from model variation
+  for( unsigned int i = 0 ; i < ratio_5->GetNbinsX() ; ++i ){
+    double bin_cont_max = 0 ;
+    double bin_cont_min = 999 ;
+    for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
+      ratios_5[j]->SetBinError(i,0);
+      if( ratios_5[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_5[j]->GetBinContent(i) ;
+      if( ratios_5[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_5[j]->GetBinContent(i) ;
+    }
+    double error = (bin_cont_max-bin_cont_min)/ratio_5->GetBinContent(i)/sqrt(12.);
+    ratio_5->SetBinError(i,error);
+  }
   StandardFormat( ratio_5, title, kGreen-3, 1, observable ) ;
   ratio_5 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
   ratio_5 -> GetYaxis()->SetTitle("Acceptance correction e-Sector 5");

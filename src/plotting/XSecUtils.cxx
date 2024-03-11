@@ -456,16 +456,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       CorrectData(hist_data_4, h_radcorr);
       CorrectData(hist_data_5, h_radcorr);
     }
-    
-    //Adding Acceptance correction systematics from model dependence
-    systematics::AddSystematic( *hist_data, *h_acceptance );
-    systematics::AddSystematic( *hist_data_0, *h_acceptance );
-    systematics::AddSystematic( *hist_data_1, *h_acceptance );
-    systematics::AddSystematic( *hist_data_2, *h_acceptance );
-    systematics::AddSystematic( *hist_data_3, *h_acceptance );
-    systematics::AddSystematic( *hist_data_4, *h_acceptance );
-    systematics::AddSystematic( *hist_data_5, *h_acceptance );
-    
+        
     hist_data_correventrate = (TH1D*) hist_data ->Clone();
     hist_data_correventrate -> SetName( "Corrected_Event_Rate_Data") ;
     hist_data_correventrate_0 = (TH1D*) hist_data_0 ->Clone();
@@ -490,6 +481,15 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_correventrate_4, 1 );
     NormalizeHist(hist_data_correventrate_5, 1 );
     
+    //Adding Acceptance correction systematics from model dependence
+    systematics::AddSystematic( *hist_data, *h_acceptance );
+    systematics::AddSystematic( *hist_data_0, *h_acceptance );
+    systematics::AddSystematic( *hist_data_1, *h_acceptance );
+    systematics::AddSystematic( *hist_data_2, *h_acceptance );
+    systematics::AddSystematic( *hist_data_3, *h_acceptance );
+    systematics::AddSystematic( *hist_data_4, *h_acceptance );
+    systematics::AddSystematic( *hist_data_5, *h_acceptance );
+
     // Normalize data from slices
     if( addbinning.size() != 0 ) {
       for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
@@ -622,10 +622,10 @@ void plotting::PlotXsecDataTotal( TH1D * data, std::string observable, std::stri
   if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
 
   if( store_root ) {
-		TFile root_file((output_location+"/TotalXSec/"+output_name+".root").c_str(),"recreate");
-		data->Write();
-		c1->Write();
-	}
+    TFile root_file((output_location+"/TotalXSec/"+output_name+".root").c_str(),"recreate");
+    data->Write();
+    c1->Write();
+  }
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   delete c1 ;
 
@@ -710,12 +710,12 @@ void plotting::PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> br
   std::cout << " Total integrated cross section (mc) " << mc_integral << std::endl;
 
   if( store_root ) {
-		TFile root_file((output_location+"/TotalXSec/"+output_name+".root").c_str(),"recreate");
-		data->Write();
-		for( unsigned int i = 0; i < mc_hists.size() ; ++i ) mc_hists[i] -> Write();
-		for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Write();
-		c1->Write();
-	}
+    TFile root_file((output_location+"/TotalXSec/"+output_name+".root").c_str(),"recreate");
+    data->Write();
+    for( unsigned int i = 0; i < mc_hists.size() ; ++i ) mc_hists[i] -> Write();
+    for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Write();
+    c1->Write();
+  }
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
   delete c1 ;
 
@@ -750,10 +750,10 @@ void plotting::PlotEventRate( TH1D * data, std::string observable, std::string t
   if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
 
   if( store_root ) {
-		TFile root_file((output_location+"/EventRate/"+output_name+".root").c_str(),"recreate");
-		data->Write();
-		c1->Write();
-	}
+    TFile root_file((output_location+"/EventRate/"+output_name+".root").c_str(),"recreate");
+    data->Write();
+    c1->Write();
+  }
   c1->SaveAs((output_location+"/EventRate/"+output_name+".pdf").c_str());
   delete c1 ;
 
@@ -884,16 +884,16 @@ void plotting::PlotPerSector( std::vector<TH1D*> mc_per_sector,std::vector<TH1D*
   xsecpersector_path =(output_location+"/XSecPerSector/").c_str();
   if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
 
-	if( store_root ) {
-		TFile root_file((output_location+"/XSecPerSector/"+output_name+".root").c_str(),"recreate");
-		for( unsigned int i = 0 ; i < 6 ; ++i ) {
-			mc_per_sector[i] -> Write();
-			if(data_per_sector.size()!=0 && data_per_sector[i]) {
-				data_per_sector[i] -> Write();
-			}
-		}
-		c_sector->Write();
-	}
+  if( store_root ) {
+    TFile root_file((output_location+"/XSecPerSector/"+output_name+".root").c_str(),"recreate");
+    for( unsigned int i = 0 ; i < 6 ; ++i ) {
+      mc_per_sector[i] -> Write();
+      if(data_per_sector.size()!=0 && data_per_sector[i]) {
+	data_per_sector[i] -> Write();
+      }
+    }
+    c_sector->Write();
+  }
 
   c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
   delete c_sector ;

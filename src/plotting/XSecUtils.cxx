@@ -30,8 +30,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
   TFile * file_data = nullptr ;
   if( plot_data ) file_data = new TFile((input_data_location+data_file_name+".root").c_str(),"READ");
-  
-  TFile * file_acceptance = new TFile((output_location+acceptance_file_name+".root").c_str(),"READ");  
+
+  TFile * file_acceptance = new TFile((output_location+acceptance_file_name+".root").c_str(),"READ");
   TFile * file_radcorr = new TFile((output_location+radcorr_file+".root").c_str(),"READ");
   if( !file_data && plot_data ) { std::cout << "ERROR: the "<< input_data_location << data_file_name << ".root does not exist." <<std::endl; return ;}
   if( !file_acceptance ) { std::cout << "ERROR: the "<< output_location << acceptance_file_name << ".root does not exist." <<std::endl; return ;}
@@ -44,8 +44,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   TH1D * h_acceptance_4 = (TH1D*)file_acceptance->Get("Acceptance_4");
   TH1D * h_acceptance_5 = (TH1D*)file_acceptance->Get("Acceptance_5");
 
-  TH1D * h_radcorr = nullptr ; 
-  if( file_radcorr ) { 
+  TH1D * h_radcorr = nullptr ;
+  if( file_radcorr ) {
     h_radcorr = (TH1D*)file_radcorr->Get("Acceptance");
   }
 
@@ -409,7 +409,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   // Corr event rate§
   TH1D * hist_data_correventrate=nullptr, * hist_data_correventrate_0=nullptr, * hist_data_correventrate_1=nullptr, * hist_data_correventrate_2=nullptr, * hist_data_correventrate_3=nullptr, * hist_data_correventrate_4=nullptr, * hist_data_correventrate_5=nullptr ;
 
-  if( plot_data ) { 
+  if( plot_data ) {
     hist_data_uncorr = (TH1D*) hist_data ->Clone();
     hist_data_uncorr -> SetName( "Uncorrected Data") ;
     hist_data_uncorr_0 = (TH1D*) hist_data_0 ->Clone();
@@ -442,12 +442,12 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     CorrectData(hist_data_3, h_acceptance_3);
     CorrectData(hist_data_4, h_acceptance_4);
     CorrectData(hist_data_5, h_acceptance_5);
-    
+
     hist_data_uncorrrad = (TH1D*) hist_data ->Clone();
     hist_data_uncorrrad -> SetName( "Corrected for acceptance before rad corr data") ;
     NormalizeHist(hist_data_uncorrrad, 1 );
 
-    if( h_radcorr ) { 
+    if( h_radcorr ) {
       CorrectData(hist_data, h_radcorr);
       CorrectData(hist_data_0, h_radcorr);
       CorrectData(hist_data_1, h_radcorr);
@@ -456,7 +456,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       CorrectData(hist_data_4, h_radcorr);
       CorrectData(hist_data_5, h_radcorr);
     }
-        
+
     hist_data_correventrate = (TH1D*) hist_data ->Clone();
     hist_data_correventrate -> SetName( "Corrected_Event_Rate_Data") ;
     hist_data_correventrate_0 = (TH1D*) hist_data_0 ->Clone();
@@ -480,7 +480,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_correventrate_3, 1 );
     NormalizeHist(hist_data_correventrate_4, 1 );
     NormalizeHist(hist_data_correventrate_5, 1 );
-    
+
     //Adding Acceptance correction systematics from model dependence
     systematics::AddSystematic( *hist_data, *h_acceptance );
     systematics::AddSystematic( *hist_data_0, *h_acceptance );
@@ -526,10 +526,10 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_3, DataNormalization );
     NormalizeHist(hist_data_4, DataNormalization );
     NormalizeHist(hist_data_5, DataNormalization );
-    
+
     // Add sector variation ERROR
     systematics::SectorVariationError( *hist_data, {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5}) ;
-    
+
     //adding systematics from systematic map. Relative systematic added to all bins
     for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
       std::cout << " Adding " << it->second*100 << " % systematic on " << it->first << std::endl;
@@ -562,12 +562,14 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   // Store histograms for plotting
-  std::vector<TH1D*> mc_hists = {hist_true};
+  std::vector<TH1D> mc_hists = {*hist_true};
+	std::vector<TH1D*> mc_hists_xsec = {hist_true};
   for( unsigned int id = 0 ; id < hists_true_submodel.size() ; ++id ){
-    mc_hists.push_back(hists_true_submodel[id]);
+    mc_hists.push_back(*hists_true_submodel[id]);
+		mc_hists_xsec.push_back(hists_true_submodel[id]);
   }
-
-  std::vector<TH1D*> breakdown = {hist_true_QEL,hist_true_RES_Delta,hist_true_RES,hist_true_SIS,hist_true_MEC,hist_true_DIS};
+	std::vector<TH1D> breakdown = {*hist_true_QEL,*hist_true_RES_Delta,*hist_true_RES,*hist_true_SIS,*hist_true_MEC,*hist_true_DIS};
+	std::vector<TH1D*> breakdown_xsec = {hist_true_QEL,hist_true_RES_Delta,hist_true_RES,hist_true_SIS,hist_true_MEC,hist_true_DIS};
   std::vector<TH1D*> mc_per_sector = {hist_true_0,hist_true_1,hist_true_2,hist_true_3,hist_true_4,hist_true_5};
   std::vector<TH1D*> data_per_sector = {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5};
   std::vector<std::vector<TH1D*>> all_slices = {h_total_slices,h_QEL_slices,h_RES_Delta_slices,h_RES_slices,h_SIS_slices,h_MEC_slices,h_DIS_slices,h_data_slices};
@@ -582,16 +584,19 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   plotting::PlotEventRate( hist_data_correventrate, observable, title, data_name, input_data_location, output_location,
 			   output_file_name+"_correventrate", analysis_id, store_root ) ;
 
+	plotting::PlotComparisonDataNormalized( mc_hists, breakdown, hist_data_correventrate, observable, title, data_name, model, input_MC_location,
+	 		   input_data_location, output_location, output_file_name+"_normalizedtodata", systematic_map, analysis_id, store_root);
+
   plotting::PlotXsecDataTotal( hist_data, observable, title, data_name, input_data_location, output_location, output_file_name,
 			       systematic_map, analysis_id, store_root);
 
-  plotting::PlotTotalXSec( mc_hists, breakdown, hist_data, observable, title, data_name, model, input_MC_location,
+  plotting::PlotTotalXSec( mc_hists_xsec, breakdown_xsec, hist_data, observable, title, data_name, model, input_MC_location,
 			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root);
 
   plotting::PlotPerSector( mc_per_sector, data_per_sector, observable, title, data_name, model,input_MC_location,
 			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root ) ;
 
-  plotting::PlotLegend( mc_hists, breakdown, hist_data, observable, data_name, model, output_location, output_file_name, store_root );
+  plotting::PlotLegend( mc_hists_xsec, breakdown_xsec, hist_data, observable, data_name, model, output_location, output_file_name, store_root );
 
   //  plotting::PlotSlices(  all_slices, addbinning, observable, title, data_name, model, input_MC_location, input_data_location,
   //			 output_location, output_file_name,  analysis_id, store_root ) ;
@@ -624,6 +629,76 @@ void plotting::PlotXsecDataTotal( TH1D * data, std::string observable, std::stri
   if( store_root ) {
     TFile root_file((output_location+"/TotalXSec/"+output_name+".root").c_str(),"recreate");
     data->Write();
+    c1->Write();
+  }
+  c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());
+  delete c1 ;
+
+}
+
+void plotting::PlotComparisonDataNormalized( std::vector<TH1D> mc_hists, std::vector<TH1D> breakdown,
+						TH1D * data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model,
+			      std::string input_MC_location, std::string input_data_location, std::string output_location,
+			      std::string output_file_name, std::map<string,double> systematic_map,
+			      std::string analysis_id, bool store_root ) {
+  TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
+  TPad *pad1 = new TPad("pad1","",0,0,1,1);
+  pad1->Draw();
+  pad1->cd();
+  pad1->SetBottomMargin(0.15);
+  pad1->SetLeftMargin(0.15);
+
+  // Find absolute y max
+  std::vector<TH1D*> temp_check = {&mc_hists[0]};
+  if(data) temp_check.push_back(data);
+
+  for( unsigned int id = 1 ; id < mc_hists.size() ; ++id ){
+    temp_check.push_back(&mc_hists[id]);
+  }
+  double y_max_total = GetMaximum( temp_check );
+  // Format plots
+  if( data ) {
+    StandardFormat( data, title, kBlack, 8, observable, y_max_total ) ;
+    data -> SetLineStyle(1);
+  }
+
+  StandardFormat( &mc_hists[0], title, kBlack, 1, observable, y_max_total, "Counts/Bin Width" ) ;
+  if( breakdown.size() == 6 ) {
+    StandardFormat( &breakdown[0], title, kBlue-3, 1, observable, y_max_total, "Counts/Bin Width" ) ;
+    StandardFormat( &breakdown[1], title, kRed-4, 1, observable, y_max_total, "Counts/Bin Width"  ) ;
+    StandardFormat( &breakdown[2], title, kGreen+2, 1, observable, y_max_total, "Counts/Bin Width"  ) ;
+    StandardFormat( &breakdown[3], title, kOrange, 1, observable, y_max_total, "Counts/Bin Width"  ) ;
+    StandardFormat( &breakdown[4], title, kMagenta-3, 1, observable, y_max_total, "Counts/Bin Width"  ) ;
+    StandardFormat( &breakdown[5], title, kCyan+1, 1, observable, y_max_total, "Counts/Bin Width"  ) ;
+  }
+
+	// Print out integral for debugging
+  double data_integral = 0 ;
+  if( data ) data_integral= data->Integral("width") ;
+  double mc_integral = mc_hists[0].Integral("width") ;
+
+	// Normalize MC to data
+	mc_hists[0].Scale(data_integral/mc_integral);
+	for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i].Scale(data_integral/mc_integral);
+	for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i].Scale(data_integral/mc_integral);
+
+  // Draw total xsec (all sectors):
+  mc_hists[0].Draw("hist");
+  for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i].Draw("hist same");
+  for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i].Draw("hist same");
+
+  if( data ) data -> Draw(" err same ");
+
+  std::string output_name = output_file_name+"_dxsec_d"+observable ;
+
+  std::filesystem::path totalxsec_path{(output_location+"/TotalXSec/").c_str()};
+  if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
+
+  if( store_root ) {
+    TFile root_file((output_location+"/TotalXSec/"+output_name+".root").c_str(),"recreate");
+    data->Write();
+    for( unsigned int i = 0; i < mc_hists.size() ; ++i ) mc_hists[i].Write();
+    for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i].Write();
     c1->Write();
   }
   c1->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());

@@ -444,12 +444,14 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   }
 
   // Plot it
-  ratio->Draw("hist err");
+  ratio->Draw("AP");
+  ratio->SetMarkerStyle(8);
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios[i]->Draw("hist same");
+    ratios[i]->SetMarkerStyle(8);
+    ratios[i]->Draw("P same");
     ratios[i]->Write();
   }
-  ratio->Draw("hist err same");
+  ratio->Draw("P same");
   //teff->Draw("AP");
 
   if( store_root ) c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());
@@ -471,9 +473,11 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_0 -> SetBottomMargin(0.15);
   pad_sector_0 -> SetLeftMargin(0.15);
   ratio_0 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_0 -> Draw("hist");
+  ratio_0 ->SetMarkerStyle(8);
+  ratio_0 -> Draw("AP");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_0[i] -> Draw("hist same");
+    ratios_0[i]->SetMarkerStyle(8);
+    ratios_0[i] -> Draw("P same");
   }
 
   TPad *pad_sector_1 = (TPad*)pad_sector->cd(2);
@@ -481,9 +485,11 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_1 -> SetBottomMargin(0.15);
   pad_sector_1 -> SetLeftMargin(0.15);
   ratio_1 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_1 -> Draw("hist");
+  ratio_1->SetMarkerStyle(8);
+  ratio_1 -> Draw("AP");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_1[i] -> Draw("hist same");
+    ratios_1[i]->SetMarkerStyle(8);
+    ratios_1[i] -> Draw("P same");
   }
 
   TPad *pad_sector_2 = (TPad*)pad_sector->cd(3);
@@ -491,6 +497,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_2 -> SetBottomMargin(0.15);
   pad_sector_2 -> SetLeftMargin(0.15);
   ratio_2 -> GetYaxis()->SetTitleOffset(1.2);
+  ratio_2 ->SetMarkerStyle(8);
   ratio_2 -> Draw("hist");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
     ratios_2[i] -> Draw("hist same");
@@ -501,9 +508,11 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_3 -> SetBottomMargin(0.15);
   pad_sector_3 -> SetLeftMargin(0.15);
   ratio_3 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_3 -> Draw("hist");
+  ratio_3 -> SetMarkerStyle(8);
+  ratio_3 -> Draw("AP");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_3[i] -> Draw("hist same");
+    ratios_3[i] -> SetMarkerStyle(8);
+    ratios_3[i] -> Draw("P same");
   }
 
   TPad *pad_sector_4 = (TPad*)pad_sector->cd(5);
@@ -511,9 +520,11 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_4 -> SetBottomMargin(0.15);
   pad_sector_4 -> SetLeftMargin(0.15);
   ratio_4 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_4 -> Draw("hist");
+  ratio_4 -> SetMarkerStyle(8);
+  ratio_4 -> Draw("AP");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios_4[i] -> Draw("hist same");
+    ratios_4[i] -> SetMarkerStyle(8);
+    ratios_4[i] -> Draw("P same");
   }
 
   TPad *pad_sector_5 = (TPad*)pad_sector->cd(6);
@@ -521,8 +532,10 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   pad_sector_5 -> SetBottomMargin(0.15);
   pad_sector_5 -> SetLeftMargin(0.15);
   ratio_5 -> GetYaxis()->SetTitleOffset(1.2);
-  ratio_5 -> Draw("hist");
+  ratio_5 -> SetMarkerStyle(8);
+  ratio_5 -> Draw("AP");
   for( unsigned int i = 1 ; i < mc_files.size() ; ++i ) {
+    ratios_5[i] -> SetMarkerStyle(8);
     ratios_5[i] -> Draw("hist same");
   }
 
@@ -703,7 +716,7 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
   ratio -> Scale( 1./mc_files.size() );
   StandardFormat( ratio, title, kBlack, 1, observable ) ;
   ratio -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-  ratio -> GetYaxis()->SetTitle("Acceptance correction");
+  ratio -> GetYaxis()->SetTitle("Radiation Correction");
 
   std::string output_name = output_file_name+"_acceptance_correction_rad_"+observable ;
   std::string acc_file = "/AcceptanceFiles/"+output_name ;

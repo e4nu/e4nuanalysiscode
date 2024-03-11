@@ -737,12 +737,14 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
   ratio->Write();
 
   // Plot it
-  ratio->Draw("hist err");
+  ratio->SetMarkerStyle(8);
+  ratio->Draw("AP");
   for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
-    ratios[i]->Draw("hist err same");
+    ratios[i]->SetMarkerStyle(8);
+    ratios[i]->Draw("P same");
     ratios[i]->Write();
   }
-  ratio->Draw("hist err same");
+  ratio->Draw("P same");
   //teff->Draw("AP");
 
   if( store_root ) c_1->SaveAs((output_location+"/AcceptanceFiles/"+output_name+"_total.root").c_str());

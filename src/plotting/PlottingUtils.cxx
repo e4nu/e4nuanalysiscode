@@ -4,6 +4,7 @@ using namespace e4nu ;
 
 void plotting::NormalizeHist( TH1D * h, double normalization_factor ){
   // Data normalization
+  h->Sumw2(kFALSE);
   h -> Scale( normalization_factor );
   double NBins = h->GetNbinsX();
 
@@ -11,8 +12,8 @@ void plotting::NormalizeHist( TH1D * h, double normalization_factor ){
     double content = h->GetBinContent(i);
     double error = h->GetBinError(i);
     double width = h->GetBinWidth(i);
-    double newcontent = content / width;
-    double newerror = error / width;
+    double newcontent = content / width ;
+    double newerror = error / width ;
     h->SetBinContent(i,newcontent);
     h->SetBinError(i,newerror);
   }
@@ -20,10 +21,8 @@ void plotting::NormalizeHist( TH1D * h, double normalization_factor ){
 
 void plotting::CorrectData(TH1D* h, TH1D* acc) {
   double NBins = h->GetNbinsX();
-  for (int i = 1; i <= NBins; i++) {
-    double content = h->GetBinContent(i);
-    if( h->GetBinContent(i) != 0 ) h->SetBinContent(i, content * acc->GetBinContent(i));
-  }
+  h->Sumw2(kFALSE);
+  h->Multiply(acc);
 }
 
 std::string plotting::GetAxisLabel( std::string observable, unsigned int id_axis ){
@@ -71,13 +70,13 @@ std::string plotting::GetAxisLabel( std::string observable, unsigned int id_axis
 
 
 std::vector<double> plotting::GetUniformBinning( unsigned int nbins, double min, double max){
-  
+
   std::vector<double> binning ;
   double step = (max-min)/nbins;
   for( unsigned int i = 0 ; i < nbins + 1 ; ++i ){
     binning.push_back( min + i * step ) ;
   }
-  
+
   return binning ;
 }
 
@@ -105,7 +104,7 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
     if( EBeam == 1.161 ) binning = plotting::GetECalBinning( 10, 10, 0.8, 1.2, EBeam);
     else if( EBeam == 2.261 ) binning = plotting::GetECalBinning( 20, 10, 1, EBeam+0.06, EBeam);
     else if( EBeam == 4.461 ) binning = plotting::GetECalBinning( 20, 10, 1.5, EBeam+0.1, EBeam);
-  } else if ( observable == "DiffECal" ) { 
+  } else if ( observable == "DiffECal" ) {
     if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 25, -0.6, 0.2 );
     else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 25, -0.6, 0.2 );
     else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 25, -0.6, 0.2 );
@@ -274,7 +273,7 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
     } else if ( observable == "MissingMomentum"){
       if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 25, 0, 1 );
       else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 25, 0, 1.8 );
-      else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 25, 0,1.5); 
+      else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 25, 0,1.5);
     } else if ( observable == "InferedNucleonMom"){
       if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 30, 0, 0.8 );
       else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 30, 0, 1 );
@@ -421,9 +420,9 @@ void plotting::StandardFormat( TH1D * prediction, std::string title, int color, 
       if ( prediction->GetBinContent(k) > max ) max = prediction->GetBinContent(k) ;
     }
     //y_max = (prediction -> GetMaximum()) * ( 1+0.2 );
-    y_max = max * ( 1+0.2 ) ; 
+    y_max = max * ( 1+0.2 ) ;
   }
-  
+
   int FontStyle = 132;
   prediction->GetXaxis()->SetTitleOffset(0.8);
   prediction->GetXaxis()->SetLabelSize(0.04);
@@ -519,7 +518,7 @@ bool plotting::ExistArg(std::string op, int argc, char ** argv )
 }
 
 bool plotting::PlotZoomIn(std::string analysis_id){
-  if( analysis_id == "1p1pim" ) return true ; 
-  else if ( analysis_id == "1p1pip" || analysis_id == "1pim" || analysis_id == "1pip" ) return false ; 
-  return true ; 
+  if( analysis_id == "1p1pim" ) return true ;
+  else if ( analysis_id == "1p1pip" || analysis_id == "1pim" || analysis_id == "1pip" ) return false ;
+  return true ;
 }

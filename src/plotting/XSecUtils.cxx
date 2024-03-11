@@ -585,13 +585,19 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 			   output_file_name+"_correventrate", analysis_id, store_root ) ;
 
 	plotting::PlotComparisonDataNormalized( mc_hists, breakdown, hist_data_correventrate, observable, title, data_name, model, input_MC_location,
-	 		   input_data_location, output_location, output_file_name+"_normalizedtodata", systematic_map, analysis_id, store_root);
+	 		   input_data_location, output_location, output_file_name+"_normalizedtodata_with_breakdown", systematic_map, true, analysis_id, store_root);
+
+  plotting::PlotComparisonDataNormalized( mc_hists, breakdown, hist_data_correventrate, observable, title, data_name, model, input_MC_location,
+	 			 input_data_location, output_location, output_file_name+"_normalizedtodata", systematic_map, false, analysis_id, store_root);
 
   plotting::PlotXsecDataTotal( hist_data, observable, title, data_name, input_data_location, output_location, output_file_name,
 			       systematic_map, analysis_id, store_root);
 
   plotting::PlotTotalXSec( mc_hists_xsec, breakdown_xsec, hist_data, observable, title, data_name, model, input_MC_location,
-			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root);
+			   input_data_location, output_location, output_file_name+"_with_breakdown", systematic_map, true, analysis_id, store_root);
+
+	plotting::PlotTotalXSec( mc_hists_xsec, breakdown_xsec, hist_data, observable, title, data_name, model, input_MC_location,
+	 			 input_data_location, output_location, output_file_name, systematic_map, false, analysis_id, store_root);
 
   plotting::PlotPerSector( mc_per_sector, data_per_sector, observable, title, data_name, model,input_MC_location,
 			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root ) ;
@@ -639,7 +645,7 @@ void plotting::PlotXsecDataTotal( TH1D * data, std::string observable, std::stri
 void plotting::PlotComparisonDataNormalized( std::vector<TH1D> mc_hists, std::vector<TH1D> breakdown,
 						TH1D * data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model,
 			      std::string input_MC_location, std::string input_data_location, std::string output_location,
-			      std::string output_file_name, std::map<string,double> systematic_map,
+			      std::string output_file_name, std::map<string,double> systematic_map, bool show_breakdown,
 			      std::string analysis_id, bool store_root ) {
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
@@ -680,12 +686,15 @@ void plotting::PlotComparisonDataNormalized( std::vector<TH1D> mc_hists, std::ve
 	// Normalize MC to data
 	mc_hists[0].Scale(data_integral/mc_integral);
 	for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i].Scale(data_integral/mc_integral);
-	for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i].Scale(data_integral/mc_integral);
-
+	if( show_breakdown ) {
+		for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i].Scale(data_integral/mc_integral);
+	}
   // Draw total xsec (all sectors):
   mc_hists[0].Draw("hist");
   for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i].Draw("hist same");
-  for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i].Draw("hist same");
+  if( show_breakdown ) {
+		for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i].Draw("hist same");
+  }
 
   if( data ) data -> Draw(" err same ");
 
@@ -709,7 +718,7 @@ void plotting::PlotComparisonDataNormalized( std::vector<TH1D> mc_hists, std::ve
 void plotting::PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,
 			      std::string title, std::string data_name, std::vector<std::string> model,
 			      std::string input_MC_location, std::string input_data_location, std::string output_location,
-			      std::string output_file_name, std::map<string,double> systematic_map,
+			      std::string output_file_name, std::map<string,double> systematic_map, bool show_breakdown,
 			      std::string analysis_id, bool store_root ) {
   TCanvas * c1 = new TCanvas("c1","c1",200,10,700,500);
   TPad *pad1 = new TPad("pad1","",0,0,1,1);
@@ -745,7 +754,9 @@ void plotting::PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> br
   // Draw total xsec (all sectors):
   mc_hists[0] -> Draw("hist");
   for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i] -> Draw("hist same");
-  for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Draw("hist same");
+  if( show_breakdown ) {
+		for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Draw("hist same");
+  }
 
   if( data ) data -> Draw(" err same ");
 
@@ -768,8 +779,9 @@ void plotting::PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> br
 
     tmp_hist_true -> Draw("hist");
     for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i] -> Draw("hist same");
-    for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Draw("hist same");
-
+    if( show_breakdown ) {
+			for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i] -> Draw("hist same");
+    }
     if( data ) data -> Draw(" err same ");
   }
   std::string output_name = output_file_name+"_dxsec_d"+observable ;

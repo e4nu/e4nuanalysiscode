@@ -31,13 +31,13 @@ namespace e4nu {
     void PlotComparisonDataNormalized( std::vector<TH1D> mc_hists, std::vector<TH1D> breakdown,
         	TH1D * data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model,
           std::string input_MC_location, std::string input_data_location, std::string output_location,
-          std::string output_file_name, std::map<string,double> systematic_map,
+          std::string output_file_name, std::map<string,double> systematic_map, bool show_breakdown = true,
           std::string analysis_id= "default", bool store_root = false) ;
 
     void PlotTotalXSec( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data,
 			std::string observable, std::string title, std::string data_name, std::vector<std::string> model,
 			std::string input_MC_location, std::string input_data_location, std::string output_location,
-			std::string output_file_name, std::map<string,double> systematic_map,
+			std::string output_file_name, std::map<string,double> systematic_map, bool show_breakdown = true,
 			std::string analysis_id = "default", bool store_root = false) ;
 
     void PlotEventRate( TH1D * data, std::string observable, std::string title, std::string data_name, std::string input_data_location,

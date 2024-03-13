@@ -253,9 +253,9 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
       else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 20, 0., 1.5 );
       else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 10, 0, 3 );
     } else if ( observable == "pip_mom") {
-      if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 20, 0., 0.6);
-      else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 20, 0.4, 1.2 );
-      else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 0, 2.2 );
+      if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 20, 0.1, 0.6);
+      else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 20, 0.3, 1.2 );
+      else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 20, 0.1, 2.2 );
     } else if ( observable == "pip_theta") {
       if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 20, 0, 180 );
       else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 15, 0, 130 );
@@ -374,7 +374,10 @@ std::string plotting::GetUnit( std::string observable ){
 double plotting::GetMaximum( std::vector<TH1D*> predictions){
   double max = 0;
   for( unsigned int i = 0 ; i < predictions.size();++i){
-    if ( max < predictions[i] -> GetMaximum() ) max = predictions[i] -> GetMaximum();
+    // if ( max < predictions[i] -> GetMaximum() ) max = predictions[i] -> GetMaximum();
+    for( unsigned int j = 0 ; j < predictions[i]->GetNbinsX() ; ++j ){
+      if( max < predictions[i]->GetBinContent(j) ) max = predictions[i]->GetBinContent(j);
+    }
   }
   return max*(1 + 0.12);
 }

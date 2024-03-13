@@ -636,7 +636,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 			   input_data_location, output_location, output_file_name+"_with_breakdown", systematic_map, true, analysis_id, store_root);
 
 	plotting::PlotTotalXSec( mc_hists_xsec, breakdown_xsec, hist_data, observable, title, data_name, model, input_MC_location,
-	 			 input_data_location, output_location, output_file_name"_no_breakdown", systematic_map, false, analysis_id, store_root);
+	 			 input_data_location, output_location, output_file_name+"_no_breakdown", systematic_map, false, analysis_id, store_root);
 
   plotting::PlotPerSector( mc_per_sector, data_per_sector, observable, title, data_name, model,input_MC_location,
 			   input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root ) ;
@@ -693,6 +693,18 @@ void plotting::PlotComparisonDataNormalized( std::vector<TH1D> mc_hists, std::ve
   pad1->SetBottomMargin(0.15);
   pad1->SetLeftMargin(0.15);
 
+  // Print out integral for debugging
+  double data_integral = 0 ;
+  if( data ) data_integral= data->Integral("width") ;
+  double mc_integral = mc_hists[0].Integral("width") ;
+
+	// Normalize MC to data
+	mc_hists[0].Scale(data_integral/mc_integral);
+	for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i].Scale(data_integral/mc_integral);
+	if( show_breakdown ) {
+		for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i].Scale(data_integral/mc_integral);
+	}
+
   // Find absolute y max
   std::vector<TH1D*> temp_check = {&mc_hists[0]};
   if(data) temp_check.push_back(data);
@@ -701,6 +713,7 @@ void plotting::PlotComparisonDataNormalized( std::vector<TH1D> mc_hists, std::ve
     temp_check.push_back(&mc_hists[id]);
   }
   double y_max_total = GetMaximum( temp_check );
+
   // Format plots
   if( data ) {
     StandardFormat( data, title, kBlack, 8, observable, y_max_total ) ;
@@ -716,18 +729,6 @@ void plotting::PlotComparisonDataNormalized( std::vector<TH1D> mc_hists, std::ve
     StandardFormat( &breakdown[4], title, kMagenta-3, 1, observable, y_max_total, "Counts/Bin Width"  ) ;
     StandardFormat( &breakdown[5], title, kCyan+1, 1, observable, y_max_total, "Counts/Bin Width"  ) ;
   }
-
-  // Print out integral for debugging
-  double data_integral = 0 ;
-  if( data ) data_integral= data->Integral("width") ;
-  double mc_integral = mc_hists[0].Integral("width") ;
-
-	// Normalize MC to data
-	mc_hists[0].Scale(data_integral/mc_integral);
-	for( unsigned int i = 1; i < mc_hists.size() ; ++i ) mc_hists[i].Scale(data_integral/mc_integral);
-	if( show_breakdown ) {
-		for( unsigned int i = 0; i < breakdown.size() ; ++i ) breakdown[i].Scale(data_integral/mc_integral);
-	}
 
   // Draw total xsec (all sectors):
   mc_hists[0].Draw("hist");

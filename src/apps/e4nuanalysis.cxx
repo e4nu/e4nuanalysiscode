@@ -16,21 +16,21 @@ using namespace std;
 using namespace e4nu;
 using namespace e4nu::plotting;
 
-/////////////////////////////////////////////////////////////////
-// Options:                                                    //
-/////////////////////////////////////////////////////////////////
-// --conf-file) Configuration file location                    //   
-// --root-file) InputFile                                      // 
-// --output-file) OutputFile                                   //
-// --analysis-type) Type of analysis:                          // 
-//    - ComputeTrueAccCorr                                     // 
-//    - ComputeTrueRecoAccCorr                                 //
-//    - IsData                                                 //   
-// --rad-corr bool ; used to change the output name of file    //
-//                   when radiative corr are used in MC        //
-// --xsec-file) XSecFile (only for MC)                         //
-// --bkg-mult) Add multiplicity                                //
-/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+// Options:                                                            //
+/////////////////////////////////////////////////////////////////////////
+// --conf-file) Configuration file location                            //   
+// --root-file) Input MC File (GENIE gst format or CLAS6 data)         // 
+// --output-file) Output file which contains event information         //
+// --analysis-type) Type of analysis:                                  // 
+//    - ComputeTrueAccCorr (output file named as "_true.root")         // 
+//    - ComputeTrueRecoAccCorr(output file named as "_truereco .root") //
+//    - IsData                                                         //  
+// --rad-corr bool ; used to change the output name of file            //
+//                   when radiative corr are used in MC                //
+// --xsec-file) XSecFile (only for MC)                                 //
+// --bkg-mult) Maximum multiplicity used in bkg subtraction method     //
+/////////////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
 
@@ -91,9 +91,9 @@ int main( int argc, char* argv[] ) {
   if ( is_data ) {   
     compute_trueacc = false ; 
     compute_truerecoacc = false ; 
-    analysis -> SetApplyFiducial( true ) ; 
-    analysis -> SetApplyAccWeights( true ) ; 
-    analysis -> SetApplyReso( true ) ;  
+    analysis -> SetApplyFiducial( false ) ; 
+    analysis -> SetApplyAccWeights( false ) ; 
+    analysis -> SetApplyReso( false ) ;  
     std::string OutputFile_data = analysis->GetOutputFile() + "_clas6data" ;
     analysis -> SetOutputFile( OutputFile_data ) ; 
   }
@@ -102,6 +102,8 @@ int main( int argc, char* argv[] ) {
     analysis -> SetTrueSignal( true ) ;
     analysis -> SetApplyFiducial( false ) ;
     analysis -> SetApplyAccWeights( false ) ;
+    // Correcting for smearing gives unphysical ECal peak. We opt to not correct for this effect
+    // MC Generators will have to smear their results to compare against data
     //    analysis -> SetApplyReso( false ) ;
     analysis -> SetUseAllSectors( true ) ;
     analysis -> EnableAllSectors( true ) ;
@@ -135,6 +137,7 @@ int main( int argc, char* argv[] ) {
   
   // Stores all the information in a TTree file
   // If requested, it also stores the requested histograms in an output root file
+  // The format of the output root file is set in the MCCLAS6AnalysisI or CLAS6AnalysisI StoreTree function
   analysis -> Finalise();
 
   delete analysis ;

@@ -23,7 +23,7 @@ using namespace e4nu::plotting;
 // --ebeam : beam energy of your experiment                    //
 // --target : target pdg                                       //
 // --thickness : thickness of your experiment target           //
-// --Nbins : number of bins for radiated flux histogram        //
+// --resolution : electron energy resolution (bin width)       //
 // --Emin : minimum energy for your histogram axis             //
 // --Emax : maximum energy for your histogram axis             //
 // --rad-model : model used for external radiation of in e-    //
@@ -38,7 +38,7 @@ int main( int argc, char* argv[] ) {
   string output_file = "radiatedflux.root";
   double EBeam = 1 ; 
   int tgt = 1000060120 ;
-  int nbins = 1000 ; 
+  double resolution = 0.01;
   double Emin = 0.75 ;
   double Emax = EBeam+0.02 ;
   double thickness = e4nu::conf::GetThickness(tgt); // Defaulted to CLAS6
@@ -62,8 +62,8 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("thickness",argc,argv)) {
       thickness = stoi(GetArg("thickness",argc,argv)); 
     }
-    if( ExistArg("Nbins",argc,argv)) {
-      nbins = stoi(GetArg("Nbins",argc,argv)); 
+    if( ExistArg("resolution",argc,argv)) {
+      resolution = stod(GetArg("resolution",argc,argv)); 
     }
     if( ExistArg("Emin",argc,argv)) {
       Emin = stod(GetArg("Emin",argc,argv)); 
@@ -75,6 +75,9 @@ int main( int argc, char* argv[] ) {
       MaxEPhoton = stod(GetArg("max-Ephoton",argc,argv)); 
     }
   }
+  // Calculate number of bins given resolution
+  if( resolution == 0 ) return 0 ; 
+  int nbins = (Emax - Emin)/resolution ; 
 
   std::unique_ptr<TFile> myFile( TFile::Open(output_file.c_str(), "RECREATE") );
   TH1D * hradflux = new TH1D( "hradflux", "Radiated Flux", nbins, Emin, Emax) ;   

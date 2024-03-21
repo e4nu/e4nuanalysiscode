@@ -88,7 +88,7 @@ int main( int argc, char* argv[] ) {
     double egamma = 0 ; 
     if( rad_model == "simc" || rad_model == "schwinger" || rad_model == "vanderhaeghen" || rad_model == "motsai" || rad_model == "myversion" ) {
       egamma = SIMCEnergyLoss( V4_beam, 11, tgt, thickness, MaxEPhoton ) ;
-    } else if ( rad_model == "simple" ) egamma = SimpleEnergyLoss( EBeam, tgt, thickness, MaxEPhoton ) ; 
+    } else if ( rad_model == "simple" ) egamma = SimpleEnergyLoss( V4_beam, tgt, thickness, MaxEPhoton ) ; 
     double Ee = EBeam - egamma ;
     hradflux -> Fill( Ee ) ; 
   }

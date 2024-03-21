@@ -106,16 +106,17 @@ double utils::SIMCEnergyLoss(const TLorentzVector particle, const int p_pdg, con
   return energyLoss ; 
 }
 
-double utils::SimpleEnergyLoss(const double EBeam, const double tgt_pdg, const double thickness, const double max_Ephoton ) {
+double utils::SimpleEnergyLoss(const TLorentzVector electron, const double tgt_pdg, const double thickness, const double max_Ephoton ) {
   // Reference https://github.com/adishka/Generator/blob/adi_radcorr/src/Physics/Common/RadiativeCorrector.cxx
-  double b = SIMCBFactor( tgt_pdg );  
-  double lambda = (kAem/kPi)*( 2*TMath::Log(2*EBeam/kElectronMass) - 1 ) + b*thickness;
-  double e_gamma_max = max_Ephoton*EBeam ;
+  double b = SIMCBFactor( tgt_pdg ); 
+  double lambda = (kAem/kPi)*( 2*TMath::Log(2*electron.E()/kElectronMass) - 1 ) + b*thickness;
+  //  if( particle.Pz() != particle.E() ) lambda += TMath::Log(0.5*(1-particle.CosTheta())) ;
+  double e_gamma_max = max_Ephoton*electron.E() ;
   double e_gamma_min = 1E-25;
 
   TF1 *f = new TF1("f","[0]*pow(x,[0]-1)/[1]",e_gamma_min,e_gamma_max);
   f->SetParameter(0,lambda);
-  f->SetParameter(1,pow(EBeam,-1.*lambda));
+  f->SetParameter(1,pow(electron.E(),-1.*lambda));
   double energyLoss = f->GetRandom();
   delete f;
   return energyLoss ; 
@@ -124,10 +125,10 @@ double utils::SimpleEnergyLoss(const double EBeam, const double tgt_pdg, const d
 TLorentzVector utils::RadOutElectron( const TLorentzVector electron_vertex, TLorentzVector & out_electron, const int tgt, const double thickness, const double max_Ephoton, const string model ) {
   // Compute true detected outgoing electron kinematics with energy loss method
   double egamma = 0 ; 
-  if( model == "simc" || model == "schwinger" || model == "vanderhaeghen" || model == "motsai" || model == "myversion" ) {
-    egamma = SIMCEnergyLoss( electron_vertex, 11, tgt, thickness, max_Ephoton ) ;
-  }
-  else if ( model == "simple" ) egamma = SimpleEnergyLoss( electron_vertex.E(), tgt, thickness, max_Ephoton ) ; 
+  //if( model == "simc" || model == "schwinger" || model == "vanderhaeghen" || model == "motsai" || model == "myversion" ) {
+  egamma = SIMCEnergyLoss( electron_vertex, 11, tgt, thickness, max_Ephoton ) ;
+  //}
+  //  else if ( model == "simple" ) egamma = SimpleEnergyLoss( electron_vertex, tgt, thickness, max_Ephoton ) ; 
   if( egamma < 0 ) egamma = 0 ;
   TLorentzVector OutGamma = GetEmittedHardPhoton( electron_vertex, egamma ) ;
   if( OutGamma.E() < 0 )  OutGamma.SetPxPyPzE(0,0,0,0);

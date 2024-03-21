@@ -23,7 +23,7 @@ namespace e4nu {
     double SIMCBFactor( const double tgt_pdg ) ;
     double SIMCEnergyLoss( const TLorentzVector particle, const int p_pdg, const double tgt_pdg, 
 			   const double thickness, const double max_Ephoton ) ;
-    double SimpleEnergyLoss(const double EBeam, const double tgt_pdg, const double thickness, const double max_Ephoton ) ;
+    double SimpleEnergyLoss(const TLorentzVector electron, const double tgt_pdg, const double thickness, const double max_Ephoton ) ;
     double VanderhagenELoss( const double Q2 , const double Ee ) ;
 
     // Compute TLorentzVector for emited photon

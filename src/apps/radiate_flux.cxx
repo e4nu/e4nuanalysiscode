@@ -86,14 +86,15 @@ int main( int argc, char* argv[] ) {
   unsigned int nentries = 100000; 
   for( unsigned int i = 0 ; i < nentries ; ++i ) { 
     double egamma = 0 ; 
-    if( rad_model == "simc" ) egamma = SIMCEnergyLoss( V4_beam, 11, tgt, thickness, MaxEPhoton ) ;
-    else if ( rad_model == "simple" ) egamma = SimpleEnergyLoss( EBeam, tgt, thickness, MaxEPhoton ) ; 
+    if( rad_model == "simc" || rad_model == "schwinger" || rad_model == "vanderhaeghen" || rad_model == "motsai" || rad_model == "myversion" ) {
+      egamma = SIMCEnergyLoss( V4_beam, 11, tgt, thickness, MaxEPhoton ) ;
+    } else if ( rad_model == "simple" ) egamma = SimpleEnergyLoss( EBeam, tgt, thickness, MaxEPhoton ) ; 
     double Ee = EBeam - egamma ;
     hradflux -> Fill( Ee ) ; 
   }
   hradflux->Scale(1./hradflux->GetEntries());
   myFile->WriteObject(hradflux,"hradflux");
 
-  std::cout << " Flux stored in " << output_file << std::endl;
+  std::cout << " Flux generated with " << rad_model << " with a resolution of " << resolution << " was stored in " << output_file << std::endl;
   return 0 ;
 }

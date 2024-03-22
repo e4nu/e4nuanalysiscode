@@ -86,8 +86,7 @@ double utils::SIMCEnergyLoss(const TLorentzVector particle, const int p_pdg, con
   // https://journals.aps.org/prc/abstract/10.1103/PhysRevC.64.054610
   double b = SIMCBFactor( tgt_pdg );
   double lambda = TMath::Log(4*pow(particle.P(),2)/pow(utils::GetParticleMass(p_pdg),2)) - 1 ;
-  //if( particle.Pz() != particle.E() ) lambda += TMath::Log(0.5*(1-particle.CosTheta())) ;
-  lambda += 2*TMath::Log(4.325/particle.E());
+  if( particle.Pz() != particle.E() ) lambda += TMath::Log(0.5*(1-particle.CosTheta())) ;
   lambda *= (kAem/kPi) ;
   lambda += b*thickness;
   if( lambda < 0 ) return 0; 
@@ -110,7 +109,7 @@ double utils::SimpleEnergyLoss(const TLorentzVector electron, const double tgt_p
   // Reference https://github.com/adishka/Generator/blob/adi_radcorr/src/Physics/Common/RadiativeCorrector.cxx
   double b = SIMCBFactor( tgt_pdg ); 
   double lambda = (kAem/kPi)*( 2*TMath::Log(2*electron.E()/kElectronMass) - 1 ) + b*thickness;
-  //  if( particle.Pz() != particle.E() ) lambda += TMath::Log(0.5*(1-particle.CosTheta())) ;
+  //if( particle.Pz() != particle.E() ) lambda += TMath::Log(0.5*(1-particle.CosTheta())) ;
   double e_gamma_max = max_Ephoton*electron.E() ;
   double e_gamma_min = 1E-25;
 

@@ -31,7 +31,6 @@ void ExtDataFig2() {
 	int FontStyle = 132;
 	double TextSize = 0.05;
 
-
 	std::vector<TString> nucleus; nucleus.push_back("1H"); 
 	std::vector<TString> LabelsOfSamples; LabelsOfSamples.push_back("^{1}H"); 
 
@@ -41,28 +40,15 @@ void ExtDataFig2() {
 
 	std::vector<TString> FSIModel; 
         FSIModel.push_back("Data"); 
-        FSIModel.push_back("hA2018_LFG_simpleMax20Min25"); 
-        FSIModel.push_back("hA2018_LFG_norad"); 
+	//        FSIModel.push_back("hA2018_LFG_simpleMax20Min25"); 
+        //FSIModel.push_back("hA2018_LFG_norad"); 
 	std::vector<TString> FSILabel; 
         FSILabel.push_back("Data"); 
-        FSILabel.push_back("GENIE + radiative correction"); 
-        FSILabel.push_back("GENIE default"); 
+        //FSILabel.push_back("GENIE + radiative correction"); 
+        //FSILabel.push_back("GENIE default"); 
 
 	std::vector<TString> NameOfPlots;
 
-	//NameOfPlots.push_back("Q2"); 
-	//NameOfPlots.push_back("nu"); 
-	//NameOfPlots.push_back("W"); NameOfPlots.push_back("xB");
-	////NameOfPlots.push_back("MissMomentumX"); NameOfPlots.push_back("MissMomentumY"); 
-	//NameOfPlots.push_back("MissMomentumZ"); 
-	//NameOfPlots.push_back("TotalMissMomentum"); NameOfPlots.push_back("MissMomentum");
-	//NameOfPlots.push_back("ElectronEnergy"); NameOfPlots.push_back("Costheta_ElectronOut");
-	////NameOfPlots.push_back("ElectronMomX"); NameOfPlots.push_back("ElectronMomY"); 
-	//NameOfPlots.push_back("ElectronMomZ");
-	//NameOfPlots.push_back("Ep"); NameOfPlots.push_back("costheta_finalStateNucleon");
-	////NameOfPlots.push_back("ProtonMomX"); NameOfPlots.push_back("ProtonMomY"); 
-	//NameOfPlots.push_back("ProtonMomZ");
-	//NameOfPlots.push_back("EQERecoPlot"); 
 	NameOfPlots.push_back("ECalRecoPlot");
 
 	std::vector<TH1D*> Plots;
@@ -108,8 +94,8 @@ void ExtDataFig2() {
 		    for (int WhichFSIModel = 0; WhichFSIModel < NFSIModels; WhichFSIModel ++) {
 
 
-			TString PathToFiles = "myFiles/"+ E[WhichEnergy] + "/"+FSIModel[WhichFSIModel]+"/"; // default
-
+			TString PathToFiles = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/data/"; // default
+			if( FSIModel[WhichFSIModel] != "Data" ) PathToFiles = "";
 			TFile* FileSample = TFile::Open(PathToFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+FSIModel[WhichFSIModel]+"_Plots_FSI_em.root");
 
 			Plots.push_back( (TH1D*)( FileSample->Get(NameOfPlots[WhichPlot]) ) );
@@ -174,7 +160,7 @@ void ExtDataFig2() {
 		latex.SetTextSize(0.07);
 
  
-		PlotCanvas->SaveAs("myPlots/pdf/extdatafig2/"+nucleus[WhichNucleus]+"_" +E[WhichEnergy]+"_" +NameOfPlots[WhichPlot]+WhatModelsAreIncluded+"hist.pdf"); 
+		PlotCanvas->SaveAs(nucleus[WhichNucleus]+"_" +E[WhichEnergy]+"_" +NameOfPlots[WhichPlot]+WhatModelsAreIncluded+"hist.pdf"); 
 		//delete PlotCanvas;
 
 	} // End of the loop over the plots

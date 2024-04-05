@@ -454,7 +454,7 @@ void StoreToGstFormat( Event & event, string output_file ) {
   Evcorr   = event.GetInCorrLepton4Mom().E();
   pxvcorr  = event.GetInCorrLepton4Mom().Px();
   pyvcorr  = event.GetInCorrLepton4Mom().Py();
-  pyvcorr  = event.GetInCorrLepton4Mom().Pz();
+  pzvcorr  = event.GetInCorrLepton4Mom().Pz();
   Elcorr   = event.GetOutCorrLepton4Mom().E();
   pxlcorr  = event.GetOutCorrLepton4Mom().Px();
   pylcorr  = event.GetOutCorrLepton4Mom().Py();

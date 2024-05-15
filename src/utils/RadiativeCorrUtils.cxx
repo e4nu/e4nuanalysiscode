@@ -85,9 +85,8 @@ double utils::SIMCBFactor( const double tgt_pdg ) {
 double utils::SIMCEnergyLoss(const TLorentzVector particle, const int p_pdg, const double tgt_pdg, const double thickness, const double max_Ephoton ) {
   // https://journals.aps.org/prc/abstract/10.1103/PhysRevC.64.054610
   double b = SIMCBFactor( tgt_pdg );
-  double lambda = 2*TMath::Log(2*particle.P()/utils::GetParticleMass(p_pdg)) - 1 ;
-  //  if( particle.Pz() != particle.E() ) lambda += TMath::Log(0.5*(1-particle.CosTheta())) ;
-  if( p_pdg == kPdgProton ) lambda = ( TMath::Log((particle.E()+particle.P())/(particle.E()-particle.P())) - 2 ) ;
+  double lambda = TMath::Log(4*pow(particle.P(),2)/pow(utils::GetParticleMass(p_pdg),2)) - 1 ;
+  if( particle.Pz() != particle.E() ) lambda += TMath::Log(0.5*(1-particle.CosTheta())) ;
   lambda *= (kAem/kPi) ;
   lambda += b*thickness;
   if( lambda < 0 ) return 0; 
@@ -106,16 +105,17 @@ double utils::SIMCEnergyLoss(const TLorentzVector particle, const int p_pdg, con
   return energyLoss ; 
 }
 
-double utils::SimpleEnergyLoss(const double EBeam, const double tgt_pdg, const double thickness, const double max_Ephoton ) {
+double utils::SimpleEnergyLoss(const TLorentzVector electron, const double tgt_pdg, const double thickness, const double max_Ephoton ) {
   // Reference https://github.com/adishka/Generator/blob/adi_radcorr/src/Physics/Common/RadiativeCorrector.cxx
-  double b = SIMCBFactor( tgt_pdg );  
-  double lambda = (kAem/kPi)*( 2*TMath::Log(2*EBeam/kElectronMass) - 1 ) + b*thickness;
-  double e_gamma_max = max_Ephoton*EBeam ;
+  double b = SIMCBFactor( tgt_pdg ); 
+  double lambda = (kAem/kPi)*( 2*TMath::Log(2*electron.E()/kElectronMass) - 1 ) + b*thickness;
+  //if( particle.Pz() != particle.E() ) lambda += TMath::Log(0.5*(1-particle.CosTheta())) ;
+  double e_gamma_max = max_Ephoton*electron.E() ;
   double e_gamma_min = 1E-25;
 
   TF1 *f = new TF1("f","[0]*pow(x,[0]-1)/[1]",e_gamma_min,e_gamma_max);
   f->SetParameter(0,lambda);
-  f->SetParameter(1,pow(EBeam,-1.*lambda));
+  f->SetParameter(1,pow(electron.E(),-1.*lambda));
   double energyLoss = f->GetRandom();
   delete f;
   return energyLoss ; 
@@ -124,8 +124,10 @@ double utils::SimpleEnergyLoss(const double EBeam, const double tgt_pdg, const d
 TLorentzVector utils::RadOutElectron( const TLorentzVector electron_vertex, TLorentzVector & out_electron, const int tgt, const double thickness, const double max_Ephoton, const string model ) {
   // Compute true detected outgoing electron kinematics with energy loss method
   double egamma = 0 ; 
-  if( model == "simc" ) egamma = SIMCEnergyLoss( electron_vertex, 11, tgt, thickness, max_Ephoton ) ;
-  else if ( model == "simple" ) egamma = SimpleEnergyLoss( electron_vertex.E(), tgt, thickness, max_Ephoton ) ; 
+  //if( model == "simc" || model == "schwinger" || model == "vanderhaeghen" || model == "motsai" || model == "myversion" ) {
+  egamma = SIMCEnergyLoss( electron_vertex, 11, tgt, thickness, max_Ephoton ) ;
+  //}
+  //  else if ( model == "simple" ) egamma = SimpleEnergyLoss( electron_vertex, tgt, thickness, max_Ephoton ) ; 
   if( egamma < 0 ) egamma = 0 ;
   TLorentzVector OutGamma = GetEmittedHardPhoton( electron_vertex, egamma ) ;
   if( OutGamma.E() < 0 )  OutGamma.SetPxPyPzE(0,0,0,0);
@@ -142,12 +144,40 @@ double utils::SIMCRadCorrWeight( const e4nu::Event & event, const double thickne
   TLorentzVector OutRad = event.GetOutCorrLepton4Mom();
   double Q2 = event.GetTrueQ2s();
   unsigned int tgt = event.GetTargetPdg();
-  
+  double Emax = 0.2*Beam.E();
+  double Emin = 1E-15;
+  TF1 * fsp = new TF1("fsp","TMath::Log(1-x)* (1./x)"); // Spence function
+
   if( model == "simple") { 
     // Reference ?
     weight = 1 + (2*kAem /kPi) * ( (13./12.)* (TMath::Log(Q2/pow(kElectronMass,2)) - 1) - (17./36.)
 				   - (1./4.) * pow(TMath::Log(OutRad.E()*Detected.E()),2)
 				   - (1./2.) * ( (pow(kPi,2)/6) -  TMath::DiLog(TMath::Power(TMath::Cos(0.5*Detected.Theta()),2.)) ) );
+  } else if ( "schwinger" ) { 
+    // 10.1103/PhysRev.76.790
+    weight = 1 + (2*kAem / kPi) *( ( TMath::Log( Beam.P() / Emax ) - (13./12.))* (TMath::Log(Q2/pow(kElectronMass,2)) - 1) + (17./36)); 
+  } else if ( "vanderhaeghen" ) { 
+    // 10.1103/physrevc.62.025501
+    double e_gamma_min = 1E-25;
+    double SP = -1*fsp->Integral(Emin,pow(TMath::Cos(Detected.Theta())/2,2.));
+    double delta = TMath::Log(pow(Emax,2)/(Beam.E()*Detected.E()))* (TMath::Log(Q2/pow(kElectronMass,2)) - 1) + 13./9.*TMath::Log(Q2/pow(kElectronMass,2)) ;
+    delta -= ( 29./9. + 0.5 * pow(TMath::Log(Beam.E()/Detected.E()),2) + pow(kPi,2)/6.);
+    delta += SP; 
+    delta *= (kAem/kPi);
+    weight = 1+delta;
+
+  } else if ( "motsai" ) {
+    // 10.1103/RevModPhys.41.205
+    // https://inspirehep.net/files/1fcaa81f63f50d7bf56a22ce2c6b8b58 Equation II.2
+    double SP = fsp->Integral(Emin,pow(-TMath::Sin(Detected.Theta())/2,2.));
+    double Fth = TMath::Log(pow(TMath::Sin(Detected.Theta()/2),2.))*TMath::Log(pow(TMath::Cos(Detected.Theta()/2),2.))*SP;
+    double delta = (TMath::Log(Beam.E()/Emax) - 13./12.) * (TMath::Log(Q2/pow(kElectronMass,2)) - 1) + 17./36. + 0.5*Fth;
+    delta *= - 2*(kAem/kPi);
+    weight = 1 - delta ; 
+  } else if ( "myversion" ) { 
+    // 10.1103/PhysRevC.64.054610
+    double delta_hard = 2.*(kAem/kPi)*(-3./4*TMath::Log(Q2/pow(kElectronMass,2)+1)+5./9.-1./3*TMath::Log(Q2/pow(kElectronMass,2))); 
+    weight = 1 - delta_hard ; 
   } else if ( "simc" ) { 
     // This takes into account the radiation weight due to external and internal radiation of the incoming electron
     // https://journals.aps.org/prc/pdf/10.1103/PhysRevC.64.054610
@@ -190,6 +220,7 @@ double utils::SIMCRadCorrWeight( const e4nu::Event & event, const double thickne
 
     weight= W_e*W_el*Phi_ext_e*Phi_ext_el*(1-delta_hard);
   }
+  delete fsp ;  
 
   return weight;
 }

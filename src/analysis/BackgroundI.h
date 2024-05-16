@@ -75,6 +75,14 @@ namespace e4nu {
 		  // Check which particles are in fiducial
 		  bool is_particle_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData(), apply_fiducial ) ; 
 	      
+		  TLorentzVector part_shift = (it->second)[part_id] ;
+		  if( fFidAngleShift != 0 ) { 
+		    part_shift.SetPhi( (it->second)[part_id].Phi() + fFidAngleShift * TMath::Pi() / 180. ) ; 
+		    is_particle_contained *= fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
+		    part_shift.SetPhi( (it->second)[part_id].Phi() - fFidAngleShift * TMath::Pi() / 180. ) ; 
+		    is_particle_contained *= fiducial-> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial );
+		  }
+
 		  // Calculate rotated event multiplicity
 		  if( is_particle_contained ) {
 		    ++rot_event_mult ; 
@@ -213,6 +221,14 @@ namespace e4nu {
 	      
 	      // Check which particles are in fiducial	      
 	      is_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData(), apply_fiducial ) ;
+
+	      TLorentzVector part_shift = (it->second)[part_id] ;
+	      if( fFidAngleShift != 0 ) { 
+		part_shift.SetPhi( (it->second)[part_id].Phi() + fFidAngleShift * TMath::Pi() / 180. ) ; 
+		is_contained *= fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
+		part_shift.SetPhi( (it->second)[part_id].Phi() - fFidAngleShift * TMath::Pi() / 180. ) ; 
+		is_contained *= fiducial-> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial );
+	      }
 	      if( !is_contained ) break ; 
 	    }
 	    if( !is_contained ) break ; 
@@ -271,6 +287,14 @@ namespace e4nu {
 	  emom.Rotate(rotation_angle, BeamVector);
 
 	  bool is_contained = fiducial->FiducialCut( conf::kPdgElectron, GetConfiguredEBeam(), emom, IsData(), apply_fiducial ) ;
+
+	  TLorentzVector part_shift = emom;
+	  if( fFidAngleShift != 0 ) { 
+	    part_shift.SetPhi( emom.Phi() + fFidAngleShift * TMath::Pi() / 180. ) ; 
+	    is_contained *= fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
+	    part_shift.SetPhi( emom.Phi() - fFidAngleShift * TMath::Pi() / 180. ) ; 
+	    is_contained *= fiducial-> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial );
+	  }
 
 	  if( is_contained ) ++N_signal_detected ; 
 	  else ++N_signal_undetected ; 

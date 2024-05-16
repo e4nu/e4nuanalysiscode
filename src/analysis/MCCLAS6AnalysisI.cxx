@@ -163,6 +163,18 @@ bool MCCLAS6AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) {
   TLorentzVector out_mom = event.GetOutLepton4Mom() ;
   if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect(), IsData(), apply_fiducial ) ) return false ; 
   
+  // Consider case in which we shift the fiducial
+  // Instead of changing the fiducial limits, we change the phi of each particle
+  // To shrink the fiducial we must move the particle closer to the edge
+  // Instead of chekcing which edge is closer, we compute both shifts... and check if it is still there
+  TLorentzVector out_mom_shift = event.GetOutLepton4Mom() ;
+  if( fFidAngleShift != 0 ) { 
+    out_mom_shift.SetPhi( out_mom.Phi() + fFidAngleShift * TMath::Pi() / 180. ) ; 
+    if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom_shift.Vect(), IsData(), apply_fiducial ) ) return false ; 
+    out_mom_shift.SetPhi( out_mom.Phi() - fFidAngleShift * TMath::Pi() / 180. ) ; 
+    if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom_shift.Vect(), IsData(), apply_fiducial ) ) return false ; 
+  }
+
   // Apply Fiducial cut for hadrons and photons
   std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
   std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event.GetFinalParticlesUnCorr4Mom() ;
@@ -172,6 +184,19 @@ bool MCCLAS6AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) {
     std::vector<TLorentzVector> visible_part_uncorr ; 
     for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
       if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), part_map[it->first][i].Vect(), IsData(), apply_fiducial ) ) continue ; 
+
+      // Consider case in which we shift the fiducial
+      // Instead of changing the fiducial limits, we change the phi of each particle
+      // To shrink the fiducial we must move the particle closer to the edge
+      // Instead of chekcing which edge is closer, we compute both shifts... and check if it is still there
+      TLorentzVector out_mom_part_shift = part_map[it->first][i] ;
+      if( fFidAngleShift != 0 ) { 
+	out_mom_part_shift.SetPhi( part_map[it->first][i].Phi() + fFidAngleShift * TMath::Pi() / 180. ) ; 
+	if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom_part_shift.Vect(), IsData(), apply_fiducial ) ) return false ; 
+	out_mom_part_shift.SetPhi( out_mom.Phi() - fFidAngleShift * TMath::Pi() / 180. ) ; 
+	if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom_part_shift.Vect(), IsData(), apply_fiducial ) ) return false ; 
+      }
+      
       visible_part.push_back( part_map[it->first][i] ) ; 
       visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
     }

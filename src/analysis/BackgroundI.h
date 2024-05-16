@@ -35,14 +35,15 @@ namespace e4nu {
     template <class T>
       bool BackgroundSubstraction( std::map<int,std::vector<T>> & event_holder ) { 
       bool apply_fiducial = ApplyFiducial();
-      if( !GetSubtractBkg() || ! apply_fiducial ) return true ;
+      
+      if( !GetSubtractBkg() ) return true ;
       Fiducial * fiducial = GetFiducialCut() ; 
       
       unsigned int max_mult = GetMaxBkgMult(); // Max multiplicity specified in conf file
       unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
       std::map<int,unsigned int> Topology = GetTopology();
       unsigned int m = max_mult ;
-  
+      
       while ( m > min_mult ) {
 	if( event_holder.find(m) != event_holder.end() ) {
 	  std::cout<< " Substracting background events with with multiplicity " << m << ". The total number of bkg events is: " << event_holder[m].size() <<std::endl; 

@@ -30,6 +30,7 @@ using namespace e4nu::plotting;
 //                   when radiative corr are used in MC                //
 // --xsec-file) XSecFile (only for MC)                                 //
 // --bkg-mult) Maximum multiplicity used in bkg subtraction method     //
+// --phi-shift) Shift on phy applied to reduce fiducial volume         //
 /////////////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
@@ -78,12 +79,23 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("bkg-mult",argc,argv) && is_data ) {
       analysis -> SetMaxBkgMult( atoi(GetArg("bkg-mult",argc,argv).c_str()) ) ;
     }
+    if( ExistArg("phi-shift",argc,argv) ) {
+      analysis -> SetFidAngleShift( atod(GetArg("phi-shift",argc,argv).c_str()) ) ;
+    }
+
     if( ExistArg("output-file",argc,argv)) {
       std::string final_name = GetArg("output-file",argc,argv) ; 
       if( is_data ) {
 	unsigned int max_mult = analysis->GetMaxBkgMult() ; 
 	final_name += "_"+std::to_string(max_mult)+"MaxBkgMult";
       }
+      if( ExistArg("phi-shift",argc,argv) && !compute_trueacc ) {
+	double shift = atod(GetArg("phi-shift",argc,argv).c_str()) ;
+	if ( shift != 0 ) { 
+	  final_name += "_Shift_"+std::to_string(shift)+"deg";
+	}
+      }
+      
       analysis -> SetOutputFile( final_name );
     }
   }

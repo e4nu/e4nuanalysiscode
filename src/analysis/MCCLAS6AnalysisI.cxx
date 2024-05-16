@@ -168,6 +168,7 @@ bool MCCLAS6AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) {
   // To shrink the fiducial we must move the particle closer to the edge
   // Instead of chekcing which edge is closer, we compute both shifts... and check if it is still there
   TLorentzVector out_mom_shift = event.GetOutLepton4Mom() ;
+
   if( fFidAngleShift != 0 ) { 
     out_mom_shift.SetPhi( out_mom.Phi() + fFidAngleShift * TMath::Pi() / 180. ) ; 
     if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom_shift.Vect(), IsData(), apply_fiducial ) ) return false ; 
@@ -192,9 +193,9 @@ bool MCCLAS6AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) {
       TLorentzVector out_mom_part_shift = part_map[it->first][i] ;
       if( fFidAngleShift != 0 ) { 
 	out_mom_part_shift.SetPhi( part_map[it->first][i].Phi() + fFidAngleShift * TMath::Pi() / 180. ) ; 
-	if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom_part_shift.Vect(), IsData(), apply_fiducial ) ) return false ; 
+	if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), out_mom_part_shift.Vect(), IsData(), apply_fiducial ) ) continue ; 
 	out_mom_part_shift.SetPhi( out_mom.Phi() - fFidAngleShift * TMath::Pi() / 180. ) ; 
-	if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom_part_shift.Vect(), IsData(), apply_fiducial ) ) return false ; 
+	if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), out_mom_part_shift.Vect(), IsData(), apply_fiducial ) ) continue ; 
       }
       
       visible_part.push_back( part_map[it->first][i] ) ; 

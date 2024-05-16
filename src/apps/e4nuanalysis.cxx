@@ -80,7 +80,7 @@ int main( int argc, char* argv[] ) {
       analysis -> SetMaxBkgMult( atoi(GetArg("bkg-mult",argc,argv).c_str()) ) ;
     }
     if( ExistArg("phi-shift",argc,argv) ) {
-      analysis -> SetFidAngleShift( atod(GetArg("phi-shift",argc,argv).c_str()) ) ;
+      analysis -> SetFidAngleShift( stod(GetArg("phi-shift",argc,argv).c_str()) ) ;
     }
 
     if( ExistArg("output-file",argc,argv)) {
@@ -90,7 +90,7 @@ int main( int argc, char* argv[] ) {
 	final_name += "_"+std::to_string(max_mult)+"MaxBkgMult";
       }
       if( ExistArg("phi-shift",argc,argv) && !compute_trueacc ) {
-	double shift = atod(GetArg("phi-shift",argc,argv).c_str()) ;
+	double shift = stod(GetArg("phi-shift",argc,argv).c_str()) ;
 	if ( shift != 0 ) { 
 	  final_name += "_Shift_"+std::to_string(shift)+"deg";
 	}

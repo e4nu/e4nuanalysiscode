@@ -205,24 +205,35 @@ void systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
 
 void systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> h_per_sector ) {
 
-	double diff = 0 ;
-	double raw_sector_variance = 0;
+	// Loop over bins (starting from 1 )
+	for( unsigned j = 1 ; j < hist.GetNbinsX() +1; ++j ){
 
-	for( unsigned j = 0 ; j < hist.GetNbinsX() ; ++j ){
-		double var_j = h_per_sector[0]->GetBinError(j);
-		double content_j = h_per_sector[0]->GetBinContent(j);
-		double var_total_stat = pow(var_j,2);
-		double mean_content = 0 ;
-		for( unsigned int i = 1 ; i < h_per_sector.size() ; ++i ){
-			var_total_stat += h_per_sector[i]->GetBinError(j);
-			content_j = h_per_sector[i]->GetBinContent(j);
-			mean_content += content_j/pow(var_j,2);
+		double mean_i = 0 ;
+		double weight = 0 ;
+		double sectors = 0;
+		// Loop over sectors:
+		for( unsigned int i = 0 ; i < h_per_sector.size() ; ++i ){
+			// We have to be careful with empty sectors:
+			if( h_per_sector[i]->GetBinContent(j) != 0 ){
+				mean_i += h_per_sector[i]->GetBinContent(j)/pow(h_per_sector[i]->GetBinError(j),2);
+				weight += 1./pow(h_per_sector[i]->GetBinError(j),2) ;
+				sectors+= 1 ;
+			}
 		}
-		mean_content /= (1./pow(var_total_stat,2));
-		raw_sector_variance = pow( content_j - mean_content, 2 )/(h_per_sector.size()-1);
-		double corrected_sector_variance = raw_sector_variance - pow(var_total_stat,2) ; // need to remove double counting of stat error
-		double hist_error = TMath::Sqrt( pow(hist.GetBinError(j),2) + pow(corrected_sector_variance,2));
-		hist.SetBinError(j,hist_error);
+		// Compute weighted average:
+		mean_i /= weight ;
+		// Compute RMS:
+		double error_2 = 0;
+
+		for( unsigned int i = 0 ; i < h_per_sector.size() ; ++i ){
+			if( h_per_sector[i]->GetBinContent(j) != 0 ){
+				error_2 += pow( h_per_sector[i]->GetBinContent(j) - mean_i, 2);
+			}
+		}
+		error_2 /= sectors;
+		std::cout << " error = "<< sqrt(error_2)/h_per_sector[0]->GetBinContent(j)*100 << std::endl;
+
+		hist.SetBinError(j,sqrt(error_2));
 	}
 
 }

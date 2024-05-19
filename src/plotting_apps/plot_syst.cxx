@@ -45,7 +45,7 @@ int main( int argc, char* argv[] ) {
   }
 
   std::vector<string> input_files, legend_list ;
-  std::string output_file = "histogram_data";
+  std::string output_file = "histogram_syst";
   std::string observable = "ECal";
   int sector = -9999 ; // all
   std::string analysis_key = "1p1pim";
@@ -129,7 +129,6 @@ int main( int argc, char* argv[] ) {
 
   // Store systematics in histogram
   TH1D * hist_syst = new TH1D( "Systematics", "", binning.size()-1, &binning[0] );
-  TH1D * hist_mean = new TH1D( "Mean", "", binning.size()-1, &binning[0] );
 
   // OBSERVABLE DEFINITION:
   double TotWeight ;
@@ -242,52 +241,30 @@ int main( int argc, char* argv[] ) {
   }
 
   // Compute Mean
-  for( unsigned int j = 0 ; j < hist_mean->GetNbinsX() ; ++j ) {
-    hist_mean -> SetBinContent( hists[0]->GetBinContent(j), j );
-    double content = hist_mean->GetBinContent(j);
-    for( unsigned int i = 1 ; hists.size() ; ++i ) {
-      content += hists[i]->GetBinContent(j);
+  for( unsigned int j = 1 ; j < hist_syst->GetNbinsX()+1 ; ++j ) {
+    double mean = 0;
+    for( unsigned int i = 0 ; i < hists.size() ; ++i ) {
+      mean += hists[i]->GetBinContent(j);
     }
-    hist_mean -> SetBinContent( content/hists.size(), j );
-  }
+    mean/=hists.size();
 
-  // Compute RMS
-  for( unsigned int j = 0 ; j < hist_mean->GetNbinsX() ; ++j ) {
     double syst = 0;
-    for( unsigned int i = 0 ; hists.size() ; ++i ) {
-      syst += pow(hists[i]->GetBinContent(j)-hist_mean->GetBinContent(j),2);
+    for( unsigned int i = 0 ; i < hists.size() ; ++i ) {
+      syst += pow(hists[i]->GetBinContent(j)-mean,2);
     }
     syst /= hists.size();
-    hist_syst -> SetBinContent( sqrt(syst), j );
+
+    std:cout << syst << " " <<hists[0]->GetBinContent(j)<< " " << hists[0]->GetXaxis()->GetBinCenter(j)<<std::endl;
+    if( hists[0]->GetBinContent(j) != 0 ) hist_syst -> SetBinContent( j, sqrt(syst)/hists[0]->GetBinContent(j)*100 );
+    else hist_syst -> SetBinContent( j, 0 );
   }
 
-
-  double ymax = 0 ;
-  for( unsigned int i = 0 ; i < input_files.size(); ++i ){
-    double max = 0 ;
-    for( unsigned int k = 0 ; k < hists[i]->GetNbinsX() ; ++k ) {
-      if ( hists[i]->GetBinContent(k) > max ) max = hists[i]->GetBinContent(k) ;
-    }
-    if( max > ymax ) ymax = max;
-  }
-  ymax *= ( 1+0.2 ) ;
-
-  // Normalise for bin size
-  for( unsigned int i = 0 ; i < input_files.size(); ++i ){
-    plotting::StandardFormat( hists[i], "", color_list[i], 1, observable, ymax, "Counts/Bin Width");
-    hists[i] -> SetLineStyle(1);
-    hists[i] -> SetMarkerStyle(8);
-    hists[i] -> GetYaxis() -> TAxis::SetMaxDigits(3);
-    plotting::NormalizeHist(hists[i], 1 );
-    if( i == 0 ) hists[i] -> Draw("err");
-    else hists[i] -> Draw("err same");
-
-    if ( legend_list.size() == input_files.size()){
-      legend->AddEntry(hists[i],(legend_list[i]).c_str());
-    }
-  }
-  hists[0] -> Draw("err same");
-  if ( legend_list.size() == input_files.size()) legend->Draw();
+  hist_syst->SetLineColor(kBlue);
+  hist_syst->SetMarkerColor(kBlue);
+  hist_syst->SetMarkerStyle(8);
+  hist_syst->GetXaxis()->SetTitle(observable.c_str());
+  hist_syst->GetYaxis()->SetTitle("#sigma_{RMS}/x_{Nom}[%]");
+  hist_syst->Draw();
 
   std::string output_name = output_file+"_Nevents_"+observable ;
 

@@ -203,7 +203,12 @@ void systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
   }
 }
 
-void systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> h_per_sector ) {
+TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> h_per_sector ) {
+
+	TH1D * hist_syst_sector = (TH1D*)h_per_sector[0]->Clone();
+	hist_syst_sector->Reset();
+	hist_syst_sector->SetName("h_syst_sectors");
+	hist_syst_sector->GetYaxis()->SetTitle("#sigma_{Sector}/#hat{x}[%]");
 
 	// Loop over bins (starting from 1 )
 	for( unsigned j = 1 ; j < hist.GetNbinsX() +1; ++j ){
@@ -231,9 +236,10 @@ void systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> h_
 			}
 		}
 		error_2 /= sectors;
-		std::cout << " error = "<< sqrt(error_2)/h_per_sector[0]->GetBinContent(j)*100 << std::endl;
+		std::cout << " error = "<< sqrt(error_2)/mean_i*100 << std::endl;
 
 		hist.SetBinError(j,sqrt(error_2));
+		hist_syst_sector->SetBinContent(j,sqrt(error_2)/mean_i*100);
 	}
-
+	return hist_syst_sector;
 }

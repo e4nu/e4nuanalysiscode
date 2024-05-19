@@ -512,8 +512,18 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 		systematics::AddSystematic( *hist_data_4, *h_acceptance );
 		systematics::AddSystematic( *hist_data_5, *h_acceptance );
 
-		// Add sector variation ERROR
-    systematics::SectorVariationError( *hist_data, {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5}) ;
+		// Add sector variation ERROR. Store relative error in histogram
+    TH1D * hist_syst_sector = systematics::SectorVariationError( *hist_data, {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5}) ;
+	  StandardFormat( hist_syst_sector, title, kBlack, 8, observable ) ;
+	  std::string output_name = output_file_name+"_syst_persector_"+observable ;
+	  std::filesystem::path totalxsec_path{(output_location+"/XSecPerSector/").c_str()};
+	  if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
+    //TFile root_file((output_location+"/XSecPerSector/"+output_name+".root").c_str(),"recreate");
+    //hist_syst_sector->Write();
+		TCanvas * csect = new TCanvas("csect","csect",800,600);
+		hist_syst_sector->Draw("hist");
+		csect->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
+		delete csect;
 
     //adding systematics from systematic map. Relative systematic added to all bins
     for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {

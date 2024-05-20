@@ -14,25 +14,26 @@
 #include "utils/Fiducial.h"
 #include "analysis/BackgroundI.h"
 
-namespace e4nu { 
+namespace e4nu {
 
   class AnalysisI : public BackgroundI {
 
-  public: 
+  public:
     // Default constructor
     AnalysisI() ;
     AnalysisI( const std::string input_file ) ;
     AnalysisI( const double EBeam, const unsigned int TargetPdg ) ;
 
-    bool Analyse( Event & event ) ; 
+    bool Analyse( Event & event ) ;
     void Initialize(void) ;
     bool Finalise(void) ;
 
-  protected : 
+  protected :
     void CookEvent( Event & event ) ;
     void PlotBkgInformation( const Event event ) ;
     void ApplyMomentumCut( Event & event ) ;
-    double GetElectronMinTheta( TLorentzVector emom ) ;      
+    bool ApplyFiducialCut( Event & event, bool apply_fiducial ) ; 
+    double GetElectronMinTheta( TLorentzVector emom ) ;
 
     // ID for Background historams
     unsigned int kid_signal, kid_tottruebkg, kid_totestbkg, kid_acccorr;
@@ -41,9 +42,9 @@ namespace e4nu {
 
     virtual ~AnalysisI();
 
-  private : 
-    TF1 * kElectronFit = nullptr ; 
-      
+  private :
+    TF1 * kElectronFit = nullptr ;
+
   };
 }
 

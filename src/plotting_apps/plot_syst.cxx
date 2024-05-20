@@ -250,10 +250,10 @@ int main( int argc, char* argv[] ) {
 
     double syst = 0;
     for( unsigned int i = 0 ; i < hists.size() ; ++i ) {
-      syst += pow(hists[i]->GetBinContent(j)-mean,2);
+      syst += pow(hists[i]->GetBinContent(j)-mean,2) - pow(hists[i]->GetBinError(j),2) ; // removing also stat.error
     }
     syst /= hists.size();
-
+    if( syst < 0 ) syst = 0 ; // Stat is bigger than error
     std:cout << syst << " " <<hists[0]->GetBinContent(j)<< " " << hists[0]->GetXaxis()->GetBinCenter(j)<<std::endl;
     if( hists[0]->GetBinContent(j) != 0 ) hist_syst -> SetBinContent( j, sqrt(syst)/hists[0]->GetBinContent(j)*100 );
     else hist_syst -> SetBinContent( j, 0 );

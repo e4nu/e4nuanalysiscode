@@ -254,7 +254,7 @@ int main( int argc, char* argv[] ) {
     }
     syst /= hists.size();
     if( syst < 0 ) syst = 0 ; // Stat is bigger than error
-    std:cout << syst << " " <<hists[0]->GetBinContent(j)<< " " << hists[0]->GetXaxis()->GetBinCenter(j)<<std::endl;
+    
     if( hists[0]->GetBinContent(j) != 0 ) hist_syst -> SetBinContent( j, sqrt(syst)/hists[0]->GetBinContent(j)*100 );
     else hist_syst -> SetBinContent( j, 0 );
   }

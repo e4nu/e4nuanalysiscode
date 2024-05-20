@@ -193,14 +193,21 @@ void systematics::AddSystematic( TH1D & hist, const double rel_error, const std:
   }
 }
 
-void systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
+TH1D * systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
+	TH1D * hist_syst = (TH1D*)hist_w_error.Clone();
+	hist_syst->Reset();
+	hist_syst->SetName("h_syst");
+	hist_syst->GetYaxis()->SetTitle("#sigma/#hat{x} [%]");
+
   double NBins = hist.GetNbinsX();
   for (int i = 1; i <= NBins; i++) {
     double stat_error = hist.GetBinError(i);
 		double syst_error = hist_w_error.GetBinError(i);
-    double newerror = TMath::Sqrt( TMath::Power(stat_error,2.) + TMath::Power(syst_error,2.));
+    double newerror = TMath::Sqrt( TMath::Power(stat_error,2.) + TMath::Power(syst_error/hist_w_error.GetBinContent(i)*hist.GetBinContent(i),2.));
     hist.SetBinError(i,newerror);
+		hist_syst->SetBinContent(i,hist_w_error.GetBinError(i)/hist_w_error.GetBinContent(i)*100); // Store sector to sector uncertainty
   }
+	return hist_syst;
 }
 
 TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> h_per_sector ) {
@@ -236,10 +243,11 @@ TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> 
 			}
 		}
 		error_2 /= sectors;
-		std::cout << " error = "<< sqrt(error_2)/mean_i*100 << std::endl;
+		hist_syst_sector->SetBinContent(j,sqrt(error_2)/mean_i*100); // Store sector to sector uncertainty
 
+		error_2 += pow(hist.GetBinError(j),2); // Add statistical error
 		hist.SetBinError(j,sqrt(error_2));
-		hist_syst_sector->SetBinContent(j,sqrt(error_2)/mean_i*100);
+
 	}
 	return hist_syst_sector;
 }

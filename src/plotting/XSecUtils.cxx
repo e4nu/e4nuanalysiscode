@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include "TGaxis.h"
 
 using namespace e4nu ;
 using namespace e4nu::plotting ;
@@ -499,42 +500,30 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     }
 
 		// Add Systematics
-		// 1 - Acceptance model dependence
-		// 2 - Sector Sector Variation
+		// 1 - Sector Sector Variation
+		// 2 - Acceptance model dependence
 		// 3 - Relative uncertanties from configuration
 
-		//Adding Acceptance correction systematics from model dependence
-		systematics::AddSystematic( *hist_data, *h_acceptance );
-		systematics::AddSystematic( *hist_data_0, *h_acceptance );
-		systematics::AddSystematic( *hist_data_1, *h_acceptance );
-		systematics::AddSystematic( *hist_data_2, *h_acceptance );
-		systematics::AddSystematic( *hist_data_3, *h_acceptance );
-		systematics::AddSystematic( *hist_data_4, *h_acceptance );
-		systematics::AddSystematic( *hist_data_5, *h_acceptance );
-
 		// Add sector variation ERROR. Store relative error in histogram
-    TH1D * hist_syst_sector = systematics::SectorVariationError( *hist_data, {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5}) ;
-	  StandardFormat( hist_syst_sector, title, kBlack, 8, observable ) ;
-	  std::string output_name = output_file_name+"_syst_persector_"+observable ;
-	  std::filesystem::path totalxsec_path{(output_location+"/XSecPerSector/").c_str()};
-	  if( ! std::filesystem::exists(totalxsec_path) ) std::filesystem::create_directory(totalxsec_path);
-    //TFile root_file((output_location+"/XSecPerSector/"+output_name+".root").c_str(),"recreate");
-    //hist_syst_sector->Write();
+		TH1D * hist_syst_sector = systematics::SectorVariationError( *hist_data, {hist_data_uncorr_0,hist_data_uncorr_1,hist_data_uncorr_2,hist_data_uncorr_3,hist_data_uncorr_4,hist_data_uncorr_5}) ;
 		TCanvas * csect = new TCanvas("csect","csect",800,600);
 		hist_syst_sector->Draw("hist");
-		csect->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
+		csect->SaveAs((output_location+"/XSecPerSector/"+output_file_name+"_syst_persector_"+observable+".root").c_str());
 		delete csect;
 
-    //adding systematics from systematic map. Relative systematic added to all bins
+		//Adding Acceptance correction systematics from model dependence
+		TH1D * hist_syst_acc = systematics::AddSystematic( *hist_data, *h_acceptance );
+		TCanvas * cacc = new TCanvas("cacc","cacc",800,600);
+		hist_syst_acc->Draw("hist");
+		cacc->SaveAs((output_location+"/XSecPerSector/"+output_file_name+"_syst_accmodel_"+observable+".root").c_str());
+		delete cacc;
+
+    std::cout << " error : "<< hist_data->GetBinError(1)<<std::endl;
+
+		//adding systematics from systematic map. Relative systematic added to all bins
     for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
       std::cout << " Adding " << it->second*100 << " % systematic on " << it->first << std::endl;
       systematics::AddSystematic(*hist_data, it->second, it->first) ;
-      systematics::AddSystematic(*hist_data_0, it->second, it->first) ;
-      systematics::AddSystematic(*hist_data_1, it->second, it->first) ;
-      systematics::AddSystematic(*hist_data_2, it->second, it->first) ;
-      systematics::AddSystematic(*hist_data_3, it->second, it->first) ;
-      systematics::AddSystematic(*hist_data_4, it->second, it->first) ;
-      systematics::AddSystematic(*hist_data_5, it->second, it->first) ;
     }
 
 		hist_data_correventrate_wsyst = (TH1D*) hist_data ->Clone();
@@ -614,14 +603,15 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   std::vector<TH1D> breakdown = {*hist_true_QEL,*hist_true_RES_Delta,*hist_true_RES,*hist_true_SIS,*hist_true_MEC,*hist_true_DIS};
   std::vector<TH1D*> breakdown_xsec = {hist_true_QEL,hist_true_RES_Delta,hist_true_RES,hist_true_SIS,hist_true_MEC,hist_true_DIS};
   std::vector<TH1D*> mc_per_sector = {hist_true_0,hist_true_1,hist_true_2,hist_true_3,hist_true_4,hist_true_5};
-  std::vector<TH1D*> data_per_sector = {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5};
+	std::vector<TH1D*> data_per_sector = {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5};
+	std::vector<TH1D*> data_per_sector_uncorr = {hist_data_uncorr_0,hist_data_uncorr_1,hist_data_uncorr_2,hist_data_uncorr_3,hist_data_uncorr_4,hist_data_uncorr_5};
   std::vector<std::vector<TH1D*>> all_slices = {h_total_slices,h_QEL_slices,h_RES_Delta_slices,h_RES_slices,h_SIS_slices,h_MEC_slices,h_DIS_slices,h_data_slices};
 
   // Plot Total, XSector, Legend
   plotting::PlotEventRate( hist_data_uncorr, observable, title, data_name, input_data_location, output_location,
 			   output_file_name+"_raw_event_rate", analysis_id, store_root ) ;
 
-  plotting::PlotEventRate( hist_data_uncorrrad, observable, title, data_name, input_data_location, output_location,
+  plotting::PlotEventRatePerSector( data_per_sector_uncorr, observable, title, data_name, input_data_location, output_location,
 			   output_file_name+"_event_rate_corracc_noradcorr", analysis_id, store_root ) ;
 
   plotting::PlotEventRate( hist_data_correventrate, observable, title, data_name, input_data_location, output_location,
@@ -895,6 +885,79 @@ void plotting::PlotEventRate( TH1D * data, std::string observable, std::string t
   c1->SaveAs((output_location+"/EventRate/"+output_name+".pdf").c_str());
   delete c1 ;
 
+}
+
+void plotting::PlotEventRatePerSector( std::vector<TH1D*> data_per_sector, std::string observable, std::string title, std::string data_name, std::string input_data_location,
+			      std::string output_location, std::string output_file_name, std::string analysis_id, bool store_root ) {
+  TGaxis::SetMaxDigits(3);
+	// Format plots
+	if( data_per_sector.size()!=0 ) {
+		if( data_per_sector[0] ) StandardFormat( data_per_sector[0], title+" Sector  0", kOrange+1, 8, observable, 0, "Counts/Bin Width" ) ;
+		if( data_per_sector[1] ) StandardFormat( data_per_sector[1], title+" Sector  1", kPink+4, 8, observable, 0, "Counts/Bin Width" ) ;
+		if( data_per_sector[2] ) StandardFormat( data_per_sector[2], title+" Sector  2", kViolet+5, 8, observable, 0, "Counts/Bin Width" ) ;
+		if( data_per_sector[3] ) StandardFormat( data_per_sector[3], title+" Sector  3", kAzure-5, 8, observable, 0, "Counts/Bin Width" ) ;
+		if( data_per_sector[4] ) StandardFormat( data_per_sector[4], title+" Sector  4", kTeal-7, 8, observable, 0, "Counts/Bin Width" ) ;
+		if( data_per_sector[5] ) StandardFormat( data_per_sector[5], title+" Sector  5", kGreen-3, 8, observable, 0, "Counts/Bin Width" ) ;
+	}
+	// Draw total xsec per sectors
+  TCanvas * c_sector = new TCanvas("c_sector","c_sector",200,10,700,500);
+  c_sector->cd();
+  TPad *pad_sector = new TPad("pad1","",0,0,1,1);
+  pad_sector->Draw();
+  pad_sector->cd();
+  pad_sector->SetBottomMargin(0.15);
+  pad_sector->SetLeftMargin(0.15);
+  pad_sector->Divide(3,2);
+
+  for( unsigned int i = 0 ; i < 6 ; ++i ) {
+    TPad *pad_sector_i = (TPad*)pad_sector->cd(i+1);
+    pad_sector_i -> cd();
+    pad_sector_i -> SetBottomMargin(0.15);
+    pad_sector_i -> SetLeftMargin(0.15);
+
+    if(data_per_sector.size()!=0 && data_per_sector[i]) {
+      data_per_sector[i] -> SetMarkerSize(0.7);
+			data_per_sector[i] -> GetYaxis()->SetTitleOffset(1.2);
+      if ( i == 0 ) data_per_sector[i] -> Draw(" err ");
+			else data_per_sector[i] -> Draw(" err same");
+    }
+  }
+  TGaxis::SetMaxDigits(3);
+  std::string output_name = output_file_name+"_event_rate_"+observable+"_persector" ;
+  std::filesystem::path xsecpersector_path{(output_location+"/XSecPerSector/").c_str()};
+  if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
+  if( store_root ) c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".root").c_str());
+  c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
+
+
+  for( unsigned int i = 0 ; i < 6 ; ++i ) {
+    TPad *pad_sector_i = (TPad*)pad_sector->cd(i+1);
+    pad_sector_i -> cd();
+    pad_sector_i -> SetBottomMargin(0.15);
+    pad_sector_i -> SetLeftMargin(0.15);
+
+    if(data_per_sector.size()!=0 && data_per_sector[i]) {
+      data_per_sector[i] -> SetMarkerSize(0.7);
+      data_per_sector[i] -> Draw(" err ");
+    }
+  }
+
+  output_name = output_file_name+"_dataonly_dxsec_d"+observable+"_persector" ;
+  xsecpersector_path =(output_location+"/XSecPerSector/").c_str();
+  if( ! std::filesystem::exists(xsecpersector_path) ) std::filesystem::create_directory(xsecpersector_path);
+
+  if( store_root ) {
+    TFile root_file((output_location+"/XSecPerSector/"+output_name+".root").c_str(),"recreate");
+    for( unsigned int i = 0 ; i < 6 ; ++i ) {
+      if(data_per_sector.size()!=0 && data_per_sector[i]) {
+				data_per_sector[i] -> Write();
+      }
+    }
+    c_sector->Write();
+  }
+
+  c_sector->SaveAs((output_location+"/XSecPerSector/"+output_name+".pdf").c_str());
+  delete c_sector ;
 }
 
 void plotting::PlotLegend( std::vector<TH1D*> mc_hists, std::vector<TH1D*> breakdown, TH1D * data, std::string observable,

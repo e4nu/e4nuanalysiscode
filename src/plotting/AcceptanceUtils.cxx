@@ -296,7 +296,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   ratio -> Scale( 1./mc_files.size() );
 
   // Compute Acceptance error from model variation
-  for( unsigned int i = 0 ; i < ratio->GetNbinsX() ; ++i ){
+  for( unsigned int i = 1 ; i < ratio->GetNbinsX() + 1; ++i ){
     double bin_cont_max = 0 ;
     double bin_cont_min = 999 ;
     for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
@@ -304,7 +304,8 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       if( ratios[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios[j]->GetBinContent(i) ;
       if( ratios[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios[j]->GetBinContent(i) ;
     }
-    double error = (bin_cont_max-bin_cont_min)/ratio->GetBinContent(i)/sqrt(12.);
+		// Compute the error assuming a uniform distribution
+    double error = sqrt(pow(bin_cont_max-bin_cont_min,2)/12.);
     ratio->SetBinError(i,error);
   }
 

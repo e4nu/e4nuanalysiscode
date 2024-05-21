@@ -103,7 +103,11 @@ int main( int argc, char* argv[] ) {
   if ( is_data ) {   
     compute_trueacc = false ; 
     compute_truerecoacc = false ; 
-    analysis -> SetApplyFiducial( true ) ; 
+    // We need to apply the fiducial in the data as well for technical reasons 
+    // & also when we want to compute the systematics associated to the geometrical shift
+    // For these reasons, we leave it in. It should not affect at all the results when we do not shift the fiducial
+    // As these are already accounted for when we process the data
+    analysis -> SetApplyFiducial( true ) ;
     analysis -> SetApplyAccWeights( false ) ; 
     analysis -> SetApplyReso( false ) ;  
     std::string OutputFile_data = analysis->GetOutputFile() + "_clas6data" ;

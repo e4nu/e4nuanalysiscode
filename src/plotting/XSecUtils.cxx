@@ -348,21 +348,21 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model
       if( hists[size_primary_trees*(ElectronSector+1)+i] ) {
-	if( i < size_primary_trees ) {
-	  hists[size_primary_trees*(ElectronSector+1)+i] -> Fill( content, w ) ;
-	}
+					if( i < size_primary_trees ) {
+	  				hists[size_primary_trees*(ElectronSector+1)+i] -> Fill( content, w ) ;
+					}
       }
       if( i > size_primary_trees - 1 ) id_hist = size_primary_hists + ( i - size_primary_trees );
 
       if( hists[id_hist] ) {
-	hists[id_hist] -> Fill( content, w ) ;
-	hists[id_hist] -> SetLineWidth(3);
+				hists[id_hist] -> Fill( content, w ) ;
+				hists[id_hist] -> SetLineWidth(3);
       }
 
       if( i == 0 ){
         if( QEL ) hist_true_QEL -> Fill( content, w ) ;
         if( RES ) {
-	  if( resid == 0 ) hist_true_RES_Delta -> Fill( content, w ) ;
+	  		if( resid == 0 ) hist_true_RES_Delta -> Fill( content, w ) ;
           else hist_true_RES -> Fill( content, w ) ;
         }
         if( DIS ) {
@@ -374,31 +374,31 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
       // Fill slices
       if( addbinning.size() != 0 ) {
-	std::string alt_obs = GetAlternativeObs(observable) ;
-	double content_2 = 0 ;
-	if ( alt_obs == "ECal" ) content_2 = ECal ;
-	else if ( alt_obs == "HadAlphaT" ) content_2 = HadAlphaT ;
-	else if ( alt_obs == "HadDeltaPT" ) content_2 = HadDeltaPT ;
+				std::string alt_obs = GetAlternativeObs(observable) ;
+				double content_2 = 0 ;
+				if ( alt_obs == "ECal" ) content_2 = ECal ;
+				else if ( alt_obs == "HadAlphaT" ) content_2 = HadAlphaT ;
+				else if ( alt_obs == "HadDeltaPT" ) content_2 = HadDeltaPT ;
 
-	for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
-	  if( content_2 > addbinning[l] && content_2 < addbinning[l+1] ){
-	    if( i == 0 ) { //MC
-	      h_total_slices[l] -> Fill( content, w ) ;
-	      // Fill also breakdown for slice
-	      if( QEL ) h_QEL_slices[l] -> Fill( content, w ) ;
-	      if( RES ) {
-		if( resid == 0 ) h_RES_Delta_slices[l] -> Fill( content, w ) ;
-		else h_RES_slices[l] -> Fill( content, w ) ;
-	      }
-	      if( DIS ) {
-		if( RecoW < 1.7 ) h_SIS_slices[l] -> Fill( content, w ) ;
-		else h_DIS_slices[l] -> Fill( content, w ) ;
-	      }
-	      if( MEC ) h_MEC_slices[l] -> Fill( content, w ) ;
-	    } else if( i == 1 && plot_data ) h_data_slices[l] -> Fill( content, w ) ;
-	  }
-	}
-      }
+				for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+	  			if( content_2 > addbinning[l] && content_2 < addbinning[l+1] ){
+	    			if( i == 0 ) { //MC
+	      			h_total_slices[l] -> Fill( content, w ) ;
+	      			// Fill also breakdown for slice
+	      			if( QEL ) h_QEL_slices[l] -> Fill( content, w ) ;
+	      			if( RES ) {
+									if( resid == 0 ) h_RES_Delta_slices[l] -> Fill( content, w ) ;
+										else h_RES_slices[l] -> Fill( content, w ) ;
+	      			}
+	      		if( DIS ) {
+								if( RecoW < 1.7 ) h_SIS_slices[l] -> Fill( content, w ) ;
+									else h_DIS_slices[l] -> Fill( content, w ) ;
+	      		}
+	      		if( MEC ) h_MEC_slices[l] -> Fill( content, w ) ;
+	    		} else if( i == 1 && plot_data ) h_data_slices[l] -> Fill( content, w ) ;
+	  		}
+				}
+      	}
     }
   }
 
@@ -409,8 +409,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   TH1D * hist_data_uncorrrad=nullptr;
   // Corr event rate§
 	TH1D * hist_data_correventrate=nullptr, * hist_data_correventrate_0=nullptr, * hist_data_correventrate_1=nullptr, * hist_data_correventrate_2=nullptr, * hist_data_correventrate_3=nullptr, * hist_data_correventrate_4=nullptr, * hist_data_correventrate_5=nullptr ;
-  // Event rate with Systematics
+	// Event rate with Systematics
 	TH1D * hist_data_correventrate_wsyst=nullptr, * hist_data_correventrate_wsyst_0=nullptr, * hist_data_correventrate_wsyst_1=nullptr, * hist_data_correventrate_wsyst_2=nullptr, * hist_data_correventrate_wsyst_3=nullptr, * hist_data_correventrate_wsyst_4=nullptr, * hist_data_correventrate_wsyst_5=nullptr ;
+
+	// Event rate with Systematics
+	TH1D * hist_xsec_wsyst=nullptr, * hist_xsec_wsyst_0=nullptr, * hist_xsec_wsyst_1=nullptr, * hist_xsec_wsyst_2=nullptr, * hist_xsec_wsyst_3=nullptr, * hist_xsec_wsyst_4=nullptr, * hist_xsec_wsyst_5=nullptr ;
 
   // Store data event rate before acceptance correction:
   if( plot_data ) {
@@ -499,33 +502,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       }
     }
 
-		// Add Systematics
-		// 1 - Sector Sector Variation
-		// 2 - Acceptance model dependence
-		// 3 - Relative uncertanties from configuration
-
-		// Add sector variation ERROR. Store relative error in histogram
-		TH1D * hist_syst_sector = systematics::SectorVariationError( *hist_data, {hist_data_uncorr_0,hist_data_uncorr_1,hist_data_uncorr_2,hist_data_uncorr_3,hist_data_uncorr_4,hist_data_uncorr_5}) ;
-		TCanvas * csect = new TCanvas("csect","csect",800,600);
-		hist_syst_sector->Draw("hist");
-		csect->SaveAs((output_location+"/XSecPerSector/"+output_file_name+"_syst_persector_"+observable+".root").c_str());
-		delete csect;
-
-		//Adding Acceptance correction systematics from model dependence
-		TH1D * hist_syst_acc = systematics::AddSystematic( *hist_data, *h_acceptance );
-		TCanvas * cacc = new TCanvas("cacc","cacc",800,600);
-		hist_syst_acc->Draw("hist");
-		cacc->SaveAs((output_location+"/XSecPerSector/"+output_file_name+"_syst_accmodel_"+observable+".root").c_str());
-		delete cacc;
-
-    std::cout << " error : "<< hist_data->GetBinError(1)<<std::endl;
-
-		//adding systematics from systematic map. Relative systematic added to all bins
-    for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
-      std::cout << " Adding " << it->second*100 << " % systematic on " << it->first << std::endl;
-      systematics::AddSystematic(*hist_data, it->second, it->first) ;
-    }
-
 		hist_data_correventrate_wsyst = (TH1D*) hist_data ->Clone();
     hist_data_correventrate_wsyst -> SetName( "Corrected Event Rate with Systematics Data") ;
     hist_data_correventrate_wsyst_0 = (TH1D*) hist_data_0 ->Clone();
@@ -558,6 +534,47 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 		NormalizeHist(hist_data_3, DataNormalization );
 		NormalizeHist(hist_data_4, DataNormalization );
 		NormalizeHist(hist_data_5, DataNormalization );
+
+		// Add Systematics
+		// 1 - Acceptance model dependence
+		// 2 - Sector Sector Variation
+		// 3 - Relative uncertanties from configuration
+		//
+		//Adding Acceptance correction systematics from model dependence
+		TH1D * hist_syst_acc = systematics::AddSystematic( *hist_data, *h_acceptance );
+
+		// We also need to add it to the per sector so we do not double count the error
+		systematics::AddSystematic( *hist_data_0, *h_acceptance_0 );
+		systematics::AddSystematic( *hist_data_1, *h_acceptance_1 );
+		systematics::AddSystematic( *hist_data_1, *h_acceptance_2 );
+		systematics::AddSystematic( *hist_data_3, *h_acceptance_3 );
+		systematics::AddSystematic( *hist_data_4, *h_acceptance_4 );
+		systematics::AddSystematic( *hist_data_5, *h_acceptance_5 );
+
+		TCanvas * cacc = new TCanvas("cacc","cacc",800,600);
+		hist_syst_acc->Draw("hist");
+		cacc->SaveAs((output_location+"/XSecPerSector/"+output_file_name+"_syst_accmodel_"+observable+".root").c_str());
+		delete cacc;
+
+		// Add sector variation ERROR. Store relative error in histogram
+		// We use the bkg substracted, eff corrected distributions for the calculation
+		TH1D * hist_syst_sector = systematics::SectorVariationError( *hist_data, {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5}) ;
+		TCanvas * csect = new TCanvas("csect","csect",800,600);
+		hist_syst_sector->Draw("hist");
+		csect->SaveAs((output_location+"/XSecPerSector/"+output_file_name+"_syst_persector_"+observable+".root").c_str());
+		delete csect;
+		
+		//adding systematics from systematic map. Relative systematic added to all bins
+    for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
+      std::cout << " Adding " << it->second << " % systematic on " << it->first << std::endl;
+      systematics::AddSystematic(*hist_data, it->second, it->first) ;
+    }
+
+		// Hard coding some well known systematics
+    systematics::AddSystematic(*hist_data, 5, "Radiative") ;
+		systematics::AddSystematic(*hist_data, 1, "Normalization") ;
+		systematics::AddSystematic(*hist_data, 1, "AnglDependence") ;
+
   }
 
   // Normalize MC to cross-section
@@ -611,8 +628,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   plotting::PlotEventRate( hist_data_uncorr, observable, title, data_name, input_data_location, output_location,
 			   output_file_name+"_raw_event_rate", analysis_id, store_root ) ;
 
-  plotting::PlotEventRatePerSector( data_per_sector_uncorr, observable, title, data_name, input_data_location, output_location,
-			   output_file_name+"_event_rate_corracc_noradcorr", analysis_id, store_root ) ;
+  plotting::PlotEventRatePerSector( data_per_sector, observable, title, data_name, input_data_location, output_location,
+			   output_file_name+"_event_rate_corracc", analysis_id, store_root ) ;
 
   plotting::PlotEventRate( hist_data_correventrate, observable, title, data_name, input_data_location, output_location,
 			   output_file_name+"_event_rate_corracc_with_radcorr", analysis_id, store_root ) ;
@@ -629,7 +646,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   plotting::PlotComparisonDataNormalized( mc_hists, breakdown, hist_data_correventrate_wsyst, observable, title, data_name, model, input_MC_location,
  	 			 input_data_location, output_location, output_file_name+"_normalized_to_data_wsyst_with_breakdown", systematic_map, true, analysis_id, store_root);
 
-  plotting::PlotXsecDataTotal( hist_data, observable, title, data_name, input_data_location, output_location, output_file_name,
+  plotting::PlotXsecDataTotal( hist_data, observable, title, data_name, input_data_location, output_location, output_file_name+"MYTEST",
 			       systematic_map, analysis_id, store_root);
 
   plotting::PlotTotalXSec( mc_hists_xsec, breakdown_xsec, hist_data, observable, title, data_name, model, input_MC_location,

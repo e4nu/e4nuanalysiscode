@@ -188,7 +188,7 @@ void systematics::AddSystematic( TH1D & hist, const double rel_error, const std:
   for (int i = 1; i <= NBins; i++) {
     double error = hist.GetBinError(i);
     double content = hist.GetBinContent(i);
-    double newerror = TMath::Sqrt( TMath::Power(error,2.) + TMath::Power(rel_error*content,2.));
+    double newerror = TMath::Sqrt( TMath::Power(error,2.) + TMath::Power(rel_error*content/100.,2.));
     hist.SetBinError(i,newerror);
   }
 }
@@ -227,11 +227,14 @@ TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> 
 		for( unsigned int i = 0 ; i < h_per_sector.size() ; ++i ){
 			// We have to be careful with empty sectors:
 			if( h_per_sector[i]->GetBinContent(j) != 0 ){
-				mean_i += h_per_sector[i]->GetBinContent(j)/pow(h_per_sector[i]->GetBinError(j),2);
-				weight += 1./pow(h_per_sector[i]->GetBinError(j),2) ;
+				if( h_per_sector[i]->GetBinError(j) > 0 ) {
+			  	mean_i += h_per_sector[i]->GetBinContent(j)/pow(h_per_sector[i]->GetBinError(j),2);
+					weight += 1./pow(h_per_sector[i]->GetBinError(j),2) ;
+				}
 				sectors+= 1 ;
 			}
 		}
+
 		// Compute weighted average:
 		mean_i /= weight ;
 		// Compute RMS:
@@ -239,15 +242,17 @@ TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> 
 
 		for( unsigned int i = 0 ; i < h_per_sector.size() ; ++i ){
 			if( h_per_sector[i]->GetBinContent(j) != 0 ){
-				// Compute error and subtract stat. error
-				error_2 += pow( h_per_sector[i]->GetBinContent(j) - mean_i, 2) - pow(h_per_sector[i]->GetBinError(j),2);
+				// Compute error
+				error_2 += pow( h_per_sector[i]->GetBinContent(j) - mean_i, 2) ;
+				//and subtract stat. error
+				if( h_per_sector[i]->GetBinError(j) > 0 ) error_2 -= pow(h_per_sector[i]->GetBinError(j),2);
 			}
 		}
 		error_2 /= sectors;
 		if( error_2 < 0 ) error_2 = 0 ; // If stat. is bigger than syst, just assign 0
 		hist_syst_sector->SetBinContent(j,sqrt(error_2)/mean_i*100); // Store sector to sector uncertainty
 
-		error_2 += pow(hist.GetBinError(j),2); // Add statistical error
+		error_2 += pow(hist.GetBinError(j),2); // Add statistical error from final histogram
 		hist.SetBinError(j,sqrt(error_2));
 
 	}

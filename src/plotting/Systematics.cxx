@@ -239,10 +239,12 @@ TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> 
 
 		for( unsigned int i = 0 ; i < h_per_sector.size() ; ++i ){
 			if( h_per_sector[i]->GetBinContent(j) != 0 ){
-				error_2 += pow( h_per_sector[i]->GetBinContent(j) - mean_i, 2);
+				// Compute error and subtract stat. error
+				error_2 += pow( h_per_sector[i]->GetBinContent(j) - mean_i, 2) - pow(h_per_sector[i]->GetBinError(j),2);
 			}
 		}
 		error_2 /= sectors;
+		if( error_2 < 0 ) error_2 = 0 ; // If stat. is bigger than syst, just assign 0
 		hist_syst_sector->SetBinContent(j,sqrt(error_2)/mean_i*100); // Store sector to sector uncertainty
 
 		error_2 += pow(hist.GetBinError(j),2); // Add statistical error

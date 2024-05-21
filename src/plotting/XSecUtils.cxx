@@ -546,7 +546,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 		// We also need to add it to the per sector so we do not double count the error
 		systematics::AddSystematic( *hist_data_0, *h_acceptance_0 );
 		systematics::AddSystematic( *hist_data_1, *h_acceptance_1 );
-		systematics::AddSystematic( *hist_data_1, *h_acceptance_2 );
+		systematics::AddSystematic( *hist_data_2, *h_acceptance_2 );
 		systematics::AddSystematic( *hist_data_3, *h_acceptance_3 );
 		systematics::AddSystematic( *hist_data_4, *h_acceptance_4 );
 		systematics::AddSystematic( *hist_data_5, *h_acceptance_5 );
@@ -563,7 +563,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 		hist_syst_sector->Draw("hist");
 		csect->SaveAs((output_location+"/XSecPerSector/"+output_file_name+"_syst_persector_"+observable+".root").c_str());
 		delete csect;
-		
+
 		//adding systematics from systematic map. Relative systematic added to all bins
     for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
       std::cout << " Adding " << it->second << " % systematic on " << it->first << std::endl;

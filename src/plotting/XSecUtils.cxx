@@ -596,6 +596,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     }
   }
 
+	std::cout << hist_true->GetBinContent(10)<<std::endl;
 	NormalizeHist(hist_true, mc_norm[0]);
 	NormalizeHist(hist_true_0, mc_norm[0]);
 	NormalizeHist(hist_true_1, mc_norm[0]);

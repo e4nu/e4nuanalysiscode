@@ -204,7 +204,9 @@ TH1D * systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
     double stat_error = hist.GetBinError(i);
 		double syst_error = hist_w_error.GetBinError(i);
     double newerror = TMath::Sqrt( TMath::Power(stat_error,2.) + TMath::Power(syst_error/hist_w_error.GetBinContent(i)*hist.GetBinContent(i),2.));
-    hist.SetBinError(i,newerror);
+    if( hist.GetBinContent(i) > 0 ) hist.SetBinError(i,newerror);
+		else hist.SetBinError(i,0); // remove odd bins
+
 		hist_syst->SetBinContent(i,hist_w_error.GetBinError(i)/hist_w_error.GetBinContent(i)*100); // Store sector to sector uncertainty
   }
 	return hist_syst;
@@ -253,8 +255,8 @@ TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> 
 		hist_syst_sector->SetBinContent(j,sqrt(error_2)/mean_i*100); // Store sector to sector uncertainty
 
 		error_2 += pow(hist.GetBinError(j),2); // Add statistical error from final histogram
-		hist.SetBinError(j,sqrt(error_2));
-
+		if( hist.GetBinContent(j) > 0 ) hist.SetBinError(j,sqrt(error_2));
+		else hist.SetBinError(j,0);
 	}
 	return hist_syst_sector;
 }

@@ -300,7 +300,6 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double bin_cont_max = 0 ;
     double bin_cont_min = 999 ;
     for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-      // ratios[j]->SetBinError(i,0);
       if( ratios[j]->GetBinContent(i) > bin_cont_max ) {
 				bin_cont_max = ratios[j]->GetBinContent(i) ;
 			}
@@ -328,7 +327,6 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double bin_cont_max = 0 ;
     double bin_cont_min = 999 ;
     for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-      // ratios_0[j]->SetBinError(i,0);
       if( ratios_0[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_0[j]->GetBinContent(i) ;
       if( ratios_0[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_0[j]->GetBinContent(i) ;
     }
@@ -350,7 +348,6 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double bin_cont_max = 0 ;
     double bin_cont_min = 999 ;
     for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-      // ratios_1[j]->SetBinError(i,0);
       if( ratios_1[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_1[j]->GetBinContent(i) ;
       if( ratios_1[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_1[j]->GetBinContent(i) ;
     }
@@ -372,7 +369,6 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double bin_cont_max = 0 ;
     double bin_cont_min = 999 ;
     for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-      // ratios_2[j]->SetBinError(i,0);
       if( ratios_2[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_2[j]->GetBinContent(i) ;
       if( ratios_2[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_2[j]->GetBinContent(i) ;
     }
@@ -394,7 +390,6 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double bin_cont_max = 0 ;
     double bin_cont_min = 999 ;
     for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-      // ratios_3[j]->SetBinError(i,0);
       if( ratios_3[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_3[j]->GetBinContent(i) ;
       if( ratios_3[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_3[j]->GetBinContent(i) ;
     }
@@ -416,7 +411,6 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double bin_cont_max = 0 ;
     double bin_cont_min = 999 ;
     for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-      // ratios_4[j]->SetBinError(i,0);
       if( ratios_4[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_4[j]->GetBinContent(i) ;
       if( ratios_4[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_4[j]->GetBinContent(i) ;
     }
@@ -438,7 +432,6 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double bin_cont_max = 0 ;
     double bin_cont_min = 999 ;
     for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
-      // ratios_5[j]->SetBinError(i,0);
       if( ratios_5[j]->GetBinContent(i) > bin_cont_max ) bin_cont_max = ratios_5[j]->GetBinContent(i) ;
       if( ratios_5[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_5[j]->GetBinContent(i) ;
     }

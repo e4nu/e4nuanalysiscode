@@ -281,6 +281,7 @@ void ConfigureI::PrintConfiguration(void) const {
   if( kUsePhiThetaBand ) std::cout << "UsePhiThetaBand:"<< kUsePhiThetaBand << std::endl;
   if( kApplyThetaSlice ) std::cout << "ApplyThetaSlice:"<< kApplyThetaSlice << std::endl;
   if( kApplyGoodSectorPhiSlice ) std::cout << "ApplyGoodSectorPhiSlice:"<<kApplyGoodSectorPhiSlice << "\n"<<std::endl;
+  if( fFidAngleShift!=0 ) std::cout << "Phi shifted by " << fFidAngleShift << std::endl;
   std::cout << "EBeam: " << kEBeam << " GeV " << std::endl;
   std::cout << "Target Pdg : " << kTargetPdg << "\n" <<std::endl;
   if ( kIsData ) std::cout << "\nIsData" << std::endl;

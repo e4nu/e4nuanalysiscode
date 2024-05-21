@@ -30,6 +30,7 @@ using namespace e4nu::plotting;
 //                   when radiative corr are used in MC                //
 // --xsec-file) XSecFile (only for MC)                                 //
 // --bkg-mult) Maximum multiplicity used in bkg subtraction method     //
+// --phi-shift) Shift on phy applied to reduce fiducial volume         //
 /////////////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
@@ -78,12 +79,23 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("bkg-mult",argc,argv) && is_data ) {
       analysis -> SetMaxBkgMult( atoi(GetArg("bkg-mult",argc,argv).c_str()) ) ;
     }
+    if( ExistArg("phi-shift",argc,argv) ) {
+      analysis -> SetFidAngleShift( stod(GetArg("phi-shift",argc,argv).c_str()) ) ;
+    }
+
     if( ExistArg("output-file",argc,argv)) {
       std::string final_name = GetArg("output-file",argc,argv) ; 
       if( is_data ) {
 	unsigned int max_mult = analysis->GetMaxBkgMult() ; 
 	final_name += "_"+std::to_string(max_mult)+"MaxBkgMult";
       }
+      if( ExistArg("phi-shift",argc,argv) && !compute_trueacc ) {
+	double shift = stod(GetArg("phi-shift",argc,argv).c_str()) ;
+	if ( shift != 0 ) { 
+	  final_name += "_Shift_"+std::to_string(shift)+"deg";
+	}
+      }
+      
       analysis -> SetOutputFile( final_name );
     }
   }
@@ -91,7 +103,7 @@ int main( int argc, char* argv[] ) {
   if ( is_data ) {   
     compute_trueacc = false ; 
     compute_truerecoacc = false ; 
-    analysis -> SetApplyFiducial( false ) ; 
+    analysis -> SetApplyFiducial( true ) ; 
     analysis -> SetApplyAccWeights( false ) ; 
     analysis -> SetApplyReso( false ) ;  
     std::string OutputFile_data = analysis->GetOutputFile() + "_clas6data" ;
@@ -134,7 +146,7 @@ int main( int argc, char* argv[] ) {
   // and stores the background events with the substracted probabilities
   // For the stored histograms, the background is substracted
   analysis -> SubtractBackground() ; 
-  
+
   // Stores all the information in a TTree file
   // If requested, it also stores the requested histograms in an output root file
   // The format of the output root file is set in the MCCLAS6AnalysisI or CLAS6AnalysisI StoreTree function

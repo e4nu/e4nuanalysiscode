@@ -94,6 +94,7 @@ namespace e4nu {
     // Systematics configurables
     bool ComputeSystFiducial( double angle_shift ) ; 
     bool GetConfigurationFidAngleShift(void) { return fFidAngleShift; }
+    void SetFidAngleShift(double phi) { fFidAngleShift = phi ; }
 
     // Histogram Configurables
     std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }

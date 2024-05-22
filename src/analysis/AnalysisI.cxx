@@ -34,9 +34,9 @@ bool AnalysisI::Analyse( Event & event ) {
   // Check run is correct
   double EBeam = GetConfiguredEBeam() ;
   /*  if ( in_mom.E() != EBeam ) {
-    std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
-    exit(11);
-    }*/
+      std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
+      exit(11);
+      }*/
 
   if ( (unsigned int) event.GetTargetPdg() != GetConfiguredTarget() ) {
     std::cout << "Target is " << event.GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
@@ -298,7 +298,7 @@ bool AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) {
   // First, we apply it to the electron
   // Apply fiducial cut to electron
   Fiducial * fiducial = GetFiducialCut() ;
-  if( ! fiducial || IsData() ) return true ;
+  if( ! fiducial ) return true ;
 
   TLorentzVector out_mom = event.GetOutLepton4Mom() ;
   if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect(), IsData(), apply_fiducial ) ) return false ;
@@ -319,10 +319,10 @@ bool AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) {
       // Instead of chekcing which edge is closer, we compute both shifts... and check if it is still there
       TLorentzVector out_mom_part_shift = part_map[it->first][i] ;
       if( fFidAngleShift != 0 ) {
-	       out_mom_part_shift.SetPhi( part_map[it->first][i].Phi() + fFidAngleShift * TMath::Pi() / 180. ) ;
-	       if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), out_mom_part_shift.Vect(), IsData(), apply_fiducial ) ) continue ;
-	       out_mom_part_shift.SetPhi( out_mom.Phi() - fFidAngleShift * TMath::Pi() / 180. ) ;
-	        if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), out_mom_part_shift.Vect(), IsData(), apply_fiducial ) ) continue ;
+	out_mom_part_shift.SetPhi( part_map[it->first][i].Phi() + fFidAngleShift * TMath::Pi() / 180. ) ;
+	if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), out_mom_part_shift.Vect(), IsData(), apply_fiducial ) ) continue ;
+	out_mom_part_shift.SetPhi( out_mom.Phi() - fFidAngleShift * TMath::Pi() / 180. ) ;
+	if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), out_mom_part_shift.Vect(), IsData(), apply_fiducial ) ) continue ;
       }
 
       visible_part.push_back( part_map[it->first][i] ) ;

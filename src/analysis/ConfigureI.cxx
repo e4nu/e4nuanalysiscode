@@ -389,7 +389,7 @@ bool ConfigureI::InitializeFiducial(void) {
 }
 
 
-void ConfigureI::ApplyAcceptanceCorrection( Event & event ) {
+void ConfigureI::ApplyAcceptanceCorrection( Event & event, bool invert ) {
   double acc_wght = 1 ;
   if( ApplyAccWeights() ) {
     TLorentzVector out_mom = event.GetOutLepton4Mom() ;
@@ -408,6 +408,9 @@ void ConfigureI::ApplyAcceptanceCorrection( Event & event ) {
 	}
       }
     }
+    double initial_accwght = event.GetAccWght(); 
+    
+    if( invert && acc_wght != 0 ) acc_wght = initial_accwght / acc_wght ; 
     event.SetAccWght(acc_wght);
   }
   return ;

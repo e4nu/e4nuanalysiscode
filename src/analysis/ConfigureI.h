@@ -120,7 +120,7 @@ namespace e4nu {
   protected: 
     virtual ~ConfigureI();
     bool InitializeFiducial(void) ;
-    void ApplyAcceptanceCorrection( Event & event ) ;
+    void ApplyAcceptanceCorrection( Event & event, bool invert = false ) ;
     
     // Members
     bool kIsData = false ; // Is data
@@ -156,13 +156,6 @@ namespace e4nu {
     unsigned int kMult_signal = 0;
 
     Fiducial * kFiducialCut = nullptr ;
-    /*
-
-    std::map<int,std::unique_ptr<TFile>> kAcceptanceMap;
-    std::map<int,std::unique_ptr<TH3D>> kAccMap ;
-    std::map<int,std::unique_ptr<TH3D>> kGenMap ;
-
-    */
 
     std::map<int,TFile*> kAcceptanceMap;
     std::map<int,TH3D*> kAccMap ;

@@ -12,7 +12,6 @@
 #include "conf/ParticleI.h"
 #include "conf/TargetI.h"
 #include "utils/DetectorUtils.h"
-#include "conf/AccpetanceMapsI.h"
 #include "conf/AnalysisCutsI.h"
 #include "conf/AnalysisConstantsI.h"
 #include "conf/ConstantsI.h"
@@ -20,18 +19,12 @@
 using namespace e4nu ;
 
 MCCLAS6AnalysisI::MCCLAS6AnalysisI() {
-  kAcceptanceMap.clear();
-  kAccMap.clear();
-  kGenMap.clear();
   kMult_signal = GetNTopologyParticles() ;
   this->Initialize() ;
 }
 
 MCCLAS6AnalysisI::~MCCLAS6AnalysisI() {
   delete fData;
-  kAcceptanceMap.clear();
-  kAccMap.clear();
-  kGenMap.clear();
 }
 
 bool MCCLAS6AnalysisI::LoadData( void ) {
@@ -103,30 +96,6 @@ Event * MCCLAS6AnalysisI::GetValidEvent( const unsigned int event_id ) {
   return event ;
 }
 
-void MCCLAS6AnalysisI::ApplyAcceptanceCorrection( Event & event ) {
-  double acc_wght = 1 ;
-  if( ApplyAccWeights() ) {
-    TLorentzVector out_mom = event.GetOutLepton4Mom() ;
-    std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
-    std::map<int,unsigned int> Topology = GetTopology();
-    // Electron acceptance
-    if( kAccMap[conf::kPdgElectron] && kGenMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], *kGenMap[conf::kPdgElectron], out_mom ) ;
-
-    // Others
-    for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
-      if ( part_map.find(it->first) == part_map.end()) continue ;
-      if ( it->first == conf::kPdgElectron ) continue ;
-      else {
-	for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
-	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
-	}
-      }
-    }
-    event.SetAccWght(acc_wght);
-  }
-  return ;
-}
-
 void MCCLAS6AnalysisI::SmearParticles( Event & event ) {
   double EBeam = GetConfiguredEBeam() ;
   TLorentzVector out_mom = event.GetOutLepton4Mom() ;
@@ -160,26 +129,6 @@ void MCCLAS6AnalysisI::Initialize() {
   // Get run configurables
   double EBeam = GetConfiguredEBeam() ;
   unsigned int Target = GetConfiguredTarget() ;
-
-  // Initialize acceptance map histograms from file
-  if( ApplyAccWeights() ) {
-    kAcceptanceMap = conf::GetAcceptanceFileMap2( Target, EBeam ) ;
-
-    kAccMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ) ) ;
-    kAccMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") ) );
-    kAccMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") ) );
-    kAccMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") ) );
-
-    kGenMap[conf::kPdgElectron] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") ) );
-    kGenMap[conf::kPdgProton] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ) ) ;
-    kGenMap[conf::kPdgPiP] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ) ) ;
-    kGenMap[conf::kPdgPiM] = std::unique_ptr<TH3D>( dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ) ) ;
-
-    for( auto it = kAccMap.begin() ; it != kAccMap.end(); ++it ) {
-      kAccMap[it->first]->SetDirectory(nullptr);
-      kGenMap[it->first]->SetDirectory(nullptr);
-    }
-  }
 
   if( NormalizeHist() ) {
     // Get xsec from cross section spline
@@ -218,16 +167,14 @@ void MCCLAS6AnalysisI::Initialize() {
 }
 
 bool MCCLAS6AnalysisI::Finalise( std::map<int,std::vector<e4nu::Event>> & event_holder ) {
-
   if( !AnalysisI::Finalise() ) return false ;
 
   unsigned int min_mult = GetMinBkgMult() ;
   for( unsigned int k = 0 ; k < event_holder[min_mult].size() ; ++k ) {
     // Store corrected background in event sample
     StoreTree( event_holder[min_mult][k] );
-
     double norm_weight = event_holder[min_mult][k].GetTotalWeight() ;
-
+    
     // Store in histogram(s)
     for( unsigned int j = 0 ; j < GetObservablesTag().size() ; ++j ) {
       kHistograms[j]-> Fill( event_holder[min_mult][k].GetObservable( GetObservablesTag()[j] ), norm_weight ) ;

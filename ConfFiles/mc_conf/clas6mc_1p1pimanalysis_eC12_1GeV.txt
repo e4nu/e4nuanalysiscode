@@ -8,7 +8,7 @@ ApplyMottWeight true
 ApplyOutEMomCut	true
 ApplyQ2Cut	true
 ApplyWCut	false
-SubtractBkg     false
+SubtractBkg     true
 
 ApplyPhiOpeningAngle	false
 UsePhiThetaBand		false
@@ -33,7 +33,7 @@ NRotations 1000
 #The following parameters will modify the configuration 
 #TrueAccCorr: by using only true signal events, it provides with the analysed events after momentum cuts. All Sectors are used
 #trueRecoAccCorr: by using only true signal events, it provodes with analysed reconstructed events after momentum, fiducial, acceptance, smearing effects. Sectors 2 and 4 are not used.
-ComputeTrueAccCorr true
+ComputeTrueAccCorr false
 ComputeTrueRecoAccCorr false
 
 InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root

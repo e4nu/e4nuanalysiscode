@@ -13,10 +13,13 @@
 #include <vector>
 #include <map>
 #include "TH1D.h"
+#include "TH3D.h"
 #include "TFile.h"
 #include "TTree.h"
+#include "physics/Event.h"
 #include "conf/FiducialCutI.h"
 #include "utils/Fiducial.h"
+#include "conf/AccpetanceMapsI.h"
 #include <TRandom3.h>
 
 namespace e4nu { 
@@ -117,6 +120,7 @@ namespace e4nu {
   protected: 
     virtual ~ConfigureI();
     bool InitializeFiducial(void) ;
+    void ApplyAcceptanceCorrection( Event & event ) ;
     
     // Members
     bool kIsData = false ; // Is data
@@ -152,6 +156,17 @@ namespace e4nu {
     unsigned int kMult_signal = 0;
 
     Fiducial * kFiducialCut = nullptr ;
+    /*
+
+    std::map<int,std::unique_ptr<TFile>> kAcceptanceMap;
+    std::map<int,std::unique_ptr<TH3D>> kAccMap ;
+    std::map<int,std::unique_ptr<TH3D>> kGenMap ;
+
+    */
+
+    std::map<int,TFile*> kAcceptanceMap;
+    std::map<int,TH3D*> kAccMap ;
+    std::map<int,TH3D*> kGenMap ;
 
     // Topology
     std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity

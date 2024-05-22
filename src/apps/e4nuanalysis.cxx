@@ -89,7 +89,7 @@ int main( int argc, char* argv[] ) {
 	unsigned int max_mult = analysis->GetMaxBkgMult() ; 
 	final_name += "_"+std::to_string(max_mult)+"MaxBkgMult";
       }
-      if( ExistArg("phi-shift",argc,argv) && !compute_trueacc ) {
+      if( ExistArg("phi-shift",argc,argv) ) {
 	double shift = stod(GetArg("phi-shift",argc,argv).c_str()) ;
 	if ( shift != 0 ) { 
 	  final_name += "_Shift_"+std::to_string(shift)+"deg";

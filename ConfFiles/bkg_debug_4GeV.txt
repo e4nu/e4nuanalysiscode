@@ -1,13 +1,13 @@
 #Analysis Cuts
 ApplyFiducial   true
-ApplyAccWeights true
+ApplyAccWeights false
 ApplyReso	true
 ApplyMomCut     true
 ApplyMottWeight true
 ApplyOutEMomCut	true
 ApplyQ2Cut	true
 ApplyWCut	false
-SubtractBkg     false
+SubtractBkg     true
 
 ApplyPhiOpeningAngle	false
 UsePhiThetaBand		false
@@ -26,10 +26,10 @@ IsData			false
 IsCLAS6Analysis		true
 Toplogy 		11:1,2212:1,-211:1,221:0,22:0
 MaxBackgroundMultiplicity 4
-NRotations 1000
+NRotations 4000
 
 #histogram definition
-RangeList 0:4.5
+RangeList 1.4:4.5
 ObservableList ECal
 NBinsList 60
 NormalizeHists false

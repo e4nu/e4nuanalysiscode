@@ -75,10 +75,23 @@ int main( int argc, char* argv[] ) {
   TH1D * h_tot_true = (TH1D*) in_root_file->Get( (observable+"_TotTrueBkg"+bkg_string).c_str() ) ;
   TH1D * h_tot_est = (TH1D*) in_root_file->Get( (observable+"_TotEstBkg"+bkg_string).c_str() ) ;
   TH1D * h_diff_true = (TH1D*) h_tot_true->Clone();
-  h_diff_true->Scale(-1.);
-  h_diff_true->Add(h_tot_est);
-  h_diff_true->Divide(h_tot_est);
-  h_diff_true->Scale(100.); // Relative error in %
+  TH1D * h_mean = (TH1D*) h_tot_true->Clone();
+  h_mean -> Add ( h_tot_est );
+  h_mean -> Scale( 0.5 );
+
+  for( unsigned int j = 0 ; j < h_diff_true -> GetNbinsX() ; ++j ){
+    double err = pow(h_diff_true->GetBinContent(j)-h_mean->GetBinContent(j),2) ;
+    err += pow(h_tot_est->GetBinContent(j)-h_mean->GetBinContent(j),2);
+    err *= 0.5 ;
+    // Substract stat error
+    err -= pow(h_tot_est->GetBinError(j),2) ;
+    if( err < 0 ) err = 0 ;
+    err = sqrt(err);
+    if( h_tot_est->GetBinContent(j) != 0 ) {
+      h_diff_true->SetBinContent(j,err/h_tot_est->GetBinContent(j)*100);
+    }
+
+  }
 
   // Setting formatt
   gStyle->SetFrameBorderMode(0);
@@ -102,8 +115,8 @@ int main( int argc, char* argv[] ) {
   h_tot_true -> SetMarkerStyle(8);
   h_tot_true -> SetMarkerColor(kRed);
   h_tot_true -> SetLineWidth(2);
-  h_tot_true->GetYaxis()->SetLabelSize(0.06);
-  h_tot_true->GetYaxis()->SetTitleSize(0.06);
+  h_tot_true -> GetYaxis()->SetLabelSize(0.06);
+  h_tot_true -> GetYaxis()->SetTitleSize(0.06);
   h_tot_true -> SetTitle("Total Background");
   h_tot_true -> GetXaxis()->SetTitle(plotting::GetAxisLabel(observable,0).c_str());
   h_tot_true -> GetYaxis()->SetTitle(plotting::GetAxisLabel(observable,1).c_str());
@@ -124,16 +137,16 @@ int main( int argc, char* argv[] ) {
 
   h_diff_true -> SetTitle("");
   h_diff_true -> GetXaxis()->SetTitle(plotting::GetAxisLabel(observable,0).c_str());
-  h_diff_true -> GetYaxis()->SetTitle("(True-Est)/Est[%]");
+  h_diff_true -> GetYaxis()->SetTitle("#sigma_{BKG}/Est[%]");
   h_diff_true -> GetXaxis()->CenterTitle();
   h_diff_true -> GetYaxis()->CenterTitle();
-  h_diff_true->GetYaxis()->SetNdivisions(6);
-  h_diff_true->GetYaxis()->SetRangeUser(-50,50);
-  h_diff_true->GetXaxis()->SetLabelSize(0.08);
-  h_diff_true->GetYaxis()->SetLabelSize(0.08);
-  h_diff_true->GetXaxis()->SetTitleOffset(1.2);
-  h_diff_true->GetXaxis()->SetTitleSize(0.08);
-  h_diff_true->GetYaxis()->SetTitleSize(0.08);
+  h_diff_true -> GetYaxis()->SetNdivisions(6);
+  h_diff_true -> GetYaxis()->SetRangeUser(-50,50);
+  h_diff_true -> GetXaxis()->SetLabelSize(0.08);
+  h_diff_true -> GetYaxis()->SetLabelSize(0.08);
+  h_diff_true -> GetXaxis()->SetTitleOffset(1.2);
+  h_diff_true -> GetXaxis()->SetTitleSize(0.08);
+  h_diff_true -> GetYaxis()->SetTitleSize(0.08);
 
   auto legend = new TLegend(0.15,0.6,0.35,0.8);
   legend->AddEntry(h_tot_true, "Total true background");
@@ -156,7 +169,7 @@ int main( int argc, char* argv[] ) {
   pad2->SetBottomMargin(0.25);
   pad2->SetLeftMargin(0.1);
   pad2->SetTopMargin(0.05);
-  h_diff_true->Draw("hist ERR");
+  h_diff_true->Draw("hist");
   c->SaveAs(output_file.c_str());
   return 0 ;
 }

@@ -1,7 +1,7 @@
 #Analysis Cuts
 DisableSector   2,4
 ApplyFiducial   true
-ApplyAccWeights true
+ApplyAccWeights false
 ApplyReso	true
 ApplyMomCut     true
 ApplyMottWeight true
@@ -29,6 +29,13 @@ Toplogy 		11:1,2212:1,-211:1,221:0,22:0
 MaxBackgroundMultiplicity 4
 NRotations 1000
 
+#histogram definition
+RangeList 0.5:1.2
+ObservableList ECal
+NBinsList 60
+NormalizeHists false
+DebugBkg true
+
 #Acceptance correction
 #The following parameters will modify the configuration 
 #TrueAccCorr: by using only true signal events, it provides with the analysed events after momentum cuts. All Sectors are used
@@ -38,6 +45,4 @@ ComputeTrueRecoAccCorr false
 
 InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root
 XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/G18_10a_Dipole_Q2_01_eCarbon.root
-OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1p1pimanalysis_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad
-
-
+OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1p1pim_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad_bkg

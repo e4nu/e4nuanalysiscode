@@ -1,14 +1,14 @@
 #Analysis Cuts
-UseAllSectors false
+DisableSector   2,3,4
 ApplyFiducial   true
-ApplyAccWeights false
+ApplyAccWeights true
 ApplyReso	true
 ApplyMomCut     true
 ApplyMottWeight true
 ApplyOutEMomCut	true
 ApplyQ2Cut	true
-ApplyWCut	true
-SubtractBkg true
+ApplyWCut	false
+SubtractBkg     true
 
 ApplyPhiOpeningAngle	false
 UsePhiThetaBand		false
@@ -20,16 +20,22 @@ offset			0
 EBeam			2.261
 TargetPdg		1000060120
 NEvents			1000000000
-#NEvents			100000
 FirstEvent		0
 
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
-#Toplogy 		11:1,-211:1,221:0,22:0
 Toplogy 		11:1,2212:1,-211:1,221:0,22:0
-MaxBackgroundMultiplicity 4
-NRotations 1000
+MaxBackgroundMultiplicity 5
+NRotations 4000
+
+
+#histogram definition
+RangeList 0.5:2.5
+ObservableList ECal
+NBinsList 60
+NormalizeHists false
+DebugBkg true
 
 #Acceptance correction
 #The following parameters will modify the configuration 
@@ -38,21 +44,6 @@ NRotations 1000
 ComputeTrueAccCorr false
 ComputeTrueRecoAccCorr false
 
-#histogram definition
-RangeList 0.5:2.5,0:2
-#RangeList 0.5:1.2,0:2
-ObservableList ECal,RecoW
-NBinsList 60,60
-NormalizeHists false
-DebugBkg true
-
-#InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_01_e_on_1000060120_1161MeV_NoRad.gst.root
-#XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_01_total_xsec.root
-
-InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad.gst.root
-XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_04_total_xsec.root
-
-# InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_08_e_1000060120_4461MeV_NoRad.gst.root
-# XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_08_total_xsec.root
-
-OutputFile /genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/test_1p1pim_2GeV_m4
+InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/G18_10a_Dipole_LFG_Q2_04_2GeV_eCarbon.gst.root
+XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/G18_10a_Dipole_Q2_04_eCarbon.root
+OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1p1pim_G18_10a_Dipole_LFG_Q2_04_2GeV_eCarbon_NoRad_bkg

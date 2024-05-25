@@ -13,7 +13,7 @@ namespace e4nu {
   namespace conf { 
     
     std::string GetAcceptanceFile( const int particle, const unsigned int target, const double E ) ;
-    std::map<int,std::unique_ptr<TFile>> GetAcceptanceFileMap2( const unsigned int target, const double E ) ;
+    std::map<int,TFile*> GetAcceptanceFileMap2( const unsigned int target, const double E ) ;
   }
 }
 #endif 

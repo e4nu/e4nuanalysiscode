@@ -36,13 +36,9 @@ namespace e4nu {
   private :
 
     void SmearParticles( Event & event ) ;
-    void ApplyAcceptanceCorrection( Event & event ) ;
     Event * GetEvent( const unsigned int event_id ) ;
 
     MCEventHolder * fData = nullptr ;
-    std::map<int,std::unique_ptr<TFile>> kAcceptanceMap;
-    std::map<int,std::unique_ptr<TH3D>> kAccMap ;
-    std::map<int,std::unique_ptr<TH3D>> kGenMap ;
 
     // XSec value
     double kXSec = 0 ;

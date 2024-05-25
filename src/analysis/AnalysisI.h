@@ -10,7 +10,6 @@
 #include "TH1D.h"
 #include "TFile.h"
 #include "TTree.h"
-#include "physics/Event.h"
 #include "utils/Fiducial.h"
 #include "analysis/BackgroundI.h"
 

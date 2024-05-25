@@ -14,12 +14,13 @@
 #include "conf/AnalysisCutsI.h"
 #include "utils/KinematicUtils.h"
 #include "utils/ParticleUtils.h"
+#include "utils/DetectorUtils.h"
 #include "utils/Utils.h"
 
 using namespace e4nu; 
 
 ConfigureI::ConfigureI( ) {
-    this->Initialize();
+  this->Initialize();
 }
 
 ConfigureI::ConfigureI( const double EBeam, const unsigned int TargetPdg ) { 
@@ -32,6 +33,22 @@ ConfigureI::ConfigureI( const double EBeam, const unsigned int TargetPdg ) {
 }
     
 ConfigureI::~ConfigureI() {
+  for ( auto it = kAcceptanceMap.begin(); it != kAcceptanceMap.end(); it++){
+    delete it->second ;
+  }
+
+  for ( auto it = kAccMap.begin(); it != kAccMap.end(); it++){
+    delete it->second ;
+  }
+
+  for ( auto it = kGenMap.begin(); it != kGenMap.end(); it++){
+    delete it->second ;
+  }
+
+  kAcceptanceMap.clear();
+  kAccMap.clear();
+  kGenMap.clear();
+
   kTopology_map.clear() ; 
   kObservables.clear();
   kNBins.clear();
@@ -251,11 +268,33 @@ void ConfigureI::Initialize(void){
   gRandom = new TRandom3() ; 
   gRandom->SetSeed(10);
 
-  if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
   if( !kIsConfigured ) std::cout << " CONFIGURATION FAILED..." << std::endl;
   if( !IsData() ) kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCCLAS6Tree","GENIE CLAS6 Tree") ) ; 
   else kAnalysisTree = std::unique_ptr<TTree>( new TTree("CLAS6Tree","CLAS6 Tree") ) ; 
 
+  if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
+  
+  // Initialize acceptance map histograms from file
+  if( ApplyAccWeights() ) {
+    double EBeam = GetConfiguredEBeam() ; 
+    unsigned int Target = GetConfiguredTarget() ;
+    kAcceptanceMap = conf::GetAcceptanceFileMap2( Target, EBeam ) ;
+
+    kAccMap[conf::kPdgElectron] = dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Accepted Particles") ) ;
+    kAccMap[conf::kPdgProton] = dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Accepted Particles") );
+    kAccMap[conf::kPdgPiP] = dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Accepted Particles") );
+    kAccMap[conf::kPdgPiM] = dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Accepted Particles") );
+
+    kGenMap[conf::kPdgElectron] = dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgElectron] -> Get("Generated Particles") );
+    kGenMap[conf::kPdgProton] = dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgProton] -> Get("Generated Particles") ) ;
+    kGenMap[conf::kPdgPiP] = dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiP] -> Get("Generated Particles") ) ;
+    kGenMap[conf::kPdgPiM] = dynamic_cast<TH3D*>( kAcceptanceMap[conf::kPdgPiM] -> Get("Generated Particles") ) ;
+
+    for( auto it = kAccMap.begin() ; it != kAccMap.end(); ++it ) {
+      kAccMap[it->first]->SetDirectory(nullptr);
+      kGenMap[it->first]->SetDirectory(nullptr);
+    }
+  }
 }
       
 void ConfigureI::PrintConfiguration(void) const { 
@@ -347,6 +386,34 @@ bool ConfigureI::InitializeFiducial(void) {
   if( !kFiducialCut ) return false ; 
 
   return true ; 
+}
+
+
+void ConfigureI::ApplyAcceptanceCorrection( Event & event, bool invert ) {
+  double acc_wght = 1 ;
+  if( ApplyAccWeights() ) {
+    TLorentzVector out_mom = event.GetOutLepton4Mom() ;
+    std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
+    std::map<int,unsigned int> Topology = GetTopology();
+    // Electron acceptance
+    if( kAccMap[conf::kPdgElectron] && kGenMap[conf::kPdgElectron] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[conf::kPdgElectron], *kGenMap[conf::kPdgElectron], out_mom ) ;
+
+    // Others
+    for( auto it = Topology.begin() ; it != Topology.end() ; ++it ) {
+      if ( part_map.find(it->first) == part_map.end()) continue ;
+      if ( it->first == conf::kPdgElectron ) continue ;
+      else {
+	for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
+	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
+	}
+      }
+    }
+    double initial_accwght = event.GetAccWght(); 
+    
+    if( invert && acc_wght != 0 ) acc_wght = initial_accwght / acc_wght ; 
+    event.SetAccWght(acc_wght);
+  }
+  return ;
 }
 
 

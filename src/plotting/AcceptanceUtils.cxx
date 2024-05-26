@@ -9,8 +9,8 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 					std::string input_MC_location, std::string output_location,  std::string output_file_name,
 					std::string analysis_id, bool store_root ) {
 
-  				// Define trees
-  			std::vector<TFile*> files_mcrecoacc, files_mctrueacc;
+  // Define trees
+  std::vector<TFile*> files_mcrecoacc, files_mctrueacc;
   std::vector<TTree*> trees_mcrecoacc, trees_mctrueacc ;
 
   // Define Hists
@@ -176,7 +176,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
         else if ( observable == "pip_phi") content = pip_phi  ;
         else if ( observable == "RecoW") content = RecoW ;
         else if ( observable == "Recoq3") content = Recoq3 ;
-				else if ( observable == "RecoQELEnu") content = RecoQELEnu ;
+	else if ( observable == "RecoQELEnu") content = RecoQELEnu ;
         else if ( observable == "RecoXBJK") content = RecoXBJK ;
         else if ( observable == "RecoQ2") content = RecoQ2 ;
         else if ( observable == "RecoEnergyTransfer") content = RecoEnergyTransfer ;
@@ -184,45 +184,45 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
         else if ( observable == "HadAlphaT") content = HadAlphaT ;
         else if ( observable == "DeltaPT") content = DeltaPT ;
         else if ( observable == "HadDeltaPT") content = HadDeltaPT ;
-				else if ( observable == "HadDeltaPTx") content = HadDeltaPTx ;
-				else if ( observable == "HadDeltaPTy") content = HadDeltaPTy ;
+	else if ( observable == "HadDeltaPTx") content = HadDeltaPTx ;
+	else if ( observable == "HadDeltaPTy") content = HadDeltaPTy ;
         else if ( observable == "DeltaPhiT") content = DeltaPhiT ;
         else if ( observable == "HadDeltaPhiT") content = HadDeltaPhiT ;
         else if ( observable == "HadSystemMass") content = HadSystemMass ;
-				else if ( observable == "MissingEnergy") content = MissingEnergy ;
-				else if ( observable == "MissingMomentum") content = MissingMomentum ;
-				else if ( observable == "MissingAngle") content = MissingAngle ;
-				else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
-				else if ( observable == "HadronsAngle" ) content = HadronsAngle ;
-				else if ( observable == "AdlerAngleThetaP" ) content = AdlerAngleThetaP ;
-				else if ( observable == "AdlerAnglePhiP" ) content = AdlerAnglePhiP ;
-				else if ( observable == "AdlerAngleThetaPi" ) content = AdlerAngleThetaPi ;
-				else if ( observable == "AdlerAnglePhiPi" ) content = AdlerAnglePhiPi ;
-				else if ( observable == "Angleqvshad" ) content = Angleqvshad ;
+	else if ( observable == "MissingEnergy") content = MissingEnergy ;
+	else if ( observable == "MissingMomentum") content = MissingMomentum ;
+	else if ( observable == "MissingAngle") content = MissingAngle ;
+	else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
+	else if ( observable == "HadronsAngle" ) content = HadronsAngle ;
+	else if ( observable == "AdlerAngleThetaP" ) content = AdlerAngleThetaP ;
+	else if ( observable == "AdlerAnglePhiP" ) content = AdlerAnglePhiP ;
+	else if ( observable == "AdlerAngleThetaPi" ) content = AdlerAngleThetaPi ;
+	else if ( observable == "AdlerAnglePhiPi" ) content = AdlerAnglePhiPi ;
+	else if ( observable == "Angleqvshad" ) content = Angleqvshad ;
 
         // Fill the per Sector  histogram
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> Fill( content, w ) ;
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> SetLineWidth(3);
 
-				hists[j+initial_size_hists-initial_size_trees] -> Fill( content, w ) ;
+	hists[j+initial_size_hists-initial_size_trees] -> Fill( content, w ) ;
         hists[j+initial_size_hists-initial_size_trees] -> SetLineWidth(3);
 
-				std::string alt_obs = GetAlternativeObs(observable) ;
-				double content_2 = 0 ;
-				if ( alt_obs == "ECal" ) content_2 = ECal ;
-				else if ( alt_obs == "HadAlphaT" ) content_2 = HadAlphaT ;
-				else if ( alt_obs == "HadDeltaPT" ) content_2 = HadDeltaPT ;
+	std::string alt_obs = GetAlternativeObs(observable) ;
+	double content_2 = 0 ;
+	if ( alt_obs == "ECal" ) content_2 = ECal ;
+	else if ( alt_obs == "HadAlphaT" ) content_2 = HadAlphaT ;
+	else if ( alt_obs == "HadDeltaPT" ) content_2 = HadDeltaPT ;
 
         // Fill sliced histogram
-				if( addbinning.size() != 0 ) {
-	  			for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
-	    			if( content_2 > addbinning[l] && content_2 < addbinning[l+1] ){
-	      			if( j == initial_size_trees ) hists_recoacc_slices[i][l] -> Fill( content, w ) ;
-	      			else if( j == initial_size_trees + 1 ) hists_trueacc_slices[i][l] -> Fill( content, w ) ;
-	    			}
-	  			}
-				}
-	 		}
+	if( addbinning.size() != 0 ) {
+	  for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+	    if( content_2 > addbinning[l] && content_2 < addbinning[l+1] ){
+	      if( j == initial_size_trees ) hists_recoacc_slices[i][l] -> Fill( content, w ) ;
+	      else if( j == initial_size_trees + 1 ) hists_trueacc_slices[i][l] -> Fill( content, w ) ;
+	    }
+	  }
+	}
+      }
     }
 
     ratios.push_back( (TH1D*)hists_trueacc[i]->Clone() ) ;
@@ -277,12 +277,12 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     std::vector<TH1D*> temp_ratios_slices ;
     if( hists_trueacc_slices.size() != 0 ) {
       for( unsigned int l = 0 ; l < hists_trueacc_slices[i].size() ; ++l ){
-				temp_ratios_slices.push_back( (TH1D*)hists_trueacc_slices[i][l]->Clone() );
-				temp_ratios_slices[l] -> Divide( hists_recoacc_slices[i][l] );
-				StandardFormat( temp_ratios_slices[l], title, kGreen-3-i, 2+i, observable ) ;
-				std::string name = "Acceptance for slice " + std::to_string(l) ;
-				temp_ratios_slices[l] -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
-				temp_ratios_slices[l] -> GetYaxis()->SetTitle(name.c_str());
+	temp_ratios_slices.push_back( (TH1D*)hists_trueacc_slices[i][l]->Clone() );
+	temp_ratios_slices[l] -> Divide( hists_recoacc_slices[i][l] );
+	StandardFormat( temp_ratios_slices[l], title, kGreen-3-i, 2+i, observable ) ;
+	std::string name = "Acceptance for slice " + std::to_string(l) ;
+	temp_ratios_slices[l] -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
+	temp_ratios_slices[l] -> GetYaxis()->SetTitle(name.c_str());
       }
     }
     ratios_slices.push_back(temp_ratios_slices);
@@ -301,13 +301,13 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double bin_cont_min = 999 ;
     for( unsigned int j = 0 ; j < mc_files.size() ; ++j ) {
       if( ratios[j]->GetBinContent(i) > bin_cont_max ) {
-				bin_cont_max = ratios[j]->GetBinContent(i) ;
-			}
+	bin_cont_max = ratios[j]->GetBinContent(i) ;
+      }
       if( ratios[j]->GetBinContent(i) < bin_cont_min ) {
-				bin_cont_min = ratios[j]->GetBinContent(i) ;
-			}
+	bin_cont_min = ratios[j]->GetBinContent(i) ;
+      }
     }
-		// Compute the error assuming a uniform distribution
+    // Compute the error assuming a uniform distribution
     double error = pow(bin_cont_max-bin_cont_min,2)/12. + pow(ratio->GetBinError(i),2);
     ratio->SetBinError(i,sqrt(error));
   }
@@ -465,7 +465,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       TH1D * temp_slice_ratio = (TH1D*)ratios_slices[0][l]->Clone();
       temp_slice_ratio -> SetName(("Acceptance_Slice_"+std::to_string(l)).c_str());
       for( unsigned int i = 1 ; i < mc_files.size() ; ++i ) {
-				temp_slice_ratio->Add(ratios_slices[i][l]);
+	temp_slice_ratio->Add(ratios_slices[i][l]);
       }
       temp_slice_ratio -> Scale( 1./mc_files.size() );
       StandardFormat( temp_slice_ratio, title, kGreen-3, 1, observable ) ;
@@ -732,7 +732,7 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
         else if ( observable == "pip_phi") content = pip_phi  ;
         else if ( observable == "RecoW") content = RecoW ;
         else if ( observable == "Recoq3") content = Recoq3 ;
-				else if ( observable == "RecoQELEnu") content = RecoQELEnu ;
+	else if ( observable == "RecoQELEnu") content = RecoQELEnu ;
         else if ( observable == "RecoXBJK") content = RecoXBJK ;
         else if ( observable == "RecoQ2") content = RecoQ2 ;
         else if ( observable == "RecoEnergyTransfer") content = RecoEnergyTransfer ;
@@ -740,25 +740,25 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
         else if ( observable == "HadAlphaT") content = HadAlphaT ;
         else if ( observable == "DeltaPT") content = DeltaPT ;
         else if ( observable == "HadDeltaPT") content = HadDeltaPT ;
-				else if ( observable == "HadDeltaPTx") content = HadDeltaPTx ;
-				else if ( observable == "HadDeltaPTy") content = HadDeltaPTy ;
+	else if ( observable == "HadDeltaPTx") content = HadDeltaPTx ;
+	else if ( observable == "HadDeltaPTy") content = HadDeltaPTy ;
         else if ( observable == "DeltaPhiT") content = DeltaPhiT ;
         else if ( observable == "HadDeltaPhiT") content = HadDeltaPhiT ;
         else if ( observable == "HadSystemMass") content = HadSystemMass ;
-				else if ( observable == "MissingEnergy") content = MissingEnergy ;
-				else if ( observable == "MissingMomentum") content = MissingMomentum ;
-				else if ( observable == "MissingAngle") content = MissingAngle ;
-				else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
-				else if ( observable == "HadronsAngle" ) content = HadronsAngle ;
-				else if ( observable == "AdlerAngleThetaP" ) content = AdlerAngleThetaP ;
-				else if ( observable == "AdlerAnglePhiP" ) content = AdlerAnglePhiP ;
-				else if ( observable == "AdlerAngleThetaPi" ) content = AdlerAngleThetaPi ;
-				else if ( observable == "AdlerAnglePhiPi" ) content = AdlerAnglePhiPi ;
-				else if ( observable == "Angleqvshad" ) content = Angleqvshad ;
+	else if ( observable == "MissingEnergy") content = MissingEnergy ;
+	else if ( observable == "MissingMomentum") content = MissingMomentum ;
+	else if ( observable == "MissingAngle") content = MissingAngle ;
+	else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
+	else if ( observable == "HadronsAngle" ) content = HadronsAngle ;
+	else if ( observable == "AdlerAngleThetaP" ) content = AdlerAngleThetaP ;
+	else if ( observable == "AdlerAnglePhiP" ) content = AdlerAnglePhiP ;
+	else if ( observable == "AdlerAngleThetaPi" ) content = AdlerAngleThetaPi ;
+	else if ( observable == "AdlerAnglePhiPi" ) content = AdlerAnglePhiPi ;
+	else if ( observable == "Angleqvshad" ) content = Angleqvshad ;
 
         // Fill the per Sector  histogram
-				if( j == 0 ) hists_true[i]-> Fill( content, w ) ;
-				else if ( j == 1 ) hists_radcorr[i] -> Fill( content, w ) ;
+	if( j == 0 ) hists_true[i]-> Fill( content, w ) ;
+	else if ( j == 1 ) hists_radcorr[i] -> Fill( content, w ) ;
       }
     }
 

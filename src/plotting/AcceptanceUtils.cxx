@@ -331,7 +331,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       if( ratios_0[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_0[j]->GetBinContent(i) ;
     }
     double error = pow(bin_cont_max-bin_cont_min,2)/12. + pow(ratio_0->GetBinError(i),2);
-    ratio_0->SetBinError(i,error);
+    ratio_0->SetBinError(i,sqrt(error));
   }
   StandardFormat( ratio_0, title, kOrange+1, 1, observable ) ;
   ratio_0 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
@@ -352,7 +352,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       if( ratios_1[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_1[j]->GetBinContent(i) ;
     }
     double error = pow(bin_cont_max-bin_cont_min,2)/12. + pow(ratio_1->GetBinError(i),2);
-    ratio_1->SetBinError(i,error);
+    ratio_1->SetBinError(i,sqrt(error));
   }
   StandardFormat( ratio_1, title, kPink+4, 1, observable ) ;
   ratio_1 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
@@ -373,7 +373,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       if( ratios_2[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_2[j]->GetBinContent(i) ;
     }
     double error = pow(bin_cont_max-bin_cont_min,2)/12. + pow(ratio_2->GetBinError(i),2);
-    ratio_2->SetBinError(i,error);
+    ratio_2->SetBinError(i,sqrt(error));
   }
   StandardFormat( ratio_2, title, kViolet+5, 1, observable ) ;
   ratio_2 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
@@ -394,7 +394,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       if( ratios_3[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_3[j]->GetBinContent(i) ;
     }
     double error = pow(bin_cont_max-bin_cont_min,2)/12. + pow(ratio_3->GetBinError(i),2);
-    ratio_3->SetBinError(i,error);
+    ratio_3->SetBinError(i,sqrt(error));
   }
   StandardFormat( ratio_3, title, kAzure-5, 1, observable ) ;
   ratio_3 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
@@ -415,7 +415,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       if( ratios_4[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_4[j]->GetBinContent(i) ;
     }
     double error = pow(bin_cont_max-bin_cont_min,2)/12. + pow(ratio_4->GetBinError(i),2);
-    ratio_4->SetBinError(i,error);
+    ratio_4->SetBinError(i,sqrt(error));
   }
   StandardFormat( ratio_4, title, kTeal-7, 1, observable ) ;
   ratio_4 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());
@@ -436,7 +436,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       if( ratios_5[j]->GetBinContent(i) < bin_cont_min ) bin_cont_min = ratios_5[j]->GetBinContent(i) ;
     }
     double error = pow(bin_cont_max-bin_cont_min,2)/12. + pow(ratio_5->GetBinError(i),2);
-    ratio_5->SetBinError(i,error);
+    ratio_5->SetBinError(i,sqrt(error));
   }
   StandardFormat( ratio_5, title, kGreen-3, 1, observable ) ;
   ratio_5 -> GetXaxis()->SetTitle(GetAxisLabel(observable,0).c_str());

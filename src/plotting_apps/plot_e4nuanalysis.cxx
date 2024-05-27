@@ -136,10 +136,10 @@ int main( int argc, char* argv[] ) {
     string sys ;
     if( ExistArg("add-systematics",argc,argv)) {
       sys = GetArg("add-systematics",argc,argv) ;
-      vector<string> sys_names = SplitString(sys,':');
+      vector<string> sys_names = SplitString(sys,',');
       for( unsigned s = 0 ; s < sys_names.size() ; ++s ) {
 	std::cout << sys_names[s]<<std::endl;
-	vector<string> tmpsys = SplitString(sys_names[s]) ;
+	vector<string> tmpsys = SplitString(sys_names[s],':') ;
 	if( tmpsys.size() != 2 ) continue ;
 	systematic_map[tmpsys[0]] = stod(tmpsys[1]);
       }

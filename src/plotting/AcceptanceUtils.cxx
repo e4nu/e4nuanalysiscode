@@ -763,7 +763,7 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
     }
 
     ratios.push_back( (TH1D*)hists_true[i]->Clone() ) ;
-    ratios[i] -> Scale( hists_radcorr[i] ->GetEntries() / hists_true[i]->GetEntries() );
+    //ratios[i] -> Scale( hists_radcorr[i] ->GetEntries() / hists_true[i]->GetEntries() );
     ratios[i] -> Divide( hists_radcorr[i] );
     ratios[i] -> SetName(("RadCorrModel_"+std::to_string(i)).c_str());
     StandardFormat( ratios[i], title, kBlack+i+1, 2+i, observable ) ;

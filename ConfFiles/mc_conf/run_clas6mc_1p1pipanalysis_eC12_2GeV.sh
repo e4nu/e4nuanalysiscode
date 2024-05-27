@@ -36,6 +36,8 @@ declare -a XSecFiles=("G18_10a_Dipole_Q2_04_eCarbon.root"
     "GEM21_11a_Dipole_Q2_04_eCarbon.root"
 )
 
+declare -a RadiatedFiles=("GEM21_11a_Dipole_LFG_Q2_04_2GeV_eCarbon_radiated.gst.root")
+
 conf_file="ConfFiles/mc_conf/clas6mc_1p1pipanalysis_eC12_2GeV.txt"
 
 cd $E4NUANALYSIS
@@ -51,3 +53,5 @@ done
 
 ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
 ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueRecoAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
+
+./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}"e4nuanalysis_1p1pip_GEM21_11a_Dipole_LFG_Q2_04_2GeV_eCarbon_Rad" --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true

@@ -3,7 +3,7 @@ path_mc_files="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024
 path_output="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/"
 path_xsec="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/"
 
-declare -a InputFiles=("G18_10a_Dipole_CFG_Q2_01_1GeV_eCarbon.gst.root"
+declare -a InputFiles=("G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root"
     "G18_10a_Rarita_LFG_Q2_01_1GeV_eCarbon.gst.root"
     "GEM21_11a_Dipole_CFG_Q2_01_1GeV_eCarbon.gst.root"
     "GEM21_11a_Dipole_LFG_NoFSI_Q2_01_1GeV_eCarbon.gst.root"
@@ -15,7 +15,7 @@ declare -a InputFiles=("G18_10a_Dipole_CFG_Q2_01_1GeV_eCarbon.gst.root"
     "GEM21_11d_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root"
 )
 
-declare -a OutputFiles=("e4nuanalysis_1p1pip_G18_10a_Dipole_CFG_Q2_01_1GeV_eCarbon_NoRad"
+declare -a OutputFiles=("e4nuanalysis_1p1pip_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad"
     "e4nuanalysis_1p1pip_G18_10a_Rarita_LFG_Q2_01_1GeV_eCarbon_NoRad"
     "e4nuanalysis_1p1pip_GEM21_11a_Dipole_CFG_Q2_01_1GeV_eCarbon_NoRad"
     "e4nuanalysis_1p1pip_GEM21_11a_Dipole_LFG_NoFSI_Q2_01_1GeV_eCarbon_NoRad"
@@ -57,4 +57,4 @@ done
 ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
 ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueRecoAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
 
-./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}"e4nuanalysis_1p1pip_GEM21_11a_Dipole_CFG_Q2_01_1GeV_eCarbon_Rad" --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true
+./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}"e4nuanalysis_1p1pip_GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_Rad" --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true

@@ -581,8 +581,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     // Adding Acceptance correction systematics from model dependence
     // As is not very interesting we do not store it
     if( h_radcorr ) {
-	systematics::AddSystematic( *hist_data, *h_radcorr );
-    	systematics::AddSystematic( *hist_data_correventrate_wsyst, *h_radcorr );
+      systematics::AddSystematic( *hist_data, *h_radcorr );
+      systematics::AddSystematic( *hist_data_correventrate_wsyst, *h_radcorr );
     }
     // Hard coding some well known systematics
     systematics::AddSystematic(*hist_data, 5, "Radiative") ;

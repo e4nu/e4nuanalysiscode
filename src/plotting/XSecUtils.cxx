@@ -490,18 +490,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_correventrate_4, 1 );
     NormalizeHist(hist_data_correventrate_5, 1 );
 
-    // Normalize data from slices
-    if( addbinning.size() != 0 ) {
-      for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
-	NormalizeHist(h_data_slices[l], DataNormalization );
-	CorrectData(h_data_slices[l], h_acc_slices[l] );
-	if( h_radcorr ) CorrectData(h_data_slices[l], h_radcorr );
-	for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
-	  systematics::AddSystematic(*h_data_slices[l], it->second, it->first) ;
-	}
-      }
-    }
-
     hist_data_correventrate_wsyst = (TH1D*) hist_data ->Clone();
     hist_data_correventrate_wsyst -> SetName( "Corrected Event Rate with Systematics Data") ;
     hist_data_correventrate_wsyst_0 = (TH1D*) hist_data_0 ->Clone();
@@ -602,19 +590,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     StandardFormat( hists_true_submodel[id], title, kBlack, 2+id, observable ) ;
   }
 
-  // Normalize true from slices
-  if( addbinning.size() != 0 ) {
-    for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
-      NormalizeHist(h_total_slices[l], mc_norm[0] );
-      NormalizeHist(h_QEL_slices[l], mc_norm[0] );
-      NormalizeHist(h_RES_Delta_slices[l], mc_norm[0] );
-      NormalizeHist(h_RES_slices[l], mc_norm[0] );
-      NormalizeHist(h_SIS_slices[l], mc_norm[0] );
-      NormalizeHist(h_DIS_slices[l], mc_norm[0] );
-      NormalizeHist(h_MEC_slices[l], mc_norm[0] );
-    }
-  }
-
   NormalizeHist(hist_true, mc_norm[0]);
   NormalizeHist(hist_true_0, mc_norm[0]);
   NormalizeHist(hist_true_1, mc_norm[0]);
@@ -636,6 +611,47 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     mc_hists.push_back(*hists_true_submodel[id]);
     mc_hists_xsec.push_back(hists_true_submodel[id]);
   }
+
+	// Deal with _Slices
+
+	// Normalize true from slices
+  if( addbinning.size() != 0 ) {
+    for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+      NormalizeHist(h_total_slices[l], mc_norm[0] );
+      NormalizeHist(h_QEL_slices[l], mc_norm[0] );
+      NormalizeHist(h_RES_Delta_slices[l], mc_norm[0] );
+      NormalizeHist(h_RES_slices[l], mc_norm[0] );
+      NormalizeHist(h_SIS_slices[l], mc_norm[0] );
+      NormalizeHist(h_DIS_slices[l], mc_norm[0] );
+      NormalizeHist(h_MEC_slices[l], mc_norm[0] );
+    }
+
+		// Normalize data from slices
+    for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
+			CorrectData(h_data_slices[l], h_acc_slices[l] ); // Correct data before normalizing, as it compensates for events
+			if( h_radcorr ) CorrectData(h_data_slices[l], h_radcorr ); // ! Need to have one per sector!
+
+			NormalizeHist(h_data_slices[l], DataNormalization );
+
+			// Add systematics
+
+			systematics::AddSystematic( *h_data_slices[l], *h_acc_slices[l] );
+      //systematics::SectorVariationError( *h_data_slices[l], {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5}) ;
+			//! Need per sector slices
+			if( h_radcorr ) {
+				systematics::AddSystematic( *h_data_slices[l], *h_radcorr );
+			}
+			// Hard coding some well known systematics
+			systematics::AddSystematic(*h_data_slices[l], 5, "Radiative") ;
+			systematics::AddSystematic(*h_data_slices[l], 1, "Normalization") ;
+			systematics::AddSystematic(*h_data_slices[l], 1, "AnglDependence") ;
+
+			for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
+				systematics::AddSystematic(*h_data_slices[l], it->second, it->first) ;
+			}
+		}
+  }
+
   std::vector<TH1D> breakdown = {*hist_true_QEL,*hist_true_RES_Delta,*hist_true_RES,*hist_true_SIS,*hist_true_MEC,*hist_true_DIS};
   std::vector<TH1D*> breakdown_xsec = {hist_true_QEL,hist_true_RES_Delta,hist_true_RES,hist_true_SIS,hist_true_MEC,hist_true_DIS};
   std::vector<TH1D*> mc_per_sector = {hist_true_0,hist_true_1,hist_true_2,hist_true_3,hist_true_4,hist_true_5};
@@ -1182,7 +1198,10 @@ void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vect
     if( all_slices[4][l]) StandardFormat( all_slices[4][l], title_subname, kOrange, 1, observable, y_max_total ) ;
     if( all_slices[5][l]) StandardFormat( all_slices[5][l], title_subname, kMagenta-3, 1, observable, y_max_total ) ;
     if( all_slices[6][l]) StandardFormat( all_slices[6][l], title_subname, kCyan+1, 1, observable, y_max_total ) ;
-    if( all_slices.size() == 8 && all_slices[7][l]) StandardFormat( all_slices[7][l], title_subname, kBlack, 8, observable, y_max_total ) ;
+    if( all_slices.size() == 8 && all_slices[7][l]) {
+			StandardFormat( all_slices[7][l], title_subname, kBlack, 1, observable, y_max_total ) ;
+			all_slices[7][l]->SetMarkerStyle(8);
+		}
   }
 
   c_slices->cd();
@@ -1198,14 +1217,15 @@ void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vect
       pad_slice_i = (TPad*)pad_slices->cd(1+l);
       pad_slice_i -> cd();
       pad_slice_i -> SetBottomMargin(0.15);
-      pad_slice_i -> SetLeftMargin(0.15);
+      pad_slice_i -> SetLeftMargin(0.2);
+			pad_slice_i -> SetRightMargin(0.);
       if( all_slices[0][l]) {
 				all_slices[0][l] -> GetYaxis()->SetTitleOffset(1.2);
 				all_slices[0][l]->Draw("hist");
       }
 
       for( unsigned i = 1 ; i < all_slices.size() -1 ; ++i ) {
-				if( all_slices[i][l] ) all_slices[i][l] ->Draw("same");
+				if( all_slices[i][l] ) all_slices[i][l] ->Draw("hist same");
       }
 
       if( all_slices.size() == 8 && all_slices[7][l] ) all_slices[7][l] -> Draw("err same ");

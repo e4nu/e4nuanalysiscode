@@ -569,7 +569,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
     // Adding in event rate too
     systematics::SectorVariationError( *hist_data_correventrate_wsyst, {hist_data_0,hist_data_1,hist_data_2,hist_data_3,hist_data_4,hist_data_5}) ;
-    
+
     //adding systematics from systematic map. Relative systematic added to all bins
     for( auto it = systematic_map.begin() ; it != systematic_map.end() ; ++it ) {
       std::cout << " Adding " << it->second << " % systematic on " << it->first << std::endl;
@@ -679,8 +679,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   plotting::PlotLegend( mc_hists_xsec, breakdown_xsec, hist_data, observable, data_name, model, output_location, output_file_name, store_root );
 
-  //  plotting::PlotSlices(  all_slices, addbinning, observable, title, data_name, model, input_MC_location, input_data_location,
-  //			 output_location, output_file_name,  analysis_id, store_root ) ;
+  plotting::PlotSlices(  all_slices, addbinning, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name,  systematic_map, analysis_id, store_root ) ;
 }
 
 void plotting::PlotXsecDataTotal( TH1D * data, std::string observable, std::string title, std::string data_name,
@@ -1142,9 +1141,22 @@ void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vect
 			   std::string output_file_name, std::map<string,double> systematic_map,
 			   std::string analysis_id, bool store_root ) {
 
+	// Check slices aren't empty
+	for( unsigned int i = 0 ; i < all_slices.size(); ++i ) {
+     for( unsigned j = 0 ; j < all_slices[i].size(); ++j ){
+			 if( !all_slices[i][j] ) {
+				 std::cout << " slice " << i << " is empty. Exit..."<<std::endl;
+				 return ;
+			 }
+		 }
+	}
+
+  TCanvas* c_slices = new TCanvas("c_slices","c_slices",200,10,700,500);
+	TPad *pad_slices = new TPad("pad1","",0,0,1,1);
+	TPad *pad_slice_i ;
+
   for( unsigned int l = 0 ; l < addbinning.size()-1 ; l++ ){
     double y_max_total = GetMaximum( all_slices[0] );
-
     // Add Slice information in title
     std::string title_subname = title ;
     std::string alt_obs = GetAlternativeObs(observable);
@@ -1173,9 +1185,7 @@ void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vect
     if( all_slices.size() == 8 && all_slices[7][l]) StandardFormat( all_slices[7][l], title_subname, kBlack, 8, observable, y_max_total ) ;
   }
 
-  TCanvas* c_slices = new TCanvas("c_slices","c_slices",200,10,700,500);
   c_slices->cd();
-  TPad *pad_slices = new TPad("pad1","",0,0,1,1);
   pad_slices->Draw();
   pad_slices->cd();
   pad_slices->SetBottomMargin(0.15);
@@ -1185,22 +1195,22 @@ void plotting::PlotSlices( std::vector<std::vector<TH1D*>> all_slices, std::vect
   if( addbinning.size() != 0 ) {
     pad_slices->Divide(addbinning.size()-1,0);
     for( unsigned int l = 0 ; l < addbinning.size()-1 ; ++l ){
-      TPad *pad_slice_i = (TPad*)pad_slices->cd(1+l);
+      pad_slice_i = (TPad*)pad_slices->cd(1+l);
       pad_slice_i -> cd();
       pad_slice_i -> SetBottomMargin(0.15);
       pad_slice_i -> SetLeftMargin(0.15);
       if( all_slices[0][l]) {
-	all_slices[0][l] -> GetYaxis()->SetTitleOffset(1.2);
-	all_slices[0][l]->Draw("hist");
+				all_slices[0][l] -> GetYaxis()->SetTitleOffset(1.2);
+				all_slices[0][l]->Draw("hist");
       }
 
       for( unsigned i = 1 ; i < all_slices.size() -1 ; ++i ) {
-	if( all_slices[i][l] ) all_slices[i][l] ->Draw("same");
+				if( all_slices[i][l] ) all_slices[i][l] ->Draw("same");
       }
-      if( all_slices.size() == 8 && all_slices[8][l] ) all_slices[8][l] -> Draw("err same ");
+
+      if( all_slices.size() == 8 && all_slices[7][l] ) all_slices[7][l] -> Draw("err same ");
     }
   }
-
   std::string output_name = output_file_name+"_dxsec_d"+observable+"_"+GetAlternativeObs(observable)+"_Slices" ;
   if( store_root ) c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".root").c_str());
   c_slices->SaveAs((output_location+"/TotalXSec/"+output_name+".pdf").c_str());

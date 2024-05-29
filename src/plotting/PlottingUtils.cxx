@@ -433,20 +433,20 @@ void plotting::StandardFormat( TH1D * prediction, std::string title, int color, 
   int FontStyle = 132;
   prediction->GetXaxis()->SetTitleOffset(0.8);
   prediction->GetXaxis()->SetLabelSize(0.04);
-  prediction->GetXaxis()->SetTitleSize(0.06);
+  prediction->GetXaxis()->SetTitleSize(0.08);
   prediction->GetXaxis()->SetNdivisions(6);
   prediction->GetXaxis()->SetLabelFont(FontStyle);
   prediction->GetXaxis()->SetTitleFont(FontStyle);
 
-  prediction->GetYaxis()->SetNdivisions(6);
+  prediction->GetYaxis()->SetNdivisions(8);
   prediction->GetYaxis()->SetTitleOffset(0.8);
-  prediction->GetYaxis()->SetLabelSize(0.04);
+  prediction->GetYaxis()->SetLabelSize(0.08);
   prediction->GetYaxis()->SetTitleSize(0.06);
   prediction->GetYaxis()->SetLabelFont(43);
   prediction->GetYaxis()->SetLabelFont(FontStyle);
   prediction->GetYaxis()->SetTitleFont(FontStyle);
   prediction->GetYaxis()->SetRangeUser(0,y_max);
-  prediction->GetYaxis()->SetMaxDigits(1) ;
+  prediction->GetYaxis()->SetMaxDigits(3) ;
   prediction->SetTitleFont(FontStyle);
 
   return;

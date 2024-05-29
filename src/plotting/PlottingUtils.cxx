@@ -254,8 +254,8 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
       else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 10, 0.3, 3 );
     } else if ( observable == "pip_mom") {
       if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 20, 0.15, 0.6);
-      else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 35, 0.15, 1.2 );
-      else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 35, 0.15, 2.2 );
+      else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 35, 0.3, 1.2 );
+      else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 35, 0.3, 2.2 );
     } else if ( observable == "pip_theta") {
       if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 35, 12, 180 );
       else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 35, 12, 180 );

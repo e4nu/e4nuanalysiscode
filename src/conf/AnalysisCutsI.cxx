@@ -18,8 +18,10 @@ double conf::GetMinMomentumCut( const int particle_pdg, const double EBeam ) {
     else if ( EBeam == 4.461 ) min_p = 1.1 ; 
   } else if ( particle_pdg == kPdgProton || particle_pdg == kPdgPhoton ) { 
     min_p = 0.3 ; 
-  } else if ( particle_pdg == kPdgPiM || particle_pdg == kPdgPiP ) { 
+  } else if ( particle_pdg == kPdgPiM ) {
     min_p = 0.15 ; 
+  } else if ( particle_pdg == kPdgPiP ) { 
+    min_p = 0.2 ; 
   }
   return min_p ; 
 }

@@ -211,32 +211,11 @@ void E4NuAnalysis::Initialize(void) {
   kOutFile = std::unique_ptr<TFile> ( new TFile( (GetOutputFile()+".root").c_str(),"RECREATE") ) ;
 
   for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
-    std::vector<double> binning ;
-    if (GetNBins().size() != 0 ) {
-      double width = ( GetRange()[i][1] - GetRange()[i][0] ) / (double) GetNBins()[i] ;  
-      for( unsigned int k = 0 ; k < GetNBins()[i] ; ++k ) { 
-	binning.push_back( GetRange()[i][0] + k * width ) ; 
-      }
-      binning.push_back( GetRange()[i][1] ) ; 
-    }
-
-    if( binning.size() == 0 ) binning = plotting::GetBinning( GetObservablesTag()[i], GetConfiguredEBeam() );
+    std::vector<double> binning = plotting::GetBinning( GetObservablesTag()[i], GetConfiguredEBeam() );
     kHistograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-  }  
 
-  if( GetDebugBkg() ) {
-    for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
-      std::vector<double> binning ;
-      if (GetNBins().size() != 0 ) {
-	if ( GetNBins()[i] == 0 ) continue ; 
-	double width = ( GetRange()[i][1] - GetRange()[i][0] ) / (double) GetNBins()[i] ;  
-	for( unsigned int k = 0 ; k < GetNBins()[i] ; ++k ) { 
-	  binning.push_back( GetRange()[i][0] + k * width ) ; 
-	}
-	binning.push_back( GetRange()[i][1] ) ; 
-      }
-      if( binning.size() == 0 ) binning = plotting::GetBinning( GetObservablesTag()[i], GetConfiguredEBeam() );
-      
+
+    if( GetDebugBkg() ) {
       // These histograms are used to debug the background
       // It compares the true background distribution to the estimated background distribution
       // Different contributions are considered, depending on the multiplicity or the topology
@@ -281,7 +260,7 @@ void E4NuAnalysis::Initialize(void) {
       mult = min_mult + 1 ;
       for( unsigned int j = 0 ; j < max_mult - min_mult ; ++j ) { 
 	kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotEstBkg_mult_"+std::to_string(mult)).c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-      mult += 1 ; 
+	mult += 1 ; 
       }
       
       // Add plots for min_mult + 1, in terms of particle content
@@ -301,5 +280,5 @@ void E4NuAnalysis::Initialize(void) {
   }
   
 }
-  
-  
+
+

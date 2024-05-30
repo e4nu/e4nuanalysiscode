@@ -30,9 +30,7 @@ MaxBackgroundMultiplicity 4
 NRotations 1000
 
 #histogram definition
-RangeList 0.5:1.2
 ObservableList ECal
-NBinsList 60
 NormalizeHists false
 DebugBkg true
 

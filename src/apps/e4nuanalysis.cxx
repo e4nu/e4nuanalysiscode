@@ -92,9 +92,11 @@ int main( int argc, char* argv[] ) {
       std::string obs;
       while( getline( obs_list, obs, ',' ) ) { 
 	obs_vect.push_back(obs) ; 
-	std::cout << obs << std::endl;
       }
       analysis -> SetBkgObservables( obs_vect ) ;
+      analysis -> SetDebugBkg( true ) ;
+      compute_trueacc = false ; 
+      compute_truerecoacc = false ;
     }
 
     if( ExistArg("output-file",argc,argv)) {
@@ -151,7 +153,19 @@ int main( int argc, char* argv[] ) {
     if( analysis -> IsRadiated() ) OutputFile_reco += "_radiated";
     analysis -> SetOutputFile( OutputFile_reco ) ; 
     std::cout << " Computing true reconstructed analysis distributions for acceptance correction..."<<std::endl;
+  } else if( ExistArg("bkg-obs-list",argc,argv) ) {
+    analysis -> SetTrueSignal( false ) ; 
+    analysis -> SetApplyFiducial( true ) ; 
+    analysis -> SetApplyAccWeights( false ) ; // for now 
+    analysis -> SetApplyReso( true ) ; 
+    analysis -> SetSubtractBkg( true ) ; 
+    std::string OutputFile_reco = analysis->GetOutputFile() + "_debugbkg" ;
+    analysis -> SetOutputFile( OutputFile_reco ) ; 
+      
   }
+
+
+
   analysis -> PrintConfiguration() ;
   analysis -> Initialize() ;
 

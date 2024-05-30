@@ -89,6 +89,7 @@ namespace e4nu {
     void SetSubtractBkg( const bool b ) { kSubtractBkg = b ; }
     void SetMaxBkgMult( const unsigned int mult ) { kMaxBkgMult = mult; }
     void SetBkgObservables( const std::vector<std::string> list ) { kObservables = list ;}
+    void SetDebugBkg( const bool b ) { kDebugBkg = b ; }
 
     // Get information about the background subtraction method
     unsigned int GetMaxBkgMult(void) const { return kMaxBkgMult ; }

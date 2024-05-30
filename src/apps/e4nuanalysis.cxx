@@ -31,6 +31,7 @@ using namespace e4nu::plotting;
 // --xsec-file) XSecFile (only for MC)                                 //
 // --bkg-mult) Maximum multiplicity used in bkg subtraction method     //
 // --phi-shift) Shift on phy applied to reduce fiducial volume         //
+// --bkg-obs-list) List for bkg observable closure test                //
 /////////////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
@@ -81,6 +82,19 @@ int main( int argc, char* argv[] ) {
     }
     if( ExistArg("phi-shift",argc,argv) ) {
       analysis -> SetFidAngleShift( stod(GetArg("phi-shift",argc,argv).c_str()) ) ;
+    }
+
+    if( ExistArg("bkg-obs-list",argc,argv) ) {
+      std::string obs_conf = GetArg("bkg-obs-list",argc,argv) ; 
+      std::cout << obs_conf << std::endl;
+      std::istringstream obs_list( obs_conf ) ; 
+      std::vector<string> obs_vect ; 
+      std::string obs;
+      while( getline( obs_list, obs, ',' ) ) { 
+	obs_vect.push_back(obs) ; 
+	std::cout << obs << std::endl;
+      }
+      analysis -> SetBkgObservables( obs_vect ) ;
     }
 
     if( ExistArg("output-file",argc,argv)) {

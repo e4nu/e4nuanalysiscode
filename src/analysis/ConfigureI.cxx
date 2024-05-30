@@ -319,7 +319,7 @@ void ConfigureI::PrintConfiguration(void) const {
   if( kTrueSignal ) std::cout << "Only analysing true signal events : " << std::endl;
 
   for( unsigned int i = 0 ; i < kObservables.size(); ++i ) {
-    std::cout << "Observable " << kObservables[i] << std::endl;
+    std::cout << "Observable for closure test: " << kObservables[i] << std::endl;
   }
   if( kDebugBkg ) std::cout << " Storing debugging plots for background " << std::endl;
 

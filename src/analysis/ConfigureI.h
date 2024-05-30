@@ -11,6 +11,8 @@
 #define _CONFIGURE_I_H_
 
 #include <vector>
+#include <string>
+#include <iostream>
 #include <map>
 #include "TH1D.h"
 #include "TH3D.h"
@@ -86,6 +88,7 @@ namespace e4nu {
     void EnableAllSectors( const bool b ) { kEnabledSectors = { b, b, b, b, b, b } ; } 
     void SetSubtractBkg( const bool b ) { kSubtractBkg = b ; }
     void SetMaxBkgMult( const unsigned int mult ) { kMaxBkgMult = mult; }
+    void SetBkgObservables( const std::vector<std::string> list ) { kObservables = list ;}
 
     // Get information about the background subtraction method
     unsigned int GetMaxBkgMult(void) const { return kMaxBkgMult ; }

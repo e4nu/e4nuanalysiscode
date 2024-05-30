@@ -34,6 +34,10 @@ namespace e4nu {
     bool ApplyFiducialCut( Event & event, bool apply_fiducial ) ; 
     double GetElectronMinTheta( TLorentzVector emom ) ;
 
+    // Loading all observables
+    void LoadFinalObservables( Event event );
+    double GetObservable( std::string obs ); 
+
     // ID for Background historams
     unsigned int kid_signal, kid_tottruebkg, kid_totestbkg, kid_acccorr;
     unsigned int kid_2p0pitruebkg, kid_1p1pitruebkg, kid_2p1pitruebkg, kid_1p2pitruebkg ;
@@ -43,6 +47,24 @@ namespace e4nu {
 
   private :
     TF1 * kElectronFit = nullptr ;
+
+    // XSec value. if data it is set to 0
+    double kXSec = 0 ;
+
+
+  // Definition of final observables
+  bool fCC, fNC, fEM, fQEL, fRES, fMEC, fDIS, fIsBkg ;
+  int fID, fTargetPdg, fInLeptonPdg, fOutLeptonPdg, kresid ;
+  unsigned int fTrueNProtons, fTrueNNeutrons, fTrueNPiP, fTrueNPiM, fTrueNPi0, fTrueNKP, fTrueNKM, fTrueNK0, fTrueNEM, fTrueNOther, fTopMult, fInitialNEvents; 
+  unsigned int fElectronSector, fRecoNProtons, fRecoNNeutrons, fRecoNPiP, fRecoNPiM, fRecoNPi0, fRecoNKP, fRecoNKM, fRecoNK0, fRecoNEM;
+  double fTotWeight, fAccWght, fEventWght, fBeamE, fTrueQ2s, fTrueWs,fTruexs, fTrueys,fTrueQ2,fTrueW,fTruex,fTruey ;
+  double fEfl, fpfl, fpflx, fpfly, fpflz, fpfl_theta, fpfl_phi, fRecoQELEnu, fRecoEnergyTransfer, fRecoq3, fRecoQ2, fRecoXBJK, fRecoW, fMottXSecScale;
+  double kHadronsAngle,kproton_E, kproton_mom, kproton_momx, kproton_momy, kproton_momz, kproton_theta, kproton_phi, kECal, kDiffECal, kAlphaT, kDeltaPT;
+  double kDeltaPhiT, kHadAlphaT, kHadDeltaPT, kHadDeltaPTx, kHadDeltaPTy, kHadDeltaPhiT, kInferedNucleonMom ;
+  double fpip_E, fpip_mom, fpip_momx, fpip_momy, fpip_momz, fpip_theta, fpip_phi;
+  double fAdlerAngleThetaP, fAdlerAnglePhiP, fAdlerAngleThetaPi, fAdlerAnglePhiPi, fAngleqvshad, fHadSystemMass ;
+  double fpim_E, fpim_mom, fpim_momx, fpim_momy, fpim_momz, fpim_theta, fpim_phi;
+  double fMissingEnergy, fMissingMomentum, fMissingAngle, fConversionFactor, fTotalXSec, fMCNormalization;
 
   };
 }

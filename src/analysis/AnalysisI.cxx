@@ -7,6 +7,7 @@
 #include <string>
 #include <fstream>
 #include "analysis/AnalysisI.h"
+#include "conf/ConstantsI.h"
 #include "conf/FiducialCutI.h"
 #include "conf/AnalysisConstantsI.h"
 #include "conf/AccpetanceMapsI.h"
@@ -344,3 +345,222 @@ bool AnalysisI::Finalise(void) {
   //  if( kElectronFit ) delete kElectronFit ;
   return true ;
 }
+
+
+void AnalysisI::LoadFinalObservables( Event event ){
+  // Access observables
+  fID = event.GetEventID() ;
+  fTargetPdg = event.GetTargetPdg() ;
+  fInLeptonPdg = event.GetInLeptPdg() ;
+  fOutLeptonPdg = event.GetOutLeptPdg() ;
+  fTotWeight = event.GetTotalWeight() ;
+  fAccWght = event.GetAccWght() ;
+  fEventWght = event.GetEventWeight() ;
+  fBeamE = event.GetInLepton4Mom().E() ;
+
+  fCC = event.IsCC();
+  fNC = event.IsNC();
+  fEM = event.IsEM();
+  fQEL = event.IsQEL();
+  fRES = event.IsRES();
+  fMEC = event.IsMEC();
+  fDIS = event.IsDIS();
+
+  fTrueNProtons = event.GetTrueNProtons() ;
+  fTrueNNeutrons = event.GetTrueNNeutrons();
+  fTrueNPiP = event.GetTrueNPiP();
+  fTrueNPiM = event.GetTrueNPiM();
+  fTrueNPi0 = event.GetTrueNPi0();
+  fTrueNKP = event.GetTrueNKP();
+  fTrueNKM = event.GetTrueNKM();
+  fTrueNK0 = event.GetTrueNK0();
+  fTrueNEM = event.GetTrueNEM();
+  fTrueNOther = event.GetTrueNOther();
+
+  fRecoNProtons = event.GetRecoNProtons() ;
+  fRecoNNeutrons = event.GetRecoNNeutrons();
+  fRecoNPiP = event.GetRecoNPiP();
+  fRecoNPiM = event.GetRecoNPiM();
+  fRecoNPi0 = event.GetRecoNPi0();
+  fRecoNKP = event.GetRecoNKP();
+  fRecoNKM = event.GetRecoNKM();
+  fRecoNK0 = event.GetRecoNK0();
+  fRecoNEM = event.GetRecoNEM();
+
+  fTrueQ2s = event.GetTrueQ2s();
+  fTrueWs = event.GetTrueWs();
+  fTruexs = event.GetTruexs();
+  fTrueys = event.GetTrueys();
+  fTrueQ2 = event.GetTrueQ2();
+  fTrueW = event.GetTrueW();
+  fTruex = event.GetTruex();
+  fTruey = event.GetTruey();
+  kresid = event.GetRESID();
+
+  TLorentzVector out_mom = event.GetOutLepton4Mom();
+  fEfl = out_mom.E();
+  fpfl = out_mom.P();
+  fpflx = out_mom.Px();
+  fpfly = out_mom.Py();
+  fpflz = out_mom.Pz();
+  fpfl_theta = out_mom.Theta() * TMath::RadToDeg() ;
+  out_mom.SetPhi( out_mom.Phi() + TMath::Pi() ) ;
+  fElectronSector = utils::GetSector( out_mom.Phi() ) ;
+  fpfl_phi = out_mom.Phi() * TMath::RadToDeg() ;
+
+  fRecoQELEnu = utils::GetQELRecoEnu( out_mom, fTargetPdg ) ;
+  fRecoEnergyTransfer = utils::GetEnergyTransfer( out_mom, fBeamE ) ;
+  fRecoq3 = utils::GetRecoq3( out_mom, fBeamE ).Mag() ;
+  fRecoQ2 = utils::GetRecoQ2( out_mom, fBeamE ) ;
+  fRecoXBJK = utils::GetRecoXBJK( out_mom, fBeamE ) ;
+  fRecoW = utils::GetRecoW(out_mom, fBeamE ) ;
+
+  fMottXSecScale = event.GetMottXSecWeight();
+
+  std::map<int,unsigned int> topology = GetTopology() ;
+  static bool topology_has_protons = false ;
+  if( topology.count(conf::kPdgProton) != 0 ) {
+    if( topology[conf::kPdgProton] != 0 ) topology_has_protons = true ;
+  }
+  static bool topology_has_pip = false ;
+  if( topology.count(conf::kPdgPiP) != 0 ) {
+    if( topology[conf::kPdgPiP] != 0 ) topology_has_pip = true ;
+  }
+
+  static bool topology_has_pim = false ;
+  if( topology.count(conf::kPdgPiM) != 0 ) {
+    if( topology[conf::kPdgPiM] != 0 ) topology_has_pim = true ;
+  }
+
+  fTopMult = GetNTopologyParticles();
+
+  // flip hadrons phi
+  std::map<int,std::vector<TLorentzVector>> hadron_map = event.GetFinalParticles4Mom();
+  for( auto it = hadron_map.begin() ; it!=hadron_map.end() ; ++it ) {
+    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
+      TLorentzVector had_4mom = (it->second)[i] ;
+      had_4mom.SetPhi( (it->second)[i].Phi() + TMath::Pi() );
+      (it->second)[i] = had_4mom;
+    }
+  }
+
+  TLorentzVector p_max(0,0,0,0) ;
+  if( topology_has_protons ) {
+    double max_mom = 0 ;
+    for( unsigned int i = 0 ; i < hadron_map[conf::kPdgProton].size() ; ++i ) {
+      if( hadron_map[conf::kPdgProton][i].P() > max_mom ) {
+	max_mom = hadron_map[conf::kPdgProton][i].P() ;
+	p_max = hadron_map[conf::kPdgProton][i] ;
+      }
+    }
+  }
+
+  std::vector<TLorentzVector> particles;
+  for( auto it = hadron_map.begin() ; it!=hadron_map.end() ; ++it ) {
+    if( (it->second).size() != 1 ) continue ;
+    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) {
+      particles.push_back((it->second)[i]) ;
+    }
+  }
+  if( particles.size() == 2 ) {
+    kHadronsAngle = utils::Angle( particles[0].Vect(), particles[1].Vect() ) * TMath::RadToDeg() ;
+  }
+  
+  kproton_E = p_max.E() ;
+  kproton_mom = p_max.P() ;
+  kproton_momx = p_max.Px() ;
+  kproton_momy = p_max.Py() ;
+  kproton_momz = p_max.Pz() ;
+  kproton_theta = p_max.Theta() * TMath::RadToDeg() ;
+  kproton_phi = p_max.Phi() * TMath::RadToDeg() ;
+  kECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), fTargetPdg ) ;
+  kDiffECal = utils::GetECal( out_mom.E(), event.GetFinalParticles4Mom(), fTargetPdg ) - fBeamE ;
+  kAlphaT = utils::DeltaAlphaT( out_mom.Vect(), p_max.Vect() ) ;
+  kDeltaPT = utils::DeltaPT( out_mom.Vect(), p_max.Vect() ).Mag() ;
+  kDeltaPhiT = utils::DeltaPhiT( out_mom.Vect(), p_max.Vect() ) ;
+  kHadAlphaT = utils::DeltaAlphaT( out_mom, hadron_map ) ;
+  kHadDeltaPT = utils::DeltaPT( out_mom, hadron_map ).Mag() ;
+  kHadDeltaPTx = utils::DeltaPTx( out_mom, hadron_map ) ;
+  kHadDeltaPTy = utils::DeltaPTy( out_mom, hadron_map ) ;
+  kHadDeltaPhiT = utils::DeltaPhiT( out_mom, hadron_map ) ;
+  kInferedNucleonMom = utils::InferedNucleonMom( fBeamE, out_mom, hadron_map, fTargetPdg ) ;
+  
+  TLorentzVector pip_max(0,0,0,0) ;
+  if( topology_has_pip ) {
+    double max_mom = 0 ;
+    for( unsigned int i = 0 ; i < hadron_map[conf::kPdgPiP].size() ; ++i ) {
+      if( hadron_map[conf::kPdgPiP][i].P() > max_mom ) {
+	max_mom = hadron_map[conf::kPdgPiP][i].P() ;
+	pip_max = hadron_map[conf::kPdgPiP][i] ;
+      }
+    }
+  }
+
+  fpip_E = pip_max.E() ;
+  fpip_mom = pip_max.P() ;
+  fpip_momx = pip_max.Px() ;
+  fpip_momy = pip_max.Py() ;
+  fpip_momz = pip_max.Pz() ;
+  fpip_theta = pip_max.Theta() * TMath::RadToDeg();
+  fpip_phi = pip_max.Phi() * TMath::RadToDeg() ;
+
+  TLorentzVector pim_max(0,0,0,0) ;
+  if( topology_has_pim ) {
+    double max_mom = 0 ;
+    for( unsigned int i = 0 ; i < hadron_map[conf::kPdgPiM].size() ; ++i ) {
+      if( hadron_map[conf::kPdgPiM][i].P() > max_mom ) {
+	max_mom = hadron_map[conf::kPdgPiM][i].P() ;
+	pim_max = hadron_map[conf::kPdgPiM][i] ;
+      }
+    }
+  }
+
+  //Adler angles
+  fAdlerAngleThetaP = utils::GetAdlerAngleTheta( fBeamE, out_mom, hadron_map, conf::kPdgProton) * TMath::RadToDeg();
+  fAdlerAnglePhiP = utils::GetAdlerAnglePhi( fBeamE, out_mom, hadron_map, conf::kPdgProton) * TMath::RadToDeg();
+  fAdlerAngleThetaPi = utils::GetAdlerAngleTheta( fBeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg();
+  fAdlerAnglePhiPi = utils::GetAdlerAnglePhi( fBeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg() ;
+
+  // Angle between q and had system
+  fAngleqvshad = utils::Angle( utils::GetRecoq3( out_mom, fBeamE), utils::TotHadron(hadron_map).Vect() ) * TMath::RadToDeg() ;
+
+  fHadSystemMass = utils::HadSystemMass( hadron_map ) ;
+  fpim_E = pim_max.E() ;
+  fpim_mom = pim_max.P() ;
+  fpim_momx = pim_max.Px() ;
+  fpim_momy = pim_max.Py() ;
+  fpim_momz = pim_max.Pz() ;
+  fpim_theta = pim_max.Theta() * TMath::RadToDeg();
+  fpim_phi = pim_max.Phi() * TMath::RadToDeg();
+
+  fMissingEnergy = utils::Missing4Momenta( fBeamE, out_mom, hadron_map ).E();
+  fMissingMomentum = utils::Missing4Momenta( fBeamE, out_mom, hadron_map ).P();
+  fMissingAngle = utils::Missing4Momenta( fBeamE, out_mom, hadron_map ).Theta() * TMath::RadToDeg() ;
+
+  fIsBkg = event.IsBkg() ;
+  fInitialNEvents = GetNEventsToRun() ;
+  fConversionFactor = conf::kConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) ;
+  fTotalXSec = kXSec ;
+  fMCNormalization = fTotalXSec * fConversionFactor / fInitialNEvents ;
+
+  return;
+}
+
+double AnalysisI::GetObservable( std::string obs ){
+  /*
+  double fTotWeight, fAccWght, fEventWght, fBeamE, fTrueQ2s, fTrueWs,fTruexs, fTrueys,fTrueQ2,fTrueW,fTruex,fTruey ;
+  double fEfl, fpfl, fpflx, fpfly, fpflz, fpfl_theta, fpfl_phi, fRecoQELEnu, fRecoEnergyTransfer, fRecoq3, fRecoQ2, fRecoXBJK, fRecoW, fMottXSecScale;
+  double kHadronsAngle,kproton_E, kproton_mom, kproton_momx, kproton_momy, kproton_momz, kproton_theta, kproton_phi, kECal, kDiffECal, kAlphaT, kDeltaPT;
+  double kDeltaPhiT, kHadAlphaT, kHadDeltaPT, kHadDeltaPTx, kHadDeltaPTy, kHadDeltaPhiT, kInferedNucleonMom ;
+  double fpip_E, fpip_mom, fpip_momx, fpip_momy, fpip_momz, fpip_theta, fpip_phi;
+  double fAdlerAngleThetaP, fAdlerAnglePhiP, fAdlerAngleThetaPi, fAdlerAnglePhiPi, fAngleqvshad, fHadSystemMass ;
+  double fpim_E, fpim_mom, fpim_momx, fpim_momy, fpim_momz, fpim_theta, fpim_phi;
+  double fMissingEnergy, fMissingMomentum, fMissingAngle, fConversionFactor, fTotalXSec, fMCNormalization;
+*/
+  if( obs == "ECal" ) {
+    return kECal ;
+  } 
+
+
+  return 0 ; 
+} 

@@ -134,7 +134,7 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
     else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 35, 0, 180 );
   } else if ( observable == "pim_mom") {
     if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 25, 0.15, 0.6 );
-    else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 35, 0.15, 1.6 );
+    else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 50, 0.15, 1.6 );
     else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 35, 0.15, 1.6 );
   } else if ( observable == "pim_theta") {
     if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 35, 12, 140 );
@@ -432,7 +432,7 @@ void plotting::StandardFormat( TH1D * prediction, std::string title, int color, 
 
   int FontStyle = 132;
   prediction->GetXaxis()->SetTitleOffset(0.8);
-  prediction->GetXaxis()->SetLabelSize(0.04);
+  prediction->GetXaxis()->SetLabelSize(0.08);
   prediction->GetXaxis()->SetTitleSize(0.08);
   prediction->GetXaxis()->SetNdivisions(6);
   prediction->GetXaxis()->SetLabelFont(FontStyle);
@@ -441,7 +441,7 @@ void plotting::StandardFormat( TH1D * prediction, std::string title, int color, 
   prediction->GetYaxis()->SetNdivisions(8);
   prediction->GetYaxis()->SetTitleOffset(0.8);
   prediction->GetYaxis()->SetLabelSize(0.08);
-  prediction->GetYaxis()->SetTitleSize(0.06);
+  prediction->GetYaxis()->SetTitleSize(0.08);
   prediction->GetYaxis()->SetLabelFont(43);
   prediction->GetYaxis()->SetLabelFont(FontStyle);
   prediction->GetYaxis()->SetTitleFont(FontStyle);

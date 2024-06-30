@@ -248,7 +248,6 @@ double utils::GetRecoEvPionProduction( const TLorentzVector out_electron, const 
   double elMass2 = pow(conf::kElectronMass, 2);
   double piMMass2 = pow(conf::kPiMMass, 2);
   double nucMass = conf::kNucleonMass;
-  double nucMass2 = pow(nucMass, 2);
 
   double elEnergy = out_electron.E();
   double piMEnergy = out_pion.E();

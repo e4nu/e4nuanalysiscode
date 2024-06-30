@@ -3,11 +3,11 @@ path_mc_files="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024
 path_output="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/"
 path_xsec="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/"
 
-declare -a InputFiles=("GEM21_11a_Dipole_CFG_Q2_01_1GeV_eCarbon.gst.root")
+declare -a InputFiles=("G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root")
 
-declare -a OutputFiles=("e4nuanalysis_1pim_GEM21_11a_Dipole_CFG_Q2_01_1GeV_eCarbon_NoRad")
+declare -a OutputFiles=("e4nuanalysis_1pim_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad")
 
-declare -a XSecFiles=("GEM21_11a_Dipole_Q2_01_eCarbon.root")
+declare -a XSecFiles=("G18_10a_Dipole_Q2_01_eCarbon.root")
 
 declare -a RadiatedFiles=("GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_radiated.gst.root")
 

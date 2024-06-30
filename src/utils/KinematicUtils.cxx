@@ -252,16 +252,19 @@ double utils::GetRecoEvPionProduction( const TLorentzVector out_electron, const 
 
   double elEnergy = out_electron.E();
   double piMEnergy = out_pion.E();
+  double E_rec = 0;
 
-  double elMag = out_electron.Vect().Mag();
-  double piMMag = out_pion.Vect().Mag();
+  if (elEnergy > 0 && piMEnergy > 0) {
+    double elMag = out_electron.Vect().Mag();
+    double piMMag = out_pion.Vect().Mag();
 
-  TLorentzVector beam (0, 0, 1, 1);
-  double elAngle = TMath::Cos(out_electron.Vect().Angle(beam.Vect()));
-  double piMAngle = TMath::Cos(out_pion.Vect().Angle(beam.Vect()));
+    TLorentzVector beam (0, 0, 1, 1);
+    double elAngle = TMath::Cos(out_electron.Vect().Angle(beam.Vect()));
+    double piMAngle = TMath::Cos(out_pion.Vect().Angle(beam.Vect()));
 
-  double E_rec = 2*elMass2 + 2*piMMass2 - 2*nucMass2*(elEnergy + piMEnergy) + 2*out_electron.Dot(out_pion);
-  E_rec /= (2*(elEnergy + piMEnergy - piMMag*piMAngle - elMag*elAngle - nucMass));
+    E_rec = 2*elMass2 + 2*piMMass2 - 2*nucMass*(elEnergy + piMEnergy) + 2*out_electron.Dot(out_pion);
+    E_rec /= (2*(elEnergy + piMEnergy - piMMag*piMAngle - elMag*elAngle - nucMass));
+  } 
 
   return E_rec;
 }

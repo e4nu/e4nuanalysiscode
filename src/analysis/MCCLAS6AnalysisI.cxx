@@ -398,6 +398,28 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
   double MissingMomentum = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).P();
   double MissingAngle = utils::Missing4Momenta( BeamE, out_mom, hadron_map ).Theta() * TMath::RadToDeg() ;
 
+  TLorentzVector pi_mom(0,0,0,0) ;
+  if( topology_has_pip ) {
+    double max_mom = 0 ;
+    for( unsigned int i = 0 ; i < hadron_map[conf::kPdgPiP].size() ; ++i ) {
+      if( hadron_map[conf::kPdgPiP][i].P() > max_mom ) {
+	      max_mom = hadron_map[conf::kPdgPiP][i].P() ;
+	      pi_mom = hadron_map[conf::kPdgPiP][i] ;
+      }
+    }
+  } else  if( topology_has_pim ) {
+    double max_mom = 0 ;
+    for( unsigned int i = 0 ; i < hadron_map[conf::kPdgPiM].size() ; ++i ) {
+      if( hadron_map[conf::kPdgPiM][i].P() > max_mom ) {
+	      max_mom = hadron_map[conf::kPdgPiM][i].P() ;
+	      pi_mom = hadron_map[conf::kPdgPiM][i] ;
+      }
+    }
+  }
+
+  double RecoEvPion = utils::GetRecoEvPionProduction(out_mom, pi_mom);
+  double RecoWPion = utils::GetRecoWPionProduction(out_mom, pi_mom);
+
   bool IsBkg = event.IsBkg() ;
   unsigned int InitialNEvents = GetNEventsToRun() ;
   double ConversionFactor = kConversionFactorCm2ToMicroBarn  * TMath::Power(10.,-38.) ;
@@ -481,6 +503,8 @@ bool MCCLAS6AnalysisI::StoreTree(Event event){
     kAnalysisTree -> Branch( "resid", &resid, "resid/I");
     kAnalysisTree -> Branch( "HadronsAngle",&HadronsAngle, "HadronsAngle/D");
     kAnalysisTree -> Branch( "Angleqvshad",&Angleqvshad,"Angleqvshad/D");
+    kAnalysisTree -> Branch( "RecoEvPion",&RecoEvPion,"RecoEvPion/D");
+    kAnalysisTree -> Branch( "RecoWPion",&RecoWPion,"RecoWPion/D");
 
     if( topology_has_protons ) {
       kAnalysisTree -> Branch( "proton_E", &proton_E, "proton_E/D");

@@ -243,3 +243,41 @@ double utils::GetAdlerAnglePhi( const double EBeam, const TLorentzVector leptonf
   
   return particle_perp.Angle(x_axis); // phi 
 }
+
+double utils::GetRecoEvPionProduction( const TLorentzVector out_electron, const TLorentzVector out_pion ) {
+  double elMass2 = pow(conf::kElectronMass, 2);
+  double piMMass2 = pow(conf::kPiMMass, 2);
+  double nucMass = conf::kNucleonMass;
+  double nucMass2 = pow(nucMass, 2);
+
+  double elEnergy = out_electron.E();
+  double piMEnergy = out_pion.E();
+
+  double elMag = out_electron.Vect().Mag();
+  double piMMag = out_pion.Vect().Mag();
+
+  TLorentzVector beam (0, 0, 1, 1);
+  double elAngle = TMath::Cos(out_electron.Vect().Angle(beam.Vect()));
+  double piMAngle = TMath::Cos(out_pion.Vect().Angle(beam.Vect()));
+
+  double E_rec = 2*elMass2 + 2*piMMass2 - 2*nucMass2*(elEnergy + piMEnergy) + 2*out_electron.Dot(out_pion);
+  E_rec /= (2*(elEnergy + piMEnergy - piMMag*piMAngle - elMag*elAngle - nucMass));
+
+  return E_rec;
+}
+
+double utils::GetRecoWPionProduction( const TLorentzVector out_electron, const TLorentzVector out_pion ) {
+  double E_rec = utils::GetRecoWPionProduction(out_electron, out_pion);
+
+  TLorentzVector ev_4vect_rec;
+    ev_4vect_rec.SetPxPyPzE(0, 0, E_rec, E_rec);
+
+    TLorentzVector nucl_4vect;
+    nucl_4vect.SetPxPyPzE(0, 0, 0, conf::kNucleonMass);
+
+    TLorentzVector q_4vect = ev_4vect_rec - out_electron;
+
+    double W_rec = (nucl_4vect + q_4vect).Mag();
+
+    return W_rec;
+}

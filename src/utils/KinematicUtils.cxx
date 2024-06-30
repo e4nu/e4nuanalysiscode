@@ -267,7 +267,7 @@ double utils::GetRecoEvPionProduction( const TLorentzVector out_electron, const 
 }
 
 double utils::GetRecoWPionProduction( const TLorentzVector out_electron, const TLorentzVector out_pion ) {
-  double E_rec = utils::GetRecoWPionProduction(out_electron, out_pion);
+  double E_rec = utils::GetRecoEvPionProduction(out_electron, out_pion);
 
   TLorentzVector ev_4vect_rec;
     ev_4vect_rec.SetPxPyPzE(0, 0, E_rec, E_rec);

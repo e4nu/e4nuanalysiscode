@@ -19,13 +19,14 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			1000000000
+NEvents			1000000
 FirstEvent		0
 
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
-Toplogy 		11:1,-211:1,221:0,22:0,111:0
+Toplogy 		11:1
+#,-211:1,211:0,22:0
 MaxBackgroundMultiplicity 4
 NRotations 1000
 

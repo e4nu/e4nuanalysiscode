@@ -35,8 +35,8 @@ namespace e4nu {
     TLorentzVector FindParticle( const unsigned int particle_pdg, const std::map<int,std::vector<TLorentzVector>> hadrons ) ;
     double GetAdlerAngleTheta( const double EBeam, const TLorentzVector leptonf, const std::map<int,std::vector<TLorentzVector>> hadrons, const unsigned int particle_pdg ) ;
     double GetAdlerAnglePhi( const double EBeam, const TLorentzVector leptonf, const std::map<int,std::vector<TLorentzVector>> hadrons, const unsigned int particle_pdg ) ;
-    double utils::GetRecoEvPionProduction( const TLorentzVector out_electron, const TLorentzVector out_pion );
-    double utils::GetRecoWPionProduction( const TLorentzVector out_electron, const TLorentzVector out_pion );
+    double GetRecoEvPionProduction( const TLorentzVector out_electron, const TLorentzVector out_pion );
+    double GetRecoWPionProduction( const TLorentzVector out_electron, const TLorentzVector out_pion );
   }
 }
 

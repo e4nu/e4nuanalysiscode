@@ -315,6 +315,7 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
       if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 50, 0, 2 );
       else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 50, 0.5, 3.5 );
       else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 50, 2, 6 );
+      std::cout << binning.size() << std::endl;
     }
       if( observable == "RecoWPion") {
       if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 50, 0.5, 2 );

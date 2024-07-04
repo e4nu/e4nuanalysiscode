@@ -233,6 +233,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   double InferedNucleonMom ;
   double HadronsAngle,Angleqvshad ;
   double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
+  double RecoEvPion, RecoWPion;
   long NEntries ;
   bool IsBkg ;
   int ElectronSector ;
@@ -285,6 +286,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     trees[i] -> SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
     trees[i] -> SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
     trees[i] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
+    trees[i] -> SetBranchAddress("RecoEvPion",&RecoEvPion);
+    trees[i] -> SetBranchAddress("RecoWPion",&RecoWPion);
 
     // Only fill true info for the first model:
     if( i == 0 ) trees[i] -> SetBranchAddress("QEL",&QEL);

@@ -109,6 +109,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double InferedNucleonMom ;
     double HadronsAngle, Angleqvshad;
     double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
+    double RecoEvPion, RecoWPion;
     long NEntries ;
     bool IsBkg ;
     int ElectronSector ;
@@ -155,6 +156,8 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       trees[j] -> SetBranchAddress("AdlerAngleThetaPi",&AdlerAngleThetaPi);
       trees[j] -> SetBranchAddress("AdlerAnglePhiPi",&AdlerAnglePhiPi);
       trees[j] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
+      trees[i] -> SetBranchAddress("RecoEvPion",&RecoEvPion);
+      trees[i] -> SetBranchAddress("RecoWPion",&RecoWPion);
 
       for( int k = 0 ; k < NEntries; ++k ) {
         trees[j]->GetEntry(k) ;

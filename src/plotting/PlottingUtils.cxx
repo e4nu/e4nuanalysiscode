@@ -63,6 +63,8 @@ std::string plotting::GetAxisLabel( std::string observable, unsigned int id_axis
   else if ( observable == "AdlerAngleThetaPi") { x_axis = "#theta_{#pi}^{*}[deg]"; y_axis = "d#sigma/d#theta_{#pi}^{*} #left[#mub (deg)^{-1}#right]"; }
   else if ( observable == "AdlerAnglePhiPi") { x_axis = "#phi_{#pi}^{*}[deg]"; y_axis = "d#sigma/d#phi_{#pi}^{*} #left[#mub (deg)^{-1}#right]"; }
   else if ( observable == "Angleqvshad") { x_axis = "#theta_{#vec{q}#dot#vec{p}_{had}}[deg]"; y_axis = "d#sigma/d#theta_{#vec{q}#dot#vec{p}_{had}} #left[#mub (deg)^{-1}#right]"; }
+  else if ( observable == "RecoEvPion") { x_axis = "E_{rec} [GeV]"; y_axis = "d#sigma/dE_{rec} #left[#mub GeV^{-1}#right#right]"; }
+  else if ( observable == "RecoWPion") { x_axis = "W_{rec} [GeV]"; y_axis = "d#sigma/dW_{rec} #left[#mub GeV^{-1}#right#right]"; }
 
   if( id_axis ==0 ) return x_axis ;
   return y_axis ;
@@ -308,6 +310,16 @@ std::vector<double> plotting::GetBinning( std::string observable, double EBeam, 
       if( EBeam == 1.161 ) binning = plotting::GetECalBinning( 20, 10, 0.6, 1.2, EBeam);
       else if( EBeam == 2.261 ) binning = plotting::GetECalBinning( 20, 10, 0.6, EBeam+0.06, EBeam);
       else if( EBeam == 4.461 ) binning = plotting::GetECalBinning( 15, 10, 1.2, EBeam+0.1, EBeam);
+    }
+      if( observable == "RecoEvPion") {
+      if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 50, 0, 2 );
+      else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 50, 0.5, 3.5 );
+      else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 50, 2, 6 );
+    }
+      if( observable == "RecoWPion") {
+      if( EBeam == 1.161 ) binning = plotting::GetUniformBinning( 50, 0.5, 2 );
+      else if( EBeam == 2.261 ) binning = plotting::GetUniformBinning( 50, 0.5, 3 );
+      else if( EBeam == 4.461 ) binning = plotting::GetUniformBinning( 50, 0.5, 3.5 );
     }
   }
   else if( analysis_key == "1pip" ) {

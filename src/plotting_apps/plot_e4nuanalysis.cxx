@@ -18,8 +18,8 @@ using namespace e4nu::plotting;
 // 1) MC files location                                        //
 // 2) Data files location (*)                                  //
 // 3) OutputLocation                                           //
-// 4) Input MC Files (without .root extension)                 //
-// 5) Input data file (without .root extension) (*)            //
+// 4) Input MC Files (without _true.root or _truereco.root)    //
+// 5) Input data file (without _clas6.root extension) (*)      //
 // 6) Observables List                                         //
 // 7) Normalize to cross-section                               //
 // 8) Plot MC, default true                                    //

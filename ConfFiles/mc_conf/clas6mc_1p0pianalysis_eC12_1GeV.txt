@@ -1,22 +1,14 @@
 #Analysis Cuts
 DisableSector   2,4
 ApplyFiducial   true
-ApplyAccWeights false
+ApplyAccWeights true
 ApplyReso	true
 ApplyMomCut     true
 ApplyMottWeight true
 ApplyOutEMomCut	true
 ApplyQ2Cut	true
-ApplyWCut	true
+ApplyWCut	false
 SubtractBkg     true
-DebugBkg true 
-#histogram definition
-RangeList 0.5:2.5,0:2
-#RangeList 0.5:1.2,0:2
-ObservableList ECal,RecoW
-NBinsList 60,60
-NormalizeHists false
-DebugBkg true
 
 ApplyPhiOpeningAngle	false
 UsePhiThetaBand		false
@@ -27,13 +19,13 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			2000000000
+NEvents			50000000
 FirstEvent		0
 
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
-Toplogy 		11:1,2212:1,-211:0,211:0,22:0
+Toplogy 		11:1,2212:1,-211:0,221:0,22:0
 MaxBackgroundMultiplicity 4
 NRotations 1000
 
@@ -41,11 +33,11 @@ NRotations 1000
 #The following parameters will modify the configuration 
 #TrueAccCorr: by using only true signal events, it provides with the analysed events after momentum cuts. All Sectors are used
 #trueRecoAccCorr: by using only true signal events, it provodes with analysed reconstructed events after momentum, fiducial, acceptance, smearing effects. Sectors 2 and 4 are not used.
-ComputeTrueAccCorr false
+ComputeTrueAccCorr true
 ComputeTrueRecoAccCorr false
 
 InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root
 XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/G18_10a_Dipole_Q2_01_eCarbon.root
-OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1p0pianalysis_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad
+OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1p1pimanalysis_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad
 
 

@@ -347,6 +347,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ;
       else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ;
       else if ( observable == "Angleqvshad") content = Angleqvshad ;
+      else if ( observable == "RecoEvPion") content = RecoEvPion ;
+      else if ( observable == "RecoWPion") content = RecoWPion ;
 
       unsigned int id_hist = i ;
       // Fill the per Sector  histogram. Only for primary model

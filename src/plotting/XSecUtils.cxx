@@ -42,11 +42,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   TFile * file_acceptance = new TFile((output_location+acceptance_file_name+".root").c_str(),"READ");
-  if (!file_acceptance) {
-    std::cout << "ERROR: acceptance not found" << std::endl;
-    return;
-  }
-  TFile * file_radcorr;
+  TFile * file_radcorr = nullptr;
   if (radcorr_file != "") file_radcorr = new TFile((output_location+radcorr_file+".root").c_str(),"READ");
   if( !file_data && plot_data ) { std::cout << "ERROR: the "<< input_data_location << data_file_name << ".root does not exist." <<std::endl; return ;}
   if( !file_acceptance ) { std::cout << "ERROR: the "<< output_location << acceptance_file_name << ".root does not exist." <<std::endl; return ;}

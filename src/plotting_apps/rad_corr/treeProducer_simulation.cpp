@@ -50,7 +50,7 @@ void treeProducer_simulation::Loop() {
   TFile* acc_p = new TFile((acc_path+"/AcceptanceMap_p_TH3D.root").c_str() );
   TH3D* h3_p = (TH3D*)(acc_p->Get("h3"));
 
-  TString out_file_name = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/src/plotting_apps/rad_corr/rad_w_acc";
+  TString out_file_name = "/exp/genie/app/jtena/e4nuanalysiscode/src/plotting_apps/rad_corr/rad_w_acc";
   TFile* file = new TFile(out_file_name+"_em.root","recreate");
   std::cout << "File " << out_file_name << "_em.root will be created" << std::endl << std::endl; 
   double Weight = 1.;
@@ -242,8 +242,8 @@ void treeProducer_simulation::Loop() {
     // Energy Reconstruction
 
     double EQE = (2 * ProtonMass * FSElectron4Vector.E() - pow(ElectronMass,2) ) / 2 / ( ProtonMass - FSElectron4Vector.E() + FSElectronMag * FSElectronCosTheta); 
-    double ECal = FSElectron4Vector.E() + FSProton4Vector.E() - ProtonMass + BE;
-
+    double ECal = FSElectron4Vector.E() + FSProton4Vector.E() - ProtonMass + 0.0008;
+    //   std::cout << BE*2 << std::endl;
     //if (ECal > 4.32) std::cout<<"El "<<FSElectron4Vector.E()<<" Ep "<<FSProton4Vector.E()<<" Ecal "<<ECal<<" EQE "<<EQE<<std::endl;
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

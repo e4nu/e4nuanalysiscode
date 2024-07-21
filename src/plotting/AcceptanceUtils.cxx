@@ -156,8 +156,8 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       trees[j] -> SetBranchAddress("AdlerAngleThetaPi",&AdlerAngleThetaPi);
       trees[j] -> SetBranchAddress("AdlerAnglePhiPi",&AdlerAnglePhiPi);
       trees[j] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
-      trees[i] -> SetBranchAddress("RecoEvPion",&RecoEvPion);
-      trees[i] -> SetBranchAddress("RecoWPion",&RecoWPion);
+      trees[j] -> SetBranchAddress("RecoEvPion",&RecoEvPion);
+      trees[j] -> SetBranchAddress("RecoWPion",&RecoWPion);
 
       for( int k = 0 ; k < NEntries; ++k ) {
         trees[j]->GetEntry(k) ;
@@ -205,7 +205,6 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   else if ( observable == "RecoEvPion" ) content = RecoEvPion ;
   else if ( observable == "RecoWPion" ) content = RecoWPion ;
 
-  if (j == initial_size_trees+1) std::cout << 2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists << " content " << content << " W " << w <<std::endl;
         // Fill the per Sector  histogram
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> Fill( content, w ) ;
         hists[2*(ElectronSector+1)+(j-initial_size_trees)+initial_size_hists] -> SetLineWidth(3);

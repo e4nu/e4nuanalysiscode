@@ -467,7 +467,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       else if (observable == "RecoWPion")
         content = RecoWPion;
 
-      std::cout << content << std::endl;
+      // std::cout << content << std::endl;
 
       unsigned int id_hist = i;
       // Fill the per Sector  histogram. Only for primary model

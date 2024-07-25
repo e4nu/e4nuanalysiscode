@@ -7,8 +7,6 @@
 
 #include "TFile.h"
 #include "TTree.h"
-#include "plotting/XSecUtils.h"
-#include "plotting/Systematics.h"
 #include "TLegend.h"
 #include "TGaxis.h"
 

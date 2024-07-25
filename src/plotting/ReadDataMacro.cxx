@@ -31,7 +31,7 @@ int ReadDataMacro()
     // OBSERVABLE DEFINITION:
     double RecoEvPion;
 
-    my_gst_tree->SetBranchAddress("RecoEvPion", &RecoEvPion);
+    my_data_tree->SetBranchAddress("RecoEvPion", &RecoEvPion);
 
     long NEntries = my_data_tree->GetEntries();
 

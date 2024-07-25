@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <filesystem>
 #include <sstream>
+#include <limits>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -36,7 +37,8 @@ int ReadDataMacro()
 
     for (int j = 0; j < NEntries; ++j)
     {
-        std::cout << "Total # entries:" << NEntries << " Pion momentum:" << pim_mom << std::endl;
+        // std::cout << "Total # entries:" << NEntries << " Pion momentum:" << pim_mom << std::endl;
+        std::cout << fixed << setprecision(numeric_limits<double>::max_digits10) << pim_mom << std::endl;
     }
 
     return 0;

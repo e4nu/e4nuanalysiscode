@@ -1,16 +1,16 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iomanip>
+#include <filesystem>
+#include <sstream>
 
 #include "TFile.h"
-#include "TStyle.h"
-#include "TH1.h"
-#include "TCanvas.h"
 #include "TTree.h"
-#include "TLorentzVector.h"
+#include "plotting/XSecUtils.h"
+#include "plotting/Systematics.h"
 #include "TLegend.h"
-#include "TMath.h"
-#include "TColor.h"
+#include "TGaxis.h"
 
 int ReadDataMacro()
 {
@@ -38,7 +38,7 @@ int ReadDataMacro()
 
     for (int j = 0; j < NEntries; ++j)
     {
-        std::cout << "Total # entries:" << NEntries << "Pion momentum:" << pim_mom << std::endl;
+        std::cout << "Total # entries:" << NEntries << " Pion momentum:" << pim_mom << std::endl;
     }
 
     return 0;

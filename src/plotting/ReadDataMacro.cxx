@@ -38,7 +38,7 @@ int ReadDataMacro()
 
     for (int j = 0; j < NEntries; ++j)
     {
-        std::cout << NEntries, j, pim_mom << std::endl;
+        std::cout << "Total # entries:" << NEntries << "Pion momentum:" << pim_mom << std::endl;
     }
 
     return 0;

@@ -26,7 +26,7 @@ IsData			true
 IsCLAS6Analysis		true
 Toplogy 		11:1,-211:1,221:0,22:0,111:0
 MaxBackgroundMultiplicity 4
-NRotations 1000
+NRotations 5000
 
 InputFile /w/hallb-scshelf2102/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_C12_4461_neutrino6_united4_radphot_test_100M.root
 OutputFile /u/home/jtena/Software/e4nuanalysiscode/e4nuanalysis_1pimanalysis_e_on_1000060120_4461MeV

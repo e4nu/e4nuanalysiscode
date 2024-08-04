@@ -224,13 +224,13 @@ std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis)
   }
   else if (observable == "ElectronPT")
   {
-    x_axis = "p_{T} [GeV]";
-    y_axis = "d#sigma/dp_{T} #left[#mub GeV^{-1}#right#right]";
+    x_axis = "p_{e',T} [GeV]";
+    y_axis = "d#sigma/dp_{e'T} #left[#mub GeV^{-1}#right#right]";
   }
   else if (observable == "PionPT")
   {
-    x_axis = "p_{T} [GeV]";
-    y_axis = "d#sigma/dp_{T} #left[#mub GeV^{-1}#right#right]";
+    x_axis = "p_{#pi,T} [GeV]";
+    y_axis = "d#sigma/dp_{#pi,T} #left[#mub GeV^{-1}#right#right]";
   }
 
   if (id_axis == 0)
@@ -612,20 +612,20 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "ElectronPT")
   {
     if (EBeam == 1.161)
-      binning = plotting::GetUniformBinning(50, 0, 10);
+      binning = plotting::GetUniformBinning(50, 0, 0.5);
     else if (EBeam == 2.261)
-      binning = plotting::GetUniformBinning(50, 0, 10);
+      binning = plotting::GetUniformBinning(50, 0, 1);
     else if (EBeam == 4.461)
-      binning = plotting::GetUniformBinning(50, 0, 10);
+      binning = plotting::GetUniformBinning(50, 0, 1);
   }
   else if (observable == "PionPT")
   {
     if (EBeam == 1.161)
-      binning = plotting::GetUniformBinning(50, 0, 10);
+      binning = plotting::GetUniformBinning(50, 0, 0.5);
     else if (EBeam == 2.261)
-      binning = plotting::GetUniformBinning(50, 0, 10);
+      binning = plotting::GetUniformBinning(50, 0, 1);
     else if (EBeam == 4.461)
-      binning = plotting::GetUniformBinning(50, 0, 10);
+      binning = plotting::GetUniformBinning(50, 0, 1);
   }
 
   if (analysis_key == "1p1pim")
@@ -796,20 +796,20 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (observable == "ElectronPT")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(50, 0, 10);
+        binning = plotting::GetUniformBinning(50, 0, 0.5);
       else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(50, 0, 10);
+        binning = plotting::GetUniformBinning(50, 0, 1);
       else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(50, 0, 10);
+        binning = plotting::GetUniformBinning(50, 0, 1);
     }
     else if (observable == "PionPT")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(50, 0, 10);
+        binning = plotting::GetUniformBinning(50, 0, 0.5);
       else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(50, 0, 10);
+        binning = plotting::GetUniformBinning(50, 0, 1);
       else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(50, 0, 10);
+        binning = plotting::GetUniformBinning(50, 0, 1);
     }
   }
   else if (analysis_key == "1pip")
@@ -862,20 +862,20 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (observable == "ElectronPT")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(50, 0, 10);
+        binning = plotting::GetUniformBinning(50, 0, 0.5);
       else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(50, 0, 10);
+        binning = plotting::GetUniformBinning(50, 0, 1);
       else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(50, 0, 10);
+        binning = plotting::GetUniformBinning(50, 0, 1);
     }
     else if (observable == "PionPT")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(50, 0, 10);
+        binning = plotting::GetUniformBinning(50, 0, 0.5);
       else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(50, 0, 10);
+        binning = plotting::GetUniformBinning(50, 0, 1);
       else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(50, 0, 10);
+        binning = plotting::GetUniformBinning(50, 0, 1);
     }
   }
 

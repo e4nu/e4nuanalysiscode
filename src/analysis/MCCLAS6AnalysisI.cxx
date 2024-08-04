@@ -492,7 +492,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event)
   double RecoEvPion = utils::GetRecoEvPionProduction(out_mom, pi_mom);
   double RecoWPion = utils::GetRecoWPionProduction(out_mom, pi_mom);
   double ElectronPT = utils::GetPT(out_mom.Vect()).Mag();
-  std::cout << ElectronPT << std::endl;
+  std::cout << utils::GetPT(out_mom.Vect()).Mag() << std::endl; // TBD remove
   double PionPT = utils::GetPT(pi_mom.Vect()).Mag();
 
   bool IsBkg = event.IsBkg();

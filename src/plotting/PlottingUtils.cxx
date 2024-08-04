@@ -8,7 +8,7 @@ void plotting::NormalizeHist(TH1D *h, double normalization_factor)
   h->Sumw2(kFALSE);
   h->Scale(normalization_factor);
   double NBins = h->GetNbinsX();
-  std::cout << NBins << std::endl;
+  std::cout << NBins << std::endl; // TBD remove
 
   for (int i = 1; i <= NBins; i++)
   {
@@ -586,7 +586,10 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     if (EBeam == 1.161)
       binning = plotting::GetUniformBinning(50, 0, 2);
     else if (EBeam == 2.261)
+    {
       binning = plotting::GetUniformBinning(50, 0, 2);
+      std::cout << "Binning here!" << std::endl;
+    }
     else if (EBeam == 4.461)
       binning = plotting::GetUniformBinning(50, 2, 6);
   }

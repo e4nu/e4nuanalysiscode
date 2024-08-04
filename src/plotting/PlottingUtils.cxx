@@ -8,6 +8,7 @@ void plotting::NormalizeHist(TH1D *h, double normalization_factor)
   h->Sumw2(kFALSE);
   h->Scale(normalization_factor);
   double NBins = h->GetNbinsX();
+  std::cout << NBins << std::endl;
 
   for (int i = 1; i <= NBins; i++)
   {

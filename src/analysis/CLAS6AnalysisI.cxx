@@ -350,6 +350,8 @@ bool CLAS6AnalysisI::StoreTree(Event event)
 
   double RecoEvPion = utils::GetRecoEvPionProduction(out_mom, pi_mom);
   double RecoWPion = utils::GetRecoWPionProduction(out_mom, pi_mom);
+  double ElectronPT = utils::GetPT(out_mom.Vect()).Mag();
+  double PionPT = utils::GetPT(pi_mom.Vect()).Mag();
 
   // Store name of files used
   const char *InputROOTFile = kInputFile.c_str();
@@ -403,6 +405,8 @@ bool CLAS6AnalysisI::StoreTree(Event event)
     kAnalysisTree->Branch("Angleqvshad", &Angleqvshad, "Angleqvshad/D");
     kAnalysisTree->Branch("RecoEvPion", &RecoEvPion, "RecoEvPion/D");
     kAnalysisTree->Branch("RecoWPion", &RecoWPion, "RecoWPion/D");
+    kAnalysisTree->Branch("ElectronPT", &ElectronPT, "ElectronPT/D");
+    kAnalysisTree->Branch("PionPT", &PionPT, "PionPT/D");
 
     if (topology_has_protons)
     {

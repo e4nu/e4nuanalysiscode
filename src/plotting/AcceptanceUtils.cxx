@@ -130,6 +130,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     double HadronsAngle, Angleqvshad;
     double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi;
     double RecoEvPion, RecoWPion;
+    double ElectronPT, PionPT;
     long NEntries;
     bool IsBkg;
     int ElectronSector;
@@ -179,6 +180,8 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       trees[j]->SetBranchAddress("Angleqvshad", &Angleqvshad);
       trees[j]->SetBranchAddress("RecoEvPion", &RecoEvPion);
       trees[j]->SetBranchAddress("RecoWPion", &RecoWPion);
+      trees[j]->SetBranchAddress("ElectronPT", &ElectronPT);
+      trees[j]->SetBranchAddress("PionPT", &PionPT);
 
       for (int k = 0; k < NEntries; ++k)
       {
@@ -266,6 +269,10 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
           content = RecoEvPion;
         else if (observable == "RecoWPion")
           content = RecoWPion;
+        else if (observable == "ElectronPT")
+          content = ElectronPT;
+        else if (observable == "PionPT")
+          content = PionPT;
 
         // Fill the per Sector  histogram
         hists[2 * (ElectronSector + 1) + (j - initial_size_trees) + initial_size_hists]->Fill(content, w);

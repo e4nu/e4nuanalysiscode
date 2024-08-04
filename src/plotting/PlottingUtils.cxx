@@ -586,7 +586,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     if (EBeam == 1.161)
       binning = plotting::GetUniformBinning(50, 0, 2);
     else if (EBeam == 2.261)
-      binning = plotting::GetUniformBinning(50, 0.5, 3.5);
+      binning = plotting::GetUniformBinning(50, 0, 2);
     else if (EBeam == 4.461)
       binning = plotting::GetUniformBinning(50, 2, 6);
   }

@@ -3,7 +3,6 @@
 // _____________________________________________________________
 
 #include "plotting/AcceptanceUtils.h"
-#include "plotting/XSecUtils.h"
 #include "plotting/Systematics.h"
 #include <iomanip>
 #include <filesystem>

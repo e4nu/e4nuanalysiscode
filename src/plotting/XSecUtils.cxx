@@ -283,29 +283,13 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   if (plot_data)
     id_data = 1;
 
-  // OBSERVABLE DEFINITION:
-  double TotWeight;
-  double ECal, Recoq3, RecoW;
-  double pfl, pfl_theta, pfl_phi;
-  double proton_mom, proton_phi, proton_theta;
-  double pim_mom, pim_theta, pim_phi;
-  double pip_mom, pip_theta, pip_phi;
-  double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT;
-  double AlphaT, DeltaPT, DeltaPhiT;
-  double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu;
-  double MissingEnergy, MissingAngle, MissingMomentum;
-  double InferedNucleonMom;
-  double HadronsAngle, Angleqvshad;
-  double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi;
-  double RecoEvPion, RecoWPion;
-  double ElectronPT, PionPT;
-  long NEntries;
+
   bool IsBkg;
   int ElectronSector;
   bool QEL, RES, DIS, MEC;
   double MCNormalization, DataNormalization;
-  std::vector<double> mc_norm;
   int resid;
+  std::vector<double> mc_norm;
 
   for (unsigned int i = 0; i < trees.size(); ++i)
   {

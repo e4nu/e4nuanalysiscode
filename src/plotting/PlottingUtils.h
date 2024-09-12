@@ -13,6 +13,8 @@
 
 namespace e4nu {
   namespace plotting {
+
+    // Functions
     void NormalizeHist( TH1D * h, double normalization_factor );
     void CorrectData(TH1D* h, TH1D* acc);
     std::string GetAxisLabel( std::string observable, unsigned int id_axis );
@@ -29,6 +31,7 @@ namespace e4nu {
     std::vector<std::string> SplitString(std::string s, char d=',' ) ;
     std::string GetArg(std::string op, int argc, char ** argv );
     bool ExistArg(std::string op, int argc, char ** argv );
+
   }
 }
 

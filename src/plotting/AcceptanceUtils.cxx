@@ -5,6 +5,99 @@
 using namespace e4nu;
 using namespace e4nu::plotting;
 
+double plotting::GetContent( const std::string observable ) {
+
+  double content = 0 ; 
+  
+  if (observable == "ECal")
+    content = ECal;
+  else if (observable == "pfl")
+    content = pfl;
+  else if (observable == "pfl_theta")
+    content = pfl_theta;
+  else if (observable == "pfl_phi")
+    content = pfl_phi;
+  else if (observable == "proton_mom")
+    content = proton_mom;
+  else if (observable == "proton_theta")
+    content = proton_theta;
+  else if (observable == "proton_phi")
+    content = proton_phi;
+  else if (observable == "pim_mom")
+    content = pim_mom;
+  else if (observable == "pim_theta")
+    content = pim_theta;
+  else if (observable == "pim_phi")
+    content = pim_phi;
+  else if (observable == "pip_mom")
+    content = pip_mom;
+  else if (observable == "pip_theta")
+    content = pip_theta;
+  else if (observable == "pip_phi")
+    content = pip_phi;
+  else if (observable == "RecoW")
+    content = RecoW;
+  else if (observable == "Recoq3")
+    content = Recoq3;
+  else if (observable == "RecoQELEnu")
+    content = RecoQELEnu;
+  else if (observable == "RecoXBJK")
+    content = RecoXBJK;
+  else if (observable == "RecoQ2")
+    content = RecoQ2;
+  else if (observable == "RecoEnergyTransfer")
+    content = RecoEnergyTransfer;
+  else if (observable == "AlphaT")
+    content = AlphaT;
+  else if (observable == "HadAlphaT")
+    content = HadAlphaT;
+  else if (observable == "DeltaPT")
+    content = DeltaPT;
+  else if (observable == "HadDeltaPT")
+    content = HadDeltaPT;
+  else if (observable == "HadDeltaPTx")
+    content = HadDeltaPTx;
+  else if (observable == "HadDeltaPTy")
+    content = HadDeltaPTy;
+  else if (observable == "DeltaPhiT")
+    content = DeltaPhiT;
+  else if (observable == "HadDeltaPhiT")
+    content = HadDeltaPhiT;
+  else if (observable == "HadSystemMass")
+    content = HadSystemMass;
+  else if (observable == "MissingEnergy")
+    content = MissingEnergy;
+  else if (observable == "MissingMomentum")
+    content = MissingMomentum;
+  else if (observable == "MissingAngle")
+    content = MissingAngle;
+  else if (observable == "InferedNucleonMom")
+    content = InferedNucleonMom;
+  else if (observable == "HadronsAngle")
+    content = HadronsAngle;
+  else if (observable == "AdlerAngleThetaP")
+    content = AdlerAngleThetaP;
+  else if (observable == "AdlerAnglePhiP")
+    content = AdlerAnglePhiP;
+  else if (observable == "AdlerAngleThetaPi")
+    content = AdlerAngleThetaPi;
+  else if (observable == "AdlerAnglePhiPi")
+    content = AdlerAnglePhiPi;
+  else if (observable == "Angleqvshad")
+    content = Angleqvshad;
+  else if (observable == "RecoEvPion")
+    content = RecoEvPion;
+  else if (observable == "RecoWPion")
+    content = RecoWPion;
+  else if (observable == "ElectronPT")
+    content = ElectronPT;
+  else if (observable == "PionPT")
+    content = PionPT;
+
+  return content ;
+}
+
+
 std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::string observable, std::string title,
                                         std::string input_MC_location, std::string output_location, std::string output_file_name,
                                         std::string analysis_id, bool store_root)
@@ -115,25 +208,6 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
       hists[id]->Sumw2();
     }
 
-    // OBSERVABLE DEFINITION:
-    double TotWeight;
-    double ECal, Recoq3, RecoW;
-    double pfl, pfl_theta, pfl_phi;
-    double proton_mom, proton_phi, proton_theta;
-    double pim_mom, pim_theta, pim_phi;
-    double pip_mom, pip_theta, pip_phi;
-    double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT;
-    double AlphaT, DeltaPT, DeltaPhiT;
-    double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu;
-    double MissingEnergy, MissingAngle, MissingMomentum;
-    double InferedNucleonMom;
-    double HadronsAngle, Angleqvshad;
-    double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi;
-    double RecoEvPion, RecoWPion;
-    double ElectronPT, PionPT;
-    long NEntries;
-    bool IsBkg;
-    int ElectronSector;
     for (unsigned int j = initial_size_trees; j < trees.size(); ++j)
     {
       NEntries = trees[j]->GetEntries();
@@ -424,7 +498,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   ratio_aSmooth_0->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_0->GetNbinsX(); ++i)
+  for (int i = 0; i < ratio_0->GetNbinsX(); ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -456,7 +530,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   ratio_aSmooth_1->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_1->GetNbinsX(); ++i)
+  for (int i = 0; i < ratio_1->GetNbinsX(); ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -488,7 +562,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   ratio_aSmooth_2->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_2->GetNbinsX(); ++i)
+  for (int i = 0; i < ratio_2->GetNbinsX(); ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -520,7 +594,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   ratio_aSmooth_3->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_3->GetNbinsX(); ++i)
+  for (int i = 0; i < ratio_3->GetNbinsX(); ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -552,7 +626,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   ratio_aSmooth_4->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_4->GetNbinsX(); ++i)
+  for (int i = 0; i < ratio_4->GetNbinsX(); ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -583,7 +657,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   TH1D *ratio_aSmooth_5 = (TH1D *)ratio_5->Clone();
   ratio_aSmooth_5->Smooth(3);
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_5->GetNbinsX(); ++i)
+  for (int i = 0; i < ratio_5->GetNbinsX(); ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -684,7 +758,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratios_5[i]->Write();
   }
 
-  for (unsigned int i = 0; i < ratio_slices.size(); ++i)
+  for (int i = 0; i < ratio_slices.size(); ++i)
   {
     ratio_slices[i]->Write();
   }
@@ -692,7 +766,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   // Plot it
   ratio->Draw("hist err P");
   ratio->SetMarkerStyle(8);
-  for (unsigned int i = 0; i < mc_files.size(); ++i)
+  for (int i = 0; i < mc_files.size(); ++i)
   {
     ratios[i]->Draw("hist err same");
     ratios[i]->Write();
@@ -851,23 +925,6 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
 
     std::vector<TTree *> trees = {trees_mctrueacc[i], trees_mcradcorr[i]};
 
-    // OBSERVABLE DEFINITION:
-    double TotWeight;
-    double ECal, Recoq3, RecoW;
-    double pfl, pfl_theta, pfl_phi;
-    double proton_mom, proton_phi, proton_theta;
-    double pim_mom, pim_theta, pim_phi;
-    double pip_mom, pip_theta, pip_phi;
-    double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT;
-    double AlphaT, DeltaPT, DeltaPhiT;
-    double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu;
-    double MissingEnergy, MissingAngle, MissingMomentum;
-    double InferedNucleonMom;
-    double HadronsAngle, Angleqvshad;
-    double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi;
-    long NEntries;
-    bool IsBkg;
-    int ElectronSector;
     for (unsigned int j = 0; j < trees.size(); ++j)
     {
       NEntries = trees[j]->GetEntries();

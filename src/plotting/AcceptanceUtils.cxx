@@ -119,6 +119,8 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
   std::vector<double> binning;
   // Get energy from tree to define range
   double BeamE;
+  bool IsBkg;
+  int ElectronSector;
 
   for (unsigned int i = 0; i < mc_files.size(); ++i)
   {
@@ -924,6 +926,8 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
     hists_true[i]->Sumw2();
 
     std::vector<TTree *> trees = {trees_mctrueacc[i], trees_mcradcorr[i]};
+    bool IsBkg;
+    int ElectronSector;
 
     for (unsigned int j = 0; j < trees.size(); ++j)
     {

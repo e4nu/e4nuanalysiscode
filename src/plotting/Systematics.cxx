@@ -1,5 +1,4 @@
 #include "plotting/Systematics.h"
-#include "plotting/PlottingUtils.h"
 #include "plotting/XSecUtils.h"
 #include "TLegend.h"
 #include <iomanip>
@@ -11,6 +10,7 @@
 
 using namespace e4nu ;
 using namespace e4nu::systematics ;
+using namespace e4nu::plotting;
 
 void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::vector<std::string> tags, std::string observable, bool is_data,
 				   std::string input_location, std::string output_location, std::string analysis_id ){
@@ -43,22 +43,7 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
     TH1D * hist = new TH1D( tags[i].c_str(), tags[i].c_str(), binning.size()-1, &binning[0] ) ;
     if( !hist ) return ;
 
-    // OBSERVABLE DEFINITION:
-    double TotWeight ;
-    double ECal,Recoq3,RecoW;
-    double pfl,pfl_theta,pfl_phi;
-    double proton_mom,proton_phi,proton_theta;
-    double pim_mom,pim_theta,pim_phi;
-    double pip_mom,pip_theta,pip_phi;
-    double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT ;
-    double AlphaT, DeltaPT, DeltaPhiT ;
-    double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
-    double MissingEnergy, MissingAngle, MissingMomentum ;
-    double InferedNucleonMom ;
-    double HadronsAngle,Angleqvshad ;
-    double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
-    long NEntries ;
-    bool IsBkg ;
+    bool IsBkg;
     double MCNormalization, DataNormalization ;
     std::vector<double> mc_norm ;
 

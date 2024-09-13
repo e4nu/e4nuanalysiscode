@@ -813,11 +813,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (observable == "Angleqvshad")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(30, 0, 160);
+        binning = plotting::GetUniformBinning(30, 0, 120);
       else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(30, 0, 160);
+        binning = plotting::GetUniformBinning(30, 0, 120);
       else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(20, 0, 160);
+        binning = plotting::GetUniformBinning(20, 0, 60);
     }
     else if (observable == "HadDeltaPT" || observable == "DeltaPT")
     {
@@ -893,11 +893,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (observable == "Angleqvshad")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(30, 0, 160);
+        binning = plotting::GetUniformBinning(30, 0, 120);
       else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(30, 0, 160);
+        binning = plotting::GetUniformBinning(30, 0, 120);
       else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(20, 0, 160);
+        binning = plotting::GetUniformBinning(20, 0, 60);
     }
     else if (observable == "HadDeltaPT" || observable == "DeltaPT")
     {

@@ -795,7 +795,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (observable == "ElectronPT")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(50, 0, 0.5);
+        binning = plotting::GetUniformBinning(50, 0.2, 0.7);
       else if (EBeam == 2.261)
         binning = plotting::GetUniformBinning(50, 0, 1);
       else if (EBeam == 4.461)
@@ -804,7 +804,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (observable == "PionPT")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(50, 0.2, 0.7);
+        binning = plotting::GetUniformBinning(50, 0, 0.5);
       else if (EBeam == 2.261)
         binning = plotting::GetUniformBinning(50, 0, 1);
       else if (EBeam == 4.461)

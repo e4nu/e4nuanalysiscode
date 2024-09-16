@@ -13,6 +13,22 @@
 
 namespace e4nu {
   namespace plotting {
+
+    // Define observables here
+    extern double TotWeight, ECal, Recoq3, RecoW;
+    extern double pfl, pfl_theta, pfl_phi;
+    extern double proton_mom, proton_phi, proton_theta;
+    extern double pim_mom, pim_theta, pim_phi;
+    extern double pip_mom, pip_theta, pip_phi;
+    extern double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT;
+    extern double AlphaT, DeltaPT, DeltaPhiT;
+    extern double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu;
+    extern double MissingEnergy, MissingAngle, MissingMomentum;
+    extern double InferedNucleonMom, HadronsAngle, Angleqvshad;
+    extern double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi;
+    extern double RecoEvPion, RecoWPion, ElectronPT, PionPT;
+
+    double GetObservable( const std::string observable ) ;
     void NormalizeHist( TH1D * h, double normalization_factor );
     void CorrectData(TH1D* h, TH1D* acc);
     std::string GetAxisLabel( std::string observable, unsigned int id_axis );

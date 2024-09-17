@@ -52,6 +52,10 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     trees_mctrueacc[0]->SetBranchAddress("BeamE", &BeamE);
     trees_mctrueacc[0]->GetEntry(0);
     binning = plotting::GetBinning(observable, BeamE, analysis_id);
+    if( binning.size() == 0 ){
+      std::cout << " ERROR: Binning is zero! Exiting... "<<std::endl;
+      exit(0);
+    }
 
     hists_recoacc.push_back(new TH1D(("Reco MC ACC Model " + std::to_string(i)).c_str(), "", binning.size() - 1, &binning[0]));
     hists_trueacc.push_back(new TH1D(("True MC ACC Model " + std::to_string(i)).c_str(), "", binning.size() - 1, &binning[0]));

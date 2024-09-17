@@ -5,7 +5,7 @@ using namespace e4nu::plotting;
 
 namespace e4nu {
   namespace plotting {
-    // Defining rootbranches 
+    // Defining rootbranches
     double TotWeight, ECal, Recoq3, RecoW;
     double pfl, pfl_theta, pfl_phi;
     double proton_mom, proton_phi, proton_theta;
@@ -110,7 +110,7 @@ double plotting::GetObservable( const std::string observable ) {
     content = ElectronPT;
   else if (observable == "PionPT")
     content = PionPT;
-      
+
   return content;
 }
 
@@ -395,8 +395,8 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
 	binning = plotting::GetECalBinning(20, 10, 1, EBeam + 0.06, EBeam);
       else if (EBeam == 4.461)
 	binning = plotting::GetECalBinning(20, 10, 1.5, EBeam + 0.1, EBeam);
-    }
-  else if (observable == "DiffECal")
+      else std::cout << " Asking for incorrect beam energy !!! " << std::endl;
+  } else if (observable == "DiffECal")
     {
       if (EBeam == 1.161)
 	binning = plotting::GetUniformBinning(25, -0.6, 0.2);
@@ -990,6 +990,10 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
 	}
     }
 
+
+  if( binning.size() == 0 ) {
+    std::cout << " ERROR: Binning for " << observable << " is nul"<< std::endl;
+  }
   return binning;
 }
 

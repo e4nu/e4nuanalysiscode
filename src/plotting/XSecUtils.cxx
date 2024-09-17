@@ -15,7 +15,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
                           std::string acceptance_file_name, std::string radcorr_file, std::string observable,
                           std::string title, std::string data_name, std::vector<std::string> model,
                           std::string input_MC_location, std::string input_data_location, std::string output_location,
-                          std::string output_file_name, bool plot_data, std::map<string, double> systematic_map,
+                          std::string output_file_name, bool plot_data, std::map<string, double> systematic_map, std::map<std::string,std::vector<double>> cuts,
                           std::string analysis_id, bool store_root)
 {
 
@@ -369,8 +369,21 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       double w = TotWeight;
       if (i != id_data && j == 0)
         mc_norm.push_back(MCNormalization);
-      
+
       content = GetObservable(observable);
+
+      // Check if passes cuts
+      bool do_fill =true ;
+      for (auto it = cuts.begin(); it != cuts.end(); it++)
+      {
+        double min = it->second[0] ;
+        double max = it->second[1] ;
+        if( GetObservable(it->first) < min || GetObservable(it->first) > max ) {
+          do_fill = false;
+          continue;
+        }
+      }
+      if( !do_fill ) continue ;
 
       unsigned int id_hist = i;
       // Fill the per Sector  histogram. Only for primary model

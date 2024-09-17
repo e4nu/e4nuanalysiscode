@@ -7,7 +7,8 @@ using namespace e4nu::plotting;
 
 std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::string observable, std::string title,
                                         std::string input_MC_location, std::string output_location, std::string output_file_name,
-                                        std::string analysis_id, bool store_root)
+                                        std::map<std::string,std::vector<double>> cuts,
+                                        std::string analysis_id, bool store_root )
 {
 
   // Define trees
@@ -177,7 +178,20 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
         trees[j]->GetEntry(k);
         double content = 0;
         double w = TotWeight;
-	content = GetObservable(observable);
+	      content = GetObservable(observable);
+
+        // Check if passes cuts
+        bool do_fill =true ;
+        for (auto it = cuts.begin(); it != cuts.end(); it++)
+        {
+          double min = it->second[0] ;
+          double max = it->second[1] ;
+          if( GetObservable(it->first) < min || GetObservable(it->first) > max ) {
+            do_fill = false;
+            continue;
+          }
+        }
+        if( !do_fill ) continue ;
 
         // Fill the per Sector  histogram
         hists[2 * (ElectronSector + 1) + (j - initial_size_trees) + initial_size_hists]->Fill(content, w);
@@ -708,7 +722,8 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 
 std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::string observable, std::string title,
                                      std::string input_MC_location, std::string output_location, std::string output_file_name,
-                                     std::string analysis_id, bool store_root)
+                                     std::map<std::string,std::vector<double>> cuts,
+                                     std::string analysis_id, bool store_root )
 {
 
   // Define trees
@@ -809,7 +824,19 @@ std::string plotting::ComputeRadCorr(std::vector<std::string> mc_files, std::str
         trees[j]->GetEntry(k);
         double content = 0;
         double w = TotWeight;
-	content = GetObservable(observable);
+	       content = GetObservable(observable);
+         // Check if passes cuts
+         bool do_fill =true ;
+         for (auto it = cuts.begin(); it != cuts.end(); it++)
+         {
+           double min = it->second[0] ;
+           double max = it->second[1] ;
+           if( GetObservable(it->first) < min || GetObservable(it->first) > max ) {
+             do_fill = false;
+             continue;
+           }
+         }
+         if( !do_fill ) continue ;
 
         // Fill the per Sector  histogram
         if (j == 0)

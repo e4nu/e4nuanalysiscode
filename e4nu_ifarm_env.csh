@@ -1,6 +1,6 @@
 #!/bin/csh                                                                                    
-source /group/clas12/packages/setup.csh
-module load root/6.26.10
+source /cvmfs/oasis.opensciencegrid.org/jlab/hallb/clas12/sw/modulefiles
+module load root/6.30.04
 
 setenv E4NUANALYSIS `pwd`
 

@@ -10,6 +10,7 @@
 #include "TCanvas.h"
 #include "TTree.h"
 #include <iomanip>
+#include <map>
 
 namespace e4nu {
   namespace plotting {
@@ -49,6 +50,3 @@ namespace e4nu {
 }
 
 #endif
-
-
-

@@ -36,6 +36,7 @@ namespace e4nu {
 		    std::string title, std::string data_name, std::vector<std::string> model,
 		    std::string input_MC_location, std::string input_data_location, std::string output_location,
 		    std::string output_file_name, bool plot_data, std::map<string,double> systematic_map,
+        std::map<std::string,std::vector<double>> cuts,
 		    std::string analysis_id = "default", bool store_root = false) ;
 
     void PlotXsecDataTotal( TH1D * data, std::string observable, std::string title, std::string data_name,

@@ -7,6 +7,8 @@
 #include "plotting/Systematics.h"
 #include <iomanip>
 #include <filesystem>
+#include <map>
+#include <vector>
 
 using namespace std;
 using namespace e4nu;
@@ -32,6 +34,8 @@ using namespace e4nu::plotting;
 // 15) Analysis id - used to set the ranges. default none      //
 //     i.e. 1p1pim                                             //
 // 16) Plot root file output. Stores individual histograms     //
+// 17) Apply cut on observable                                 //
+//     --cut-observables Obs1,min1,max1:...:ObsN,minN,maxN     //
 /////////////////////////////////////////////////////////////////
 
 string mc_location="", data_location="", output_location ="", output_name ="", analysis_id="default";
@@ -43,6 +47,10 @@ map<string,double> systematic_map ;
 bool plot_data = true ;
 bool store_root = false ;
 void PrintFormat(string s);
+
+// We want to add a map which contains the observable to cut on and its range
+std::map<string,vector<double>> cuts;
+
 int main( int argc, char* argv[] ) {
 
   std::cout << "Plotting e4nu analysis..." << std::endl;
@@ -65,12 +73,12 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("output_name",argc,argv)) {
       output_name = GetArg("output_name",argc,argv) ;
     } else PrintFormat("output_name") ;
- 
+
     if( ExistArg("mc_location",argc,argv)) {
       mc_location = GetArg("mc_location",argc,argv) ;
       cout << "Reading MC files from " << mc_location << std::endl;
     } else PrintFormat("mc_location") ;
-    
+
     if( ExistArg("input_mc_files",argc,argv)) {
       string files ;
       files = GetArg("input_mc_files",argc,argv) ;
@@ -111,7 +119,7 @@ int main( int argc, char* argv[] ) {
 	return 0;
       }
     }
-    if( ExistArg("store_root",argc,argv)) store_root = true ; 
+    if( ExistArg("store_root",argc,argv)) store_root = true ;
 
     cout<<"Loading MC Files:"<<endl;
     for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
@@ -149,6 +157,29 @@ int main( int argc, char* argv[] ) {
       string bkgsys = GetArg("bkg-systematics",argc,argv) ;
       bkg_syst = SplitString(bkgsys,',');
     }
+
+    string cut_obs ;
+    if( ExistArg("cut-observables",argc,argv)) {
+      cut_obs = GetArg("cut-observables",argc,argv) ;
+      vector<string> obs_names = SplitString(cut_obs,':');
+      for( unsigned s = 0 ; s < obs_names.size() ; ++s ) {
+         vector<string> obs_details = SplitString(obs_names[s],',');
+         if( obs_details.size() != 3 ) {
+            std::cout << " Need three entries for observable " << obs_names[s] << std::endl;
+            continue ;
+          }
+          string observable_s = obs_details[0] ;
+          double min_obs = stod( obs_details[1] );
+          double max_obs = stod( obs_details[2] );
+          // And add in map
+          cuts[observable_s] = {min_obs, max_obs};
+          // print out information:
+          std::cout << " Adding cuts on " << observable_s << " : " << std::endl;
+          std::cout << " --> Min: " << min_obs << std::endl;
+          std::cout << " --> Max: " << max_obs << std::endl;
+      }
+    }
+
   }
 
   // Loop over observables
@@ -156,9 +187,9 @@ int main( int argc, char* argv[] ) {
     vector<string> root_files = mc_files;
     vector<string> root_rad_files = rad_files;
     vector<string> names = model_names ;
-    string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name, analysis_id, store_root ) ;
+    string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
     string radcorr_file = "";
-    if( rad_files.size() != 0 ) radcorr_file = ComputeRadCorr( root_rad_files, observables[i], title, mc_location, output_location, output_name, analysis_id, store_root ) ;
+    if( rad_files.size() != 0 ) radcorr_file = ComputeRadCorr( root_rad_files, observables[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
 
     vector<string> bkg_syst_files = {data_file};
@@ -171,7 +202,7 @@ int main( int argc, char* argv[] ) {
     if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables[i], true, data_location, output_location, analysis_id );
 
     Plot1DXSec( root_files, data_file, acceptance_file, radcorr_file, observables[i], title, data_name, names, mc_location, data_location,
-		output_location, output_name, plot_data, systematic_map, analysis_id, store_root ) ;
+		output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root ) ;
   }
 
   return 0 ;

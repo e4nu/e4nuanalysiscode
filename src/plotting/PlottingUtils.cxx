@@ -278,7 +278,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   if (observable == "ECal")
   {
     if (EBeam == 1.161)
-      binning = plotting::GetECalBinning(22, 10, 0.8, 1.2, EBeam);
+      binning = plotting::GetECalBinning(22, 10, 0.6, 1.2, EBeam);
     else if (EBeam == 2.261)
       binning = plotting::GetECalBinning(20, 10, 1, EBeam + 0.06, EBeam);
     else if (EBeam == 4.461)

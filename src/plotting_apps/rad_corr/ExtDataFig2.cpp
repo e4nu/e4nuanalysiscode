@@ -36,14 +36,21 @@ void ExtDataFig2() {
 
 	std::vector<TString> E; E.push_back("4_325");
 
-	std::vector<int> Colors; Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kGreen); Colors.push_back(60);
+	std::vector<int> Colors; Colors.push_back(kBlack); Colors.push_back(kBlack); Colors.push_back(kBlue); Colors.push_back(kOrange); Colors.push_back(60);
+	std::vector<int> LineStyle; LineStyle.push_back(1); LineStyle.push_back(1); LineStyle.push_back(1); LineStyle.push_back(2); LineStyle.push_back(8);
 
 	std::vector<TString> FSIModel; 
-        FSIModel.push_back("Data"); 
-	//        FSIModel.push_back("hA2018_LFG_simpleMax20Min25"); 
-        //FSIModel.push_back("hA2018_LFG_norad"); 
+        FSIModel.push_back("Data");
+	FSIModel.push_back("MonoChromatic");
+	FSIModel.push_back("NotRadiatedV2");
+	FSIModel.push_back("New"); 
+
 	std::vector<TString> FSILabel; 
         FSILabel.push_back("Data"); 
+	FSILabel.push_back("MonoChromatic");
+	FSILabel.push_back("GENIE+emMCRadCorr");
+	FSILabel.push_back("GENIE+radiative corrections");
+
         //FSILabel.push_back("GENIE + radiative correction"); 
         //FSILabel.push_back("GENIE default"); 
 
@@ -94,12 +101,13 @@ void ExtDataFig2() {
 		    for (int WhichFSIModel = 0; WhichFSIModel < NFSIModels; WhichFSIModel ++) {
 
 
-			TString PathToFiles = "/genie/app/users/jtenavid/Software/e4v/E4NuAnalysis/Source/e4nuanalysiscode/data/"; // default
+			TString PathToFiles = "/exp/genie/app/jtena/e4nuanalysiscode/data/"; // default
 			if( FSIModel[WhichFSIModel] != "Data" ) PathToFiles = "";
 			TFile* FileSample = TFile::Open(PathToFiles+nucleus[WhichNucleus]+"_"+E[WhichEnergy]+"_"+FSIModel[WhichFSIModel]+"_Plots_FSI_em.root");
 
 			Plots.push_back( (TH1D*)( FileSample->Get(NameOfPlots[WhichPlot]) ) );
 			Plots[WhichFSIModel]->SetLineColor(Colors[WhichFSIModel]);
+			Plots[WhichFSIModel]->SetLineStyle(LineStyle[WhichFSIModel]);
 			Plots[WhichFSIModel]->SetLineWidth(LineWidth);
 
 			Plots[WhichFSIModel]->GetXaxis()->SetNdivisions(Ndivisions);
@@ -137,7 +145,6 @@ void ExtDataFig2() {
 				Plots[WhichFSIModel]->SetMarkerSize(1.2); 
 				Plots[WhichFSIModel]->Draw("e same"); 
 			     }
-
 
    		    }   // End of the loop over the FSI Models 
 

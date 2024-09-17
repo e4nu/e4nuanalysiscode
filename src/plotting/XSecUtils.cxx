@@ -283,22 +283,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   if (plot_data)
     id_data = 1;
 
-  // OBSERVABLE DEFINITION:
-  double TotWeight;
-  double ECal, Recoq3, RecoW;
-  double pfl, pfl_theta, pfl_phi;
-  double proton_mom, proton_phi, proton_theta;
-  double pim_mom, pim_theta, pim_phi;
-  double pip_mom, pip_theta, pip_phi;
-  double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT;
-  double AlphaT, DeltaPT, DeltaPhiT;
-  double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu;
-  double MissingEnergy, MissingAngle, MissingMomentum;
-  double InferedNucleonMom;
-  double HadronsAngle, Angleqvshad;
-  double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi;
-  double RecoEvPion, RecoWPion;
-  double ElectronPT, PionPT;
+  // OBSERVABLE DEFINITION specific for MC
   long NEntries;
   bool IsBkg;
   int ElectronSector;
@@ -384,92 +369,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       double w = TotWeight;
       if (i != id_data && j == 0)
         mc_norm.push_back(MCNormalization);
-      if (observable == "ECal")
-        content = ECal;
-      else if (observable == "pfl")
-        content = pfl;
-      else if (observable == "pfl_theta")
-        content = pfl_theta;
-      else if (observable == "pfl_phi")
-        content = pfl_phi;
-      else if (observable == "proton_mom")
-        content = proton_mom;
-      else if (observable == "proton_theta")
-        content = proton_theta;
-      else if (observable == "proton_phi")
-        content = proton_phi;
-      else if (observable == "pim_mom")
-        content = pim_mom;
-      else if (observable == "pim_theta")
-        content = pim_theta;
-      else if (observable == "pim_phi")
-        content = pim_phi;
-      else if (observable == "pip_mom")
-        content = pip_mom;
-      else if (observable == "pip_theta")
-        content = pip_theta;
-      else if (observable == "pip_phi")
-        content = pip_phi;
-      else if (observable == "RecoW")
-        content = RecoW;
-      else if (observable == "Recoq3")
-        content = Recoq3;
-      else if (observable == "RecoQELEnu")
-        content = RecoQELEnu;
-      else if (observable == "RecoXBJK")
-        content = RecoXBJK;
-      else if (observable == "RecoQ2")
-        content = RecoQ2;
-      else if (observable == "RecoEnergyTransfer")
-        content = RecoEnergyTransfer;
-      else if (observable == "AlphaT")
-        content = AlphaT;
-      else if (observable == "HadAlphaT")
-        content = HadAlphaT;
-      else if (observable == "DeltaPT")
-        content = DeltaPT;
-      else if (observable == "HadDeltaPT")
-        content = HadDeltaPT;
-      else if (observable == "HadDeltaPTx")
-        content = HadDeltaPTx;
-      else if (observable == "HadDeltaPTy")
-        content = HadDeltaPTy;
-      else if (observable == "DeltaPhiT")
-        content = DeltaPhiT;
-      else if (observable == "HadDeltaPhiT")
-        content = HadDeltaPhiT;
-      else if (observable == "HadSystemMass")
-        content = HadSystemMass;
-      else if (observable == "MissingEnergy")
-        content = MissingEnergy;
-      else if (observable == "MissingEnergy")
-        content = MissingEnergy;
-      else if (observable == "MissingAngle")
-        content = MissingAngle;
-      else if (observable == "MissingMomentum")
-        content = MissingMomentum;
-      else if (observable == "InferedNucleonMom")
-        content = InferedNucleonMom;
-      else if (observable == "HadronsAngle")
-        content = HadronsAngle;
-      else if (observable == "AdlerAngleThetaP")
-        content = AdlerAngleThetaP;
-      else if (observable == "AdlerAnglePhiP")
-        content = AdlerAnglePhiP;
-      else if (observable == "AdlerAngleThetaPi")
-        content = AdlerAngleThetaPi;
-      else if (observable == "AdlerAnglePhiPi")
-        content = AdlerAnglePhiPi;
-      else if (observable == "Angleqvshad")
-        content = Angleqvshad;
-      else if (observable == "RecoEvPion")
-        content = RecoEvPion;
-      else if (observable == "RecoWPion")
-        content = RecoWPion;
-      else if (observable == "ElectronPT")
-        content = ElectronPT;
-      else if (observable == "PionPT")
-        content = PionPT;
+      
+      content = GetObservable(observable);
 
       unsigned int id_hist = i;
       // Fill the per Sector  histogram. Only for primary model

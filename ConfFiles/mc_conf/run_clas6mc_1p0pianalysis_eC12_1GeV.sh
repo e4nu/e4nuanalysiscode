@@ -10,21 +10,21 @@ declare -a InputFiles=("G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root"
     "GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root"
     "GEM21_11a_Dipole_RFG_Q2_01_1GeV_eCarbon.gst.root"
     "GEM21_11b_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root"
-    "GEM21_11c_Dipole_CFG_Q2_01_1GeV_eCarbon.gst.root"
+    "GEM21_11c_Dipole_CFG_Q2_01_1GeV_eCarbon.gst.root"OB
     "GEM21_11d_Dipole_CFG_Q2_01_1GeV_eCarbon.gst.root"
     "GEM21_11d_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root"
 )
 
 declare -a OutputFiles=("e4nuanalysis_1p0pi_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad"
-    "e4nuanalysis_1p0pi_G18_10a_Rarita_LFG_Q2_01_1GeV_eCarbon_NoRad"
-    "e4nuanalysis_1p0pi_GEM21_11a_Dipole_CFG_Q2_01_1GeV_eCarbon_NoRad"
-    "e4nuanalysis_1p0pi_GEM21_11a_Dipole_LFG_NoFSI_Q2_01_1GeV_eCarbon_NoRad"
-    "e4nuanalysis_1p0pi_GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad"
-    "e4nuanalysis_1p0pi_GEM21_11a_Dipole_RFG_Q2_01_1GeV_eCarbon_NoRad"
-    "e4nuanalysis_1p0pi_GEM21_11b_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad"
-    "e4nuanalysis_1p0pi_GEM21_11c_Dipole_CFG_Q2_01_1GeV_eCarbon_NoRad"
-    "e4nuanalysis_1p0pi_GEM21_11d_Dipole_CFG_Q2_01_1GeV_eCarbon_NoRad"
-    "e4nuanalysis_1p0pi_GEM21_11d_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad"
+    "e4nuanalysis_1pi0_G18_10a_Rarita_LFG_Q2_01_1GeV_eCarbon_NoRad"
+    "e4nuanalysis_1pi0_GEM21_11a_Dipole_CFG_Q2_01_1GeV_eCarbon_NoRad"
+    "e4nuanalysis_1pi0_GEM21_11a_Dipole_LFG_NoFSI_Q2_01_1GeV_eCarbon_NoRad"
+    "e4nuanalysis_1pi0_GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad"
+    "e4nuanalysis_1pi0_GEM21_11a_Dipole_RFG_Q2_01_1GeV_eCarbon_NoRad"
+    "e4nuanalysis_1pi0_GEM21_11b_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad"
+    "e4nuanalysis_1pi0_GEM21_11c_Dipole_CFG_Q2_01_1GeV_eCarbon_NoRad"
+    "e4nuanalysis_1pi0_GEM21_11d_Dipole_CFG_Q2_01_1GeV_eCarbon_NoRad"
+    "e4nuanalysis_1pi0_GEM21_11d_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad"
 )
 
 declare -a XSecFiles=("G18_10a_Dipole_Q2_01_eCarbon.root"
@@ -39,6 +39,8 @@ declare -a XSecFiles=("G18_10a_Dipole_Q2_01_eCarbon.root"
     "GEM21_11a_Dipole_Q2_01_eCarbon.root"
 )
 
+declare -a RadiatedFiles=("GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_radiated.gst.root")
+
 conf_file="ConfFiles/mc_conf/clas6mc_1p0pianalysis_eC12_1GeV.txt"
 
 cd $E4NUANALYSIS
@@ -51,3 +53,8 @@ do
   ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[$i]} --output-file ${path_output}${OutputFiles[$i]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[$i]}
   ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[$i]} --output-file ${path_output}${OutputFiles[$i]} --analysis-type ComputeTrueRecoAccCorr --xsec-file ${path_xsec}${XSecFiles[$i]}
 done
+
+./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
+./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueRecoAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
+
+./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}"e4nuanalysis_1p0pi_GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_Rad" --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true

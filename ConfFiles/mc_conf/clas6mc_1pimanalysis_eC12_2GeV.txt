@@ -19,7 +19,7 @@ offset			0
 #Run Configurables
 EBeam			2.261
 TargetPdg		1000060120
-NEvents			1000000000
+NEvents			10000000
 FirstEvent		0
 
 #Topology definition
@@ -33,8 +33,8 @@ NRotations 1000
 #The following parameters will modify the configuration 
 #TrueAccCorr: by using only true signal events, it provides with the analysed events after momentum cuts. All Sectors are used
 #trueRecoAccCorr: by using only true signal events, it provodes with analysed reconstructed events after momentum, fiducial, acceptance, smearing effects. Sectors 2 and 4 are not used.
-ComputeTrueAccCorr false
-ComputeTrueRecoAccCorr true
+ComputeTrueAccCorr true
+ComputeTrueRecoAccCorr false
 
 InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/G18_10a_Dipole_LFG_Q2_04_2GeV_eCarbon.gst.root
 XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/G18_10a_Dipole_Q2_04_eCarbon.root

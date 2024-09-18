@@ -689,9 +689,9 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       if (EBeam == 1.161)
         binning = plotting::GetUniformBinning(20, 0, 0.7);
     }
-  }
-  else if (analysis_key == "1pip")
-  {
+  
+
+  if (analysis_key == "1pip") {
     if (observable == "ECal")
     {
       if (EBeam == 1.161)

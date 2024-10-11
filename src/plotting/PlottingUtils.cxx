@@ -927,7 +927,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       else if (EBeam == 2.261)
         binning = plotting::GetUniformBinning(50, 0.5, 3.5);
       else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(50, 0, 7);
+        binning = plotting::GetUniformBinning(50, 1, 7);
     }
     if (observable == "RecoWPion")
     {
@@ -993,7 +993,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       else if (EBeam == 2.261)
         binning = plotting::GetUniformBinning(50, 0.5, 3.5);
       else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(50, 0, 7);
+        binning = plotting::GetUniformBinning(50, 1, 7);
     }
     if (observable == "RecoWPion")
     {

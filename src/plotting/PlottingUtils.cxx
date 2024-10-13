@@ -411,11 +411,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "pfl_theta")
   {
     if (EBeam == 1.161)
-      binning = plotting::GetUniformBinning(35, 20, 145);
+      binning = plotting::GetUniformBinning(35, 20, 45);
     else if (EBeam == 2.261)
-      binning = plotting::GetUniformBinning(35, 20, 145);
+      binning = plotting::GetUniformBinning(35, 20, 45);
     else if (EBeam == 4.461)
-      binning = plotting::GetUniformBinning(35, 15, 145);
+      binning = plotting::GetUniformBinning(35, 15, 45);
   }
   else if (observable == "pfl_phi")
   {

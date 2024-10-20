@@ -881,12 +881,12 @@ void plotting::PlotComparisonDataNormalized(std::vector<TH1D> mc_hists, std::vec
   StandardFormat(&mc_hists[0], title, kBlack, 1, observable, y_max_total, "Counts/Bin Width");
   if (breakdown.size() == 6)
   {
-    StandardFormat(&breakdown[0], title, kBlue - 3, 1, observable, y_max_total, "Counts/Bin Width");
+    StandardFormat(&breakdown[0], title, kGreen + 1 , 1, observable, y_max_total, "Counts/Bin Width");
     StandardFormat(&breakdown[1], title, kRed - 4, 1, observable, y_max_total, "Counts/Bin Width");
-    StandardFormat(&breakdown[2], title, kGreen + 2, 1, observable, y_max_total, "Counts/Bin Width");
-    StandardFormat(&breakdown[3], title, kOrange, 1, observable, y_max_total, "Counts/Bin Width");
-    StandardFormat(&breakdown[4], title, kMagenta - 3, 1, observable, y_max_total, "Counts/Bin Width");
-    StandardFormat(&breakdown[5], title, kCyan + 1, 1, observable, y_max_total, "Counts/Bin Width");
+    StandardFormat(&breakdown[2], title, kMagenta - 3, 1, observable, y_max_total, "Counts/Bin Width");
+    StandardFormat(&breakdown[3], title, kCyan + 1, 1, observable, y_max_total, "Counts/Bin Width");
+    StandardFormat(&breakdown[4], title, kOrange, 1, observable, y_max_total, "Counts/Bin Width");
+    StandardFormat(&breakdown[5], title, kBlue, 1, observable, y_max_total, "Counts/Bin Width");
   }
 
   // Draw total xsec (all sectors):
@@ -955,12 +955,12 @@ void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, std::vector<TH1D *> b
   StandardFormat(mc_hists[0], title, kBlack, 1, observable, y_max_total);
   if (breakdown.size() == 6)
   {
-    StandardFormat(breakdown[0], title, kBlue - 3, 1, observable);
+    StandardFormat(breakdown[0], title, kGreen + 1 , 1, observable);
     StandardFormat(breakdown[1], title, kRed - 4, 1, observable);
-    StandardFormat(breakdown[2], title, kGreen + 2, 1, observable);
-    StandardFormat(breakdown[3], title, kOrange, 1, observable);
-    StandardFormat(breakdown[4], title, kMagenta - 3, 1, observable);
-    StandardFormat(breakdown[5], title, kCyan + 1, 1, observable);
+    StandardFormat(breakdown[2], title, kMagenta - 3, 1, observable);
+    StandardFormat(breakdown[3], title, kCyan + 1, 1, observable);
+    StandardFormat(breakdown[4], title, kOrange, 1, observable);
+    StandardFormat(breakdown[5], title, kBlue, 1, observable);
   }
 
   // Draw total xsec (all sectors):

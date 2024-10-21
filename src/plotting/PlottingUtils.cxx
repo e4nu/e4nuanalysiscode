@@ -501,11 +501,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "RecoW")
   {
     if (EBeam == 1.161)
-      binning = plotting::GetUniformBinning(35, 1, 1.5);
+      binning = plotting::GetUniformBinning(35, 0.9, 1.5);
     else if (EBeam == 2.261)
-      binning = plotting::GetUniformBinning(35, 1, 1.9);
+      binning = plotting::GetUniformBinning(35, 0.8, 2);
     else if (EBeam == 4.461)
-      binning = plotting::GetUniformBinning(35, 1.2, 2.5);
+      binning = plotting::GetUniformBinning(35, 0.6, 2.6);
   }
   else if (observable == "RecoXBJK")
   {

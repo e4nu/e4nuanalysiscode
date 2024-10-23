@@ -24,7 +24,7 @@ FirstEvent		0
 #Topology definition
 IsData			true
 IsCLAS6Analysis		true
-Toplogy 		11:1,-211:1,221:0,22:0,111:0
+Toplogy 		11:1,-211:1,211:0,22:0
 MaxBackgroundMultiplicity 4
 NRotations 5000
 

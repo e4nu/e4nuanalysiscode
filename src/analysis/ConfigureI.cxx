@@ -391,7 +391,9 @@ bool ConfigureI::InitializeFiducial(void) {
 
 void ConfigureI::ApplyAcceptanceCorrection( Event & event, bool invert ) {
   double acc_wght = 1 ;
-  if( ApplyAccWeights() ) {
+  if( ApplyAccWeights() || kIsData ) {
+    // We only apply the acceptance if configured
+    // For the data, acceptance is used to correct background events for this effect
     TLorentzVector out_mom = event.GetOutLepton4Mom() ;
     std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
     std::map<int,unsigned int> Topology = GetTopology();

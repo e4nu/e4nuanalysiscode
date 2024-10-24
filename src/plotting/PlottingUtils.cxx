@@ -951,6 +951,31 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     {
       if (EBeam == 1.161)
         binning = plotting::GetUniformBinning(50, 0, 0.5);
+    }
+    else if (observable == "RecoEvPion")
+      {
+        if (EBeam == 1.161)
+  	binning = plotting::GetUniformBinning(50, 0, 2);
+        else if (EBeam == 2.261)
+  	binning = plotting::GetUniformBinning(50, 0.5, 3.5);
+        else if (EBeam == 4.461)
+  	binning = plotting::GetUniformBinning(50, 2, 6);
+      }
+    else if (observable == "RecoWPion")
+      {
+        if (EBeam == 1.161)
+  	binning = plotting::GetUniformBinning(50, 0.5, 2);
+        else if (EBeam == 2.261)
+  	binning = plotting::GetUniformBinning(50, 0.5, 3);
+        else if (EBeam == 4.461)
+  	binning = plotting::GetUniformBinning(50, 0.5, 3.5);
+      }
+
+  if (analysis_key == "1pip") {
+    if (observable == "ECal")
+    {
+      if (EBeam == 1.161)
+	binning = plotting::GetUniformBinning(30, 20, 180);
       else if (EBeam == 2.261)
         binning = plotting::GetUniformBinning(50, 0, 1);
       else if (EBeam == 4.461)

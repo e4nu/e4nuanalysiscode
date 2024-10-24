@@ -55,7 +55,7 @@ namespace e4nu {
 	    // probability_counts is the number of events with that specific topology and id list
 
 	    // We want to correct for the acceptance so we have a "perfectly detected" event independent of the acceptance
-	    //	    ApplyAcceptanceCorrection( event_holder[m][event_id], true ) ;
+	    ApplyAcceptanceCorrection( event_holder[m][event_id], true ) ;
 
 	    // Start rotations
 	    for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) {
@@ -169,7 +169,7 @@ namespace e4nu {
 		                                                // For m = signal_multiplicity, id = 3+signal_mult
 
 		// Account for acceptance
-		// ApplyAcceptanceCorrection( temp_event ) ;
+		ApplyAcceptanceCorrection( temp_event ) ;
 
 		// Add in map
 		if ( event_holder.find(new_multiplicity) != event_holder.end() ) {

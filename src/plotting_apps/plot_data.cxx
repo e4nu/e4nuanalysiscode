@@ -137,7 +137,7 @@ int main( int argc, char* argv[] ) {
   double AlphaT, DeltaPT, DeltaPhiT ;
   double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
   double MissingEnergy, MissingAngle, MissingMomentum ;
-  double InferedNucleonMom ;
+  double InferedNucleonMom, RecoEvPion, RecoWPion ;
   double HadronsAngle,Angleqvshad ;
   double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
   long NEntries ;
@@ -188,7 +188,9 @@ int main( int argc, char* argv[] ) {
     in_trees[i] -> SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
     in_trees[i] -> SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
     in_trees[i] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
-
+    in_trees[i] -> SetBranchAddress("RecoEvPion",&RecoEvPion);
+    in_trees[i] -> SetBranchAddress("RecoWPion",&RecoWPion);
+	
     for( int j = 0 ; j < NEntries ; ++j ) {
       in_trees[i]->GetEntry(j) ;
       double content = 0 ;
@@ -232,6 +234,8 @@ int main( int argc, char* argv[] ) {
       else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ;
       else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ;
       else if ( observable == "Angleqvshad") content = Angleqvshad ;
+      else if ( observable == "RecoEvPion") content = RecoEvPion ;
+      else if ( observable == "RecoWPion") content = RecoWPion;
       hists[i]->Fill(content,w);
     }
   }

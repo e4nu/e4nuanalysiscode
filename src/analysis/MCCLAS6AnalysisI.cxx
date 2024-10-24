@@ -174,6 +174,7 @@ void MCCLAS6AnalysisI::Initialize()
     if (GetConfiguredTarget() == conf::kPdgO16)
       target_tag = "e-_O16";
 
+    std::cout << " *********************************** " << GetXSecFile()<< std::endl;
     std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>(new TFile((GetXSecFile()).c_str(), "READ"));
     if (!xsec_file)
     {

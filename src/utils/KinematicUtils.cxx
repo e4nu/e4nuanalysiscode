@@ -293,7 +293,7 @@ double utils::GetRecoEvPionProduction(const double EBeam, const TLorentzVector o
   double piMEnergy = out_pion.E();
   double E_rec = 0;
 
-  if (elEnergy > 0 && piMEnergy > 0)
+  if (elEnergy > 0 && piMEnergy > 0 && (out_electron.P() > 0.35 || EBeam != 4.461))
   {
     double elMag = out_electron.Vect().Mag();
     double piMMag = out_pion.Vect().Mag();

@@ -920,24 +920,6 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       else if (EBeam == 4.461)
         binning = plotting::GetECalBinning(15, 10, 1.2, EBeam + 0.1, EBeam);
     }
-    if (observable == "RecoEvPion")
-    {
-      if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(50, 0.5, 2);
-      else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(50, 0.5, 3.5);
-      else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(50, 1, 7);
-    }
-    if (observable == "RecoWPion")
-    {
-      if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(50, 0.9, 2);
-      else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(50, 0.9, 2.6);
-      else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(50, 0, 4);
-    }
     else if (observable == "ElectronPT")
     {
       if (EBeam == 1.161)
@@ -952,23 +934,23 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       if (EBeam == 1.161)
         binning = plotting::GetUniformBinning(50, 0, 0.5);
     }
-    else if (observable == "RecoEvPion")
+    if (observable == "RecoWPion")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(50, 0, 2);
+        binning = plotting::GetUniformBinning(50, 0.9, 2);
       else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(50, 0.5, 3.5);
+        binning = plotting::GetUniformBinning(50, 0.8, 2.6);
       else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(50, 2, 6);
+        binning = plotting::GetUniformBinning(50, 0.6, 2.6);
     }
-    else if (observable == "RecoWPion")
+    else if (observable == "RecoEvPion")
     {
       if (EBeam == 1.161)
         binning = plotting::GetUniformBinning(50, 0.5, 2);
       else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(50, 0.5, 3);
-      else if (EBeam == 4.461)
         binning = plotting::GetUniformBinning(50, 0.5, 3.5);
+      else if (EBeam == 4.461)
+        binning = plotting::GetUniformBinning(50, 2, 6);
     }
   }
 

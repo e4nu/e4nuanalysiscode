@@ -283,7 +283,7 @@ double utils::GetAdlerAnglePhi(const double EBeam, const TLorentzVector leptonf,
   return particle_perp.Angle(x_axis); // phi
 }
 
-double utils::GetRecoEvPionProduction(const TLorentzVector out_electron, const TLorentzVector out_pion)
+double utils::GetRecoEvPionProduction(const double EBeam, const TLorentzVector out_electron, const TLorentzVector out_pion)
 {
   double elMass2 = pow(conf::kElectronMass, 2);
   double piMMass2 = pow(conf::kPiMMass, 2);
@@ -293,7 +293,7 @@ double utils::GetRecoEvPionProduction(const TLorentzVector out_electron, const T
   double piMEnergy = out_pion.E();
   double E_rec = 0;
 
-  if (elEnergy > 0 && piMEnergy > 0)
+  if (elEnergy > 0 && piMEnergy > 0 && (out_electron.P() > 0.35 || EBeam != 4.461))
   {
     double elMag = out_electron.Vect().Mag();
     double piMMag = out_pion.Vect().Mag();

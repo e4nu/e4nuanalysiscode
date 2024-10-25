@@ -174,7 +174,7 @@ void MCCLAS6AnalysisI::Initialize()
     if (GetConfiguredTarget() == conf::kPdgO16)
       target_tag = "e-_O16";
 
-    std::cout << " *********************************** " << GetXSecFile()<< std::endl;
+    std::cout << " *********************************** " << GetXSecFile() << std::endl;
     std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>(new TFile((GetXSecFile()).c_str(), "READ"));
     if (!xsec_file)
     {
@@ -490,7 +490,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event)
     }
   }
 
-  double RecoEvPion = utils::GetRecoEvPionProduction(out_mom, pi_mom);
+  double RecoEvPion = utils::GetRecoEvPionProduction(BeamE, out_mom, pi_mom);
   double RecoWPion = utils::GetRecoWPionProduction(out_mom, pi_mom);
   double ElectronPT = utils::GetPT(out_mom.Vect()).Mag();
   double PionPT = utils::GetPT(pi_mom.Vect()).Mag();

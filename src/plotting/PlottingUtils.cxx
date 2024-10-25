@@ -433,7 +433,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (EBeam == 2.261)
       binning = plotting::GetUniformBinning(20, 0.5, 1.7);
     else if (EBeam == 4.461)
-      binning = plotting::GetUniformBinning(20, 1.2, 3.8);
+      binning = plotting::GetUniformBinning(20, 1.35, 3.8);
   }
   else if (observable == "proton_mom")
   {
@@ -501,9 +501,9 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "RecoW")
   {
     if (EBeam == 1.161)
-      binning = plotting::GetUniformBinning(35, 0.9, 1.5);
+      binning = plotting::GetUniformBinning(35, 0.9, 2);
     else if (EBeam == 2.261)
-      binning = plotting::GetUniformBinning(35, 0.8, 2);
+      binning = plotting::GetUniformBinning(35, 0.8, 2.6);
     else if (EBeam == 4.461)
       binning = plotting::GetUniformBinning(35, 0.6, 2.6);
   }
@@ -934,7 +934,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       if (EBeam == 1.161)
         binning = plotting::GetUniformBinning(50, 0.9, 2);
       else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(50, 0.5, 3);
+        binning = plotting::GetUniformBinning(50, 0.9, 2.6);
       else if (EBeam == 4.461)
         binning = plotting::GetUniformBinning(50, 0, 4);
     }

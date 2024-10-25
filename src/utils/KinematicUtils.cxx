@@ -310,9 +310,9 @@ double utils::GetRecoEvPionProduction(const double EBeam, const TLorentzVector o
   return E_rec;
 }
 
-double utils::GetRecoWPionProduction(const TLorentzVector out_electron, const TLorentzVector out_pion)
+double utils::GetRecoWPionProduction(const double EBeam, const TLorentzVector out_electron, const TLorentzVector out_pion)
 {
-  double E_rec = utils::GetRecoEvPionProduction(out_electron, out_pion);
+  double E_rec = utils::GetRecoEvPionProduction(EBeam, out_electron, out_pion);
 
   TLorentzVector ev_4vect_rec;
   ev_4vect_rec.SetPxPyPzE(0, 0, E_rec, E_rec);

@@ -491,7 +491,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event)
   }
 
   double RecoEvPion = utils::GetRecoEvPionProduction(BeamE, out_mom, pi_mom);
-  double RecoWPion = utils::GetRecoWPionProduction(out_mom, pi_mom);
+  double RecoWPion = utils::GetRecoWPionProduction(BeamE, out_mom, pi_mom);
   double ElectronPT = utils::GetPT(out_mom.Vect()).Mag();
   double PionPT = utils::GetPT(pi_mom.Vect()).Mag();
 

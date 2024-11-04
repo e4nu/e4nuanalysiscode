@@ -56,7 +56,7 @@ namespace e4nu {
 
 	    // We want to correct for the acceptance so we have a "perfectly detected" event independent of the acceptance
 	    ApplyAcceptanceCorrection( event_holder[m][event_id], true ) ;
-
+	    
 	    // Start rotations
 	    for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) {
 	      // Set rotation around q3 vector
@@ -170,7 +170,7 @@ namespace e4nu {
 
 		// Account for acceptance
 		ApplyAcceptanceCorrection( temp_event ) ;
-
+		
 		// Add in map
 		if ( event_holder.find(new_multiplicity) != event_holder.end() ) {
 		  event_holder[new_multiplicity].push_back( temp_event ) ;

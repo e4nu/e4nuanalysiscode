@@ -32,9 +32,8 @@ NRotations 4000
 
 
 #histogram definition
-RangeList 0.5:2.5,0.8:2
-ObservableList ECal,RecoW
-NBinsList 60,60
+ObservableList ECal
+,RecoW
 NormalizeHists false
 DebugBkg true
 

@@ -101,8 +101,6 @@ namespace e4nu {
 
     // Histogram Configurables
     std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }
-    std::vector<unsigned int> GetNBins(void) const { return kNBins ; }
-    std::vector<std::vector<double>> GetRange(void) const { return kRanges ; } 
     bool NormalizeHist(void) { return kNormalize ; }
 
     // Output file information
@@ -168,8 +166,6 @@ namespace e4nu {
 
     // Histogram configurables
     std::vector< std::string > kObservables ;
-    std::vector< unsigned int > kNBins ;
-    std::vector<std::vector<double>> kRanges ; 
     std::string kInputFile ;
     std::string kOutputFile = "";
     std::string kXSecFile = "";

@@ -51,8 +51,6 @@ ConfigureI::~ConfigureI() {
 
   kTopology_map.clear() ; 
   kObservables.clear();
-  kNBins.clear();
-  kRanges.clear();
   if( kFiducialCut ) delete kFiducialCut ;
 }
 
@@ -178,28 +176,6 @@ ConfigureI::ConfigureI( const std::string input_file ) {
       while( getline( obs_list, obs, ',' ) ) { 
 	kObservables.push_back(obs) ; 
       }
-    } else if ( param[i] == "NBinsList" ) {
-      std::string nb ;
-      std::istringstream nbs_list( value[i] ) ;
-      while( getline( nbs_list, nb, ',' ) ) {
-	kNBins.push_back((unsigned int) std::stoi(nb)) ;
-      }
-    } else if ( param[i] == "RangeList" ) {
-      std::istringstream ranges_list( value[i] ) ;
-      std::string m_element,range ;
-      while ( getline( ranges_list, range, ',' ) ) {
-	std::istringstream ele(range) ; 
-	std::vector<double> myrange ; 
-	while ( getline( ele, m_element, ':' ) ) {
-	  myrange.push_back(std::stod(m_element)); 
-	}
-	if( myrange.size() != 2 ) {
-	  std::cout<< " Range size is not 2 !! " << std::endl;
-	  kIsConfigured = false ; 
-	  break ; 
-	}
-	kRanges.push_back( myrange ) ; 
-      }
     } else if ( param[i] == "NormalizeHists" ) {
       if ( value[i] == "true" ) kNormalize = true ; 
       else kNormalize = false ; 
@@ -227,11 +203,6 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     } else if ( param[i] == "SystFidAngleShift" ) { 
       fFidAngleShift = stod(value[i]) ;
     }
-  }
-
-  if( kObservables.size() != kRanges.size() || kObservables.size() != kNBins.size() || kRanges.size()!= kNBins.size() ){
-    std::cout << " ERROR : Ranges don't match !! " << std::endl;
-    kIsConfigured = false ; 
   }
 
   if( kInputFile == "" ) {
@@ -348,8 +319,6 @@ void ConfigureI::PrintConfiguration(void) const {
 
   for( unsigned int i = 0 ; i < kObservables.size(); ++i ) {
     std::cout << "Observable " << kObservables[i] << std::endl;
-    std::cout << "Number of bins = " << kNBins[i] << std::endl;
-    std::cout << "Range = {"<<kRanges[i][0]<<","<<kRanges[i][1]<<"}\n"<<std::endl;
   }
   if( kDebugBkg ) std::cout << " Storing debugging plots for background " << std::endl;
 

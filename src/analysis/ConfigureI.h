@@ -102,7 +102,7 @@ namespace e4nu {
     // Histogram Configurables
     std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }
     bool NormalizeHist(void) { return kNormalize ; }
-
+    std::string GetAnalysisKey(void) const { return kAnalysisKey; } 
     // Output file information
     std::string GetOutputFile(void) const { return kOutputFile ; }
     std::string GetInputFile(void) const { return kInputFile ; }
@@ -187,6 +187,7 @@ namespace e4nu {
 
     // Analysis ID 
     unsigned int kAnalysisTypeID = 0 ;  // 0 -> Generic 
+    std::string kAnalysisKey = "undefined"; // To be used for ranges in the analysis 
 
     // Analysis Record ID's
     const unsigned int kid_bcuts = 0 ;

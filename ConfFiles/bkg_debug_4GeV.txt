@@ -30,6 +30,7 @@ NRotations 4000
 
 #histogram definition
 ObservableList ECal
+AnalysisKey 1p1pim
 NormalizeHists false
 DebugBkg true
 

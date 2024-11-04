@@ -170,6 +170,7 @@ ConfigureI::ConfigureI( const std::string input_file ) {
       else kSubtractBkg = false ; 
     } else if ( param[i] == "MaxBackgroundMultiplicity" ) { kMaxBkgMult = (unsigned int) std::stoi( value[i] ) ;
     } else if ( param[i] == "NRotations" ) { kNRotations = (unsigned int) std::stoi( value[i] ) ;
+    } else if ( param[i] == "AnalysisKey" ) { kAnalysisKey = value[i] ;
     } else if ( param[i] == "ObservableList" ) {
       std::string obs ; 
       std::istringstream obs_list( value[i] ) ; 

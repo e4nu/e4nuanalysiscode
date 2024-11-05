@@ -210,6 +210,7 @@ bool MCCLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_h
   if (!AnalysisI::Finalise())
     return false;
 
+  auto tags = GetObservablesTag() ;
   unsigned int min_mult = GetMinBkgMult();
   for (unsigned int k = 0; k < event_holder[min_mult].size(); ++k)
   {
@@ -218,9 +219,10 @@ bool MCCLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_h
     double norm_weight = event_holder[min_mult][k].GetTotalWeight();
 
     // Store in histogram(s)
-    for (unsigned int j = 0; j < GetObservablesTag().size(); ++j)
+    for (unsigned int obs_id = 0; obs_id < tags.size(); ++obs_id)
     {
-      kHistograms[j]->Fill(event_holder[min_mult][k].GetObservable(GetObservablesTag()[j]), norm_weight);
+      if( !kHistograms[tags[obs_id]][0] ) continue ; 
+      kHistograms[tags[obs_id]][0]->Fill(event_holder[min_mult][k].GetObservable(tags[obs_id]), norm_weight);
     }
 
     PlotBkgInformation(event_holder[min_mult][k]);
@@ -229,22 +231,23 @@ bool MCCLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_h
   // Normalize
   if (NormalizeHist())
   {
-    for (unsigned int j = 0; j < GetObservablesTag().size(); ++j)
+    for (unsigned int obs_id = 0; obs_id < tags.size(); ++obs_id)
     {
-      double NBins = kHistograms[j]->GetNbinsX();
+      if( !kHistograms[tags[obs_id]][0] ) continue ;
+      double NBins = kHistograms[tags[obs_id]][0]->GetNbinsX();
 
       for (int k = 1; k <= NBins; k++)
       {
-        double content = kHistograms[j]->GetBinContent(k);
-        double error = kHistograms[j]->GetBinError(k);
-        double width = kHistograms[j]->GetBinWidth(k);
+        double content = kHistograms[tags[obs_id]][0]->GetBinContent(k);
+        double error = kHistograms[tags[obs_id]][0]->GetBinError(k);
+        double width = kHistograms[tags[obs_id]][0]->GetBinWidth(k);
         double newcontent = content / width;
         double newerror = error / width;
-        kHistograms[j]->SetBinContent(k, newcontent);
-        kHistograms[j]->SetBinError(k, newerror);
+        kHistograms[tags[obs_id]][0]->SetBinContent(k, newcontent);
+        kHistograms[tags[obs_id]][0]->SetBinError(k, newerror);
       }
 
-      kHistograms[j]->Scale(kXSec * kConversionFactorCm2ToMicroBarn * TMath::Power(10., -38.) / GetNEventsToRun());
+      kHistograms[tags[obs_id]][0]->Scale(kXSec * kConversionFactorCm2ToMicroBarn * TMath::Power(10., -38.) / GetNEventsToRun());
     }
   }
 

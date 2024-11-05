@@ -176,7 +176,7 @@ namespace e4nu {
     // Information for output file
     std::unique_ptr<TFile> kOutFile ;
     std::unique_ptr<TTree> kAnalysisTree ; 
-    std::vector<TH1D*> kHistograms ; 
+    std::map<std::string,std::vector<TH1D*>> kHistograms ; // Obs, vector
 
     // Configuration validity checks:
     bool kIsDataLoaded = false ;

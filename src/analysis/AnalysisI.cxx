@@ -33,10 +33,10 @@ bool AnalysisI::Analyse( Event & event ) {
   // Step 1 : Apply generic cuts
   // Check run is correct
   double EBeam = GetConfiguredEBeam() ;
-  /*  if ( in_mom.E() != EBeam ) {
-      std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
-      exit(11);
-      }*/
+  if ( in_mom.E() != EBeam ) {
+    std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
+    exit(11);
+  }
 
   if ( (unsigned int) event.GetTargetPdg() != GetConfiguredTarget() ) {
     std::cout << "Target is " << event.GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
@@ -178,97 +178,101 @@ void AnalysisI::PlotBkgInformation( Event event ) {
 
   // Store plots for Background debugging
   std::map<unsigned int,std::pair<std::vector<int>,double>> AnalysisRecord = event.GetAnalysisRecord() ;
+  auto tags = GetObservablesTag() ;
 
   // Signal multiplicity
   unsigned int min_mult = GetMinBkgMult() ;
   unsigned int max_mult = GetMaxBkgMult(); // Max multiplicity specified in conf file
+
   // Define status ids
   const std::pair<std::vector<int>,double> record_bmomcuts = AnalysisRecord[kid_bcuts] ; // Before mom cuts
   const std::pair<std::vector<int>,double> record_amomcuts = AnalysisRecord[kid_acuts] ; // After mom cuts
   const std::pair<std::vector<int>,double> record_afiducials = AnalysisRecord[kid_fid] ; // After fiducials
   const std::pair<std::vector<int>,double> record_acccorr = AnalysisRecord[kid_acc] ; // Acc Correction
 
-  if( !kHistograms[kid_totestbkg] || !kHistograms[kid_signal] || !kHistograms[kid_tottruebkg]
-      || !kHistograms[kid_2p0pitruebkg] || !kHistograms[kid_1p1pitruebkg] || !kHistograms[kid_2p1pitruebkg] || !kHistograms[kid_1p2pitruebkg]
-      || !kHistograms[kid_2p0piestbkg] || !kHistograms[kid_1p1piestbkg] || !kHistograms[kid_2p1piestbkg] || !kHistograms[kid_1p2piestbkg] ) return ;
+  for ( unsigned obs_id = 0 ; obs_id < tags.size() ; ++obs_id ) { 
+    if( !kHistograms[tags[obs_id]][kid_totestbkg] || !kHistograms[tags[obs_id]][kid_signal] || !kHistograms[tags[obs_id]][kid_tottruebkg]
+	|| !kHistograms[tags[obs_id]][kid_2p0pitruebkg] || !kHistograms[tags[obs_id]][kid_1p1pitruebkg] || !kHistograms[tags[obs_id]][kid_2p1pitruebkg] || !kHistograms[tags[obs_id]][kid_1p2pitruebkg]
+	|| !kHistograms[tags[obs_id]][kid_2p0piestbkg] || !kHistograms[tags[obs_id]][kid_1p1piestbkg] || !kHistograms[tags[obs_id]][kid_2p1piestbkg] || !kHistograms[tags[obs_id]][kid_1p2piestbkg] ) return ;
 
-  if( event.IsBkg() == true ) {
-    // This is used to estimate the total background contribution
-    kHistograms[kid_totestbkg]->Fill( event.GetObservable("ECal"), - event.GetTotalWeight() ) ;
+    if( event.IsBkg() == true ) {
+      // This is used to estimate the total background contribution
+      kHistograms[tags[obs_id]][kid_totestbkg]->Fill( event.GetObservable(tags[obs_id]), - event.GetTotalWeight() ) ;
 
-    ///    std::cout << event.GetTotalWeight()  << std::endl;
-    // Store contributions from different multiplicities
-    // Check only direct contribution :
-    unsigned int original_mult = min_mult + 1 ;
-    for( unsigned int j = 0 ; j < max_mult - min_mult ; ++j ) {
-      bool is_m_bkg = true ;
-      if( (AnalysisRecord[original_mult+kid_bkgcorr].first).size() != min_mult ) is_m_bkg = false ;
+      // Store contributions from different multiplicities
+      // Check only direct contribution :
+      unsigned int original_mult = min_mult + 1 ;
+      for( unsigned int j = 0 ; j < max_mult - min_mult ; ++j ) {
+	bool is_m_bkg = true ;
+	if( (AnalysisRecord[original_mult+kid_bkgcorr].first).size() != min_mult ) is_m_bkg = false ;
 
-      // Fill for direct contributions only
-      unsigned int id2 = kid_totestbkg + original_mult - min_mult ;
-      if( kHistograms[id2] && is_m_bkg ) {
-	kHistograms[id2]->Fill( event.GetObservable("ECal"), -event.GetTotalWeight() ) ;
+	// Fill for direct contributions only
+	unsigned int id2 = kid_totestbkg + original_mult - min_mult ;
+	if( kHistograms[tags[obs_id]][id2] && is_m_bkg ) {
+	  kHistograms[tags[obs_id]][id2]->Fill( event.GetObservable(tags[obs_id]), -event.GetTotalWeight() ) ;
+	}
+
+	// Filling for specific topologies:
+	// First, we need to get the correct mother pdg list.
+	std::vector<int> pdgs ;
+	if( (record_afiducials.first).size() == original_mult ) pdgs = record_afiducials.first ; // It comes directly from background event
+	else if( (AnalysisRecord[original_mult+1+kid_bkgcorr].first).size() == original_mult ) pdgs= AnalysisRecord[original_mult+1+kid_bkgcorr].first ; 
+	// It comes from original_mult + 1 event
+	// If none of the two cases above, the bkg event comes directly from a higher multiplicity event ... discard. 
+	// Only considering direct contributions or corrections
+
+	// Count number of protons and pions
+	unsigned int nprotons = 0 ;
+	unsigned int npions = 0 ;
+	for ( unsigned int k = 0 ; k < pdgs.size() ; ++k ) {
+	  int particle_pdg = pdgs[k];
+	  if( particle_pdg == conf::kPdgProton ) ++nprotons ;
+	  else if ( particle_pdg == conf::kPdgPiP || particle_pdg == conf::kPdgPiM || particle_pdg == conf::kPdgPi0 || particle_pdg == conf::kPdgPhoton ) ++npions ;
+	}
+
+	// Add breakdown in topologies
+	if( original_mult == 2 ) {
+	  // Store according to initial topology
+	  if( nprotons == 2 && npions == 0 ) kHistograms[tags[obs_id]][kid_2p0piestbkg]->Fill( event.GetObservable(tags[obs_id]), -event.GetTotalWeight() ) ;
+	  if( nprotons == 1 && npions == 1 ) kHistograms[tags[obs_id]][kid_1p1piestbkg]->Fill( event.GetObservable(tags[obs_id]), -event.GetTotalWeight() ) ;
+	} else if (original_mult == 3 ) {
+	  // Store according to initial topology
+	  if( nprotons == 2 && npions == 1 ) kHistograms[tags[obs_id]][kid_2p1piestbkg]->Fill( event.GetObservable(tags[obs_id]), -event.GetTotalWeight() ) ;
+	  if( nprotons == 1 && npions == 2 ) kHistograms[tags[obs_id]][kid_1p2piestbkg]->Fill( event.GetObservable(tags[obs_id]), -event.GetTotalWeight() ) ;
+	}
+
+	++original_mult;
       }
-
-      // Filling for specific topologies:
-      // First, we need to get the correct mother pdg list.
-      std::vector<int> pdgs ;
-      if( (record_afiducials.first).size() == original_mult ) pdgs = record_afiducials.first ; // It comes directly from background event
-      else if( (AnalysisRecord[original_mult+1+kid_bkgcorr].first).size() == original_mult ) pdgs= AnalysisRecord[original_mult+1+kid_bkgcorr].first ; // It comes from original_mult + 1 event
-      // If none of the two cases above, the bkg event comes directly from a higher multiplicity event ... discard. Only considering direct contributions or corrections
-
-      // Count number of protons and pions
-      unsigned int nprotons = 0 ;
-      unsigned int npions = 0 ;
-      for ( unsigned int k = 0 ; k < pdgs.size() ; ++k ) {
-	int particle_pdg = pdgs[k];
-	if( particle_pdg == conf::kPdgProton ) ++nprotons ;
-	else if ( particle_pdg == conf::kPdgPiP || particle_pdg == conf::kPdgPiM || particle_pdg == conf::kPdgPi0 || particle_pdg == conf::kPdgPhoton ) ++npions ;
-      }
-
-      // Add breakdown in topologies
-      if( original_mult == 2 ) {
-	// Store according to initial topology
-	if( nprotons == 2 && npions == 0 ) kHistograms[kid_2p0piestbkg]->Fill( event.GetObservable("ECal"), -event.GetTotalWeight() ) ;
-	if( nprotons == 1 && npions == 1 ) kHistograms[kid_1p1piestbkg]->Fill( event.GetObservable("ECal"), -event.GetTotalWeight() ) ;
-      } else if (original_mult == 3 ) {
-	// Store according to initial topology
-	if( nprotons == 2 && npions == 1 ) kHistograms[kid_2p1piestbkg]->Fill( event.GetObservable("ECal"), -event.GetTotalWeight() ) ;
-	if( nprotons == 1 && npions == 2 ) kHistograms[kid_1p2piestbkg]->Fill( event.GetObservable("ECal"), -event.GetTotalWeight() ) ;
-      }
-
-      ++original_mult;
-    }
-
-  } else {
-    // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
-    if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() == 0 ) {
-      kHistograms[kid_signal]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
     } else {
-      kHistograms[kid_tottruebkg]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
+      // These are singal events. They are classified as either true signal or bkg events that contribute to signal after fiducial
+      if( (record_afiducials.first).size() == (record_amomcuts.first).size() && (record_acccorr.first).size() == 0 ) {
+	kHistograms[tags[obs_id]][kid_signal]->Fill( event.GetObservable(tags[obs_id]), event.GetTotalWeight() ) ;
+      } else {
+	kHistograms[tags[obs_id]][kid_tottruebkg]->Fill( event.GetObservable(tags[obs_id]), event.GetTotalWeight() ) ;
 
-      // Fill each multiplicity contribution
-      unsigned int id = (record_amomcuts.first).size() - min_mult ;
-      if( kHistograms[kid_tottruebkg+id] ) kHistograms[kid_tottruebkg+id]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
+	// Fill each multiplicity contribution
+	unsigned int id = (record_amomcuts.first).size() - min_mult ;
+	if( kHistograms[tags[obs_id]][kid_tottruebkg+id] ) kHistograms[tags[obs_id]][kid_tottruebkg+id]->Fill( event.GetObservable(tags[obs_id]), event.GetTotalWeight() ) ;
 
-      // Count number of protons and pions
-      unsigned int nprotons = 0 ;
-      unsigned int npions = 0 ;
-      for ( unsigned int k = 0 ; k < (record_amomcuts.first).size() ; ++k ) {
-	int particle_pdg = (record_amomcuts.first)[k];
-	if( particle_pdg == conf::kPdgProton ) ++nprotons ;
-	else if ( particle_pdg == conf::kPdgPiP || particle_pdg == conf::kPdgPiM || particle_pdg == conf::kPdgPi0 || particle_pdg == conf::kPdgPhoton ) ++npions ;
-      }
+	// Count number of protons and pions
+	unsigned int nprotons = 0 ;
+	unsigned int npions = 0 ;
+	for ( unsigned int k = 0 ; k < (record_amomcuts.first).size() ; ++k ) {
+	  int particle_pdg = (record_amomcuts.first)[k];
+	  if( particle_pdg == conf::kPdgProton ) ++nprotons ;
+	  else if ( particle_pdg == conf::kPdgPiP || particle_pdg == conf::kPdgPiM || particle_pdg == conf::kPdgPi0 || particle_pdg == conf::kPdgPhoton ) ++npions ;
+	}
 
-      // Add breakdown in topologies
-      if( (record_amomcuts.first).size() == 2 ) {
-	// Store according to initial topology
-	if( nprotons == 2 && npions == 0 ) kHistograms[kid_2p0pitruebkg]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
-	if( nprotons == 1 && npions == 1 ) kHistograms[kid_1p1pitruebkg]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
-      } else if ( (record_amomcuts.first).size() == 3 ) {
-	// Store according to initial topology
-	if( nprotons == 2 && npions == 1 ) kHistograms[kid_2p1pitruebkg]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
-	if( nprotons == 1 && npions == 2 ) kHistograms[kid_1p2pitruebkg]->Fill( event.GetObservable("ECal"), event.GetTotalWeight() ) ;
+	// Add breakdown in topologies
+	if( (record_amomcuts.first).size() == 2 ) {
+	  // Store according to initial topology
+	  if( nprotons == 2 && npions == 0 ) kHistograms[tags[obs_id]][kid_2p0pitruebkg]->Fill( event.GetObservable(tags[obs_id]), event.GetTotalWeight() ) ;
+	  if( nprotons == 1 && npions == 1 ) kHistograms[tags[obs_id]][kid_1p1pitruebkg]->Fill( event.GetObservable(tags[obs_id]), event.GetTotalWeight() ) ;
+	} else if ( (record_amomcuts.first).size() == 3 ) {
+	  // Store according to initial topology
+	  if( nprotons == 2 && npions == 1 ) kHistograms[tags[obs_id]][kid_2p1pitruebkg]->Fill( event.GetObservable(tags[obs_id]), event.GetTotalWeight() ) ;
+	  if( nprotons == 1 && npions == 2 ) kHistograms[tags[obs_id]][kid_1p2pitruebkg]->Fill( event.GetObservable(tags[obs_id]), event.GetTotalWeight() ) ;
+	}
       }
     }
   }

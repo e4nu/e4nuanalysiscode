@@ -1,4 +1,3 @@
-// _______________________________________________
 /*
  * Main E4Nu analysis code
  * It deals with the distinction between data and MC
@@ -80,7 +79,7 @@ bool E4NuAnalysis::Analyse(void) {
   for( unsigned int i = 0 ; i < total_nevents ; ++i ) {
     //Print percentage
     if( i==0 || i % 100000 == 0 ) utils::PrintProgressBar(i, total_nevents);
-  
+   
     // Get valid event after analysis
     // It returns cooked event, with detector effects
     Event * event = nullptr ;
@@ -95,7 +94,7 @@ bool E4NuAnalysis::Analyse(void) {
     } 
 
     if( ! event ) continue ;
-
+    
     this->ClassifyEvent( *event ) ; // Classify events as signal or Background
 
     delete event ; 
@@ -177,25 +176,23 @@ bool E4NuAnalysis::Finalise( ) {
       if( GetAnalysisTypeID() == 0 ) is_ok = MCCLAS6StandardAnalysis::Finalise(kAnalysedEventHolder) ; 
     }
   }
+  
+  auto tags = GetObservablesTag() ; 
+  for( unsigned int obs_id = 0 ; obs_id < tags.size() ; ++obs_id ) { 
 
-  unsigned int hist_size = GetObservablesTag().size() ; 
-  if( GetDebugBkg() ) hist_size = kHistograms.size() ; 
-
-  if( is_ok ) { 
-    for( unsigned int i = 0 ; i < hist_size ; ++i ) {
-      if( !kHistograms[i] ) continue ; 
-      if( i < GetObservablesTag().size() ){ 
-	kHistograms[i]->GetXaxis()->SetTitle(GetObservablesTag()[i].c_str()) ; 
-	if( NormalizeHist() ) kHistograms[i]->GetYaxis()->SetTitle(("d#sigma/d"+GetObservablesTag()[i]).c_str()) ; 
-	else {
-	  kHistograms[i]->GetYaxis()->SetTitle("Weighted Events") ;  
-	}
-      } else { 
-	kHistograms[i]->GetXaxis()->SetTitle("ECal") ;
-	kHistograms[i]->GetYaxis()->SetTitle("Weighted Events") ;
+    unsigned int hist_size = kHistograms[tags[obs_id]].size() ;
+    
+    if( is_ok ) { 
+      for( unsigned int i = 0 ; i < hist_size ; ++i ) {
+      if( !kHistograms[tags[obs_id]][i] ) continue ; 
+      kHistograms[tags[obs_id]][i]->GetXaxis()->SetTitle(tags[obs_id].c_str()) ; 
+      if( NormalizeHist() ) kHistograms[tags[obs_id]][i]->GetYaxis()->SetTitle(("d#sigma/d"+tags[obs_id]).c_str()) ; 
+      else {
+	kHistograms[tags[obs_id]][i]->GetYaxis()->SetTitle("Weighted Events") ;  
       }
-      kHistograms[i]->SetStats(false); 
-      kHistograms[i]->Write() ; 
+      kHistograms[tags[obs_id]][i]->SetStats(false); 
+      kHistograms[tags[obs_id]][i]->Write() ; 
+      }
     }
   }
   kAnalysisTree->Write() ; 
@@ -207,99 +204,90 @@ bool E4NuAnalysis::Finalise( ) {
 }
 
 void E4NuAnalysis::Initialize(void) {
-
   kOutFile = std::unique_ptr<TFile> ( new TFile( (GetOutputFile()+".root").c_str(),"RECREATE") ) ;
-
-  for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
-    std::vector<double> binning ;
-    if (GetNBins().size() != 0 ) {
-      double width = ( GetRange()[i][1] - GetRange()[i][0] ) / (double) GetNBins()[i] ;  
-      for( unsigned int k = 0 ; k < GetNBins()[i] ; ++k ) { 
-	binning.push_back( GetRange()[i][0] + k * width ) ; 
-      }
-      binning.push_back( GetRange()[i][1] ) ; 
+  auto tags = GetObservablesTag() ;
+  for( unsigned int obs_id = 0 ; obs_id < tags.size() ; ++obs_id ) {
+    std::vector<double> binning = plotting::GetBinning( tags[obs_id], GetConfiguredEBeam(), GetAnalysisKey() );
+    if( binning.size() == 0 ) {
+      std::cout << " Issue with the binning and validation plots" << std::endl;
+      continue;
     }
-
-    if( binning.size() == 0 ) binning = plotting::GetBinning( GetObservablesTag()[i], GetConfiguredEBeam() );
-    kHistograms.push_back( new TH1D( GetObservablesTag()[i].c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-  }  
-
-  if( GetDebugBkg() ) {
-    for( unsigned int i = 0 ; i < GetObservablesTag().size() ; ++i ) {
-      std::vector<double> binning ;
-      if (GetNBins().size() != 0 ) {
-	if ( GetNBins()[i] == 0 ) continue ; 
-	double width = ( GetRange()[i][1] - GetRange()[i][0] ) / (double) GetNBins()[i] ;  
-	for( unsigned int k = 0 ; k < GetNBins()[i] ; ++k ) { 
-	  binning.push_back( GetRange()[i][0] + k * width ) ; 
-	}
-	binning.push_back( GetRange()[i][1] ) ; 
-      }
-      if( binning.size() == 0 ) binning = plotting::GetBinning( GetObservablesTag()[i], GetConfiguredEBeam() );
-      
+    
+    if (kHistograms.find(tags[obs_id]) == kHistograms.end()) {
+      kHistograms[tags[obs_id]] = { new TH1D( tags[obs_id].c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) };
+    } else { 
+      kHistograms[tags[obs_id]].push_back( new TH1D( tags[obs_id].c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
+    }  
+    
+    if( GetDebugBkg() ) {
+    
       // These histograms are used to debug the background
       // It compares the true background distribution to the estimated background distribution
       // Different contributions are considered, depending on the multiplicity or the topology
       // You can find some examples here: https://docdb.lns.mit.edu/e4nudb/0000/000060/001/NewBackgroundMethod_test.pdf
       
-      kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_OnlySignal").c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-      kid_signal = kHistograms.size() -1 ;
-      kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_SignalAccCorr").c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-      kid_acccorr = kHistograms.size() -1 ; 
+      kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_OnlySignal").c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
+      kid_signal = kHistograms[tags[obs_id]].size() -1 ;
+      kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_SignalAccCorr").c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
+      kid_acccorr = kHistograms[tags[obs_id]].size() -1 ; 
       
       // True Background -> Signal 
-      kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotTrueBkg").c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-      kid_tottruebkg = kHistograms.size() -1 ;
+      kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_TotTrueBkg").c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
+      kid_tottruebkg = kHistograms[tags[obs_id]].size() -1 ;
       
       unsigned int min_mult = GetMinBkgMult() ; 
       unsigned int max_mult = GetMaxBkgMult() ; 
       unsigned int mult = min_mult + 1 ;
       for( unsigned int j = 0 ; j < max_mult - min_mult ; ++j ) { 
-	kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotTrueBkg_mult_"+std::to_string(mult)).c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
+	kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_TotTrueBkg_mult_"+std::to_string(mult)).c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
 	mult += 1 ; 
       }
       
       // Add plots for min_mult + 1, in terms of particle content
       // Hardcoded for simplicity ... Adding few cases
-      kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotTrueBkg_mult_2_2p0pi").c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-      kid_2p0pitruebkg = kHistograms.size() -1 ;
+      kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_TotTrueBkg_mult_2_2p0pi").c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
+      kid_2p0pitruebkg = kHistograms[tags[obs_id]].size() -1 ;
       
-      kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotTrueBkg_mult_2_1p1pi").c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ;
-      kid_1p1pitruebkg = kHistograms.size() -1 ; 
+      kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_TotTrueBkg_mult_2_1p1pi").c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ;
+      kid_1p1pitruebkg = kHistograms[tags[obs_id]].size() -1 ; 
       
-      kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotTrueBkg_mult_3_2p1pi").c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-      kid_2p1pitruebkg = kHistograms.size() -1 ;
+      kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_TotTrueBkg_mult_3_2p1pi").c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
+      kid_2p1pitruebkg = kHistograms[tags[obs_id]].size() -1 ;
       
-      kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotTrueBkg_mult_3_1p2pi").c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-      kid_1p2pitruebkg = kHistograms.size() -1 ;
+      kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_TotTrueBkg_mult_3_1p2pi").c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
+      kid_1p2pitruebkg = kHistograms[tags[obs_id]].size() -1 ;
       
       
       // Estimated background correction from background events
-      kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotEstBkg").c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-      kid_totestbkg = kHistograms.size() -1 ; 
+      kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_TotEstBkg").c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
+      kid_totestbkg = kHistograms[tags[obs_id]].size() -1 ; 
       
       mult = min_mult + 1 ;
       for( unsigned int j = 0 ; j < max_mult - min_mult ; ++j ) { 
-	kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotEstBkg_mult_"+std::to_string(mult)).c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-      mult += 1 ; 
+	kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_TotEstBkg_mult_"+std::to_string(mult)).c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
+	mult += 1 ; 
       }
       
       // Add plots for min_mult + 1, in terms of particle content
       // Hardcoded for simplicity ... Adding few cases
-      kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotEstBkg_mult_2_2p0pi").c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-      kid_2p0piestbkg = kHistograms.size() -1 ;
+      kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_TotEstBkg_mult_2_2p0pi").c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
+      kid_2p0piestbkg = kHistograms[tags[obs_id]].size() -1 ;
       
-      kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotEstBkg_mult_2_1p1pi").c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ;
-      kid_1p1piestbkg = kHistograms.size() -1 ; 
+      kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_TotEstBkg_mult_2_1p1pi").c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ;
+      kid_1p1piestbkg = kHistograms[tags[obs_id]].size() -1 ; 
       
-      kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotEstBkg_mult_3_2p1pi").c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-      kid_2p1piestbkg = kHistograms.size() -1 ;
+      kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_TotEstBkg_mult_3_2p1pi").c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
+      kid_2p1piestbkg = kHistograms[tags[obs_id]].size() -1 ;
       
-      kHistograms.push_back( new TH1D( (GetObservablesTag()[i]+"_TotEstBkg_mult_3_1p2pi").c_str(),GetObservablesTag()[i].c_str(), binning.size()-1, &binning[0] ) ) ; 
-      kid_1p2piestbkg = kHistograms.size() -1 ;
+      kHistograms[tags[obs_id]].push_back( new TH1D( (tags[obs_id]+"_TotEstBkg_mult_3_1p2pi").c_str(),tags[obs_id].c_str(), binning.size()-1, &binning[0] ) ) ; 
+      kid_1p2piestbkg = kHistograms[tags[obs_id]].size() -1 ;
+    }
+    
+    for( unsigned int i = 0 ; i < kHistograms[tags[obs_id]].size() ; ++i ) {
+      kHistograms[tags[obs_id]][i]->Sumw2();
     }
   }
-  
+
 }
   
   

@@ -1,6 +1,6 @@
 #Analysis Cuts
 ApplyFiducial   true
-ApplyAccWeights false
+ApplyAccWeights true
 ApplyReso	true
 ApplyMomCut     true
 ApplyMottWeight true
@@ -18,7 +18,7 @@ offset			0
 #Run Configurables
 EBeam			4.461
 TargetPdg		1000060120
-NEvents			1000000000
+NEvents			100000000
 FirstEvent		0
 
 #Topology definition
@@ -29,9 +29,8 @@ MaxBackgroundMultiplicity 4
 NRotations 4000
 
 #histogram definition
-RangeList 1.4:4.5
 ObservableList ECal
-NBinsList 60
+AnalysisKey 1p1pim
 NormalizeHists false
 DebugBkg true
 

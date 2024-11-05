@@ -101,10 +101,8 @@ namespace e4nu {
 
     // Histogram Configurables
     std::vector<std::string> GetObservablesTag(void) const { return kObservables ; }
-    std::vector<unsigned int> GetNBins(void) const { return kNBins ; }
-    std::vector<std::vector<double>> GetRange(void) const { return kRanges ; } 
     bool NormalizeHist(void) { return kNormalize ; }
-
+    std::string GetAnalysisKey(void) const { return kAnalysisKey; } 
     // Output file information
     std::string GetOutputFile(void) const { return kOutputFile ; }
     std::string GetInputFile(void) const { return kInputFile ; }
@@ -168,8 +166,6 @@ namespace e4nu {
 
     // Histogram configurables
     std::vector< std::string > kObservables ;
-    std::vector< unsigned int > kNBins ;
-    std::vector<std::vector<double>> kRanges ; 
     std::string kInputFile ;
     std::string kOutputFile = "";
     std::string kXSecFile = "";
@@ -180,7 +176,7 @@ namespace e4nu {
     // Information for output file
     std::unique_ptr<TFile> kOutFile ;
     std::unique_ptr<TTree> kAnalysisTree ; 
-    std::vector<TH1D*> kHistograms ; 
+    std::map<std::string,std::vector<TH1D*>> kHistograms ; // Obs, vector
 
     // Configuration validity checks:
     bool kIsDataLoaded = false ;
@@ -191,6 +187,7 @@ namespace e4nu {
 
     // Analysis ID 
     unsigned int kAnalysisTypeID = 0 ;  // 0 -> Generic 
+    std::string kAnalysisKey = "undefined"; // To be used for ranges in the analysis 
 
     // Analysis Record ID's
     const unsigned int kid_bcuts = 0 ;

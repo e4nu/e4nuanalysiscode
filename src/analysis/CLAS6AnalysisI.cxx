@@ -95,6 +95,7 @@ bool CLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_hol
   if (!AnalysisI::Finalise())
     return false;
 
+  auto tags = GetObservablesTag();
   // Store corrected background in event sample
   unsigned int min_mult = GetMinBkgMult();
   for (unsigned int k = 0; k < event_holder[min_mult].size(); ++k)
@@ -108,9 +109,10 @@ bool CLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_hol
     }
 
     // Store in histogram(s)
-    for (unsigned int j = 0; j < kHistograms.size(); ++j)
+    for (unsigned int j = 0; j < tags.size(); ++j)
     {
-      kHistograms[j]->Fill(event_holder[min_mult][k].GetObservable(GetObservablesTag()[j]), norm_weight);
+      if( !kHistograms[tags[j]][0] ) continue ; 
+      kHistograms[tags[j]][0]->Fill(event_holder[min_mult][k].GetObservable(tags[j]), norm_weight);
     }
   }
 
@@ -126,21 +128,22 @@ bool CLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_hol
 
   if (NormalizeHist())
   {
-    for (unsigned int j = 0; j < kHistograms.size(); ++j)
+    for (unsigned int j = 0; j < tags.size(); ++j)
     {
-      double NBins = kHistograms[j]->GetNbinsX();
+      if( !kHistograms[tags[j]][0] ) continue ; 
+      double NBins = kHistograms[tags[j]][0]->GetNbinsX();
 
       for (int k = 1; k <= NBins; k++)
       {
-        double content = kHistograms[j]->GetBinContent(k);
-        double error = kHistograms[j]->GetBinError(k);
-        double width = kHistograms[j]->GetBinWidth(k);
+        double content = kHistograms[tags[j]][0]->GetBinContent(k);
+        double error = kHistograms[tags[j]][0]->GetBinError(k);
+        double width = kHistograms[tags[j]][0]->GetBinWidth(k);
         double newcontent = content / width;
         double newerror = error / width;
-        kHistograms[j]->SetBinContent(k, newcontent);
-        kHistograms[j]->SetBinError(k, newerror);
+        kHistograms[tags[j]][0]->SetBinContent(k, newcontent);
+        kHistograms[tags[j]][0]->SetBinError(k, newerror);
       }
-      kHistograms[j]->Scale(kConversionFactorCm2ToMicroBarn * MassNumber / (IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor));
+      kHistograms[tags[j]][0]->Scale(kConversionFactorCm2ToMicroBarn * MassNumber / (IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor));
     }
   }
 

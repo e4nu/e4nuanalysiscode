@@ -107,96 +107,227 @@ int Event::GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzVe
 }
 
 double Event::GetObservable( const std::string observable ) {
-  unsigned int target = fTargetPdg ; 
-  double EBeam = GetInLepton4Mom().E();
-  TLorentzVector ef4mom = GetOutLepton4Mom() ;
-  TLorentzVector p4mom, pip4mom, pim4mom ; 
-  bool event_wproton = false, event_wpip = false, event_wpim = false ; 
+
+  int ID = GetEventID();
+  int TargetPdg = GetTargetPdg();
+  int InLeptonPdg = GetInLeptPdg();
+  int OutLeptonPdg = GetOutLeptPdg();
+  double BeamE = GetInLepton4Mom().E();
+
+  TLorentzVector out_mom = GetOutLepton4Mom();
+  double Efl = out_mom.E();
+  double pfl = out_mom.P();
+  double pflx = out_mom.Px();
+  double pfly = out_mom.Py();
+  double pflz = out_mom.Pz();
+  double pfl_theta = out_mom.Theta() * TMath::RadToDeg();
+  out_mom.SetPhi(out_mom.Phi() + TMath::Pi());
+  unsigned int ElectronSector = utils::GetSector(out_mom.Phi());
+  double pfl_phi = out_mom.Phi() * TMath::RadToDeg();
+
+  double RecoQELEnu = utils::GetQELRecoEnu(out_mom, TargetPdg);
+  double RecoEnergyTransfer = utils::GetEnergyTransfer(out_mom, BeamE);
+  double Recoq3 = utils::GetRecoq3(out_mom, BeamE).Mag();
+  double RecoQ2 = utils::GetRecoQ2(out_mom, BeamE);
+  double RecoXBJK = utils::GetRecoXBJK(out_mom, BeamE);
+  double RecoW = utils::GetRecoW(out_mom, BeamE);
+
+  // flip hadrons phi
+  std::map<int, std::vector<TLorentzVector>> hadron_map = GetFinalParticles4Mom();
+  for (auto it = hadron_map.begin(); it != hadron_map.end(); ++it)
+  {
+    for (unsigned int i = 0; i < (it->second).size(); ++i)
+    {
+      TLorentzVector had_4mom = (it->second)[i];
+      had_4mom.SetPhi((it->second)[i].Phi() + TMath::Pi());
+      (it->second)[i] = had_4mom;
+    }
+  }
+
+  TLorentzVector p_max(0, 0, 0, 0);
+  double max_mom = 0;
+  for (unsigned int i = 0; i < hadron_map[conf::kPdgProton].size(); ++i)
+    {
+      if (hadron_map[conf::kPdgProton][i].P() > max_mom)
+	{
+	  max_mom = hadron_map[conf::kPdgProton][i].P();
+	  p_max = hadron_map[conf::kPdgProton][i];
+	}
+    }
+
+  double HadronsAngle = 0;
+  std::vector<TLorentzVector> particles;
+  for (auto it = hadron_map.begin(); it != hadron_map.end(); ++it)
+  {
+    if ((it->second).size() != 1)
+      continue;
+    for (unsigned int i = 0; i < (it->second).size(); ++i)
+    {
+      particles.push_back((it->second)[i]);
+    }
+  }
+  if (particles.size() == 2)
+  {
+    HadronsAngle = utils::Angle(particles[0].Vect(), particles[1].Vect()) * TMath::RadToDeg();
+  }
+
+  double proton_E = p_max.E();
+  double proton_mom = p_max.P();
+  double proton_momx = p_max.Px();
+  double proton_momy = p_max.Py();
+  double proton_momz = p_max.Pz();
+  double proton_theta = p_max.Theta() * TMath::RadToDeg();
+  double proton_phi = p_max.Phi() * TMath::RadToDeg();
+  double ECal = utils::GetECal(out_mom.E(), GetFinalParticles4Mom(), TargetPdg);
+  double DiffECal = utils::GetECal(out_mom.E(), GetFinalParticles4Mom(), TargetPdg) - BeamE;
+  double AlphaT = utils::DeltaAlphaT(out_mom.Vect(), p_max.Vect());
+  double DeltaPT = utils::DeltaPT(out_mom.Vect(), p_max.Vect()).Mag();
+  double DeltaPhiT = utils::DeltaPhiT(out_mom.Vect(), p_max.Vect());
+  double HadAlphaT = utils::DeltaAlphaT(out_mom, hadron_map);
+  double HadDeltaPT = utils::DeltaPT(out_mom, hadron_map).Mag();
+  double HadDeltaPTx = utils::DeltaPTx(out_mom, hadron_map);
+  double HadDeltaPTy = utils::DeltaPTy(out_mom, hadron_map);
+  double HadDeltaPhiT = utils::DeltaPhiT(out_mom, hadron_map);
+  double InferedNucleonMom = utils::InferedNucleonMom(BeamE, out_mom, hadron_map, TargetPdg);
+
+  TLorentzVector pip_max(0, 0, 0, 0);
+  max_mom = 0;
+  for (unsigned int i = 0; i < hadron_map[conf::kPdgPiP].size(); ++i)
+    {
+      if (hadron_map[conf::kPdgPiP][i].P() > max_mom)
+	{
+	  max_mom = hadron_map[conf::kPdgPiP][i].P();
+	  pip_max = hadron_map[conf::kPdgPiP][i];
+	}
+    }
+
+  double pip_E = pip_max.E();
+  double pip_mom = pip_max.P();
+  double pip_momx = pip_max.Px();
+  double pip_momy = pip_max.Py();
+  double pip_momz = pip_max.Pz();
+  double pip_theta = pip_max.Theta() * TMath::RadToDeg();
+  double pip_phi = pip_max.Phi() * TMath::RadToDeg();
+
+  TLorentzVector pim_max(0, 0, 0, 0);
+  max_mom = 0;
+  for (unsigned int i = 0; i < hadron_map[conf::kPdgPiM].size(); ++i)
+    {
+      if (hadron_map[conf::kPdgPiM][i].P() > max_mom)
+	{
+	  max_mom = hadron_map[conf::kPdgPiM][i].P();
+	  pim_max = hadron_map[conf::kPdgPiM][i];
+	}
+    }
   
-  if( fFinalParticles.find( conf::kPdgProton ) != fFinalParticles.end() ) { 
-    event_wproton = true ;
-    double max_mom = 0 ; 
-    for ( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgProton].size() ; ++i ) {
-      if( fFinalParticles[conf::kPdgProton][i].P() > max_mom ) {
-	max_mom = fFinalParticles[conf::kPdgProton][i].P() ; 
-	p4mom = fFinalParticles[conf::kPdgProton][i] ;
-      }
-    }
-  }
 
-  if( fFinalParticles.find( conf::kPdgPiP ) != fFinalParticles.end() ) { 
-    event_wpip = true ;
-    double max_mom = 0 ; 
-    for ( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgPiP].size() ; ++i ) {
-      if( fFinalParticles[conf::kPdgPiP][i].P() > max_mom ) {
-	max_mom = fFinalParticles[conf::kPdgPiP][i].P() ; 
-	pip4mom = fFinalParticles[conf::kPdgPiP][i] ;
-      }
-    }
-  }
+  // Adler angles
+  double AdlerAngleThetaP = utils::GetAdlerAngleTheta(BeamE, out_mom, hadron_map, conf::kPdgProton) * TMath::RadToDeg();
+  double AdlerAnglePhiP = utils::GetAdlerAnglePhi(BeamE, out_mom, hadron_map, conf::kPdgProton) * TMath::RadToDeg();
+  double AdlerAngleThetaPi = utils::GetAdlerAngleTheta(BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg();
+  double AdlerAnglePhiPi = utils::GetAdlerAnglePhi(BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg();
 
-  if( fFinalParticles.find( conf::kPdgPiM ) != fFinalParticles.end() ) { 
-    event_wpim = true ;
-    double max_mom = 0 ; 
-    for ( unsigned int i = 0 ; i < fFinalParticles[conf::kPdgPiM].size() ; ++i ) {
-      if( fFinalParticles[conf::kPdgPiM][i].P() > max_mom ) {
-	max_mom = fFinalParticles[conf::kPdgPiM][i].P() ; 
-	pim4mom = fFinalParticles[conf::kPdgPiM][i] ;
-      }
-    }
-  }
+  // Angle between q and had system
+  double Angleqvshad = utils::Angle(utils::GetRecoq3(out_mom, BeamE), utils::TotHadron(hadron_map).Vect()) * TMath::RadToDeg();
 
-  if( observable == "ECal" ) {
-    if ( event_wproton == false ) return 0 ; 
-    return utils::GetECal( ef4mom.E(), GetFinalParticles4Mom(), target ) ; 
-  }else if( observable == "EQEL" ) {
-    return utils::GetQELRecoEnu( ef4mom, target ) ; 
-  } else if ( observable == "RecoEnu" ) {
-    return utils::GetRecoEnu( ef4mom, target ) ;
-  } else if ( observable == "EnergyTransfer" ) {
-    return utils::GetEnergyTransfer( ef4mom, EBeam ) ; 
-  } else if ( observable == "RecoQ2" ) {
-    return utils::GetRecoQ2( ef4mom, EBeam ) ; 
-  } else if ( observable == "RecoXBJK" ) {
-    return utils::GetRecoXBJK( ef4mom, EBeam ) ;
-  } else if ( observable == "RecoW" ) {
-    return utils::GetRecoW(ef4mom,EBeam ); 
-  } else if ( observable == "DeltaPT" ) {
-    if ( event_wproton == false ) return 0; 
-    return utils::DeltaPT( ef4mom.Vect(), p4mom.Vect() ).Mag() ;
-  } else if ( observable == "DeltaAlphaT" ) {
-    if ( event_wproton == false ) return 0; 
-    return utils::DeltaAlphaT( ef4mom.Vect(), p4mom.Vect() ) ; 
-  } else if ( observable == "DeltaPhiT" ) {
-    if ( event_wproton == false ) return 0; 
-    return utils::DeltaPhiT( ef4mom.Vect(), p4mom.Vect() ) ;
-  } else if ( observable == "LeadingPMom" ) {
-    return p4mom.P() ; 
-  } else if ( observable == "OutEMom" ) {
-    return ef4mom.P() ; 
-  } else if ( observable == "Weight" ) { 
-    return this->GetEventWeight() ;
-  } else if ( observable == "LeadingPiPMom" ) {
-    if( !event_wpip ) return 0 ; 
-    return pip4mom.P() ; 
-  } else if ( observable == "LeadingPiMMom" ) {
-    if( !event_wpim ) return 0 ; 
-    return pim4mom.P() ; 
-  } else if ( observable == "LeadingPiPTheta" ) {
-    if( !event_wpip ) return 0 ; 
-    return pip4mom.Theta() * TMath::RadToDeg() ; 
-  } else if ( observable == "LeadingPiMTheta" ) {
-    if( !event_wpim ) return 0 ; 
-    return pim4mom.Theta() * TMath::RadToDeg() ; 
-  } else if ( observable == "HadSystemDeltaAlphaT" ) {
-    return utils::DeltaAlphaT( ef4mom, GetFinalParticles4Mom() ) ;
-  } else if ( observable == "HadSystemDeltaPhiT" ) {
-    return utils::DeltaPhiT( ef4mom, GetFinalParticles4Mom() ) ;
-  } else if ( observable == "HadSystemDeltaPT" ) {
-    return utils::DeltaPT( ef4mom, GetFinalParticles4Mom() ).Mag() ;
-  } else if ( observable == "ElectronSector" ) {
-    return utils::GetSector( ef4mom.Phi() );
-  }
+  double HadSystemMass = utils::HadSystemMass(hadron_map);
+  double pim_E = pim_max.E();
+  double pim_mom = pim_max.P();
+  double pim_momx = pim_max.Px();
+  double pim_momy = pim_max.Py();
+  double pim_momz = pim_max.Pz();
+  double pim_theta = pim_max.Theta() * TMath::RadToDeg();
+  double pim_phi = pim_max.Phi() * TMath::RadToDeg();
+
+  double MissingEnergy = utils::Missing4Momenta(BeamE, out_mom, hadron_map).E();
+  double MissingMomentum = utils::Missing4Momenta(BeamE, out_mom, hadron_map).P();
+  double MissingAngle = utils::Missing4Momenta(BeamE, out_mom, hadron_map).Theta() * TMath::RadToDeg();
+
+  TLorentzVector pi_mom(0, 0, 0, 0);
+  max_mom = 0;
+  for (unsigned int i = 0; i < hadron_map[conf::kPdgPiP].size(); ++i)
+    {
+      if (hadron_map[conf::kPdgPiP][i].P() > max_mom)
+	{
+	  max_mom = hadron_map[conf::kPdgPiP][i].P();
+	  pi_mom = hadron_map[conf::kPdgPiP][i];
+	}
+    }
+  max_mom = 0;
+  for (unsigned int i = 0; i < hadron_map[conf::kPdgPiM].size(); ++i)
+    {
+      if (hadron_map[conf::kPdgPiM][i].P() > max_mom)
+	{
+	  max_mom = hadron_map[conf::kPdgPiM][i].P();
+	  pi_mom = hadron_map[conf::kPdgPiM][i];
+	}
+    }
+ 
+  double RecoEvPion = utils::GetRecoEvPionProduction(out_mom, pi_mom);
+  double RecoWPion = utils::GetRecoWPionProduction(out_mom, pi_mom);
+  double ElectronPT = utils::GetPT(out_mom.Vect()).Mag();
+  double PionPT = utils::GetPT(pi_mom.Vect()).Mag();
+
+  if( observable == "Efl" ) return Efl ;
+  else if ( observable == "pfl" ) return pfl ;
+  else if ( observable == "pflx") return pflx ;
+  else if ( observable == "pfly") return pfly ;
+  else if ( observable == "pflz") return pflz ;
+  else if ( observable == "pfl_theta") return pfl_theta ;
+  else if ( observable == "pfl_phi") return pfl_phi ;
+  else if ( observable == "RecoQELEnu") return RecoQELEnu ;
+  else if ( observable == "RecoEnergyTransfer") return RecoEnergyTransfer ;
+  else if ( observable == "Recoq3") return Recoq3 ;
+  else if ( observable == "RecoQ2") return RecoQ2 ;
+  else if ( observable == "RecoW") return RecoW;
+  else if ( observable == "RecoXBJK") return RecoXBJK;
+  else if ( observable == "HadSystemMass") return HadSystemMass;
+  else if ( observable == "ElectronSector") return ElectronSector;
+  else if ( observable == "MissingEnergy") return MissingEnergy;
+  else if ( observable == "MissingMomentum") return MissingMomentum;
+  else if ( observable == "MissingAngle") return MissingAngle;
+  else if ( observable == "ECal") return ECal;
+  else if ( observable == "DiffECal") return DiffECal;
+  else if ( observable == "HadronsAngle") return HadronsAngle;
+  else if ( observable == "Angleqvshad") return Angleqvshad;
+  else if ( observable == "RecoEvPion") return RecoEvPion;
+  else if ( observable == "RecoWPion") return RecoWPion;
+  else if ( observable == "ElectronPT") return ElectronPT;
+  else if ( observable == "PionPT") return PionPT;
+  else if ( observable == "proton_E") return proton_E;
+  else if ( observable == "proton_mom") return proton_mom;
+  else if ( observable == "proton_momx") return proton_momx;
+  else if ( observable == "proton_momy") return proton_momy; 
+  else if ( observable == "proton_momz") return proton_momz;
+  else if ( observable == "proton_theta") return proton_theta;
+  else if ( observable == "proton_phi") return proton_phi;
+  else if ( observable == "AlphaT") return AlphaT;
+  else if ( observable == "DeltaPT") return DeltaPT;
+  else if ( observable == "DeltaPhiT") return DeltaPhiT;
+  else if ( observable == "AdlerAngleThetaP") return AdlerAngleThetaP;
+  else if ( observable == "AdlerAnglePhiP") return AdlerAnglePhiP;
+  else if ( observable == "pip_E") return pip_E;
+  else if ( observable == "pip_mom") return pip_mom;
+  else if ( observable == "pip_momx") return pip_momx;
+  else if ( observable == "pip_momy") return pip_momy;
+  else if ( observable == "pip_momz") return pip_momz;
+  else if ( observable == "pip_theta") return pip_theta;
+  else if ( observable == "pip_phi") return pip_phi;
+  else if ( observable == "pim_E") return pim_E;
+  else if ( observable == "pim_mom") return pim_mom;
+  else if ( observable == "pim_momx") return pim_momx;
+  else if ( observable == "pim_momy") return pim_momy;
+  else if ( observable == "pim_momz") return pim_momz;
+  else if ( observable == "pim_theta") return pim_theta;
+  else if ( observable == "pim_phi") return pim_phi;
+  else if ( observable == "AdlerAngleThetaPi" ) return AdlerAngleThetaPi ;
+  else if ( observable == "AdlerAnglePhiPi" ) return AdlerAnglePhiPi ;
+  else if ( observable == "HadAlphaT") return HadAlphaT;
+  else if ( observable == "HadDeltaPT") return HadDeltaPT;
+  else if ( observable == "HadDeltaPTx") return HadDeltaPTx;
+  else if ( observable == "HadDeltaPTy") return HadDeltaPTy;
+  else if ( observable == "HadDeltaPhiT") return HadDeltaPhiT;
+  else if ( observable == "InferedNucleonMom") return InferedNucleonMom;
 
   std::cout << observable << " is NOT defined " << std::endl;
   return 0 ; 

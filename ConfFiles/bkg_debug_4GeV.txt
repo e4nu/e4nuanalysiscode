@@ -18,7 +18,7 @@ offset			0
 #Run Configurables
 EBeam			4.461
 TargetPdg		1000060120
-NEvents			100000000
+NEvents			10000000
 FirstEvent		0
 
 #Topology definition
@@ -29,7 +29,7 @@ MaxBackgroundMultiplicity 4
 NRotations 4000
 
 #histogram definition
-ObservableList ECal
+ObservableList RecoW,ECal,pim_mom,proton_mom
 AnalysisKey 1p1pim
 NormalizeHists false
 DebugBkg true

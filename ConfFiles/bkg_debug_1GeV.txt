@@ -1,7 +1,7 @@
 #Analysis Cuts
 DisableSector   2,4
 ApplyFiducial   true
-ApplyAccWeights false
+ApplyAccWeights true
 ApplyReso	true
 ApplyMomCut     true
 ApplyMottWeight true
@@ -19,7 +19,7 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			1000000000
+NEvents			10000000
 FirstEvent		0
 
 #Topology definition
@@ -30,7 +30,7 @@ MaxBackgroundMultiplicity 4
 NRotations 1000
 
 #histogram definition
-ObservableList ECal
+ObservableList RecoW,ECal,pim_mom,proton_mom
 AnalysisKey 1p1pim
 NormalizeHists false
 DebugBkg true

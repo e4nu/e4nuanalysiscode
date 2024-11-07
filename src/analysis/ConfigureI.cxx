@@ -247,7 +247,7 @@ void ConfigureI::Initialize(void){
   if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
   
   // Initialize acceptance map histograms from file
-  if( ApplyAccWeights() ) {
+  if( ApplyAccWeights() || kIsData ) {
     double EBeam = GetConfiguredEBeam() ; 
     unsigned int Target = GetConfiguredTarget() ;
     kAcceptanceMap = conf::GetAcceptanceFileMap2( Target, EBeam ) ;
@@ -361,6 +361,7 @@ bool ConfigureI::InitializeFiducial(void) {
 
 void ConfigureI::ApplyAcceptanceCorrection( Event & event, bool invert ) {
   double acc_wght = 1 ;
+
   if( ApplyAccWeights() || kIsData ) {
     // We only apply the acceptance if configured
     // For the data, acceptance is used to correct background events for this effect
@@ -381,7 +382,7 @@ void ConfigureI::ApplyAcceptanceCorrection( Event & event, bool invert ) {
       }
     }
     double initial_accwght = event.GetAccWght(); 
-    
+    acc_wght *= initial_accwght ; 
     if( invert && acc_wght != 0 ) acc_wght = initial_accwght / acc_wght ; 
     event.SetAccWght(acc_wght);
   }

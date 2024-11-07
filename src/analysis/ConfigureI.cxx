@@ -382,8 +382,8 @@ void ConfigureI::ApplyAcceptanceCorrection( Event & event, bool invert ) {
       }
     }
     double initial_accwght = event.GetAccWght(); 
+    if( invert && acc_wght != 0 ) acc_wght = 1. / acc_wght ; 
     acc_wght *= initial_accwght ; 
-    if( invert && acc_wght != 0 ) acc_wght = initial_accwght / acc_wght ; 
     event.SetAccWght(acc_wght);
   }
   return ;

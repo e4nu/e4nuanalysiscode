@@ -87,7 +87,7 @@ int main( int argc, char* argv[] ) {
     err -= pow(h_tot_est->GetBinError(j),2) ;
     if( err < 0 ) err = 0 ;
     err = sqrt(err);
-    if( h_tot_est->GetBinContent(j) != 0 ) {
+    if( h_tot_est->GetBinContent(j) != 0 && h_tot_true->GetBinContent(j) > 100 && h_tot_est->GetBinContent(j) > 100) {
       h_diff_true->SetBinContent(j,err/h_tot_est->GetBinContent(j)*100);
     }
 

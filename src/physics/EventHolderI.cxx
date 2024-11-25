@@ -5,6 +5,9 @@
  */
 #include <iostream>
 #include "physics/EventHolderI.h"
+#include <filesystem>
+#include <sys/types.h>
+#include <dirent.h>
 
 using namespace e4nu ; 
 
@@ -41,7 +44,27 @@ EventHolderI::EventHolderI( const std::vector<std::string> files ) {
 }
 
 bool EventHolderI::LoadMembers( const std::string file ) {
-  if ( ! fEventHolderChain -> Add( file.c_str() ) ) return false ; 
+  if( file.find("gst.root") != std::string::npos) {
+    std::cout << " Loading single file from " << file << std::endl;
+    if ( ! fEventHolderChain -> Add( file.c_str() ) ) return false ;
+  } else { 
+    DIR* dirp = opendir(file.c_str());
+    struct dirent * dp;
+    std::cout << " Loading files from " << file << std::endl;
+    while ((dp = readdir(dirp)) != NULL) {
+      std::string s1 = dp->d_name;
+      if (s1.find("gst.root") != std::string::npos) {	
+	std::cout << " Adding " << (file+s1)<< std::endl;
+	if ( ! fEventHolderChain -> Add( (file+s1).c_str() ) ) {
+	  std::cout << " Failded to add " << file+s1 << std::endl;
+	  closedir(dirp);
+	  return false ;
+	}
+      }
+    }
+    closedir(dirp);
+  }
+
   return true ; 
 } 
 

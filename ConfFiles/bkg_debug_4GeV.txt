@@ -18,15 +18,15 @@ offset			0
 #Run Configurables
 EBeam			4.461
 TargetPdg		1000060120
-NEvents			10000000
+NEvents			1000000000
 FirstEvent		0
 
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
 Toplogy 		11:1,2212:1,-211:1,221:0,22:0
-MaxBackgroundMultiplicity 4
-NRotations 4000
+MaxBackgroundMultiplicity 5
+NRotations 5000
 
 #histogram definition
 ObservableList RecoW,ECal,pim_mom,proton_mom

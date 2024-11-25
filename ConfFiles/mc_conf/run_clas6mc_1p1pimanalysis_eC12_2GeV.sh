@@ -1,28 +1,30 @@
 #!/bin/bash
-path_mc_files="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/"
+path_mc_files="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/FinalSPSPiAnalysis/"
 path_output="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/"
-path_xsec="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/"
+path_xsec="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/FinalSPSPiAnalysis/"
 
 # Unradiated input 
-declare -a InputFiles=("G18_10a_Dipole_LFG_Q2_04_2GeV_eCarbon.gst.root"
+declare -a InputFiles=(    
     "GEM21_11a_Dipole_LFG_Q2_04_2GeV_eCarbon.gst.root"
+    "GEM21_11a_Rarita_LFG_Q2_04_2GeV_eCarbon.gst.root"
 )
 
-declare -a OutputFiles=("e4nuanalysis_1p1pim_G18_10a_Dipole_LFG_Q2_04_2GeV_eCarbon_NoRad"
+declare -a OutputFiles=(
     "e4nuanalysis_1p1pim_GEM21_11a_Dipole_LFG_Q2_04_2GeV_eCarbon_NoRad"
+    "e4nuanalysis_1p1pim_GEM21_11a_Rarita_LFG_Q2_04_2GeV_eCarbon_NoRad"
 )
 
-declare -a XSecFiles=("G18_10a_Dipole_Q2_04_eCarbon.root"
-    "GEM21_11a_Dipole_Q2_04_eCarbon.root"
+declare -a XSecFiles=("GEM21_11a_Dipole_Q2_04_C.gst.root"
+    "GEM21_11a_Rarita_Q2_04_C.gst.root"
 )
 
 ## Radiated input
-declare -a RadiatedFiles=("G18_10a_Dipole_LFG_Q2_04_2GeV_eCarbon_radiated.gst.root"
-    "GEM21_11a_Dipole_LFG_Q2_04_2GeV_eCarbon_radiated.gst.root")
+#declare -a RadiatedFiles=("G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_radiated.gst.root"
+#    "GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_radiated.gst.root")
 
-declare -a OutputFilesRadiated=("e4nuanalysis_1p1pim_G18_10a_Dipole_LFG_Q2_04_2GeV_eCarbon_Rad"
-    "e4nuanalysis_1p1pim_GEM21_11a_Dipole_LFG_Q2_04_2GeV_eCarbon_Rad"
-)
+#declare -a OutputFilesRadiated=("e4nuanalysis_1p1pim_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_Rad"
+#    "e4nuanalysis_1p1pim_GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_Rad"
+#)
 
 conf_file="ConfFiles/mc_conf/clas6mc_1p1pimanalysis_eC12_2GeV.txt"
 
@@ -38,13 +40,15 @@ do
 done
 
 # Radiated
-number_inputs_rad=${#RadiatedFiles[@]}
-for (( i=0; i<${number_inputs_rad}; i++ ));
-do
-    ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}${OutputFilesRadiated[$i]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true
-done
+#number_inputs_rad=${#RadiatedFiles[@]}
+#for (( i=0; i<${number_inputs_rad}; i++ ));
+#do
+#    ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}${OutputFilesRadiated[$i]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true
+#done
 
 # For systematics
 
 #./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
 #./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueRecoAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
+
+

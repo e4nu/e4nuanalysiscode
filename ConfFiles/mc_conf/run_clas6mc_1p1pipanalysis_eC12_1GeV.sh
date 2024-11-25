@@ -1,29 +1,30 @@
 #!/bin/bash
-path_mc_files="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/"
+path_mc_files="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/FinalSPSPiAnalysis/"
 path_output="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/"
-path_xsec="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/"
+path_xsec="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/FinalSPSPiAnalysis/"
 
 # Unradiated input 
-declare -a InputFiles=("G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root"
-    "GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon.gst.root"
+declare -a InputFiles=(    
+    "Dipole/Carbon/1GeV/"
+    "Rarita/Carbon/1GeV/"
 )
 
-declare -a OutputFiles=("e4nuanalysis_1p1pip_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad"
+declare -a OutputFiles=(
     "e4nuanalysis_1p1pip_GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_NoRad"
+    "e4nuanalysis_1p1pip_GEM21_11a_Rarita_LFG_Q2_01_1GeV_eCarbon_NoRad"
 )
 
-declare -a XSecFiles=("G18_10a_Dipole_Q2_01_eCarbon.root"
-    "GEM21_11a_Dipole_Q2_01_eCarbon.root"
+declare -a XSecFiles=("GEM21_11a_Dipole_Q2_01_C.gst.root"
+    "GEM21_11a_Rarita_Q2_01_C.gst.root"
 )
 
 ## Radiated input
-declare -a RadiatedFiles=("G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_radiated.gst.root"
-    "GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_radiated.gst.root")
+#declare -a RadiatedFiles=("G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_radiated.gst.root"
+#    "GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_radiated.gst.root")
 
-declare -a OutputFilesRadiated=("e4nuanalysis_1p1pip_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_Rad"
-    "e4nuanalysis_1p1pip_GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_Rad"
-)
-
+#declare -a OutputFilesRadiated=("e4nuanalysis_1p1pim_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_Rad"
+#    "e4nuanalysis_1p1pim_GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_Rad"
+#)
 conf_file="ConfFiles/mc_conf/clas6mc_1p1pipanalysis_eC12_1GeV.txt"
 
 cd $E4NUANALYSIS

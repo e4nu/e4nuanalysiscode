@@ -5,8 +5,8 @@ path_xsec="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Spli
 
 # Unradiated input 
 declare -a InputFiles=(    
-    "GEM21_11a_Dipole_LFG_Q2_08_4GeV_eCarbon.gst.root"
-    "GEM21_11a_Rarita_LFG_Q2_08_4GeV_eCarbon.gst.root"
+    "Dipole/Carbon/4GeV/"
+    "Rarita/Carbon/4GeV/"
 )
 
 declare -a OutputFiles=(

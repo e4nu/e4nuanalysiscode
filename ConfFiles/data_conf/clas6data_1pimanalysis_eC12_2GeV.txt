@@ -2,7 +2,7 @@
 DisableSector   2,3,4
 ApplyFiducial   true
 ApplyAccWeights false
-ApplyReso	true
+ApplyReso	false
 ApplyMomCut     true
 ApplyMottWeight true
 ApplyOutEMomCut	true

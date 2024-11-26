@@ -1,7 +1,7 @@
 #Analysis Cuts
 ApplyFiducial   true
 ApplyAccWeights false
-ApplyReso	true
+ApplyReso	false
 ApplyMomCut     true
 ApplyMottWeight true
 ApplyOutEMomCut	true

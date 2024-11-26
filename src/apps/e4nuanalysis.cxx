@@ -120,7 +120,8 @@ int main( int argc, char* argv[] ) {
     analysis -> SetApplyAccWeights( false ) ;
     // Correcting for smearing gives unphysical ECal peak. We opt to not correct for this effect
     // MC Generators will have to smear their results to compare against data
-    //    analysis -> SetApplyReso( false ) ;
+    analysis -> SetApplyReso( true ) ;
+    // !!!!!!!
     analysis -> SetUseAllSectors( true ) ;
     analysis -> EnableAllSectors( true ) ;
     std::string OutputFile_true = analysis->GetOutputFile() + "_true" ;

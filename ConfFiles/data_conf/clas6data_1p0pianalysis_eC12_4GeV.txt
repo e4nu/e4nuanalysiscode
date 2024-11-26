@@ -1,7 +1,7 @@
 #Analysis Cuts
 ApplyFiducial   true
-ApplyAccWeights true
-ApplyReso	true
+ApplyAccWeights false
+ApplyReso	false
 ApplyMomCut     true
 ApplyMottWeight true
 ApplyOutEMomCut	true
@@ -25,8 +25,8 @@ FirstEvent		0
 IsData			true
 IsCLAS6Analysis		true
 Toplogy 		11:1,2212:1,-211:0,211:0,22:0
-MaxBackgroundMultiplicity 3
-NRotations 1000
+MaxBackgroundMultiplicity 4
+NRotations 5000
 
 InputFile /w/hallb-scshelf2102/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_C12_4461_neutrino6_united4_radphot_test_100M.root
 OutputFile /u/home/jtena/Software/e4nuanalysiscode/e4nuanalysis_1p0pianalysis_e_on_1000060120_4461MeV

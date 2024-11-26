@@ -44,7 +44,7 @@ EventHolderI::EventHolderI( const std::vector<std::string> files ) {
 }
 
 bool EventHolderI::LoadMembers( const std::string file ) {
-  if( file.find("gst.root") != std::string::npos) {
+  if( file.find(".root") != std::string::npos) {
     std::cout << " Loading single file from " << file << std::endl;
     if ( ! fEventHolderChain -> Add( file.c_str() ) ) return false ;
   } else { 

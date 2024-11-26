@@ -325,7 +325,7 @@ bool AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) {
       if( fFidAngleShift != 0 ) {
 	out_mom_part_shift.SetPhi( part_map[it->first][i].Phi() + fFidAngleShift * TMath::Pi() / 180. ) ;
 	if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), out_mom_part_shift.Vect(), IsData(), apply_fiducial ) ) continue ;
-	out_mom_part_shift.SetPhi( out_mom.Phi() - fFidAngleShift * TMath::Pi() / 180. ) ;
+	out_mom_part_shift.SetPhi( part_map[it->first][i].Phi() - fFidAngleShift * TMath::Pi() / 180. ) ;
 	if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), out_mom_part_shift.Vect(), IsData(), apply_fiducial ) ) continue ;
       }
 

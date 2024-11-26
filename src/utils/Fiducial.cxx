@@ -640,22 +640,25 @@ Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, TVector3 mome
     momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ;
   }
 
-  if ( ! apply_fiducial )  {
-    if ( pdg == conf::kPdgElectron ) {
-      if( momentum.Theta() * TMath::RadToDeg() < conf::kMinThetaElectron || momentum.Theta() * TMath::RadToDeg() > conf::kMaxThetaElectron ) return false ; 
-      return true ; 
-    }
-    else if ( pdg == conf::kPdgProton ) return PFiducialCutExtra( beam_en, momentum ) ;
-    else if ( pdg == conf::kPdgPiP ) return PiplFiducialCutExtra( beam_en, momentum ) ;
-    else if ( pdg == conf::kPdgPiM ) return PimiFiducialCutExtra(beam_en, momentum) ;
-    else if ( pdg == conf::kPdgPhoton ) return Phot_fidExtra(momentum) ;    
+  // Apply first angle cuts in both MC and data
+  bool extra = true ;   
+  if ( pdg == conf::kPdgElectron ) {
+    if( momentum.Theta() * TMath::RadToDeg() < conf::kMinThetaElectron || momentum.Theta() * TMath::RadToDeg() > conf::kMaxThetaElectron ) extra = false ; 
   }
-
-  if ( pdg == conf::kPdgElectron ) return EFiducialCut( beam_en, momentum ) ; 
-  else if ( pdg == conf::kPdgProton ) return PFiducialCut( beam_en, momentum ) ; 
-  else if ( pdg == conf::kPdgPiP ) return Pi_phot_fid_united( beam_en, momentum, 1 ) ; 
-  else if ( pdg == conf::kPdgPiM ) return Pi_phot_fid_united (beam_en, momentum, -1 ) ; 
-  else if ( pdg == conf::kPdgPhoton ) return Pi_phot_fid_united( beam_en, momentum, 0 ) ; 
+  else if ( pdg == conf::kPdgProton ) extra *= PFiducialCutExtra( beam_en, momentum ) ;
+  else if ( pdg == conf::kPdgPiP ) extra *= PiplFiducialCutExtra( beam_en, momentum ) ;
+  else if ( pdg == conf::kPdgPiM ) extra *= PimiFiducialCutExtra(beam_en, momentum) ;
+  else if ( pdg == conf::kPdgPhoton ) extra *= Phot_fidExtra(momentum) ;    
+  if ( extra == false ) return false ; 
+			     
+  // Apply cuts to include real detector fiducial
+  if ( apply_fiducial ) { 
+    if ( pdg == conf::kPdgElectron ) return EFiducialCut( beam_en, momentum ) ; 
+    else if ( pdg == conf::kPdgProton ) return PFiducialCut( beam_en, momentum ) ; 
+    else if ( pdg == conf::kPdgPiP ) return Pi_phot_fid_united( beam_en, momentum, 1 ) ; 
+    else if ( pdg == conf::kPdgPiM ) return Pi_phot_fid_united (beam_en, momentum, -1 ) ; 
+    else if ( pdg == conf::kPdgPhoton ) return Pi_phot_fid_united( beam_en, momentum, 0 ) ; 
+  }
   return true ; 
 }
 

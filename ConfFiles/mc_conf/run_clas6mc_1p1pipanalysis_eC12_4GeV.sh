@@ -5,17 +5,21 @@ path_xsec="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Spli
 
 # Unradiated input 
 declare -a InputFiles=(    
-    "Dipole/Carbon/4GeV/"
     "Rarita/Carbon/4GeV/"
+    "Rarita/Carbon/NoFsi/4GeV/"
+    "Dipole/Carbon/4GeV/"
 )
 
 declare -a OutputFiles=(
-    "e4nuanalysis_1p1pip_GEM21_11a_Dipole_LFG_Q2_08_4GeV_eCarbon_NoRad"
     "e4nuanalysis_1p1pip_GEM21_11a_Rarita_LFG_Q2_08_4GeV_eCarbon_NoRad"
+    "e4nuanalysis_1p1pip_GEM21_11a_Rarita_LFG_Q2_08_4GeV_eCarbon_NoRad_NoFSI"
+    "e4nuanalysis_1p1pip_GEM21_11a_Dipole_LFG_Q2_08_4GeV_eCarbon_NoRad"
 )
 
-declare -a XSecFiles=("GEM21_11a_Dipole_Q2_08_C.gst.root"
+declare -a XSecFiles=(
     "GEM21_11a_Rarita_Q2_08_C.gst.root"
+    "GEM21_11a_Rarita_Q2_08_C.gst.root"
+    "GEM21_11a_Dipole_Q2_08_C.gst.root"
 )
 
 ## Radiated input
@@ -40,13 +44,13 @@ do
 done
 
 # Radiated
-number_inputs_rad=${#RadiatedFiles[@]}
-for (( i=0; i<${number_inputs_rad}; i++ ));
-do
-    ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}${OutputFilesRadiated[$i]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true
-done
+#number_inputs_rad=${#RadiatedFiles[@]}
+#for (( i=0; i<${number_inputs_rad}; i++ ));
+#do
+#    ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}${OutputFilesRadiated[$i]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true
+#done
 
 # For systematics
 
-#./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
-#./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueRecoAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
+./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
+./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueRecoAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3

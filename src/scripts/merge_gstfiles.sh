@@ -35,7 +35,7 @@ for ((i = 0; i < num_chunks; i++)); do
     fi
 
     # Prepare the output filename
-    output_file="${output_dir}merged_chunk_$((i + 1)).root"
+    output_file="${output_dir}merged_chunk_$((i + 1)).gst.root"
 
     # Run hadd for this chunk
     echo "Merging files ${start} to $((end - 1)) into $output_file"

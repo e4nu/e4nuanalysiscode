@@ -298,6 +298,9 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
     ratio->Add(ratios[i]);
   }
   ratio->Scale(1. / mc_files.size());
+  // Cloning the acceptance so we will remove the uncertanty from it
+  TH1D *ratio_nosyst = (TH1D *)ratio->Clone();
+
   // We want to store the ratio before smoothing to account for this as an error
   TH1D *ratio_aSmooth = (TH1D *)ratio->Clone();
   ratio_aSmooth->Smooth(1);
@@ -327,10 +330,16 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 
     // Adding all errors together
     ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+    ratio_nosyst->SetBinError(i,0);
   }
   StandardFormat(ratio, title, kBlack, 1, observable);
   ratio->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
   ratio->GetYaxis()->SetTitle("Acceptance correction");
+
+  StandardFormat(ratio_nosyst, title, kBlack, 1, observable);
+  ratio_nosyst->SetName("Acceptance_NoSyst");
+  ratio_nosyst->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
+  ratio_nosyst->GetYaxis()->SetTitle("Acceptance correction No Systematics");
 
   TH1D *ratio_0 = (TH1D *)ratios_0[0]->Clone();
   ratio_0->SetName("Acceptance_0");
@@ -585,6 +594,7 @@ std::string plotting::ComputeAcceptance(std::vector<std::string> mc_files, std::
 
   // Store total contribution (averaged)
   ratio->Write();
+  ratio_nosyst->Write();
   ratio_0->Write();
   ratio_1->Write();
   ratio_2->Write();

@@ -66,6 +66,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   TH1D *h_acceptance = (TH1D *)file_acceptance->Get("Acceptance");
+  TH1D *h_acceptance_nosyst = (TH1D *)file_acceptance->Get("Acceptance_NoSyst");
   TH1D *h_acceptance_0 = (TH1D *)file_acceptance->Get("Acceptance_0");
   TH1D *h_acceptance_1 = (TH1D *)file_acceptance->Get("Acceptance_1");
   TH1D *h_acceptance_2 = (TH1D *)file_acceptance->Get("Acceptance_2");
@@ -74,9 +75,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   TH1D *h_acceptance_5 = (TH1D *)file_acceptance->Get("Acceptance_5");
 
   TH1D *h_radcorr = nullptr;
+  TH1D *h_radcorr_nosyst = nullptr;
   if (file_radcorr)
   {
     h_radcorr = (TH1D *)file_radcorr->Get("Acceptance");
+    h_radcorr_nosyst= (TH1D *)file_radcorr->Get("Acceptance_NoSyst");
   }
 
   // Get Tree for main model
@@ -125,7 +128,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     }
   }
 
-  if (!h_acceptance)
+  if (!h_acceptance || !h_acceptance_nosyst )
   {
     std::cout << "ERROR: Acceptance is not defined" << std::endl;
     return;
@@ -486,9 +489,12 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   TH1D *hist_data_correventrate = nullptr, *hist_data_correventrate_0 = nullptr, *hist_data_correventrate_1 = nullptr, *hist_data_correventrate_2 = nullptr, *hist_data_correventrate_3 = nullptr, *hist_data_correventrate_4 = nullptr, *hist_data_correventrate_5 = nullptr;
   // Event rate with Systematics
   TH1D *hist_data_correventrate_wsyst = nullptr, *hist_data_correventrate_wsyst_0 = nullptr, *hist_data_correventrate_wsyst_1 = nullptr, *hist_data_correventrate_wsyst_2 = nullptr, *hist_data_correventrate_wsyst_3 = nullptr, *hist_data_correventrate_wsyst_4 = nullptr, *hist_data_correventrate_wsyst_5 = nullptr;
-
+  // Event rate no Systematics
+  TH1D *hist_data_correventrate_nosyst = nullptr;
   // Event rate with Systematics
   TH1D *hist_xsec_wsyst = nullptr, *hist_xsec_wsyst_0 = nullptr, *hist_xsec_wsyst_1 = nullptr, *hist_xsec_wsyst_2 = nullptr, *hist_xsec_wsyst_3 = nullptr, *hist_xsec_wsyst_4 = nullptr, *hist_xsec_wsyst_5 = nullptr;
+  // Event rate without Systematics
+  TH1D *hist_xsec_nosyst = nullptr;
 
   // Store data event rate before acceptance correction:
   if (plot_data && hist_data)
@@ -517,6 +523,10 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_uncorr_4, 1);
     NormalizeHist(hist_data_uncorr_5, 1);
 
+    // Correcting data without systematics
+    hist_data_correventrate_nosyst= (TH1D *)hist_data->Clone();
+    CorrectData(hist_data_correventrate_nosyst, h_acceptance_nosyst);
+
     // Correct data for detector acceptance :
     CorrectData(hist_data, h_acceptance);
     CorrectData(hist_data_0, h_acceptance_0);
@@ -540,9 +550,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       CorrectData(hist_data_3, h_radcorr);
       CorrectData(hist_data_4, h_radcorr);
       CorrectData(hist_data_5, h_radcorr);
+      //without systematics
+      CorrectData(hist_data_correventrate_nosyst, h_radcorr_nosyst);
     }
 
-    // Store with full corrections
+
     hist_data_correventrate = (TH1D *)hist_data->Clone();
     hist_data_correventrate->SetName("Corrected_Event_Rate_Data");
     hist_data_correventrate_0 = (TH1D *)hist_data_0->Clone();
@@ -558,6 +570,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_correventrate_5 = (TH1D *)hist_data_5->Clone();
     hist_data_correventrate_5->SetName("Corrected_Event_Rate_Data_Sector_5");
 
+    // Store without systematics so we can normalize later to xsec
+    hist_xsec_nosyst = (TH1D*)hist_data_correventrate_nosyst->Clone();
+
     // Normaize by bin width
     NormalizeHist(hist_data_correventrate, 1);
     NormalizeHist(hist_data_correventrate_0, 1);
@@ -566,7 +581,57 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_correventrate_3, 1);
     NormalizeHist(hist_data_correventrate_4, 1);
     NormalizeHist(hist_data_correventrate_5, 1);
+    NormalizeHist(hist_data_correventrate_nosyst, 1);
 
+    // Add Systematics
+    // 1 - Acceptance model dependence
+    // 2 - Sector Sector Variation
+    // 3 - Relative uncertanties from configuration
+    //
+    // Adding Acceptance correction systematics from model dependence
+    TH1D *hist_syst_acc = systematics::AddSystematic(*hist_data, *h_acceptance);
+
+    // We also need to add it to the per sector so we do not double count the error
+    systematics::AddSystematic(*hist_data_0, *h_acceptance_0);
+    systematics::AddSystematic(*hist_data_1, *h_acceptance_1);
+    systematics::AddSystematic(*hist_data_2, *h_acceptance_2);
+    systematics::AddSystematic(*hist_data_3, *h_acceptance_3);
+    systematics::AddSystematic(*hist_data_4, *h_acceptance_4);
+    systematics::AddSystematic(*hist_data_5, *h_acceptance_5);
+
+    TCanvas *cacc = new TCanvas("cacc", "cacc", 800, 600);
+    hist_syst_acc->Draw("hist");
+    cacc->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_accmodel_" + observable + ".root").c_str());
+    delete cacc;
+
+    // Add sector variation ERROR. Store relative error in histogram
+    // We use the bkg substracted, eff corrected distributions for the calculation
+    TH1D *hist_syst_sector = systematics::SectorVariationError(*hist_data, {hist_data_0, hist_data_1, hist_data_2, hist_data_3, hist_data_4, hist_data_5});
+    TCanvas *csect = new TCanvas("csect", "csect", 800, 600);
+    hist_syst_sector->Draw("hist");
+    csect->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_persector_" + observable + ".root").c_str());
+    delete csect;
+
+    // adding systematics from systematic map. Relative systematic added to all bins
+    for (auto it = systematic_map.begin(); it != systematic_map.end(); ++it)
+    {
+      std::cout << " Adding " << it->second << " % systematic on " << it->first << std::endl;
+      systematics::AddSystematic(*hist_data, it->second, it->first);
+    }
+
+    // Add systematics from possible MC stat in rad corr
+    // Adding Acceptance correction systematics from model dependence
+    // As is not very interesting we do not store it
+    if (h_radcorr)
+    {
+      systematics::AddSystematic(*hist_data, *h_radcorr);
+    }
+    // Hard coding some well known systematics
+    systematics::AddSystematic(*hist_data, 5, "Radiative");
+    systematics::AddSystematic(*hist_data, 1, "Normalization");
+    systematics::AddSystematic(*hist_data, 1, "AnglDependence");
+
+    // Store event rate with systematics
     hist_data_correventrate_wsyst = (TH1D *)hist_data->Clone();
     hist_data_correventrate_wsyst->SetName("Corrected Event Rate with Systematics Data");
     hist_data_correventrate_wsyst_0 = (TH1D *)hist_data_0->Clone();
@@ -599,67 +664,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_3, DataNormalization);
     NormalizeHist(hist_data_4, DataNormalization);
     NormalizeHist(hist_data_5, DataNormalization);
-
-    // Add Systematics
-    // 1 - Acceptance model dependence
-    // 2 - Sector Sector Variation
-    // 3 - Relative uncertanties from configuration
-    //
-    // Adding Acceptance correction systematics from model dependence
-    TH1D *hist_syst_acc = systematics::AddSystematic(*hist_data, *h_acceptance);
-
-    // We also need to add it to the per sector so we do not double count the error
-    systematics::AddSystematic(*hist_data_0, *h_acceptance_0);
-    systematics::AddSystematic(*hist_data_1, *h_acceptance_1);
-    systematics::AddSystematic(*hist_data_2, *h_acceptance_2);
-    systematics::AddSystematic(*hist_data_3, *h_acceptance_3);
-    systematics::AddSystematic(*hist_data_4, *h_acceptance_4);
-    systematics::AddSystematic(*hist_data_5, *h_acceptance_5);
-
-    // Add also for normalized event rate
-    systematics::AddSystematic(*hist_data_correventrate_wsyst, *h_acceptance);
-
-    TCanvas *cacc = new TCanvas("cacc", "cacc", 800, 600);
-    hist_syst_acc->Draw("hist");
-    cacc->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_accmodel_" + observable + ".root").c_str());
-    delete cacc;
-
-    // Add sector variation ERROR. Store relative error in histogram
-    // We use the bkg substracted, eff corrected distributions for the calculation
-    TH1D *hist_syst_sector = systematics::SectorVariationError(*hist_data, {hist_data_0, hist_data_1, hist_data_2, hist_data_3, hist_data_4, hist_data_5});
-    TCanvas *csect = new TCanvas("csect", "csect", 800, 600);
-    hist_syst_sector->Draw("hist");
-    csect->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_persector_" + observable + ".root").c_str());
-    delete csect;
-
-    // Adding in event rate too
-    systematics::SectorVariationError(*hist_data_correventrate_wsyst, {hist_data_0, hist_data_1, hist_data_2, hist_data_3, hist_data_4, hist_data_5});
-
-    // adding systematics from systematic map. Relative systematic added to all bins
-    for (auto it = systematic_map.begin(); it != systematic_map.end(); ++it)
-    {
-      std::cout << " Adding " << it->second << " % systematic on " << it->first << std::endl;
-      systematics::AddSystematic(*hist_data, it->second, it->first);
-      systematics::AddSystematic(*hist_data_correventrate_wsyst, it->second, it->first);
-    }
-
-    // Add systematics from possible MC stat in rad corr
-    // Adding Acceptance correction systematics from model dependence
-    // As is not very interesting we do not store it
-    if (h_radcorr)
-    {
-      systematics::AddSystematic(*hist_data, *h_radcorr);
-      systematics::AddSystematic(*hist_data_correventrate_wsyst, *h_radcorr);
-    }
-    // Hard coding some well known systematics
-    systematics::AddSystematic(*hist_data, 5, "Radiative");
-    systematics::AddSystematic(*hist_data, 1, "Normalization");
-    systematics::AddSystematic(*hist_data, 1, "AnglDependence");
-
-    // And add in corrected event rate
-    systematics::AddSystematic(*hist_data_correventrate_wsyst, 5, "Radiative");
-    systematics::AddSystematic(*hist_data_correventrate_wsyst, 1, "Normalization");
-    systematics::AddSystematic(*hist_data_correventrate_wsyst, 1, "AnglDependence");
+    NormalizeHist(hist_xsec_nosyst,DataNormalization);
+    
   } // end if data
 
   // Normalize MC to cross-section
@@ -750,13 +756,13 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   // Plot Total, XSector, Legend
   if (plot_data)
   {
-    plotting::PlotEventRate(hist_data_uncorr, observable, title, data_name, input_data_location, output_location,
+    plotting::PlotEventRate(hist_data_uncorr, hist_data_uncorr, observable, title, data_name, input_data_location, output_location,
                             output_file_name + "_raw_event_rate", analysis_id, store_root);
 
     plotting::PlotEventRatePerSector(data_per_sector, observable, title, data_name, input_data_location, output_location,
                                      output_file_name + "_event_rate_corracc", analysis_id, store_root);
 
-    plotting::PlotEventRate(hist_data_correventrate, observable, title, data_name, input_data_location, output_location,
+    plotting::PlotEventRate(hist_data_correventrate, hist_data_correventrate_nosyst, observable, title, data_name, input_data_location, output_location,
                             output_file_name + "_event_rate_corracc_with_radcorr", analysis_id, store_root);
     plotting::PlotComparisonDataNormalized(mc_hists, breakdown, hist_data_correventrate, observable, title, data_name, model, input_MC_location,
                                            input_data_location, output_location, output_file_name + "_normalized_to_data_with_breakdown", systematic_map, true, analysis_id, store_root);
@@ -1039,7 +1045,7 @@ void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, std::vector<TH1D *> b
   delete c1;
 }
 
-void plotting::PlotEventRate(TH1D *data, std::string observable, std::string title, std::string data_name, std::string input_data_location,
+void plotting::PlotEventRate(TH1D *data, TH1D *data_nosyst, std::string observable, std::string title, std::string data_name, std::string input_data_location,
                              std::string output_location, std::string output_file_name, std::string analysis_id, bool store_root)
 {
   TCanvas *c1 = new TCanvas("c1", "c1", 200, 10, 700, 500);
@@ -1053,12 +1059,25 @@ void plotting::PlotEventRate(TH1D *data, std::string observable, std::string tit
   if (data)
   {
     StandardFormat(data, title, kBlack, 8, observable, 0, "Counts/Bin Width");
+    data->SetLineColor(kBlue);
     data->SetLineStyle(1);
+  }
+
+  if (data_nosyst)
+  {
+    StandardFormat(data_nosyst, title, kBlack, 8, observable, 0, "Counts/Bin Width");
+    data_nosyst->SetLineColor(kRed);
+    data_nosyst->SetLineStyle(1);
   }
 
   if (data)
   {
     data->Draw(" err ");
+  }
+
+  if (data_nosyst)
+  {
+    data_nosyst->Draw(" err same ");
   }
 
   double data_integral;

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <TStyle.h>
 
-int plot_analised_data() {
+int main( int argc, char* argv[] ) {
 
     // Paths to ROOT files
     const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_2GeV_3degshiftMYTEST_onlydata_dxsec_dMissingAngle.root";

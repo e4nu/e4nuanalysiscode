@@ -153,8 +153,11 @@ TH1D * systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
   for (int i = 1; i <= NBins; i++) {
     double stat_error = hist.GetBinError(i);
     double syst_error = hist_w_error.GetBinError(i);
-    double newerror = TMath::Sqrt( TMath::Power(stat_error,2.) + TMath::Power(syst_error/hist_w_error.GetBinContent(i)*hist.GetBinContent(i),2.));
-    if( hist.GetBinContent(i) > 0 ) hist.SetBinError(i,newerror);
+
+		// The error calculation assumes that it is a multiplicative factor
+		// The error is added as a relative
+		double newerror = TMath::Sqrt( TMath::Power(stat_error,2.) + TMath::Power(syst_error*hist.GetBinContent(i)/hist_w_error.GetBinContent(i),2.));
+		if( hist.GetBinContent(i) > 0 ) hist.SetBinError(i,newerror);
     else hist.SetBinError(i,0); // remove odd bins
 
     hist_syst->SetBinContent(i,hist_w_error.GetBinError(i)/hist_w_error.GetBinContent(i)*100); // Store sector to sector uncertainty
@@ -175,35 +178,35 @@ TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> 
     double mean_i = 0 ;
     double weight = 0 ;
     double sectors = 0;
-    // Loop over sectors:
+    // Loop over sectors to compute the mean variance per sector in each bin
     for( unsigned int i = 0 ; i < h_per_sector.size() ; ++i ){
       // We have to be careful with empty sectors:
       if( h_per_sector[i]->GetBinContent(j) != 0 ){
-	  if( h_per_sector[i]->GetBinError(j) != 0 ) {
-		mean_i += h_per_sector[i]->GetBinContent(j)/pow(h_per_sector[i]->GetBinError(j),2);
-	  	weight += 1./pow(h_per_sector[i]->GetBinError(j),2) ;
-	  }
-	sectors+= 1 ;
+			  if( h_per_sector[i]->GetBinError(j) != 0 ) {
+					mean_i += h_per_sector[i]->GetBinContent(j)/pow(h_per_sector[i]->GetBinError(j),2);
+			  	weight += 1./pow(h_per_sector[i]->GetBinError(j),2) ;
+			  }
+				sectors+= 1 ;
       }
     }
 
     // Compute weighted average:
     if( weight != 0 ) mean_i /= weight ;
-    
+
     // Compute RMS:
     double error_2 = 0;
 
     for( unsigned int i = 0 ; i < h_per_sector.size() ; ++i ){
       if( h_per_sector[i]->GetBinContent(j) != 0 ){
-	// Compute error
-	error_2 += pow( h_per_sector[i]->GetBinContent(j) - mean_i, 2) ;
-	//and subtract stat. error
-	if( h_per_sector[i]->GetBinError(j) > 0 ) error_2 -= pow(h_per_sector[i]->GetBinError(j),2);
+				// Compute error
+				error_2 += pow( h_per_sector[i]->GetBinContent(j) - mean_i, 2) ;
+				//and subtract stat. error
+				if( h_per_sector[i]->GetBinError(j) > 0 ) error_2 -= pow(h_per_sector[i]->GetBinError(j),2);
       }
     }
-    if(sectors!=0) error_2 /= sectors;
+    if( sectors > 1 ) error_2 /= sectors - 1 ;
     if( error_2 < 0 ) error_2 = 0 ; // If stat. is bigger than syst, just assign 0
-    	
+
     if( mean_i != 0 ) hist_syst_sector->SetBinContent(j,sqrt(error_2)/mean_i*100); // Store sector to sector uncertainty
 
     error_2 += pow(hist.GetBinError(j),2); // Add statistical error from final histogram

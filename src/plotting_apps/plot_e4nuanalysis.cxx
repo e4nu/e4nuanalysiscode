@@ -36,6 +36,7 @@ using namespace e4nu::plotting;
 // 16) Plot root file output. Stores individual histograms     //
 // 17) Apply cut on observable                                 //
 //     --cut-observables Obs1,min1,max1:...:ObsN,minN,maxN     //
+// 18) log-scale : option to use log scale                     //
 /////////////////////////////////////////////////////////////////
 
 string mc_location="", data_location="", output_location ="", output_name ="", analysis_id="default";
@@ -46,6 +47,7 @@ vector<string> bkg_syst;
 map<string,double> systematic_map ;
 bool plot_data = true ;
 bool store_root = false ;
+bool log_scale = false ;
 void PrintFormat(string s);
 
 // We want to add a map which contains the observable to cut on and its range
@@ -106,7 +108,7 @@ int main( int argc, char* argv[] ) {
       observables = SplitString(obs);
       cout << "Plotting xsec for the following observables: \n- ";
       for( unsigned s = 0 ; s<observables.size();++s ) {
-	cout << observables[s] << std::endl;
+      	cout << observables[s] << std::endl;
       }
     } else PrintFormat("observable_list") ;
 
@@ -115,12 +117,15 @@ int main( int argc, char* argv[] ) {
       mdl = GetArg("model_names",argc,argv) ;
       model_names = SplitString(mdl);
       if( model_names.size() != mc_files.size() ){
-	std::cout << "Number of mc files does not match the number of models"<< std::endl;
-	return 0;
+      	std::cout << "Number of mc files does not match the number of models"<< std::endl;
+      	return 0;
       }
     }
     if( ExistArg("store_root",argc,argv)) store_root = true ;
-
+    if( ExistArg("log-scale",argc,argv)) {
+      std::cout << " Enabling log scale..." << std::endl;
+      log_scale = true ;
+    }
     cout<<"Loading MC Files:"<<endl;
     for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
       cout << " -> " ;
@@ -146,10 +151,10 @@ int main( int argc, char* argv[] ) {
       sys = GetArg("add-systematics",argc,argv) ;
       vector<string> sys_names = SplitString(sys,',');
       for( unsigned s = 0 ; s < sys_names.size() ; ++s ) {
-	std::cout << sys_names[s]<<std::endl;
-	vector<string> tmpsys = SplitString(sys_names[s],':') ;
-	if( tmpsys.size() != 2 ) continue ;
-	systematic_map[tmpsys[0]] = stod(tmpsys[1]);
+      	std::cout << sys_names[s]<<std::endl;
+      	vector<string> tmpsys = SplitString(sys_names[s],':') ;
+      	if( tmpsys.size() != 2 ) continue ;
+      	systematic_map[tmpsys[0]] = stod(tmpsys[1]);
       }
     }
 
@@ -202,7 +207,7 @@ int main( int argc, char* argv[] ) {
     if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables[i], true, data_location, output_location, analysis_id );
 
     Plot1DXSec( root_files, data_file, acceptance_file, radcorr_file, observables[i], title, data_name, names, mc_location, data_location,
-		output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root ) ;
+		output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale ) ;
   }
 
   return 0 ;

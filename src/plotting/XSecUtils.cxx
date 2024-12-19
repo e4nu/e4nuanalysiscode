@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include "TGaxis.h"
+#include "THStack.h"
 
 using namespace e4nu;
 using namespace e4nu::plotting;
@@ -960,23 +961,42 @@ void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, std::vector<TH1D *> b
 
   if (breakdown.size() == 6)
   {
-    StandardFormat(breakdown[0], title, kGreen + 1 , 1, observable);
-    StandardFormat(breakdown[1], title, kRed - 4, 1, observable);
-    StandardFormat(breakdown[2], title, kMagenta - 3, 1, observable);
-    StandardFormat(breakdown[3], title, kCyan + 1, 1, observable);
-    StandardFormat(breakdown[4], title, kOrange, 1, observable);
-    StandardFormat(breakdown[5], title, kBlue, 1, observable);
+    StandardFormat(breakdown[0], title, ColorBlindPalette(0), 1, observable);
+    StandardFormat(breakdown[1], title, ColorBlindPalette(1), 1, observable);
+    StandardFormat(breakdown[2], title, ColorBlindPalette(9), 1, observable);
+    StandardFormat(breakdown[3], title, ColorBlindPalette(2), 1, observable);
+    StandardFormat(breakdown[4], title, ColorBlindPalette(6), 1, observable);
+    StandardFormat(breakdown[5], title, ColorBlindPalette(3), 1, observable);
+
+    breakdown[0]->SetFillColorAlpha(ColorBlindPalette(0),0.65);
+    breakdown[1]->SetFillColorAlpha(ColorBlindPalette(1),0.65);
+    breakdown[2]->SetFillColorAlpha(ColorBlindPalette(9),0.65);
+    breakdown[3]->SetFillColorAlpha(ColorBlindPalette(2),0.65);
+    breakdown[4]->SetFillColorAlpha(ColorBlindPalette(6),0.65);
+    breakdown[5]->SetFillColorAlpha(ColorBlindPalette(3),0.65);
+
+    breakdown[0]->SetFillStyle(4050);
+    breakdown[1]->SetFillStyle(4050);
+    breakdown[2]->SetFillStyle(4050);
+    breakdown[3]->SetFillStyle(4050);
+    breakdown[4]->SetFillStyle(4050);
+    breakdown[5]->SetFillStyle(4050);
+
   }
+
+  auto hs = new THStack("hs","");
+  hs->Add(breakdown[0]);
+  hs->Add(breakdown[1]);
+  hs->Add(breakdown[2]);
+  hs->Add(breakdown[3]);
+  hs->Add(breakdown[4]);
+  hs->Add(breakdown[5]);
 
   // Draw total xsec (all sectors):
   mc_hists[0]->Draw("hist");
-  for (unsigned int i = 1; i < mc_hists.size(); ++i)
+  hs->Draw("hist same");
+  for (unsigned int i = 0; i < mc_hists.size(); ++i)
     mc_hists[i]->Draw("hist same");
-  if (show_breakdown)
-  {
-    for (unsigned int i = 0; i < breakdown.size(); ++i)
-      breakdown[i]->Draw("hist same");
-  }
 
   if (data)
     data->Draw(" err same ");

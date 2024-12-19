@@ -8,6 +8,7 @@
 #include "TStyle.h"
 #include "TH1.h"
 #include "TCanvas.h"
+#include "TColor.h"
 #include "TTree.h"
 #include <iomanip>
 #include <map>
@@ -28,7 +29,7 @@ namespace e4nu {
     extern double InferedNucleonMom, HadronsAngle, Angleqvshad;
     extern double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi;
     extern double RecoEvPion, RecoWPion, ElectronPT, PionPT;
-
+    int ColorBlindPalette(int color_id ) ;
     double GetObservable( const std::string observable ) ;
     void NormalizeHist( TH1D * h, double normalization_factor );
     void CorrectData(TH1D* h, TH1D* acc);

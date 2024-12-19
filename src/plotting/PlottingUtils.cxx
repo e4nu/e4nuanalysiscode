@@ -1205,12 +1205,20 @@ void plotting::StandardFormat(TH1D *prediction, std::string title, int color, in
   prediction->GetYaxis()->SetLabelFont(43);
   prediction->GetYaxis()->SetLabelFont(FontStyle);
   prediction->GetYaxis()->SetTitleFont(FontStyle);
-  prediction->GetYaxis()->SetRangeUser(1./1E8, y_max);
+  prediction->GetYaxis()->SetRangeUser(1./1E6, y_max);
   prediction->GetYaxis()->SetMaxDigits(3);
   prediction->SetTitleFont(FontStyle);
 
   return;
 }
+
+int plotting::ColorBlindPalette(int color_id){
+  // using color blind palette developed by CMS
+  // https://arxiv.org/abs/2107.02270
+  static const std::vector<std::string> sequence({"#3f90da","#ffa90e","#bd1f01","#94a4a2","#832db6","#a96b59","#e76300","#b9ac70","#717581","#92dadd"});
+  return TColor::GetColor( sequence[ color_id%10 ].c_str() );
+}
+
 
 std::vector<std::string> plotting::SplitString(std::string s, char d)
 {

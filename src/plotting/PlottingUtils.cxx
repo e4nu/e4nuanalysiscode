@@ -1140,6 +1140,20 @@ double plotting::GetMaximum(std::vector<TH1D *> predictions)
   return max * (1 + 0.12);
 }
 
+double plotting::GetMinimum(std::vector<TH1D *> predictions)
+{
+  double min = 9999;
+  for (unsigned int i = 0; i < predictions.size(); ++i)
+    {
+      for (unsigned int j = 0; j < predictions[i]->GetNbinsX(); ++j)
+	{
+	  if (min < predictions[i]->GetBinContent(j))
+	    min = predictions[i]->GetBinContent(j);
+	}
+    }
+  return min * (1 - 0.12);
+}
+
 void plotting::StandardFormat(TH1D *prediction, std::string title, int color, int style, std::string observable, double y_max, std::string y_axis_label)
 {
   gStyle->SetFrameBorderMode(0);
@@ -1191,16 +1205,16 @@ void plotting::StandardFormat(TH1D *prediction, std::string title, int color, in
     }
 
   int FontStyle = 132;
-  prediction->GetXaxis()->SetTitleOffset(0.8);
-  prediction->GetXaxis()->SetLabelSize(0.08);
-  prediction->GetXaxis()->SetTitleSize(0.08);
+  prediction->GetXaxis()->SetTitleOffset(1);
+  prediction->GetXaxis()->SetLabelSize(0.05);
+  prediction->GetXaxis()->SetTitleSize(0.05);
   prediction->GetXaxis()->SetNdivisions(6);
   prediction->GetXaxis()->SetLabelFont(FontStyle);
   prediction->GetXaxis()->SetTitleFont(FontStyle);
 
   prediction->GetYaxis()->SetNdivisions(8);
-  prediction->GetYaxis()->SetTitleOffset(0.8);
-  prediction->GetYaxis()->SetLabelSize(0.08);
+  prediction->GetYaxis()->SetTitleOffset(0.5);
+  prediction->GetYaxis()->SetLabelSize(0.05);
   prediction->GetYaxis()->SetTitleSize(0.08);
   prediction->GetYaxis()->SetLabelFont(43);
   prediction->GetYaxis()->SetLabelFont(FontStyle);

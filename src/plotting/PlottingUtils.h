@@ -41,7 +41,8 @@ namespace e4nu {
     std::string GetAlternativeObs( std::string observable );
     std::string GetObsName( std::string observable );
     std::string GetUnit( std::string observable );
-    double GetMaximum( std::vector<TH1D*> predictions);
+    double GetMaximum( std::vector<TH1D*> predictions );
+    double GetMinimum( std::vector<TH1D*> predictions );
     bool PlotZoomIn(std::string analysis_id="default");
     void StandardFormat( TH1D * prediction, std::string title, int color, int style, std::string observable, double y_max = 0, std::string y_axis_label ="");
     std::vector<std::string> SplitString(std::string s, char d=',' ) ;

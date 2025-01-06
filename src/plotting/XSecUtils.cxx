@@ -761,6 +761,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
     plotting::PlotEventRate(hist_data_correventrate, hist_data_correventrate_nosyst, observable, title, data_name, input_data_location, output_location,
                             output_file_name + "_event_rate_corracc_with_radcorr", analysis_id, store_root);
+
     plotting::PlotComparisonDataNormalized(mc_hists, breakdown, hist_data_correventrate, observable, title, data_name, model, input_MC_location,
                                            input_data_location, output_location, output_file_name + "_normalized_to_data_with_breakdown", systematic_map, true, analysis_id, store_root);
 
@@ -844,6 +845,7 @@ void plotting::PlotComparisonDataNormalized(std::vector<TH1D> mc_hists, std::vec
   if( log_scale ) gPad->SetLogy();
   TCanvas *c1 = new TCanvas("c1", "c1", 200, 10, 700, 500);
   TPad *pad1 = new TPad("pad1", "", 0, 0, 1, 1);
+
   pad1->Draw();
   pad1->cd();
   pad1->SetBottomMargin(0.15);
@@ -933,13 +935,24 @@ void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, std::vector<TH1D *> b
                              std::string output_file_name, std::map<string, double> systematic_map, bool show_breakdown,
                              std::string analysis_id, bool store_root, bool log_scale)
 {
-  TCanvas *c1 = new TCanvas("c1", "c1", 200, 10, 700, 500);
-  TPad *pad1 = new TPad("pad1", "", 0, 0, 1, 1);
+  TCanvas *c1 = new TCanvas("c1", "Canvas with Two Pads", 800, 600);
+
+  // Create the upper pad, taking the top half of the canvas
+  TPad *pad1 = new TPad("pad1", "Top Pad", 0, 0.35, 1, 1);
+  pad1->SetBottomMargin(0.025); // Minimize gap between pads
   pad1->Draw();
-  pad1->cd();
-  pad1->SetBottomMargin(0.15);
-  pad1->SetLeftMargin(0.15);
+
+  // Create the lower pad, taking the bottom half of the canvas
+  TPad *sub_pad = new TPad("sub_pad", "Bottom Pad", 0, 0, 1, 0.35);
+  sub_pad->SetTopMargin(0.05); // Minimize gap between pads
+  sub_pad->SetBottomMargin(0.25); // Leave space for the x-axis labels
+  sub_pad->Draw();
+
   if( log_scale ) pad1->SetLogy();
+
+  // Fill xsec canvas
+  pad1->cd();
+  // Set correct plotting style
   // Find absolute y max
   std::vector<TH1D *> temp_check = {mc_hists[0]};
   if (data)
@@ -968,22 +981,16 @@ void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, std::vector<TH1D *> b
     StandardFormat(breakdown[4], title, ColorBlindPalette(6), 1, observable);
     StandardFormat(breakdown[5], title, ColorBlindPalette(3), 1, observable);
 
-    breakdown[0]->SetFillColorAlpha(ColorBlindPalette(0),0.65);
-    breakdown[1]->SetFillColorAlpha(ColorBlindPalette(1),0.65);
-    breakdown[2]->SetFillColorAlpha(ColorBlindPalette(9),0.65);
-    breakdown[3]->SetFillColorAlpha(ColorBlindPalette(2),0.65);
-    breakdown[4]->SetFillColorAlpha(ColorBlindPalette(6),0.65);
-    breakdown[5]->SetFillColorAlpha(ColorBlindPalette(3),0.65);
-
-    breakdown[0]->SetFillStyle(4050);
-    breakdown[1]->SetFillStyle(4050);
-    breakdown[2]->SetFillStyle(4050);
-    breakdown[3]->SetFillStyle(4050);
-    breakdown[4]->SetFillStyle(4050);
-    breakdown[5]->SetFillStyle(4050);
+    breakdown[0]->SetFillColorAlpha(ColorBlindPalette(0),0.6);
+    breakdown[1]->SetFillColorAlpha(ColorBlindPalette(1),0.6);
+    breakdown[2]->SetFillColorAlpha(ColorBlindPalette(9),0.6);
+    breakdown[3]->SetFillColorAlpha(ColorBlindPalette(2),0.6);
+    breakdown[4]->SetFillColorAlpha(ColorBlindPalette(6),0.6);
+    breakdown[5]->SetFillColorAlpha(ColorBlindPalette(3),0.6);
 
   }
 
+  // Fill tstack Plot
   auto hs = new THStack("hs","");
   hs->Add(breakdown[0]);
   hs->Add(breakdown[1]);
@@ -992,47 +999,80 @@ void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, std::vector<TH1D *> b
   hs->Add(breakdown[4]);
   hs->Add(breakdown[5]);
 
-  // Draw total xsec (all sectors):
-  mc_hists[0]->Draw("hist");
-  hs->Draw("hist same");
-  for (unsigned int i = 0; i < mc_hists.size(); ++i)
-    mc_hists[i]->Draw("hist same");
+  // Remove top plot label
+  mc_hists[0]->GetXaxis()->SetLabelSize(0.);
+  mc_hists[0]->GetXaxis()->SetTitleSize(0.);
+  mc_hists[0]->SetMarkerSize(0);
+
+  // print
+  mc_hists[0]->Draw("hist err ");
+  hs->Draw("hist err same");
+  for (unsigned int i = 0; i < mc_hists.size(); ++i) {
+      mc_hists[i]->Draw("hist err same");
+      mc_hists[i]->SetMarkerSize(0);
+  }
 
   if (data)
-    data->Draw(" err same ");
+      data->Draw("err same");
 
-  // if (data && observable == "ECal" && plotting::PlotZoomIn(analysis_id) == true)
-  // {
-  //   // Add a sub-pad1
-  //   TPad *sub_pad = new TPad("subpad", "", 0.2, 0.2, 0.85, 0.85);
-  //   sub_pad->SetFillStyle(4000);
-  //   sub_pad->Draw();
-  //   sub_pad->cd();
-  //   sub_pad->SetBottomMargin(0.15);
-  //   sub_pad->SetLeftMargin(0.15);
-  //
-  //   TH1D *tmp_hist_true = (TH1D *)mc_hists[0]->Clone();
-  //   TH1D *tmp_hist_data;
-  //   if (data)
-  //     tmp_hist_data = (TH1D *)data->Clone();
-  //   tmp_hist_true->SetTitle("");
-  //
-  //   // tmp_hist_true->GetXaxis()->SetRangeUser(0,BeamE*(1-0.1));
-  //   if (data)
-  //     tmp_hist_true->GetYaxis()->SetRangeUser(0, tmp_hist_data->GetBinContent(tmp_hist_data->GetMaximumBin()) * (1 + 0.25));
-  //
-  //   tmp_hist_true->Draw("hist");
-  //   for (unsigned int i = 1; i < mc_hists.size(); ++i)
-  //     mc_hists[i]->Draw("hist same");
-  //   if (show_breakdown)
-  //   {
-  //     for (unsigned int i = 0; i < breakdown.size(); ++i)
-  //       breakdown[i]->Draw("hist same");
-  //   }
-  //   if (data)
-  //     data->Draw(" err same ");
-  // }
+  // Plot Ratio
+  sub_pad->cd();
+  TH1D * data_ratio = (TH1D*)data->Clone();
+  TH1D * data_minus = (TH1D*)data->Clone();
+  std::vector<TH1D*> mc_ratio ;
+  for (unsigned int i = 0; i < mc_hists.size(); ++i){
+    mc_ratio.push_back((TH1D*)mc_hists[i]->Clone());
+    StandardFormat(mc_ratio[i], title, kBlack, i+1, observable);
+  }
+  StandardFormat(data_ratio, title, kBlack, 8, observable);
+
+  //data_minus->Scale(-1.);
+  //data_ratio->Add(data_minus);
+
+  data_ratio->Divide(data);
+  data_ratio->Scale(100);
+  data_ratio->GetXaxis()->SetLabelSize(0.1);
+  data_ratio->GetXaxis()->SetTitleSize(0.1);
+  data_ratio->GetYaxis()->SetLabelSize(0.1);
+  data_ratio->GetYaxis()->SetTitleSize(0.1);
+  data_ratio->SetMinimum(0);
+  data_ratio->GetYaxis()->SetMaxDigits(5);
+  data_ratio->GetYaxis()->SetTitle("Pred / Data [%]");
+
+
+  for (unsigned int i = 0; i < mc_hists.size(); ++i){
+    //mc_ratio[i]->Add(data_minus);
+    mc_ratio[i]->Divide(data);
+    mc_ratio[i]->Scale(100);
+
+    mc_ratio[i]->GetYaxis()->SetTitle("Pred / Data [%]");
+  }
+  // Find correct range
+  double max_ratio = GetMaximum(mc_ratio);
+  double min_ratio = GetMinimum(mc_ratio);
+  data_ratio->GetYaxis()->SetRangeUser(min_ratio,max_ratio);
+  sub_pad->SetLogy();
+  data_ratio->Draw("err");
+  for (unsigned int i = 0; i < mc_hists.size(); ++i){
+    mc_ratio[i]->GetYaxis()->SetRangeUser(min_ratio,max_ratio);
+    mc_ratio[i]->Draw("hist err same");
+  }
+
   std::string output_name = output_file_name + "_dxsec_d" + observable;
+  if (store_root)
+  {
+    TFile root_file((output_location + "/TotalXSec/" + output_name + ".root").c_str(), "recreate");
+    if (data)
+      data->Write();
+    for (unsigned int i = 0; i < mc_hists.size(); ++i)
+      mc_hists[i]->Write();
+    for (unsigned int i = 0; i < breakdown.size(); ++i)
+      breakdown[i]->Write();
+    c1->Write();
+  }
+  // Return to the canvas for further customization if needed
+  c1->cd();
+
 
   std::filesystem::path totalxsec_path{(output_location + "/TotalXSec/").c_str()};
   if (!std::filesystem::exists(totalxsec_path))
@@ -1049,19 +1089,9 @@ void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, std::vector<TH1D *> b
   }
   std::cout << " Total integrated cross section (mc) " << mc_integral << std::endl;
 
-  if (store_root)
-  {
-    TFile root_file((output_location + "/TotalXSec/" + output_name + ".root").c_str(), "recreate");
-    if (data)
-      data->Write();
-    for (unsigned int i = 0; i < mc_hists.size(); ++i)
-      mc_hists[i]->Write();
-    for (unsigned int i = 0; i < breakdown.size(); ++i)
-      breakdown[i]->Write();
-    c1->Write();
-  }
   c1->SaveAs((output_location + "/TotalXSec/" + output_name + ".pdf").c_str());
   delete c1;
+
 }
 
 void plotting::PlotEventRate(TH1D *data, TH1D *data_nosyst, std::string observable, std::string title, std::string data_name, std::string input_data_location,
@@ -1094,10 +1124,10 @@ void plotting::PlotEventRate(TH1D *data, TH1D *data_nosyst, std::string observab
     data->Draw(" err ");
   }
 
-  if (data_nosyst)
-  {
-    data_nosyst->Draw(" err same ");
-  }
+  // if (data_nosyst)
+  // {
+  //   //data_nosyst->Draw(" err same ");
+  // }
 
   double data_integral;
   if (data)

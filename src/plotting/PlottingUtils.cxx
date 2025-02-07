@@ -136,7 +136,41 @@ void plotting::NormalizeHist(TH1D *h, double normalization_factor)
     }
 }
 
+void plotting::NormalizeHist(TH2D *h, double normalization_factor)
+{
+  // Data normalization
+  h->Sumw2(kFALSE); // Disable error propagation if necessary
+  h->Scale(normalization_factor);
+
+  int NbinsX = h->GetNbinsX();
+  int NbinsY = h->GetNbinsY();
+
+  for (int i = 1; i <= NbinsX; i++) // Loop over X-axis bins
+  {
+    for (int j = 1; j <= NbinsY; j++) // Loop over Y-axis bins
+    {
+      double content = h->GetBinContent(i, j);
+      double error = h->GetBinError(i, j);
+      double width_x = h->GetXaxis()->GetBinWidth(i);
+      double width_y = h->GetYaxis()->GetBinWidth(j);
+
+      double newcontent = content / width_x ;/// width_y;
+      double newerror = error / width_x ;/// width_y;
+
+      h->SetBinContent(i, j, newcontent);
+      h->SetBinError(i, j, newerror);
+    }
+  }
+}
+
 void plotting::CorrectData(TH1D *h, TH1D *acc)
+{
+  double NBins = h->GetNbinsX();
+  h->Sumw2(kFALSE);
+  h->Multiply(acc);
+}
+
+void plotting::CorrectData(TH2D *h, TH2D *acc)
 {
   double NBins = h->GetNbinsX();
   h->Sumw2(kFALSE);
@@ -218,7 +252,7 @@ std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis)
     }
   else if (observable == "RecoQ2")
     {
-      x_axis = "Q^{2} [GeV]";
+      x_axis = "Q^{2} [GeV^{2}]";
       y_axis = "d#sigma/dQ^{2} #left[#mub GeV^{-1}#right]";
     }
   else if (observable == "Recoq3")
@@ -352,6 +386,12 @@ std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis)
   return y_axis;
 }
 
+std::string plotting::GetAxisLabel(std::string observable_x, std::string observable_y, unsigned int id_axis) {
+
+  return "Cross Section";
+}
+
+
 std::vector<double> plotting::GetUniformBinning(unsigned int nbins, double min, double max)
 {
 
@@ -393,11 +433,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   if (observable == "ECal")
     {
       if (EBeam == 1.161)
-	binning = plotting::GetECalBinning(22, 10, 0.6, 1.2, EBeam);
+	binning = plotting::GetECalBinning(13, 15, 0.7, EBeam + 0.15, EBeam);
       else if (EBeam == 2.261)
-	binning = plotting::GetECalBinning(20, 10, 1, EBeam + 0.06, EBeam);
+	binning = plotting::GetECalBinning(13, 15, 1, EBeam + 0.15, EBeam);
       else if (EBeam == 4.461)
-	binning = plotting::GetECalBinning(20, 10, 1.5, EBeam + 0.1, EBeam);
+	binning = plotting::GetECalBinning(13, 15, 1.5, EBeam + 0.15, EBeam);
     }
   else if (observable == "DiffECal")
     {
@@ -411,11 +451,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "pfl_theta")
     {
       if (EBeam == 1.161)
-	binning = plotting::GetUniformBinning(35, 20, 45);
+	binning = plotting::GetUniformBinning(25, 24, 45);
       else if (EBeam == 2.261)
-	binning = plotting::GetUniformBinning(35, 20, 45);
+	binning = plotting::GetUniformBinning(25, 24, 45);
       else if (EBeam == 4.461)
-	binning = plotting::GetUniformBinning(35, 15, 45);
+	binning = plotting::GetUniformBinning(25, 15, 45);
     }
   else if (observable == "pfl_phi")
     {
@@ -467,9 +507,9 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       if (EBeam == 1.161)
 	binning = plotting::GetUniformBinning(25, 0.15, 0.6);
       else if (EBeam == 2.261)
-	binning = plotting::GetUniformBinning(50, 0.15, 1.6);
+	binning = plotting::GetUniformBinning(25, 0.15, 1.6);
       else if (EBeam == 4.461)
-	binning = plotting::GetUniformBinning(35, 0.15, 1.6);
+	binning = plotting::GetUniformBinning(25, 0.15, 1.6);
     }
   else if (observable == "pim_theta")
     {
@@ -492,20 +532,20 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "pip_theta")
     {
       if (EBeam == 1.161)
-	binning = plotting::GetUniformBinning(35, 12, 180);
+	binning = plotting::GetUniformBinning(20, 12, 180);
       else if (EBeam == 2.261)
-	binning = plotting::GetUniformBinning(35, 12, 180);
+	binning = plotting::GetUniformBinning(20, 12, 180);
       else if (EBeam == 4.461)
-	binning = plotting::GetUniformBinning(35, 12, 180);
+	binning = plotting::GetUniformBinning(20, 12, 180);
     }
   else if (observable == "RecoW")
     {
       if (EBeam == 1.161)
-	binning = plotting::GetUniformBinning(35, 0.9, 1.5);
+	binning = plotting::GetUniformBinning(20, 1, 1.5);
       else if (EBeam == 2.261)
-	binning = plotting::GetUniformBinning(35, 1, 2);
+	binning = plotting::GetUniformBinning(20, 1, 2);
       else if (EBeam == 4.461)
-	binning = plotting::GetUniformBinning(35, 0.6, 2.6);
+	binning = plotting::GetUniformBinning(20, 1, 2.4);
     }
   else if (observable == "RecoXBJK")
     {
@@ -546,11 +586,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "HadDeltaPT" || observable == "DeltaPT")
     {
       if (EBeam == 1.161)
-	binning = plotting::GetUniformBinning(35, 0, 1);
+	binning = plotting::GetUniformBinning(30, 0, 1);
       else if (EBeam == 2.261)
-	binning = plotting::GetUniformBinning(35, 0, 1);
+	binning = plotting::GetUniformBinning(30, 0, 1);
       else if (EBeam == 4.461)
-	binning = plotting::GetUniformBinning(35, 0, 1);
+	binning = plotting::GetUniformBinning(30, 0, 1);
     }
   else if (observable == "HadDeltaPTx")
     {
@@ -591,11 +631,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "HadAlphaT")
     {
       if (EBeam == 1.161)
-	binning = plotting::GetUniformBinning(30, 0, 180);
+	binning = plotting::GetUniformBinning(25, 0, 180);
       else if (EBeam == 2.261)
-	binning = plotting::GetUniformBinning(30, 0, 180);
+	binning = plotting::GetUniformBinning(25, 0, 180);
       else if (EBeam == 4.461)
-	binning = plotting::GetUniformBinning(30, 0, 180);
+	binning = plotting::GetUniformBinning(25, 0, 180);
     }
   else if (observable == "RecoEnergyTransfer")
     {
@@ -627,11 +667,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "MissingAngle")
     {
       if (EBeam == 1.161)
-	binning = plotting::GetUniformBinning(35, 0, 180);
+	binning = plotting::GetUniformBinning(20, 0, 180);
       else if (EBeam == 2.261)
-	binning = plotting::GetUniformBinning(35, 0, 180);
+	binning = plotting::GetUniformBinning(20, 0, 180);
       else if (EBeam == 4.461)
-	binning = plotting::GetUniformBinning(35, 15, 180);
+	binning = plotting::GetUniformBinning(20, 15, 180);
     }
   else if (observable == "MissingMomentum")
     {
@@ -696,11 +736,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
 } else if (observable == "Angleqvshad")
     {
       if (EBeam == 1.161)
-	binning = plotting::GetUniformBinning(40, 0, 120);
+	binning = plotting::GetUniformBinning(25, 0, 120);
       else if (EBeam == 2.261)
-	binning = plotting::GetUniformBinning(40, 0, 120);
+	binning = plotting::GetUniformBinning(25, 0, 120);
       else if (EBeam == 4.461)
-	binning = plotting::GetUniformBinning(40, 0, 60);
+	binning = plotting::GetUniformBinning(25, 0, 60);
     }
   else if (observable == "HadDeltaPT" || observable == "DeltaPT")
     {
@@ -712,7 +752,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       if (observable == "ECal")
 	{
 	  if (EBeam == 1.161)
-	    binning = plotting::GetUniformBinning(30, 20, 180);
+	    binning = plotting::GetUniformBinning(20, 20, 180);
 	  else if (EBeam == 2.261)
 	    binning = plotting::GetUniformBinning(20, 20, 180);
 	  else if (EBeam == 4.461)
@@ -730,54 +770,54 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       else if (observable == "Angleqvshad")
 	{
 	  if (EBeam == 1.161)
-	    binning = plotting::GetUniformBinning(40, 0, 70);
+	    binning = plotting::GetUniformBinning(20, 0, 70);
 	  else if (EBeam == 2.261)
-	    binning = plotting::GetUniformBinning(40, 0, 50);
+	    binning = plotting::GetUniformBinning(20, 0, 50);
 	  else if (EBeam == 4.461)
-	    binning = plotting::GetUniformBinning(40, 0, 30);
+	    binning = plotting::GetUniformBinning(20, 0, 30);
 	}
       else if (observable == "RecoEvPion")
 	{
 	  if (EBeam == 1.161)
-	    binning = plotting::GetUniformBinning(50, 0, 2);
+	    binning = plotting::GetUniformBinning(20, 0, 2);
 	  else if (EBeam == 2.261)
-	    binning = plotting::GetUniformBinning(50, 0.5, 3.5);
+	    binning = plotting::GetUniformBinning(20, 0.5, 3.5);
 	  else if (EBeam == 4.461)
-	    binning = plotting::GetUniformBinning(50, 2, 6);
+	    binning = plotting::GetUniformBinning(20, 2, 6);
 	}
       else if (observable == "RecoWPion")
 	{
 	  if (EBeam == 1.161)
-	    binning = plotting::GetUniformBinning(50, 0.5, 2);
+	    binning = plotting::GetUniformBinning(20, 0.5, 2);
 	  else if (EBeam == 2.261)
-	    binning = plotting::GetUniformBinning(50, 0.5, 3);
+	    binning = plotting::GetUniformBinning(20, 0.5, 3);
 	  else if (EBeam == 4.461)
-	    binning = plotting::GetUniformBinning(50, 0.5, 3.5);
+	    binning = plotting::GetUniformBinning(20, 0.5, 3.5);
 	}
       else if (observable == "ElectronPT")
 	{
 	  if (EBeam == 1.161)
-	    binning = plotting::GetUniformBinning(50, 0.2, 0.7);
+	    binning = plotting::GetUniformBinning(20, 0.2, 0.7);
 	  else if (EBeam == 2.261)
-	    binning = plotting::GetUniformBinning(50, 0, 1);
+	    binning = plotting::GetUniformBinning(20, 0, 1);
 	  else if (EBeam == 4.461)
-	    binning = plotting::GetUniformBinning(50, 0, 1);
+	    binning = plotting::GetUniformBinning(20, 0, 1);
 	}
       else if (observable == "PionPT")
 	{
 	  if (EBeam == 1.161)
-	    binning = plotting::GetUniformBinning(50, 0, 0.5);
+	    binning = plotting::GetUniformBinning(20, 0, 0.5);
 	  else if (EBeam == 2.261)
-	    binning = plotting::GetUniformBinning(50, 0, 1);
+	    binning = plotting::GetUniformBinning(20, 0, 1);
 	  else if (EBeam == 4.461)
-	    binning = plotting::GetUniformBinning(50, 0, 1);
+	    binning = plotting::GetUniformBinning(20, 0, 1);
 	}
       else if (observable == "Angleqvshad")
 	{
 	  if (EBeam == 1.161)
-	    binning = plotting::GetUniformBinning(30, 0, 120);
+	    binning = plotting::GetUniformBinning(20, 0, 120);
 	  else if (EBeam == 2.261)
-	    binning = plotting::GetUniformBinning(30, 0, 120);
+	    binning = plotting::GetUniformBinning(20, 0, 120);
 	  else if (EBeam == 4.461)
 	    binning = plotting::GetUniformBinning(20, 0, 60);
 	}
@@ -795,11 +835,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       if (observable == "ECal")
 	{
 	  if (EBeam == 1.161)
-	    binning = plotting::GetECalBinning(15, 10, 0.8, 1.2, EBeam);
+	    binning = plotting::GetECalBinning(15, 10, 0.8, EBeam + 0.2, EBeam);
 	  else if (EBeam == 2.261)
-	    binning = plotting::GetECalBinning(15, 10, 1.2, EBeam + 0.06, EBeam);
+	    binning = plotting::GetECalBinning(15, 10, 1.2, EBeam + 0.2, EBeam);
 	  else if (EBeam == 4.461)
-	    binning = plotting::GetECalBinning(15, 10, 2, EBeam + 0.1, EBeam);
+	    binning = plotting::GetECalBinning(15, 10, 2, EBeam + 0.2, EBeam);
 	}
       else if (observable == "proton_mom")
 	{
@@ -810,14 +850,23 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
 	  else if (EBeam == 4.461)
 	    binning = plotting::GetUniformBinning(30, 0.3, 3);
 	}
+  else if (observable == "HadDeltaPT" || observable == "DeltaPT")
+    {
+      if (EBeam == 1.161)
+  binning = plotting::GetUniformBinning(25, 0, 1);
+      else if (EBeam == 2.261)
+  binning = plotting::GetUniformBinning(25, 0, 1);
+      else if (EBeam == 4.461)
+  binning = plotting::GetUniformBinning(25, 0, 1);
+    }
       else if (observable == "pip_mom")
 	{
 	  if (EBeam == 1.161)
-	    binning = plotting::GetUniformBinning(20, 0.15, 0.6);
+	    binning = plotting::GetUniformBinning(25, 0.2, 0.6);
 	  else if (EBeam == 2.261)
-	    binning = plotting::GetUniformBinning(35, 0.3, 1.2);
+	    binning = plotting::GetUniformBinning(25, 0.3, 1.2);
 	  else if (EBeam == 4.461)
-	    binning = plotting::GetUniformBinning(35, 0.3, 2.2);
+	    binning = plotting::GetUniformBinning(25, 0.3, 2.2);
 	}
       else if (observable == "pip_theta")
 	{
@@ -828,19 +877,14 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
 	  else if (EBeam == 4.461)
 	    binning = plotting::GetUniformBinning(30, 12, 130);
 	}
-      else if (observable == "HadDeltaPT" || observable == "DeltaPT")
-	{
-	  if (EBeam == 1.161)
-	    binning = plotting::GetUniformBinning(20, 0, 0.8);
-	}
       else if (observable == "MissingEnergy")
 	{
 	  if (EBeam == 1.161)
-	    binning = plotting::GetUniformBinning(40, 0.5, 1);
+	    binning = plotting::GetUniformBinning(25, 0.5, 1);
 	  else if (EBeam == 2.261)
-	    binning = plotting::GetUniformBinning(40, 0, 1);
+	    binning = plotting::GetUniformBinning(25, 0, 1);
 	  else if (EBeam == 4.461)
-	    binning = plotting::GetUniformBinning(40, 0, 1);
+	    binning = plotting::GetUniformBinning(25, 0, 1);
 	}
       else if (observable == "MissingAngle")
 	{
@@ -908,20 +952,20 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       else if (observable == "Angleqvshad")
 	{
 	  if (EBeam == 1.161)
-	    binning = plotting::GetUniformBinning(30, 0, 120);
+	    binning = plotting::GetUniformBinning(25, 0, 120);
 	  else if (EBeam == 2.261)
-	    binning = plotting::GetUniformBinning(30, 0, 120);
+	    binning = plotting::GetUniformBinning(25, 0, 120);
 	  else if (EBeam == 4.461)
-	    binning = plotting::GetUniformBinning(20, 0, 60);
+	    binning = plotting::GetUniformBinning(25, 0, 60);
 	}
       else if (observable == "RecoW")
 	{
 	  if (EBeam == 1.161)
 	    binning = plotting::GetUniformBinning(25, 1.1, 1.45);
 	  else if (EBeam == 2.261)
-	    binning = plotting::GetUniformBinning(35, 1, 1.9);
+	    binning = plotting::GetUniformBinning(25, 1, 1.9);
 	  else if (EBeam == 4.461)
-	    binning = plotting::GetUniformBinning(35, 1.2, 2.3);
+	    binning = plotting::GetUniformBinning(25, 1.2, 2.3);
 	}
     }
   else if (analysis_key == "1pim")
@@ -929,11 +973,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       if (observable == "ECal")
 	{
 	  if (EBeam == 1.161)
-	    binning = plotting::GetECalBinning(20, 10, 0.6, 1.2, EBeam);
+	    binning = plotting::GetECalBinning(20, 10, 0.6, EBeam + 0.2, EBeam);
 	  else if (EBeam == 2.261)
-	    binning = plotting::GetECalBinning(20, 10, 0.6, EBeam + 0.06, EBeam);
+	    binning = plotting::GetECalBinning(20, 10, 0.6, EBeam + 0.2, EBeam);
 	  else if (EBeam == 4.461)
-	    binning = plotting::GetECalBinning(15, 10, 1.2, EBeam + 0.1, EBeam);
+	    binning = plotting::GetECalBinning(15, 10, 1.2, EBeam + 0.2, EBeam);
 	}
       if (observable == "RecoEvPion")
 	{
@@ -991,11 +1035,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     if (observable == "ECal")
       {
 	if (EBeam == 1.161)
-	  binning = plotting::GetECalBinning(15, 10, 0.6, 1.2, EBeam);
+	  binning = plotting::GetECalBinning(15, 10, 0.6, EBeam + 0.2, EBeam);
 	else if (EBeam == 2.261)
-	  binning = plotting::GetECalBinning(15, 10, 1, EBeam + 0.06, EBeam);
+	  binning = plotting::GetECalBinning(15, 10, 1, EBeam + 0.2, EBeam);
 	else if (EBeam == 4.461)
-	  binning = plotting::GetECalBinning(15, 10, 1, EBeam + 0.1, EBeam);
+	  binning = plotting::GetECalBinning(15, 10, 1, EBeam + 0.2, EBeam);
       }
     else if (observable == "pip_mom")
       {
@@ -1128,16 +1172,28 @@ std::string plotting::GetUnit(std::string observable)
 double plotting::GetMaximum(std::vector<TH1D *> predictions)
 {
   double max = 0;
-  for (unsigned int i = 0; i < predictions.size(); ++i)
-    {
-      // if ( max < predictions[i] -> GetMaximum() ) max = predictions[i] -> GetMaximum();
-      for (unsigned int j = 0; j < predictions[i]->GetNbinsX(); ++j)
-	{
-	  if (max < predictions[i]->GetBinContent(j))
-	    max = predictions[i]->GetBinContent(j);
-	}
+  for (unsigned int i = 0; i < predictions.size(); ++i) {
+      for (int j = 1; j <= predictions[i]->GetNbinsX(); ++j) { // Note the range: 1 to GetNbinsX()
+          if (max < predictions[i]->GetBinContent(j)) max = predictions[i]->GetBinContent(j);
+      }
+  }
+  return max * (1 + 0.05); // Add a 5% buffer to the maximum
+}
+
+double plotting::GetMaximum(std::vector<TH2D *> predictions)
+{
+    double max = 0;
+    for (unsigned int i = 0; i < predictions.size(); ++i) {
+        int nBinsX = predictions[i]->GetNbinsX();
+        int nBinsY = predictions[i]->GetNbinsY();
+        for (int xBin = 1; xBin <= nBinsX; ++xBin) { // Loop over X bins (1-based index)
+            for (int yBin = 1; yBin <= nBinsY; ++yBin) { // Loop over Y bins (1-based index)
+                double binContent = predictions[i]->GetBinContent(xBin, yBin);
+                if (max < binContent) max = binContent;
+            }
+        }
     }
-  return max * (1 + 0.12);
+    return max * (1 + 0.05); // Add a 5% buffer to the maximum
 }
 
 double plotting::GetMinimum(std::vector<TH1D *> predictions)
@@ -1154,7 +1210,7 @@ double plotting::GetMinimum(std::vector<TH1D *> predictions)
   return min * (1 - 0.12);
 }
 
-void plotting::StandardFormat(TH1D *prediction, std::string title, int color, int style, std::string observable, double y_max, std::string y_axis_label)
+void plotting::StandardFormat(TH1D *prediction, std::string title, int color, int style, std::string observable, bool is_log, double y_max, std::string y_axis_label )
 {
   gStyle->SetFrameBorderMode(0);
   gStyle->SetCanvasBorderMode(0);
@@ -1202,12 +1258,14 @@ void plotting::StandardFormat(TH1D *prediction, std::string title, int color, in
 	}
       // y_max = (prediction -> GetMaximum()) * ( 1+0.2 );
       y_max = max * (1 + 0.2);
-    }
+  }
+
+  if( y_max == 0 ) y_max = 100; // for empty plots.
 
   int FontStyle = 132;
   prediction->GetXaxis()->SetTitleOffset(1);
   prediction->GetXaxis()->SetLabelSize(0.05);
-  prediction->GetXaxis()->SetTitleSize(0.05);
+  prediction->GetXaxis()->SetTitleSize(0.08);
   prediction->GetXaxis()->SetNdivisions(6);
   prediction->GetXaxis()->SetLabelFont(FontStyle);
   prediction->GetXaxis()->SetTitleFont(FontStyle);
@@ -1219,8 +1277,84 @@ void plotting::StandardFormat(TH1D *prediction, std::string title, int color, in
   prediction->GetYaxis()->SetLabelFont(43);
   prediction->GetYaxis()->SetLabelFont(FontStyle);
   prediction->GetYaxis()->SetTitleFont(FontStyle);
-  prediction->GetYaxis()->SetRangeUser(1./1E6, y_max);
+  if( is_log ) prediction->GetYaxis()->SetRangeUser(1./1E4, y_max);
+  else prediction->GetYaxis()->SetRangeUser(0, y_max);
   prediction->GetYaxis()->SetMaxDigits(3);
+  prediction->SetTitleFont(FontStyle);
+
+  return;
+}
+
+void plotting::StandardFormat(TH2D *prediction, std::string title, int color, int style, std::string observable_x, std::string observable_y, double z_max, std::string z_axis_label)
+{
+  gStyle->SetFrameBorderMode(0);
+  gStyle->SetCanvasBorderMode(0);
+  gStyle->SetPadBorderMode(0);
+  gStyle->SetPadColor(0);
+  gStyle->SetCanvasColor(0);
+  gStyle->SetStatColor(0);
+  gStyle->SetFillColor(0);
+  gStyle->SetLegendBorderSize(1);
+  gStyle->SetPaperSize(20, 26);
+  gStyle->SetTitleFont(132, "pad");
+  gStyle->SetMarkerStyle(20);
+  gStyle->SetLineStyleString(2, "[12 12]");
+  gStyle->SetOptStat(0);
+  gStyle->SetOptFit(0);
+  gStyle->SetPadTickX(1);
+  gStyle->SetPadTickY(1);
+
+  prediction->SetLineColor(color);
+  prediction->SetLineStyle(style);
+  prediction->SetMarkerStyle(style);
+  prediction->SetMarkerColor(color);
+  prediction->SetLineWidth(2);
+
+  prediction->SetTitle(title.c_str());
+  // prediction -> SetTitleFont(13);
+  prediction->GetXaxis()->SetTitle(GetAxisLabel(observable_x, 0).c_str());
+  prediction->GetYaxis()->SetTitle(GetAxisLabel(observable_y, 0).c_str());
+
+  if (z_max == 0)
+    {
+      double max = -999;
+      for (unsigned int k = 0; k < prediction->GetNbinsX(); ++k)
+      {
+        if (prediction->GetBinContent(k) > max)
+        max = prediction->GetBinContent(k);
+      }
+      // y_max = (prediction -> GetMaximum()) * ( 1+0.2 );
+      z_max = max * (1 + 0.2);
+    }
+
+  if (z_axis_label == "")
+    prediction->GetZaxis()->SetTitle(GetAxisLabel(observable_x,observable_y, 1).c_str());
+  else
+    prediction->GetZaxis()->SetTitle(z_axis_label.c_str());
+
+  prediction->GetXaxis()->CenterTitle();
+  prediction->GetYaxis()->CenterTitle();
+  prediction->GetZaxis()->CenterTitle();
+
+  prediction->BufferEmpty(-1);
+
+  int FontStyle = 132;
+  prediction->GetXaxis()->SetTitleOffset(1);
+  prediction->GetXaxis()->SetLabelSize(0.05);
+  prediction->GetXaxis()->SetTitleSize(0.05);
+  prediction->GetXaxis()->SetNdivisions(6);
+  prediction->GetXaxis()->SetLabelFont(FontStyle);
+  prediction->GetXaxis()->SetTitleFont(FontStyle);
+
+  prediction->GetYaxis()->SetNdivisions(8);
+  prediction->GetYaxis()->SetTitleOffset(0.9);
+  prediction->GetYaxis()->SetLabelSize(0.05);
+  prediction->GetYaxis()->SetTitleSize(0.05);
+  prediction->GetYaxis()->SetLabelFont(43);
+  prediction->GetYaxis()->SetLabelFont(FontStyle);
+  prediction->GetYaxis()->SetTitleFont(FontStyle);
+  // prediction->GetZaxis()->SetRangeUser(1./1E6, z_max);
+  prediction->GetZaxis()->SetMaxDigits(3);
   prediction->SetTitleFont(FontStyle);
 
   return;

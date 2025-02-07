@@ -7,6 +7,7 @@
 #include "TFile.h"
 #include "TStyle.h"
 #include "TH1.h"
+#include "TH2D.h"
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TTree.h"
@@ -32,8 +33,11 @@ namespace e4nu {
     int ColorBlindPalette(int color_id ) ;
     double GetObservable( const std::string observable ) ;
     void NormalizeHist( TH1D * h, double normalization_factor );
+    void NormalizeHist( TH2D * h, double normalization_factor );
     void CorrectData(TH1D* h, TH1D* acc);
+    void CorrectData(TH2D* h, TH2D* acc);
     std::string GetAxisLabel( std::string observable, unsigned int id_axis );
+    std::string GetAxisLabel(std::string observable_x, std::string observable_y, unsigned int id_axis);
     std::vector<double> GetUniformBinning( unsigned int nbins, double min, double max);
     std::vector<double> GetECalBinning( unsigned int nbins_tail, unsigned int nbins_peak, double min, double max, double EBeam);
     std::vector<double> GetBinning( std::string observable, double EBeam, std::string analysis_key="default" );
@@ -42,9 +46,11 @@ namespace e4nu {
     std::string GetObsName( std::string observable );
     std::string GetUnit( std::string observable );
     double GetMaximum( std::vector<TH1D*> predictions );
+    double GetMaximum( std::vector<TH2D*> predictions );
     double GetMinimum( std::vector<TH1D*> predictions );
     bool PlotZoomIn(std::string analysis_id="default");
-    void StandardFormat( TH1D * prediction, std::string title, int color, int style, std::string observable, double y_max = 0, std::string y_axis_label ="");
+    void StandardFormat( TH1D * prediction, std::string title, int color, int style, std::string observable, bool is_log = false, double y_max = 0, std::string y_axis_label ="" );
+    void StandardFormat( TH2D * prediction, std::string title, int color, int style, std::string observable_x, std::string observable_y, double z_max = 0, std::string z_axis_label ="");
     std::vector<std::string> SplitString(std::string s, char d=',' ) ;
     std::string GetArg(std::string op, int argc, char ** argv );
     bool ExistArg(std::string op, int argc, char ** argv );

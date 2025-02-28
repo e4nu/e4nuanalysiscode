@@ -262,8 +262,6 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     ratio->Add(ratios[i]);
   }
   ratio->Scale(1. / mc_files.size());
-  // Cloning the acceptance so we will remove the uncertanty from it
-  TH1D *ratio_nosyst = (TH1D *)ratio->Clone();
 
   // We want to store the ratio before smoothing to account for this as an error
   TH1D *ratio_aSmooth = (TH1D *)ratio->Clone();
@@ -294,16 +292,11 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
 
     // Adding all errors together
     ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
-    ratio_nosyst->SetBinError(i,0);
   }
   StandardFormat(ratio, title, kBlack, 1, observable);
   ratio->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
   ratio->GetYaxis()->SetTitle("Acceptance correction");
 
-  StandardFormat(ratio_nosyst, title, kBlack, 1, observable);
-  ratio_nosyst->SetName("Acceptance_NoSyst");
-  ratio_nosyst->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
-  ratio_nosyst->GetYaxis()->SetTitle("Acceptance correction No Systematics");
 
   TH1D *ratio_0 = (TH1D *)ratios_0[0]->Clone();
   ratio_0->SetName("Acceptance_0");
@@ -316,7 +309,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_0->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_0->GetNbinsX(); ++i)
+  for (unsigned int i = 1; i < ratio_0->GetNbinsX()+1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -348,7 +341,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_1->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_1->GetNbinsX(); ++i)
+  for (unsigned int i = 1; i < ratio_1->GetNbinsX()+1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -380,7 +373,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_2->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_2->GetNbinsX(); ++i)
+  for (unsigned int i = 1; i < ratio_2->GetNbinsX()+1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -394,7 +387,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
       if (ratios_2[j]->GetBinContent(i) < bin_cont_min)
         bin_cont_min = ratios_2[j]->GetBinContent(i);
     }
-    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12. + pow(ratio_2->GetBinError(i), 2);
+    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12. ;
     ratio_2->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
   }
   StandardFormat(ratio_2, title, kViolet + 5, 1, observable);
@@ -412,7 +405,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_3->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_3->GetNbinsX(); ++i)
+  for (unsigned int i = 1; i < ratio_3->GetNbinsX()+1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -444,7 +437,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_4->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_4->GetNbinsX(); ++i)
+  for (unsigned int i = 1; i < ratio_4->GetNbinsX()+1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -475,7 +468,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   TH1D *ratio_aSmooth_5 = (TH1D *)ratio_5->Clone();
   ratio_aSmooth_5->Smooth(3);
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_5->GetNbinsX(); ++i)
+  for (unsigned int i = 1; i < ratio_5->GetNbinsX()+1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -535,7 +528,6 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
 
   // Store total contribution (averaged)
   ratio->Write();
-  ratio_nosyst->Write();
   ratio_0->Write();
   ratio_1->Write();
   ratio_2->Write();
@@ -917,49 +909,35 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
     ratio->Add(ratios[i]);
   }
   ratio->Scale(1. / mc_files.size());
-  // Cloning the acceptance so we will remove the uncertanty from it
-  TH2D *ratio_nosyst = (TH2D *)ratio->Clone();
 
   // We want to store the ratio before smoothing to account for this as an error
   TH2D *ratio_aSmooth = (TH2D *)ratio->Clone();
   ratio_aSmooth->Smooth(1);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 1; i < ratio->GetNbinsX() + 1; ++i)
-  {
-    double bin_cont_max = 0;
-    double bin_cont_min = 999;
+  for (int i = 1; i <= ratio->GetNbinsX(); ++i) {
+    for (int j = 1; j <= ratio->GetNbinsY(); ++j) {
+        double bin_cont_max = 0;
+        double bin_cont_min = 999;
+        double error_smoothing_2 = pow(ratio->GetBinContent(i, j) - ratio_aSmooth->GetBinContent(i, j), 2) / 12.;
+        double error_stat_2 = pow(ratio->GetBinError(i, j), 2);
+        double error_model_2 = 0;
 
-    double error_smoothing_2 = pow(ratio->GetBinContent(i) - ratio_aSmooth->GetBinContent(i), 2) / 2.;
-    double error_stat_2 = pow(ratio->GetBinError(i), 2);
-    double error_model_2 = 0;
-    for (unsigned int j = 0; j < mc_files.size(); ++j)
-     {
-       if (ratios[j]->GetBinContent(i) > bin_cont_max) {
-          bin_cont_max = ratios[j]->GetBinContent(i);
-       }
-       if (ratios[j]->GetBinContent(i) < bin_cont_min)
-        {
-          bin_cont_min = ratios[j]->GetBinContent(i);
+        for (unsigned int k = 0; k < mc_files.size(); ++k) {
+            if (ratios[k]->GetBinContent(i, j) > bin_cont_max)
+                bin_cont_max = ratios[k]->GetBinContent(i, j);
+            if (ratios[k]->GetBinContent(i, j) < bin_cont_min)
+                bin_cont_min = ratios[k]->GetBinContent(i, j);
         }
-      }
-    // Compute the error assuming a uniform distribution
-    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
 
-    // Adding all errors together
-    ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
-    ratio_nosyst->SetBinError(i,0);
+        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+        ratio->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+    }
   }
   // StandardFormat(ratio, title, kBlack, 1, observable);
   ratio->GetXaxis()->SetTitle(GetAxisLabel(x_observable, 0).c_str());
   ratio->GetYaxis()->SetTitle(GetAxisLabel(y_observable, 0).c_str());
   ratio->GetZaxis()->SetTitle("Acceptance correction");
-
-  // StandardFormat(ratio_nosyst, title, kBlack, 1, observable);
-  ratio_nosyst->SetName("Acceptance_NoSyst");
-  ratio_nosyst->GetXaxis()->SetTitle(GetAxisLabel(x_observable, 0).c_str());
-  ratio_nosyst->GetYaxis()->SetTitle(GetAxisLabel(y_observable, 0).c_str());
-  ratio_nosyst->GetZaxis()->SetTitle("Acceptance correction No Systematics");
 
   TH2D *ratio_0 = (TH2D *)ratios_0[0]->Clone();
   ratio_0->SetName("Acceptance_0");
@@ -972,21 +950,24 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_0->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_0->GetNbinsX(); ++i)
-  {
-    double bin_cont_max = 0;
-    double bin_cont_min = 999;
-    double error_smoothing_2 = pow(ratio_0->GetBinContent(i) - ratio_aSmooth_0->GetBinContent(i), 2) / 12.;
-    double error_stat_2 = pow(ratio_0->GetBinError(i), 2);
-    double error_model_2 = 0;
-    for (unsigned int j = 0; j < mc_files.size(); ++j) {
-      if (ratios_0[j]->GetBinContent(i) > bin_cont_max)
-        bin_cont_max = ratios_0[j]->GetBinContent(i);
-      if (ratios_0[j]->GetBinContent(i) < bin_cont_min)
-        bin_cont_min = ratios_0[j]->GetBinContent(i);
+  for (int i = 1; i <= ratio_0->GetNbinsX(); ++i) {
+    for (int j = 1; j <= ratio_0->GetNbinsY(); ++j) {
+        double bin_cont_max = 0;
+        double bin_cont_min = 999;
+        double error_smoothing_2 = pow(ratio_0->GetBinContent(i, j) - ratio_aSmooth_0->GetBinContent(i, j), 2) / 12.;
+        double error_stat_2 = pow(ratio_0->GetBinError(i, j), 2);
+        double error_model_2 = 0;
+
+        for (unsigned int k = 0; k < mc_files.size(); ++k) {
+            if (ratios_0[k]->GetBinContent(i, j) > bin_cont_max)
+                bin_cont_max = ratios_0[k]->GetBinContent(i, j);
+            if (ratios_0[k]->GetBinContent(i, j) < bin_cont_min)
+                bin_cont_min = ratios_0[k]->GetBinContent(i, j);
+        }
+
+        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+        ratio_0->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
-    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-    ratio_0->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
   }
   StandardFormat(ratio_0, title, kOrange + 1, 1, x_observable, y_observable);
   ratio_0->GetXaxis()->SetTitle(GetAxisLabel(x_observable, 0).c_str());
@@ -1004,22 +985,24 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_1->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_1->GetNbinsX(); ++i)
-  {
-    double bin_cont_max = 0;
-    double bin_cont_min = 999;
-    double error_smoothing_2 = pow(ratio_1->GetBinContent(i) - ratio_aSmooth_1->GetBinContent(i), 2) / 12.;
-    double error_stat_2 = pow(ratio_1->GetBinError(i), 2);
-    double error_model_2 = 0;
-    for (unsigned int j = 0; j < mc_files.size(); ++j)
-    {
-      if (ratios_1[j]->GetBinContent(i) > bin_cont_max)
-        bin_cont_max = ratios_1[j]->GetBinContent(i);
-      if (ratios_1[j]->GetBinContent(i) < bin_cont_min)
-        bin_cont_min = ratios_1[j]->GetBinContent(i);
+  for (int i = 1; i <= ratio_1->GetNbinsX(); ++i) {
+    for (int j = 1; j <= ratio_1->GetNbinsY(); ++j) {
+        double bin_cont_max = 0;
+        double bin_cont_min = 999;
+        double error_smoothing_2 = pow(ratio_1->GetBinContent(i, j) - ratio_aSmooth_1->GetBinContent(i, j), 2) / 12.;
+        double error_stat_2 = pow(ratio_1->GetBinError(i, j), 2);
+        double error_model_2 = 0;
+
+        for (unsigned int k = 0; k < mc_files.size(); ++k) {
+            if (ratios_1[k]->GetBinContent(i, j) > bin_cont_max)
+                bin_cont_max = ratios_1[k]->GetBinContent(i, j);
+            if (ratios_1[k]->GetBinContent(i, j) < bin_cont_min)
+                bin_cont_min = ratios_1[k]->GetBinContent(i, j);
+        }
+
+        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+        ratio_1->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
-    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-    ratio_1->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
   }
   StandardFormat(ratio_1, title, kPink + 4, 1, x_observable, y_observable);
   ratio_1->GetXaxis()->SetTitle(GetAxisLabel(x_observable, 0).c_str());
@@ -1037,22 +1020,24 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_2->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_2->GetNbinsX(); ++i)
-  {
-    double bin_cont_max = 0;
-    double bin_cont_min = 999;
-    double error_smoothing_2 = pow(ratio_2->GetBinContent(i) - ratio_aSmooth_2->GetBinContent(i), 2) / 12.;
-    double error_stat_2 = pow(ratio_2->GetBinError(i), 2);
-    double error_model_2 = 0;
-    for (unsigned int j = 0; j < mc_files.size(); ++j)
-    {
-      if (ratios_2[j]->GetBinContent(i) > bin_cont_max)
-        bin_cont_max = ratios_2[j]->GetBinContent(i);
-      if (ratios_2[j]->GetBinContent(i) < bin_cont_min)
-        bin_cont_min = ratios_2[j]->GetBinContent(i);
+  for (int i = 1; i <= ratio_2->GetNbinsX(); ++i) {
+    for (int j = 1; j <= ratio_2->GetNbinsY(); ++j) {
+        double bin_cont_max = 0;
+        double bin_cont_min = 999;
+        double error_smoothing_2 = pow(ratio_2->GetBinContent(i, j) - ratio_aSmooth_2->GetBinContent(i, j), 2) / 12.;
+        double error_stat_2 = pow(ratio_2->GetBinError(i, j), 2);
+        double error_model_2 = 0;
+
+        for (unsigned int k = 0; k < mc_files.size(); ++k) {
+            if (ratios_2[k]->GetBinContent(i, j) > bin_cont_max)
+                bin_cont_max = ratios_2[k]->GetBinContent(i, j);
+            if (ratios_2[k]->GetBinContent(i, j) < bin_cont_min)
+                bin_cont_min = ratios_2[k]->GetBinContent(i, j);
+        }
+
+        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+        ratio_2->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
-    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12. + pow(ratio_2->GetBinError(i), 2);
-    ratio_2->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
   }
   StandardFormat(ratio_2, title, kViolet + 5, 1, x_observable, y_observable);
   ratio_2->GetXaxis()->SetTitle(GetAxisLabel(x_observable, 0).c_str());
@@ -1070,22 +1055,24 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_3->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_3->GetNbinsX(); ++i)
-  {
-    double bin_cont_max = 0;
-    double bin_cont_min = 999;
-    double error_smoothing_2 = pow(ratio_3->GetBinContent(i) - ratio_aSmooth_3->GetBinContent(i), 2) / 12.;
-    double error_stat_2 = pow(ratio_3->GetBinError(i), 2);
-    double error_model_2 = 0;
-    for (unsigned int j = 0; j < mc_files.size(); ++j)
-    {
-      if (ratios_3[j]->GetBinContent(i) > bin_cont_max)
-        bin_cont_max = ratios_3[j]->GetBinContent(i);
-      if (ratios_3[j]->GetBinContent(i) < bin_cont_min)
-        bin_cont_min = ratios_3[j]->GetBinContent(i);
+  for (int i = 1; i <= ratio_3->GetNbinsX(); ++i) {
+    for (int j = 1; j <= ratio_3->GetNbinsY(); ++j) {
+        double bin_cont_max = 0;
+        double bin_cont_min = 999;
+        double error_smoothing_2 = pow(ratio_3->GetBinContent(i, j) - ratio_aSmooth_3->GetBinContent(i, j), 2) / 12.;
+        double error_stat_2 = pow(ratio_3->GetBinError(i, j), 2);
+        double error_model_2 = 0;
+
+        for (unsigned int k = 0; k < mc_files.size(); ++k) {
+            if (ratios_3[k]->GetBinContent(i, j) > bin_cont_max)
+                bin_cont_max = ratios_3[k]->GetBinContent(i, j);
+            if (ratios_3[k]->GetBinContent(i, j) < bin_cont_min)
+                bin_cont_min = ratios_3[k]->GetBinContent(i, j);
+        }
+
+        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+        ratio_3->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
-    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-    ratio_3->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
   }
   StandardFormat(ratio_3, title, kAzure - 5, 1, x_observable, y_observable);
   ratio_3->GetXaxis()->SetTitle(GetAxisLabel(x_observable, 0).c_str());
@@ -1103,22 +1090,24 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_4->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_4->GetNbinsX(); ++i)
-  {
-    double bin_cont_max = 0;
-    double bin_cont_min = 999;
-    double error_smoothing_2 = pow(ratio_4->GetBinContent(i) - ratio_aSmooth_4->GetBinContent(i), 2) / 12.;
-    double error_stat_2 = pow(ratio_4->GetBinError(i), 2);
-    double error_model_2 = 0;
-    for (unsigned int j = 0; j < mc_files.size(); ++j)
-    {
-      if (ratios_4[j]->GetBinContent(i) > bin_cont_max)
-        bin_cont_max = ratios_4[j]->GetBinContent(i);
-      if (ratios_4[j]->GetBinContent(i) < bin_cont_min)
-        bin_cont_min = ratios_4[j]->GetBinContent(i);
+  for (int i = 1; i <= ratio_4->GetNbinsX(); ++i) {
+    for (int j = 1; j <= ratio_4->GetNbinsY(); ++j) {
+        double bin_cont_max = 0;
+        double bin_cont_min = 999;
+        double error_smoothing_2 = pow(ratio_4->GetBinContent(i, j) - ratio_aSmooth_4->GetBinContent(i, j), 2) / 12.;
+        double error_stat_2 = pow(ratio_4->GetBinError(i, j), 2);
+        double error_model_2 = 0;
+
+        for (unsigned int k = 0; k < mc_files.size(); ++k) {
+            if (ratios_4[k]->GetBinContent(i, j) > bin_cont_max)
+                bin_cont_max = ratios_4[k]->GetBinContent(i, j);
+            if (ratios_4[k]->GetBinContent(i, j) < bin_cont_min)
+                bin_cont_min = ratios_4[k]->GetBinContent(i, j);
+        }
+
+        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+        ratio_4->SetBinError(i, j, 1E30); // sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
-    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-    ratio_4->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
   }
   StandardFormat(ratio_4, title, kTeal - 7, 1, x_observable,y_observable);
   ratio_4->GetXaxis()->SetTitle(GetAxisLabel(x_observable, 0).c_str());
@@ -1135,22 +1124,24 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   TH2D *ratio_aSmooth_5 = (TH2D *)ratio_5->Clone();
   ratio_aSmooth_5->Smooth(3);
   // Compute Acceptance error from model variation
-  for (unsigned int i = 0; i < ratio_5->GetNbinsX(); ++i)
-  {
-    double bin_cont_max = 0;
-    double bin_cont_min = 999;
-    double error_smoothing_2 = pow(ratio_5->GetBinContent(i) - ratio_aSmooth_5->GetBinContent(i), 2) / 12.;
-    double error_stat_2 = pow(ratio_5->GetBinError(i), 2);
-    double error_model_2 = 0;
-    for (unsigned int j = 0; j < mc_files.size(); ++j)
-    {
-      if (ratios_5[j]->GetBinContent(i) > bin_cont_max)
-        bin_cont_max = ratios_5[j]->GetBinContent(i);
-      if (ratios_5[j]->GetBinContent(i) < bin_cont_min)
-        bin_cont_min = ratios_5[j]->GetBinContent(i);
+  for (int i = 1; i <= ratio_5->GetNbinsX(); ++i) {
+    for (int j = 1; j <= ratio_5->GetNbinsY(); ++j) {
+        double bin_cont_max = 0;
+        double bin_cont_min = 999;
+        double error_smoothing_2 = pow(ratio_5->GetBinContent(i, j) - ratio_aSmooth_5->GetBinContent(i, j), 2) / 12.;
+        double error_stat_2 = pow(ratio_0->GetBinError(i, j), 2);
+        double error_model_2 = 0;
+
+        for (unsigned int k = 0; k < mc_files.size(); ++k) {
+            if (ratios_5[k]->GetBinContent(i, j) > bin_cont_max)
+                bin_cont_max = ratios_5[k]->GetBinContent(i, j);
+            if (ratios_5[k]->GetBinContent(i, j) < bin_cont_min)
+                bin_cont_min = ratios_5[k]->GetBinContent(i, j);
+        }
+
+        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+        ratio_5->SetBinError(i, j, 1E30); // sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
-    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-    ratio_5->SetBinError(i, sqrt(error_stat_2 + error_model_2 + error_smoothing_2));
   }
   StandardFormat(ratio_5, title, kGreen - 3, 1, x_observable,y_observable);
   ratio_5->GetXaxis()->SetTitle(GetAxisLabel(x_observable, 0).c_str());
@@ -1174,7 +1165,6 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
 
   // Store total contribution (averaged)
   ratio->Write();
-  ratio_nosyst->Write();
   ratio_0->Write();
   ratio_1->Write();
   ratio_2->Write();

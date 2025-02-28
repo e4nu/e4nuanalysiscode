@@ -68,7 +68,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   TH1D *h_acceptance = (TH1D *)file_acceptance->Get("Acceptance");
-  TH1D *h_acceptance_nosyst = (TH1D *)file_acceptance->Get("Acceptance_NoSyst");
   TH1D *h_acceptance_0 = (TH1D *)file_acceptance->Get("Acceptance_0");
   TH1D *h_acceptance_1 = (TH1D *)file_acceptance->Get("Acceptance_1");
   TH1D *h_acceptance_2 = (TH1D *)file_acceptance->Get("Acceptance_2");
@@ -77,11 +76,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   TH1D *h_acceptance_5 = (TH1D *)file_acceptance->Get("Acceptance_5");
 
   TH1D *h_radcorr = nullptr;
-  TH1D *h_radcorr_nosyst = nullptr;
   if (file_radcorr)
   {
     h_radcorr = (TH1D *)file_radcorr->Get("Acceptance");
-    h_radcorr_nosyst= (TH1D *)file_radcorr->Get("Acceptance_NoSyst");
   }
 
   // Get Tree for main model
@@ -114,7 +111,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     }
   }
 
-  if (!h_acceptance || !h_acceptance_nosyst )
+  if (!h_acceptance )
   {
     std::cout << "ERROR: Acceptance is not defined" << std::endl;
     return;
@@ -384,12 +381,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   TH1D *hist_data_correventrate = nullptr, *hist_data_correventrate_0 = nullptr, *hist_data_correventrate_1 = nullptr, *hist_data_correventrate_2 = nullptr, *hist_data_correventrate_3 = nullptr, *hist_data_correventrate_4 = nullptr, *hist_data_correventrate_5 = nullptr;
   // Event rate with Systematics
   TH1D *hist_data_correventrate_wsyst = nullptr, *hist_data_correventrate_wsyst_0 = nullptr, *hist_data_correventrate_wsyst_1 = nullptr, *hist_data_correventrate_wsyst_2 = nullptr, *hist_data_correventrate_wsyst_3 = nullptr, *hist_data_correventrate_wsyst_4 = nullptr, *hist_data_correventrate_wsyst_5 = nullptr;
-  // Event rate no Systematics
-  TH1D *hist_data_correventrate_nosyst = nullptr;
   // Event rate with Systematics
   TH1D *hist_xsec_wsyst = nullptr, *hist_xsec_wsyst_0 = nullptr, *hist_xsec_wsyst_1 = nullptr, *hist_xsec_wsyst_2 = nullptr, *hist_xsec_wsyst_3 = nullptr, *hist_xsec_wsyst_4 = nullptr, *hist_xsec_wsyst_5 = nullptr;
-  // Event rate without Systematics
-  TH1D *hist_xsec_nosyst = nullptr;
 
   // Store data event rate before acceptance correction:
   if (plot_data && hist_data)
@@ -418,10 +411,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_uncorr_4, 1);
     NormalizeHist(hist_data_uncorr_5, 1);
 
-    // Correcting data without systematics
-    hist_data_correventrate_nosyst= (TH1D *)hist_data->Clone();
-    CorrectData(hist_data_correventrate_nosyst, h_acceptance_nosyst);
-
     // Correct data for detector acceptance :
     // Notice this step already propagates the error from the acceptance to the corrected event rate
     // (Err_Corr_eventrate)^2 = (Err_Raw_EventRate)^2 * (Acc)^2 + (Raw_EventRate)^2 * (Err_Acc)^2
@@ -437,7 +426,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_uncorrrad->SetName("Corrected for acceptance before rad corr data");
     NormalizeHist(hist_data_uncorrrad, 1);
 
-    // Apply radiative correction
+    //Apply radiative correction
     if (h_radcorr)
     {
       CorrectData(hist_data, h_radcorr);
@@ -447,8 +436,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       CorrectData(hist_data_3, h_radcorr);
       CorrectData(hist_data_4, h_radcorr);
       CorrectData(hist_data_5, h_radcorr);
-      //without systematics
-      CorrectData(hist_data_correventrate_nosyst, h_radcorr_nosyst);
     }
 
     hist_data_correventrate = (TH1D *)hist_data->Clone();
@@ -465,9 +452,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_correventrate_4->SetName("Corrected_Event_Rate_Data_Sector_4");
     hist_data_correventrate_5 = (TH1D *)hist_data_5->Clone();
     hist_data_correventrate_5->SetName("Corrected_Event_Rate_Data_Sector_5");
-
-    // Store without systematics so we can normalize later to xsec
-    hist_xsec_nosyst = (TH1D*)hist_data_correventrate_nosyst->Clone();
 
     // Store event rate with systematics
     hist_data_correventrate_wsyst = (TH1D *)hist_data->Clone();
@@ -502,7 +486,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_correventrate_3, 1);
     NormalizeHist(hist_data_correventrate_4, 1);
     NormalizeHist(hist_data_correventrate_5, 1);
-    NormalizeHist(hist_data_correventrate_nosyst, 1);
 
     // Normalize to cross-section
     NormalizeHist(hist_data, DataNormalization);
@@ -512,7 +495,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_3, DataNormalization);
     NormalizeHist(hist_data_4, DataNormalization);
     NormalizeHist(hist_data_5, DataNormalization);
-    NormalizeHist(hist_xsec_nosyst,DataNormalization);
 
     // Add Systematics
     // 1 - Acceptance model dependence (already included)
@@ -520,12 +502,12 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     // 3 - Relative uncertanties from configuration
 
     // Adding Acceptance correction systematics from model dependence
-    // TH1D *hist_syst_acc = systematics::AddSystematic(*hist_data, *h_acceptance);
+    TH1D *hist_syst_acc = systematics::AddSystematic(*hist_data, *h_acceptance);
 
-    //TCanvas *cacc = new TCanvas("cacc", "cacc", 800, 600);
-    // hist_syst_acc->Draw("hist");
-    // cacc->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_accmodel_" + observable + ".root").c_str());
-    // delete cacc;
+    TCanvas *cacc = new TCanvas("cacc", "cacc", 800, 600);
+    hist_syst_acc->Draw("hist");
+    cacc->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_accmodel_" + observable + ".root").c_str());
+    delete cacc;
 
     // Add sector variation ERROR. Store relative error in histogram
     // We use the bkg substracted, eff corrected distributions for the calculation
@@ -596,14 +578,11 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   // Plot Total, XSector, Legend
   if (plot_data)
   {
-    plotting::PlotEventRate(hist_data_uncorr, hist_data_uncorr, observable, title, data_name, input_data_location, output_location,
+    plotting::PlotEventRate(hist_data_uncorr, observable, title, data_name, input_data_location, output_location,
                             output_file_name + "_raw_event_rate", analysis_id, store_root);
 
     plotting::PlotEventRatePerSector(data_per_sector, observable, title, data_name, input_data_location, output_location,
                                      output_file_name + "_event_rate_corracc", analysis_id, store_root);
-
-    plotting::PlotEventRate(hist_data_correventrate, hist_data_correventrate_nosyst, observable, title, data_name, input_data_location, output_location,
-                            output_file_name + "_event_rate_corracc_with_radcorr", analysis_id, store_root);
 
     plotting::PlotComparisonDataNormalized(mc_hists, breakdown, hist_data_correventrate, observable, title, data_name, model, input_MC_location,
                                            input_data_location, output_location, output_file_name + "_normalized_to_data_with_breakdown", systematic_map, true, analysis_id, store_root);
@@ -873,7 +852,7 @@ void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, std::vector<TH1D *> b
     StandardFormat(mc_ratio[i], title, kBlack, i+1, observable, log_scale);
   }
   StandardFormat(data_ratio, title, kBlack, 8, observable, log_scale);
-
+  data_ratio->SetLineStyle(1);
   data_ratio->Divide(data);
   data_ratio->GetXaxis()->SetLabelSize(0.1);
   data_ratio->GetXaxis()->SetTitleSize(0.15);
@@ -890,10 +869,10 @@ void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, std::vector<TH1D *> b
     mc_ratio[i]->GetYaxis()->SetTitle("Pred / Data ");
   }
   // Find correct range
-  double max_ratio = GetMaximum(mc_ratio);
-  double min_ratio = GetMinimum(mc_ratio);
+  double max_ratio = GetMaximum(mc_ratio)*(1-0.35);
+  double min_ratio = GetMinimum(mc_ratio)*(1-0.15);
   data_ratio->GetYaxis()->SetRangeUser(min_ratio,max_ratio);
-  sub_pad->SetLogy();
+  if( log_scale ) sub_pad->SetLogy();
   data_ratio->Draw("err");
   for (unsigned int i = 0; i < mc_hists.size(); ++i){
     mc_ratio[i]->GetYaxis()->SetRangeUser(min_ratio,max_ratio);
@@ -1045,7 +1024,7 @@ void plotting::PlotTotal2DXSec(std::vector<TH2D *> mc_hists, std::vector<TH2D *>
   plotting::PlotSlicesGeneralized(mc_hists, breakdown, data, x_observable, y_observable, y_cuts, title, output_location, output_name_2, store_root, log_scale );
 }
 
-void plotting::PlotEventRate(TH1D *data, TH1D *data_nosyst, std::string observable, std::string title, std::string data_name, std::string input_data_location,
+void plotting::PlotEventRate(TH1D *data, std::string observable, std::string title, std::string data_name, std::string input_data_location,
                              std::string output_location, std::string output_file_name, std::string analysis_id, bool store_root, bool log_scale)
 {
   if( log_scale ) gPad->SetLogy();
@@ -1064,21 +1043,10 @@ void plotting::PlotEventRate(TH1D *data, TH1D *data_nosyst, std::string observab
     data->SetLineStyle(1);
   }
 
-  if (data_nosyst)
-  {
-    StandardFormat(data_nosyst, title, kBlack, 8, observable, log_scale, 0, "Counts/Bin Width");
-    data_nosyst->SetLineStyle(1);
-  }
-
   if (data)
   {
     data->Draw(" err ");
   }
-
-  // if (data_nosyst)
-  // {
-  //   //data_nosyst->Draw(" err same ");
-  // }
 
   double data_integral;
   if (data)
@@ -1419,7 +1387,6 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   TH2D *h_acceptance = (TH2D *)file_acceptance->Get("Acceptance");
-  TH2D *h_acceptance_nosyst = (TH2D *)file_acceptance->Get("Acceptance_NoSyst");
   TH2D *h_acceptance_0 = (TH2D *)file_acceptance->Get("Acceptance_0");
   TH2D *h_acceptance_1 = (TH2D *)file_acceptance->Get("Acceptance_1");
   TH2D *h_acceptance_2 = (TH2D *)file_acceptance->Get("Acceptance_2");
@@ -1463,7 +1430,7 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
     }
   }
 
-  if (!h_acceptance || !h_acceptance_nosyst )
+  if (!h_acceptance )
   {
     std::cout << "ERROR: Acceptance is not defined" << std::endl;
     return;
@@ -1732,12 +1699,8 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
   TH2D *hist_data_correventrate = nullptr, *hist_data_correventrate_0 = nullptr, *hist_data_correventrate_1 = nullptr, *hist_data_correventrate_2 = nullptr, *hist_data_correventrate_3 = nullptr, *hist_data_correventrate_4 = nullptr, *hist_data_correventrate_5 = nullptr;
   // Event rate with Systematics
   TH2D *hist_data_correventrate_wsyst = nullptr, *hist_data_correventrate_wsyst_0 = nullptr, *hist_data_correventrate_wsyst_1 = nullptr, *hist_data_correventrate_wsyst_2 = nullptr, *hist_data_correventrate_wsyst_3 = nullptr, *hist_data_correventrate_wsyst_4 = nullptr, *hist_data_correventrate_wsyst_5 = nullptr;
-  // Event rate no Systematics
-  TH2D *hist_data_correventrate_nosyst = nullptr;
   // Event rate with Systematics
   TH2D *hist_xsec_wsyst = nullptr, *hist_xsec_wsyst_0 = nullptr, *hist_xsec_wsyst_1 = nullptr, *hist_xsec_wsyst_2 = nullptr, *hist_xsec_wsyst_3 = nullptr, *hist_xsec_wsyst_4 = nullptr, *hist_xsec_wsyst_5 = nullptr;
-  // Event rate without Systematics
-  TH2D *hist_xsec_nosyst = nullptr;
 
   // Store data event rate before acceptance correction:
   if (plot_data && hist_data)
@@ -1766,10 +1729,6 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_uncorr_4, 1);
     NormalizeHist(hist_data_uncorr_5, 1);
 
-    // Correcting data without systematics
-    hist_data_correventrate_nosyst= (TH2D *)hist_data->Clone();
-    CorrectData(hist_data_correventrate_nosyst, h_acceptance_nosyst);
-
     // Correct data for detector acceptance :
     // Notice this step already propagates the error from the acceptance to the corrected event rate
     // (Err_Corr_eventrate)^2 = (Err_Raw_EventRate)^2 * (Acc)^2 + (Raw_EventRate)^2 * (Err_Acc)^2
@@ -1797,8 +1756,6 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
       CorrectData(hist_data_3, h_radcorr);
       CorrectData(hist_data_4, h_radcorr);
       CorrectData(hist_data_5, h_radcorr);
-      //without systematics
-    //  CorrectData(hist_data_correventrate_nosyst, h_radcorr_nosyst);
     }
 
     hist_data_correventrate = (TH2D *)hist_data->Clone();
@@ -1815,9 +1772,6 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_correventrate_4->SetName("Corrected_Event_Rate_Data_Sector_4");
     hist_data_correventrate_5 = (TH2D *)hist_data_5->Clone();
     hist_data_correventrate_5->SetName("Corrected_Event_Rate_Data_Sector_5");
-
-    // Store without systematics so we can normalize later to xsec
-    hist_xsec_nosyst = (TH2D*)hist_data_correventrate_nosyst->Clone();
 
     // Store event rate with systematics
     hist_data_correventrate_wsyst = (TH2D *)hist_data->Clone();
@@ -1852,7 +1806,6 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_correventrate_3, 1);
     NormalizeHist(hist_data_correventrate_4, 1);
     NormalizeHist(hist_data_correventrate_5, 1);
-    NormalizeHist(hist_data_correventrate_nosyst, 1);
 
     // Normalize to cross-section
     NormalizeHist(hist_data, DataNormalization);
@@ -1990,6 +1943,7 @@ void plotting::PlotProjectionWithRatio( const std::vector<TH2D*>& mcHists, const
 
     // Compute slice for main predictions
     for ( unsigned int i = 0 ; i < mcHists.size(); ++i ) {
+        double first_bin_axis = mcHists[i]->GetNbinsX();
         last_bin = axis == "X" ? mcHists[i]->GetNbinsX() : mcHists[i]->GetNbinsY();
         if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
         if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
@@ -2037,6 +1991,7 @@ void plotting::PlotProjectionWithRatio( const std::vector<TH2D*>& mcHists, const
     if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
     TH1D* dataProjection = axis == "X" ? data->ProjectionX((data->GetName()+projection_name).c_str(),first_bin,last_bin) : data->ProjectionY((data->GetName()+projection_name).c_str(),first_bin,last_bin);
     StandardFormat(dataProjection, "", kBlack, 8, xobservable, logScale);
+    dataProjection->SetLineStyle(1);
     dataProjection->SetMarkerSize(0.6);
     dataProjection->SetLineWidth(1);
     dataProjection->Draw("err same");
@@ -2061,13 +2016,14 @@ void plotting::PlotProjectionWithRatio( const std::vector<TH2D*>& mcHists, const
     dataRatio->GetXaxis()->SetTitleSize(0.1);
     dataRatio->GetYaxis()->SetLabelSize(0.1);
     dataRatio->GetYaxis()->SetTitleSize(0.1);
+    dataRatio->SetLineStyle(1);
     dataRatio->SetMinimum(0);
     dataRatio->GetYaxis()->SetMaxDigits(5);
     dataRatio->GetYaxis()->SetTitleOffset(0.7);
     dataRatio->GetYaxis()->SetTitle("Pred / Data ");
 
-    double maxRatio = GetMaximum(mcRatios);
-    double minRatio = GetMinimum(mcRatios);
+    double maxRatio = GetMaximum(mcRatios)*(1-0.35);
+    double minRatio = GetMinimum(mcRatios)*(1-0.15);
     dataRatio->GetYaxis()->SetRangeUser(minRatio, maxRatio);
     dataRatio->SetLineWidth(1);
     dataRatio->GetXaxis()->SetLabelSize(0.08);

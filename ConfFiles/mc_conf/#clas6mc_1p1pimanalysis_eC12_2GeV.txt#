@@ -19,13 +19,13 @@ offset			0
 #Run Configurables
 EBeam			2.261
 TargetPdg		1000060120
-NEvents			10000000
+NEvents			50000000
 FirstEvent		0
 
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
-Toplogy 		11:1,-211:1,211:1,22:0
+Toplogy 		11:1,2212:1,-211:1,221:0,22:0
 MaxBackgroundMultiplicity 4
 NRotations 1000
 
@@ -38,7 +38,7 @@ ComputeTrueRecoAccCorr false
 
 InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/G18_10a_Dipole_LFG_Q2_04_2GeV_eCarbon.gst.root
 XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/G18_10a_Dipole_Q2_04_eCarbon.root
-OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1pim1pip_G18_10a_Dipole_LFG_Q2_01_2GeV_eCarbon_NoRad
+OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1p1pim_G18_10a_Dipole_LFG_Q2_01_2GeV_eCarbon_NoRad
 
 
 

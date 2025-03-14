@@ -22,31 +22,36 @@ using namespace e4nu::plotting;
 // 3) OutputLocation                                           //
 // 4) Input MC Files (without _true.root or _truereco.root)    //
 // 5) Input data file (without _clas6.root extension) (*)      //
-// 6) Observables List                                         //
-// 7) Normalize to cross-section                               //
-// 8) Plot MC, default true                                    //
-// 9) Input Model Names (*)                                    //
-// 10) Title (*)                                                //
-// 11) Data Name (*)                                           //
-// 12) Compute systematics (* def false )                      //
-// 13) AddSystematics                                          //
-// 14) NoFSI ROOT file (without .root extension)               //
-// 15) Analysis id - used to set the ranges. default none      //
+// 6) Observables List (X axis)                                //
+// 7) Observables List (Y axis) - Optional                     //
+// 8) Slices for Y axis (mandatory if Y axis used)             //
+// 9) Normalize to cross-section                               //
+// 10) Plot MC, default true                                   //
+// 11) Input Model Names (*)                                   //
+// 12) Title (*)                                               //
+// 13) Data Name (*)                                           //
+// 14) Compute systematics (* def false )                      //
+// 15) AddSystematics                                          //
+// 16) NoFSI ROOT file (without .root extension)               //
+// 17) Analysis id - used to set the ranges. default none      //
 //     i.e. 1p1pim                                             //
-// 16) Plot root file output. Stores individual histograms     //
-// 17) Apply cut on observable                                 //
+// 18) Plot root file output. Stores individual histograms     //
+// 19) Apply cut on observable                                 //
 //     --cut-observables Obs1,min1,max1:...:ObsN,minN,maxN     //
+// 20) log-scale : option to use log scale                     //
 /////////////////////////////////////////////////////////////////
 
 string mc_location="", data_location="", output_location ="", output_name ="", analysis_id="default";
-vector<string> mc_files, rad_files,observables, model_names ;
+vector<string> mc_files, rad_files,observables_x, observables_y, model_names ;
 string data_file ="", nofsi_file="", title="", data_name="" ;
 bool compute_systematics ;
 vector<string> bkg_syst;
 map<string,double> systematic_map ;
 bool plot_data = true ;
 bool store_root = false ;
+bool log_scale = false ;
 void PrintFormat(string s);
+std::vector<double> y_cuts ; // for 2D slicing.
 
 // We want to add a map which contains the observable to cut on and its range
 std::map<string,vector<double>> cuts;
@@ -100,14 +105,36 @@ int main( int argc, char* argv[] ) {
       analysis_id = GetArg("analysis_id",argc,argv);
     }
 
-    string obs ;
+    string obs_x ;
     if( ExistArg("observable_list",argc,argv)) {
-      obs = GetArg("observable_list",argc,argv) ;
-      observables = SplitString(obs);
+      obs_x = GetArg("observable_list",argc,argv) ;
+      observables_x = SplitString(obs_x);
       cout << "Plotting xsec for the following observables: \n- ";
-      for( unsigned s = 0 ; s<observables.size();++s ) {
-	cout << observables[s] << std::endl;
+      for( unsigned s = 0 ; s<observables_x.size();++s ) {
+      	cout << observables_x[s] << std::endl;
       }
+    } else PrintFormat("observable_list") ;
+
+    string obs_y;
+    if( ExistArg("observable_list_y",argc,argv)) {
+      obs_y = GetArg("observable_list_y",argc,argv) ;
+      observables_y = SplitString(obs_y);
+      cout << "Plotting xsec for the following observables: \n- ";
+      for( unsigned s = 0 ; s<observables_y.size();++s ) {
+      	cout << observables_y[s] << std::endl;
+      }
+      string obs_cuts_y;
+      if( ExistArg("observable_y_cuts",argc,argv)) {
+        obs_cuts_y = GetArg("observable_y_cuts",argc,argv) ;
+        auto string_cuts_y = SplitString(obs_cuts_y);
+        for( unsigned s = 0 ; s<string_cuts_y.size();++s ) {
+        	y_cuts.push_back(stod(string_cuts_y[s]));
+        }
+      } else {
+        std::cout << "Using 2D plotting, needs slice information."<< std::endl;
+      	return 0;
+      }
+
     } else PrintFormat("observable_list") ;
 
     string mdl ;
@@ -115,12 +142,15 @@ int main( int argc, char* argv[] ) {
       mdl = GetArg("model_names",argc,argv) ;
       model_names = SplitString(mdl);
       if( model_names.size() != mc_files.size() ){
-	std::cout << "Number of mc files does not match the number of models"<< std::endl;
-	return 0;
+      	std::cout << "Number of mc files does not match the number of models"<< std::endl;
+      	return 0;
       }
     }
     if( ExistArg("store_root",argc,argv)) store_root = true ;
-
+    if( ExistArg("log-scale",argc,argv)) {
+      std::cout << " Enabling log scale..." << std::endl;
+      log_scale = true ;
+    }
     cout<<"Loading MC Files:"<<endl;
     for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
       cout << " -> " ;
@@ -146,10 +176,10 @@ int main( int argc, char* argv[] ) {
       sys = GetArg("add-systematics",argc,argv) ;
       vector<string> sys_names = SplitString(sys,',');
       for( unsigned s = 0 ; s < sys_names.size() ; ++s ) {
-	std::cout << sys_names[s]<<std::endl;
-	vector<string> tmpsys = SplitString(sys_names[s],':') ;
-	if( tmpsys.size() != 2 ) continue ;
-	systematic_map[tmpsys[0]] = stod(tmpsys[1]);
+      	std::cout << sys_names[s]<<std::endl;
+      	vector<string> tmpsys = SplitString(sys_names[s],':') ;
+      	if( tmpsys.size() != 2 ) continue ;
+      	systematic_map[tmpsys[0]] = stod(tmpsys[1]);
       }
     }
 
@@ -182,27 +212,47 @@ int main( int argc, char* argv[] ) {
 
   }
 
-  // Loop over observables
-  for( unsigned int i = 0 ; i < observables.size(); ++i ){
+  // Loop over observables_x
+  for( unsigned int i = 0 ; i < observables_x.size(); ++i ){
     vector<string> root_files = mc_files;
     vector<string> root_rad_files = rad_files;
     vector<string> names = model_names ;
-    string acceptance_file = ComputeAcceptance( root_files, observables[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
-    string radcorr_file = "";
-    if( rad_files.size() != 0 ) radcorr_file = ComputeRadCorr( root_rad_files, observables[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
-    if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
+    string acceptance_file_1D = Compute1DAcceptance( root_files, observables_x[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
 
-    vector<string> bkg_syst_files = {data_file};
-    vector<string> bkg_syst_tag = {data_name+"_"+observables[i]};
-    for( unsigned int j = 0 ; j < bkg_syst.size(); ++j ){
-      bkg_syst_files.push_back(bkg_syst[j]);
-      bkg_syst_tag.push_back(data_name+"_"+observables[i]+"_"+to_string(j+1));
+    // compute 2D acceptance if requested
+    string acceptance_file_2D = "";
+    if( observables_y.size() > 0 ){
+      // For now it only works for one single alternative observable
+      std::cout << " Computing 2D acceptance: "<<std::endl;
+      acceptance_file_2D = Compute2DAcceptance( root_files, observables_x[i], observables_y[0], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
     }
 
-    if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables[i], true, data_location, output_location, analysis_id );
+    string radcorr_file = "";
+    if( rad_files.size() != 0 ) radcorr_file = Compute1DRadCorr( root_rad_files, observables_x[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
+    if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
 
-    Plot1DXSec( root_files, data_file, acceptance_file, radcorr_file, observables[i], title, data_name, names, mc_location, data_location,
-		output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root ) ;
+    // compute 2D rad corr if requested
+    string radcorr_file_2D = "";
+    if( observables_y.size() > 0 && rad_files.size() != 0 ){
+      // For now it only works for one single alternative observable
+      std::cout << " Computing 2D rad corr: "<<std::endl;
+      radcorr_file_2D = Compute2DRadCorr( root_rad_files, observables_x[i], observables_y[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
+    }
+
+    vector<string> bkg_syst_files = {data_file};
+    vector<string> bkg_syst_tag = {data_name+"_"+observables_x[i]};
+    for( unsigned int j = 0 ; j < bkg_syst.size(); ++j ){
+      bkg_syst_files.push_back(bkg_syst[j]);
+      bkg_syst_tag.push_back(data_name+"_"+observables_x[i]+"_"+to_string(j+1));
+    }
+
+    if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables_x[i], true, data_location, output_location, analysis_id );
+
+    Plot1DXSec( root_files, data_file, acceptance_file_1D, radcorr_file, observables_x[i], title, data_name, names, mc_location, data_location,
+		output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale ) ;
+
+    Plot2DXSec( root_files, data_file, acceptance_file_2D, radcorr_file_2D, observables_x[i], observables_y[i], y_cuts, title, data_name, names, mc_location, data_location,
+		output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale ) ;
   }
 
   return 0 ;

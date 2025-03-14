@@ -190,7 +190,7 @@ int main( int argc, char* argv[] ) {
     in_trees[i] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
     in_trees[i] -> SetBranchAddress("RecoEvPion",&RecoEvPion);
     in_trees[i] -> SetBranchAddress("RecoWPion",&RecoWPion);
-	
+
     for( int j = 0 ; j < NEntries ; ++j ) {
       in_trees[i]->GetEntry(j) ;
       double content = 0 ;
@@ -252,7 +252,7 @@ int main( int argc, char* argv[] ) {
 
   // Normalise for bin size
   for( unsigned int i = 0 ; i < input_files.size(); ++i ){
-    plotting::StandardFormat( hists[i], "", color_list[i], 1, observable, ymax, "Counts/Bin Width");
+    plotting::StandardFormat( hists[i], "", color_list[i], 1, observable, false, ymax, "Counts/Bin Width");
     hists[i] -> SetLineStyle(1);
     hists[i] -> SetMarkerStyle(8);
     hists[i] -> GetYaxis() -> TAxis::SetMaxDigits(3);

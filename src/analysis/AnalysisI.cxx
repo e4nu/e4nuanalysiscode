@@ -31,13 +31,6 @@ bool AnalysisI::Analyse( Event & event ) {
   TLorentzVector out_mom = event.GetOutLepton4Mom() ;
 
   // Step 1 : Apply generic cuts
-  // Check run is correct
-  double EBeam = GetConfiguredEBeam() ;
-  if ( in_mom.E() != EBeam ) {
-    std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
-    exit(11);
-  }
-
   if ( (unsigned int) event.GetTargetPdg() != GetConfiguredTarget() ) {
     std::cout << "Target is " << event.GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
     exit(11);
@@ -126,7 +119,7 @@ bool AnalysisI::Analyse( Event & event ) {
 
 
 void AnalysisI::ApplyMomentumCut( Event & event ) {
-  
+
   std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event.GetFinalParticlesUnCorr4Mom() ;
   TLorentzVector out_mom = event.GetOutLepton4Mom() ;
   // Remove particles below threshold
@@ -190,7 +183,7 @@ void AnalysisI::PlotBkgInformation( Event event ) {
   const std::pair<std::vector<int>,double> record_afiducials = AnalysisRecord[kid_fid] ; // After fiducials
   const std::pair<std::vector<int>,double> record_acccorr = AnalysisRecord[kid_acc] ; // Acc Correction
 
-  for ( unsigned obs_id = 0 ; obs_id < tags.size() ; ++obs_id ) { 
+  for ( unsigned obs_id = 0 ; obs_id < tags.size() ; ++obs_id ) {
     if( !kHistograms[tags[obs_id]][kid_totestbkg] || !kHistograms[tags[obs_id]][kid_signal] || !kHistograms[tags[obs_id]][kid_tottruebkg]
 	|| !kHistograms[tags[obs_id]][kid_2p0pitruebkg] || !kHistograms[tags[obs_id]][kid_1p1pitruebkg] || !kHistograms[tags[obs_id]][kid_2p1pitruebkg] || !kHistograms[tags[obs_id]][kid_1p2pitruebkg]
 	|| !kHistograms[tags[obs_id]][kid_2p0piestbkg] || !kHistograms[tags[obs_id]][kid_1p1piestbkg] || !kHistograms[tags[obs_id]][kid_2p1piestbkg] || !kHistograms[tags[obs_id]][kid_1p2piestbkg] ) return ;
@@ -216,9 +209,9 @@ void AnalysisI::PlotBkgInformation( Event event ) {
 	// First, we need to get the correct mother pdg list.
 	std::vector<int> pdgs ;
 	if( (record_afiducials.first).size() == original_mult ) pdgs = record_afiducials.first ; // It comes directly from background event
-	else if( (AnalysisRecord[original_mult+1+kid_bkgcorr].first).size() == original_mult ) pdgs= AnalysisRecord[original_mult+1+kid_bkgcorr].first ; 
+	else if( (AnalysisRecord[original_mult+1+kid_bkgcorr].first).size() == original_mult ) pdgs= AnalysisRecord[original_mult+1+kid_bkgcorr].first ;
 	// It comes from original_mult + 1 event
-	// If none of the two cases above, the bkg event comes directly from a higher multiplicity event ... discard. 
+	// If none of the two cases above, the bkg event comes directly from a higher multiplicity event ... discard.
 	// Only considering direct contributions or corrections
 
 	// Count number of protons and pions

@@ -30,6 +30,12 @@ namespace e4nu {
     extern double InferedNucleonMom, HadronsAngle, Angleqvshad;
     extern double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi;
     extern double RecoEvPion, RecoWPion, ElectronPT, PionPT;
+    extern bool IsBkg;
+    extern int ElectronSector, resid;
+    extern bool QEL, RES, DIS, MEC;
+    extern double MCNormalization, DataNormalization;
+    void SetAnalysisBranch( TTree * tree ) ;
+
     int ColorBlindPalette(int color_id ) ;
     double GetObservable( const std::string observable ) ;
     void NormalizeHist( TH1D * h, double normalization_factor );

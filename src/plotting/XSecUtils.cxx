@@ -20,7 +20,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
                           std::string analysis_id, bool store_root, bool log_scale)
 {
 
-  TCanvas *c = new TCanvas("c", "c", 800, 600);
   TPad *pad1 = new TPad("pad1", "", 0, 0, 1, 1);
   pad1->Draw();
   pad1->cd();
@@ -231,82 +230,15 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // OBSERVABLE DEFINITION specific for MC
   long NEntries;
-  bool IsBkg;
-  int ElectronSector;
-  bool QEL, RES, DIS, MEC;
-  double MCNormalization, DataNormalization;
   std::vector<double> mc_norm;
-  int resid;
 
   for (unsigned int i = 0; i < trees.size(); ++i)
   {
     NEntries = trees[i]->GetEntries();
     if (!trees[i])
       continue;
-    trees[i]->SetBranchAddress("TotWeight", &TotWeight);
-    trees[i]->SetBranchAddress("IsBkg", &IsBkg);
-    trees[i]->SetBranchAddress("ECal", &ECal);
-    trees[i]->SetBranchAddress("pfl_theta", &pfl_theta);
-    trees[i]->SetBranchAddress("pfl_phi", &pfl_phi);
-    trees[i]->SetBranchAddress("pfl", &pfl);
-    trees[i]->SetBranchAddress("proton_mom", &proton_mom);
-    trees[i]->SetBranchAddress("proton_theta", &proton_theta);
-    trees[i]->SetBranchAddress("proton_phi", &proton_phi);
-    trees[i]->SetBranchAddress("pim_mom", &pim_mom);
-    trees[i]->SetBranchAddress("pim_theta", &pim_theta);
-    trees[i]->SetBranchAddress("pim_phi", &pim_phi);
-    trees[i]->SetBranchAddress("pip_mom", &pip_mom);
-    trees[i]->SetBranchAddress("pip_theta", &pip_theta);
-    trees[i]->SetBranchAddress("pip_phi", &pip_phi);
-    trees[i]->SetBranchAddress("RecoW", &RecoW);
-    trees[i]->SetBranchAddress("Recoq3", &Recoq3);
-    trees[i]->SetBranchAddress("RecoQELEnu", &RecoQELEnu);
-    trees[i]->SetBranchAddress("RecoXBJK", &RecoXBJK);
-    trees[i]->SetBranchAddress("RecoQ2", &RecoQ2);
-    trees[i]->SetBranchAddress("RecoEnergyTransfer", &RecoEnergyTransfer);
-    trees[i]->SetBranchAddress("AlphaT", &AlphaT);
-    trees[i]->SetBranchAddress("HadAlphaT", &HadAlphaT);
-    trees[i]->SetBranchAddress("DeltaPT", &DeltaPT);
-    trees[i]->SetBranchAddress("HadDeltaPT", &HadDeltaPT);
-    trees[i]->SetBranchAddress("HadDeltaPTx", &HadDeltaPTx);
-    trees[i]->SetBranchAddress("HadDeltaPTy", &HadDeltaPTy);
-    trees[i]->SetBranchAddress("DeltaPhiT", &DeltaPhiT);
-    trees[i]->SetBranchAddress("HadDeltaPhiT", &HadDeltaPhiT);
-    trees[i]->SetBranchAddress("ElectronSector", &ElectronSector);
-    trees[i]->SetBranchAddress("HadSystemMass", &HadSystemMass);
-    trees[i]->SetBranchAddress("MissingEnergy", &MissingEnergy);
-    trees[i]->SetBranchAddress("MissingAngle", &MissingAngle);
-    trees[i]->SetBranchAddress("MissingMomentum", &MissingMomentum);
-    trees[i]->SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
-    trees[i]->SetBranchAddress("HadronsAngle", &HadronsAngle);
-    trees[i]->SetBranchAddress("AdlerAngleThetaP", &AdlerAngleThetaP);
-    trees[i]->SetBranchAddress("AdlerAnglePhiP", &AdlerAnglePhiP);
-    trees[i]->SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
-    trees[i]->SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
-    trees[i]->SetBranchAddress("Angleqvshad", &Angleqvshad);
-    trees[i]->SetBranchAddress("RecoEvPion", &RecoEvPion);
-    trees[i]->SetBranchAddress("RecoWPion", &RecoWPion);
-    trees[i]->SetBranchAddress("ElectronPT", &ElectronPT);
-    trees[i]->SetBranchAddress("PionPT", &PionPT);
 
-    // Only fill true info for the first model:
-    if (i == 0)
-    {
-      trees[i]->SetBranchAddress("QEL", &QEL);
-      trees[i]->SetBranchAddress("RES", &RES);
-      trees[i]->SetBranchAddress("MEC", &MEC);
-      trees[i]->SetBranchAddress("DIS", &DIS);
-      trees[i]->SetBranchAddress("resid", &resid);
-    }
-    // Only second tree corresponds to data
-    if (i != id_data)
-    {
-      trees[i]->SetBranchAddress("MCNormalization", &MCNormalization);
-    }
-    else
-    {
-      trees[i]->SetBranchAddress("DataNormalization", &DataNormalization);
-    }
+    plotting::SetAnalysisBranch( trees[i] ) ;
 
     for (int j = 0; j < NEntries; ++j)
     {
@@ -315,7 +247,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       double w = TotWeight;
       if (i != id_data && j == 0)
         mc_norm.push_back(MCNormalization);
-
       content = GetObservable(observable);
 
       // Check if passes cuts
@@ -381,8 +312,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   TH1D *hist_data_correventrate = nullptr, *hist_data_correventrate_0 = nullptr, *hist_data_correventrate_1 = nullptr, *hist_data_correventrate_2 = nullptr, *hist_data_correventrate_3 = nullptr, *hist_data_correventrate_4 = nullptr, *hist_data_correventrate_5 = nullptr;
   // Event rate with Systematics
   TH1D *hist_data_correventrate_wsyst = nullptr, *hist_data_correventrate_wsyst_0 = nullptr, *hist_data_correventrate_wsyst_1 = nullptr, *hist_data_correventrate_wsyst_2 = nullptr, *hist_data_correventrate_wsyst_3 = nullptr, *hist_data_correventrate_wsyst_4 = nullptr, *hist_data_correventrate_wsyst_5 = nullptr;
-  // Event rate with Systematics
-  TH1D *hist_xsec_wsyst = nullptr, *hist_xsec_wsyst_0 = nullptr, *hist_xsec_wsyst_1 = nullptr, *hist_xsec_wsyst_2 = nullptr, *hist_xsec_wsyst_3 = nullptr, *hist_xsec_wsyst_4 = nullptr, *hist_xsec_wsyst_5 = nullptr;
 
   // Store data event rate before acceptance correction:
   if (plot_data && hist_data)
@@ -495,7 +424,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_3, DataNormalization);
     NormalizeHist(hist_data_4, DataNormalization);
     NormalizeHist(hist_data_5, DataNormalization);
-
+  
     // Add Systematics
     // 1 - Acceptance model dependence (already included)
     // 2 - Sector Sector Variation
@@ -1100,7 +1029,7 @@ void plotting::PlotEventRatePerSector(std::vector<TH1D *> data_per_sector, std::
   pad_sector->cd();
   pad_sector->SetBottomMargin(0.15);
   pad_sector->SetLeftMargin(0.15);
-  pad_sector->Divide(3, 2);
+  pad_sector->Divide(3, 2); // Make flexible.
 
   for (unsigned int i = 0; i < 6; ++i)
   {
@@ -1339,7 +1268,6 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
                           std::string output_file_name, bool plot_data, std::map<string, double> systematic_map, std::map<std::string,std::vector<double>> cuts,
                           std::string analysis_id, bool store_root, bool log_scale)
 {
-  TCanvas *c = new TCanvas("c2", "c2", 800, 600);
   TPad *pad1 = new TPad("pad1", "", 0, 0, 1, 1);
   pad1->Draw();
   pad1->cd();
@@ -1549,82 +1477,14 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
 
   // OBSERVABLE DEFINITION specific for MC
   long NEntries;
-  bool IsBkg;
-  int ElectronSector;
-  bool QEL, RES, DIS, MEC;
-  double MCNormalization, DataNormalization;
   std::vector<double> mc_norm;
-  int resid;
 
   for (unsigned int i = 0; i < trees.size(); ++i)
   {
     NEntries = trees[i]->GetEntries();
     if (!trees[i])
       continue;
-    trees[i]->SetBranchAddress("TotWeight", &TotWeight);
-    trees[i]->SetBranchAddress("IsBkg", &IsBkg);
-    trees[i]->SetBranchAddress("ECal", &ECal);
-    trees[i]->SetBranchAddress("pfl_theta", &pfl_theta);
-    trees[i]->SetBranchAddress("pfl_phi", &pfl_phi);
-    trees[i]->SetBranchAddress("pfl", &pfl);
-    trees[i]->SetBranchAddress("proton_mom", &proton_mom);
-    trees[i]->SetBranchAddress("proton_theta", &proton_theta);
-    trees[i]->SetBranchAddress("proton_phi", &proton_phi);
-    trees[i]->SetBranchAddress("pim_mom", &pim_mom);
-    trees[i]->SetBranchAddress("pim_theta", &pim_theta);
-    trees[i]->SetBranchAddress("pim_phi", &pim_phi);
-    trees[i]->SetBranchAddress("pip_mom", &pip_mom);
-    trees[i]->SetBranchAddress("pip_theta", &pip_theta);
-    trees[i]->SetBranchAddress("pip_phi", &pip_phi);
-    trees[i]->SetBranchAddress("RecoW", &RecoW);
-    trees[i]->SetBranchAddress("Recoq3", &Recoq3);
-    trees[i]->SetBranchAddress("RecoQELEnu", &RecoQELEnu);
-    trees[i]->SetBranchAddress("RecoXBJK", &RecoXBJK);
-    trees[i]->SetBranchAddress("RecoQ2", &RecoQ2);
-    trees[i]->SetBranchAddress("RecoEnergyTransfer", &RecoEnergyTransfer);
-    trees[i]->SetBranchAddress("AlphaT", &AlphaT);
-    trees[i]->SetBranchAddress("HadAlphaT", &HadAlphaT);
-    trees[i]->SetBranchAddress("DeltaPT", &DeltaPT);
-    trees[i]->SetBranchAddress("HadDeltaPT", &HadDeltaPT);
-    trees[i]->SetBranchAddress("HadDeltaPTx", &HadDeltaPTx);
-    trees[i]->SetBranchAddress("HadDeltaPTy", &HadDeltaPTy);
-    trees[i]->SetBranchAddress("DeltaPhiT", &DeltaPhiT);
-    trees[i]->SetBranchAddress("HadDeltaPhiT", &HadDeltaPhiT);
-    trees[i]->SetBranchAddress("ElectronSector", &ElectronSector);
-    trees[i]->SetBranchAddress("HadSystemMass", &HadSystemMass);
-    trees[i]->SetBranchAddress("MissingEnergy", &MissingEnergy);
-    trees[i]->SetBranchAddress("MissingAngle", &MissingAngle);
-    trees[i]->SetBranchAddress("MissingMomentum", &MissingMomentum);
-    trees[i]->SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
-    trees[i]->SetBranchAddress("HadronsAngle", &HadronsAngle);
-    trees[i]->SetBranchAddress("AdlerAngleThetaP", &AdlerAngleThetaP);
-    trees[i]->SetBranchAddress("AdlerAnglePhiP", &AdlerAnglePhiP);
-    trees[i]->SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
-    trees[i]->SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
-    trees[i]->SetBranchAddress("Angleqvshad", &Angleqvshad);
-    trees[i]->SetBranchAddress("RecoEvPion", &RecoEvPion);
-    trees[i]->SetBranchAddress("RecoWPion", &RecoWPion);
-    trees[i]->SetBranchAddress("ElectronPT", &ElectronPT);
-    trees[i]->SetBranchAddress("PionPT", &PionPT);
-
-    // Only fill true info for the first model:
-    if (i == 0)
-    {
-      trees[i]->SetBranchAddress("QEL", &QEL);
-      trees[i]->SetBranchAddress("RES", &RES);
-      trees[i]->SetBranchAddress("MEC", &MEC);
-      trees[i]->SetBranchAddress("DIS", &DIS);
-      trees[i]->SetBranchAddress("resid", &resid);
-    }
-    // Only second tree corresponds to data
-    if (i != id_data)
-    {
-      trees[i]->SetBranchAddress("MCNormalization", &MCNormalization);
-    }
-    else
-    {
-      trees[i]->SetBranchAddress("DataNormalization", &DataNormalization);
-    }
+    plotting::SetAnalysisBranch( trees[i] ) ;
 
     for (int j = 0; j < NEntries; ++j)
     {
@@ -1699,8 +1559,6 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
   TH2D *hist_data_correventrate = nullptr, *hist_data_correventrate_0 = nullptr, *hist_data_correventrate_1 = nullptr, *hist_data_correventrate_2 = nullptr, *hist_data_correventrate_3 = nullptr, *hist_data_correventrate_4 = nullptr, *hist_data_correventrate_5 = nullptr;
   // Event rate with Systematics
   TH2D *hist_data_correventrate_wsyst = nullptr, *hist_data_correventrate_wsyst_0 = nullptr, *hist_data_correventrate_wsyst_1 = nullptr, *hist_data_correventrate_wsyst_2 = nullptr, *hist_data_correventrate_wsyst_3 = nullptr, *hist_data_correventrate_wsyst_4 = nullptr, *hist_data_correventrate_wsyst_5 = nullptr;
-  // Event rate with Systematics
-  TH2D *hist_xsec_wsyst = nullptr, *hist_xsec_wsyst_0 = nullptr, *hist_xsec_wsyst_1 = nullptr, *hist_xsec_wsyst_2 = nullptr, *hist_xsec_wsyst_3 = nullptr, *hist_xsec_wsyst_4 = nullptr, *hist_xsec_wsyst_5 = nullptr;
 
   // Store data event rate before acceptance correction:
   if (plot_data && hist_data)
@@ -1981,7 +1839,7 @@ void plotting::PlotProjectionWithRatio( const std::vector<TH2D*>& mcHists, const
         mcProjections[i]->GetYaxis()->SetTitleSize(0.09);
         mcProjections[i]->GetYaxis()->SetTitleOffset(1);
         mcProjections[i]->SetMarkerSize(0);
-        mcProjections[i]->SetLineWidth(1.2);
+        mcProjections[i]->SetLineWidth(2);
         mcProjections[i]->Draw("hist err same");
     }
 
@@ -2016,7 +1874,7 @@ void plotting::PlotProjectionWithRatio( const std::vector<TH2D*>& mcHists, const
     dataRatio->GetXaxis()->SetTitleSize(0.1);
     dataRatio->GetYaxis()->SetLabelSize(0.1);
     dataRatio->GetYaxis()->SetTitleSize(0.1);
-    dataRatio->SetLineStyle(1);
+    dataRatio->SetLineStyle(2);
     dataRatio->SetMinimum(0);
     dataRatio->GetYaxis()->SetMaxDigits(5);
     dataRatio->GetYaxis()->SetTitleOffset(0.7);
@@ -2033,7 +1891,7 @@ void plotting::PlotProjectionWithRatio( const std::vector<TH2D*>& mcHists, const
     dataRatio->GetYaxis()->SetTitleOffset(0.77);
     dataRatio->Draw("err");
     for (const auto& ratio : mcRatios) {
-        ratio->SetLineWidth(1.2);
+        ratio->SetLineWidth(2);
         ratio->Draw("hist err same");
     }
 }

@@ -5,23 +5,86 @@ using namespace e4nu::plotting;
 
 namespace e4nu
 {
-  namespace plotting
-  {
-    // Defining rootbranches
-    double TotWeight, ECal, Recoq3, RecoW;
-    double pfl, pfl_theta, pfl_phi;
-    double proton_mom, proton_phi, proton_theta;
-    double pim_mom, pim_theta, pim_phi;
-    double pip_mom, pip_theta, pip_phi;
-    double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT;
-    double AlphaT, DeltaPT, DeltaPhiT;
-    double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu;
-    double MissingEnergy, MissingAngle, MissingMomentum;
-    double InferedNucleonMom, HadronsAngle, Angleqvshad;
-    double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi;
-    double RecoEvPion, RecoWPion, ElectronPT, PionPT;
+  namespace plotting {
+    // Defining variables to be read from root file here.
+    double TotWeight = -9999, ECal= -9999, Recoq3= -9999, RecoW= -9999;
+    double pfl= -9999, pfl_theta= -9999, pfl_phi= -9999;
+    double proton_mom= -9999, proton_phi= -9999, proton_theta= -9999;
+    double pim_mom= -9999, pim_theta= -9999, pim_phi= -9999;
+    double pip_mom= -9999, pip_theta= -9999, pip_phi= -9999;
+    double HadAlphaT= -9999, HadDeltaPT= -9999, HadDeltaPTx= -9999, HadDeltaPTy= -9999, HadDeltaPhiT= -9999;
+    double AlphaT= -9999, DeltaPT= -9999, DeltaPhiT= -9999;
+    double RecoXBJK= -9999, RecoEnergyTransfer= -9999, RecoQ2= -9999, HadSystemMass= -9999, RecoQELEnu= -9999;
+    double MissingEnergy= -9999, MissingAngle= -9999, MissingMomentum= -9999;
+    double InferedNucleonMom= -9999, HadronsAngle= -9999, Angleqvshad= -9999;
+    double AdlerAngleThetaP= -9999, AdlerAnglePhiP= -9999, AdlerAngleThetaPi= -9999, AdlerAnglePhiPi= -9999;
+    double RecoEvPion= -9999, RecoWPion= -9999, ElectronPT= -9999, PionPT= -9999;
+    bool IsBkg= 0;
+    int ElectronSector= -9999, resid= -9999;
+    bool QEL= 0, RES= 0, DIS= 0, MEC= 0;
+    double MCNormalization= 0, DataNormalization= 0;
   }
 }
+
+void plotting::SetAnalysisBranch( TTree * tree ) {
+  if(tree->GetBranch("TotWeight")) tree->SetBranchAddress("TotWeight", &TotWeight);
+  else {
+    // This variable should exist. Use as validation
+    std::cout << " ROOT file corrupted. TotWeight Branch missing...!"
+  }
+  if(tree->GetBranch("IsBkg")) tree->SetBranchAddress("IsBkg", &IsBkg);
+  if(tree->GetBranch("ECal")) tree->SetBranchAddress("ECal", &ECal);
+  if(tree->GetBranch("pfl_theta")) tree->SetBranchAddress("pfl_theta", &pfl_theta);
+  if(tree->GetBranch("pfl_phi")) tree->SetBranchAddress("pfl_phi", &pfl_phi);
+  if(tree->GetBranch("pfl")) tree->SetBranchAddress("pfl", &pfl);
+  if(tree->GetBranch("proton_mom")) tree->SetBranchAddress("proton_mom", &proton_mom);
+  if(tree->GetBranch("proton_theta")) tree->SetBranchAddress("proton_theta", &proton_theta);
+  if(tree->GetBranch("proton_phi")) tree->SetBranchAddress("proton_phi", &proton_phi);
+  if(tree->GetBranch("pim_mom")) tree->SetBranchAddress("pim_mom", &pim_mom);
+  if(tree->GetBranch("pim_theta")) tree->SetBranchAddress("pim_theta", &pim_theta);
+  if(tree->GetBranch("pim_phi")) tree->SetBranchAddress("pim_phi", &pim_phi);
+  if(tree->GetBranch("pip_mom")) tree->SetBranchAddress("pip_mom", &pip_mom);
+  if(tree->GetBranch("pip_theta")) tree->SetBranchAddress("pip_theta", &pip_theta);
+  if(tree->GetBranch("pip_phi")) tree->SetBranchAddress("pip_phi", &pip_phi);
+  if(tree->GetBranch("RecoW")) tree->SetBranchAddress("RecoW", &RecoW);
+  if(tree->GetBranch("Recoq3")) tree->SetBranchAddress("Recoq3", &Recoq3);
+  if(tree->GetBranch("RecoQELEnu")) tree->SetBranchAddress("RecoQELEnu", &RecoQELEnu);
+  if(tree->GetBranch("RecoXBJK")) tree->SetBranchAddress("RecoXBJK", &RecoXBJK);
+  if(tree->GetBranch("RecoQ2")) tree->SetBranchAddress("RecoQ2", &RecoQ2);
+  if(tree->GetBranch("RecoEnergyTransfer")) tree->SetBranchAddress("RecoEnergyTransfer", &RecoEnergyTransfer);
+  if(tree->GetBranch("AlphaT")) tree->SetBranchAddress("AlphaT", &AlphaT);
+  if(tree->GetBranch("HadAlphaT")) tree->SetBranchAddress("HadAlphaT", &HadAlphaT);
+  if(tree->GetBranch("DeltaPT")) tree->SetBranchAddress("DeltaPT", &DeltaPT);
+  if(tree->GetBranch("HadDeltaPT")) tree->SetBranchAddress("HadDeltaPT", &HadDeltaPT);
+  if(tree->GetBranch("HadDeltaPTx")) tree->SetBranchAddress("HadDeltaPTx", &HadDeltaPTx);
+  if(tree->GetBranch("HadDeltaPTy")) tree->SetBranchAddress("HadDeltaPTy", &HadDeltaPTy);
+  if(tree->GetBranch("DeltaPhiT")) tree->SetBranchAddress("DeltaPhiT", &DeltaPhiT);
+  if(tree->GetBranch("HadDeltaPhiT")) tree->SetBranchAddress("HadDeltaPhiT", &HadDeltaPhiT);
+  if(tree->GetBranch("ElectronSector")) tree->SetBranchAddress("ElectronSector", &ElectronSector);
+  if(tree->GetBranch("HadSystemMass")) tree->SetBranchAddress("HadSystemMass", &HadSystemMass);
+  if(tree->GetBranch("MissingEnergy")) tree->SetBranchAddress("MissingEnergy", &MissingEnergy);
+  if(tree->GetBranch("MissingAngle")) tree->SetBranchAddress("MissingAngle", &MissingAngle);
+  if(tree->GetBranch("MissingMomentum")) tree->SetBranchAddress("MissingMomentum", &MissingMomentum);
+  if(tree->GetBranch("InferedNucleonMom")) tree->SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
+  if(tree->GetBranch("HadronsAngle")) tree->SetBranchAddress("HadronsAngle", &HadronsAngle);
+  if(tree->GetBranch("AdlerAngleThetaP")) tree->SetBranchAddress("AdlerAngleThetaP", &AdlerAngleThetaP);
+  if(tree->GetBranch("AdlerAnglePhiP")) tree->SetBranchAddress("AdlerAnglePhiP", &AdlerAnglePhiP);
+  if(tree->GetBranch("AdlerAngleThetaPi")) tree->SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
+  if(tree->GetBranch("AdlerAnglePhiPi")) tree->SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
+  if(tree->GetBranch("Angleqvshad")) tree->SetBranchAddress("Angleqvshad", &Angleqvshad);
+  if(tree->GetBranch("RecoEvPion")) tree->SetBranchAddress("RecoEvPion", &RecoEvPion);
+  if(tree->GetBranch("RecoWPion")) tree->SetBranchAddress("RecoWPion", &RecoWPion);
+  if(tree->GetBranch("ElectronPT")) tree->SetBranchAddress("ElectronPT", &ElectronPT);
+  if(tree->GetBranch("PionPT")) tree->SetBranchAddress("PionPT", &PionPT);
+  if(tree->GetBranch("QEL")) tree->SetBranchAddress("QEL", &QEL);
+  if(tree->GetBranch("RES")) tree->SetBranchAddress("RES", &RES);
+  if(tree->GetBranch("MEC")) tree->SetBranchAddress("MEC", &MEC);
+  if(tree->GetBranch("DIS")) tree->SetBranchAddress("DIS", &DIS);
+  if(tree->GetBranch("resid")) tree->SetBranchAddress("resid", &resid);
+  if(tree->GetBranch("MCNormalization")) tree->SetBranchAddress("MCNormalization", &MCNormalization);
+  if(tree->GetBranch("DataNormalization")) tree->SetBranchAddress("DataNormalization", &DataNormalization);
+}
+
 
 double plotting::GetObservable(const std::string observable)
 {
@@ -1393,7 +1456,7 @@ void plotting::StandardFormat(TH2D *prediction, std::string title, int color, in
 int plotting::ColorBlindPalette(int color_id){
   // using color blind palette developed by CMS
   // https://arxiv.org/abs/2107.02270
-  static const std::vector<std::string> sequence({"#3f90da","#ffa90e","#bd1f01","#94a4a2","#832db6","#a96b59","#e76300","#b9ac70","#717581","#92dadd"});
+  const std::vector<std::string> sequence({"#3f90da","#ffa90e","#bd1f01","#94a4a2","#832db6","#a96b59","#e76300","#b9ac70","#717581","#92dadd"});
   return TColor::GetColor( sequence[ color_id%10 ].c_str() );
 }
 

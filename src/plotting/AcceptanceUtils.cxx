@@ -100,56 +100,10 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
 
     // Observables definition in Plotting Utils
     long NEntries;
-    bool IsBkg;
-    int ElectronSector;
     for (unsigned int j = initial_size_trees; j < trees.size(); ++j)
     {
       NEntries = trees[j]->GetEntries();
-      trees[j]->SetBranchAddress("TotWeight", &TotWeight);
-      trees[j]->SetBranchAddress("IsBkg", &IsBkg);
-      trees[j]->SetBranchAddress("ECal", &ECal);
-      trees[j]->SetBranchAddress("pfl_theta", &pfl_theta);
-      trees[j]->SetBranchAddress("pfl_phi", &pfl_phi);
-      trees[j]->SetBranchAddress("pfl", &pfl);
-      trees[j]->SetBranchAddress("proton_mom", &proton_mom);
-      trees[j]->SetBranchAddress("proton_theta", &proton_theta);
-      trees[j]->SetBranchAddress("proton_phi", &proton_phi);
-      trees[j]->SetBranchAddress("pim_mom", &pim_mom);
-      trees[j]->SetBranchAddress("pim_theta", &pim_theta);
-      trees[j]->SetBranchAddress("pim_phi", &pim_phi);
-      trees[j]->SetBranchAddress("pip_mom", &pip_mom);
-      trees[j]->SetBranchAddress("pip_theta", &pip_theta);
-      trees[j]->SetBranchAddress("pip_phi", &pip_phi);
-      trees[j]->SetBranchAddress("RecoW", &RecoW);
-      trees[j]->SetBranchAddress("RecoQELEnu", &RecoQELEnu);
-      trees[j]->SetBranchAddress("Recoq3", &Recoq3);
-      trees[j]->SetBranchAddress("RecoXBJK", &RecoXBJK);
-      trees[j]->SetBranchAddress("RecoQ2", &RecoQ2);
-      trees[j]->SetBranchAddress("RecoEnergyTransfer", &RecoEnergyTransfer);
-      trees[j]->SetBranchAddress("AlphaT", &AlphaT);
-      trees[j]->SetBranchAddress("HadAlphaT", &HadAlphaT);
-      trees[j]->SetBranchAddress("DeltaPT", &DeltaPT);
-      trees[j]->SetBranchAddress("HadDeltaPT", &HadDeltaPT);
-      trees[j]->SetBranchAddress("HadDeltaPTx", &HadDeltaPTx);
-      trees[j]->SetBranchAddress("HadDeltaPTy", &HadDeltaPTy);
-      trees[j]->SetBranchAddress("DeltaPhiT", &DeltaPhiT);
-      trees[j]->SetBranchAddress("HadDeltaPhiT", &HadDeltaPhiT);
-      trees[j]->SetBranchAddress("ElectronSector", &ElectronSector);
-      trees[j]->SetBranchAddress("HadSystemMass", &HadSystemMass);
-      trees[j]->SetBranchAddress("MissingEnergy", &MissingEnergy);
-      trees[j]->SetBranchAddress("MissingAngle", &MissingAngle);
-      trees[j]->SetBranchAddress("MissingMomentum", &MissingMomentum);
-      trees[j]->SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
-      trees[j]->SetBranchAddress("HadronsAngle", &HadronsAngle);
-      trees[j]->SetBranchAddress("AdlerAngleThetaP", &AdlerAngleThetaP);
-      trees[j]->SetBranchAddress("AdlerAnglePhiP", &AdlerAnglePhiP);
-      trees[j]->SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
-      trees[j]->SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
-      trees[j]->SetBranchAddress("Angleqvshad", &Angleqvshad);
-      trees[j]->SetBranchAddress("RecoEvPion", &RecoEvPion);
-      trees[j]->SetBranchAddress("RecoWPion", &RecoWPion);
-      trees[j]->SetBranchAddress("ElectronPT", &ElectronPT);
-      trees[j]->SetBranchAddress("PionPT", &PionPT);
+      plotting::SetAnalysisBranch( trees[j] ) ;
 
       for (int k = 0; k < NEntries; ++k)
       {
@@ -177,16 +131,6 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
 
         hists[j + initial_size_hists - initial_size_trees]->Fill(content, w);
         hists[j + initial_size_hists - initial_size_trees]->SetLineWidth(3);
-
-        std::string alt_obs = GetAlternativeObs(observable);
-        double content_2 = 0;
-        if (alt_obs == "ECal")
-          content_2 = ECal;
-        else if (alt_obs == "HadAlphaT")
-          content_2 = HadAlphaT;
-        else if (alt_obs == "HadDeltaPT")
-          content_2 = HadDeltaPT;
-
       }
     }
 
@@ -765,56 +709,10 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
 
     // Observables definition in Plotting Utils
     long NEntries;
-    bool IsBkg;
-    int ElectronSector;
     for (unsigned int j = initial_size_trees; j < trees.size(); ++j)
     {
       NEntries = trees[j]->GetEntries();
-      trees[j]->SetBranchAddress("TotWeight", &TotWeight);
-      trees[j]->SetBranchAddress("IsBkg", &IsBkg);
-      trees[j]->SetBranchAddress("ECal", &ECal);
-      trees[j]->SetBranchAddress("pfl_theta", &pfl_theta);
-      trees[j]->SetBranchAddress("pfl_phi", &pfl_phi);
-      trees[j]->SetBranchAddress("pfl", &pfl);
-      trees[j]->SetBranchAddress("proton_mom", &proton_mom);
-      trees[j]->SetBranchAddress("proton_theta", &proton_theta);
-      trees[j]->SetBranchAddress("proton_phi", &proton_phi);
-      trees[j]->SetBranchAddress("pim_mom", &pim_mom);
-      trees[j]->SetBranchAddress("pim_theta", &pim_theta);
-      trees[j]->SetBranchAddress("pim_phi", &pim_phi);
-      trees[j]->SetBranchAddress("pip_mom", &pip_mom);
-      trees[j]->SetBranchAddress("pip_theta", &pip_theta);
-      trees[j]->SetBranchAddress("pip_phi", &pip_phi);
-      trees[j]->SetBranchAddress("RecoW", &RecoW);
-      trees[j]->SetBranchAddress("RecoQELEnu", &RecoQELEnu);
-      trees[j]->SetBranchAddress("Recoq3", &Recoq3);
-      trees[j]->SetBranchAddress("RecoXBJK", &RecoXBJK);
-      trees[j]->SetBranchAddress("RecoQ2", &RecoQ2);
-      trees[j]->SetBranchAddress("RecoEnergyTransfer", &RecoEnergyTransfer);
-      trees[j]->SetBranchAddress("AlphaT", &AlphaT);
-      trees[j]->SetBranchAddress("HadAlphaT", &HadAlphaT);
-      trees[j]->SetBranchAddress("DeltaPT", &DeltaPT);
-      trees[j]->SetBranchAddress("HadDeltaPT", &HadDeltaPT);
-      trees[j]->SetBranchAddress("HadDeltaPTx", &HadDeltaPTx);
-      trees[j]->SetBranchAddress("HadDeltaPTy", &HadDeltaPTy);
-      trees[j]->SetBranchAddress("DeltaPhiT", &DeltaPhiT);
-      trees[j]->SetBranchAddress("HadDeltaPhiT", &HadDeltaPhiT);
-      trees[j]->SetBranchAddress("ElectronSector", &ElectronSector);
-      trees[j]->SetBranchAddress("HadSystemMass", &HadSystemMass);
-      trees[j]->SetBranchAddress("MissingEnergy", &MissingEnergy);
-      trees[j]->SetBranchAddress("MissingAngle", &MissingAngle);
-      trees[j]->SetBranchAddress("MissingMomentum", &MissingMomentum);
-      trees[j]->SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
-      trees[j]->SetBranchAddress("HadronsAngle", &HadronsAngle);
-      trees[j]->SetBranchAddress("AdlerAngleThetaP", &AdlerAngleThetaP);
-      trees[j]->SetBranchAddress("AdlerAnglePhiP", &AdlerAnglePhiP);
-      trees[j]->SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
-      trees[j]->SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
-      trees[j]->SetBranchAddress("Angleqvshad", &Angleqvshad);
-      trees[j]->SetBranchAddress("RecoEvPion", &RecoEvPion);
-      trees[j]->SetBranchAddress("RecoWPion", &RecoWPion);
-      trees[j]->SetBranchAddress("ElectronPT", &ElectronPT);
-      trees[j]->SetBranchAddress("PionPT", &PionPT);
+      plotting::SetAnalysisBranch( trees[j] ) ;
 
       for (int k = 0; k < NEntries; ++k)
       {
@@ -1321,55 +1219,10 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::s
     std::vector<TTree *> trees = {trees_mctrueacc[i], trees_mcradcorr[i]};
 
     long NEntries;
-    bool IsBkg;
-    int ElectronSector;
-
     for (unsigned int j = 0; j < trees.size(); ++j)
     {
       NEntries = trees[j]->GetEntries();
-
-      trees[j]->SetBranchAddress("TotWeight", &TotWeight);
-      trees[j]->SetBranchAddress("IsBkg", &IsBkg);
-      trees[j]->SetBranchAddress("ECal", &ECal);
-      trees[j]->SetBranchAddress("pfl_theta", &pfl_theta);
-      trees[j]->SetBranchAddress("pfl_phi", &pfl_phi);
-      trees[j]->SetBranchAddress("pfl", &pfl);
-      trees[j]->SetBranchAddress("proton_mom", &proton_mom);
-      trees[j]->SetBranchAddress("proton_theta", &proton_theta);
-      trees[j]->SetBranchAddress("proton_phi", &proton_phi);
-      trees[j]->SetBranchAddress("pim_mom", &pim_mom);
-      trees[j]->SetBranchAddress("pim_theta", &pim_theta);
-      trees[j]->SetBranchAddress("pim_phi", &pim_phi);
-      trees[j]->SetBranchAddress("pip_mom", &pip_mom);
-      trees[j]->SetBranchAddress("pip_theta", &pip_theta);
-      trees[j]->SetBranchAddress("pip_phi", &pip_phi);
-      trees[j]->SetBranchAddress("RecoW", &RecoW);
-      trees[j]->SetBranchAddress("RecoQELEnu", &RecoQELEnu);
-      trees[j]->SetBranchAddress("Recoq3", &Recoq3);
-      trees[j]->SetBranchAddress("RecoXBJK", &RecoXBJK);
-      trees[j]->SetBranchAddress("RecoQ2", &RecoQ2);
-      trees[j]->SetBranchAddress("RecoEnergyTransfer", &RecoEnergyTransfer);
-      trees[j]->SetBranchAddress("AlphaT", &AlphaT);
-      trees[j]->SetBranchAddress("HadAlphaT", &HadAlphaT);
-      trees[j]->SetBranchAddress("DeltaPT", &DeltaPT);
-      trees[j]->SetBranchAddress("HadDeltaPT", &HadDeltaPT);
-      trees[j]->SetBranchAddress("HadDeltaPTx", &HadDeltaPTx);
-      trees[j]->SetBranchAddress("HadDeltaPTy", &HadDeltaPTy);
-      trees[j]->SetBranchAddress("DeltaPhiT", &DeltaPhiT);
-      trees[j]->SetBranchAddress("HadDeltaPhiT", &HadDeltaPhiT);
-      trees[j]->SetBranchAddress("ElectronSector", &ElectronSector);
-      trees[j]->SetBranchAddress("HadSystemMass", &HadSystemMass);
-      trees[j]->SetBranchAddress("MissingEnergy", &MissingEnergy);
-      trees[j]->SetBranchAddress("MissingAngle", &MissingAngle);
-      trees[j]->SetBranchAddress("MissingMomentum", &MissingMomentum);
-      trees[j]->SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
-      trees[j]->SetBranchAddress("HadronsAngle", &HadronsAngle);
-      trees[j]->SetBranchAddress("AdlerAngleThetaP", &AdlerAngleThetaP);
-      trees[j]->SetBranchAddress("AdlerAnglePhiP", &AdlerAnglePhiP);
-      trees[j]->SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
-      trees[j]->SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
-      trees[j]->SetBranchAddress("Angleqvshad", &Angleqvshad);
-
+      plotting::SetAnalysisBranch( trees[j] ) ;
       for (int k = 0; k < NEntries; ++k)
       {
         trees[j]->GetEntry(k);
@@ -1511,53 +1364,10 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::s
     std::vector<TTree *> trees = {trees_mctrueacc[i], trees_mcradcorr[i]};
 
     long NEntries;
-    bool IsBkg;
-    int ElectronSector;
     for (unsigned int j = 0; j < trees.size(); ++j)
     {
       NEntries = trees[j]->GetEntries();
-      trees[j]->SetBranchAddress("TotWeight", &TotWeight);
-      trees[j]->SetBranchAddress("IsBkg", &IsBkg);
-      trees[j]->SetBranchAddress("ECal", &ECal);
-      trees[j]->SetBranchAddress("pfl_theta", &pfl_theta);
-      trees[j]->SetBranchAddress("pfl_phi", &pfl_phi);
-      trees[j]->SetBranchAddress("pfl", &pfl);
-      trees[j]->SetBranchAddress("proton_mom", &proton_mom);
-      trees[j]->SetBranchAddress("proton_theta", &proton_theta);
-      trees[j]->SetBranchAddress("proton_phi", &proton_phi);
-      trees[j]->SetBranchAddress("pim_mom", &pim_mom);
-      trees[j]->SetBranchAddress("pim_theta", &pim_theta);
-      trees[j]->SetBranchAddress("pim_phi", &pim_phi);
-      trees[j]->SetBranchAddress("pip_mom", &pip_mom);
-      trees[j]->SetBranchAddress("pip_theta", &pip_theta);
-      trees[j]->SetBranchAddress("pip_phi", &pip_phi);
-      trees[j]->SetBranchAddress("RecoW", &RecoW);
-      trees[j]->SetBranchAddress("RecoQELEnu", &RecoQELEnu);
-      trees[j]->SetBranchAddress("Recoq3", &Recoq3);
-      trees[j]->SetBranchAddress("RecoXBJK", &RecoXBJK);
-      trees[j]->SetBranchAddress("RecoQ2", &RecoQ2);
-      trees[j]->SetBranchAddress("RecoEnergyTransfer", &RecoEnergyTransfer);
-      trees[j]->SetBranchAddress("AlphaT", &AlphaT);
-      trees[j]->SetBranchAddress("HadAlphaT", &HadAlphaT);
-      trees[j]->SetBranchAddress("DeltaPT", &DeltaPT);
-      trees[j]->SetBranchAddress("HadDeltaPT", &HadDeltaPT);
-      trees[j]->SetBranchAddress("HadDeltaPTx", &HadDeltaPTx);
-      trees[j]->SetBranchAddress("HadDeltaPTy", &HadDeltaPTy);
-      trees[j]->SetBranchAddress("DeltaPhiT", &DeltaPhiT);
-      trees[j]->SetBranchAddress("HadDeltaPhiT", &HadDeltaPhiT);
-      trees[j]->SetBranchAddress("ElectronSector", &ElectronSector);
-      trees[j]->SetBranchAddress("HadSystemMass", &HadSystemMass);
-      trees[j]->SetBranchAddress("MissingEnergy", &MissingEnergy);
-      trees[j]->SetBranchAddress("MissingAngle", &MissingAngle);
-      trees[j]->SetBranchAddress("MissingMomentum", &MissingMomentum);
-      trees[j]->SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
-      trees[j]->SetBranchAddress("HadronsAngle", &HadronsAngle);
-      trees[j]->SetBranchAddress("AdlerAngleThetaP", &AdlerAngleThetaP);
-      trees[j]->SetBranchAddress("AdlerAnglePhiP", &AdlerAnglePhiP);
-      trees[j]->SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
-      trees[j]->SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
-      trees[j]->SetBranchAddress("Angleqvshad", &Angleqvshad);
-
+      plotting::SetAnalysisBranch( trees[j] ) ;
       for (int k = 0; k < NEntries; ++k)
       {
         trees[j]->GetEntry(k);

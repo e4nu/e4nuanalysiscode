@@ -30,7 +30,7 @@ void plotting::SetAnalysisBranch( TTree * tree ) {
   if(tree->GetBranch("TotWeight")) tree->SetBranchAddress("TotWeight", &TotWeight);
   else {
     // This variable should exist. Use as validation
-    std::cout << " ROOT file corrupted. TotWeight Branch missing...!"
+    std::cout << " ROOT file corrupted. TotWeight Branch missing...!"<<std::endl;
   }
   if(tree->GetBranch("IsBkg")) tree->SetBranchAddress("IsBkg", &IsBkg);
   if(tree->GetBranch("ECal")) tree->SetBranchAddress("ECal", &ECal);

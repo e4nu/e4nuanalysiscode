@@ -47,11 +47,11 @@ bool AnalysisI::Analyse( Event & event ) {
   // GENIE coordinate system flipped with respect to CLAS
   if( !IsData() ) out_mom.SetPhi( out_mom.Phi() + TMath::Pi() );
 
-  if( !utils::IsValidSector( out_mom.Phi(), EBeam, UseAllSectors() ) ) return false ;
+  if( !utils::IsValidSector( out_mom.Phi(), kEBeam, UseAllSectors() ) ) return false ;
   if( !utils::IsValidSector( out_mom.Phi(), EnabledSectors() ) ) return false ;
 
   if( ApplyOutElectronCut() ){
-    if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) return false ;
+    if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, kEBeam ) ) return false ;
   }
 
   if( ApplyThetaSlice() ) {
@@ -67,19 +67,19 @@ bool AnalysisI::Analyse( Event & event ) {
     if ( ! conf::GoodSectorPhiSlice( out_mom.Phi() ) ) return false ;
   }
 
-  double reco_Q2 = utils::GetRecoQ2( out_mom, EBeam ) ;
-  double W_var = utils::GetRecoW( out_mom, EBeam ) ;
+  double reco_Q2 = utils::GetRecoQ2( out_mom, kEBeam ) ;
+  double W_var = utils::GetRecoW( out_mom, kEBeam ) ;
 
   if( ApplyQ2Cut() ) {
     double MaxQ2 = 0 ;
-    if( conf::GetQ2Cut( MaxQ2, EBeam ) ) {
+    if( conf::GetQ2Cut( MaxQ2, kEBeam ) ) {
       if( reco_Q2 < MaxQ2 ) return false ;
     }
   }
 
   if( ApplyWCut() ) {
     double MinW = 0 ;
-    if( conf::GetWCut( MinW, EBeam ) ) {
+    if( conf::GetWCut( MinW, kEBeam ) ) {
       if( W_var > MinW ) return false ;
     }
   }

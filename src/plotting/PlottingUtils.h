@@ -34,9 +34,6 @@ namespace e4nu {
     extern int ElectronSector, resid;
     extern bool QEL, RES, DIS, MEC;
     extern double MCNormalization, DataNormalization;
-
-
-
     void SetAnalysisBranch( TTree * tree ) ;
 
     int ColorBlindPalette(int color_id ) ;

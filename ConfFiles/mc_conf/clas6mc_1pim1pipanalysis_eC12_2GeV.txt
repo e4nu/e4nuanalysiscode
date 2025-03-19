@@ -19,15 +19,15 @@ offset			0
 #Run Configurables
 EBeam			2.261
 TargetPdg		1000060120
-NEvents			1000000000
+NEvents			10000000
 FirstEvent		0
 
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
-Toplogy 		11:1,211:1,-211:1,22:0,111:0
+Toplogy 		11:1,-211:1,211:1,22:0
 MaxBackgroundMultiplicity 4
-NRotations 5000
+NRotations 1000
 
 #Acceptance correction
 #The following parameters will modify the configuration 
@@ -36,7 +36,9 @@ NRotations 5000
 ComputeTrueAccCorr true
 ComputeTrueRecoAccCorr false
 
-# G18_10a_00_000:
-InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/EventGeneration/G18_10a_00_000/G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad.gst.root
-XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/Splines/G18_10a_00_000/G18_10a_00_000_eC12_Q2min_04_total_xsec.root
-OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/AnalisedFiles/2pip/e4nuanalysis_1pim1pipanalysis_G18_10a_Q2_04_e_on_1000060120_2261MeV_NoRad
+InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/G18_10a_Dipole_LFG_Q2_04_2GeV_eCarbon.gst.root
+XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/G18_10a_Dipole_Q2_04_eCarbon.root
+OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1pim1pip_G18_10a_Dipole_LFG_Q2_01_2GeV_eCarbon_NoRad
+
+
+

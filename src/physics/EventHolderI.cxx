@@ -51,10 +51,12 @@ bool EventHolderI::LoadMembers( const std::string file ) {
     DIR* dirp = opendir(file.c_str());
     struct dirent * dp;
     std::cout << " Loading files from " << file << std::endl;
+    int count = 0 ;
     while ((dp = readdir(dirp)) != NULL) {
       std::string s1 = dp->d_name;
       if (s1.find("gst.root") != std::string::npos) {	
 	std::cout << " Adding " << (file+s1)<< std::endl;
+	++count ; 
 	if ( ! fEventHolderChain -> Add( (file+s1).c_str() ) ) {
 	  std::cout << " Failded to add " << file+s1 << std::endl;
 	  closedir(dirp);

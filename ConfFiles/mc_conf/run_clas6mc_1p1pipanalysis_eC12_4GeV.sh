@@ -23,12 +23,9 @@ declare -a XSecFiles=(
 )
 
 ## Radiated input
-#declare -a RadiatedFiles=("G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_radiated.gst.root"
-#    "GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_radiated.gst.root")
+declare -a RadiatedFiles=("Rarita/Carbon/Radiated/4GeV/")
 
-#declare -a OutputFilesRadiated=("e4nuanalysis_1p1pip_G18_10a_Dipole_LFG_Q2_01_1GeV_eCarbon_Rad"
-#    "e4nuanalysis_1p1pip_GEM21_11a_Dipole_LFG_Q2_01_1GeV_eCarbon_Rad"
-#)
+declare -a OutputFilesRadiated=("e4nuanalysis_1p1pip_GEM21_11a_Rarita_LFG_Q2_08_4GeV_eCarbon_Rad")
 
 conf_file="ConfFiles/mc_conf/clas6mc_1p1pipanalysis_eC12_4GeV.txt"
 
@@ -44,13 +41,11 @@ do
 done
 
 # Radiated
-#number_inputs_rad=${#RadiatedFiles[@]}
-#for (( i=0; i<${number_inputs_rad}; i++ ));
-#do
-#    ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}${OutputFilesRadiated[$i]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true
-#done
+./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}${OutputFilesRadiated[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true
 
 # For systematics
 
-./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
-./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueRecoAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
+#./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
+#./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueRecoAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
+
+

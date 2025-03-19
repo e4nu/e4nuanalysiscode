@@ -22,6 +22,11 @@ declare -a XSecFiles=(
     "GEM21_11a_Dipole_Q2_04_C.gst.root"
 )
 
+## Radiated input
+declare -a RadiatedFiles=("Rarita/Carbon/Radiated/2GeV/")
+
+declare -a OutputFilesRadiated=("e4nuanalysis_1p1pip_GEM21_11a_Dipole_Rarita_Q2_04_2GeV_eCarbon_Rad")
+
 conf_file="ConfFiles/mc_conf/clas6mc_1p1pipanalysis_eC12_2GeV.txt"
 
 cd $E4NUANALYSIS
@@ -36,13 +41,12 @@ do
 done
 
 # Radiated
-#number_inputs_rad=${#RadiatedFiles[@]}
-#for (( i=0; i<${number_inputs_rad}; i++ ));
-#do
-#    ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}${OutputFilesRadiated[$i]} --analysis-#type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true
-#done
+./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}${OutputFilesRadiated[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true
+
 
 # For systematics
 
-./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
-./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueRecoAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
+#./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
+#./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${InputFiles[0]} --output-file ${path_output}${OutputFiles[0]} --analysis-type ComputeTrueRecoAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --phi-shift 3
+
+

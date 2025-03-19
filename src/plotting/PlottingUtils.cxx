@@ -20,18 +20,27 @@ namespace e4nu
     double AdlerAngleThetaP= -9999, AdlerAnglePhiP= -9999, AdlerAngleThetaPi= -9999, AdlerAnglePhiPi= -9999;
     double RecoEvPion= -9999, RecoWPion= -9999, ElectronPT= -9999, PionPT= -9999;
     bool IsBkg= 0;
-    int ElectronSector= -9999, resid= -9999;
+    int ElectronSector= -9999, resid= -9999, InitialNEvents= 1;
     bool QEL= 0, RES= 0, DIS= 0, MEC= 0;
     double MCNormalization= 0, DataNormalization= 0;
+    long NEntries = 0;
   }
 }
 
 void plotting::SetAnalysisBranch( TTree * tree ) {
+  NEntries = tree->GetEntries();
+  if( NEntries == 0 ){
+    std::cout << " ROOT tree is empty. Exiting...!" << std::endl;
+    exit(0);
+  }
+
   if(tree->GetBranch("TotWeight")) tree->SetBranchAddress("TotWeight", &TotWeight);
   else {
     // This variable should exist. Use as validation
-    std::cout << " ROOT file corrupted. TotWeight Branch missing...!"
+    std::cout << " ROOT file corrupted. TotWeight Branch missing...!, Exiting"<< std::endl;
+    exit(0);
   }
+  if(tree->GetBranch("InitialNEvents")) tree->SetBranchAddress("InitialNEvents",&InitialNEvents);
   if(tree->GetBranch("IsBkg")) tree->SetBranchAddress("IsBkg", &IsBkg);
   if(tree->GetBranch("ECal")) tree->SetBranchAddress("ECal", &ECal);
   if(tree->GetBranch("pfl_theta")) tree->SetBranchAddress("pfl_theta", &pfl_theta);

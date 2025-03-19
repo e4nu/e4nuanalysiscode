@@ -424,7 +424,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_3, DataNormalization);
     NormalizeHist(hist_data_4, DataNormalization);
     NormalizeHist(hist_data_5, DataNormalization);
-  
+
     // Add Systematics
     // 1 - Acceptance model dependence (already included)
     // 2 - Sector Sector Variation
@@ -1476,12 +1476,10 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
     id_data = 1;
 
   // OBSERVABLE DEFINITION specific for MC
-  long NEntries;
   std::vector<double> mc_norm;
 
   for (unsigned int i = 0; i < trees.size(); ++i)
   {
-    NEntries = trees[i]->GetEntries();
     if (!trees[i])
       continue;
     plotting::SetAnalysisBranch( trees[i] ) ;

@@ -45,61 +45,10 @@ void systematics::ComputeHistSyst( std::vector<std::string> input_files, std::ve
     if( !hist ) return ;
 
     // OBSERVABLE DEFINITION:
-    long NEntries ;
-    bool IsBkg ;
-    double MCNormalization, DataNormalization ;
     std::vector<double> mc_norm ;
 
     if( !tree ) continue ;
-    NEntries = tree -> GetEntries() ;
-
-    tree -> SetBranchAddress("TotWeight",&TotWeight);
-    tree -> SetBranchAddress("IsBkg",&IsBkg);
-    tree -> SetBranchAddress("ECal",&ECal);
-    tree -> SetBranchAddress("pfl_theta",&pfl_theta);
-    tree -> SetBranchAddress("pfl_phi",&pfl_phi);
-    tree -> SetBranchAddress("pfl",&pfl);
-    tree -> SetBranchAddress("proton_mom",&proton_mom);
-    tree -> SetBranchAddress("proton_theta",&proton_theta);
-    tree -> SetBranchAddress("proton_phi",&proton_phi);
-    tree -> SetBranchAddress("pim_mom",&pim_mom);
-    tree -> SetBranchAddress("pim_theta",&pim_theta);
-    tree -> SetBranchAddress("pim_phi",&pim_phi);
-    tree -> SetBranchAddress("pip_mom",&pip_mom);
-    tree -> SetBranchAddress("pip_theta",&pip_theta);
-    tree -> SetBranchAddress("pip_phi",&pip_phi);
-    tree -> SetBranchAddress("RecoW",&RecoW);
-    tree -> SetBranchAddress("Recoq3",&Recoq3);
-    tree -> SetBranchAddress("RecoQELEnu",&RecoQELEnu);
-    tree -> SetBranchAddress("RecoXBJK",&RecoXBJK);
-    tree -> SetBranchAddress("RecoQ2",&RecoQ2);
-    tree -> SetBranchAddress("RecoEnergyTransfer",&RecoEnergyTransfer);
-    tree -> SetBranchAddress("AlphaT",&AlphaT);
-    tree -> SetBranchAddress("HadAlphaT",&HadAlphaT);
-    tree -> SetBranchAddress("DeltaPT",&DeltaPT);
-    tree -> SetBranchAddress("HadDeltaPT",&HadDeltaPT);
-    tree -> SetBranchAddress("HadDeltaPTx",&HadDeltaPTx);
-    tree -> SetBranchAddress("HadDeltaPTy",&HadDeltaPTy);
-    tree -> SetBranchAddress("DeltaPhiT",&DeltaPhiT);
-    tree -> SetBranchAddress("HadDeltaPhiT",&HadDeltaPhiT);
-    tree -> SetBranchAddress("HadSystemMass", &HadSystemMass);
-    tree -> SetBranchAddress("MissingEnergy", &MissingEnergy);
-    tree -> SetBranchAddress("MissingAngle", &MissingAngle);
-    tree -> SetBranchAddress("MissingMomentum", &MissingMomentum);
-    tree -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
-    tree -> SetBranchAddress("HadronsAngle", &HadronsAngle);
-    tree -> SetBranchAddress("AdlerAngleThetaP", &AdlerAngleThetaP);
-    tree -> SetBranchAddress("AdlerAnglePhiP", &AdlerAnglePhiP);
-    tree -> SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
-    tree -> SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
-    tree -> SetBranchAddress("Angleqvshad",&Angleqvshad);
-
-    // Only second tree corresponds to data
-    if( !is_data ) {
-      tree -> SetBranchAddress("MCNormalization", &MCNormalization );
-    } else {
-      tree -> SetBranchAddress("DataNormalization",&DataNormalization );
-    }
+    plotting::SetAnalysisBranch( tree ) ;
 
     double norm =0;
     for( int j = 0 ; j < NEntries ; ++j ) {

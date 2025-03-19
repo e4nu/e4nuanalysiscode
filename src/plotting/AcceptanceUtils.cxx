@@ -99,17 +99,17 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     }
 
     // Observables definition in Plotting Utils
-    long NEntries;
     for (unsigned int j = initial_size_trees; j < trees.size(); ++j)
     {
-      NEntries = trees[j]->GetEntries();
       plotting::SetAnalysisBranch( trees[j] ) ;
 
       for (int k = 0; k < NEntries; ++k)
       {
         trees[j]->GetEntry(k);
         double content = 0;
-        double w = TotWeight;
+        // Weight is the total weight devided by the number of entries.
+        // This ensures that we get the same results even if we run less radiated events.
+        double w = TotWeight / InitialNEvents;
 	      content = GetObservable(observable);
 
         // Check if passes cuts
@@ -708,10 +708,8 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
     }
 
     // Observables definition in Plotting Utils
-    long NEntries;
     for (unsigned int j = initial_size_trees; j < trees.size(); ++j)
     {
-      NEntries = trees[j]->GetEntries();
       plotting::SetAnalysisBranch( trees[j] ) ;
 
       for (int k = 0; k < NEntries; ++k)
@@ -719,7 +717,9 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
         trees[j]->GetEntry(k);
         double content_x = GetObservable(x_observable);
         double content_y = GetObservable(y_observable);
-        double w = TotWeight;
+        // Weight is the total weight devided by the number of entries.
+        // This ensures that we get the same results even if we run less radiated events.
+        double w = TotWeight / InitialNEvents;
 
         // Check if passes cuts
         bool do_fill =true ;
@@ -1217,30 +1217,30 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::s
     hists_true[i]->Sumw2();
 
     std::vector<TTree *> trees = {trees_mctrueacc[i], trees_mcradcorr[i]};
-
-    long NEntries;
     for (unsigned int j = 0; j < trees.size(); ++j)
     {
-      NEntries = trees[j]->GetEntries();
       plotting::SetAnalysisBranch( trees[j] ) ;
+
       for (int k = 0; k < NEntries; ++k)
       {
         trees[j]->GetEntry(k);
         double content = 0;
-        double w = TotWeight;
-	       content = GetObservable(observable);
-         // Check if passes cuts
-         bool do_fill =true ;
-         for (auto it = cuts.begin(); it != cuts.end(); it++)
-         {
-           double min = it->second[0] ;
-           double max = it->second[1] ;
-           if( GetObservable(it->first) < min || GetObservable(it->first) > max ) {
-             do_fill = false;
-             continue;
-           }
-         }
-         if( !do_fill ) continue ;
+        // Weight is the total weight devided by the number of entries.
+        // This ensures that we get the same results even if we run less radiated events.
+        double w = TotWeight / InitialNEvents;
+	      content = GetObservable(observable);
+        // Check if passes cuts
+        bool do_fill =true ;
+        for (auto it = cuts.begin(); it != cuts.end(); it++)
+        {
+          double min = it->second[0] ;
+          double max = it->second[1] ;
+          if( GetObservable(it->first) < min || GetObservable(it->first) > max ) {
+            do_fill = false;
+            continue;
+          }
+        }
+        if( !do_fill ) continue ;
 
         // Fill the per Sector  histogram
         if (j == 0)
@@ -1251,8 +1251,6 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::s
     }
 
     ratios.push_back((TH1D *)hists_true[i]->Clone());
-    ratios[i]->Scale(hists_radcorr[i]->GetEntries() / hists_true[i]->GetEntries());
-    std::cout << " scale " << hists_radcorr[i]->GetEntries() / hists_true[i]->GetEntries() << std::endl;
     ratios[i]->Divide(hists_radcorr[i]);
     ratios[i]->SetName(("RadCorrModel_" + std::to_string(i)).c_str());
     StandardFormat(ratios[i], title, kBlack + i + 1, 2 + i, observable);
@@ -1363,17 +1361,17 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::s
 
     std::vector<TTree *> trees = {trees_mctrueacc[i], trees_mcradcorr[i]};
 
-    long NEntries;
     for (unsigned int j = 0; j < trees.size(); ++j)
     {
-      NEntries = trees[j]->GetEntries();
       plotting::SetAnalysisBranch( trees[j] ) ;
       for (int k = 0; k < NEntries; ++k)
       {
         trees[j]->GetEntry(k);
         double content_x = GetObservable(x_observable);
         double content_y = GetObservable(y_observable);
-        double w = TotWeight;
+        // Weight is the total weight devided by the number of entries.
+        // This ensures that we get the same results even if we run less radiated events.
+        double w = TotWeight / InitialNEvents;
 
          // Check if passes cuts
          bool do_fill =true ;
@@ -1397,8 +1395,6 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::s
     }
 
     ratios.push_back((TH2D *)hists_true[i]->Clone());
-    ratios[i]->Scale(hists_radcorr[i]->GetEntries() / hists_true[i]->GetEntries());
-    std::cout << " scale " << hists_radcorr[i]->GetEntries() / hists_true[i]->GetEntries() << std::endl;
     ratios[i]->Divide(hists_radcorr[i]);
     ratios[i]->SetName(("RadCorrModel_" + std::to_string(i)).c_str());
     StandardFormat(ratios[i], title, kBlack + i + 1, 2 + i, x_observable, y_observable);

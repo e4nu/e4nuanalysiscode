@@ -5,29 +5,29 @@ path_xsec="/pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Spli
 
 # Unradiated input 
 declare -a InputFiles=(    
-    "Rarita/Carbon/4GeV/"
-    "Rarita/Carbon/NoFsi/4GeV/"
-    "Dipole/Carbon/4GeV/"
+    "Rarita/Carbon/2GeV/"
+    "Rarita/Carbon/NoFsi/2GeV/"
+    "Dipole/Carbon/2GeV/"
 )
 
 declare -a OutputFiles=(
-    "e4nuanalysis_1pim_GEM21_11a_Rarita_LFG_Q2_08_4GeV_eCarbon_NoRad"
-    "e4nuanalysis_1pim_GEM21_11a_Rarita_LFG_Q2_08_4GeV_eCarbon_NoRad_NoFSI"
-    "e4nuanalysis_1pim_GEM21_11a_Dipole_LFG_Q2_08_4GeV_eCarbon_NoRad"
+    "e4nuanalysis_1pim1pip_GEM21_11a_Rarita_LFG_Q2_04_2GeV_eCarbon_NoRad"
+    "e4nuanalysis_1pim1pip_GEM21_11a_Rarita_LFG_Q2_04_2GeV_eCarbon_NoRad_NoFSI"
+    "e4nuanalysis_1pim1pip_GEM21_11a_Dipole_LFG_Q2_04_2GeV_eCarbon_NoRad"
 )
 
 declare -a XSecFiles=(
-    "GEM21_11a_Rarita_Q2_08_C.gst.root"
-    "GEM21_11a_Rarita_Q2_08_C.gst.root"
-    "GEM21_11a_Dipole_Q2_08_C.gst.root"
+    "GEM21_11a_Rarita_Q2_04_C.gst.root"
+    "GEM21_11a_Rarita_Q2_04_C.gst.root"
+    "GEM21_11a_Dipole_Q2_04_C.gst.root"
 )
 
 ## Radiated input
-declare -a RadiatedFiles=("Rarita/Carbon/Radiated/4GeV/")
+declare -a RadiatedFiles=("Rarita/Carbon/Radiated/2GeV/")
 
-declare -a OutputFilesRadiated=("e4nuanalysis_1pim_GEM21_11a_Rarita_LFG_Q2_01_1GeV_eCarbon_Rad")
+declare -a OutputFilesRadiated=("e4nuanalysis_1pim1pip_GEM21_11a_Dipole_Rarita_Q2_01_1GeV_eCarbon_Rad")
 
-conf_file="ConfFiles/mc_conf/clas6mc_1pimanalysis_eC12_4GeV.txt"
+conf_file="ConfFiles/mc_conf/clas6mc_1pim1pipanalysis_eC12_2GeV.txt"
 
 cd $E4NUANALYSIS
 
@@ -42,6 +42,7 @@ done
 
 # Radiated
 ./e4nuanalysis --conf-file ${conf_file} --root-file ${path_mc_files}${RadiatedFiles[0]} --output-file ${path_output}${OutputFilesRadiated[0]} --analysis-type ComputeTrueAccCorr --xsec-file ${path_xsec}${XSecFiles[0]} --rad-corr true
+
 
 # For systematics
 

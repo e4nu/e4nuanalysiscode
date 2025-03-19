@@ -2437,6 +2437,9 @@ Bool_t Fiducial::PFiducialCutExtra(double beam_en, TVector3 momentum) {
 
   if (theta < conf::kMinThetaProton) { status = false; }
 
+  // There is a gap in proton theta at 1 GeV which we cannot correct well for
+  // we apply an additional cut to remove those protons
+  if (theta > 35 && theta < 45 && beam_en < 2 ) status = false ; 
   return status;
 
 }

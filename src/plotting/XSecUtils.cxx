@@ -851,17 +851,6 @@ void plotting::PlotTotal2DXSec(std::vector<TH2D *> mc_hists, std::vector<TH2D *>
                              std::string output_file_name, std::map<string, double> systematic_map, bool show_breakdown,
                              std::string analysis_id, bool store_root, bool log_scale)
 {
-
-  TCanvas *c_sector = new TCanvas("c_sector", "c_sector", 200, 10, 700, 500);
-  c_sector->cd();
-  TPad *pad_sector = new TPad("pad1", "", 0, 0, 1, 1);
-  pad_sector->Draw();
-  pad_sector->cd();
-  pad_sector->SetBottomMargin(0.15);
-  pad_sector->SetLeftMargin(0.15);
-  pad_sector->SetRightMargin(0.15);
-  pad_sector->Divide(2, 1);
-
   // Set correct plotting style
   // Find absolute y max
   std::vector<TH2D *> temp_check = {mc_hists[0]};
@@ -909,30 +898,41 @@ void plotting::PlotTotal2DXSec(std::vector<TH2D *> mc_hists, std::vector<TH2D *>
   hs->Add(breakdown[4]);
   hs->Add(breakdown[5]);
 
-  TPad *pad_sector_1 = (TPad *)pad_sector->cd(1);
-  pad_sector_1->cd();
-  pad_sector_1->SetBottomMargin(0.15);
-  pad_sector_1->SetLeftMargin(0.15);
-  pad_sector_1->SetRightMargin(0.15);
-  mc_hists[0]->SetTitle("Prediction");
-  mc_hists[0]->Draw("COLZ");
-
-  TPad *pad_sector_2 = (TPad *)pad_sector->cd(2);
-  pad_sector_2->cd();
-  pad_sector_2->SetBottomMargin(0.15);
-  pad_sector_2->SetLeftMargin(0.15);
-  pad_sector_2->SetRightMargin(0.15);
-
+  TCanvas *c = new TCanvas("c_sector", "c_sector", 200, 10, 700, 500);
+  c->cd();
+  c->SetBottomMargin(0.15);
+  c->SetLeftMargin(0.15);
+  c->SetRightMargin(0.15);
+  // Setting z axis in log scale for easibility when plotting 2D distributions:
+  if( log_scale ) gPad->SetLogz();
+  gStyle->SetPalette(kCMYK);
   data->SetTitle("Data");
-  data->GetZaxis()->SetRangeUser(mc_hists[0]->GetMinimum(),mc_hists[0]->GetMaximum());
   data->Draw("COLZ same");
-
-  std::string output_name = output_file_name + "_dxsec_d" + x_observable + "_vs_" + y_observable +"_data_vs_mc";
+  std::string output_name = output_file_name + "_dxsec_d" + x_observable + "_vs_" + y_observable +"_data";
+  c->SaveAs((output_location + "/TotalXSec/" + output_name + ".pdf").c_str());
   if (store_root)
   {
     TFile root_file((output_location + "/TotalXSec/" + output_name + ".root").c_str(), "recreate");
     if (data)
       data->Write();
+    c->Write();
+  }
+
+  TCanvas *c_sector = new TCanvas("c_sector", "c_sector", 200, 10, 700, 500);
+  c_sector->cd();
+  c_sector->SetBottomMargin(0.15);
+  c_sector->SetLeftMargin(0.15);
+  c_sector->SetRightMargin(0.15);
+
+  if( log_scale ) gPad->SetLogz();
+  gStyle->SetPalette(kCMYK);
+  mc_hists[0]->SetTitle("Prediction");
+  mc_hists[0]->Draw("COLZ");
+
+  output_name = output_file_name + "_dxsec_d" + x_observable + "_vs_" + y_observable +"_mc";
+  if (store_root)
+  {
+    TFile root_file((output_location + "/TotalXSec/" + output_name + ".root").c_str(), "recreate");
     for (unsigned int i = 0; i < mc_hists.size(); ++i)
       mc_hists[i]->Write();
     for (unsigned int i = 0; i < breakdown.size(); ++i)
@@ -947,7 +947,6 @@ void plotting::PlotTotal2DXSec(std::vector<TH2D *> mc_hists, std::vector<TH2D *>
 
   c_sector->SaveAs((output_location + "/TotalXSec/" + output_name + ".pdf").c_str());
   delete c_sector;
-
 
   std::string output_name_2 = output_file_name + "_dxsec_d" + x_observable + "_vs_" + y_observable +"_projectionX";
   plotting::PlotSlicesGeneralized(mc_hists, breakdown, data, x_observable, y_observable, y_cuts, title, output_location, output_name_2, store_root, log_scale );

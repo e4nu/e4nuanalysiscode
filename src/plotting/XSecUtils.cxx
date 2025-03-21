@@ -906,7 +906,7 @@ void plotting::PlotTotal2DXSec(std::vector<TH2D *> mc_hists, std::vector<TH2D *>
   c->SetRightMargin(0.15);
   // Setting z axis in log scale for easibility when plotting 2D distributions:
   if( log_scale ) gPad->SetLogz();
-  gStyle->SetPalette(kCMYK);
+  gStyle->SetPalette(kColorPrintableOnGrey);
   data->SetTitle("Data");
   data->Draw("COLZ same");
   std::string output_name = output_file_name + "_dxsec_d" + x_observable + "_vs_" + y_observable +"_data";
@@ -926,7 +926,7 @@ void plotting::PlotTotal2DXSec(std::vector<TH2D *> mc_hists, std::vector<TH2D *>
   c_sector->SetRightMargin(0.15);
 
   if( log_scale ) gPad->SetLogz();
-  gStyle->SetPalette(kCMYK);
+  gStyle->SetPalette(kColorPrintableOnGrey);
   mc_hists[0]->SetTitle("Prediction");
   mc_hists[0]->Draw("COLZ");
 
@@ -1800,7 +1800,6 @@ void plotting::PlotProjectionWithRatio( const std::vector<TH2D*>& mcHists, const
 
     // Compute slice for main predictions
     for ( unsigned int i = 0 ; i < mcHists.size(); ++i ) {
-        double first_bin_axis = mcHists[i]->GetNbinsX();
         last_bin = axis == "X" ? mcHists[i]->GetNbinsX() : mcHists[i]->GetNbinsY();
         if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
         if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;

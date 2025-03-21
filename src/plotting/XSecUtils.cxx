@@ -906,7 +906,7 @@ void plotting::PlotTotal2DXSec(std::vector<TH2D *> mc_hists, std::vector<TH2D *>
   c->SetRightMargin(0.15);
   // Setting z axis in log scale for easibility when plotting 2D distributions:
   if( log_scale ) gPad->SetLogz();
-  gStyle->SetPalette(kColorPrintableOnGrey);
+  gStyle->SetPalette(kLightTemperature);
   data->SetTitle("Data");
   data->Draw("COLZ same");
   std::string output_name = output_file_name + "_dxsec_d" + x_observable + "_vs_" + y_observable +"_data";
@@ -926,7 +926,7 @@ void plotting::PlotTotal2DXSec(std::vector<TH2D *> mc_hists, std::vector<TH2D *>
   c_sector->SetRightMargin(0.15);
 
   if( log_scale ) gPad->SetLogz();
-  gStyle->SetPalette(kColorPrintableOnGrey);
+  gStyle->SetPalette(kLightTemperature);
   mc_hists[0]->SetTitle("Prediction");
   mc_hists[0]->Draw("COLZ");
 

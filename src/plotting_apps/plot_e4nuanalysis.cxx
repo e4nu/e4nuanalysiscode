@@ -258,8 +258,10 @@ int main( int argc, char* argv[] ) {
     Plot1DXSec( root_files, data_file, acceptance_file_1D, radcorr_file, observables_x[i], title, data_name, names, mc_location, data_location,
 		output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
 
-    Plot2DXSec( root_files, data_file, acceptance_file_2D, radcorr_file_2D, observables_x[i], observables_y[i], y_cuts, title, data_name, names, mc_location, data_location,
-		output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
+    if( observables_y.size() > 0 ){
+      Plot2DXSec( root_files, data_file, acceptance_file_2D, radcorr_file_2D, observables_x[i], observables_y[i], y_cuts, title, data_name, names, mc_location, data_location,
+        output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
+    }
   }
 
   return 0 ;

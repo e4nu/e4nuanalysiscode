@@ -1167,10 +1167,11 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   return acc_file;
 }
 
-std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::string observable, std::string title,
-                                     std::string input_MC_location, std::string output_location, std::string output_file_name,
-                                     std::map<std::string,std::vector<double>> cuts,
-                                     std::string analysis_id, bool store_root )
+std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::vector<std::string> rad_files,
+                                       std::string observable, std::string title,
+                                       std::string input_MC_location, std::string output_location, std::string output_file_name,
+                                       std::map<std::string,std::vector<double>> cuts,
+                                       std::string analysis_id, bool store_root )
 {
 
   // Define trees
@@ -1184,10 +1185,10 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::s
   // Get energy from tree to define range
   double BeamE;
 
-  for (unsigned int i = 0; i < mc_files.size(); ++i)
+  for (unsigned int i = 0; i < rad_files.size(); ++i)
   {
     files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_true.root").c_str(), "ROOT"));
-    files_mcradcorr.push_back(new TFile((input_MC_location + mc_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
+    files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
     if (!files_mctrueacc[i])
     {
       std::cout << "ERROR: the " << mc_files[i] << "_true.root  does not exist." << std::endl;
@@ -1309,10 +1310,11 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::s
 }
 
 
-std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::string x_observable, std::string y_observable, std::string title,
-                                     std::string input_MC_location, std::string output_location, std::string output_file_name,
-                                     std::map<std::string,std::vector<double>> cuts,
-                                     std::string analysis_id, bool store_root )
+std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::vector<std::string> rad_files,
+                                        std::string x_observable, std::string y_observable, std::string title,
+                                        std::string input_MC_location, std::string output_location, std::string output_file_name,
+                                        std::map<std::string,std::vector<double>> cuts,
+                                        std::string analysis_id, bool store_root )
 {
 
   // Define trees
@@ -1326,10 +1328,10 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::s
   // Get energy from tree to define range
   double BeamE;
 
-  for (unsigned int i = 0; i < mc_files.size(); ++i)
+  for (unsigned int i = 0; i < rad_files.size(); ++i)
   {
     files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_true.root").c_str(), "ROOT"));
-    files_mcradcorr.push_back(new TFile((input_MC_location + mc_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
+    files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
     if (!files_mctrueacc[i])
     {
       std::cout << "ERROR: the " << mc_files[i] << "_true.root  does not exist." << std::endl;
@@ -1406,7 +1408,7 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::s
   // Calculate average correction
   TH2D *ratio = (TH2D *)ratios[0]->Clone();
   ratio->SetName("Acceptance");
-  for (unsigned int i = 1; i < mc_files.size(); ++i)
+  for (unsigned int i = 1; i < rad_files.size(); ++i)
   {
     ratio->Add(ratios[i]);
   }

@@ -8,6 +8,7 @@ namespace e4nu
   namespace plotting {
     // Defining variables to be read from root file here.
     double TotWeight = -9999, ECal= -9999, Recoq3= -9999, RecoW= -9999;
+    double EventWght = 1, AccWght = 1, MottXSecScale = 1;
     double pfl= -9999, pfl_theta= -9999, pfl_phi= -9999;
     double proton_mom= -9999, proton_phi= -9999, proton_theta= -9999;
     double pim_mom= -9999, pim_theta= -9999, pim_phi= -9999;
@@ -41,6 +42,9 @@ void plotting::SetAnalysisBranch( TTree * tree ) {
     exit(0);
   }
   if(tree->GetBranch("InitialNEvents")) tree->SetBranchAddress("InitialNEvents",&InitialNEvents);
+  if(tree->GetBranch("EventWght")) tree->SetBranchAddress("EventWght",&EventWght);
+  if(tree->GetBranch("AccWght")) tree->SetBranchAddress("AccWght",&AccWght);
+  if(tree->GetBranch("MottXSecScale")) tree->SetBranchAddress("MottXSecScale",&MottXSecScale);
   if(tree->GetBranch("IsBkg")) tree->SetBranchAddress("IsBkg", &IsBkg);
   if(tree->GetBranch("ECal")) tree->SetBranchAddress("ECal", &ECal);
   if(tree->GetBranch("pfl_theta")) tree->SetBranchAddress("pfl_theta", &pfl_theta);

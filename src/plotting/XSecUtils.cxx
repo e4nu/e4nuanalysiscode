@@ -17,7 +17,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
                           std::string title, std::string data_name, std::vector<std::string> model,
                           std::string input_MC_location, std::string input_data_location, std::string output_location,
                           std::string output_file_name, bool plot_data, std::map<string, double> systematic_map, std::map<std::string,std::vector<double>> cuts,
-                          std::string analysis_id, bool store_root, bool log_scale)
+                          std::string analysis_id, bool store_root, bool log_scale, bool scale_mott )
 {
 
   TPad *pad1 = new TPad("pad1", "", 0, 0, 1, 1);
@@ -244,7 +244,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     {
       trees[i]->GetEntry(j);
       double content = 0;
-      double w = TotWeight;
+      double w = EventWght * AccWght ;
+      if( scale_mott ) w *= MottXSecScale;
       if (i != id_data && j == 0)
         mc_norm.push_back(MCNormalization);
       content = GetObservable(observable);
@@ -1265,7 +1266,7 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
                           std::vector<double> & y_cuts, std::string title, std::string data_name, std::vector<std::string> model,
                           std::string input_MC_location, std::string input_data_location, std::string output_location,
                           std::string output_file_name, bool plot_data, std::map<string, double> systematic_map, std::map<std::string,std::vector<double>> cuts,
-                          std::string analysis_id, bool store_root, bool log_scale)
+                          std::string analysis_id, bool store_root, bool log_scale, bool scale_mott)
 {
   TPad *pad1 = new TPad("pad1", "", 0, 0, 1, 1);
   pad1->Draw();
@@ -1488,7 +1489,8 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
       trees[i]->GetEntry(j);
       double content_x = GetObservable(x_observable);
       double content_y = GetObservable(y_observable);
-      double w = TotWeight;
+      double w = EventWght * AccWght ;
+      if( scale_mott ) w *= MottXSecScale;
       if (i != id_data && j == 0)
         mc_norm.push_back(MCNormalization);
 

@@ -1029,7 +1029,7 @@ void plotting::PlotEventRatePerSector(std::vector<TH1D *> data_per_sector, std::
   pad_sector->cd();
   pad_sector->SetBottomMargin(0.15);
   pad_sector->SetLeftMargin(0.15);
-  pad_sector->Divide(3, 2); // Make flexible.
+  pad_sector->Divide(3, 2);
 
   for (unsigned int i = 0; i < 6; ++i)
   {
@@ -1901,9 +1901,9 @@ void plotting::PlotSlicesGeneralized(const std::vector<TH2D*>& mcHists, const st
     // We want to slice the histogram on the Y axis - which is the alternative axis
     // The input is the cuts - ignoring the histogram edges.
     // The number of canvas will be y_cuts.size()+1
-    int v_slice = 1, h_slice = y_cuts.size() + 1 ;
-    if( y_cuts.size() > 2 ) {v_slice = 2; h_slice = 3; }
-    else if( y_cuts.size() > 5 ) {v_slice = 3; h_slice = 3; }
+    int v_slice = 1, h_slice = y_cuts.size() - 1 ;
+    if( y_cuts.size() > 4 ) {v_slice = 2; h_slice = 3; }
+    else if( y_cuts.size() > 8 ) {v_slice = 3; h_slice = 3; }
 
     TCanvas *c_slices = new TCanvas("c_slices", "c_slices", 200, 10, 700, 500);
     c_slices->cd();
@@ -1914,10 +1914,6 @@ void plotting::PlotSlicesGeneralized(const std::vector<TH2D*>& mcHists, const st
     pad_slice->SetLeftMargin(0.15);
     pad_slice->SetRightMargin(0.15);
     pad_slice->Divide(h_slice, v_slice);
-
-    // We add two edges for the cuts so we include, effectively, the min and max range of a histogram
-    y_cuts.insert(y_cuts.begin(), -99999);
-    y_cuts.push_back(99999);
 
     std::vector<TPad *> pad_slices ;
     std::vector<TPad *> top_pads, bottom_pads ;
@@ -1962,8 +1958,11 @@ int plotting::GetClosestBin(TH2D* hist, double cut_value, std::string axis) {
     int n_bins = target_axis->GetNbins();
 
     if( cut_value > target_axis->GetBinCenter(n_bins) ) return n_bins;
-    if( cut_value < target_axis->GetBinCenter(1) ) return 0;
-
+    if( cut_value < target_axis->GetBinCenter(1) ) {
+      std::cout << " cut_value " << cut_value << " target_axis->GetBinCenter(1) " << target_axis->GetBinCenter(1)<<std::endl;
+      std::cout << " HERE?"<<std::endl;
+      return 0;
+    }
     double min_diff = std::numeric_limits<double>::max(); // Initialize to a large value
     int closest_bin = -1;
 

@@ -10,14 +10,14 @@
 using namespace std;
 namespace e4nu {
   namespace plotting {
-    
+
     void Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_name,
 		    std::string acceptance_file_name, std::string radcorr_file, std::string observable,
 		    std::string title, std::string data_name, std::vector<std::string> model,
 		    std::string input_MC_location, std::string input_data_location, std::string output_location,
 		    std::string output_file_name, bool plot_data, std::map<string,double> systematic_map,
         std::map<std::string,std::vector<double>> cuts,
-		    std::string analysis_id = "default", bool store_root = false, bool log_scale = false) ;
+		    std::string analysis_id = "default", bool store_root = false, bool log_scale = false, bool scale_mott = false ) ;
 
     void Plot2DXSec(std::vector<std::string> MC_files_name, std::string data_file_name,
         std::string acceptance_file_name, std::string radcorr_file, std::string x_observable, std::string y_observable,
@@ -25,7 +25,7 @@ namespace e4nu {
         std::string input_MC_location, std::string input_data_location, std::string output_location,
         std::string output_file_name, bool plot_data, std::map<string,double> systematic_map,
         std::map<std::string,std::vector<double>> cuts,
-        std::string analysis_id = "default", bool store_root = false, bool log_scale = false) ;
+        std::string analysis_id = "default", bool store_root = false, bool log_scale = false, bool scale_mott = false ) ;
 
     void PlotXsecDataTotal( TH1D * data, std::string observable, std::string title, std::string data_name,
 			    std::string input_data_location, std::string output_location,

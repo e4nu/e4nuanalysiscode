@@ -1262,10 +1262,11 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
   // Calculate average correction
   TH1D *ratio = (TH1D *)ratios[0]->Clone();
   ratio->SetName("Acceptance");
-  for (unsigned int i = 1; i < mc_files.size(); ++i)
+  for (unsigned int i = 1; i < rad_files.size(); ++i)
   {
     ratio->Add(ratios[i]);
   }
+
   ratio->Scale(1. / mc_files.size());
   // ratio->Smooth(3);
   StandardFormat(ratio, title, kBlack, 1, observable);
@@ -1294,7 +1295,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
   // Plot it
   ratio->SetMarkerStyle(8);
   ratio->Draw("hist err P ");
-  for (unsigned int i = 0; i < mc_files.size(); ++i)
+  for (unsigned int i = 0; i < rad_files.size(); ++i)
   {
     ratios[i]->Draw("hist err same");
     ratios[i]->Write();
@@ -1305,6 +1306,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
   if (store_root)
     c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.root").c_str());
   c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.pdf").c_str());
+
   delete c_1;
   return acc_file;
 }

@@ -235,7 +235,7 @@ int main( int argc, char* argv[] ) {
     }
 
     string radcorr_file = "";
-    if( rad_files.size() != 0 ) radcorr_file = Compute1DRadCorr( root_rad_files, observables_x[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
+    if( rad_files.size() != 0 ) radcorr_file = Compute1DRadCorr( root_files, root_rad_files, observables_x[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
 
     // compute 2D rad corr if requested
@@ -243,7 +243,7 @@ int main( int argc, char* argv[] ) {
     if( observables_y.size() > 0 && rad_files.size() != 0 ){
       // For now it only works for one single alternative observable
       std::cout << " Computing 2D rad corr: "<<std::endl;
-      radcorr_file_2D = Compute2DRadCorr( root_rad_files, observables_x[i], observables_y[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
+      radcorr_file_2D = Compute2DRadCorr( root_files, root_rad_files, observables_x[i], observables_y[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
     }
 
     vector<string> bkg_syst_files = {data_file};

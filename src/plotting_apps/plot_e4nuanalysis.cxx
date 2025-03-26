@@ -219,6 +219,10 @@ int main( int argc, char* argv[] ) {
 
   }
 
+  // Fill 2D Graph for oscillation study:
+  // We only fill it with the first MC sample
+  plotting::GetMissingEnergyGraph( (mc_location+"/"+mc_files[0]+"_true.root").c_str() );
+
   // Loop over observables_x
   for( unsigned int i = 0 ; i < observables_x.size(); ++i ){
     vector<string> root_files = mc_files;

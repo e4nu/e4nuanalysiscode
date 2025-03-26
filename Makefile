@@ -33,7 +33,7 @@ PHYSICS_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(PHYSICS_SRCS))
 ANALYSIS_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(ANALYSIS_SRCS))
 APP_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(APP_SRCS))
 
-all: e4nuanalysis plot_e4nuanalysis plot_bkg plot_histograms plot_data plot_syst plot_analised_data
+all: e4nuanalysis plot_e4nuanalysis plot_bkg plot_histograms plot_data plot_syst plot_analised_data plot_OscillationVariables
 
 e4nuanalysis: $(SRCDIR)/apps/e4nuanalysis.cxx $(UTILS_OBJS) $(PLOTTING_OBJS) $(CONF_OBJS) $(PHYSICS_OBJS) $(ANALYSIS_OBJS) $(APP_OBJS)
 	@mkdir -p $(@D)
@@ -63,6 +63,9 @@ plot_analised_data: $(SRCDIR)/plotting_apps/plot_analised_data.cxx $(UTILS_OBJS)
 		@mkdir -p $(@D)
 		$(CXX) $(CXXFLAGS) $(ROOTLIBS) $(OBJDIR)/utils/*.o  $(OBJDIR)/plotting/*.o $(OBJDIR)/physics/*.o $(OBJDIR)/conf/*.o $(OBJDIR)/analysis/*.o $< -o $@
 
+plot_OscillationVariables: $(SRCDIR)/plotting_apps/plot_OscillationVariables.cxx $(UTILS_OBJS) $(PLOTTING_OBJS) $(CONF_OBJS) $(PHYSICS_OBJS) $(ANALYSIS_OBJS) $(APP_OBJS)
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) $(ROOTLIBS) $(OBJDIR)/utils/*.o  $(OBJDIR)/plotting/*.o $(OBJDIR)/physics/*.o $(OBJDIR)/conf/*.o $(OBJDIR)/analysis/*.o $< -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cxx
 	@mkdir -p $(@D)
@@ -71,7 +74,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cxx
 clean:
 	rm -rf $(OBJDIR)/* e4nuanalysis
 	rm -rf $(OBJDIR)/* plot_e4nuanalysis
-	
+
 .PHONY: test
 
 test: e4nuanalysis

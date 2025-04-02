@@ -75,16 +75,13 @@ int main( int argc, char* argv[] ) {
   TH1D * h_tot_true = (TH1D*) in_root_file->Get( (observable+"_TotTrueBkg"+bkg_string).c_str() ) ;
   TH1D * h_tot_est = (TH1D*) in_root_file->Get( (observable+"_TotEstBkg"+bkg_string).c_str() ) ;
   TH1D * h_diff_true = (TH1D*) h_tot_true->Clone();
-  TH1D * h_mean = (TH1D*) h_tot_true->Clone();
-  h_mean -> Add ( h_tot_est );
-  h_mean -> Scale( 0.5 );
 
   for( unsigned int j = 0 ; j < h_diff_true -> GetNbinsX() ; ++j ){
-    double err = pow(h_diff_true->GetBinContent(j)-h_mean->GetBinContent(j),2) ;
-    err += pow(h_tot_est->GetBinContent(j)-h_mean->GetBinContent(j),2);
-    err *= 0.5 ;
+    double err = pow(h_tot_true->GetBinContent(j)-h_tot_est->GetBinContent(j),2) ;
     // Substract stat error
+    err -= pow(h_tot_true->GetBinError(j),2) ;
     err -= pow(h_tot_est->GetBinError(j),2) ;
+
     if( err < 0 ) err = 0 ;
     err = sqrt(err);
     if( h_tot_est->GetBinContent(j) != 0 && h_tot_true->GetBinContent(j) > 100 && h_tot_est->GetBinContent(j) > 100) {

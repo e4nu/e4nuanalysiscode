@@ -13,6 +13,7 @@
 #include "TTree.h"
 #include <iomanip>
 #include <map>
+#include "TGraph2D.h"
 
 namespace e4nu {
   namespace plotting {
@@ -20,14 +21,14 @@ namespace e4nu {
     // Define observables here
     extern double TotWeight, ECal, Recoq3, RecoW;
     extern double EventWght, AccWght, MottXSecScale;
-    extern double pfl, pfl_theta, pfl_phi;
+    extern double Efl, pfl, pfl_theta, pfl_phi;
     extern double proton_mom, proton_phi, proton_theta;
     extern double pim_mom, pim_theta, pim_phi;
     extern double pip_mom, pip_theta, pip_phi;
     extern double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT;
     extern double AlphaT, DeltaPT, DeltaPhiT;
     extern double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu;
-    extern double MissingEnergy, MissingAngle, MissingMomentum;
+    extern double MissingEnergy, MissingAngle, MissingMomentum, CorrMissingEnergy;
     extern double InferedNucleonMom, HadronsAngle, Angleqvshad;
     extern double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi;
     extern double RecoEvPion, RecoWPion, ElectronPT, PionPT;
@@ -36,6 +37,7 @@ namespace e4nu {
     extern bool QEL, RES, DIS, MEC;
     extern double MCNormalization, DataNormalization;
     extern long NEntries ;
+    extern TGraph2D* graph_oscillations ;
     void SetAnalysisBranch( TTree * tree ) ;
 
     int ColorBlindPalette(int color_id ) ;
@@ -62,6 +64,9 @@ namespace e4nu {
     std::vector<std::string> SplitString(std::string s, char d=',' ) ;
     std::string GetArg(std::string op, int argc, char ** argv );
     bool ExistArg(std::string op, int argc, char ** argv );
+    // Functions for oscillation study
+    void GetMissingEnergyGraph( const std::string mc_file );
+    double ComputeMissingEnergy( const double event_efl, const double event_ehad );
   }
 }
 

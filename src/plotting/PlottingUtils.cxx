@@ -9,7 +9,7 @@ namespace e4nu
     // Defining variables to be read from root file here.
     double TotWeight = -9999, ECal= -9999, Recoq3= -9999, RecoW= -9999;
     double EventWght = 1, AccWght = 1, MottXSecScale = 1;
-    double pfl= -9999, pfl_theta= -9999, pfl_phi= -9999;
+    double Efl= -9999, pfl= -9999, pfl_theta= -9999, pfl_phi= -9999;
     double proton_mom= -9999, proton_phi= -9999, proton_theta= -9999;
     double pim_mom= -9999, pim_theta= -9999, pim_phi= -9999;
     double pip_mom= -9999, pip_theta= -9999, pip_phi= -9999;
@@ -25,6 +25,7 @@ namespace e4nu
     bool QEL= 0, RES= 0, DIS= 0, MEC= 0;
     double MCNormalization= 0, DataNormalization= 0;
     long NEntries = 0;
+    TGraph2D* graph_oscillations = nullptr;
   }
 }
 
@@ -50,6 +51,7 @@ void plotting::SetAnalysisBranch( TTree * tree ) {
   if(tree->GetBranch("pfl_theta")) tree->SetBranchAddress("pfl_theta", &pfl_theta);
   if(tree->GetBranch("pfl_phi")) tree->SetBranchAddress("pfl_phi", &pfl_phi);
   if(tree->GetBranch("pfl")) tree->SetBranchAddress("pfl", &pfl);
+  if(tree->GetBranch("Efl")) tree->SetBranchAddress("Efl", &Efl);
   if(tree->GetBranch("proton_mom")) tree->SetBranchAddress("proton_mom", &proton_mom);
   if(tree->GetBranch("proton_theta")) tree->SetBranchAddress("proton_theta", &proton_theta);
   if(tree->GetBranch("proton_phi")) tree->SetBranchAddress("proton_phi", &proton_phi);
@@ -105,6 +107,8 @@ double plotting::GetObservable(const std::string observable)
   double content = 0;
   if (observable == "ECal")
     content = ECal;
+  else if (observable == "Efl")
+      content = Efl;
   else if (observable == "pfl")
     content = pfl;
   else if (observable == "pfl_theta")
@@ -163,6 +167,8 @@ double plotting::GetObservable(const std::string observable)
     content = MissingEnergy;
   else if (observable == "MissingEnergy")
     content = MissingEnergy;
+  else if (observable == "CorrMissingEnergy")
+    content = ComputeMissingEnergy( Efl, HadSystemMass );
   else if (observable == "MissingAngle")
     content = MissingAngle;
   else if (observable == "MissingMomentum")
@@ -425,6 +431,11 @@ std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis)
     {
       x_axis = "E_{miss}[GeV]";
       y_axis = "d#sigma/dE_{miss} #left[#mub GeV^{-1}#right]";
+    }
+  else if (observable == "CorrMissingEnergy")
+    {
+      x_axis = "E_{miss}[GeV]";
+      y_axis = "d#sigma/dE_{miss}^{corr} #left[#mub GeV^{-1}#right]";
     }
   else if (observable == "MissingAngle")
     {
@@ -764,12 +775,21 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "MissingEnergy")
     {
       if (EBeam == 1.161)
-	binning = plotting::GetUniformBinning(20, 0.5, 1);
+	     binning = plotting::GetECalBinning(20, 15, 0.3, 1.1, 0.9);
       else if (EBeam == 2.261)
-	binning = plotting::GetUniformBinning(20, 0, 1);
+        binning = plotting::GetECalBinning(20, 15, -0.7, 1.2, 0.9);
       else if (EBeam == 4.461)
-	binning = plotting::GetUniformBinning(20, 0, 1);
-    }
+	     binning = plotting::GetECalBinning(20, 15, -2.5, 1.2, 0.9);
+}
+  else if (observable == "CorrMissingEnergy")
+    {
+      if (EBeam == 1.161)
+        binning = plotting::GetECalBinning(20, 15, 0.3, 1.1, 0.9);
+      else if (EBeam == 2.261)
+        binning = plotting::GetECalBinning(20, 15, -0.7, 1.2, 0.9);
+      else if (EBeam == 4.461)
+        binning = plotting::GetECalBinning(20, 15, -2.5, 1.2, 0.9);
+      }
   else if (observable == "MissingAngle")
     {
       if (EBeam == 1.161)
@@ -796,7 +816,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
 	binning = plotting::GetUniformBinning(30, 0, 1);
       else if (EBeam == 4.461)
 	binning = plotting::GetUniformBinning(30, 0, 1);
-    }
+  }
   else if (observable == "HadronsAngle")
     {
       if (EBeam == 1.161)
@@ -992,6 +1012,15 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
 	  else if (EBeam == 4.461)
 	    binning = plotting::GetUniformBinning(25, 0, 1);
 	}
+  else if (observable == "CorrMissingEnergy")
+{
+if (EBeam == 1.161)
+  binning = plotting::GetUniformBinning(25, 0.5, 1);
+else if (EBeam == 2.261)
+  binning = plotting::GetUniformBinning(25, 0, 1);
+else if (EBeam == 4.461)
+  binning = plotting::GetUniformBinning(25, 0, 1);
+}
       else if (observable == "MissingAngle")
 	{
 	  if (EBeam == 1.161)
@@ -1558,4 +1587,52 @@ bool plotting::PlotZoomIn(std::string analysis_id)
   else if (analysis_id == "1p1pip" || analysis_id == "1pim" || analysis_id == "1pip")
     return false;
   return true;
+}
+
+
+void plotting::GetMissingEnergyGraph( const std::string mc_file ){
+  // This function coputes a 2D graph for MC only with the following variables:
+  // Efl, MissingEnergy and Ehad (HadSystemMass)
+  // As done in NOVA, we can attempt to correct e-data with the MC calculation and directly estimate the bias
+
+  // Open MC file
+  TFile* in_root_file = new TFile((mc_file).c_str(),"ROOT") ;
+  if( !in_root_file ) {
+    std::cout << " ERROR: " << mc_file << " does not exist."<<std::endl;
+    return ;
+  }
+
+  TTree* in_tree = (TTree*)in_root_file->Get("MCCLAS6Tree") ;
+  if( !in_tree ) {
+    std::cout << " ERROR: MCCLAS6Tree does not exist in "<< mc_file <<std::endl;
+    return ;
+  }
+
+  plotting::SetAnalysisBranch(in_tree);
+  // Retrieve the histogram contents (averages for each bin)
+  std::vector<double> x_values;
+  std::vector<double> y_values;
+  std::vector<double> z_values;
+  for( int j = 0 ; j < NEntries ; ++j ) {
+    in_tree->GetEntry(j) ;
+    double content_x = plotting::GetObservable("Efl");
+    double content_y = plotting::GetObservable("HadSystemMass");
+    double content_z = plotting::GetObservable("MissingEnergy");
+
+    x_values.push_back(content_x);
+    y_values.push_back(content_y);
+    z_values.push_back(content_z);
+  }
+
+  // Create 2D graph:
+  graph_oscillations= new TGraph2D(x_values.size(), &x_values[0], &y_values[0], &z_values[0]);
+
+}
+
+double plotting::ComputeMissingEnergy( const double event_efl, const double event_ehad ){
+  if( !graph_oscillations ){
+    std::cout << " ERROR: you did not compute graph oscillations from MC file. "<< std::endl;
+    return 0;
+  }
+  return graph_oscillations->Interpolate(event_efl,event_ehad) ;
 }

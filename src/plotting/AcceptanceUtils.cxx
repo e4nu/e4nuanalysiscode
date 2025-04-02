@@ -1228,7 +1228,8 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
         double content = 0;
         // Weight is the total weight devided by the number of entries.
         // This ensures that we get the same results even if we run less radiated events.
-        double w = TotWeight / InitialNEvents;
+        double w = TotWeight / InitialNEvents / NEntries;
+
 	      content = GetObservable(observable);
         // Check if passes cuts
         bool do_fill =true ;
@@ -1249,6 +1250,8 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
         else if (j == 1)
           hists_radcorr[i]->Fill(content, w);
       }
+      std::cout << "*******************"<<std::endl;
+      std::cout << " InitialNEvents = " << InitialNEvents << " NEntries = " << NEntries << " fraction " << NEntries / InitialNEvents << std::endl;
     }
 
     ratios.push_back((TH1D *)hists_true[i]->Clone());

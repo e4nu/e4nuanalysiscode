@@ -30,7 +30,6 @@ using namespace e4nu::plotting;
 /////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
-  /* ** ISSUE WITH src/plotting_apps/plot_BkgCheck.cxx, GetMaximum overload function **!
 
   std::cout << "Plotting e4nu analysis background check..." << std::endl;
 
@@ -76,16 +75,13 @@ int main( int argc, char* argv[] ) {
   TH1D * h_tot_true = (TH1D*) in_root_file->Get( (observable+"_TotTrueBkg"+bkg_string).c_str() ) ;
   TH1D * h_tot_est = (TH1D*) in_root_file->Get( (observable+"_TotEstBkg"+bkg_string).c_str() ) ;
   TH1D * h_diff_true = (TH1D*) h_tot_true->Clone();
-  TH1D * h_mean = (TH1D*) h_tot_true->Clone();
-  h_mean -> Add ( h_tot_est );
-  h_mean -> Scale( 0.5 );
 
   for( unsigned int j = 0 ; j < h_diff_true -> GetNbinsX() ; ++j ){
-    double err = pow(h_diff_true->GetBinContent(j)-h_mean->GetBinContent(j),2) ;
-    err += pow(h_tot_est->GetBinContent(j)-h_mean->GetBinContent(j),2);
-    err *= 0.5 ;
+    double err = pow(h_tot_true->GetBinContent(j)-h_tot_est->GetBinContent(j),2) ;
     // Substract stat error
+    err -= pow(h_tot_true->GetBinError(j),2) ;
     err -= pow(h_tot_est->GetBinError(j),2) ;
+
     if( err < 0 ) err = 0 ;
     err = sqrt(err);
     if( h_tot_est->GetBinContent(j) != 0 && h_tot_true->GetBinContent(j) > 100 && h_tot_est->GetBinContent(j) > 100) {
@@ -123,7 +119,7 @@ int main( int argc, char* argv[] ) {
   h_tot_true -> GetYaxis()->SetTitle(plotting::GetAxisLabel(observable,1).c_str());
   h_tot_true -> GetXaxis()->CenterTitle();
   h_tot_true -> GetYaxis()->CenterTitle();
-  double max = plotting::GetMaximum({(h_tot_true,h_tot_est});
+  double max = plotting::GetMaximum({h_tot_true,h_tot_est});
   h_tot_true->GetYaxis()->SetRangeUser(0,max);
 
   h_tot_est -> SetLineColor(kBlue);
@@ -172,6 +168,6 @@ int main( int argc, char* argv[] ) {
   pad2->SetTopMargin(0.05);
   h_diff_true->Draw("hist");
   c->SaveAs(output_file.c_str());
-				    */
+
   return 0 ;
 }

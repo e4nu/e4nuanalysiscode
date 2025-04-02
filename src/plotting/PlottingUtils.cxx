@@ -8,6 +8,7 @@ namespace e4nu
   namespace plotting {
     // Defining variables to be read from root file here.
     double TotWeight = -9999, ECal= -9999, Recoq3= -9999, RecoW= -9999;
+    double EventWght = 1, AccWght = 1, MottXSecScale = 1;
     double pfl= -9999, pfl_theta= -9999, pfl_phi= -9999;
     double proton_mom= -9999, proton_phi= -9999, proton_theta= -9999;
     double pim_mom= -9999, pim_theta= -9999, pim_phi= -9999;
@@ -20,18 +21,30 @@ namespace e4nu
     double AdlerAngleThetaP= -9999, AdlerAnglePhiP= -9999, AdlerAngleThetaPi= -9999, AdlerAnglePhiPi= -9999;
     double RecoEvPion= -9999, RecoWPion= -9999, ElectronPT= -9999, PionPT= -9999;
     bool IsBkg= 0;
-    int ElectronSector= -9999, resid= -9999;
+    int ElectronSector= -9999, resid= -9999, InitialNEvents= 1;
     bool QEL= 0, RES= 0, DIS= 0, MEC= 0;
     double MCNormalization= 0, DataNormalization= 0;
+    long NEntries = 0;
   }
 }
 
 void plotting::SetAnalysisBranch( TTree * tree ) {
+  NEntries = tree->GetEntries();
+  if( NEntries == 0 ){
+    std::cout << " ROOT tree is empty. Exiting...!" << std::endl;
+    exit(0);
+  }
+
   if(tree->GetBranch("TotWeight")) tree->SetBranchAddress("TotWeight", &TotWeight);
   else {
     // This variable should exist. Use as validation
-    std::cout << " ROOT file corrupted. TotWeight Branch missing...!"<<std::endl;
+    std::cout << " ROOT file corrupted. TotWeight Branch missing...!, Exiting"<< std::endl;
+    exit(0);
   }
+  if(tree->GetBranch("InitialNEvents")) tree->SetBranchAddress("InitialNEvents",&InitialNEvents);
+  if(tree->GetBranch("EventWght")) tree->SetBranchAddress("EventWght",&EventWght);
+  if(tree->GetBranch("AccWght")) tree->SetBranchAddress("AccWght",&AccWght);
+  if(tree->GetBranch("MottXSecScale")) tree->SetBranchAddress("MottXSecScale",&MottXSecScale);
   if(tree->GetBranch("IsBkg")) tree->SetBranchAddress("IsBkg", &IsBkg);
   if(tree->GetBranch("ECal")) tree->SetBranchAddress("ECal", &ECal);
   if(tree->GetBranch("pfl_theta")) tree->SetBranchAddress("pfl_theta", &pfl_theta);

@@ -39,6 +39,7 @@ using namespace e4nu::plotting;
 // 19) Apply cut on observable                                 //
 //     --cut-observables Obs1,min1,max1:...:ObsN,minN,maxN     //
 // 20) log-scale : option to use log scale                     //
+// 21) mott-scalet: scale by mott (Q4)                          //
 /////////////////////////////////////////////////////////////////
 
 string mc_location="", data_location="", output_location ="", output_name ="", analysis_id="default";
@@ -50,6 +51,7 @@ map<string,double> systematic_map ;
 bool plot_data = true ;
 bool store_root = false ;
 bool log_scale = false ;
+bool mott_scale = false ;
 void PrintFormat(string s);
 std::vector<double> y_cuts ; // for 2D slicing.
 
@@ -151,6 +153,11 @@ int main( int argc, char* argv[] ) {
       std::cout << " Enabling log scale..." << std::endl;
       log_scale = true ;
     }
+    if( ExistArg("mott-scale",argc,argv)) {
+      std::cout << " Enabling mott scaling..." << std::endl;
+      mott_scale = true ;
+    }
+
     cout<<"Loading MC Files:"<<endl;
     for( unsigned int i = 0 ; i < mc_files.size() ; ++i ) {
       cout << " -> " ;
@@ -228,7 +235,7 @@ int main( int argc, char* argv[] ) {
     }
 
     string radcorr_file = "";
-    if( rad_files.size() != 0 ) radcorr_file = Compute1DRadCorr( root_rad_files, observables_x[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
+    if( rad_files.size() != 0 ) radcorr_file = Compute1DRadCorr( root_files, root_rad_files, observables_x[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
 
     // compute 2D rad corr if requested
@@ -236,7 +243,7 @@ int main( int argc, char* argv[] ) {
     if( observables_y.size() > 0 && rad_files.size() != 0 ){
       // For now it only works for one single alternative observable
       std::cout << " Computing 2D rad corr: "<<std::endl;
-      radcorr_file_2D = Compute2DRadCorr( root_rad_files, observables_x[i], observables_y[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
+      radcorr_file_2D = Compute2DRadCorr( root_files, root_rad_files, observables_x[i], observables_y[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
     }
 
     vector<string> bkg_syst_files = {data_file};
@@ -249,10 +256,12 @@ int main( int argc, char* argv[] ) {
     if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables_x[i], true, data_location, output_location, analysis_id );
 
     Plot1DXSec( root_files, data_file, acceptance_file_1D, radcorr_file, observables_x[i], title, data_name, names, mc_location, data_location,
-		output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale ) ;
+		output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
 
-    Plot2DXSec( root_files, data_file, acceptance_file_2D, radcorr_file_2D, observables_x[i], observables_y[i], y_cuts, title, data_name, names, mc_location, data_location,
-		output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale ) ;
+    if( observables_y.size() > 0 ){
+      Plot2DXSec( root_files, data_file, acceptance_file_2D, radcorr_file_2D, observables_x[i], observables_y[i], y_cuts, title, data_name, names, mc_location, data_location,
+        output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
+    }
   }
 
   return 0 ;

@@ -19,6 +19,7 @@ namespace e4nu {
 
     // Define observables here
     extern double TotWeight, ECal, Recoq3, RecoW;
+    extern double EventWght, AccWght, MottXSecScale;
     extern double pfl, pfl_theta, pfl_phi;
     extern double proton_mom, proton_phi, proton_theta;
     extern double pim_mom, pim_theta, pim_phi;
@@ -31,9 +32,10 @@ namespace e4nu {
     extern double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi;
     extern double RecoEvPion, RecoWPion, ElectronPT, PionPT;
     extern bool IsBkg;
-    extern int ElectronSector, resid;
+    extern int ElectronSector, resid, InitialNEvents;
     extern bool QEL, RES, DIS, MEC;
     extern double MCNormalization, DataNormalization;
+    extern long NEntries ;
     void SetAnalysisBranch( TTree * tree ) ;
 
     int ColorBlindPalette(int color_id ) ;

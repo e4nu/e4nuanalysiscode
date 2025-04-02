@@ -17,7 +17,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
                           std::string title, std::string data_name, std::vector<std::string> model,
                           std::string input_MC_location, std::string input_data_location, std::string output_location,
                           std::string output_file_name, bool plot_data, std::map<string, double> systematic_map, std::map<std::string,std::vector<double>> cuts,
-                          std::string analysis_id, bool store_root, bool log_scale)
+                          std::string analysis_id, bool store_root, bool log_scale, bool scale_mott )
 {
 
   TPad *pad1 = new TPad("pad1", "", 0, 0, 1, 1);
@@ -244,7 +244,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     {
       trees[i]->GetEntry(j);
       double content = 0;
-      double w = TotWeight;
+      double w = EventWght * AccWght ;
+      if( scale_mott ) w *= MottXSecScale;
       if (i != id_data && j == 0)
         mc_norm.push_back(MCNormalization);
       content = GetObservable(observable);
@@ -424,7 +425,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_3, DataNormalization);
     NormalizeHist(hist_data_4, DataNormalization);
     NormalizeHist(hist_data_5, DataNormalization);
-  
+
     // Add Systematics
     // 1 - Acceptance model dependence (already included)
     // 2 - Sector Sector Variation
@@ -851,17 +852,6 @@ void plotting::PlotTotal2DXSec(std::vector<TH2D *> mc_hists, std::vector<TH2D *>
                              std::string output_file_name, std::map<string, double> systematic_map, bool show_breakdown,
                              std::string analysis_id, bool store_root, bool log_scale)
 {
-
-  TCanvas *c_sector = new TCanvas("c_sector", "c_sector", 200, 10, 700, 500);
-  c_sector->cd();
-  TPad *pad_sector = new TPad("pad1", "", 0, 0, 1, 1);
-  pad_sector->Draw();
-  pad_sector->cd();
-  pad_sector->SetBottomMargin(0.15);
-  pad_sector->SetLeftMargin(0.15);
-  pad_sector->SetRightMargin(0.15);
-  pad_sector->Divide(2, 1);
-
   // Set correct plotting style
   // Find absolute y max
   std::vector<TH2D *> temp_check = {mc_hists[0]};
@@ -909,30 +899,41 @@ void plotting::PlotTotal2DXSec(std::vector<TH2D *> mc_hists, std::vector<TH2D *>
   hs->Add(breakdown[4]);
   hs->Add(breakdown[5]);
 
-  TPad *pad_sector_1 = (TPad *)pad_sector->cd(1);
-  pad_sector_1->cd();
-  pad_sector_1->SetBottomMargin(0.15);
-  pad_sector_1->SetLeftMargin(0.15);
-  pad_sector_1->SetRightMargin(0.15);
-  mc_hists[0]->SetTitle("Prediction");
-  mc_hists[0]->Draw("COLZ");
-
-  TPad *pad_sector_2 = (TPad *)pad_sector->cd(2);
-  pad_sector_2->cd();
-  pad_sector_2->SetBottomMargin(0.15);
-  pad_sector_2->SetLeftMargin(0.15);
-  pad_sector_2->SetRightMargin(0.15);
-
+  TCanvas *c = new TCanvas("c_sector", "c_sector", 200, 10, 700, 500);
+  c->cd();
+  c->SetBottomMargin(0.15);
+  c->SetLeftMargin(0.15);
+  c->SetRightMargin(0.15);
+  // Setting z axis in log scale for easibility when plotting 2D distributions:
+  if( log_scale ) gPad->SetLogz();
+  gStyle->SetPalette(kLightTemperature);
   data->SetTitle("Data");
-  data->GetZaxis()->SetRangeUser(mc_hists[0]->GetMinimum(),mc_hists[0]->GetMaximum());
   data->Draw("COLZ same");
-
-  std::string output_name = output_file_name + "_dxsec_d" + x_observable + "_vs_" + y_observable +"_data_vs_mc";
+  std::string output_name = output_file_name + "_dxsec_d" + x_observable + "_vs_" + y_observable +"_data";
+  c->SaveAs((output_location + "/TotalXSec/" + output_name + ".pdf").c_str());
   if (store_root)
   {
     TFile root_file((output_location + "/TotalXSec/" + output_name + ".root").c_str(), "recreate");
     if (data)
       data->Write();
+    c->Write();
+  }
+
+  TCanvas *c_sector = new TCanvas("c_sector", "c_sector", 200, 10, 700, 500);
+  c_sector->cd();
+  c_sector->SetBottomMargin(0.15);
+  c_sector->SetLeftMargin(0.15);
+  c_sector->SetRightMargin(0.15);
+
+  if( log_scale ) gPad->SetLogz();
+  gStyle->SetPalette(kLightTemperature);
+  mc_hists[0]->SetTitle("Prediction");
+  mc_hists[0]->Draw("COLZ");
+
+  output_name = output_file_name + "_dxsec_d" + x_observable + "_vs_" + y_observable +"_mc";
+  if (store_root)
+  {
+    TFile root_file((output_location + "/TotalXSec/" + output_name + ".root").c_str(), "recreate");
     for (unsigned int i = 0; i < mc_hists.size(); ++i)
       mc_hists[i]->Write();
     for (unsigned int i = 0; i < breakdown.size(); ++i)
@@ -947,7 +948,6 @@ void plotting::PlotTotal2DXSec(std::vector<TH2D *> mc_hists, std::vector<TH2D *>
 
   c_sector->SaveAs((output_location + "/TotalXSec/" + output_name + ".pdf").c_str());
   delete c_sector;
-
 
   std::string output_name_2 = output_file_name + "_dxsec_d" + x_observable + "_vs_" + y_observable +"_projectionX";
   plotting::PlotSlicesGeneralized(mc_hists, breakdown, data, x_observable, y_observable, y_cuts, title, output_location, output_name_2, store_root, log_scale );
@@ -1029,7 +1029,7 @@ void plotting::PlotEventRatePerSector(std::vector<TH1D *> data_per_sector, std::
   pad_sector->cd();
   pad_sector->SetBottomMargin(0.15);
   pad_sector->SetLeftMargin(0.15);
-  pad_sector->Divide(3, 2); // Make flexible.
+  pad_sector->Divide(3, 2);
 
   for (unsigned int i = 0; i < 6; ++i)
   {
@@ -1266,7 +1266,7 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
                           std::vector<double> & y_cuts, std::string title, std::string data_name, std::vector<std::string> model,
                           std::string input_MC_location, std::string input_data_location, std::string output_location,
                           std::string output_file_name, bool plot_data, std::map<string, double> systematic_map, std::map<std::string,std::vector<double>> cuts,
-                          std::string analysis_id, bool store_root, bool log_scale)
+                          std::string analysis_id, bool store_root, bool log_scale, bool scale_mott)
 {
   TPad *pad1 = new TPad("pad1", "", 0, 0, 1, 1);
   pad1->Draw();
@@ -1476,12 +1476,10 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
     id_data = 1;
 
   // OBSERVABLE DEFINITION specific for MC
-  long NEntries;
   std::vector<double> mc_norm;
 
   for (unsigned int i = 0; i < trees.size(); ++i)
   {
-    NEntries = trees[i]->GetEntries();
     if (!trees[i])
       continue;
     plotting::SetAnalysisBranch( trees[i] ) ;
@@ -1491,7 +1489,8 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
       trees[i]->GetEntry(j);
       double content_x = GetObservable(x_observable);
       double content_y = GetObservable(y_observable);
-      double w = TotWeight;
+      double w = EventWght * AccWght ;
+      if( scale_mott ) w *= MottXSecScale;
       if (i != id_data && j == 0)
         mc_norm.push_back(MCNormalization);
 
@@ -1801,7 +1800,6 @@ void plotting::PlotProjectionWithRatio( const std::vector<TH2D*>& mcHists, const
 
     // Compute slice for main predictions
     for ( unsigned int i = 0 ; i < mcHists.size(); ++i ) {
-        double first_bin_axis = mcHists[i]->GetNbinsX();
         last_bin = axis == "X" ? mcHists[i]->GetNbinsX() : mcHists[i]->GetNbinsY();
         if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
         if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
@@ -1896,16 +1894,95 @@ void plotting::PlotProjectionWithRatio( const std::vector<TH2D*>& mcHists, const
     }
 }
 
+
+void plotting::PlotProjectionsStack( const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& breakdown, const TH2D* data, const std::string& xobservable, const std::string& yobservable,
+   bool logScale, const std::string& axis, std::vector<double> y_cuts, const std::string& outputLocation, const std::string& outputName, bool store_root )
+{
+    if ( y_cuts.size() < 1 ) { throw std::invalid_argument("Provide at least two values for the cuts. Exiting function "); return ;}
+    TCanvas *c_projections = new TCanvas("c_projections", "c_projections", 200, 10, 700, 500);
+    c_projections->cd();
+    c_projections->SetTopMargin(0.2);
+    c_projections->SetBottomMargin(0.15);
+    c_projections->SetLeftMargin(0.2);
+    c_projections->SetRightMargin(0.02);
+    if( logScale ) gPad->SetLogy();
+
+    // Projection and formatting
+    std::vector<TH1D*> mcProjections, dataProjections, allPredictions;
+    double LegXmin = 0.18, LegYmin = 0.8, YSpread = 0.2;
+    TLegend *legend = new TLegend(LegXmin, LegYmin, LegXmin + 0.8, LegYmin + YSpread);
+    legend->SetBorderSize(0);
+    legend->SetTextFont(132);
+    legend->SetTextSize(0.05);
+    legend->SetFillStyle(0);
+    legend->SetNColumns(2);
+
+    for( unsigned int i = 0 ; i < y_cuts.size() - 1 ; ++i ){
+      // Store input for projection details
+      std::string projection_name = axis == "X" ? "_stack_px_Range_"+std::to_string(y_cuts[i])+"_"+std::to_string(y_cuts[i+1]) : "_py";
+      double first_bin = 0 ;
+      double last_bin = 999;
+      const double bin_max_cut_id = GetClosestBin( mcHists[0],y_cuts[i+1], "Y" );
+      const double bin_min_cut_id = GetClosestBin( mcHists[0],y_cuts[i], "Y" );
+
+      if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
+      if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
+
+      for ( unsigned int j = 0 ; j < 1 /* mcHists.size() */; ++j ) {
+          mcProjections.push_back(axis == "X" ? mcHists[j]->ProjectionX((mcHists[j]->GetName()+projection_name).c_str(),first_bin,last_bin) : mcHists[j]->ProjectionY((mcHists[j]->GetName()+projection_name).c_str(),first_bin,last_bin));
+          StandardFormat(mcProjections.back(), "", ColorBlindPalette(i), 1+j, xobservable, logScale);
+          mcProjections.back()->SetLineColorAlpha(ColorBlindPalette(i),0.8);
+      }
+      dataProjections.push_back(axis == "X" ? data->ProjectionX((data->GetName()+projection_name).c_str(),first_bin,last_bin) : data->ProjectionY((data->GetName()+projection_name).c_str(),first_bin,last_bin));
+      allPredictions.push_back(mcProjections[i]);
+      allPredictions.push_back(dataProjections[i]);
+
+      // Setting right format
+      StandardFormat(dataProjections[i], "", ColorBlindPalette(i), 8, xobservable, logScale);
+      std::ostringstream oss;
+      oss << std::fixed << std::setprecision(2) << y_cuts[i] << "<" << plotting::GetAxisLabel(yobservable, 0) << "<" << y_cuts[i+1];
+      legend->AddEntry(dataProjections[i], oss.str().c_str(), "l");
+      mcProjections[i]->SetMarkerSize(0);
+      dataProjections[i]->SetLineStyle(1);
+      dataProjections[i]->SetMarkerSize(0.6);
+      dataProjections[i]->SetLineWidth(1);
+    }
+
+    double total_min = 0 ;
+    if( logScale) total_min = 1E-4;
+    // Store maximum of all TH2D histograms to set the same range to all
+    double total_max = plotting::GetMaximum(allPredictions) * ( 1 + 0.2 );
+    mcProjections[0]->Draw("hist err");
+
+    for (size_t i = 0; i < mcProjections.size(); ++i) {
+        mcProjections[i]->GetYaxis()->SetRangeUser(total_min,total_max); // TO AUTOMATIZE!
+        mcProjections[i]->GetXaxis()->SetTitleSize(0.08);
+        mcProjections[i]->GetYaxis()->SetTitleSize(0.08);
+        mcProjections[i]->GetYaxis()->SetTitleOffset(1);
+        mcProjections[i]->GetXaxis()->SetTitleOffset(0.8);
+        mcProjections[i]->SetMarkerSize(0);
+        mcProjections[i]->SetLineWidth(2);
+        mcProjections[i]->Draw("hist err same");
+    }
+
+    for (size_t i = 0; i < dataProjections.size(); ++i) {
+        dataProjections[i]->Draw("err same");
+    }
+    legend->Draw();
+    c_projections->SaveAs((outputLocation + "/TotalXSec/" + outputName + "_stack_X.pdf").c_str());
+    if( store_root ) c_projections->SaveAs((outputLocation + "/TotalXSec/" + outputName + "_stack_X.root").c_str());
+}
+
 void plotting::PlotSlicesGeneralized(const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& breakdown, const TH2D* data,
     const std::string& xObservable, const std::string& yObservable, std::vector<double> & y_cuts, const std::string& title, const std::string& outputLocation,
-    const std::string& outputName, bool storeRoot, bool logScale ){
+    const std::string& outputName, bool store_root, bool logScale ){
 
     // We want to slice the histogram on the Y axis - which is the alternative axis
     // The input is the cuts - ignoring the histogram edges.
     // The number of canvas will be y_cuts.size()+1
-    int v_slice = 1, h_slice = y_cuts.size() + 1 ;
-    if( y_cuts.size() > 2 ) {v_slice = 2; h_slice = 3; }
-    else if( y_cuts.size() > 5 ) {v_slice = 3; h_slice = 3; }
+    int v_slice = 1, h_slice = y_cuts.size() - 1 ;
+    if( y_cuts.size() > 4 ) {v_slice = 2; h_slice = 3; }
+    else if( y_cuts.size() > 8 ) {v_slice = 3; h_slice = 3; }
 
     TCanvas *c_slices = new TCanvas("c_slices", "c_slices", 200, 10, 700, 500);
     c_slices->cd();
@@ -1917,10 +1994,6 @@ void plotting::PlotSlicesGeneralized(const std::vector<TH2D*>& mcHists, const st
     pad_slice->SetRightMargin(0.15);
     pad_slice->Divide(h_slice, v_slice);
 
-    // We add two edges for the cuts so we include, effectively, the min and max range of a histogram
-    y_cuts.insert(y_cuts.begin(), -99999);
-    y_cuts.push_back(99999);
-
     std::vector<TPad *> pad_slices ;
     std::vector<TPad *> top_pads, bottom_pads ;
     for(unsigned int i = 0 ; i < y_cuts.size() - 1; ++i ){
@@ -1929,11 +2002,11 @@ void plotting::PlotSlicesGeneralized(const std::vector<TH2D*>& mcHists, const st
       CreateCanvasWithPads(pad_slices[i], top_pads, bottom_pads, "CanvasX");
       PlotProjectionWithRatio(mcHists, breakdown, data, xObservable, yObservable, top_pads[i], bottom_pads[i], logScale, "X", y_cuts[i], y_cuts[i+1]);
     }
-
     c_slices->SaveAs((outputLocation + "/TotalXSec/" + outputName + "_X.pdf").c_str());
     c_slices->SaveAs((outputLocation + "/TotalXSec/" + outputName + "_X.root").c_str());
+    PlotProjectionsStack(mcHists, breakdown, data, xObservable, yObservable, logScale, "X", y_cuts, outputLocation, outputName, store_root );
 
-    if (storeRoot) {
+    if (store_root) {
         TFile rootFile((outputLocation + "/TotalXSec/" + outputName + ".root").c_str(), "recreate");
         for (auto& proj : mcHists) {
             proj->Write();
@@ -1964,8 +2037,9 @@ int plotting::GetClosestBin(TH2D* hist, double cut_value, std::string axis) {
     int n_bins = target_axis->GetNbins();
 
     if( cut_value > target_axis->GetBinCenter(n_bins) ) return n_bins;
-    if( cut_value < target_axis->GetBinCenter(1) ) return 0;
-
+    if( cut_value < target_axis->GetBinCenter(1) ) {
+      return 0;
+    }
     double min_diff = std::numeric_limits<double>::max(); // Initialize to a large value
     int closest_bin = -1;
 

@@ -99,17 +99,17 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     }
 
     // Observables definition in Plotting Utils
-    long NEntries;
     for (unsigned int j = initial_size_trees; j < trees.size(); ++j)
     {
-      NEntries = trees[j]->GetEntries();
       plotting::SetAnalysisBranch( trees[j] ) ;
 
       for (int k = 0; k < NEntries; ++k)
       {
         trees[j]->GetEntry(k);
         double content = 0;
-        double w = TotWeight;
+        // Weight is the total weight devided by the number of entries.
+        // This ensures that we get the same results even if we run less radiated events.
+        double w = TotWeight / InitialNEvents;
 	      content = GetObservable(observable);
 
         // Check if passes cuts
@@ -708,10 +708,8 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
     }
 
     // Observables definition in Plotting Utils
-    long NEntries;
     for (unsigned int j = initial_size_trees; j < trees.size(); ++j)
     {
-      NEntries = trees[j]->GetEntries();
       plotting::SetAnalysisBranch( trees[j] ) ;
 
       for (int k = 0; k < NEntries; ++k)
@@ -719,7 +717,9 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
         trees[j]->GetEntry(k);
         double content_x = GetObservable(x_observable);
         double content_y = GetObservable(y_observable);
-        double w = TotWeight;
+        // Weight is the total weight devided by the number of entries.
+        // This ensures that we get the same results even if we run less radiated events.
+        double w = TotWeight / InitialNEvents;
 
         // Check if passes cuts
         bool do_fill =true ;
@@ -1167,10 +1167,11 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   return acc_file;
 }
 
-std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::string observable, std::string title,
-                                     std::string input_MC_location, std::string output_location, std::string output_file_name,
-                                     std::map<std::string,std::vector<double>> cuts,
-                                     std::string analysis_id, bool store_root )
+std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::vector<std::string> rad_files,
+                                       std::string observable, std::string title,
+                                       std::string input_MC_location, std::string output_location, std::string output_file_name,
+                                       std::map<std::string,std::vector<double>> cuts,
+                                       std::string analysis_id, bool store_root )
 {
 
   // Define trees
@@ -1184,10 +1185,10 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::s
   // Get energy from tree to define range
   double BeamE;
 
-  for (unsigned int i = 0; i < mc_files.size(); ++i)
+  for (unsigned int i = 0; i < rad_files.size(); ++i)
   {
     files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_true.root").c_str(), "ROOT"));
-    files_mcradcorr.push_back(new TFile((input_MC_location + mc_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
+    files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
     if (!files_mctrueacc[i])
     {
       std::cout << "ERROR: the " << mc_files[i] << "_true.root  does not exist." << std::endl;
@@ -1217,30 +1218,30 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::s
     hists_true[i]->Sumw2();
 
     std::vector<TTree *> trees = {trees_mctrueacc[i], trees_mcradcorr[i]};
-
-    long NEntries;
     for (unsigned int j = 0; j < trees.size(); ++j)
     {
-      NEntries = trees[j]->GetEntries();
       plotting::SetAnalysisBranch( trees[j] ) ;
+
       for (int k = 0; k < NEntries; ++k)
       {
         trees[j]->GetEntry(k);
         double content = 0;
-        double w = TotWeight;
-	       content = GetObservable(observable);
-         // Check if passes cuts
-         bool do_fill =true ;
-         for (auto it = cuts.begin(); it != cuts.end(); it++)
-         {
-           double min = it->second[0] ;
-           double max = it->second[1] ;
-           if( GetObservable(it->first) < min || GetObservable(it->first) > max ) {
-             do_fill = false;
-             continue;
-           }
-         }
-         if( !do_fill ) continue ;
+        // Weight is the total weight devided by the number of entries.
+        // This ensures that we get the same results even if we run less radiated events.
+        double w = TotWeight / InitialNEvents;
+	      content = GetObservable(observable);
+        // Check if passes cuts
+        bool do_fill =true ;
+        for (auto it = cuts.begin(); it != cuts.end(); it++)
+        {
+          double min = it->second[0] ;
+          double max = it->second[1] ;
+          if( GetObservable(it->first) < min || GetObservable(it->first) > max ) {
+            do_fill = false;
+            continue;
+          }
+        }
+        if( !do_fill ) continue ;
 
         // Fill the per Sector  histogram
         if (j == 0)
@@ -1251,8 +1252,6 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::s
     }
 
     ratios.push_back((TH1D *)hists_true[i]->Clone());
-    ratios[i]->Scale(hists_radcorr[i]->GetEntries() / hists_true[i]->GetEntries());
-    std::cout << " scale " << hists_radcorr[i]->GetEntries() / hists_true[i]->GetEntries() << std::endl;
     ratios[i]->Divide(hists_radcorr[i]);
     ratios[i]->SetName(("RadCorrModel_" + std::to_string(i)).c_str());
     StandardFormat(ratios[i], title, kBlack + i + 1, 2 + i, observable);
@@ -1263,10 +1262,11 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::s
   // Calculate average correction
   TH1D *ratio = (TH1D *)ratios[0]->Clone();
   ratio->SetName("Acceptance");
-  for (unsigned int i = 1; i < mc_files.size(); ++i)
+  for (unsigned int i = 1; i < rad_files.size(); ++i)
   {
     ratio->Add(ratios[i]);
   }
+
   ratio->Scale(1. / mc_files.size());
   // ratio->Smooth(3);
   StandardFormat(ratio, title, kBlack, 1, observable);
@@ -1295,7 +1295,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::s
   // Plot it
   ratio->SetMarkerStyle(8);
   ratio->Draw("hist err P ");
-  for (unsigned int i = 0; i < mc_files.size(); ++i)
+  for (unsigned int i = 0; i < rad_files.size(); ++i)
   {
     ratios[i]->Draw("hist err same");
     ratios[i]->Write();
@@ -1306,15 +1306,17 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::s
   if (store_root)
     c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.root").c_str());
   c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.pdf").c_str());
+
   delete c_1;
   return acc_file;
 }
 
 
-std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::string x_observable, std::string y_observable, std::string title,
-                                     std::string input_MC_location, std::string output_location, std::string output_file_name,
-                                     std::map<std::string,std::vector<double>> cuts,
-                                     std::string analysis_id, bool store_root )
+std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::vector<std::string> rad_files,
+                                        std::string x_observable, std::string y_observable, std::string title,
+                                        std::string input_MC_location, std::string output_location, std::string output_file_name,
+                                        std::map<std::string,std::vector<double>> cuts,
+                                        std::string analysis_id, bool store_root )
 {
 
   // Define trees
@@ -1328,10 +1330,10 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::s
   // Get energy from tree to define range
   double BeamE;
 
-  for (unsigned int i = 0; i < mc_files.size(); ++i)
+  for (unsigned int i = 0; i < rad_files.size(); ++i)
   {
     files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_true.root").c_str(), "ROOT"));
-    files_mcradcorr.push_back(new TFile((input_MC_location + mc_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
+    files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
     if (!files_mctrueacc[i])
     {
       std::cout << "ERROR: the " << mc_files[i] << "_true.root  does not exist." << std::endl;
@@ -1363,17 +1365,17 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::s
 
     std::vector<TTree *> trees = {trees_mctrueacc[i], trees_mcradcorr[i]};
 
-    long NEntries;
     for (unsigned int j = 0; j < trees.size(); ++j)
     {
-      NEntries = trees[j]->GetEntries();
       plotting::SetAnalysisBranch( trees[j] ) ;
       for (int k = 0; k < NEntries; ++k)
       {
         trees[j]->GetEntry(k);
         double content_x = GetObservable(x_observable);
         double content_y = GetObservable(y_observable);
-        double w = TotWeight;
+        // Weight is the total weight devided by the number of entries.
+        // This ensures that we get the same results even if we run less radiated events.
+        double w = TotWeight / InitialNEvents;
 
          // Check if passes cuts
          bool do_fill =true ;
@@ -1397,8 +1399,6 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::s
     }
 
     ratios.push_back((TH2D *)hists_true[i]->Clone());
-    ratios[i]->Scale(hists_radcorr[i]->GetEntries() / hists_true[i]->GetEntries());
-    std::cout << " scale " << hists_radcorr[i]->GetEntries() / hists_true[i]->GetEntries() << std::endl;
     ratios[i]->Divide(hists_radcorr[i]);
     ratios[i]->SetName(("RadCorrModel_" + std::to_string(i)).c_str());
     StandardFormat(ratios[i], title, kBlack + i + 1, 2 + i, x_observable, y_observable);
@@ -1410,7 +1410,7 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::s
   // Calculate average correction
   TH2D *ratio = (TH2D *)ratios[0]->Clone();
   ratio->SetName("Acceptance");
-  for (unsigned int i = 1; i < mc_files.size(); ++i)
+  for (unsigned int i = 1; i < rad_files.size(); ++i)
   {
     ratio->Add(ratios[i]);
   }

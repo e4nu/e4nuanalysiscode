@@ -149,7 +149,7 @@ int main( int argc, char* argv[] ) {
     analysis -> SetApplyFiducial( true ) ;
     analysis -> SetApplyAccWeights( true ) ;
     analysis -> SetApplyReso( true ) ;
-    analysis -> SetSubtractBkg( false ) ;
+    analysis -> SetSubtractBkg( true ) ;
     analysis -> SetOutputFile( analysis->GetOutputFile() + "_closuretest"  ) ;
     analysis -> SetDebugBkg(true) ;
     std::cout << " Computing true reconstructed analysis distributions for acceptance correction..."<<std::endl;

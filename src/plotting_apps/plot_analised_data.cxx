@@ -7,12 +7,8 @@
 int main( int argc, char* argv[] ) {
 
     // Paths to ROOT files
-    const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_2GeV_3degshiftMYTEST_onlydata_dxsec_dMissingAngle.root";
-    //"/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_2GeV_3degshiftMYTEST_onlydata_dxsec_dRecoW.root";
-    //"/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_3degshiftMYTEST_onlydata_dxsec_dRecoW.root";
-    const char* filedefPath = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_2GeVMYTEST_onlydata_dxsec_dMissingAngle.root";
-    //"/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_2GeVMYTEST_onlydata_dxsec_dRecoW.root";
-    //"/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeVMYTEST_onlydata_dxsec_dRecoW.root";
+    const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_4GeV_with_breakdown_dxsec_dMissingEnergy.root";
+    const char* filedefPath = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_4GeV_with_breakdown_dxsec_dCorrMissingEnergy.root";
 
     // Open the ROOT files
     TFile* file1 = TFile::Open(file1Path);
@@ -109,6 +105,6 @@ int main( int argc, char* argv[] ) {
 
     // Clean up
     canvas->SaveAs("comparison.pdf"); // Save the comparison plot
-
+    canvas->SaveAs("comparison.root");
     return 0;
 }

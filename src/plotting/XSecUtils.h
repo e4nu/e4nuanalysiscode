@@ -69,6 +69,7 @@ namespace e4nu {
 			std::string analysis_id = "default", bool store_root = false, bool log_scale = false) ;
 
     void CreateCanvasWithPads(TPad *& pad, std::vector<TPad*>& topPad, std::vector<TPad*>& bottomPad, const std::string& canvasName);
+    void PlotProjection( const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& data, const std::string& xobservable, const std::string& yobservable, TCanvas* canvas, bool logScale, const std::string& axis, double y_cut_min, double y_cut_max );
     void PlotProjectionWithRatio( const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& breakdown, const TH2D* data, const std::string& xobservable, const std::string& yobservable, TPad* topPad, TPad* bottomPad, bool logScale, const std::string& axis, double y_cut_min, double y_cut_max) ;
     void PlotProjectionsStack( const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& breakdown, const TH2D* data, const std::string& xobservable, const std::string& yobservable, bool logScale, const std::string& axis, std::vector<double> y_cuts, const std::string& outputLocation, const std::string& outputName, bool store_root );
     void PlotSlicesGeneralized(const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& breakdown, const TH2D* data,

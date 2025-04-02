@@ -30,7 +30,6 @@ using namespace e4nu::plotting;
 /////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
-  /* ** ISSUE WITH src/plotting_apps/plot_BkgCheck.cxx, GetMaximum overload function **!
 
   std::cout << "Plotting e4nu analysis background check..." << std::endl;
 
@@ -123,7 +122,7 @@ int main( int argc, char* argv[] ) {
   h_tot_true -> GetYaxis()->SetTitle(plotting::GetAxisLabel(observable,1).c_str());
   h_tot_true -> GetXaxis()->CenterTitle();
   h_tot_true -> GetYaxis()->CenterTitle();
-  double max = plotting::GetMaximum({(h_tot_true,h_tot_est});
+  double max = plotting::GetMaximum({h_tot_true,h_tot_est});
   h_tot_true->GetYaxis()->SetRangeUser(0,max);
 
   h_tot_est -> SetLineColor(kBlue);
@@ -172,6 +171,6 @@ int main( int argc, char* argv[] ) {
   pad2->SetTopMargin(0.05);
   h_diff_true->Draw("hist");
   c->SaveAs(output_file.c_str());
-				    */
+
   return 0 ;
 }

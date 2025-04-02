@@ -775,20 +775,20 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "MissingEnergy")
     {
       if (EBeam == 1.161)
-	     binning = plotting::GetECalBinning(20, 15, -0.7, 1.2, 0.9);
+	     binning = plotting::GetECalBinning(20, 15, 0.3, 1.1, 0.9);
       else if (EBeam == 2.261)
         binning = plotting::GetECalBinning(20, 15, -0.7, 1.2, 0.9);
       else if (EBeam == 4.461)
-	     binning = plotting::GetECalBinning(20, 15, -0.7, 1.2, 0.9);
+	     binning = plotting::GetECalBinning(20, 15, -2.5, 1.2, 0.9);
 }
   else if (observable == "CorrMissingEnergy")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetECalBinning(20, 15, -0.7, 1.2, 0.9);
+        binning = plotting::GetECalBinning(20, 15, 0.3, 1.1, 0.9);
       else if (EBeam == 2.261)
         binning = plotting::GetECalBinning(20, 15, -0.7, 1.2, 0.9);
       else if (EBeam == 4.461)
-        binning = plotting::GetECalBinning(20, 15, -0.7, 1.2, 0.9);
+        binning = plotting::GetECalBinning(20, 15, -2.5, 1.2, 0.9);
       }
   else if (observable == "MissingAngle")
     {

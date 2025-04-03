@@ -119,7 +119,9 @@ int main( int argc, char* argv[] ) {
   h_tot_true -> GetYaxis()->SetTitle(plotting::GetAxisLabel(observable,1).c_str());
   h_tot_true -> GetXaxis()->CenterTitle();
   h_tot_true -> GetYaxis()->CenterTitle();
-  double max = plotting::GetMaximum({h_tot_true,h_tot_est});
+
+  std::vector<TH1D*> vector_hists = {h_tot_true,h_tot_est};
+  double max = plotting::GetMaximum(vector_hists);
   h_tot_true->GetYaxis()->SetRangeUser(0,max);
 
   h_tot_est -> SetLineColor(kBlue);

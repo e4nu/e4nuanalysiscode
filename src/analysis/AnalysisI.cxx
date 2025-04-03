@@ -166,7 +166,6 @@ void AnalysisI::CookEvent( Event & event ) {
 }
 
 void AnalysisI::PlotBkgInformation( Event event ) {
-
   if( ! GetDebugBkg() ) return ;
 
   // Store plots for Background debugging

@@ -63,12 +63,12 @@ int main( int argc, char* argv[] ) {
     }
     if( ExistArg("analysis-type",argc,argv)) {
       if ( GetArg("analysis-type",argc,argv) == "ComputeTrueAccCorr" ) {
-	       std::cout << " ComputeTrueAccCorr = True " <<std::endl;
-	        compute_trueacc = true ; compute_truerecoacc = false ;
+	std::cout << " ComputeTrueAccCorr = True " <<std::endl;
+	compute_trueacc = true ; compute_truerecoacc = false ;
       }
       else if ( GetArg("analysis-type",argc,argv) == "ComputeTrueRecoAccCorr" ) {
-	       std::cout << " ComputeRecoAccCorr = True " <<std::endl;
-	        compute_trueacc = false ; compute_truerecoacc = true ;
+	std::cout << " ComputeRecoAccCorr = True " <<std::endl;
+	compute_trueacc = false ; compute_truerecoacc = true ;
       }
       else if ( GetArg("analysis-type",argc,argv) == "ClosureTest" ) {
         std::cout << " Implementing closure test = True " <<std::endl;
@@ -116,6 +116,7 @@ int main( int argc, char* argv[] ) {
     analysis -> SetApplyFiducial( true ) ;
     analysis -> SetApplyAccWeights( false ) ;
     analysis -> SetApplyReso( false ) ;
+    analysis -> SetSubtractBkg( true ) ;
     std::string OutputFile_data = analysis->GetOutputFile() + "_clas6data" ;
     analysis -> SetOutputFile( OutputFile_data ) ;
   }
@@ -145,14 +146,14 @@ int main( int argc, char* argv[] ) {
     analysis -> SetOutputFile( OutputFile_reco ) ;
     std::cout << " Computing true reconstructed analysis distributions for acceptance correction..."<<std::endl;
   } else if ( compute_closuretest ) {
-    analysis -> SetTrueSignal( true ) ;
+    analysis -> SetTrueSignal( false ) ;
     analysis -> SetApplyFiducial( true ) ;
     analysis -> SetApplyAccWeights( true ) ;
     analysis -> SetApplyReso( true ) ;
     analysis -> SetSubtractBkg( true ) ;
     analysis -> SetOutputFile( analysis->GetOutputFile() + "_closuretest"  ) ;
     analysis -> SetDebugBkg(true) ;
-    std::cout << " Computing true reconstructed analysis distributions for acceptance correction..."<<std::endl;
+    std::cout << " Computing Closure test..."<<std::endl;
   }
   analysis -> PrintConfiguration() ;
   analysis -> Initialize() ;

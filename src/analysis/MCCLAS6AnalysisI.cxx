@@ -159,50 +159,48 @@ void MCCLAS6AnalysisI::Initialize()
   double EBeam = GetConfiguredEBeam();
   unsigned int Target = GetConfiguredTarget();
 
-  if (NormalizeHist())
-  {
-    // Get xsec from cross section spline
-    std::string target_tag = "";
-    if (GetConfiguredTarget() == conf::kPdgC12)
-      target_tag = "e-_C12";
-    if (GetConfiguredTarget() == conf::kPdgHe3)
-      target_tag = "e-_He3";
-    if (GetConfiguredTarget() == conf::kPdgHe4)
-      target_tag = "e-_He4";
-    if (GetConfiguredTarget() == conf::kPdgFe56)
+  // Get xsec from cross section spline
+  std::string target_tag = "";
+  if (GetConfiguredTarget() == conf::kPdgC12)
+    target_tag = "e-_C12";
+  if (GetConfiguredTarget() == conf::kPdgHe3)
+    target_tag = "e-_He3";
+  if (GetConfiguredTarget() == conf::kPdgHe4)
+    target_tag = "e-_He4";
+  if (GetConfiguredTarget() == conf::kPdgFe56)
       target_tag = "e-_Fe56";
-    if (GetConfiguredTarget() == conf::kPdgO16)
-      target_tag = "e-_O16";
-
-    std::cout << " *********************************** " << GetXSecFile()<< std::endl;
-    std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>(new TFile((GetXSecFile()).c_str(), "READ"));
-    if (!xsec_file)
+  if (GetConfiguredTarget() == conf::kPdgO16)
+    target_tag = "e-_O16";
+  
+  std::cout << " *********************************** " << GetXSecFile()<< std::endl;
+  std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>(new TFile((GetXSecFile()).c_str(), "READ"));
+  if (!xsec_file)
     {
       std::cout << " ERROR: Xsec file does not exist: " << GetXSecFile() << std::endl;
       kIsConfigured = false;
       return;
     }
-
-    TDirectoryFile *xsec_dir = (TDirectoryFile *)xsec_file->Get(target_tag.c_str());
-    if (!xsec_dir)
+  
+  TDirectoryFile *xsec_dir = (TDirectoryFile *)xsec_file->Get(target_tag.c_str());
+  if (!xsec_dir)
     {
       std::cout << " ERROR: Xsec dir does not exist: " << target_tag << std::endl;
       kIsConfigured = false;
       return;
     }
-
-    TGraph *gxsec = (TGraph *)xsec_dir->Get("tot_em");
-    if (!gxsec)
+  
+  TGraph *gxsec = (TGraph *)xsec_dir->Get("tot_em");
+  if (!gxsec)
     {
       std::cout << " ERROR: Cannot create graph for " << "tot_em" << std::endl;
       kIsConfigured = false;
       return;
     }
-
-    kXSec = gxsec->Eval(GetConfiguredEBeam());
-    std::cout << " Total XSec (" << GetConfiguredEBeam() << ") = " << kXSec << std::endl;
-    xsec_file->Close();
-  }
+  
+  kXSec = gxsec->Eval(GetConfiguredEBeam());
+  std::cout << " Total XSec (" << GetConfiguredEBeam() << ") = " << kXSec << std::endl;
+  xsec_file->Close();
+  
 }
 
 bool MCCLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_holder)

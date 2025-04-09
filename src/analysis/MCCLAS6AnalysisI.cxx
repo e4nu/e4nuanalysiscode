@@ -252,10 +252,9 @@ bool MCCLAS6AnalysisI::StoreTree(Event event)
   static bool n = true;
 
   // Storing general variables:
-  unsigned int InitialNEvents = GetNEventsToRun();
   double ConversionFactor = kConversionFactorCm2ToMicroBarn * TMath::Power(10., -38.);
   double TotalXSec = kXSec;
-  double MCNormalization = TotalXSec * ConversionFactor / InitialNEvents;
+  double MCNormalization = TotalXSec * ConversionFactor / GetNEventsToRun();
 
   // Storing additional GENIE information:
   bool CC = event.IsCC();
@@ -344,8 +343,6 @@ bool MCCLAS6AnalysisI::StoreTree(Event event)
     kAnalysisTree->Branch("resid", &resid, "resid/I");
 
     // Add normaization information
-    kAnalysisTree->Branch("InitialNEvents", &InitialNEvents, "InitialNEvents/I");
-    kAnalysisTree->Branch("ConversionFactor", &ConversionFactor, "ConversionFactor/D");
     kAnalysisTree->Branch("TotalXSec", &TotalXSec, "TotalXSec/D");
     kAnalysisTree->Branch("MCNormalization", &MCNormalization, "MCNormalization/D");
 

@@ -344,6 +344,8 @@ bool AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) {
 bool AnalysisI::StoreTree(Event event)
 {
   static bool n = true;
+  unsigned int InitialNEvents = GetNEventsToRun();
+  double ConversionFactor = conf::kConversionFactorCm2ToMicroBarn * TMath::Power(10., -38.);
   int ID = event.GetEventID();
   double BeamE = event.GetInLepton4Mom().E();
   int TargetPdg = event.GetTargetPdg();
@@ -556,6 +558,8 @@ bool AnalysisI::StoreTree(Event event)
   {
     kAnalysisTree->Branch("InputROOTFile", &InputROOTFile, "InputROOTFile/C");
     kAnalysisTree->Branch("OutputROOTFile", &OutputROOTFile, "OutputROOTFile/C");
+    kAnalysisTree->Branch("InitialNEvents", &InitialNEvents, "InitialNEvents/I");
+    kAnalysisTree->Branch("ConversionFactor", &ConversionFactor, "ConversionFactor/D");
     kAnalysisTree->Branch("ID", &ID, "ID/I");
     kAnalysisTree->Branch("TargetPdg", &TargetPdg, "TargetPdg/I");
     kAnalysisTree->Branch("InLeptonPdg", &InLeptonPdg, "InLeptonPdg/I");

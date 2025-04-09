@@ -37,7 +37,9 @@ namespace e4nu {
     extern bool QEL, RES, DIS, MEC;
     extern double MCNormalization, DataNormalization;
     extern long NEntries ;
-    extern TGraph2D* graph_oscillations ;
+    // Declaring an external variable to use in the code to store the Graph relating El', Ehad with Ebeam-Emiss.
+    // This is done also for slices on pt (hence _1, _2, and _3 correspond to different pt slices, hardcoded).
+    extern TGraph2D* graph_oscillations, *graph_oscillations_1, *graph_oscillations_2, *graph_oscillations_3 ;
     void SetAnalysisBranch( TTree * tree ) ;
 
     int ColorBlindPalette(int color_id ) ;
@@ -66,7 +68,7 @@ namespace e4nu {
     bool ExistArg(std::string op, int argc, char ** argv );
     // Functions for oscillation study
     void GetMissingEnergyGraph( const std::string mc_file );
-    double ComputeMissingEnergy( const double event_efl, const double event_ehad );
+    double ComputeMissingEnergy( const double event_efl, const double event_ehad, const unsigned int slice = 0 );
   }
 }
 

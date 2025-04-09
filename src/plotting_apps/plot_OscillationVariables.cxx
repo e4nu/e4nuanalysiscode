@@ -59,7 +59,7 @@ int main( int argc, char* argv[] ) {
   pad1->cd();
   pad1->SetBottomMargin(0.15);
   pad1->SetLeftMargin(0.15);
-  gStyle->SetPalette(kLightTemperature);
+  // gStyle->SetPalette(kLightTemperature);
 
   GetMissingEnergyGraph( (input_file).c_str() );
 
@@ -74,46 +74,83 @@ int main( int argc, char* argv[] ) {
   c->SaveAs((output_name+".root").c_str());
   c->SaveAs((output_name+".pdf").c_str());
 
-  TFile* true_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dMissingEnergy.root","ROOT") ;
-  TFile* reco_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dCorrMissingEnergy.root","ROOT") ;
-  if( !true_root_file || !reco_root_file ) {
-    std::cout << " ERROR: Files do not exist."<<std::endl;
-    return 0 ;
+  // Pt < 0.2
+  if( graph_oscillations_1 ) {
+    // gStyle->SetPalette(kLightTemperature);
+    graph_oscillations_1->SetTitle("3D Scatter Plot;Efl;HadSystemMass;MissingEnergy");
+    graph_oscillations_1->SetMarkerStyle(20);
+    graph_oscillations_1->SetMarkerColor(kRed); // Change color if desired
+    graph_oscillations_1->Draw("COLZ");
+    output_name = "test_GraphOscillations_1" ;
+
+    c->SaveAs((output_name+".root").c_str());
+    c->SaveAs((output_name+".pdf").c_str());
   }
-  TH1D * mc_data = (TH1D*)true_root_file->Get("MC_True");
-  TH1D * mc_recodata = (TH1D*)reco_root_file->Get("MC_True");
-  TH1D * true_data = (TH1D*)true_root_file->Get("Data");
-  TH1D * reco_data = (TH1D*)reco_root_file->Get("Data");
-  reco_data->SetMarkerColor(kRed);
-  reco_data->SetLineColor(kRed);
-  mc_recodata->SetLineColor(kRed);
-  mc_data->GetXaxis()->SetLabelSize(0.05);
-  mc_data->GetXaxis()->SetTitleSize(0.08);
-  mc_data->Draw("hist");
-  mc_recodata->Draw("hist same");
-  true_data->Draw("same");
-  reco_data->Draw("same");
-  c->SaveAs("testing.root");
 
+  if( graph_oscillations_2 ) {
+    graph_oscillations_2->SetTitle("3D Scatter Plot;Efl;HadSystemMass;MissingEnergy");
+    graph_oscillations_2->SetMarkerStyle(20);
+    graph_oscillations_2->SetMarkerColor(kRed); // Change color if desired
+    graph_oscillations_2->Draw("COLZ");
 
-  TFile* true_data_root_2Dfile = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dMissingEnergy_vs_HadDeltaPT_data.root","ROOT") ;
-  TFile* true_mc_root_2Dfile = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dMissingEnergy_vs_HadDeltaPT_mc.root","ROOT") ;
-  TFile* reco_data_root_2Dfile = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dCorrMissingEnergy_vs_HadDeltaPT_data.root","ROOT") ;
-  TFile* reco_mc_root_2Dfile = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dCorrMissingEnergy_vs_HadDeltaPT_mc.root","ROOT") ;
-  if( !true_data_root_2Dfile || !true_mc_root_2Dfile || !reco_data_root_2Dfile || !reco_mc_root_2Dfile ) {
-    std::cout << " ERROR: Files do not exist."<<std::endl;
-    return 0 ;
+    output_name = "test_GraphOscillations_2" ;
+
+    c->SaveAs((output_name+".root").c_str());
+    c->SaveAs((output_name+".pdf").c_str());
   }
-  TH2D * mc_data_2D = (TH2D*)true_mc_root_2Dfile->Get("MC_True");
-  TH2D * mc_recodata_2D = (TH2D*)reco_mc_root_2Dfile->Get("MC_True");
-  TH2D * true_data_2D = (TH2D*)true_data_root_2Dfile->Get("Data");
-  TH2D * reco_data_2D = (TH2D*)reco_data_root_2Dfile->Get("Data");
 
-  std::vector<TH2D*> mc_hists = {mc_data_2D,mc_recodata_2D};
-  std::vector<TH2D*> data_hists = {true_data_2D,reco_data_2D};
+  if( graph_oscillations_3 ) {
+    graph_oscillations_3->SetTitle("3D Scatter Plot;Efl;HadSystemMass;MissingEnergy");
+    graph_oscillations_3->SetMarkerStyle(20);
+    graph_oscillations_3->SetMarkerColor(kRed); // Change color if desired
+    graph_oscillations_3->Draw("COLZ");
 
-  plotting::PlotProjection( mc_hists, data_hists, "MissingEnergy", "MissingEnergy", c, true, "", 0.2, 0.4 );
-  c->SaveAs("testing2D.root");
+    output_name = "test_GraphOscillations_3" ;
+
+    c->SaveAs((output_name+".root").c_str());
+    c->SaveAs((output_name+".pdf").c_str());
+  }
+
+  // TFile* true_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dMissingEnergy.root","ROOT") ;
+  // TFile* reco_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dCorrMissingEnergy.root","ROOT") ;
+  // if( !true_root_file || !reco_root_file ) {
+  //   std::cout << " ERROR: Files do not exist."<<std::endl;
+  //   return 0 ;
+  // }
+  // TH1D * mc_data = (TH1D*)true_root_file->Get("MC_True");
+  // TH1D * mc_recodata = (TH1D*)reco_root_file->Get("MC_True");
+  // TH1D * true_data = (TH1D*)true_root_file->Get("Data");
+  // TH1D * reco_data = (TH1D*)reco_root_file->Get("Data");
+  // reco_data->SetMarkerColor(kRed);
+  // reco_data->SetLineColor(kRed);
+  // mc_recodata->SetLineColor(kRed);
+  // mc_data->GetXaxis()->SetLabelSize(0.05);
+  // mc_data->GetXaxis()->SetTitleSize(0.08);
+  // mc_data->Draw("hist");
+  // mc_recodata->Draw("hist same");
+  // true_data->Draw("same");
+  // reco_data->Draw("same");
+  // c->SaveAs("testing.root");
+  //
+  //
+  // TFile* true_data_root_2Dfile = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dMissingEnergy_vs_HadDeltaPT_data.root","ROOT") ;
+  // TFile* true_mc_root_2Dfile = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dMissingEnergy_vs_HadDeltaPT_mc.root","ROOT") ;
+  // TFile* reco_data_root_2Dfile = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dCorrMissingEnergy_vs_HadDeltaPT_data.root","ROOT") ;
+  // TFile* reco_mc_root_2Dfile = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dCorrMissingEnergy_vs_HadDeltaPT_mc.root","ROOT") ;
+  // if( !true_data_root_2Dfile || !true_mc_root_2Dfile || !reco_data_root_2Dfile || !reco_mc_root_2Dfile ) {
+  //   std::cout << " ERROR: Files do not exist."<<std::endl;
+  //   return 0 ;
+  // }
+  // TH2D * mc_data_2D = (TH2D*)true_mc_root_2Dfile->Get("MC_True");
+  // TH2D * mc_recodata_2D = (TH2D*)reco_mc_root_2Dfile->Get("MC_True");
+  // TH2D * true_data_2D = (TH2D*)true_data_root_2Dfile->Get("Data");
+  // TH2D * reco_data_2D = (TH2D*)reco_data_root_2Dfile->Get("Data");
+  //
+  // std::vector<TH2D*> mc_hists = {mc_data_2D,mc_recodata_2D};
+  // std::vector<TH2D*> data_hists = {true_data_2D,reco_data_2D};
+  //
+  // plotting::PlotProjection( mc_hists, data_hists, "MissingEnergy", "MissingEnergy", c, true, "", 0.2, 0.4 );
+  // c->SaveAs("testing2D.root");
 
   return 0 ;
 

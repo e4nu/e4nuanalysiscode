@@ -109,7 +109,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
         double content = 0;
         // Weight is the total weight devided by the number of entries.
         // This ensures that we get the same results even if we run less radiated events.
-        double w = TotWeight / InitialNEvents;
+        double w = TotWeight / (double) InitialNEvents;
 	      content = GetObservable(observable);
 
         // Check if passes cuts
@@ -719,7 +719,7 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
         double content_y = GetObservable(y_observable);
         // Weight is the total weight devided by the number of entries.
         // This ensures that we get the same results even if we run less radiated events.
-        double w = TotWeight / InitialNEvents;
+        double w = TotWeight / (double) InitialNEvents;
 
         // Check if passes cuts
         bool do_fill =true ;
@@ -1228,7 +1228,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
         double content = 0;
         // Weight is the total weight devided by the number of entries.
         // This ensures that we get the same results even if we run less radiated events.
-        double w = TotWeight / InitialNEvents / NEntries;
+        double w = TotWeight / (double) InitialNEvents ;
 
 	      content = GetObservable(observable);
         // Check if passes cuts
@@ -1247,11 +1247,11 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
         // Fill the per Sector  histogram
         if (j == 0)
           hists_true[i]->Fill(content, w);
-        else if (j == 1)
+        else if (j == 1) {
           hists_radcorr[i]->Fill(content, w);
+        }
+
       }
-      std::cout << "*******************"<<std::endl;
-      std::cout << " InitialNEvents = " << InitialNEvents << " NEntries = " << NEntries << " fraction " << NEntries / InitialNEvents << std::endl;
     }
 
     ratios.push_back((TH1D *)hists_true[i]->Clone());
@@ -1270,8 +1270,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
     ratio->Add(ratios[i]);
   }
 
-  ratio->Scale(1. / mc_files.size());
-  // ratio->Smooth(3);
+  //ratio->Scale(1. / mc_files.size());
   StandardFormat(ratio, title, kBlack, 1, observable);
   ratio->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
   ratio->GetYaxis()->SetTitle("Radiation Correction");
@@ -1378,7 +1377,7 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::v
         double content_y = GetObservable(y_observable);
         // Weight is the total weight devided by the number of entries.
         // This ensures that we get the same results even if we run less radiated events.
-        double w = TotWeight / InitialNEvents;
+        double w = TotWeight / (double) InitialNEvents;
 
          // Check if passes cuts
          bool do_fill =true ;

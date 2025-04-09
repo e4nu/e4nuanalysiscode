@@ -25,7 +25,7 @@ namespace e4nu
     bool QEL= 0, RES= 0, DIS= 0, MEC= 0;
     double MCNormalization= 0, DataNormalization= 0;
     long NEntries = 0;
-    TGraph2D* graph_oscillations = nullptr;
+    TGraph2D* graph_oscillations = nullptr, * graph_oscillations_1 = nullptr, * graph_oscillations_2 = nullptr, * graph_oscillations_3 = nullptr;
   }
 }
 
@@ -1610,29 +1610,65 @@ void plotting::GetMissingEnergyGraph( const std::string mc_file ){
 
   plotting::SetAnalysisBranch(in_tree);
   // Retrieve the histogram contents (averages for each bin)
-  std::vector<double> x_values;
-  std::vector<double> y_values;
-  std::vector<double> z_values;
+  std::vector<double> x_values, x_values_1, x_values_2, x_values_3;
+  std::vector<double> y_values, y_values_1, y_values_2, y_values_3;
+  std::vector<double> z_values, z_values_1, z_values_2, z_values_3;
   for( int j = 0 ; j < NEntries ; ++j ) {
     in_tree->GetEntry(j) ;
     double content_x = plotting::GetObservable("Efl");
     double content_y = plotting::GetObservable("HadSystemMass");
     double content_z = plotting::GetObservable("MissingEnergy");
+    double content_pt = plotting::GetObservable("HadDeltaPT");
 
     x_values.push_back(content_x);
     y_values.push_back(content_y);
     z_values.push_back(content_z);
+
+    // Fill for slices of PT:
+    if( content_pt < 0.2  && content_pt > 0 ) {
+      x_values_1.push_back(content_x);
+      y_values_1.push_back(content_y);
+      z_values_1.push_back(content_z);
+    } else if ( content_pt < 0.4  && content_pt > 0.2 ) {
+      x_values_2.push_back(content_x);
+      y_values_2.push_back(content_y);
+      z_values_2.push_back(content_z);
+    } else if ( content_pt > 0.4 ){
+      x_values_3.push_back(content_x);
+      y_values_3.push_back(content_y);
+      z_values_3.push_back(content_z);
+    }
   }
 
   // Create 2D graph:
-  graph_oscillations= new TGraph2D(x_values.size(), &x_values[0], &y_values[0], &z_values[0]);
+  if( x_values.size() != 0) {
+    graph_oscillations= new TGraph2D(x_values.size(), &x_values[0], &y_values[0], &z_values[0]);
+    graph_oscillations->SetName("TGraph2D_0") ;
+  }
+  // For slices of PT:
+  if( x_values_1.size() != 0) {
+    graph_oscillations_1 = new TGraph2D(x_values_1.size(), &x_values_1[0], &y_values_1[0], &z_values_1[0]);
+    graph_oscillations_1->SetName("TGraph2D_1") ;
+  }
+  if( x_values_2.size() != 0) {
+    graph_oscillations_2 = new TGraph2D(x_values_2.size(), &x_values_2[0], &y_values_2[0], &z_values_2[0]);
+    graph_oscillations_2->SetName("TGraph2D_2") ;
+  }
+  if( x_values_3.size() != 0) {
+    graph_oscillations_3 = new TGraph2D(x_values_3.size(), &x_values_3[0], &y_values_3[0], &z_values_3[0]);
+    graph_oscillations_3->SetName("TGraph2D_3") ;
+  }
 
 }
 
-double plotting::ComputeMissingEnergy( const double event_efl, const double event_ehad ){
-  if( !graph_oscillations ){
+double plotting::ComputeMissingEnergy( const double event_efl, const double event_ehad, const unsigned int slice ){
+  if( !graph_oscillations  ){
     std::cout << " ERROR: you did not compute graph oscillations from MC file. "<< std::endl;
     return 0;
   }
-  return graph_oscillations->Interpolate(event_efl,event_ehad) ;
+  if( slice ==0 ) graph_oscillations->Interpolate(event_efl,event_ehad);
+  else if( slice == 1 && graph_oscillations_1 ) graph_oscillations_1->Interpolate(event_efl,event_ehad) ; // pt < 0.2
+  else if( slice == 2 && graph_oscillations_2 ) graph_oscillations_2->Interpolate(event_efl,event_ehad) ; // 0.2 < pt < 0.4
+  else if( slice == 3 && graph_oscillations_3 ) graph_oscillations_3->Interpolate(event_efl,event_ehad) ; // pt > 0.4
+  return 0 ;
 }

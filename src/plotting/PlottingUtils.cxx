@@ -7,7 +7,7 @@ namespace e4nu
 {
   namespace plotting {
     // Defining variables to be read from root file here.
-    double TotWeight = -9999, ECal= -9999, Recoq3= -9999, RecoW= -9999;
+    double TotWeight = -9999, ECal= -9999, BeamE = -9999, Recoq3= -9999, RecoW= -9999;
     double EventWght = 1, AccWght = 1, MottXSecScale = 1;
     double Efl= -9999, pfl= -9999, pfl_theta= -9999, pfl_phi= -9999;
     double proton_mom= -9999, proton_phi= -9999, proton_theta= -9999;
@@ -48,6 +48,7 @@ void plotting::SetAnalysisBranch( TTree * tree ) {
   if(tree->GetBranch("MottXSecScale")) tree->SetBranchAddress("MottXSecScale",&MottXSecScale);
   if(tree->GetBranch("IsBkg")) tree->SetBranchAddress("IsBkg", &IsBkg);
   if(tree->GetBranch("ECal")) tree->SetBranchAddress("ECal", &ECal);
+  if(tree->GetBranch("BeamE")) tree->SetBranchAddress("BeamE", &BeamE);
   if(tree->GetBranch("pfl_theta")) tree->SetBranchAddress("pfl_theta", &pfl_theta);
   if(tree->GetBranch("pfl_phi")) tree->SetBranchAddress("pfl_phi", &pfl_phi);
   if(tree->GetBranch("pfl")) tree->SetBranchAddress("pfl", &pfl);
@@ -108,6 +109,8 @@ double plotting::GetObservable(const std::string observable)
   double content = 0;
   if (observable == "ECal")
     content = ECal;
+  else if (observable == "BeamE")
+      content = BeamE;
   else if (observable == "Efl")
       content = Efl;
   else if (observable == "pfl")

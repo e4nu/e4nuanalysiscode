@@ -64,7 +64,7 @@ int main( int argc, char* argv[] ) {
   GetMissingEnergyGraph( (input_file).c_str() );
 
   // Now you can draw the graph after all entries have been processed.
-  graph_oscillations->SetTitle("3D Scatter Plot;Efl;HadSystemMass;MissingEnergy");
+  graph_oscillations->SetTitle("3D Scatter Plot;Efl;HadSystemMass;BeamE-MissingEnergy");
   graph_oscillations->SetMarkerStyle(20);
   graph_oscillations->SetMarkerColor(kRed); // Change color if desired
   graph_oscillations->Draw("COLZ");
@@ -111,26 +111,26 @@ int main( int argc, char* argv[] ) {
     c->SaveAs((output_name+".pdf").c_str());
   }
 
-  TFile* true_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_2GeV_with_breakdown_dxsec_dMissingEnergy.root","ROOT") ;
-  TFile* reco_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dCorrMissingEnergy.root","ROOT") ;
-  if( !true_root_file || !reco_root_file ) {
-    std::cout << " ERROR: Files do not exist."<<std::endl;
-    return 0 ;
-  }
-  TH1D * mc_data = (TH1D*)true_root_file->Get("MC_True");
-  TH1D * mc_recodata = (TH1D*)reco_root_file->Get("MC_True");
-  TH1D * true_data = (TH1D*)true_root_file->Get("Data");
-  TH1D * reco_data = (TH1D*)reco_root_file->Get("Data");
-  reco_data->SetMarkerColor(kRed);
-  reco_data->SetLineColor(kRed);
-  mc_recodata->SetLineColor(kRed);
-  mc_data->GetXaxis()->SetLabelSize(0.05);
-  mc_data->GetXaxis()->SetTitleSize(0.08);
-  mc_data->Draw("hist");
-  mc_recodata->Draw("hist same");
-  true_data->Draw("same");
-  reco_data->Draw("same");
-  c->SaveAs("testing.root");
+  // TFile* true_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_2GeV_with_breakdown_dxsec_dMissingEnergy.root","ROOT") ;
+  // TFile* reco_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dCorrMissingEnergy.root","ROOT") ;
+  // if( !true_root_file || !reco_root_file ) {
+  //   std::cout << " ERROR: Files do not exist."<<std::endl;
+  //   return 0 ;
+  // }
+  // TH1D * mc_data = (TH1D*)true_root_file->Get("MC_True");
+  // TH1D * mc_recodata = (TH1D*)reco_root_file->Get("MC_True");
+  // TH1D * true_data = (TH1D*)true_root_file->Get("Data");
+  // TH1D * reco_data = (TH1D*)reco_root_file->Get("Data");
+  // reco_data->SetMarkerColor(kRed);
+  // reco_data->SetLineColor(kRed);
+  // mc_recodata->SetLineColor(kRed);
+  // mc_data->GetXaxis()->SetLabelSize(0.05);
+  // mc_data->GetXaxis()->SetTitleSize(0.08);
+  // mc_data->Draw("hist");
+  // mc_recodata->Draw("hist same");
+  // true_data->Draw("same");
+  // reco_data->Draw("same");
+  // c->SaveAs("testing.root");
 
   return 0 ;
 

@@ -31,8 +31,9 @@ namespace e4nu {
     void CookEvent( Event & event ) ;
     void PlotBkgInformation( const Event event ) ;
     void ApplyMomentumCut( Event & event ) ;
-    bool ApplyFiducialCut( Event & event, bool apply_fiducial ) ; 
+    bool ApplyFiducialCut( Event & event, bool apply_fiducial ) ;
     double GetElectronMinTheta( TLorentzVector emom ) ;
+    bool StoreTree(Event event);
 
     // ID for Background historams
     unsigned int kid_signal, kid_tottruebkg, kid_totestbkg, kid_acccorr;

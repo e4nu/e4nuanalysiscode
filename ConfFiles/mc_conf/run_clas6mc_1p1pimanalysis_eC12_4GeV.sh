@@ -25,7 +25,7 @@ declare -a XSecFiles=(
 ## Radiated input
 declare -a RadiatedFiles=("Rarita/Carbon/Radiated/4GeV/")
 
-declare -a OutputFilesRadiated=("e4nuanalysis_1p1pim_GEM21_11a_Rarita_LFG_Q2_01_1GeV_eCarbon_Rad")
+declare -a OutputFilesRadiated=("e4nuanalysis_1p1pim_GEM21_11a_Rarita_LFG_Q2_08_4GeV_eCarbon_Rad")
 
 conf_file="ConfFiles/mc_conf/clas6mc_1p1pimanalysis_eC12_4GeV.txt"
 

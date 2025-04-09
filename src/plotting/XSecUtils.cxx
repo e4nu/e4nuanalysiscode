@@ -1495,8 +1495,7 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
         mc_norm.push_back(MCNormalization);
       }
 
-
-      // Check if passes cuts
+      // Check if passes additional cuts
       bool do_fill =true ;
       for (auto it = cuts.begin(); it != cuts.end(); it++)
       {

@@ -28,7 +28,7 @@ namespace e4nu {
     extern double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT;
     extern double AlphaT, DeltaPT, DeltaPhiT;
     extern double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu;
-    extern double MissingEnergy, MissingAngle, MissingMomentum, CorrMissingEnergy;
+    extern double MissingEnergy, MissingAngle, MissingMomentum, MissingTransMomentum, CorrMissingEnergy, CorrMissingEnergy1, CorrMissingEnergy2, CorrMissingEnergy3;
     extern double InferedNucleonMom, HadronsAngle, Angleqvshad;
     extern double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi;
     extern double RecoEvPion, RecoWPion, ElectronPT, PionPT;

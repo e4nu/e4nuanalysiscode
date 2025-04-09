@@ -171,7 +171,7 @@ void MCCLAS6AnalysisI::Initialize()
       target_tag = "e-_Fe56";
   if (GetConfiguredTarget() == conf::kPdgO16)
     target_tag = "e-_O16";
-  
+
   std::cout << " *********************************** " << GetXSecFile()<< std::endl;
   std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>(new TFile((GetXSecFile()).c_str(), "READ"));
   if (!xsec_file)
@@ -180,7 +180,7 @@ void MCCLAS6AnalysisI::Initialize()
       kIsConfigured = false;
       return;
     }
-  
+
   TDirectoryFile *xsec_dir = (TDirectoryFile *)xsec_file->Get(target_tag.c_str());
   if (!xsec_dir)
     {
@@ -188,7 +188,7 @@ void MCCLAS6AnalysisI::Initialize()
       kIsConfigured = false;
       return;
     }
-  
+
   TGraph *gxsec = (TGraph *)xsec_dir->Get("tot_em");
   if (!gxsec)
     {
@@ -196,11 +196,11 @@ void MCCLAS6AnalysisI::Initialize()
       kIsConfigured = false;
       return;
     }
-  
+
   kXSec = gxsec->Eval(GetConfiguredEBeam());
   std::cout << " Total XSec (" << GetConfiguredEBeam() << ") = " << kXSec << std::endl;
   xsec_file->Close();
-  
+
 }
 
 bool MCCLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_holder)
@@ -219,7 +219,7 @@ bool MCCLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_h
     // Store in histogram(s)
     for (unsigned int obs_id = 0; obs_id < tags.size(); ++obs_id)
     {
-      if( !kHistograms[tags[obs_id]][0] ) continue ; 
+      if( !kHistograms[tags[obs_id]][0] ) continue ;
       kHistograms[tags[obs_id]][0]->Fill(event_holder[min_mult][k].GetObservable(tags[obs_id]), norm_weight);
     }
 
@@ -464,6 +464,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event)
   double MissingEnergy = utils::Missing4Momenta(BeamE, out_mom, hadron_map).E();
   double MissingMomentum = utils::Missing4Momenta(BeamE, out_mom, hadron_map).P();
   double MissingAngle = utils::Missing4Momenta(BeamE, out_mom, hadron_map).Theta() * TMath::RadToDeg();
+  double MissingTransMomentum = utils::GetPT(utils::Missing4Momenta(BeamE, out_mom, hadron_map).Vect()).Mag();
 
   TLorentzVector pi_mom(0, 0, 0, 0);
   if (topology_has_pip)
@@ -574,6 +575,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event)
     kAnalysisTree->Branch("ElectronSector", &ElectronSector, "ElectronSector/I");
     kAnalysisTree->Branch("MissingEnergy", &MissingEnergy, "MissingEnergy/D");
     kAnalysisTree->Branch("MissingMomentum", &MissingMomentum, "MissingMomentum/D");
+    kAnalysisTree->Branch("MissingTransMomentum", &MissingTransMomentum, "MissingTransMomentum/D");
     kAnalysisTree->Branch("MissingAngle", &MissingAngle, "MissingAngle/D");
     kAnalysisTree->Branch("ECal", &ECal, "ECal/D");
     kAnalysisTree->Branch("DiffECal", &DiffECal, "DiffECal/D");

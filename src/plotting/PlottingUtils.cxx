@@ -16,7 +16,7 @@ namespace e4nu
     double HadAlphaT= -9999, HadDeltaPT= -9999, HadDeltaPTx= -9999, HadDeltaPTy= -9999, HadDeltaPhiT= -9999;
     double AlphaT= -9999, DeltaPT= -9999, DeltaPhiT= -9999;
     double RecoXBJK= -9999, RecoEnergyTransfer= -9999, RecoQ2= -9999, HadSystemMass= -9999, RecoQELEnu= -9999;
-    double MissingEnergy= -9999, MissingAngle= -9999, MissingMomentum= -9999;
+    double MissingEnergy= -9999, MissingAngle= -9999, MissingMomentum= -9999, MissingTransMomentum= -9999;
     double InferedNucleonMom= -9999, HadronsAngle= -9999, Angleqvshad= -9999;
     double AdlerAngleThetaP= -9999, AdlerAnglePhiP= -9999, AdlerAngleThetaPi= -9999, AdlerAnglePhiPi= -9999;
     double RecoEvPion= -9999, RecoWPion= -9999, ElectronPT= -9999, PionPT= -9999;
@@ -78,6 +78,7 @@ void plotting::SetAnalysisBranch( TTree * tree ) {
   if(tree->GetBranch("ElectronSector")) tree->SetBranchAddress("ElectronSector", &ElectronSector);
   if(tree->GetBranch("HadSystemMass")) tree->SetBranchAddress("HadSystemMass", &HadSystemMass);
   if(tree->GetBranch("MissingEnergy")) tree->SetBranchAddress("MissingEnergy", &MissingEnergy);
+  if(tree->GetBranch("MissingTransMomentum")) tree->SetBranchAddress("MissingTransMomentum", &MissingTransMomentum);
   if(tree->GetBranch("MissingAngle")) tree->SetBranchAddress("MissingAngle", &MissingAngle);
   if(tree->GetBranch("MissingMomentum")) tree->SetBranchAddress("MissingMomentum", &MissingMomentum);
   if(tree->GetBranch("InferedNucleonMom")) tree->SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
@@ -165,10 +166,16 @@ double plotting::GetObservable(const std::string observable)
     content = HadSystemMass;
   else if (observable == "MissingEnergy")
     content = MissingEnergy;
-  else if (observable == "MissingEnergy")
-    content = MissingEnergy;
+  else if (observable == "MissingTransMomentum")
+    content = MissingTransMomentum;
   else if (observable == "CorrMissingEnergy")
     content = ComputeMissingEnergy( Efl, HadSystemMass );
+  else if (observable == "CorrMissingEnergy1")
+    content = ComputeMissingEnergy( Efl, HadSystemMass, 1 );
+  else if (observable == "CorrMissingEnergy2")
+    content = ComputeMissingEnergy( Efl, HadSystemMass, 2 );
+  else if (observable == "CorrMissingEnergy3")
+    content = ComputeMissingEnergy( Efl, HadSystemMass, 3 );
   else if (observable == "MissingAngle")
     content = MissingAngle;
   else if (observable == "MissingMomentum")
@@ -432,11 +439,31 @@ std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis)
       x_axis = "E_{miss}[GeV]";
       y_axis = "d#sigma/dE_{miss} #left[#mub GeV^{-1}#right]";
     }
+  else if (observable == "MissingTransMomentum")
+    {
+      x_axis = "E_{miss}[GeV]";
+      y_axis = "d#sigma/dp_{miss}^{T} #left[#mub GeV^{-1}#right]";
+    }
   else if (observable == "CorrMissingEnergy")
     {
       x_axis = "E_{miss}[GeV]";
       y_axis = "d#sigma/dE_{miss}^{corr} #left[#mub GeV^{-1}#right]";
     }
+  else if (observable == "CorrMissingEnergy1")
+    {
+      x_axis = "E_{miss}[GeV]";
+      y_axis = "d#sigma/dE_{miss}^{corr,1} #left[#mub GeV^{-1}#right]";
+    }
+  else if (observable == "CorrMissingEnergy2")
+    {
+      x_axis = "E_{miss}[GeV]";
+      y_axis = "d#sigma/dE_{miss}^{corr,2} #left[#mub GeV^{-1}#right]";
+    }
+  else if (observable == "CorrMissingEnergy3")
+    {
+      x_axis = "E_{miss}[GeV]";
+    y_axis = "d#sigma/dE_{miss}^{corr,3} #left[#mub GeV^{-1}#right]";
+  }
   else if (observable == "MissingAngle")
     {
       x_axis = "#theta_{miss}[deg]";
@@ -780,8 +807,17 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
         binning = plotting::GetECalBinning(20, 15, -0.7, 1.2, 0.9);
       else if (EBeam == 4.461)
 	     binning = plotting::GetECalBinning(20, 15, -2.5, 1.2, 0.9);
-}
-  else if (observable == "CorrMissingEnergy")
+     }
+  else if (observable == "MissingTransMomentum")
+     {
+       if (EBeam == 1.161)
+	      binning = plotting::GetECalBinning(20, 15, 0.3, 1.1, 0.9);
+       else if (EBeam == 2.261)
+         binning = plotting::GetECalBinning(20, 15, -0.7, 1.2, 0.9);
+       else if (EBeam == 4.461)
+   	    binning = plotting::GetECalBinning(20, 15, -2.5, 1.2, 0.9);
+      }
+  else if (observable == "CorrMissingEnergy" || observable == "CorrMissingEnergy1" || observable == "CorrMissingEnergy2" || observable == "CorrMissingEnergy3")
     {
       if (EBeam == 1.161)
         binning = plotting::GetECalBinning(20, 15, 0.3, 1.1, 0.9);
@@ -1012,7 +1048,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
 	  else if (EBeam == 4.461)
 	    binning = plotting::GetUniformBinning(25, 0, 1);
 	}
-  else if (observable == "CorrMissingEnergy")
+  else if (observable == "CorrMissingEnergy"||observable == "CorrMissingEnergy1"||observable == "CorrMissingEnergy2"||observable == "CorrMissingEnergy3")
 {
 if (EBeam == 1.161)
   binning = plotting::GetUniformBinning(25, 0.5, 1);
@@ -1617,8 +1653,8 @@ void plotting::GetMissingEnergyGraph( const std::string mc_file ){
     in_tree->GetEntry(j) ;
     double content_x = plotting::GetObservable("Efl");
     double content_y = plotting::GetObservable("HadSystemMass");
-    double content_z = plotting::GetObservable("MissingEnergy");
-    double content_pt = plotting::GetObservable("HadDeltaPT");
+    double content_z = plotting::GetObservable("BeamE") - plotting::GetObservable("MissingEnergy");
+    double content_pt = plotting::GetObservable("MissingTransMomentum");
 
     x_values.push_back(content_x);
     y_values.push_back(content_y);

@@ -111,7 +111,7 @@ bool CLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_hol
     // Store in histogram(s)
     for (unsigned int j = 0; j < tags.size(); ++j)
     {
-      if( !kHistograms[tags[j]][0] ) continue ; 
+      if( !kHistograms[tags[j]][0] ) continue ;
       kHistograms[tags[j]][0]->Fill(event_holder[min_mult][k].GetObservable(tags[j]), norm_weight);
     }
   }
@@ -130,7 +130,7 @@ bool CLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_hol
   {
     for (unsigned int j = 0; j < tags.size(); ++j)
     {
-      if( !kHistograms[tags[j]][0] ) continue ; 
+      if( !kHistograms[tags[j]][0] ) continue ;
       double NBins = kHistograms[tags[j]][0]->GetNbinsX();
 
       for (int k = 1; k <= NBins; k++)
@@ -308,6 +308,7 @@ bool CLAS6AnalysisI::StoreTree(Event event)
   double MissingEnergy = utils::Missing4Momenta(BeamE, out_mom, hadron_map).E();
   double MissingMomentum = utils::Missing4Momenta(BeamE, out_mom, hadron_map).P();
   double MissingAngle = utils::Missing4Momenta(BeamE, out_mom, hadron_map).Theta() * TMath::RadToDeg();
+  double MissingTransMomentum = utils::GetPT(utils::Missing4Momenta(BeamE, out_mom, hadron_map).Vect()).Mag();
 
   unsigned int MassNumber = utils::GetMassNumber(TargetPdg);
   double IntegratedCharge = conf::GetIntegratedCharge(TargetPdg, BeamE);
@@ -322,7 +323,6 @@ bool CLAS6AnalysisI::StoreTree(Event event)
   double AdlerAnglePhiP = utils::GetAdlerAnglePhi(BeamE, out_mom, hadron_map, conf::kPdgProton) * TMath::RadToDeg();
   double AdlerAngleThetaPi = utils::GetAdlerAngleTheta(BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg();
   double AdlerAnglePhiPi = utils::GetAdlerAnglePhi(BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg();
-
   double Angleqvshad = utils::Angle(utils::GetRecoq3(out_mom, BeamE), utils::TotHadron(hadron_map).Vect()) * TMath::RadToDeg();
 
   TLorentzVector pi_mom(0, 0, 0, 0);
@@ -401,6 +401,7 @@ bool CLAS6AnalysisI::StoreTree(Event event)
     kAnalysisTree->Branch("ElectronSector", &ElectronSector, "ElectronSector/I");
     kAnalysisTree->Branch("MissingEnergy", &MissingEnergy, "MissingEnergy/D");
     kAnalysisTree->Branch("MissingMomentum", &MissingMomentum, "MissingMomentum/D");
+    kAnalysisTree->Branch("MissingTransMomentum", &MissingTransMomentum, "MissingTransMomentum/D");
     kAnalysisTree->Branch("MissingAngle", &MissingAngle, "MissingAngle/D");
     kAnalysisTree->Branch("ECal", &ECal, "ECal/D");
     kAnalysisTree->Branch("DiffECal", &DiffECal, "DiffECal/D");

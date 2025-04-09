@@ -526,7 +526,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     plotting::PlotComparisonDataNormalized(mc_hists, breakdown, hist_data_correventrate_wsyst, observable, title, data_name, model, input_MC_location,
                                            input_data_location, output_location, output_file_name + "_normalized_to_data_wsyst_with_breakdown", systematic_map, true, analysis_id, store_root);
 
-    plotting::PlotXsecDataTotal(hist_data, observable, title, data_name, input_data_location, output_location, output_file_name + "MYTEST",
+    plotting::PlotXsecDataTotal(hist_data, observable, title, data_name, input_data_location, output_location, output_file_name,
                                 systematic_map, analysis_id, store_root);
 
   }
@@ -1491,8 +1491,10 @@ void plotting::Plot2DXSec(std::vector<std::string> MC_files_name, std::string da
       double content_y = GetObservable(y_observable);
       double w = EventWght * AccWght ;
       if( scale_mott ) w *= MottXSecScale;
-      if (i != id_data && j == 0)
+      if (i != id_data && j == 0) {
         mc_norm.push_back(MCNormalization);
+      }
+
 
       // Check if passes cuts
       bool do_fill =true ;

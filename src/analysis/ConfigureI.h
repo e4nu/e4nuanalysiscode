@@ -93,7 +93,7 @@ namespace e4nu {
     unsigned int GetNRotations(void) const { return kNRotations ; }
     bool GetSubtractBkg(void) const { return kSubtractBkg ; }
     bool GetDebugBkg(void) const { return kDebugBkg ; }
-    void SetDebugBkg(bool debug ) { kDebugBkg = debug ; } 
+    void SetDebugBkg( bool debug ) { kDebugBkg = debug ; } 
 
     // Systematics configurables
     bool ComputeSystFiducial( double angle_shift ) ;

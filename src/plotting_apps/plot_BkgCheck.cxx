@@ -74,18 +74,40 @@ int main( int argc, char* argv[] ) {
 
   TH1D * h_tot_true = (TH1D*) in_root_file->Get( (observable+"_TotTrueBkg"+bkg_string).c_str() ) ;
   TH1D * h_tot_est = (TH1D*) in_root_file->Get( (observable+"_TotEstBkg"+bkg_string).c_str() ) ;
-  TH1D * h_diff_true = (TH1D*) h_tot_true->Clone();
 
-  for( unsigned int j = 0 ; j < h_diff_true -> GetNbinsX() ; ++j ){
+  TH1D * h_signal = (TH1D*) in_root_file->Get( (observable+"_OnlySignal").c_str() ) ;
+  TH1D * h_total_bkg = (TH1D*) in_root_file->Get( (observable+"_TotTrueBkg").c_str() ) ;
+
+  TH1D * h_diff_true = (TH1D*) h_tot_true->Clone();
+  double fraction = h_total_bkg->GetEntries()/h_signal->GetEntries();
+  std::cout << " Fraction Background Events: " << fraction << std::endl;
+
+  // Scale by number of signal Events
+  // h_tot_true->Scale(1./h_signal->GetEntries());
+  // h_tot_est->Scale(1./h_signal->GetEntries());
+
+  // Scale by Bin Width
+  // for (int k = 1; k <= h_tot_true->GetNbinsX(); k++)
+  // {
+  //   double width = h_tot_true->GetBinWidth(k);
+  //   // h_tot_true->SetBinContent(k, h_tot_true->GetBinContent(k) / width );
+  //   // h_tot_true->SetBinError(k, h_tot_true->GetBinError(k) / width );
+  //   // h_tot_est->SetBinContent(k, h_tot_est->GetBinContent(k) / width / fraction );
+  //   // h_tot_est->SetBinError(k, h_tot_est->GetBinError(k) / width / fraction );
+  // }
+
+  for( unsigned int j = 1 ; j < h_diff_true -> GetNbinsX() ; ++j ){
     double err = pow(h_tot_true->GetBinContent(j)-h_tot_est->GetBinContent(j),2) ;
+
     // Substract stat error
     err -= pow(h_tot_true->GetBinError(j),2) ;
     err -= pow(h_tot_est->GetBinError(j),2) ;
 
     if( err < 0 ) err = 0 ;
+    
     err = sqrt(err);
-    if( h_tot_est->GetBinContent(j) != 0 && h_tot_true->GetBinContent(j) > 100 && h_tot_est->GetBinContent(j) > 100) {
-      h_diff_true->SetBinContent(j,err/h_tot_est->GetBinContent(j)*100);
+    if( h_tot_est->GetBinContent(j) != 0 ) {
+      h_diff_true->SetBinContent(j,err/h_tot_est->GetBinContent(j)*100*fraction);
     }
 
   }

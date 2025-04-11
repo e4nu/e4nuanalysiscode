@@ -343,7 +343,7 @@ bool AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) {
 
 bool AnalysisI::StoreTree(Event event)
 {
-  static bool n = true;
+  static bool isFirstCall = true;
   unsigned int InitialNEvents = GetNEventsToRun();
   double ConversionFactor = conf::kConversionFactorCm2ToMicroBarn * TMath::Power(10., -38.);
   int ID = event.GetEventID();
@@ -554,7 +554,7 @@ bool AnalysisI::StoreTree(Event event)
   const char *InputROOTFile = kInputFile.c_str();
   const char *OutputROOTFile = kOutputFile.c_str();
 
-  if (n == true)
+  if (isFirstCall == true)
   {
     kAnalysisTree->Branch("InputROOTFile", &InputROOTFile, "InputROOTFile/C");
     kAnalysisTree->Branch("OutputROOTFile", &OutputROOTFile, "OutputROOTFile/C");
@@ -658,7 +658,7 @@ bool AnalysisI::StoreTree(Event event)
     kAnalysisTree->Branch("HadDeltaPhiT", &HadDeltaPhiT, "HadDeltaPhiT/D");
     kAnalysisTree->Branch("InferedNucleonMom", &InferedNucleonMom, "InferedNucleonMom/D");
 
-    n = false;
+    isFirstCall = false;
   }
 
   return true;

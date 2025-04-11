@@ -249,7 +249,7 @@ bool MCCLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_h
 
 bool MCCLAS6AnalysisI::StoreTree(Event event)
 {
-  static bool n = true;
+  static bool isFirstCall = true;
 
   // Storing general variables:
   double ConversionFactor = kConversionFactorCm2ToMicroBarn * TMath::Power(10., -38.);
@@ -289,12 +289,12 @@ bool MCCLAS6AnalysisI::StoreTree(Event event)
   double AccWght = event.GetAccWght();
   bool IsBkg = event.IsBkg();
 
-  // Rotate particles before storing. GENIE phi flipped with respect to CLAS:
+  // // Rotate φ to match CLAS convention (only for MC events)
   TLorentzVector out_mom = event.GetOutLepton4Mom();
   out_mom.SetPhi(out_mom.Phi() + TMath::Pi());
   event.SetOutLeptonKinematics(out_mom);
 
-  // flip hadrons phi
+  //Rotate φ to match CLAS convention (only for MC events)
   std::map<int, std::vector<TLorentzVector>> hadron_map = event.GetFinalParticles4Mom();
   for (auto it = hadron_map.begin(); it != hadron_map.end(); ++it)
   {
@@ -310,7 +310,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event)
   // Store name of files used
   const char *InputXSecFile = kXSecFile.c_str();
 
-  if (n == true)
+  if (isFirstCall == true)
   {
     kAnalysisTree->Branch("InputXSecFile", &InputXSecFile, "InputXSecFile/C");
     kAnalysisTree->Branch("CC", &CC, "CC/O");
@@ -346,7 +346,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event)
     kAnalysisTree->Branch("TotalXSec", &TotalXSec, "TotalXSec/D");
     kAnalysisTree->Branch("MCNormalization", &MCNormalization, "MCNormalization/D");
 
-    n = false;
+    isFirstCall = false;
   }
 
   // Store other branches which are generic to CLAS data also:

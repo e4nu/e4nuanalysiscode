@@ -16,7 +16,7 @@ namespace e4nu
     double HadAlphaT= -9999, HadDeltaPT= -9999, HadDeltaPTx= -9999, HadDeltaPTy= -9999, HadDeltaPhiT= -9999;
     double AlphaT= -9999, DeltaPT= -9999, DeltaPhiT= -9999;
     double RecoXBJK= -9999, RecoEnergyTransfer= -9999, RecoQ2= -9999, HadSystemMass= -9999, RecoQELEnu= -9999;
-    double MissingEnergy= -9999, MissingAngle= -9999, MissingMomentum= -9999, MissingTransMomentum= -9999;
+    double MissingEnergy= -9999, MissingAngle= -9999, MissingMomentum= -9999, MissingTransMomentum= -9999, pfl_T= -9999;
     double InferedNucleonMom= -9999, HadronsAngle= -9999, Angleqvshad= -9999;
     double AdlerAngleThetaP= -9999, AdlerAnglePhiP= -9999, AdlerAngleThetaPi= -9999, AdlerAnglePhiPi= -9999;
     double RecoEvPion= -9999, RecoWPion= -9999, ElectronPT= -9999, PionPT= -9999;
@@ -53,6 +53,7 @@ void plotting::SetAnalysisBranch( TTree * tree ) {
   if(tree->GetBranch("pfl_phi")) tree->SetBranchAddress("pfl_phi", &pfl_phi);
   if(tree->GetBranch("pfl")) tree->SetBranchAddress("pfl", &pfl);
   if(tree->GetBranch("Efl")) tree->SetBranchAddress("Efl", &Efl);
+  if(tree->GetBranch("pfl_T")) tree->SetBranchAddress("pfl_T", &pfl_T);
   if(tree->GetBranch("proton_mom")) tree->SetBranchAddress("proton_mom", &proton_mom);
   if(tree->GetBranch("proton_theta")) tree->SetBranchAddress("proton_theta", &proton_theta);
   if(tree->GetBranch("proton_phi")) tree->SetBranchAddress("proton_phi", &proton_phi);
@@ -119,6 +120,8 @@ double plotting::GetObservable(const std::string observable)
     content = pfl_theta;
   else if (observable == "pfl_phi")
     content = pfl_phi;
+  else if (observable == "pfl_T")
+    content = pfl_T;
   else if (observable == "proton_mom")
     content = proton_mom;
   else if (observable == "proton_theta")

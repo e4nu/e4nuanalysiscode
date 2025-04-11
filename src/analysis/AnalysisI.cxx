@@ -374,6 +374,7 @@ bool AnalysisI::StoreTree(Event event)
   double pfl_theta = out_mom.Theta() * TMath::RadToDeg();
   unsigned int ElectronSector = utils::GetSector(out_mom.Phi());
   double pfl_phi = out_mom.Phi() * TMath::RadToDeg();
+  double pfl_T = utils::GetPT(out_mom.Vect()).Mag();
 
   double RecoQELEnu = utils::GetQELRecoEnu(out_mom, TargetPdg);
   double RecoEnergyTransfer = utils::GetEnergyTransfer(out_mom, BeamE);
@@ -586,6 +587,7 @@ bool AnalysisI::StoreTree(Event event)
     kAnalysisTree->Branch("pflz", &pflz, "pflz/D");
     kAnalysisTree->Branch("pfl_theta", &pfl_theta, "pfl_theta/D");
     kAnalysisTree->Branch("pfl_phi", &pfl_phi, "pfl_phi/D");
+    kAnalysisTree->Branch("pfl_T", &pfl_T, "pfl_T/D");
     kAnalysisTree->Branch("RecoQELEnu", &RecoQELEnu, "RecoQELEnu/D");
     kAnalysisTree->Branch("RecoEnergyTransfer", &RecoEnergyTransfer, "RecoEnergyTransfer/D");
     kAnalysisTree->Branch("Recoq3", &Recoq3, "Recoq3/D");

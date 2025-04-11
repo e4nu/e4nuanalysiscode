@@ -21,7 +21,7 @@ namespace e4nu {
     // Define observables here
     extern double TotWeight, ECal, BeamE, Recoq3, RecoW;
     extern double EventWght, AccWght, MottXSecScale;
-    extern double Efl, pfl, pfl_theta, pfl_phi;
+    extern double Efl, pfl, pfl_theta, pfl_phi, pfl_T ;
     extern double proton_mom, proton_phi, proton_theta;
     extern double pim_mom, pim_theta, pim_phi;
     extern double pip_mom, pip_theta, pip_phi;

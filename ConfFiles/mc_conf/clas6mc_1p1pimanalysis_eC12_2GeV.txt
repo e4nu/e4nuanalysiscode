@@ -19,7 +19,7 @@ offset			0
 #Run Configurables
 EBeam			2.261
 TargetPdg		1000060120
-NEvents			10000000
+NEvents			100000000
 FirstEvent		0
 
 #Topology definition

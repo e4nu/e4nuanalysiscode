@@ -661,6 +661,9 @@ bool AnalysisI::StoreTree(Event event)
     isFirstCall = false;
   }
 
+  // Fill
+  kAnalysisTree->Fill();
+
   return true;
 }
 

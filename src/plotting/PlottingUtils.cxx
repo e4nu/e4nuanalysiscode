@@ -1660,22 +1660,22 @@ void plotting::GetMissingEnergyGraph( const std::string mc_file ){
     double content_x = plotting::GetObservable("Efl");
     double content_y = plotting::GetObservable("HadSystemMass");
     double content_z = plotting::GetObservable("BeamE") - plotting::GetObservable("MissingEnergy");
-    double content_pt = plotting::GetObservable("MissingTransMomentum");
+    double content_pt = plotting::GetObservable("pfl_T");
 
     x_values.push_back(content_x);
     y_values.push_back(content_y);
     z_values.push_back(content_z);
 
     // Fill for slices of PT:
-    if( content_pt < 0.2  && content_pt > 0 ) {
+    if( content_pt < 0.4  && content_pt > 0 ) {
       x_values_1.push_back(content_x);
       y_values_1.push_back(content_y);
       z_values_1.push_back(content_z);
-    } else if ( content_pt < 0.4  && content_pt > 0.2 ) {
+    } else if ( content_pt < 0.6  && content_pt > 0.4 ) {
       x_values_2.push_back(content_x);
       y_values_2.push_back(content_y);
       z_values_2.push_back(content_z);
-    } else if ( content_pt > 0.4 ){
+    } else if ( content_pt > 0.6 ){
       x_values_3.push_back(content_x);
       y_values_3.push_back(content_y);
       z_values_3.push_back(content_z);
@@ -1709,8 +1709,8 @@ double plotting::ComputeMissingEnergy( const double event_efl, const double even
     return 0;
   }
   if( slice ==0 ) graph_oscillations->Interpolate(event_efl,event_ehad);
-  else if( slice == 1 && graph_oscillations_1 ) graph_oscillations_1->Interpolate(event_efl,event_ehad) ; // pt < 0.2
-  else if( slice == 2 && graph_oscillations_2 ) graph_oscillations_2->Interpolate(event_efl,event_ehad) ; // 0.2 < pt < 0.4
-  else if( slice == 3 && graph_oscillations_3 ) graph_oscillations_3->Interpolate(event_efl,event_ehad) ; // pt > 0.4
+  else if( slice == 1 && graph_oscillations_1 ) graph_oscillations_1->Interpolate(event_efl,event_ehad) ; // pt < 0.4
+  else if( slice == 2 && graph_oscillations_2 ) graph_oscillations_2->Interpolate(event_efl,event_ehad) ; // 0.4 < pt < 0.6
+  else if( slice == 3 && graph_oscillations_3 ) graph_oscillations_3->Interpolate(event_efl,event_ehad) ; // pt > 0.6
   return 0 ;
 }

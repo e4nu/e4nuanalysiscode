@@ -152,6 +152,26 @@ bool CLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_hol
 
 bool CLAS6AnalysisI::StoreTree(Event event)
 {
+  static bool isFirstCall = true;
+  // Storing general variables:
+  double BeamE = event.GetInLepton4Mom().E();
+  int TargetPdg = event.GetTargetPdg();
+  unsigned int MassNumber = utils::GetMassNumber(TargetPdg);
+  double IntegratedCharge = conf::GetIntegratedCharge(TargetPdg, BeamE);
+  double TargetLength = conf::GetTargetLength(TargetPdg);
+  double TargetDensity = conf::GetTargetDensity(TargetPdg);
+  double ConversionFactor = kConversionFactorCm2ToMicroBarn / kOverallUnitConversionFactor;
+  double DataNormalization = kConversionFactorCm2ToMicroBarn * MassNumber / (IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor);
+
+  if( isFirstCall ){
+    kAnalysisTree->Branch("MassNumber", &MassNumber, "MassNumber/I");
+    kAnalysisTree->Branch("IntegratedCharge", &IntegratedCharge, "IntegratedCharge/D");
+    kAnalysisTree->Branch("TargetLength", &TargetLength, "TargetLength/D");
+    kAnalysisTree->Branch("TargetDensity", &TargetDensity, "TargetDensity/D");
+    kAnalysisTree->Branch("ConversionFactor", &ConversionFactor, "ConversionFactor/D");
+    kAnalysisTree->Branch("DataNormalization", &DataNormalization, "DataNormalization/D");
+    isFirstCall = false;
+  }
   // Store other branches which are generic to CLAS data also:
   AnalysisI::StoreTree(event);
   // Fill

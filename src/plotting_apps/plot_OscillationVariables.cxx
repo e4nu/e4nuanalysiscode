@@ -59,16 +59,24 @@ int main( int argc, char* argv[] ) {
   pad1->cd();
   pad1->SetBottomMargin(0.15);
   pad1->SetLeftMargin(0.15);
+  pad1->SetRightMargin(0.2);
   // gStyle->SetPalette(kLightTemperature);
 
   GetMissingEnergyGraph( (input_file).c_str() );
 
   // Now you can draw the graph after all entries have been processed.
-  graph_oscillations->SetTitle("3D Scatter Plot;Efl;HadSystemMass;BeamE-MissingEnergy");
+  graph_oscillations->SetTitle(";E_{e'} [GeV];E_{had} [GeV];E_{e}-E_{miss} [GeV]");
   graph_oscillations->SetMarkerStyle(20);
   graph_oscillations->SetMarkerColor(kRed); // Change color if desired
   graph_oscillations->Draw("COLZ");
-
+  graph_oscillations->GetZaxis()->SetLabelOffset(1);
+  graph_oscillations->GetXaxis()->CenterTitle();
+  graph_oscillations->GetXaxis()->SetLabelFont(13);
+  graph_oscillations->GetYaxis()->CenterTitle();
+  graph_oscillations->GetYaxis()->SetLabelFont(13);
+  graph_oscillations->GetZaxis()->CenterTitle();
+  graph_oscillations->GetZaxis()->SetLabelFont(13);
+  gPad->Update();
   std::string output_name = "test_GraphOscillations" ;
 
   c->SaveAs((output_name+".root").c_str());
@@ -77,7 +85,7 @@ int main( int argc, char* argv[] ) {
   // Pt < 0.2
   if( graph_oscillations_1 ) {
     // gStyle->SetPalette(kLightTemperature);
-    graph_oscillations_1->SetTitle("3D Scatter Plot;Efl;HadSystemMass;MissingEnergy");
+    graph_oscillations_1->SetTitle("p_{T} [GeV/c]<0.4;E_{e'} [GeV];E_{had} [GeV];E_{e}-E_{miss} [GeV]");
     graph_oscillations_1->SetMarkerStyle(20);
     graph_oscillations_1->SetMarkerColor(kRed); // Change color if desired
     graph_oscillations_1->Draw("COLZ");
@@ -88,7 +96,7 @@ int main( int argc, char* argv[] ) {
   }
 
   if( graph_oscillations_2 ) {
-    graph_oscillations_2->SetTitle("3D Scatter Plot;Efl;HadSystemMass;MissingEnergy");
+    graph_oscillations_2->SetTitle("0.4<p_{T} [GeV/c]<0.6;E_{e'} [GeV];E_{had} [GeV];E_{e}-E_{miss} [GeV]");
     graph_oscillations_2->SetMarkerStyle(20);
     graph_oscillations_2->SetMarkerColor(kRed); // Change color if desired
     graph_oscillations_2->Draw("COLZ");
@@ -100,7 +108,7 @@ int main( int argc, char* argv[] ) {
   }
 
   if( graph_oscillations_3 ) {
-    graph_oscillations_3->SetTitle("3D Scatter Plot;Efl;HadSystemMass;MissingEnergy");
+    graph_oscillations_3->SetTitle("p_{T} [GeV/c]>0.6;E_{e'} [GeV];E_{had} [GeV];E_{e}-E_{miss} [GeV]");
     graph_oscillations_3->SetMarkerStyle(20);
     graph_oscillations_3->SetMarkerColor(kRed); // Change color if desired
     graph_oscillations_3->Draw("COLZ");

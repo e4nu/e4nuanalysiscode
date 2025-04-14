@@ -174,7 +174,6 @@ bool CLAS6AnalysisI::StoreTree(Event event)
   }
   // Store other branches which are generic to CLAS data also:
   AnalysisI::StoreTree(event);
-  // Fill
-  kAnalysisTree->Fill();
+
   return true;
 }

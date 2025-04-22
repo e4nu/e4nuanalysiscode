@@ -310,6 +310,11 @@ std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis)
       x_axis = "E_{Cal} [GeV]";
       y_axis = "d#sigma/dE_{Cal} #left[#mub GeV^{-1}#right]";
     }
+  else if (observable == "Efl")
+    {
+      x_axis = "E_{e'} [GeV]";
+      y_axis = "d#sigma/dE_{e'} #left[#mub GeV^{-1}#right]";
+    }
   else if (observable == "pfl_theta")
     {
       x_axis = "#theta_{e'} [deg]";
@@ -324,6 +329,11 @@ std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis)
     {
       x_axis = "p_{e'} [GeV/c]";
       y_axis = "d#sigma/dp_{e'} #left[#mub #left(GeV/c#right)^{-1}#right]";
+    }
+  else if (observable == "pfl_T")
+    {
+      x_axis = "p_{e'}^{T} [GeV/c]";
+      y_axis = "d#sigma/dp_{e'}^{T} #left[#mub #left(GeV/c#right)^{-1}#right]";
     }
   else if (observable == "proton_mom")
     {
@@ -437,8 +447,8 @@ std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis)
     }
   else if (observable == "HadSystemMass")
     {
-      x_axis = "M_{R}[GeV]";
-      y_axis = "d#sigma/dM_{R} #left[#mub GeV^{-1}#right]";
+      x_axis = "E_{had}[GeV]";
+      y_axis = "d#sigma/dE_{had} #left[#mub GeV^{-1}#right]";
     }
   else if (observable == "MissingEnergy")
     {
@@ -452,23 +462,23 @@ std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis)
     }
   else if (observable == "CorrMissingEnergy")
     {
-      x_axis = "E_{miss}[GeV]";
+      x_axis = "E_{miss}^{corr}[GeV]";
       y_axis = "d#sigma/dE_{miss}^{corr} #left[#mub GeV^{-1}#right]";
     }
   else if (observable == "CorrMissingEnergy1")
     {
-      x_axis = "E_{miss}[GeV]";
-      y_axis = "d#sigma/dE_{miss}^{corr,1} #left[#mub GeV^{-1}#right]";
+      x_axis = "E_{miss}^{corr}[GeV]";
+      y_axis = "d#sigma/dE_{miss}^{corr} #left[#mub GeV^{-1}#right]";
     }
   else if (observable == "CorrMissingEnergy2")
     {
-      x_axis = "E_{miss}[GeV]";
-      y_axis = "d#sigma/dE_{miss}^{corr,2} #left[#mub GeV^{-1}#right]";
+      x_axis = "E_{miss}^{corr}[GeV]";
+      y_axis = "d#sigma/dE_{miss}^{corr} #left[#mub GeV^{-1}#right]";
     }
   else if (observable == "CorrMissingEnergy3")
     {
-      x_axis = "E_{miss}[GeV]";
-    y_axis = "d#sigma/dE_{miss}^{corr,3} #left[#mub GeV^{-1}#right]";
+      x_axis = "E_{miss}^{corr}[GeV]";
+      y_axis = "d#sigma/dE_{miss}^{corr} #left[#mub GeV^{-1}#right]";
   }
   else if (observable == "MissingAngle")
     {
@@ -589,6 +599,15 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       else if (EBeam == 4.461)
 	binning = plotting::GetECalBinning(13, 15, 1.5, EBeam + 0.15, EBeam);
     }
+  else if (observable == "Efl")
+      {
+      if (EBeam == 1.161)
+        binning = plotting::GetUniformBinning(20, 0.35, 0.9);
+      else if (EBeam == 2.261)
+        binning = plotting::GetUniformBinning(20, 0.5, 1.7);
+      else if (EBeam == 4.461)
+        binning = plotting::GetUniformBinning(20, 1.2, 3.8);
+    }
   else if (observable == "DiffECal")
     {
       if (EBeam == 1.161)
@@ -624,6 +643,15 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
 	binning = plotting::GetUniformBinning(20, 0.5, 1.7);
       else if (EBeam == 4.461)
 	binning = plotting::GetUniformBinning(20, 1.2, 3.8);
+  }
+  else if (observable == "pfl_T")
+    {
+      if (EBeam == 1.161)
+	binning = plotting::GetUniformBinning(20, 0.2, 0.6);
+      else if (EBeam == 2.261)
+	binning = plotting::GetUniformBinning(20, 0.3, 0.9);
+      else if (EBeam == 4.461)
+	binning = plotting::GetUniformBinning(20, 0.5, 1.2);
     }
   else if (observable == "proton_mom")
     {
@@ -826,11 +854,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "CorrMissingEnergy" || observable == "CorrMissingEnergy1" || observable == "CorrMissingEnergy2" || observable == "CorrMissingEnergy3")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetECalBinning(20, 15, 0.3, 1.1, 0.9);
+	     binning = plotting::GetECalBinning(20, 15, 0.3, 1.1, 0.9);
       else if (EBeam == 2.261)
         binning = plotting::GetECalBinning(20, 15, -0.7, 1.2, 0.9);
       else if (EBeam == 4.461)
-        binning = plotting::GetECalBinning(20, 15, -2.5, 1.2, 0.9);
+	     binning = plotting::GetECalBinning(20, 15, -2.5, 1.2, 0.9);
       }
   else if (observable == "MissingAngle")
     {
@@ -1632,7 +1660,7 @@ bool plotting::PlotZoomIn(std::string analysis_id)
 }
 
 
-void plotting::GetMissingEnergyGraph( const std::string mc_file ){
+void plotting::GetMissingEnergyGraph( const std::string mc_file, const bool diff_Ebeam ){
   // This function coputes a 2D graph for MC only with the following variables:
   // Efl, MissingEnergy and Ehad (HadSystemMass)
   // As done in NOVA, we can attempt to correct e-data with the MC calculation and directly estimate the bias
@@ -1659,7 +1687,7 @@ void plotting::GetMissingEnergyGraph( const std::string mc_file ){
     in_tree->GetEntry(j) ;
     double content_x = plotting::GetObservable("Efl");
     double content_y = plotting::GetObservable("HadSystemMass");
-    double content_z = plotting::GetObservable("BeamE") - plotting::GetObservable("MissingEnergy");
+    double content_z = plotting::GetObservable("MissingEnergy"); // Plus because I used the negative definition!
     double content_pt = plotting::GetObservable("pfl_T");
 
     x_values.push_back(content_x);
@@ -1708,9 +1736,11 @@ double plotting::ComputeMissingEnergy( const double event_efl, const double even
     std::cout << " ERROR: you did not compute graph oscillations from MC file. "<< std::endl;
     return 0;
   }
-  if( slice ==0 ) graph_oscillations->Interpolate(event_efl,event_ehad);
-  else if( slice == 1 && graph_oscillations_1 ) graph_oscillations_1->Interpolate(event_efl,event_ehad) ; // pt < 0.4
-  else if( slice == 2 && graph_oscillations_2 ) graph_oscillations_2->Interpolate(event_efl,event_ehad) ; // 0.4 < pt < 0.6
-  else if( slice == 3 && graph_oscillations_3 ) graph_oscillations_3->Interpolate(event_efl,event_ehad) ; // pt > 0.6
-  return 0 ;
+  double corrected_Emiss = 0;
+  if( slice ==0 ) corrected_Emiss = graph_oscillations->Interpolate(event_efl,event_ehad);
+  else if( slice == 1 && graph_oscillations_1 ) corrected_Emiss = graph_oscillations_1->Interpolate(event_efl,event_ehad) ; // pt < 0.4
+  else if( slice == 2 && graph_oscillations_2 ) corrected_Emiss = graph_oscillations_2->Interpolate(event_efl,event_ehad) ; // 0.4 < pt < 0.6
+  else if( slice == 3 && graph_oscillations_3 ) corrected_Emiss = graph_oscillations_3->Interpolate(event_efl,event_ehad) ; // pt > 0.6
+
+  return corrected_Emiss ;
 }

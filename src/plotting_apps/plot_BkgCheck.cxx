@@ -39,7 +39,7 @@ int main( int argc, char* argv[] ) {
   }
 
   std::string input_file ;
-  std::string output_file = "bakground_debug.root";
+  std::string output_file = "bakground_debug";
   std::string observable = "ECal";
   std::string bkg_string = "";
   if( argc > 1 ) { // configure rest of analysis
@@ -80,21 +80,9 @@ int main( int argc, char* argv[] ) {
 
   TH1D * h_diff_true = (TH1D*) h_tot_true->Clone();
   double fraction = h_total_bkg->GetEntries()/h_signal->GetEntries();
-  std::cout << " Fraction Background Events: " << fraction << std::endl;
 
-  // Scale by number of signal Events
-  // h_tot_true->Scale(1./h_signal->GetEntries());
-  // h_tot_est->Scale(1./h_signal->GetEntries());
-
-  // Scale by Bin Width
-  // for (int k = 1; k <= h_tot_true->GetNbinsX(); k++)
-  // {
-  //   double width = h_tot_true->GetBinWidth(k);
-  //   // h_tot_true->SetBinContent(k, h_tot_true->GetBinContent(k) / width );
-  //   // h_tot_true->SetBinError(k, h_tot_true->GetBinError(k) / width );
-  //   // h_tot_est->SetBinContent(k, h_tot_est->GetBinContent(k) / width / fraction );
-  //   // h_tot_est->SetBinError(k, h_tot_est->GetBinError(k) / width / fraction );
-  // }
+  // Compute weighted average
+  double waverage = 0, sum_weights =0, sum_werr = 0;
 
   for( unsigned int j = 1 ; j < h_diff_true -> GetNbinsX() ; ++j ){
     double err = pow(h_tot_true->GetBinContent(j)-h_tot_est->GetBinContent(j),2) ;
@@ -104,14 +92,22 @@ int main( int argc, char* argv[] ) {
     err -= pow(h_tot_est->GetBinError(j),2) ;
 
     if( err < 0 ) err = 0 ;
-    
+
     err = sqrt(err);
+
     if( h_tot_est->GetBinContent(j) != 0 ) {
-      h_diff_true->SetBinContent(j,err/h_tot_est->GetBinContent(j)*100*fraction);
+      double fraction_j = h_tot_true->GetBinContent(j)/h_signal->GetBinContent(j);
+      std::cout << fraction_j << std::endl;
+      sum_werr += err /h_tot_est->GetBinContent(j) * fraction_j;
+      sum_weights += fraction_j;
+      h_diff_true->SetBinContent(j,err/h_tot_est->GetBinContent(j)*100*fraction_j);
+      h_diff_true->SetBinError(j,0);
+    } else {
+      h_diff_true->SetBinContent(j,0);
+      h_diff_true->SetBinError(j,0);
     }
-
   }
-
+  std::cout << " Weighted error [%]:" << sum_werr / sum_weights * 100 << std::endl;
   // Setting formatt
   gStyle->SetFrameBorderMode(0);
   gStyle->SetCanvasBorderMode(0);
@@ -191,7 +187,12 @@ int main( int argc, char* argv[] ) {
   pad2->SetLeftMargin(0.1);
   pad2->SetTopMargin(0.05);
   h_diff_true->Draw("hist");
-  c->SaveAs(output_file.c_str());
+  c->SaveAs((output_file+".root").c_str());
+
+  TFile *ROOTOut = new TFile((output_file+"_syst.root").c_str(),"RECREATE");
+  h_diff_true->SetName("BkgClosureTestSyst");
+  h_diff_true->Write();
+  ROOTOut->Close();
 
   return 0 ;
 }

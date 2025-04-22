@@ -54,15 +54,15 @@ int main( int argc, char* argv[] ) {
 
   TCanvas * c  = new TCanvas("","",800,800);
   c->SetFillColor(0);
-  TPad *pad1 = new TPad("pad1","",0,0,1,1);
+  TPad *pad1 = new TPad("pad1","",0,0.4,1,1);
+  TPad *pad2 = new TPad("pad2","",0,0,1,0.4);
   pad1->Draw();
   pad1->cd();
-  pad1->SetBottomMargin(0.15);
-  pad1->SetLeftMargin(0.15);
-  pad1->SetRightMargin(0.2);
+  pad1->SetBottomMargin(0.015);
+  pad1->SetLeftMargin(0.1);
   // gStyle->SetPalette(kLightTemperature);
 
-  GetMissingEnergyGraph( (input_file).c_str() );
+  GetMissingEnergyGraph( (input_file).c_str(), true);
 
   // Now you can draw the graph after all entries have been processed.
   graph_oscillations->SetTitle(";E_{e'} [GeV];E_{had} [GeV];E_{e}-E_{miss} [GeV]");
@@ -119,26 +119,44 @@ int main( int argc, char* argv[] ) {
     c->SaveAs((output_name+".pdf").c_str());
   }
 
-  // TFile* true_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_2GeV_with_breakdown_dxsec_dMissingEnergy.root","ROOT") ;
-  // TFile* reco_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_1GeV_with_breakdown_dxsec_dCorrMissingEnergy.root","ROOT") ;
-  // if( !true_root_file || !reco_root_file ) {
-  //   std::cout << " ERROR: Files do not exist."<<std::endl;
-  //   return 0 ;
-  // }
-  // TH1D * mc_data = (TH1D*)true_root_file->Get("MC_True");
-  // TH1D * mc_recodata = (TH1D*)reco_root_file->Get("MC_True");
-  // TH1D * true_data = (TH1D*)true_root_file->Get("Data");
-  // TH1D * reco_data = (TH1D*)reco_root_file->Get("Data");
-  // reco_data->SetMarkerColor(kRed);
-  // reco_data->SetLineColor(kRed);
-  // mc_recodata->SetLineColor(kRed);
-  // mc_data->GetXaxis()->SetLabelSize(0.05);
-  // mc_data->GetXaxis()->SetTitleSize(0.08);
-  // mc_data->Draw("hist");
-  // mc_recodata->Draw("hist same");
-  // true_data->Draw("same");
-  // reco_data->Draw("same");
-  // c->SaveAs("testing.root");
+  TFile* true_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_2GeV_with_breakdown_dxsec_dMissingEnergy.root","ROOT") ;
+  TFile* reco_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_2GeV_with_breakdown_dxsec_dCorrMissingEnergy3.root","ROOT") ;
+
+  //TFile* true_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_2GeV_with_breakdown_dxsec_dMissingEnergy.root","ROOT") ;
+  //TFile* reco_root_file = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_1p1pim_2GeV_with_breakdown_dxsec_dCorrMissingEnergy.root","ROOT") ;
+  if( !true_root_file || !reco_root_file ) {
+    std::cout << " ERROR: Files do not exist."<<std::endl;
+    return 0 ;
+  }
+  TH1D * mc_data = (TH1D*)true_root_file->Get("MC_True");
+  TH1D * mc_recodata = (TH1D*)reco_root_file->Get("MC_True");
+  TH1D * true_data = (TH1D*)true_root_file->Get("Data");
+  TH1D * reco_data = (TH1D*)reco_root_file->Get("Data");
+  reco_data->SetMarkerColor(kRed);
+  reco_data->SetLineColor(kRed);
+  mc_recodata->SetLineColor(kRed);
+  mc_data->GetXaxis()->SetLabelSize(0.05);
+  mc_data->GetXaxis()->SetTitleSize(0.08);
+
+  mc_data->Draw("hist");
+  mc_recodata->Draw("hist same");
+  true_data->Draw("same");
+  reco_data->Draw("same");
+
+
+  c->cd();
+  pad2->Draw();
+  pad2->cd();
+  pad2->SetBottomMargin(0.25);
+  pad2->SetLeftMargin(0.1);
+  pad2->SetTopMargin(0.05);
+  TH1D * h_diff = (TH1D*)reco_data->Clone();
+  //TH1D * h_diff_reco = (TH1D*)reco_data->Clone();
+  //h_diff_reco->Scale(-1);
+  //h_diff_true->Add(h_diff_reco);
+  h_diff->Divide(true_data);
+  h_diff->Draw("hist err");
+  c->SaveAs("testing.root");
 
   return 0 ;
 

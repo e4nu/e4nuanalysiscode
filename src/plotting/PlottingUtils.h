@@ -67,7 +67,7 @@ namespace e4nu {
     std::string GetArg(std::string op, int argc, char ** argv );
     bool ExistArg(std::string op, int argc, char ** argv );
     // Functions for oscillation study
-    void GetMissingEnergyGraph( const std::string mc_file );
+    void GetMissingEnergyGraph( const std::string mc_file, const bool diff_Ebeam = false );
     double ComputeMissingEnergy( const double event_efl, const double event_ehad, const unsigned int slice = 0 );
   }
 }

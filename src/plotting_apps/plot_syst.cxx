@@ -127,145 +127,46 @@ int main( int argc, char* argv[] ) {
     hists.push_back( new TH1D( ("Dataset "+std::to_string(i)).c_str(), "", binning.size()-1, &binning[0] ) ) ;
   }
 
-  // Store systematics in histogram
-  TH1D * hist_syst = new TH1D( "Systematics", "", binning.size()-1, &binning[0] );
-
   // OBSERVABLE DEFINITION:
-  double TotWeight ;
-  double ECal,Recoq3,RecoW;
-  double pfl,pfl_theta,pfl_phi;
-  double proton_mom,proton_phi,proton_theta;
-  double pim_mom,pim_theta,pim_phi;
-  double pip_mom,pip_theta,pip_phi;
-  double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT ;
-  double AlphaT, DeltaPT, DeltaPhiT ;
-  double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
-  double MissingEnergy, MissingAngle, MissingMomentum ;
-  double InferedNucleonMom ;
-  double HadronsAngle,Angleqvshad ;
-  double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
   long NEntries ;
-  bool IsBkg ;
-  int ElectronSector ;
 
   for ( unsigned int i = 0 ; i < in_trees.size() ; ++i ){
     NEntries = in_trees[i] -> GetEntries() ;
     if( !in_trees[i] ) continue ;
-    in_trees[i] -> SetBranchAddress("TotWeight",&TotWeight);
-    in_trees[i] -> SetBranchAddress("IsBkg",&IsBkg);
-    in_trees[i] -> SetBranchAddress("ECal",&ECal);
-    in_trees[i] -> SetBranchAddress("pfl_theta",&pfl_theta);
-    in_trees[i] -> SetBranchAddress("pfl_phi",&pfl_phi);
-    in_trees[i] -> SetBranchAddress("pfl",&pfl);
-    in_trees[i] -> SetBranchAddress("proton_mom",&proton_mom);
-    in_trees[i] -> SetBranchAddress("proton_theta",&proton_theta);
-    in_trees[i] -> SetBranchAddress("proton_phi",&proton_phi);
-    in_trees[i] -> SetBranchAddress("pim_mom",&pim_mom);
-    in_trees[i] -> SetBranchAddress("pim_theta",&pim_theta);
-    in_trees[i] -> SetBranchAddress("pim_phi",&pim_phi);
-    in_trees[i] -> SetBranchAddress("pip_mom",&pip_mom);
-    in_trees[i] -> SetBranchAddress("pip_theta",&pip_theta);
-    in_trees[i] -> SetBranchAddress("pip_phi",&pip_phi);
-    in_trees[i] -> SetBranchAddress("RecoW",&RecoW);
-    in_trees[i] -> SetBranchAddress("Recoq3",&Recoq3);
-    in_trees[i] -> SetBranchAddress("RecoQELEnu",&RecoQELEnu);
-    in_trees[i] -> SetBranchAddress("RecoXBJK",&RecoXBJK);
-    in_trees[i] -> SetBranchAddress("RecoQ2",&RecoQ2);
-    in_trees[i] -> SetBranchAddress("RecoEnergyTransfer",&RecoEnergyTransfer);
-    in_trees[i] -> SetBranchAddress("AlphaT",&AlphaT);
-    in_trees[i] -> SetBranchAddress("HadAlphaT",&HadAlphaT);
-    in_trees[i] -> SetBranchAddress("DeltaPT",&DeltaPT);
-    in_trees[i] -> SetBranchAddress("HadDeltaPT",&HadDeltaPT);
-    in_trees[i] -> SetBranchAddress("HadDeltaPTx",&HadDeltaPTx);
-    in_trees[i] -> SetBranchAddress("HadDeltaPTy",&HadDeltaPTy);
-    in_trees[i] -> SetBranchAddress("DeltaPhiT",&DeltaPhiT);
-    in_trees[i] -> SetBranchAddress("HadDeltaPhiT",&HadDeltaPhiT);
-    in_trees[i] -> SetBranchAddress("ElectronSector",&ElectronSector);
-    in_trees[i] -> SetBranchAddress("HadSystemMass", &HadSystemMass);
-    in_trees[i] -> SetBranchAddress("MissingEnergy", &MissingEnergy);
-    in_trees[i] -> SetBranchAddress("MissingAngle", &MissingAngle);
-    in_trees[i] -> SetBranchAddress("MissingMomentum", &MissingMomentum);
-    in_trees[i] -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
-    in_trees[i] -> SetBranchAddress("HadronsAngle", &HadronsAngle);
-    in_trees[i] -> SetBranchAddress("AdlerAngleThetaP", &AdlerAngleThetaP);
-    in_trees[i] -> SetBranchAddress("AdlerAnglePhiP", &AdlerAnglePhiP);
-    in_trees[i] -> SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
-    in_trees[i] -> SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
-    in_trees[i] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
+    plotting::SetAnalysisBranch( in_trees[i] ) ;
 
     for( int j = 0 ; j < NEntries ; ++j ) {
       in_trees[i]->GetEntry(j) ;
-      double content = 0 ;
-      double w = TotWeight ;
-      if( observable == "ECal") content = ECal ;
-      else if ( observable == "pfl") content = pfl ;
-      else if ( observable == "pfl_theta") content = pfl_theta ;
-      else if ( observable == "pfl_phi") content = pfl_phi ;
-      else if ( observable == "proton_mom") content = proton_mom ;
-      else if ( observable == "proton_theta") content = proton_theta ;
-      else if ( observable == "proton_phi") content = proton_phi ;
-      else if ( observable == "pim_mom") content = pim_mom ;
-      else if ( observable == "pim_theta") content = pim_theta ;
-      else if ( observable == "pim_phi") content = pim_phi ;
-      else if ( observable == "pip_mom") content = pip_mom ;
-      else if ( observable == "pip_theta") content = pip_theta ;
-      else if ( observable == "pip_phi") content = pip_phi ;
-      else if ( observable == "RecoW") content = RecoW ;
-      else if ( observable == "Recoq3") content = Recoq3 ;
-      else if ( observable == "RecoQELEnu") content = RecoQELEnu ;
-      else if ( observable == "RecoXBJK") content = RecoXBJK ;
-      else if ( observable == "RecoQ2") content = RecoQ2 ;
-      else if ( observable == "RecoEnergyTransfer") content = RecoEnergyTransfer ;
-      else if ( observable == "AlphaT") content = AlphaT ;
-      else if ( observable == "HadAlphaT") content = HadAlphaT ;
-      else if ( observable == "DeltaPT") content = DeltaPT ;
-      else if ( observable == "HadDeltaPT") content = HadDeltaPT ;
-      else if ( observable == "HadDeltaPTx") content = HadDeltaPTx ;
-      else if ( observable == "HadDeltaPTy") content = HadDeltaPTy ;
-      else if ( observable == "DeltaPhiT") content = DeltaPhiT ;
-      else if ( observable == "HadDeltaPhiT") content = HadDeltaPhiT ;
-      else if ( observable == "HadSystemMass") content = HadSystemMass ;
-      else if ( observable == "MissingEnergy") content = MissingEnergy ;
-      else if ( observable == "MissingEnergy") content = MissingEnergy ;
-      else if ( observable == "MissingAngle") content = MissingAngle ;
-      else if ( observable == "MissingMomentum") content = MissingMomentum ;
-      else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
-      else if ( observable == "HadronsAngle") content = HadronsAngle ;
-      else if ( observable == "AdlerAngleThetaP") content = AdlerAngleThetaP ;
-      else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiP ;
-      else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ;
-      else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ;
-      else if ( observable == "Angleqvshad") content = Angleqvshad ;
+      double content = content = GetObservable(observable);
+      double w = EventWght * AccWght ;
+      //if( scale_mott ) w *= MottXSecScale;
       hists[i]->Fill(content,w);
     }
   }
 
-  // Compute Mean
-  for( unsigned int j = 1 ; j < hist_syst->GetNbinsX()+1 ; ++j ) {
-    double mean = 0;
-    for( unsigned int i = 0 ; i < hists.size() ; ++i ) {
-      mean += hists[i]->GetBinContent(j);
-    }
-    mean/=hists.size();
+  // Store systematics in histogram
+  std::vector<TH1D*> hist_syst ;
 
-    double syst = 0;
-    for( unsigned int i = 0 ; i < hists.size() ; ++i ) {
-      syst += pow(hists[i]->GetBinContent(j)-mean,2) - pow(hists[i]->GetBinError(j),2) ; // removing also stat.error
+  for( unsigned int i = 0 ; i < hists.size() - 1; ++i ) {
+    hist_syst.push_back( new TH1D( ("Systematics"+to_string(i)).c_str(), "", binning.size()-1, &binning[0] ));
+    for( unsigned int j = 1 ; j < binning.size()-1 ; ++j ) {
+      double err = pow(hists[i]->GetBinContent(j)-hists[i+1]->GetBinContent(j),2) ;//- pow(hists[0]->GetBinError(j),2) - pow(hists[1]->GetBinError(j),2);
+      if( err < 0 ) err = 0;
+      if( hists[i]->GetBinContent(j) != 0 ) hist_syst[i] -> SetBinContent( j, sqrt(err)/hists[i]->GetBinContent(j)*100 );
+      else hist_syst[i] -> SetBinContent( j, 0 );
     }
-    syst /= hists.size();
-    if( syst < 0 ) syst = 0 ; // Stat is bigger than error
-    
-    if( hists[0]->GetBinContent(j) != 0 ) hist_syst -> SetBinContent( j, sqrt(syst)/hists[0]->GetBinContent(j)*100 );
-    else hist_syst -> SetBinContent( j, 0 );
   }
 
-  hist_syst->SetLineColor(kBlue);
-  hist_syst->SetMarkerColor(kBlue);
-  hist_syst->SetMarkerStyle(8);
-  hist_syst->GetXaxis()->SetTitle(observable.c_str());
-  hist_syst->GetYaxis()->SetTitle("#sigma_{RMS}/x_{Nom}[%]");
-  hist_syst->Draw();
+  for( unsigned int i = 0 ; i < hists.size() -1 ; ++i ) {
+    hist_syst[i]->SetLineColor(kBlue);
+    hist_syst[i]->SetMarkerColor(kBlue);
+    hist_syst[i]->SetMarkerStyle(8);
+    hist_syst[i]->GetXaxis()->SetTitle(observable.c_str());
+    hist_syst[i]->GetYaxis()->SetTitle("#sigma_{RMS}/x_{Nom}[%]");
 
+    if( i == 0 ) hist_syst[i]->Draw();
+    else hist_syst[i]->Draw("same");
+  }
   std::string output_name = output_file+"_Nevents_"+observable ;
 
   c->SaveAs((output_file+".root").c_str());

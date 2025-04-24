@@ -82,7 +82,7 @@ int main( int argc, char* argv[] ) {
   double fraction = h_total_bkg->GetEntries()/h_signal->GetEntries();
 
   // Compute weighted average
-  double waverage = 0, sum_weights =0, sum_werr = 0;
+  double sum_weights =0, sum_werr = 0;
 
   for( unsigned int j = 1 ; j < h_diff_true -> GetNbinsX() ; ++j ){
     double err = pow(h_tot_true->GetBinContent(j)-h_tot_est->GetBinContent(j),2) ;
@@ -92,15 +92,13 @@ int main( int argc, char* argv[] ) {
     err -= pow(h_tot_est->GetBinError(j),2) ;
 
     if( err < 0 ) err = 0 ;
-
     err = sqrt(err);
 
-    if( h_tot_est->GetBinContent(j) != 0 ) {
+    if( h_tot_est->GetBinContent(j) != 0 && h_tot_est->GetBinContent(j) > h_tot_est->Integral()*0.01 ) {
       double fraction_j = h_tot_true->GetBinContent(j)/h_signal->GetBinContent(j);
-      std::cout << fraction_j << std::endl;
       sum_werr += err /h_tot_est->GetBinContent(j) * fraction_j;
       sum_weights += fraction_j;
-      h_diff_true->SetBinContent(j,err/h_tot_est->GetBinContent(j)*100*fraction_j);
+      h_diff_true->SetBinContent(j,err/h_tot_est->GetBinContent(j)*100);
       h_diff_true->SetBinError(j,0);
     } else {
       h_diff_true->SetBinContent(j,0);

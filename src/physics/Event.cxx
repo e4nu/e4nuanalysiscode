@@ -273,6 +273,7 @@ double Event::GetObservable( const std::string observable ) {
   int TrueNPiP = GetTrueNPiP();
   int TrueNPiM = GetTrueNPiM();
   int TrueNPi0 = GetTrueNPi0();
+  int TrueCharged = TrueNProtons + TrueNPiP + TrueNPiM;
 
   if( observable == "Efl" ) return Efl ;
   else if ( observable == "pfl" ) return pfl ;
@@ -339,6 +340,7 @@ double Event::GetObservable( const std::string observable ) {
   else if ( observable == "TrueNPiP") return TrueNPiP;
   else if ( observable == "TrueNPiM") return TrueNPiM;
   else if ( observable == "TrueNPi0") return TrueNPi0;
+  else if ( observable == "TrueCharged") return TrueCharged;
 
   std::cout << observable << " is NOT defined " << std::endl;
   return 0 ;

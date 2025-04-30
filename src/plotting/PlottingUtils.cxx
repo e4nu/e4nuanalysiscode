@@ -26,7 +26,7 @@ namespace e4nu
     double MCNormalization= 0, DataNormalization= 0;
     long NEntries = 0;
     TGraph2D* graph_oscillations = nullptr, * graph_oscillations_1 = nullptr, * graph_oscillations_2 = nullptr, * graph_oscillations_3 = nullptr;
-    int TrueNProtons = -1 , TrueNNeutrons = -1 , TrueNPiP = -1 , TrueNPiM = -1 , TrueNPi0 = -1 ;
+    int TrueNProtons = -1 , TrueNNeutrons = -1 , TrueNPiP = -1 , TrueNPiM = -1 , TrueNPi0 = -1, TrueCharged = -1 ;
   }
 }
 
@@ -108,6 +108,7 @@ void plotting::SetAnalysisBranch( TTree * tree ) {
   if(tree->GetBranch("TrueNPiP"))  tree->SetBranchAddress("TrueNPiP", &TrueNPiP);
   if(tree->GetBranch("TrueNPiM"))  tree->SetBranchAddress("TrueNPiM", &TrueNPiM);
   if(tree->GetBranch("TrueNPi0"))  tree->SetBranchAddress("TrueNPi0", &TrueNPi0);
+  if(tree->GetBranch("TrueCharged"))  tree->SetBranchAddress("TrueCharged", &TrueCharged);
 }
 
 
@@ -170,6 +171,7 @@ double plotting::GetObservable(const std::string observable)
   else if (observable == "TrueNPiP") content = TrueNPiP;
   else if (observable == "TrueNPiM") content = TrueNPiM;
   else if (observable == "TrueNPi0") content = TrueNPi0;
+  else if (observable == "TrueCharged") content = TrueNProtons+TrueNPiM+TrueNPiP;
 
   return content;
 }
@@ -900,7 +902,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     if (EBeam == 1.161)
     binning = plotting::GetUniformBinning(20, 0, 0.7);
   }
-  else if (observable == "TrueNProtons" || observable == "TrueNNeutrons" || observable == "TrueNPiP" || observable == "TrueNPiM" || observable == "TrueNPi0" )
+  else if (observable == "TrueNProtons" || observable == "TrueNNeutrons" || observable == "TrueNPiP" || observable == "TrueNPiM" || observable == "TrueNPi0" || observable == TrueCharged )
   {
     binning = plotting::GetUniformBinning(5, -0.5, 5.5);
   }

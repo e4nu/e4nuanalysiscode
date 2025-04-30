@@ -55,11 +55,11 @@ int main( int argc, char* argv[] ) {
       string input = GetArg("input-files",argc,argv);
       stringstream ss(input);
       while( ss.good() )
-	{
-	  string substr;
-	  getline( ss, substr, ',' );
-	  input_files.push_back( substr );
-	}
+      {
+        string substr;
+        getline( ss, substr, ',' );
+        input_files.push_back( substr );
+      }
       if( input_files.size() == 0 ) return 0;
     } else { return 0 ;}
 
@@ -67,11 +67,11 @@ int main( int argc, char* argv[] ) {
       string input = GetArg("legend-list",argc,argv);
       stringstream ss(input);
       while( ss.good() )
-	{
-	  string substr;
-	  getline( ss, substr, ',' );
-	  legend_list.push_back( substr );
-	}
+      {
+        string substr;
+        getline( ss, substr, ',' );
+        legend_list.push_back( substr );
+      }
       if( input_files.size() == 0 ) return 0;
     }
 
@@ -83,7 +83,7 @@ int main( int argc, char* argv[] ) {
     }
     double energy = 0 ;
     if( ExistArg("beam-energy",argc,argv)) {
-       energy = stof(GetArg("beam-energy",argc,argv));
+      energy = stof(GetArg("beam-energy",argc,argv));
     }
 
     if( energy > 0  && energy < 1.5 ) EBeam = 1.161 ;
@@ -150,7 +150,7 @@ int main( int argc, char* argv[] ) {
   for( unsigned int i = 0 ; i < hists.size() - 1; ++i ) {
     hist_syst.push_back( new TH1D( ("Systematics"+to_string(i)).c_str(), "", binning.size()-1, &binning[0] ));
     for( unsigned int j = 1 ; j < binning.size()-1 ; ++j ) {
-      double err = pow(hists[i]->GetBinContent(j)-hists[i+1]->GetBinContent(j),2) ;//- pow(hists[0]->GetBinError(j),2) - pow(hists[1]->GetBinError(j),2);
+      double err = pow(hists[i]->GetBinContent(j)-hists[i+1]->GetBinContent(j),2) ;
       if( err < 0 ) err = 0;
       if( hists[i]->GetBinContent(j) != 0 ) hist_syst[i] -> SetBinContent( j, sqrt(err)/hists[i]->GetBinContent(j)*100 );
       else hist_syst[i] -> SetBinContent( j, 0 );

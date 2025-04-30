@@ -1,6 +1,7 @@
 #include <iomanip>
 #include <filesystem>
 #include "plotting/AcceptanceUtils.h"
+#include "plotting/Systematics.h"
 
 using namespace e4nu;
 using namespace e4nu::plotting;
@@ -1275,6 +1276,25 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
   ratio->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
   ratio->GetYaxis()->SetTitle("Radiation Correction");
 
+  // For pion production should be around 10%
+  systematics::AddSystematic(*ratio, 5, "Radiative");
+
+  //We also add smoothing Correction
+  TH1D *ratio_aSmooth = (TH1D *)ratio->Clone();
+  ratio_aSmooth->Smooth(3);
+
+  // Compute Acceptance error from model variation
+  for (unsigned int i = 1; i < ratio->GetNbinsX()+1; ++i)
+  {
+    double bin_cont_max = 0;
+    double bin_cont_min = 999;
+    double error_smoothing_2 = pow(ratio->GetBinContent(i) - ratio_aSmooth->GetBinContent(i), 2) / 12.;
+    double error_stat_2 = pow(ratio->GetBinError(i), 2);
+    double error_model_2 = 0;
+    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+    ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2));
+  }
+
   std::string output_name = output_file_name + "_acceptance_correction_rad_" + observable;
   std::string acc_file = "/AcceptanceFiles/" + output_name;
 
@@ -1422,6 +1442,25 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::v
   ratio->GetXaxis()->SetTitle(GetAxisLabel(x_observable, 0).c_str());
   ratio->GetYaxis()->SetTitle(GetAxisLabel(y_observable, 0).c_str());
   ratio->GetZaxis()->SetTitle("Radiation Correction");
+
+  // For pion production should be around 10%
+  systematics::AddSystematic(*ratio, 5, "Radiative");
+
+  //We also add smoothing Correction
+  TH1D *ratio_aSmooth = (TH1D *)ratio->Clone();
+  ratio_aSmooth->Smooth(1);
+
+  // Compute Acceptance error from model variation
+  for (unsigned int i = 1; i < ratio->GetNbinsX()+1; ++i)
+  {
+    double bin_cont_max = 0;
+    double bin_cont_min = 999;
+    double error_smoothing_2 = pow(ratio->GetBinContent(i) - ratio_aSmooth->GetBinContent(i), 2) / 12.;
+    double error_stat_2 = pow(ratio->GetBinError(i), 2);
+    double error_model_2 = 0;
+    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+    ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2));
+  }
 
   std::string output_name = output_file_name + "_acceptance_correction_rad_" + x_observable + "_vs_" + y_observable;
   std::string acc_file = "/AcceptanceFiles/" + output_name;

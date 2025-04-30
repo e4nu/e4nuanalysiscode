@@ -136,7 +136,8 @@ int main( int argc, char* argv[] ) {
       in_trees[i]->GetEntry(j) ;
       double content = content = GetObservable(observable);
       double w = EventWght * AccWght ;
-      //if( scale_mott ) w *= MottXSecScale;
+      //if( scale_mott )
+      //w *= MottXSecScale;
       hists[i]->Fill(content,w);
     }
   }

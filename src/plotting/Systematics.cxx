@@ -188,7 +188,7 @@ TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> 
       }
     }
     if( sectors > 1 ) error_2 /= sectors - 1 ;
-    if( error_2 < 0 ) error_2 = 0 ; // If stat. is bigger than syst, just assign 0
+    if( error_2 < 0 ) error_2 = 0 ;
 
     if( mean_i != 0 ) hist_syst_sector->SetBinContent(j,sqrt(error_2)/mean_i*100); // Store sector to sector uncertainty
 

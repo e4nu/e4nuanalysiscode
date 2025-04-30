@@ -113,7 +113,7 @@ int main( int argc, char* argv[] ) {
       observables_x = SplitString(obs_x);
       cout << "Plotting xsec for the following observables: \n- ";
       for( unsigned s = 0 ; s<observables_x.size();++s ) {
-      	cout << observables_x[s] << std::endl;
+        cout << observables_x[s] << std::endl;
       }
     } else PrintFormat("observable_list") ;
 
@@ -123,18 +123,18 @@ int main( int argc, char* argv[] ) {
       observables_y = SplitString(obs_y);
       cout << "Plotting xsec for the following observables: \n- ";
       for( unsigned s = 0 ; s<observables_y.size();++s ) {
-      	cout << observables_y[s] << std::endl;
+        cout << observables_y[s] << std::endl;
       }
       string obs_cuts_y;
       if( ExistArg("observable_y_cuts",argc,argv)) {
         obs_cuts_y = GetArg("observable_y_cuts",argc,argv) ;
         auto string_cuts_y = SplitString(obs_cuts_y);
         for( unsigned s = 0 ; s<string_cuts_y.size();++s ) {
-        	y_cuts.push_back(stod(string_cuts_y[s]));
+          y_cuts.push_back(stod(string_cuts_y[s]));
         }
       } else {
         std::cout << "Using 2D plotting, needs slice information."<< std::endl;
-      	return 0;
+        return 0;
       }
 
     } else PrintFormat("observable_list") ;
@@ -144,8 +144,8 @@ int main( int argc, char* argv[] ) {
       mdl = GetArg("model_names",argc,argv) ;
       model_names = SplitString(mdl);
       if( model_names.size() != mc_files.size() ){
-      	std::cout << "Number of mc files does not match the number of models"<< std::endl;
-      	return 0;
+        std::cout << "Number of mc files does not match the number of models"<< std::endl;
+        return 0;
       }
     }
     if( ExistArg("store_root",argc,argv)) store_root = true ;
@@ -183,10 +183,10 @@ int main( int argc, char* argv[] ) {
       sys = GetArg("add-systematics",argc,argv) ;
       vector<string> sys_names = SplitString(sys,',');
       for( unsigned s = 0 ; s < sys_names.size() ; ++s ) {
-      	std::cout << sys_names[s]<<std::endl;
-      	vector<string> tmpsys = SplitString(sys_names[s],':') ;
-      	if( tmpsys.size() != 2 ) continue ;
-      	systematic_map[tmpsys[0]] = stod(tmpsys[1]);
+        std::cout << sys_names[s]<<std::endl;
+        vector<string> tmpsys = SplitString(sys_names[s],':') ;
+        if( tmpsys.size() != 2 ) continue ;
+        systematic_map[tmpsys[0]] = stod(tmpsys[1]);
       }
     }
 
@@ -200,20 +200,20 @@ int main( int argc, char* argv[] ) {
       cut_obs = GetArg("cut-observables",argc,argv) ;
       vector<string> obs_names = SplitString(cut_obs,':');
       for( unsigned s = 0 ; s < obs_names.size() ; ++s ) {
-         vector<string> obs_details = SplitString(obs_names[s],',');
-         if( obs_details.size() != 3 ) {
-            std::cout << " Need three entries for observable " << obs_names[s] << std::endl;
-            continue ;
-          }
-          string observable_s = obs_details[0] ;
-          double min_obs = stod( obs_details[1] );
-          double max_obs = stod( obs_details[2] );
-          // And add in map
-          cuts[observable_s] = {min_obs, max_obs};
-          // print out information:
-          std::cout << " Adding cuts on " << observable_s << " : " << std::endl;
-          std::cout << " --> Min: " << min_obs << std::endl;
-          std::cout << " --> Max: " << max_obs << std::endl;
+        vector<string> obs_details = SplitString(obs_names[s],',');
+        if( obs_details.size() != 3 ) {
+          std::cout << " Need three entries for observable " << obs_names[s] << std::endl;
+          continue ;
+        }
+        string observable_s = obs_details[0] ;
+        double min_obs = stod( obs_details[1] );
+        double max_obs = stod( obs_details[2] );
+        // And add in map
+        cuts[observable_s] = {min_obs, max_obs};
+        // print out information:
+        std::cout << " Adding cuts on " << observable_s << " : " << std::endl;
+        std::cout << " --> Min: " << min_obs << std::endl;
+        std::cout << " --> Max: " << max_obs << std::endl;
       }
     }
 
@@ -260,22 +260,22 @@ int main( int argc, char* argv[] ) {
     if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables_x[i], true, data_location, output_location, analysis_id );
 
     Plot1DXSec( root_files, data_file, acceptance_file_1D, radcorr_file, observables_x[i], title, data_name, names, mc_location, data_location,
-		output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
+      output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
 
-    if( observables_y.size() > 0 ){
-      Plot2DXSec( root_files, data_file, acceptance_file_2D, radcorr_file_2D, observables_x[i], observables_y[i], y_cuts, title, data_name, names, mc_location, data_location,
-        output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
+      if( observables_y.size() > 0 ){
+        Plot2DXSec( root_files, data_file, acceptance_file_2D, radcorr_file_2D, observables_x[i], observables_y[i], y_cuts, title, data_name, names, mc_location, data_location,
+          output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
+        }
+      }
+
+      return 0 ;
     }
-  }
 
-  return 0 ;
-}
-
-void PrintFormat(string s){
-  if( s!="") cout << " Missing " << s << endl;
-  cout << "RequiredArguments:\n";
-  cout << " plote4nuanalysis --mc_location <mc_location> \n --data_location <data_location> \n --output_location <output_loc> \n --output_name <outputname> \n ";
-  cout << "--input_mc_files <file1,file2,...,fileN> \n --input_data_file <data> --observable_list <obs1,obs2,...,obsM> " << endl;
-  cout << " optional arguments are : \n --model_names <name1,name2,...,nameN> \n --title <title> \n --data_name <data> \n --systematics \n";
-  cout << " --add-systematics name,value:name2,value2:...:nameK,valueK \n --nofsi_file <rootfile>" << endl;
-}
+    void PrintFormat(string s){
+      if( s!="") cout << " Missing " << s << endl;
+      cout << "RequiredArguments:\n";
+      cout << " plote4nuanalysis --mc_location <mc_location> \n --data_location <data_location> \n --output_location <output_loc> \n --output_name <outputname> \n ";
+      cout << "--input_mc_files <file1,file2,...,fileN> \n --input_data_file <data> --observable_list <obs1,obs2,...,obsM> " << endl;
+      cout << " optional arguments are : \n --model_names <name1,name2,...,nameN> \n --title <title> \n --data_name <data> \n --systematics \n";
+      cout << " --add-systematics name,value:name2,value2:...:nameK,valueK \n --nofsi_file <rootfile>" << endl;
+    }

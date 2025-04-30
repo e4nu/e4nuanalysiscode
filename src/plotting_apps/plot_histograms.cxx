@@ -56,11 +56,11 @@ int main( int argc, char* argv[] ) {
       string input = GetArg("input-files",argc,argv);
       stringstream ss(input);
       while( ss.good() )
-	{
-	  string substr;
-	  getline( ss, substr, ',' );
-	  input_files.push_back( substr );
-	}
+      {
+        string substr;
+        getline( ss, substr, ',' );
+        input_files.push_back( substr );
+      }
       if( input_files.size() == 0 ) return 0;
     } else { return 0 ;}
 
@@ -68,13 +68,13 @@ int main( int argc, char* argv[] ) {
       string input = GetArg("legend-list",argc,argv);
       stringstream ss(input);
       while( ss.good() )
-	{
-	  string substr;
-	  getline( ss, substr, ',' );
-	  legend_list.push_back( substr );
-	}
+      {
+        string substr;
+        getline( ss, substr, ',' );
+        legend_list.push_back( substr );
+      }
       if( input_files.size() == 0 ) return 0;
-    } else { 
+    } else {
       for( int i = 0 ; i < input_files.size() ; ++i ) legend_list.push_back( "Model "+to_string(i));
     }
 
@@ -88,11 +88,11 @@ int main( int argc, char* argv[] ) {
       string input = GetArg("color-list",argc,argv);
       stringstream ss(input);
       while( ss.good() )
-	{
-	  string substr;
-	  getline( ss, substr, ',' );
-	  colors.push_back( stoi(substr) );
-	}
+      {
+        string substr;
+        getline( ss, substr, ',' );
+        colors.push_back( stoi(substr) );
+      }
     }
     if( ExistArg("plot-diff",argc,argv)) plot_diff = true ;
 
@@ -132,13 +132,13 @@ int main( int argc, char* argv[] ) {
   auto legend = new TLegend(0,0,1,1);
   legend->SetLineWidth(0);
   vector<TFile*> in_root_files ;
-  vector<TH1D*> hists ; 
+  vector<TH1D*> hists ;
   vector<TH1D*> hists_diff ;
   TFile * def = new TFile( input_files[0].c_str(), "ROOTFile" );
-  TH1D* hist_def = (TH1D*) def -> Get( observable.c_str() ) ; 
+  TH1D* hist_def = (TH1D*) def -> Get( observable.c_str() ) ;
   if(! hist_def ) return 0;
 
-  for( unsigned int i = 0 ; i < input_files.size() ; ++i ) { 
+  for( unsigned int i = 0 ; i < input_files.size() ; ++i ) {
     in_root_files.push_back(new TFile( input_files[i].c_str(), "ROOTFile" )) ;
     if( !in_root_files[i] ) {
       std::cout << " root file " << input_files[i] << "does not exist" << std::endl;
@@ -147,34 +147,34 @@ int main( int argc, char* argv[] ) {
     std::cout <<input_files[i]<<std::endl;
     hists.push_back( (TH1D*) in_root_files[i]->Get( observable.c_str() ) ) ;
     if( !hists[i] ) return 0;
-    if( plot_diff ) { 
-	hists_diff.push_back( (TH1D*) hist_def->Clone() ) ;
-	hists_diff[i]->Scale(-1.);
-    	hists_diff[i]->Add(hists[i]);
-    	hists_diff[i]->Divide(hists[i]);
-    	hists_diff[i]->Scale(100.); // Relative error in %
+    if( plot_diff ) {
+      hists_diff.push_back( (TH1D*) hist_def->Clone() ) ;
+      hists_diff[i]->Scale(-1.);
+      hists_diff[i]->Add(hists[i]);
+      hists_diff[i]->Divide(hists[i]);
+      hists_diff[i]->Scale(100.); // Relative error in %
     }
 
     int color = color_list[i] ;
     if( colors.size() == input_files.size() ) color = colors[i];
-  
+
     if(plot_diff){
-    	hists_diff[i] -> SetLineColor(color);
-    	hists_diff[i] -> SetMarkerStyle(8);
-    	hists_diff[i] -> SetMarkerColor(color);
-    	hists_diff[i] -> SetLineWidth(2);
-    	hists_diff[i]->GetYaxis()->SetLabelSize(0.08);
-    	hists_diff[i]->GetXaxis()->SetLabelSize(0.08);
-    	hists_diff[i]->GetXaxis()->SetTitleSize(0.08);
-    	hists_diff[i]->GetYaxis()->SetTitleSize(0.08);
-    	hists_diff[i] -> SetTitle("");
-    	hists_diff[i] -> GetXaxis()->SetTitle(plotting::GetAxisLabel(observable,0).c_str());
-    	hists_diff[i] -> GetYaxis()->SetTitle(plotting::GetAxisLabel(observable,1).c_str());
-    	hists_diff[i] -> GetXaxis()->CenterTitle();
-    	hists_diff[i] -> GetYaxis()->CenterTitle();
-    	hists_diff[i] -> GetYaxis()->SetTitle("Rel.Diff");
-    	hists_diff[i]->GetYaxis()->SetRangeUser(-50,50);
-    }    
+      hists_diff[i] -> SetLineColor(color);
+      hists_diff[i] -> SetMarkerStyle(8);
+      hists_diff[i] -> SetMarkerColor(color);
+      hists_diff[i] -> SetLineWidth(2);
+      hists_diff[i]->GetYaxis()->SetLabelSize(0.08);
+      hists_diff[i]->GetXaxis()->SetLabelSize(0.08);
+      hists_diff[i]->GetXaxis()->SetTitleSize(0.08);
+      hists_diff[i]->GetYaxis()->SetTitleSize(0.08);
+      hists_diff[i] -> SetTitle("");
+      hists_diff[i] -> GetXaxis()->SetTitle(plotting::GetAxisLabel(observable,0).c_str());
+      hists_diff[i] -> GetYaxis()->SetTitle(plotting::GetAxisLabel(observable,1).c_str());
+      hists_diff[i] -> GetXaxis()->CenterTitle();
+      hists_diff[i] -> GetYaxis()->CenterTitle();
+      hists_diff[i] -> GetYaxis()->SetTitle("Rel.Diff");
+      hists_diff[i]->GetYaxis()->SetRangeUser(-50,50);
+    }
   }
 
   // Setting formatt
@@ -194,31 +194,31 @@ int main( int argc, char* argv[] ) {
   gStyle->SetOptFit(0);
   gStyle->SetPadTickX(1);
   gStyle->SetPadTickY(1);
-  
-  if( plot_diff ) { 
+
+  if( plot_diff ) {
     pad1->Draw();
     pad1->cd();
     pad1->SetBottomMargin(0.015);
     pad1->SetLeftMargin(0.1);
   }
 
- double integral_0 = hists[0]->Integral() ;
+  double integral_0 = hists[0]->Integral() ;
 
- double y_max =0; 
- for( unsigned int i = 0 ; i < input_files.size() ; ++i ) {   
+  double y_max =0;
+  for( unsigned int i = 0 ; i < input_files.size() ; ++i ) {
     double integral_i = hists[i]->Integral();
-    double scaling = 1; 
+    double scaling = 1;
     if(integral_i!=0) scaling = round(integral_0/integral_i);
     if( scaling != 1 ) legend_list[i] += " (x"+to_string((int)scaling)+")" ;
-    legend->AddEntry(hists[i], legend_list[i].c_str());  
+    legend->AddEntry(hists[i], legend_list[i].c_str());
     hists[i]->Scale(scaling);
 
-    y_max = plotting::GetMaximum( hists ) ; 
+    y_max = plotting::GetMaximum( hists ) ;
   }
 
   for( unsigned int i = 0 ; i < input_files.size() ; ++i ) {
     hists[i]->GetYaxis()->SetRangeUser(0,y_max);
-    hists[i]->GetYaxis()->SetMaxDigits(3) ;   
+    hists[i]->GetYaxis()->SetMaxDigits(3) ;
     hists[i]->SetLineStyle(1);
     int color = color_list[i];
     if( colors.size() == input_files.size() ) color = colors[i];
@@ -232,14 +232,14 @@ int main( int argc, char* argv[] ) {
 
   // Top canvas - distribution
   // Bottom canvas - relative difference
-  if( plot_diff ) { 
+  if( plot_diff ) {
     c->cd();
     pad2->Draw();
     pad2->cd();
     pad2->SetBottomMargin(0.25);
     pad2->SetLeftMargin(0.1);
     pad2->SetTopMargin(0.05);
-    for( unsigned int i = 0 ; i < input_files.size() ; ++i ) {   
+    for( unsigned int i = 0 ; i < input_files.size() ; ++i ) {
       if( i == 0 ) hists_diff[i]->Draw("hist ERR");
       else  hists_diff[i]->Draw("hist ERR same");
     }

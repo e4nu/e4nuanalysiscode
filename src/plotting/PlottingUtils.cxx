@@ -902,7 +902,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     if (EBeam == 1.161)
     binning = plotting::GetUniformBinning(20, 0, 0.7);
   }
-  else if (observable == "TrueNProtons" || observable == "TrueNNeutrons" || observable == "TrueNPiP" || observable == "TrueNPiM" || observable == "TrueNPi0" || observable == TrueNCh )
+  else if (observable == "TrueNProtons" || observable == "TrueNNeutrons" || observable == "TrueNPiP" || observable == "TrueNPiM" || observable == "TrueNPi0" || observable == "TrueNCh" )
   {
     binning = plotting::GetUniformBinning(5, -0.5, 5.5);
   }

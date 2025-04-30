@@ -37,7 +37,7 @@ namespace e4nu {
     extern bool QEL, RES, DIS, MEC;
     extern double MCNormalization, DataNormalization;
     extern long NEntries ;
-    extern int TrueNProtons, TrueNNeutrons, TrueNPiP, TrueNPiM, TrueNPi0, TrueCharged;
+    extern int TrueNProtons, TrueNNeutrons, TrueNPiP, TrueNPiM, TrueNPi0, TrueNCh;
     // Declaring an external variable to use in the code to store the Graph relating El', Ehad with Ebeam-Emiss.
     // This is done also for slices on pt (hence _1, _2, and _3 correspond to different pt slices, hardcoded).
     extern TGraph2D* graph_oscillations, *graph_oscillations_1, *graph_oscillations_2, *graph_oscillations_3 ;

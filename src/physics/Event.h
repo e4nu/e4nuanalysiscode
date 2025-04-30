@@ -116,7 +116,7 @@ namespace e4nu {
     unsigned int GetTrueNPiP(void) const { return fNPiP ; }
     unsigned int GetTrueNPiM(void) const { return fNPiM ; }
     unsigned int GetTrueNPi0(void) const { return fNPi0 ; }
-    unsigned int GetTrueCharged(void) const { return fNP+fNPiP+fNPiM ; }
+    unsigned int GetTrueNCh(void) const { return fNP+fNPiP+fNPiM ; }
     unsigned int GetTrueNKP(void) const { return fNKP ; }
     unsigned int GetTrueNKM(void) const { return fNKM ; }
     unsigned int GetTrueNK0(void) const { return fNK0 ; }

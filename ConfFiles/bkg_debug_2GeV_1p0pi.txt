@@ -32,7 +32,7 @@ NRotations 4000
 
 #histogram definition
 ObservableList RecoW,ECal,pim_mom,proton_mom,TrueNCh,TrueNProtons,TrueNPiM,TrueNPiP
-AnalysisKey 1p1pim
+AnalysisKey 1p0pi
 NormalizeHists false
 DebugBkg true
 

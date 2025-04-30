@@ -273,7 +273,7 @@ double Event::GetObservable( const std::string observable ) {
   int TrueNPiP = GetTrueNPiP();
   int TrueNPiM = GetTrueNPiM();
   int TrueNPi0 = GetTrueNPi0();
-  int TrueCharged = TrueNProtons + TrueNPiP + TrueNPiM;
+  int TrueCharged = GetTrueCharged();
 
   if( observable == "Efl" ) return Efl ;
   else if ( observable == "pfl" ) return pfl ;

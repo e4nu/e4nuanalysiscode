@@ -171,7 +171,7 @@ double plotting::GetObservable(const std::string observable)
   else if (observable == "TrueNPiP") content = TrueNPiP;
   else if (observable == "TrueNPiM") content = TrueNPiM;
   else if (observable == "TrueNPi0") content = TrueNPi0;
-  else if (observable == "TrueCharged") content = TrueNProtons+TrueNPiM+TrueNPiP;
+  else if (observable == "TrueCharged") content = TrueCharged;
 
   return content;
 }

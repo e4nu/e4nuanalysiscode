@@ -279,6 +279,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event)
   unsigned int TrueNPiP = event.GetTrueNPiP();
   unsigned int TrueNPiM = event.GetTrueNPiM();
   unsigned int TrueNPi0 = event.GetTrueNPi0();
+  unsigned int TrueCharged = event.GetTrueCharged();
   unsigned int TrueNKP = event.GetTrueNKP();
   unsigned int TrueNKM = event.GetTrueNKM();
   unsigned int TrueNK0 = event.GetTrueNK0();
@@ -335,6 +336,7 @@ bool MCCLAS6AnalysisI::StoreTree(Event event)
     kAnalysisTree->Branch("TrueNPiP", &TrueNPiP, "TrueNPiP/I");
     kAnalysisTree->Branch("TrueNPiM", &TrueNPiM, "TrueNPiM/I");
     kAnalysisTree->Branch("TrueNPi0", &TrueNPi0, "TrueNPi0/I");
+    kAnalysisTree->Branch("TrueCharged", &TrueCharged, "TrueCharged/I");
     kAnalysisTree->Branch("TrueNKP", &TrueNKP, "TrueNKP/I");
     kAnalysisTree->Branch("TrueNKM", &TrueNKM, "TrueNKM/I");
     kAnalysisTree->Branch("TrueNK0", &TrueNK0, "TrueNK0/I");

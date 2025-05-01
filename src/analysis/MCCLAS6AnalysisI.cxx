@@ -82,29 +82,6 @@ Event *MCCLAS6AnalysisI::GetValidEvent(const unsigned int event_id)
     this->SmearParticles(*event);
   }
 
-  // Step 4 : Remove true Bkg events if requested :
-  if (IsTrueSignal())
-  {
-    // Apply theta cut on hadrons:
-    if (!this->ApplyFiducialCut(*event, false))
-    {
-      delete event;
-      return nullptr;
-    }
-    std::map<int, unsigned int> Topology = GetTopology();
-    std::map<int, std::vector<TLorentzVector>> hadrons = event->GetFinalParticles4Mom();
-    for (auto it = Topology.begin(); it != Topology.end(); ++it)
-    {
-      if (it->first == conf::kPdgElectron)
-        continue;
-      if (hadrons[it->first].size() != it->second)
-      {
-        delete event;
-        return nullptr;
-      }
-    }
-  }
-
   // Step 5 : Apply fiducial
   // Moved to general Analysis as it is till used for the data when we apply a systematic shift to Phi
   // to compute geometric acceptance systematic.

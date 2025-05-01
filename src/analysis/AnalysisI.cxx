@@ -111,6 +111,27 @@ bool AnalysisI::Analyse( Event & event ) {
   // Store analysis record after momentum cuts:
   event.StoreAnalysisRecord(kid_acuts);
 
+  // Step 5 : Remove true Bkg events if requested :
+  if (IsTrueSignal() && !IsData() )
+  {
+    // Apply theta cut on hadrons:
+    if (!this->ApplyFiducialCut(event, false))
+    {
+      return false;
+    }
+    std::map<int, unsigned int> Topology = GetTopology();
+    std::map<int, std::vector<TLorentzVector>> hadrons = event.GetFinalParticles4Mom();
+    for (auto it = Topology.begin(); it != Topology.end(); ++it)
+    {
+      if (it->first == conf::kPdgElectron)
+        continue;
+      if (hadrons[it->first].size() != it->second)
+      {
+        return false;
+      }
+    }
+  }
+
   // Step 5: Apply fiducials
   // The detector has gaps where the particles cannot be detected
   // We need to account for these with fiducial cuts

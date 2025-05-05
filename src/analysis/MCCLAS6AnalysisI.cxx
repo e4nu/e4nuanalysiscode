@@ -82,10 +82,6 @@ Event *MCCLAS6AnalysisI::GetValidEvent(const unsigned int event_id)
     this->SmearParticles(*event);
   }
 
-  // Step 5 : Apply fiducial
-  // Moved to general Analysis as it is till used for the data when we apply a systematic shift to Phi
-  // to compute geometric acceptance systematic.
-
   // Step 5: Apply Acceptance Correction (Efficiency correction)
   // This takes into account the efficiency detection of each particle in theta and phi
   // We want to apply it at the end to correctly account for the acceptance in background substracted events
@@ -93,6 +89,7 @@ Event *MCCLAS6AnalysisI::GetValidEvent(const unsigned int event_id)
 
   // Store analysis record after fiducial cut and acceptance correction (2):
   event->StoreAnalysisRecord(kid_fid);
+
   return event;
 }
 

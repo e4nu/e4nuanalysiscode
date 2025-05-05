@@ -155,6 +155,7 @@ int main( int argc, char* argv[] ) {
     analysis -> SetDebugBkg(true) ;
     std::cout << " Computing Closure test..."<<std::endl;
   }
+
   analysis -> PrintConfiguration() ;
   analysis -> Initialize() ;
 

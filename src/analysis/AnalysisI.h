@@ -31,6 +31,7 @@ namespace e4nu {
     void CookEvent( Event & event ) ;
     void PlotBkgInformation( const Event event ) ;
     void ApplyMomentumCut( Event & event ) ;
+    bool ApplyFiducialCutExtra( Event & event ) ;
     bool ApplyFiducialCut( Event & event, bool apply_fiducial ) ;
     double GetElectronMinTheta( TLorentzVector emom ) ;
     bool StoreTree(Event event);

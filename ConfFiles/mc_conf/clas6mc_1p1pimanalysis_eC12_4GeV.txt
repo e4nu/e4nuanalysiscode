@@ -25,11 +25,11 @@ FirstEvent		0
 IsData			false
 IsCLAS6Analysis		true
 Toplogy 		11:1,2212:1,-211:1,221:0,22:0
-MaxBackgroundMultiplicity 5
+MaxBackgroundMultiplicity 6
 NRotations 5000
 
 #histogram definition
-ObservableList RecoW,ECal,pim_mom,proton_mom
+ObservableList RecoW,ECal,pim_mom,proton_mom,TrueNCh,TrueNProtons,TrueNPiM,TrueNPiP
 NormalizeHists false
 
 #Acceptance correction

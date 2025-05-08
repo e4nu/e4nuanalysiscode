@@ -20,14 +20,15 @@ offset			0
 EBeam			2.261
 TargetPdg		1000060120
 NEvents			50000000
+#00
 FirstEvent		0
 
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
 Toplogy 		11:1,2212:1,-211:0,221:0,22:0
-MaxBackgroundMultiplicity 4
-NRotations 5000
+MaxBackgroundMultiplicity 3
+NRotations 1000
 
 #histogram definition
 ObservableList RecoW,ECal,proton_mom,proton_theta

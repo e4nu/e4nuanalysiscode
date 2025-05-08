@@ -107,6 +107,13 @@ bool AnalysisI::Analyse( Event & event ) {
   if( ApplyMomCut() ) {
     this->ApplyMomentumCut( event ) ;
   }
+
+
+  // Apply angle cuts, theta for electron protons and pions
+  // these are applied to both data and MC
+  if ( ! this->ApplyFiducialCutExtra( event ) ) {
+    return false ;
+  }
   
   // Store analysis record after momentum cuts and general angle cuts:
   event.StoreAnalysisRecord(kid_acuts);
@@ -126,12 +133,6 @@ bool AnalysisI::Analyse( Event & event ) {
 	    }
 	}
     }
-
-  // Apply angle cuts, theta for electron protons and pions
-  // these are applied to both data and MC
-  if ( ! this->ApplyFiducialCutExtra( event ) ) {
-    return false ;
-  }
 
   // Step 5: The detector has gaps where the particles cannot be detected
   // We need to account for these with fiducial cuts

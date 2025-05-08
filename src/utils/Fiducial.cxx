@@ -2450,10 +2450,7 @@ Bool_t Fiducial::PFiducialCutExtra(double beam_en, TVector3 momentum) {
   double theta = momentum.Theta() * TMath::RadToDeg() ;
 
   if (theta < conf::kMinThetaProton) { status = false; }
-
-  // There is a gap in proton theta at 1 GeV which we cannot correct well for
-  // we apply an additional cut to remove those protons
-  // if (theta > 35 && theta < 45 && beam_en < 2 ) status = false ; 
+  
   return status;
 
 }
@@ -2490,8 +2487,6 @@ Bool_t Fiducial::Phot_fidExtra(TVector3 momentum) {
 
 Bool_t Fiducial::PimiFiducialCutExtra(double beam_en, TVector3 momentum) {
   double theta = momentum.Theta() * TMath::RadToDeg() ;
-  if (theta < conf::kMinThetaPiMinus) return false;
-
   double mom = momentum.Mag();
   double theta_min = myPiMinusFit->Eval(mom);
   if (theta < theta_min) return false;

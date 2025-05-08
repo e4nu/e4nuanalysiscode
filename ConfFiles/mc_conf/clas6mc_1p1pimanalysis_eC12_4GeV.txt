@@ -1,4 +1,4 @@
-B1;95;0c#Analysis Cuts
+#Analysis Cuts
 ApplyFiducial   true
 ApplyAccWeights true
 ApplyReso	true
@@ -18,7 +18,7 @@ offset			0
 #Run Configurables
 EBeam			4.461
 TargetPdg		1000060120
-NEvents			1000000000
+NEvents			100000000
 FirstEvent		0
 
 #Topology definition

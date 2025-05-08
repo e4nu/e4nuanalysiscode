@@ -55,10 +55,11 @@ namespace e4nu {
             // probability_counts is the number of events with that specific topology and id list
 
             // We want to correct for the acceptance so we have a "perfectly detected" event independent of the acceptance
-            //ApplyAcceptanceCorrection( event_holder[m][event_id], true ) ;
+            ApplyAcceptanceCorrection( event_holder[m][event_id], true ) ;
 	    
             // Start rotations
-            for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) {
+	    int rotations = GetNRotations();
+            for ( unsigned int rot_id = 0 ; rot_id < rotations ; ++rot_id ) {
               // Set rotation around q3 vector
               TVector3 VectorRecoQ = event_holder[m][event_id].GetRecoq3() ;
               double rotation_angle = gRandom->Uniform(0,2*TMath::Pi());
@@ -68,8 +69,10 @@ namespace e4nu {
               std::map<int,std::vector<TLorentzVector>> rot_particles_uncorr = event_holder[m][event_id].GetFinalParticlesUnCorr4Mom() ;
               unsigned int rot_event_mult = 0 ; // rotated event multiplicity
               std::vector<int> part_pdg_list, part_id_list ;
+	      bool is_contained_extra = true ; // This is to avoid correcting for particles with theta < theta_cut.
 
               for( auto it = rot_particles.begin() ; it != rot_particles.end() ; ++it ) {
+		if( !is_contained_extra ) continue ; // Don't try to rotate. Particle falls in extra fiducial cut
                 int part_pdg = it->first ;
                 if( Topology.find( part_pdg ) == Topology.end() ) continue ; // Skip particles which are not in signal definition
 
@@ -77,6 +80,12 @@ namespace e4nu {
                   TVector3 part_vect = (it->second)[part_id].Vect() ;
                   part_vect.Rotate(rotation_angle,VectorRecoQ);
                   // Check which particles are in fiducial
+		  is_contained_extra *= fiducial->FiducialCutExtra( part_pdg, GetConfiguredEBeam(), part_vect, IsData());
+		  if( !is_contained_extra && part_pdg == -211 ) { 
+		    ++rotations;
+		    continue ;
+		  }
+		  
                   bool is_particle_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData(), apply_fiducial ) ;
 
                   TLorentzVector part_shift = (it->second)[part_id] ;
@@ -168,7 +177,7 @@ namespace e4nu {
                 // For m = signal_multiplicity, id = 3+signal_mult
 
                 // Account for acceptance
-                //ApplyAcceptanceCorrection( temp_event ) ;
+                ApplyAcceptanceCorrection( temp_event ) ;
 
                 // Add in map
                 if ( event_holder.find(new_multiplicity) != event_holder.end() ) {

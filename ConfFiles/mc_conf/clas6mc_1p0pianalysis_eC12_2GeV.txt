@@ -7,7 +7,7 @@ ApplyMomCut     true
 ApplyMottWeight true
 ApplyOutEMomCut	true
 ApplyQ2Cut	true
-ApplyWCut	true
+ApplyWCut	false
 SubtractBkg     false
 
 ApplyPhiOpeningAngle	false
@@ -19,15 +19,19 @@ offset			0
 #Run Configurables
 EBeam			2.261
 TargetPdg		1000060120
-NEvents			20000000
+NEvents			50000000
 FirstEvent		0
 
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
-Toplogy 		11:1,2212:1,-211:0,211:0,22:0
+Toplogy 		11:1,2212:1,-211:0,221:0,22:0
 MaxBackgroundMultiplicity 4
-NRotations 1000
+NRotations 5000
+
+#histogram definition
+ObservableList RecoW,ECal,proton_mom,proton_theta
+NormalizeHists false
 
 #Acceptance correction
 #The following parameters will modify the configuration 
@@ -38,4 +42,7 @@ ComputeTrueRecoAccCorr false
 
 InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/G18_10a_Dipole_LFG_Q2_04_2GeV_eCarbon.gst.root
 XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/G18_10a_Dipole_Q2_04_eCarbon.root
-OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1p0pi_G18_10a_Dipole_LFG_Q2_01_2GeV_eCarbon_NoRad
+OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1p0pi_G18_10a_Dipole_LFG_Q2_04_2GeV_eCarbon_NoRad
+
+
+

@@ -55,8 +55,8 @@ namespace e4nu {
             // probability_counts is the number of events with that specific topology and id list
 
             // We want to correct for the acceptance so we have a "perfectly detected" event independent of the acceptance
-            ApplyAcceptanceCorrection( event_holder[m][event_id], true ) ;
-
+            //ApplyAcceptanceCorrection( event_holder[m][event_id], true ) ;
+	    
             // Start rotations
             for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) {
               // Set rotation around q3 vector
@@ -76,7 +76,6 @@ namespace e4nu {
                 for ( unsigned int part_id = 0 ; part_id < (it->second).size() ; ++part_id ) {
                   TVector3 part_vect = (it->second)[part_id].Vect() ;
                   part_vect.Rotate(rotation_angle,VectorRecoQ);
-
                   // Check which particles are in fiducial
                   bool is_particle_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData(), apply_fiducial ) ;
 
@@ -169,7 +168,7 @@ namespace e4nu {
                 // For m = signal_multiplicity, id = 3+signal_mult
 
                 // Account for acceptance
-                ApplyAcceptanceCorrection( temp_event ) ;
+                //ApplyAcceptanceCorrection( temp_event ) ;
 
                 // Add in map
                 if ( event_holder.find(new_multiplicity) != event_holder.end() ) {

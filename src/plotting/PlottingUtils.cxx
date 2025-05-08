@@ -1265,8 +1265,10 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       binning = plotting::GetUniformBinning(50, 0, 1);
     }
   }
-
-
+  if( observable == "ECal") {
+    binning = plotting::GetUniformBinning(50, 1.2, 4.5);
+    if (EBeam == 2.261) binning = plotting::GetUniformBinning(50, 0.5, 2.2);
+  }
   if (binning.size() == 0)
   {
     std::cout << " ERROR: Binning for " << observable << " is nul" << std::endl;

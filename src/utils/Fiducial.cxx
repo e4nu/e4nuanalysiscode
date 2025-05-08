@@ -661,15 +661,18 @@ Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, TVector3 mome
     // Electron fiducial cut, return kTRUE if pass or kFALSE if not
     momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ;
   }
+
+  if( !FiducialCutExtra( pdg, beam_en, momentum, is_data ) ) return false;
 			     
+  if( !apply_fiducial ) return true ; 
+  
   // Apply cuts to include real detector fiducial
-  if ( apply_fiducial ) { 
-    if ( pdg == conf::kPdgElectron ) return EFiducialCut( beam_en, momentum ) ; 
-    else if ( pdg == conf::kPdgProton ) return PFiducialCut( beam_en, momentum ) ; 
-    else if ( pdg == conf::kPdgPiP ) return Pi_phot_fid_united( beam_en, momentum, 1 ) ; 
-    else if ( pdg == conf::kPdgPiM ) return Pi_phot_fid_united (beam_en, momentum, -1 ) ; 
-    else if ( pdg == conf::kPdgPhoton ) return Pi_phot_fid_united( beam_en, momentum, 0 ) ; 
-  }
+  if ( pdg == conf::kPdgElectron ) return EFiducialCut( beam_en, momentum ) ; 
+  else if ( pdg == conf::kPdgProton ) return PFiducialCut( beam_en, momentum ) ; 
+  else if ( pdg == conf::kPdgPiP ) return Pi_phot_fid_united( beam_en, momentum, 1 ) ; 
+  else if ( pdg == conf::kPdgPiM ) return Pi_phot_fid_united (beam_en, momentum, -1 ) ; 
+  else if ( pdg == conf::kPdgPhoton ) return Pi_phot_fid_united( beam_en, momentum, 0 ) ; 
+  
   return true ; 
 }
 
@@ -2476,7 +2479,7 @@ Bool_t Fiducial::Phot_fidExtra(TVector3 momentum) {
   bool status = true;
 
   double theta = momentum.Theta() * TMath::RadToDeg() ;
-
+  
   if (theta < conf::kMinThetaGamma) { status = false; }
 
   return status;
@@ -2486,17 +2489,14 @@ Bool_t Fiducial::Phot_fidExtra(TVector3 momentum) {
 // ----------------------------------------------------------------------------------------------------------------------------------
 
 Bool_t Fiducial::PimiFiducialCutExtra(double beam_en, TVector3 momentum) {
-
-  bool status = true;
-
   double theta = momentum.Theta() * TMath::RadToDeg() ;
+  if (theta < conf::kMinThetaPiMinus) return false;
+
   double mom = momentum.Mag();
   double theta_min = myPiMinusFit->Eval(mom);
-
-  if (theta < theta_min) { status = false; }
-
-  return status;
-
+  if (theta < theta_min) return false;
+  
+  return true;
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------------

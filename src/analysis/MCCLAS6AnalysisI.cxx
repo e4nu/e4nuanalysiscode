@@ -85,8 +85,8 @@ Event *MCCLAS6AnalysisI::GetValidEvent(const unsigned int event_id)
   // Step 5: Apply Acceptance Correction (Efficiency correction)
   // This takes into account the efficiency detection of each particle in theta and phi
   // We want to apply it at the end to correctly account for the acceptance in background substracted events
-  this->ApplyAcceptanceCorrection(*event);
-
+  //this->ApplyAcceptanceCorrection(*event);
+  
   // Store analysis record after fiducial cut and acceptance correction (2):
   event->StoreAnalysisRecord(kid_fid);
 
@@ -195,29 +195,15 @@ bool MCCLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_h
     PlotBkgInformation(event_holder[min_mult][k]);
   }
 
-  // Normalize
-  if (NormalizeHist())
-  {
-    for (unsigned int obs_id = 0; obs_id < tags.size(); ++obs_id)
-    {
-      if( !kHistograms[tags[obs_id]][0] ) continue ;
-      double NBins = kHistograms[tags[obs_id]][0]->GetNbinsX();
-
-      for (int k = 1; k <= NBins; k++)
-      {
-        double content = kHistograms[tags[obs_id]][0]->GetBinContent(k);
-        double error = kHistograms[tags[obs_id]][0]->GetBinError(k);
-        double width = kHistograms[tags[obs_id]][0]->GetBinWidth(k);
-        double newcontent = content / width;
-        double newerror = error / width;
-        kHistograms[tags[obs_id]][0]->SetBinContent(k, newcontent);
-        kHistograms[tags[obs_id]][0]->SetBinError(k, newerror);
+  if (NormalizeHist()) { 
+    for (unsigned int obs_id = 0; obs_id < tags.size(); ++obs_id) { 
+      for( unsigned int i = 0 ; i < kHistograms[tags[obs_id]].size() ; ++i ) {
+	if( !kHistograms[tags[obs_id]][i] ) continue ;
+      
+	kHistograms[tags[obs_id]][i]->Scale(kXSec * kConversionFactorCm2ToMicroBarn * TMath::Power(10., -38.) / GetNEventsToRun());
       }
-
-      kHistograms[tags[obs_id]][0]->Scale(kXSec * kConversionFactorCm2ToMicroBarn * TMath::Power(10., -38.) / GetNEventsToRun());
     }
   }
-
   return true;
 }
 

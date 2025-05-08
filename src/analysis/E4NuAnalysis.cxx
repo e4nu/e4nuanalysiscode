@@ -185,9 +185,23 @@ bool E4NuAnalysis::Finalise( ) {
     if( is_ok ) {
       for( unsigned int i = 0 ; i < hist_size ; ++i ) {
         if( !kHistograms[tags[obs_id]][i] ) continue ;
-        kHistograms[tags[obs_id]][i]->GetXaxis()->SetTitle(tags[obs_id].c_str()) ;
-        if( NormalizeHist() ) kHistograms[tags[obs_id]][i]->GetYaxis()->SetTitle(("d#sigma/d"+tags[obs_id]).c_str()) ;
-        else {
+    
+	double NBins = kHistograms[tags[obs_id]][i]->GetNbinsX();
+    
+	for (int k = 1; k <= NBins; k++) {
+	  double content = kHistograms[tags[obs_id]][i]->GetBinContent(k);
+	  double error = kHistograms[tags[obs_id]][i]->GetBinError(k);
+	  double width = kHistograms[tags[obs_id]][i]->GetBinWidth(k);
+	  double newcontent = content / width;
+	  double newerror = error / width;
+	  kHistograms[tags[obs_id]][i]->SetBinContent(k, newcontent);
+	  kHistograms[tags[obs_id]][i]->SetBinError(k, newerror);
+	}
+
+	kHistograms[tags[obs_id]][i]->GetXaxis()->SetTitle(tags[obs_id].c_str()) ;
+        if( NormalizeHist() ) {
+	  kHistograms[tags[obs_id]][i]->GetYaxis()->SetTitle(("d#sigma/d"+tags[obs_id]).c_str()) ;
+        } else {
           kHistograms[tags[obs_id]][i]->GetYaxis()->SetTitle("Weighted Events") ;
         }
         kHistograms[tags[obs_id]][i]->SetStats(false);

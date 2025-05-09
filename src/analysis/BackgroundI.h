@@ -81,7 +81,7 @@ namespace e4nu {
                   part_vect.Rotate(rotation_angle,VectorRecoQ);
                   // Check which particles are in fiducial
 		  is_contained_extra *= fiducial->FiducialCutExtra( part_pdg, GetConfiguredEBeam(), part_vect, IsData());
-		  if( !is_contained_extra && part_pdg == -211 ) { 
+		  if( !is_contained_extra ) { 
 		    ++rotations;
 		    continue ;
 		  }

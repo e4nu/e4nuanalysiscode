@@ -2445,13 +2445,11 @@ Bool_t Fiducial::PiplFiducialCut(double beam_en, TVector3 momentum, Float_t *phi
 
 Bool_t Fiducial::PFiducialCutExtra(double beam_en, TVector3 momentum) {
 
-  bool status = true;
-
   double theta = momentum.Theta() * TMath::RadToDeg() ;
 
-  if (theta < conf::kMinThetaProton) { status = false; }
-  
-  return status;
+  if (theta < conf::kMinThetaProton) return false;
+  if (theta > conf::kMaxThetaHadrons ) return false; 
+  return true ;
 
 }
 
@@ -2459,27 +2457,22 @@ Bool_t Fiducial::PFiducialCutExtra(double beam_en, TVector3 momentum) {
 
 Bool_t Fiducial::PiplFiducialCutExtra(double beam_en, TVector3 momentum) {
 
-  bool status = true;
-
   double theta = momentum.Theta() * TMath::RadToDeg() ;
 
-  if (theta < conf::kMinThetaPiPlus) { status = false; }
-
-  return status;
-
+  if (theta < conf::kMinThetaPiPlus) return false;
+  if (theta > conf::kMaxThetaHadrons ) return false;
+  return true;
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 
 Bool_t Fiducial::Phot_fidExtra(TVector3 momentum) {
 
-  bool status = true;
-
   double theta = momentum.Theta() * TMath::RadToDeg() ;
   
-  if (theta < conf::kMinThetaGamma) { status = false; }
-
-  return status;
+  if (theta < conf::kMinThetaGamma) return false;
+  if (theta > conf::kMaxThetaHadrons ) return false;
+  return true;
 
 }
 
@@ -2490,7 +2483,7 @@ Bool_t Fiducial::PimiFiducialCutExtra(double beam_en, TVector3 momentum) {
   double mom = momentum.Mag();
   double theta_min = myPiMinusFit->Eval(mom);
   if (theta < theta_min) return false;
-  
+  if (theta > conf::kMaxThetaHadrons ) return false;
   return true;
 }
 

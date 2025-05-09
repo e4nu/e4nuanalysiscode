@@ -58,89 +58,94 @@ namespace e4nu {
             ApplyAcceptanceCorrection( event_holder[m][event_id], true ) ;
 	    
             // Start rotations
-	    int rotations = GetNRotations();
-            for ( unsigned int rot_id = 0 ; rot_id < rotations ; ++rot_id ) {
+            for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) {
               // Set rotation around q3 vector
-              TVector3 VectorRecoQ = event_holder[m][event_id].GetRecoq3() ;
-              double rotation_angle = gRandom->Uniform(0,2*TMath::Pi());
+	      bool is_contained_extra = false ; // This is to avoid correcting for particles with theta < theta_cut.
+	      TVector3 VectorRecoQ = event_holder[m][event_id].GetRecoq3() ;
 
-              // Rotate all Hadrons
-              std::map<int,std::vector<TLorentzVector>> rot_particles = event_holder[m][event_id].GetFinalParticles4Mom() ;
-              std::map<int,std::vector<TLorentzVector>> rot_particles_uncorr = event_holder[m][event_id].GetFinalParticlesUnCorr4Mom() ;
-              unsigned int rot_event_mult = 0 ; // rotated event multiplicity
-              std::vector<int> part_pdg_list, part_id_list ;
-	      bool is_contained_extra = true ; // This is to avoid correcting for particles with theta < theta_cut.
+	      // Rotate all Hadrons
+	      std::map<int,std::vector<TLorentzVector>> rot_particles = event_holder[m][event_id].GetFinalParticles4Mom() ;
+	      std::map<int,std::vector<TLorentzVector>> rot_particles_uncorr = event_holder[m][event_id].GetFinalParticlesUnCorr4Mom() ;
+	      unsigned int rot_event_mult = 0 ; // rotated event multiplicity
+	      std::vector<int> part_pdg_list, part_id_list ;
 
-              for( auto it = rot_particles.begin() ; it != rot_particles.end() ; ++it ) {
-		if( !is_contained_extra ) continue ; // Don't try to rotate. Particle falls in extra fiducial cut
-                int part_pdg = it->first ;
-                if( Topology.find( part_pdg ) == Topology.end() ) continue ; // Skip particles which are not in signal definition
-
-                for ( unsigned int part_id = 0 ; part_id < (it->second).size() ; ++part_id ) {
-                  TVector3 part_vect = (it->second)[part_id].Vect() ;
-                  part_vect.Rotate(rotation_angle,VectorRecoQ);
-                  // Check which particles are in fiducial
-		  is_contained_extra *= fiducial->FiducialCutExtra( part_pdg, GetConfiguredEBeam(), part_vect, IsData());
-		  if( !is_contained_extra ) { 
-		    ++rotations;
-		    continue ;
-		  }
+	      while ( !is_contained_extra ) {
+		// If it is not contained, it tries again
+		double rotation_angle = gRandom->Uniform(0,2*TMath::Pi());
+		
+		bool is_fully_contained_extra = true; 
+		for( auto it = rot_particles.begin() ; it != rot_particles.end() ; ++it ) {
+		  if( !is_fully_contained_extra ) continue ; // Don't try to rotate. Particle falls in extra fiducial cut
+		  int part_pdg = it->first ;
+		  if( Topology.find( part_pdg ) == Topology.end() ) continue ; // Skip particles which are not in signal definition
 		  
-                  bool is_particle_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData(), apply_fiducial ) ;
+		  for ( unsigned int part_id = 0 ; part_id < (it->second).size() ; ++part_id ) {
+		    TVector3 part_vect = (it->second)[part_id].Vect() ;
+		    part_vect.Rotate(rotation_angle,VectorRecoQ);
+		    // Check which particles are in fiducial
+		    if( !fiducial->FiducialCutExtra( part_pdg, GetConfiguredEBeam(), part_vect, IsData()) ) { 
+		      is_fully_contained_extra = false; 
+		      continue ;
+		    }
+		  
+		    bool is_particle_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData(), apply_fiducial ) ;
 
-                  TLorentzVector part_shift = (it->second)[part_id] ;
-                  if( fFidAngleShift != 0 ) {
-                    part_shift.SetPhi( (it->second)[part_id].Phi() + fFidAngleShift * TMath::Pi() / 180. ) ;
-                    is_particle_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
-                    part_shift.SetPhi( (it->second)[part_id].Phi() - fFidAngleShift * TMath::Pi() / 180. ) ;
-                    is_particle_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
-                  }
+		    TLorentzVector part_shift = (it->second)[part_id] ;
+		    if( fFidAngleShift != 0 ) {
+		      part_shift.SetPhi( (it->second)[part_id].Phi() + fFidAngleShift * TMath::Pi() / 180. ) ;
+		      is_particle_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
+		      part_shift.SetPhi( (it->second)[part_id].Phi() - fFidAngleShift * TMath::Pi() / 180. ) ;
+		      is_particle_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
+		    }
+		    
+		    // Calculate rotated event multiplicity
+		    if( is_particle_contained ) {
+		      ++rot_event_mult ;
+		      part_pdg_list.push_back( part_pdg ) ;
+		      part_id_list.push_back( part_id ) ;
+		    }
+		  } // end loop over a specific pdg
+		} // end pdg key loop
 
-                  // Calculate rotated event multiplicity
-                  if( is_particle_contained ) {
-                    ++rot_event_mult ;
-                    part_pdg_list.push_back( part_pdg ) ;
-                    part_id_list.push_back( part_id ) ;
-                  }
-                } // end loop over a specific pdg
-              } // end pdg key loop
-
-              // If multiplicity < minimum multiplicity, remove
-              if( rot_event_mult < min_mult ) {
+		is_contained_extra = is_fully_contained_extra; 
+	      } // end while loop. Event is fully contained 
+	      
+	      // If multiplicity < minimum multiplicity, remove
+	      if( rot_event_mult < min_mult ) {
+		continue ;
+	      }
+		
+	      // Check if particle multiplicity is above signal particle multiplicity
+	      bool is_signal_bkg = true ;
+	      for( auto it = Topology.begin(); it!=Topology.end();++it){
+		if( it->first == conf::kPdgElectron ) continue ;
+		if( it->second == 0 ) continue ; // If min mult is 0, continue
+		unsigned int count_p = 0 ;
+		for( unsigned int idp = 0 ; idp < part_pdg_list.size() ; ++idp ){
+		  if( part_pdg_list[idp] == it->first ) ++count_p ;
+		}
+		if( count_p < Topology[it->first] ) {
+		  is_signal_bkg =false ;
+		  break;
+		}
+	      }
+	      
+	      if( ! is_signal_bkg ) {
+		continue ;
+	      }
+	      
+	      // If multiplicity is the same as the original event multiplicity,
+	      if( rot_event_mult == m ) {
+		++N_all ;
                 continue ;
-              }
-
-              // Check if particle multiplicity is above signal particle multiplicity
-              bool is_signal_bkg = true ;
-              for( auto it = Topology.begin(); it!=Topology.end();++it){
-                if( it->first == conf::kPdgElectron ) continue ;
-                if( it->second == 0 ) continue ; // If min mult is 0, continue
-                unsigned int count_p = 0 ;
-                for( unsigned int idp = 0 ; idp < part_pdg_list.size() ; ++idp ){
-                  if( part_pdg_list[idp] == it->first ) ++count_p ;
-                }
-                if( count_p < Topology[it->first] ) {
-                  is_signal_bkg =false ;
-                  break;
-                }
-              }
-
-              if( ! is_signal_bkg ) {
-                continue ;
-              }
-
-              // If multiplicity is the same as the original event multiplicity,
-              if( rot_event_mult == m ) {
-                ++N_all ;
-                continue ;
-              }
-
-              // For other case, store combination of particles which contribute
-              // And add entry in corresponding map
-              std::map<std::vector<int>,std::vector<int>> new_topology ;
-              new_topology[part_pdg_list] = part_id_list ;
-              probability_count[new_topology] += 1 ;
-
+	      }
+	      
+	      // For other case, store combination of particles which contribute
+		// And add entry in corresponding map
+		std::map<std::vector<int>,std::vector<int>> new_topology ;
+		new_topology[part_pdg_list] = part_id_list ;
+		probability_count[new_topology] += 1 ;
+		
             }// Close rotation loop
 
             // Skip if denominator is 0

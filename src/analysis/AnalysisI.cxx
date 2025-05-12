@@ -108,7 +108,6 @@ bool AnalysisI::Analyse( Event & event ) {
     this->ApplyMomentumCut( event ) ;
   }
 
-
   // Apply angle cuts, theta for electron protons and pions
   // these are applied to both data and MC
   if ( ! this->ApplyFiducialCutExtra( event ) ) {

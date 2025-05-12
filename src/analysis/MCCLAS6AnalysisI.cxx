@@ -85,7 +85,7 @@ Event *MCCLAS6AnalysisI::GetValidEvent(const unsigned int event_id)
   // Step 5: Apply Acceptance Correction (Efficiency correction)
   // This takes into account the efficiency detection of each particle in theta and phi
   // We want to apply it at the end to correctly account for the acceptance in background substracted events
-  //this->ApplyAcceptanceCorrection(*event);
+  this->ApplyAcceptanceCorrection(*event);
   
   // Store analysis record after fiducial cut and acceptance correction (2):
   event->StoreAnalysisRecord(kid_fid);

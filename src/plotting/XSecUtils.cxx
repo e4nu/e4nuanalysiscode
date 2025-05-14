@@ -409,13 +409,13 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_correventrate_5, 1);
 
     // Normalize to cross-section
-    NormalizeHist(hist_data, MCNormalization);//DataNormalization);
-    NormalizeHist(hist_data_0, MCNormalization);//DataNormalization);
-    NormalizeHist(hist_data_1, MCNormalization);//DataNormalization);
-    NormalizeHist(hist_data_2, MCNormalization);//DataNormalization);
-    NormalizeHist(hist_data_3, MCNormalization);//DataNormalization);
-    NormalizeHist(hist_data_4, MCNormalization);//DataNormalization);
-    NormalizeHist(hist_data_5, MCNormalization);//DataNormalization);
+    NormalizeHist(hist_data, DataNormalization);
+    NormalizeHist(hist_data_0, DataNormalization);
+    NormalizeHist(hist_data_1, DataNormalization);
+    NormalizeHist(hist_data_2, DataNormalization);
+    NormalizeHist(hist_data_3, DataNormalization);
+    NormalizeHist(hist_data_4, DataNormalization);
+    NormalizeHist(hist_data_5, DataNormalization);
 
     // Add Systematics
     // 1 - Acceptance model dependence (already included)
@@ -1670,13 +1670,13 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
           NormalizeHist(hist_data_correventrate_5, 1);
 
           // Normalize to cross-section
-          NormalizeHist(hist_data, MCNormalization);//DataNormalization);
-          NormalizeHist(hist_data_0, MCNormalization);//DataNormalization);
-          NormalizeHist(hist_data_1, MCNormalization);//DataNormalization);
-          NormalizeHist(hist_data_2, MCNormalization);//DataNormalization);
-          NormalizeHist(hist_data_3, MCNormalization);//DataNormalization);
-          NormalizeHist(hist_data_4, MCNormalization);//DataNormalization);
-          NormalizeHist(hist_data_5, MCNormalization);//DataNormalization);
+          NormalizeHist(hist_data, DataNormalization);
+          NormalizeHist(hist_data_0, DataNormalization);
+          NormalizeHist(hist_data_1, DataNormalization);
+          NormalizeHist(hist_data_2, DataNormalization);
+          NormalizeHist(hist_data_3, DataNormalization);
+          NormalizeHist(hist_data_4, DataNormalization);
+          NormalizeHist(hist_data_5, DataNormalization);
 
           // Add Systematics
           // 1 - Acceptance model dependence (already included)

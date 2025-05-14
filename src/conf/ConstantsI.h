@@ -1,7 +1,7 @@
-/**                                     
+/**
  * \info This script contains general information on generic constants
  **/
-
+#include <TMath.h>
 #ifndef _CONST_I_H_
 #define _CONST_I_H_
 
@@ -18,10 +18,10 @@ namespace e4nu {
     // 1 gr -> 6x10^23 / 12 = 5x10^22 atoms
     static const double kAvogadroNumber = 6*TMath::Power(10.,23);
     static const double kOverallUnitConversionFactor = kConversionFactorChargeToElectrons * kAvogadroNumber;
-    static const double kAem = 1./137.03599976; // EM coupling const, dimensionless 
+    static const double kAem = 1./137.03599976; // EM coupling const, dimensionless
     static const double kAem2  = TMath::Power(kAem,2);
-    static const double kPi = TMath::Pi(); 
-    
+    static const double kPi = TMath::Pi();
+
   }
 }
 #endif

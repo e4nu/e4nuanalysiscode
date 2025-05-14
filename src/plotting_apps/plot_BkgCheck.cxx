@@ -6,7 +6,6 @@
 // __________________________________________________________________________
 #include <iostream>
 #include <vector>
-#include "utils/RadiativeCorrUtils.h"
 #include "plotting/PlottingUtils.h"
 #include "conf/ConstantsI.h"
 #include "conf/ParticleI.h"
@@ -18,7 +17,6 @@
 
 using namespace std;
 using namespace e4nu;
-using namespace e4nu::utils;
 using namespace e4nu::conf;
 using namespace e4nu::plotting;
 /////////////////////////////////////////////////////////////////
@@ -184,6 +182,13 @@ int main( int argc, char* argv[] ) {
   pad2->SetBottomMargin(0.25);
   pad2->SetLeftMargin(0.1);
   pad2->SetTopMargin(0.05);
+  for( unsigned int j = 1 ; j < h_diff_true -> GetNbinsX() ; ++j ){
+    double fraction_j = h_tot_true->GetBinContent(j)/h_signal->GetBinContent(j);
+    if (h_signal->GetBinContent(j)==0) fraction_j = 1;
+
+    h_diff_true->SetBinContent(j,h_diff_true->GetBinContent(j)*fraction_j);
+    h_diff_true->SetBinError(j,0);
+  }
   h_diff_true->Draw("hist");
   c->SaveAs((output_file+".root").c_str());
 

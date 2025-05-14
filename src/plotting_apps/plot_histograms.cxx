@@ -8,7 +8,6 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include "utils/RadiativeCorrUtils.h"
 #include "plotting/PlottingUtils.h"
 #include "conf/ConstantsI.h"
 #include "conf/ParticleI.h"
@@ -20,7 +19,6 @@
 
 using namespace std;
 using namespace e4nu;
-using namespace e4nu::utils;
 using namespace e4nu::conf;
 using namespace e4nu::plotting;
 /////////////////////////////////////////////////////////////////
@@ -60,7 +58,9 @@ int main( int argc, char* argv[] ) {
         string substr;
         getline( ss, substr, ',' );
         input_files.push_back( substr );
+        std::cout << substr << std::endl;
       }
+
       if( input_files.size() == 0 ) return 0;
     } else { return 0 ;}
 
@@ -136,7 +136,9 @@ int main( int argc, char* argv[] ) {
   vector<TH1D*> hists_diff ;
   TFile * def = new TFile( input_files[0].c_str(), "ROOTFile" );
   TH1D* hist_def = (TH1D*) def -> Get( observable.c_str() ) ;
-  if(! hist_def ) return 0;
+  if(! hist_def ) {
+    std::cout << " observable " << observable << " histogram does not exist in "<< input_files[0] << std::endl;
+  }
 
   for( unsigned int i = 0 ; i < input_files.size() ; ++i ) {
     in_root_files.push_back(new TFile( input_files[i].c_str(), "ROOTFile" )) ;

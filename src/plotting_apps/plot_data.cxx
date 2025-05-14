@@ -8,7 +8,6 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include "utils/RadiativeCorrUtils.h"
 #include "plotting/PlottingUtils.h"
 #include "conf/ConstantsI.h"
 #include "conf/ParticleI.h"
@@ -21,7 +20,6 @@
 
 using namespace std;
 using namespace e4nu;
-using namespace e4nu::utils;
 using namespace e4nu::conf;
 using namespace e4nu::plotting;
 /////////////////////////////////////////////////////////////////
@@ -32,6 +30,7 @@ using namespace e4nu::plotting;
 // * legend-list : tags for the legend                         //
 // * analysis-key: i.e. 1p1pim                                 //
 // * sector : default all                                      //
+// * beam-energy : energy                                      //
 /////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {

@@ -5,7 +5,6 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include "utils/RadiativeCorrUtils.h"
 #include "plotting/PlottingUtils.h"
 #include "plotting/XSecUtils.h"
 #include "conf/ConstantsI.h"
@@ -21,7 +20,6 @@
 
 using namespace std;
 using namespace e4nu;
-using namespace e4nu::utils;
 using namespace e4nu::conf;
 using namespace e4nu::plotting;
 /////////////////////////////////////////////////////////////////

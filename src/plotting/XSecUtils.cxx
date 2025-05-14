@@ -96,7 +96,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   TTree *tree_data = nullptr;
   if (plot_data)
   {
-    tree_data = (TTree *)file_data->Get("MCCLAS6Tree");//CLAS6Tree");
+    tree_data = (TTree *)file_data->Get("CLAS6Tree");
     if (!tree_data)
     {
       std::cout << "ERROR: tree data doesn't exist" << std::endl;

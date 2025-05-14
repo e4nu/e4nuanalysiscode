@@ -53,11 +53,11 @@ int main( int argc, char* argv[] ) {
       string input = GetArg("input-files",argc,argv);
       stringstream ss(input);
       while( ss.good() )
-	{
-	  string substr;
-	  getline( ss, substr, ',' );
-	  input_files.push_back( substr );
-	}
+      {
+        string substr;
+        getline( ss, substr, ',' );
+        input_files.push_back( substr );
+      }
       if( input_files.size() == 0 ) return 0;
     } else { return 0 ;}
 
@@ -65,11 +65,11 @@ int main( int argc, char* argv[] ) {
       string input = GetArg("legend-list",argc,argv);
       stringstream ss(input);
       while( ss.good() )
-	{
-	  string substr;
-	  getline( ss, substr, ',' );
-	  legend_list.push_back( substr );
-	}
+      {
+        string substr;
+        getline( ss, substr, ',' );
+        legend_list.push_back( substr );
+      }
       if( input_files.size() == 0 ) return 0;
     }
 
@@ -79,9 +79,12 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("observable",argc,argv)) {
       observable = GetArg("observable",argc,argv);
     }
+    if( ExistArg("analysis-key",argc,argv)) {
+      analysis_key = GetArg("analysis-key",argc,argv);
+    }
     double energy = 0 ;
     if( ExistArg("beam-energy",argc,argv)) {
-       energy = stof(GetArg("beam-energy",argc,argv));
+      energy = stof(GetArg("beam-energy",argc,argv));
     }
 
     if( energy > 0  && energy < 1.5 ) EBeam = 1.161 ;

@@ -30,7 +30,7 @@ MaxBackgroundMultiplicity 5
 NRotations 5000
 
 #histogram definition
-ObservableList RecoW,ECal,pim_mom,proton_mom
+ObservableList RecoW,ECal,pim_mom,proton_mom,pim_theta,proton_theta,RecoQ2,pfl,pfl_theta,HadAlphaT,HadDeltaPT,HadDeltaPT,HadDeltaPTy,HadDeltaPTx,HadDeltaPhiT,InferedNucleonMom,HadronsAngle,MissingMomentum,MissingAngle,MissingEnergy
 NormalizeHists false
 
 #Acceptance correction

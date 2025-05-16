@@ -77,10 +77,6 @@ int main( int argc, char* argv[] ) {
   TH1D * h_total_bkg = (TH1D*) in_root_file->Get( (observable+"_TotTrueBkg").c_str() ) ;
 
   TH1D * h_diff_true = (TH1D*) h_tot_true->Clone();
-  double fraction = h_total_bkg->GetEntries()/h_signal->GetEntries();
-
-  // Compute weighted average
-  double sum_weights =0, sum_werr = 0;
 
   for( unsigned int j = 1 ; j < h_diff_true -> GetNbinsX() ; ++j ){
     double err = pow(h_tot_true->GetBinContent(j)-h_tot_est->GetBinContent(j),2) ;
@@ -93,46 +89,22 @@ int main( int argc, char* argv[] ) {
     err = sqrt(err);
 
     if( h_tot_est->GetBinContent(j) != 0 && h_tot_est->GetBinContent(j) > h_tot_est->Integral()*0.01 ) {
-      double fraction_j = h_tot_true->GetBinContent(j)/h_signal->GetBinContent(j);
-      sum_werr += err /h_tot_est->GetBinContent(j) * fraction_j;
-      sum_weights += fraction_j;
-      h_diff_true->SetBinContent(j,err/h_tot_est->GetBinContent(j)*100);
+      h_diff_true->SetBinContent(j, err/h_tot_est->GetBinContent(j)*100);
       h_diff_true->SetBinError(j,0);
     } else {
       h_diff_true->SetBinContent(j,0);
       h_diff_true->SetBinError(j,0);
     }
   }
-  std::cout << " Weighted error [%]:" << sum_werr / sum_weights * 100 << std::endl;
-  // Setting formatt
-  gStyle->SetFrameBorderMode(0);
-  gStyle->SetCanvasBorderMode(0);
-  gStyle->SetPadBorderMode(0);
-  gStyle->SetPadColor(0);
-  gStyle->SetCanvasColor(0);
-  gStyle->SetStatColor(0);
-  gStyle->SetFillColor(0);
-  gStyle->SetLegendBorderSize(1);
-  gStyle->SetPaperSize(20,26);
-  gStyle->SetTitleFont(132,"pad");
-  gStyle->SetMarkerStyle(20);
-  gStyle->SetLineStyleString(2,"[12 12]");
-  gStyle->SetOptStat(0);
-  gStyle->SetOptFit(0);
-  gStyle->SetPadTickX(1);
-  gStyle->SetPadTickY(1);
 
-  h_tot_true -> SetLineColor(kRed);
+  h_tot_true -> SetLineColor(kBlack);
   h_tot_true -> SetMarkerStyle(8);
-  h_tot_true -> SetMarkerColor(kRed);
+  h_tot_true -> SetMarkerColor(kBlack);
   h_tot_true -> SetLineWidth(2);
   h_tot_true -> GetYaxis()->SetLabelSize(0.06);
   h_tot_true -> GetYaxis()->SetTitleSize(0.06);
   h_tot_true -> SetTitle("Total Background");
   h_tot_true -> GetXaxis()->SetTitle(plotting::GetAxisLabel(observable,0).c_str());
-  h_tot_true -> GetYaxis()->SetTitle(plotting::GetAxisLabel(observable,1).c_str());
-  h_tot_true -> GetXaxis()->CenterTitle();
-  h_tot_true -> GetYaxis()->CenterTitle();
 
   std::vector<TH1D*> vector_hists = {h_tot_true,h_tot_est};
   double max = plotting::GetMaximum(vector_hists);
@@ -143,23 +115,13 @@ int main( int argc, char* argv[] ) {
   h_tot_est -> SetMarkerColor(kBlue);
   h_tot_est -> SetLineWidth(2);
 
-  h_diff_true -> SetLineColor(kBlack);
+  h_diff_true -> SetLineColor(kBlue);
   h_diff_true -> SetMarkerStyle(8);
-  h_diff_true -> SetMarkerColor(kBlack);
+  h_diff_true -> SetMarkerColor(kBlue);
   h_diff_true -> SetLineWidth(2);
 
   h_diff_true -> SetTitle("");
   h_diff_true -> GetXaxis()->SetTitle(plotting::GetAxisLabel(observable,0).c_str());
-  h_diff_true -> GetYaxis()->SetTitle("#sigma_{BKG}/Est[%]");
-  h_diff_true -> GetXaxis()->CenterTitle();
-  h_diff_true -> GetYaxis()->CenterTitle();
-  h_diff_true -> GetYaxis()->SetNdivisions(6);
-  h_diff_true -> GetYaxis()->SetRangeUser(-50,50);
-  h_diff_true -> GetXaxis()->SetLabelSize(0.08);
-  h_diff_true -> GetYaxis()->SetLabelSize(0.08);
-  h_diff_true -> GetXaxis()->SetTitleOffset(1.2);
-  h_diff_true -> GetXaxis()->SetTitleSize(0.08);
-  h_diff_true -> GetYaxis()->SetTitleSize(0.08);
 
   auto legend = new TLegend(0.15,0.6,0.35,0.8);
   legend->AddEntry(h_tot_true, "Total true background");
@@ -182,19 +144,62 @@ int main( int argc, char* argv[] ) {
   pad2->SetBottomMargin(0.25);
   pad2->SetLeftMargin(0.1);
   pad2->SetTopMargin(0.05);
-  for( unsigned int j = 1 ; j < h_diff_true -> GetNbinsX() ; ++j ){
-    double fraction_j = h_tot_true->GetBinContent(j)/h_signal->GetBinContent(j);
-    if (h_signal->GetBinContent(j)==0) fraction_j = 1;
 
-    h_diff_true->SetBinContent(j,h_diff_true->GetBinContent(j)*fraction_j);
-    h_diff_true->SetBinError(j,0);
-  }
   h_diff_true->Draw("hist");
   c->SaveAs((output_file+".root").c_str());
 
-  TFile *ROOTOut = new TFile((output_file+"_syst.root").c_str(),"RECREATE");
-  h_diff_true->SetName("BkgClosureTestSyst");
-  h_diff_true->Write();
+
+  // Compute systematics
+  // Method 1 :
+  TH1D * h_method1 = (TH1D*)h_diff_true->Clone();
+
+  for( unsigned int j = 1 ; j < h_method1 -> GetNbinsX() ; ++j ){
+    double fraction_j = h_total_bkg->GetBinContent(j)/h_signal->GetBinContent(j);
+    if(h_total_bkg->GetBinContent(j)<500) fraction_j=0;
+    if(h_signal->GetBinContent(j)<500) fraction_j=0;
+
+    h_method1->SetBinContent(j,h_diff_true->GetBinContent(j)*fraction_j);
+    h_method1->SetBinError(j,0);
+  }
+
+  // Method 2 :
+  // Compute average
+  double sum_weights =0, sum_err = 0;
+  // Compute average error
+  for( unsigned int j = 1 ; j < h_diff_true -> GetNbinsX() ; ++j ){
+    double err = pow(h_tot_true->GetBinContent(j)-h_tot_est->GetBinContent(j),2) ;
+
+    // Substract stat error
+    err -= pow(h_tot_true->GetBinError(j),2) ;
+    err -= pow(h_tot_est->GetBinError(j),2) ;
+
+    if( err < 0 ) err = 0 ;
+    err = sqrt(err);
+
+    if( h_tot_est->GetBinContent(j) != 0 && h_tot_est->GetBinContent(j) > h_tot_est->Integral()*0.01 ) {
+      sum_err += err /h_tot_est->GetBinContent(j) ;
+      sum_weights += 1 ;
+    }
+  }
+
+  double av_err = sum_err / sum_weights ;
+  std::cout << " Weighted error [%]:" << sum_err / sum_weights * 100 << std::endl;
+
+  TH1D * h_method2 = (TH1D*)h_diff_true->Clone();
+  for( unsigned int j = 1 ; j < h_method1 -> GetNbinsX() ; ++j ){
+    double fraction_j = h_total_bkg->GetBinContent(j)/h_signal->GetBinContent(j);
+    if(h_total_bkg->GetBinContent(j)<500) fraction_j=0;
+    if(h_signal->GetBinContent(j)<500) fraction_j=0;
+
+    h_method2->SetBinContent(j,av_err*fraction_j*100);
+    h_method2->SetBinError(j,0);
+  }
+
+  TFile *ROOTOut = new TFile((output_file+"_"+observable+"_syst.root").c_str(),"RECREATE");
+  h_method1->SetName(("BkgSyst_Method1_"+observable).c_str());
+  h_method1->Write();
+  h_method2->SetName(("BkgSyst_Method2_"+observable).c_str());
+  h_method2->Write();
   ROOTOut->Close();
 
   return 0 ;

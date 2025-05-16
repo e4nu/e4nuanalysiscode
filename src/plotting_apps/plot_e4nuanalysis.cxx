@@ -46,7 +46,7 @@ string mc_location="", data_location="", output_location ="", output_name ="", a
 vector<string> mc_files, rad_files,observables_x, observables_y, model_names ;
 string data_file ="", nofsi_file="", title="", data_name="" ;
 bool compute_systematics ;
-vector<string> bkg_syst;
+string bkg_syst;
 map<string,double> systematic_map ;
 bool plot_data = true ;
 bool store_root = false ;
@@ -191,8 +191,7 @@ int main( int argc, char* argv[] ) {
     }
 
     if( ExistArg("bkg-systematics",argc,argv)) {
-      string bkgsys = GetArg("bkg-systematics",argc,argv) ;
-      bkg_syst = SplitString(bkgsys,',');
+      bkg_syst = GetArg("bkg-systematics",argc,argv);
     }
 
     string cut_obs ;
@@ -250,17 +249,8 @@ int main( int argc, char* argv[] ) {
       radcorr_file_2D = Compute2DRadCorr( root_files, root_rad_files, observables_x[i], observables_y[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
     }
 
-    vector<string> bkg_syst_files = {data_file};
-    vector<string> bkg_syst_tag = {data_name+"_"+observables_x[i]};
-    for( unsigned int j = 0 ; j < bkg_syst.size(); ++j ){
-      bkg_syst_files.push_back(bkg_syst[j]);
-      bkg_syst_tag.push_back(data_name+"_"+observables_x[i]+"_"+to_string(j+1));
-    }
-
-    if( bkg_syst.size()!=0 ) systematics::ComputeHistSyst( bkg_syst_files, bkg_syst_tag, observables_x[i], true, data_location, output_location, analysis_id );
-
     Plot1DXSec( root_files, data_file, acceptance_file_1D, radcorr_file, observables_x[i], title, data_name, names, mc_location, data_location,
-      output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
+      output_location, output_name, plot_data, systematic_map, bkg_syst, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
 
       if( observables_y.size() > 0 ){
         Plot2DXSec( root_files, data_file, acceptance_file_2D, radcorr_file_2D, observables_x[i], observables_y[i], y_cuts, title, data_name, names, mc_location, data_location,

@@ -63,12 +63,12 @@ int main( int argc, char* argv[] ) {
     }
     if( ExistArg("analysis-type",argc,argv)) {
       if ( GetArg("analysis-type",argc,argv) == "ComputeTrueAccCorr" ) {
-	std::cout << " ComputeTrueAccCorr = True " <<std::endl;
-	compute_trueacc = true ; compute_truerecoacc = false ;
+        std::cout << " ComputeTrueAccCorr = True " <<std::endl;
+        compute_trueacc = true ; compute_truerecoacc = false ;
       }
       else if ( GetArg("analysis-type",argc,argv) == "ComputeTrueRecoAccCorr" ) {
-	std::cout << " ComputeRecoAccCorr = True " <<std::endl;
-	compute_trueacc = false ; compute_truerecoacc = true ;
+        std::cout << " ComputeRecoAccCorr = True " <<std::endl;
+        compute_trueacc = false ; compute_truerecoacc = true ;
       }
       else if ( GetArg("analysis-type",argc,argv) == "ClosureTest" ) {
         std::cout << " Implementing closure test = True " <<std::endl;
@@ -92,14 +92,14 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("output-file",argc,argv)) {
       std::string final_name = GetArg("output-file",argc,argv) ;
       if( is_data ) {
-	unsigned int max_mult = analysis->GetMaxBkgMult() ;
-	final_name += "_"+std::to_string(max_mult)+"MaxBkgMult";
+        unsigned int max_mult = analysis->GetMaxBkgMult() ;
+        final_name += "_"+std::to_string(max_mult)+"MaxBkgMult";
       }
       if( ExistArg("phi-shift",argc,argv) ) {
-	double shift = stod(GetArg("phi-shift",argc,argv).c_str()) ;
-	if ( shift != 0 ) {
-	  final_name += "_Shift_"+std::to_string(shift)+"deg";
-	}
+        double shift = stod(GetArg("phi-shift",argc,argv).c_str()) ;
+        if ( shift != 0 ) {
+          final_name += "_Shift_"+std::to_string(shift)+"deg";
+        }
       }
 
       analysis -> SetOutputFile( final_name );

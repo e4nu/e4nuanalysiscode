@@ -557,7 +557,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   if (observable == "ECal") {
     if (EBeam == 1.161) binning = plotting::GetECalBinning(13, 15, 0.7, EBeam + 0.15, EBeam);
     else if (EBeam == 2.261) binning = plotting::GetECalBinning(13, 15, 0.6, EBeam + 0.15, EBeam);
-    else if (EBeam == 4.461) binning = plotting::GetECalBinning(13, 15, 1.5, EBeam + 0.15, EBeam);
+    else if (EBeam == 4.461) binning = plotting::GetECalBinning(13, 15, 1.8, EBeam + 0.15, EBeam);
   } else if (observable == "Efl") {
     if (EBeam == 1.161)
     binning = plotting::GetUniformBinning(25, 0.35, 0.9);
@@ -598,7 +598,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (EBeam == 2.261)
     binning = plotting::GetUniformBinning(25, 0.5, 1.7);
     else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(25, 1.2, 3.8);
+    binning = plotting::GetUniformBinning(25, 0.2, 3.8);
   }
   else if (observable == "pfl_T")
   {

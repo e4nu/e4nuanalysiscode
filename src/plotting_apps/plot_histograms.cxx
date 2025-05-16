@@ -9,6 +9,7 @@
 #include <string>
 #include <sstream>
 #include "plotting/PlottingUtils.h"
+#include "plotting/Systematics.h"
 #include "conf/ConstantsI.h"
 #include "conf/ParticleI.h"
 #include "TGraph.h"
@@ -140,6 +141,12 @@ int main( int argc, char* argv[] ) {
     std::cout << " observable " << observable << " histogram does not exist in "<< input_files[0] << std::endl;
   }
 
+  // Read bkg systematic histogram
+  // TFile * f_bkg_uncertanty = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/e4nuanalysiscode/bakground_debug_RecoW_syst.root","READ");
+  // std::string method = "BkgSyst_Method2";
+  // method += "_"+observable;
+  // TH1D * h_bkg_err = (TH1D*)f_bkg_uncertanty->Get(method.c_str());
+
   for( unsigned int i = 0 ; i < input_files.size() ; ++i ) {
     in_root_files.push_back(new TFile( input_files[i].c_str(), "ROOTFile" )) ;
     if( !in_root_files[i] ) {
@@ -149,6 +156,9 @@ int main( int argc, char* argv[] ) {
     std::cout <<input_files[i]<<std::endl;
     hists.push_back( (TH1D*) in_root_files[i]->Get( observable.c_str() ) ) ;
     if( !hists[i] ) return 0;
+    //if( i == 1 ) systematics::AddSystematic(*hists[i], 6.3, "Bkg");
+    // if ( i == 1 ) systematics::AddSystematic( *hists[i], *h_bkg_err ) ;
+
     if( plot_diff ) {
       hists_diff.push_back( (TH1D*) hist_def->Clone() ) ;
       hists_diff[i]->Scale(-1.);

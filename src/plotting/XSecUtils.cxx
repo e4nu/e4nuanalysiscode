@@ -12,7 +12,7 @@
 using namespace e4nu;
 using namespace e4nu::plotting;
 
-void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_name, std::string acceptance_file_name, std::string radcorr_file, std::string observable, std::string title, std::string data_name, std::vector<std::string> model, std::string input_MC_location, std::string input_data_location, std::string output_location, std::string output_file_name, bool plot_data, std::map<string, double> systematic_map, std::map<std::string,std::vector<double>> cuts, std::string analysis_id, bool store_root, bool log_scale, bool scale_mott ) {
+void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_name, std::string acceptance_file_name, std::string radcorr_file, std::string observable, std::string title, std::string data_name, std::vector<std::string> model, std::string input_MC_location, std::string input_data_location, std::string output_location, std::string output_file_name, bool plot_data, std::map<string, double> systematic_map, string bkg_syst, std::map<std::string,std::vector<double>> cuts, std::string analysis_id, bool store_root, bool log_scale, bool scale_mott ) {
 
   TPad *pad1 = new TPad("pad1", "", 0, 0, 1, 1);
   pad1->Draw();
@@ -423,12 +423,12 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     // 3 - Relative uncertanties from configuration
 
     // Adding Acceptance correction systematics from model dependence
-    TH1D *hist_syst_acc = systematics::AddSystematic(*hist_data, *h_acceptance);
+    // TH1D *hist_syst_acc = systematics::AddSystematic(*hist_data, *h_acceptance);
 
-    TCanvas *cacc = new TCanvas("cacc", "cacc", 800, 600);
-    hist_syst_acc->Draw("hist");
-    cacc->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_accmodel_" + observable + ".root").c_str());
-    delete cacc;
+    // TCanvas *cacc = new TCanvas("cacc", "cacc", 800, 600);
+    // hist_syst_acc->Draw("hist");
+    // cacc->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_accmodel_" + observable + ".root").c_str());
+    // delete cacc;
 
     // Add sector variation ERROR. Store relative error in histogram
     // We use the bkg substracted, eff corrected distributions for the calculation
@@ -449,16 +449,27 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     }
 
     // Hard coding some well known systematics
-    systematics::AddSystematic(*hist_data, 5, "Radiative");
     systematics::AddSystematic(*hist_data, 3, "Normalization");
     systematics::AddSystematic(*hist_data, 1, "AnglDependence");
     systematics::AddSystematic(*hist_data, 1, "MaxMultiplicity");
 
-    systematics::AddSystematic(*hist_data_correventrate_wsyst, 5, "Radiative");
     systematics::AddSystematic(*hist_data_correventrate_wsyst, 3, "Normalization");
     systematics::AddSystematic(*hist_data_correventrate_wsyst, 1, "AnglDependence");
     systematics::AddSystematic(*hist_data_correventrate_wsyst, 1, "MaxMultiplicity");
 
+    // Add Bkg uncertanty
+    TFile * f_bkg_uncertanty = new TFile(bkg_syst.c_str(),"READ");
+    if( f_bkg_uncertanty ) {
+      std::cout << " Adding background systematic from " << bkg_syst << std::endl;
+      std::string method = "BkgSyst_Method2_"+observable;
+      TH1D * h_bkg_err = (TH1D*)f_bkg_uncertanty->Get(method.c_str());
+      if( !h_bkg_err ) {
+        std::cout << " WARNING! Background syst. histogram is empty. Ignored..." << std::endl;
+      } else {
+        systematics::AddSystematic( *hist_data, *h_bkg_err ) ;
+        systematics::AddSystematic( *hist_data_correventrate_wsyst, *h_bkg_err ) ;
+      }
+    }
   } // end if data
 
   // Normalize MC to cross-section
@@ -1684,12 +1695,12 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
           // 3 - Relative uncertanties from configuration
           std::cout << " Adding systematics " << std::endl;
           // Adding Acceptance correction systematics from model dependence
-          TH2D *hist_syst_acc = systematics::AddSystematic(*hist_data, *h_acceptance);
-
-          TCanvas *cacc = new TCanvas("cacc", "cacc", 800, 600);
-          hist_syst_acc->Draw("hist");
-          cacc->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_accmodel_" + x_observable + "_vs_" + y_observable + ".root").c_str());
-          delete cacc;
+          // TH2D *hist_syst_acc = systematics::AddSystematic(*hist_data, *h_acceptance);
+          //
+          // TCanvas *cacc = new TCanvas("cacc", "cacc", 800, 600);
+          // hist_syst_acc->Draw("hist");
+          // cacc->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_accmodel_" + x_observable + "_vs_" + y_observable + ".root").c_str());
+          // delete cacc;
 
           // Add sector variation ERROR. Store relative error in histogram
           // We use the bkg substracted, eff corrected distributions for the calculation
@@ -1718,6 +1729,20 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
           systematics::AddSystematic(*hist_data_correventrate_wsyst, 1, "AnglDependence");
           systematics::AddSystematic(*hist_data_correventrate_wsyst, 1, "MaxMultiplicity");
 
+          // // Add Bkg uncertanty !! Still not available for 2D
+          // TFile * f_bkg_uncertanty = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/e4nuanalysiscode/bakground_debug_ECal_syst.root","READ");
+          // if( !f_bkg_uncertanty ) {
+          //   std::cout << " WARNING! Background syst. file not found. Ignored..." << std::endl ;
+          // } else {
+          //   std::string method = "BkgSyst_Method2_"+observable_x;
+          //   TH1D * h_bkg_err = (TH1D*)f_bkg_uncertanty->Get(method.c_str());
+          //   if( !h_bkg_err ) {
+          //     std::cout << " WARNING! Background syst. histogram is empty. Ignored..." << std::endl;
+          //   } else {
+          //     systematics::AddSystematic( *hist_data, *h_bkg_err ) ;
+          //     systematics::AddSystematic( *hist_data_correventrate_wsyst, *h_bkg_err ) ;
+          //   }
+          // }
         } // end if data
 
         // Normalize MC to cross-section

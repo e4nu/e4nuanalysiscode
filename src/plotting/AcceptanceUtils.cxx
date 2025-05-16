@@ -1229,7 +1229,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
         double content = 0;
         // Weight is the total weight devided by the number of entries.
         // This ensures that we get the same results even if we run less radiated events.
-        double w = TotWeight / (double) InitialNEvents / (double) NEntries ;
+        double w = TotWeight / (double) InitialNEvents ;
 
 	      content = GetObservable(observable);
         // Check if passes cuts

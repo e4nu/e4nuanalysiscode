@@ -15,7 +15,7 @@ namespace e4nu {
 		    std::string acceptance_file_name, std::string radcorr_file, std::string observable,
 		    std::string title, std::string data_name, std::vector<std::string> model,
 		    std::string input_MC_location, std::string input_data_location, std::string output_location,
-		    std::string output_file_name, bool plot_data, std::map<string,double> systematic_map,
+		    std::string output_file_name, bool plot_data, std::map<string,double> systematic_map, string bkg_syst,
         std::map<std::string,std::vector<double>> cuts,
 		    std::string analysis_id = "default", bool store_root = false, bool log_scale = false, bool scale_mott = false ) ;
 

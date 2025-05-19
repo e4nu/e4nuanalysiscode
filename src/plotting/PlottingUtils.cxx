@@ -1405,16 +1405,16 @@ void plotting::StandardFormat(TH1D *prediction, std::string title, int color, in
 
   int FontStyle = 132;
   prediction->GetXaxis()->SetTitleOffset(1);
-  prediction->GetXaxis()->SetLabelSize(0.05);
-  prediction->GetXaxis()->SetTitleSize(0.08);
-  prediction->GetXaxis()->SetNdivisions(6);
+  prediction->GetXaxis()->SetLabelSize(0.1);
+  prediction->GetXaxis()->SetTitleSize(0.09);
+  prediction->GetXaxis()->SetNdivisions(6,2,0);
   prediction->GetXaxis()->SetLabelFont(FontStyle);
   prediction->GetXaxis()->SetTitleFont(FontStyle);
 
-  prediction->GetYaxis()->SetNdivisions(8);
-  prediction->GetYaxis()->SetTitleOffset(0.5);
-  prediction->GetYaxis()->SetLabelSize(0.05);
-  prediction->GetYaxis()->SetTitleSize(0.08);
+  prediction->GetYaxis()->SetNdivisions(5,2,0);
+  prediction->GetYaxis()->SetTitleOffset(0.6);
+  prediction->GetYaxis()->SetLabelSize(0.1);
+  prediction->GetYaxis()->SetTitleSize(0.1);
   prediction->GetYaxis()->SetLabelFont(43);
   prediction->GetYaxis()->SetLabelFont(FontStyle);
   prediction->GetYaxis()->SetTitleFont(FontStyle);

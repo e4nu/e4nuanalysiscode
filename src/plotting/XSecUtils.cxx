@@ -667,7 +667,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
 
     void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, std::vector<TH1D *> breakdown, TH1D *data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model, std::string input_MC_location, std::string input_data_location, std::string output_location, std::string output_file_name, std::map<string, double> systematic_map, bool show_breakdown, std::string analysis_id, bool store_root, bool log_scale)
     {
-      TCanvas *c1 = new TCanvas("c1", "Canvas with Two Pads", 800, 600);
+      TCanvas *c1 = new TCanvas("c1", "Canvas with Two Pads", 600, 600);
 
       // Create the upper pad, taking the top half of the canvas
       TPad *pad1 = new TPad("pad1", "Top Pad", 0, 0.35, 1, 1);
@@ -678,8 +678,8 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       // Create the lower pad, taking the bottom half of the canvas
       TPad *sub_pad = new TPad("sub_pad", "Bottom Pad", 0, 0, 1, 0.35);
       sub_pad->SetTopMargin(0.05); // Minimize gap between pads
-      sub_pad->SetBottomMargin(0.4); // Leave space for the x-axis labels
-      sub_pad->SetBottomMargin(0.35);
+      sub_pad->SetBottomMargin(0.5); // Leave space for the x-axis labels
+      sub_pad->SetBottomMargin(0.4);
       sub_pad->SetLeftMargin(0.15);
       sub_pad->Draw();
 
@@ -736,7 +736,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       // Remove top plot label
       mc_hists[0]->GetXaxis()->SetLabelSize(0.);
       mc_hists[0]->GetXaxis()->SetTitleSize(0.);
-      mc_hists[0]->GetYaxis()->SetTitleOffset(0.8);
+      mc_hists[0]->GetYaxis()->SetTitleOffset(0.6);
       mc_hists[0]->SetMarkerSize(0);
       mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
 
@@ -771,19 +771,19 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       StandardFormat(data_ratio, title, kBlack, 8, observable, log_scale);
       data_ratio->SetLineStyle(1);
       data_ratio->Divide(data);
-      data_ratio->GetXaxis()->SetLabelSize(0.1);
-      data_ratio->GetXaxis()->SetTitleSize(0.15);
-      data_ratio->GetYaxis()->SetLabelSize(0.1);
-      data_ratio->GetYaxis()->SetTitleSize(0.13);
-      data_ratio->GetYaxis()->SetTitleOffset(0.4);
+      data_ratio->GetXaxis()->SetLabelSize(0.2);
+      data_ratio->GetXaxis()->SetTitleSize(0.2);
+      data_ratio->GetYaxis()->SetLabelSize(0.2);
+      data_ratio->GetYaxis()->SetTitleSize(0.17);
+      data_ratio->GetYaxis()->SetTitleOffset(0.33);
       data_ratio->SetMinimum(0);
       data_ratio->GetYaxis()->SetMaxDigits(5);
-      data_ratio->GetYaxis()->SetTitle("Pred / Data ");
+      data_ratio->GetYaxis()->SetTitle("MC / Data ");
 
 
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
         mc_ratio[i]->Divide(data);
-        mc_ratio[i]->GetYaxis()->SetTitle("Pred / Data ");
+        mc_ratio[i]->GetYaxis()->SetTitle("MC / Data ");
       }
       // Find correct range
       double max_ratio = GetMaximum(mc_ratio)*(1-0.35);

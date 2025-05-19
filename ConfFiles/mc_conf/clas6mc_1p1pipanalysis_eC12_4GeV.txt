@@ -29,11 +29,11 @@ MaxBackgroundMultiplicity 5
 NRotations 5000
 
 #histogram definition
-ObservableList RecoW,ECal,pip_mom,proton_mom,pip_theta,proton_theta,RecoQ2,pfl,pfl_theta,HadAlphaT,HadDeltaPT,HadDeltaPTy,HadDeltaPTx,HadDeltaPhiT,InferedNucleonMom,HadronsAngle,MissingMomentum,MissingAngle,MissingEnergy
+ObservableList RecoW,ECal,pip_mom,proton_mom,pip_theta,proton_theta,RecoQ2,pfl,pfl_theta,HadAlphaT,HadDeltaPT,HadDeltaPTy,HadDeltaPTx,HadDeltaPhiT,InferedNucleonMom,HadronsAngle,MissingMomentum,MissingAngle,MissingEnergy,HadSystemMass
 NormalizeHists false
 
 #Acceptance correction
-#The following parameters will modify the configuration 
+#The following parameters will modify the configuration
 #TrueAccCorr: by using only true signal events, it provides with the analysed events after momentum cuts. All Sectors are used
 #trueRecoAccCorr: by using only true signal events, it provodes with analysed reconstructed events after momentum, fiducial, acceptance, smearing effects. Sectors 2 and 4 are not used.
 ComputeTrueAccCorr true

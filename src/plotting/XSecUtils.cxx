@@ -672,15 +672,17 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       // Create the upper pad, taking the top half of the canvas
       TPad *pad1 = new TPad("pad1", "Top Pad", 0, 0.35, 1, 1);
       pad1->SetBottomMargin(0.025); // Minimize gap between pads
-      pad1->SetLeftMargin(0.15);
+      if( log_scale ) pad1->SetLeftMargin(0.2);
+      else pad1->SetLeftMargin(0.2);//pad1->SetLeftMargin(0.15);
       pad1->Draw();
 
       // Create the lower pad, taking the bottom half of the canvas
       TPad *sub_pad = new TPad("sub_pad", "Bottom Pad", 0, 0, 1, 0.35);
       sub_pad->SetTopMargin(0.05); // Minimize gap between pads
       sub_pad->SetBottomMargin(0.5); // Leave space for the x-axis labels
-      sub_pad->SetBottomMargin(0.4);
-      sub_pad->SetLeftMargin(0.15);
+      sub_pad->SetBottomMargin(0.45);
+      if( log_scale ) sub_pad->SetLeftMargin(0.2);//sub_pad->SetLeftMargin(0.15);;
+      else sub_pad->SetLeftMargin(0.2);
       sub_pad->Draw();
 
       if( log_scale ) pad1->SetLogy();
@@ -736,7 +738,8 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       // Remove top plot label
       mc_hists[0]->GetXaxis()->SetLabelSize(0.);
       mc_hists[0]->GetXaxis()->SetTitleSize(0.);
-      mc_hists[0]->GetYaxis()->SetTitleOffset(0.6);
+      if( log_scale ) mc_hists[0]->GetYaxis()->SetTitleOffset(0.9);
+      else mc_hists[0]->GetYaxis()->SetTitleOffset(0.9);//mc_hists[0]->GetYaxis()->SetTitleOffset(0.6);
       mc_hists[0]->SetMarkerSize(0);
       mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
 
@@ -776,15 +779,19 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       data_ratio->GetYaxis()->SetLabelSize(0.2);
       data_ratio->GetYaxis()->SetTitleSize(0.17);
       data_ratio->GetYaxis()->SetTitleOffset(0.33);
+      if( log_scale ) data_ratio->GetYaxis()->SetTitleOffset(0.53);
+      else data_ratio->GetYaxis()->SetTitleOffset(0.53);//data_ratio->GetYaxis()->SetTitleOffset(0.33);
       data_ratio->SetMinimum(0);
       data_ratio->GetYaxis()->SetMaxDigits(5);
+      data_ratio->GetYaxis()->SetNdivisions(3,2,0);
+      data_ratio->GetYaxis()->SetNdivisions(6,2,0);
       data_ratio->GetYaxis()->SetTitle("MC / Data ");
-
 
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
         mc_ratio[i]->Divide(data);
         mc_ratio[i]->GetYaxis()->SetTitle("MC / Data ");
       }
+
       // Find correct range
       double max_ratio = GetMaximum(mc_ratio)*(1-0.35);
       double min_ratio = GetMinimum(mc_ratio)*(1-0.15);
@@ -1694,9 +1701,9 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
           // 2 - Sector Sector Variation
           // 3 - Relative uncertanties from configuration
           std::cout << " Adding systematics " << std::endl;
+          // This is already added. Only include if you want to print out the actual contribution!!
           // Adding Acceptance correction systematics from model dependence
           // TH2D *hist_syst_acc = systematics::AddSystematic(*hist_data, *h_acceptance);
-          //
           // TCanvas *cacc = new TCanvas("cacc", "cacc", 800, 600);
           // hist_syst_acc->Draw("hist");
           // cacc->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_accmodel_" + x_observable + "_vs_" + y_observable + ".root").c_str());
@@ -1723,11 +1730,11 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
           // Hard coding some well known systematics
           systematics::AddSystematic(*hist_data, 3, "Normalization");
           systematics::AddSystematic(*hist_data, 1, "AnglDependence");
-          systematics::AddSystematic(*hist_data, 1, "MaxMultiplicity");
+          systematics::AddSystematic(*hist_data, 0, "MaxMultiplicity");
 
           systematics::AddSystematic(*hist_data_correventrate_wsyst, 3, "Normalization");
           systematics::AddSystematic(*hist_data_correventrate_wsyst, 1, "AnglDependence");
-          systematics::AddSystematic(*hist_data_correventrate_wsyst, 1, "MaxMultiplicity");
+          systematics::AddSystematic(*hist_data_correventrate_wsyst, 0, "MaxMultiplicity");
 
           // // Add Bkg uncertanty !! Still not available for 2D
           // TFile * f_bkg_uncertanty = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/e4nuanalysiscode/bakground_debug_ECal_syst.root","READ");

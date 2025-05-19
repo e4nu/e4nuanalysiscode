@@ -598,7 +598,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (EBeam == 2.261)
     binning = plotting::GetUniformBinning(25, 0.5, 1.7);
     else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(25, 0.2, 3.8);
+    binning = plotting::GetUniformBinning(20, 1.1, 3.8);
   }
   else if (observable == "pfl_T")
   {
@@ -639,29 +639,29 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "pim_mom")
   {
     if (EBeam == 1.161)
-    binning = plotting::GetUniformBinning(25, 0.15, 0.6);
+    binning = plotting::GetUniformBinning(25, 0.10, 0.6);
     else if (EBeam == 2.261)
-    binning = plotting::GetUniformBinning(25, 0.15, 1.6);
+    binning = plotting::GetUniformBinning(25, 0.10, 1.6);
     else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(25, 0.15, 1.6);
+    binning = plotting::GetUniformBinning(25, 0.10, 1.6);
   }
   else if (observable == "pim_theta")
   {
     if (EBeam == 1.161)
-    binning = plotting::GetUniformBinning(35, 12, 140);
+    binning = plotting::GetUniformBinning(25, 12, 140);
     else if (EBeam == 2.261)
-    binning = plotting::GetUniformBinning(35, 12, 140);
+    binning = plotting::GetUniformBinning(25, 12, 140);
     else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(35, 12, 140);
+    binning = plotting::GetUniformBinning(25, 12, 140);
   }
   else if (observable == "pip_mom")
   {
     if (EBeam == 1.161)
-    binning = plotting::GetUniformBinning(35, 0.15, 3);
+    binning = plotting::GetUniformBinning(25, 0.15, 3);
     else if (EBeam == 2.261)
-    binning = plotting::GetUniformBinning(35, 0.15, 3);
+    binning = plotting::GetUniformBinning(25, 0.15, 3);
     else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(35, 0.15, 3);
+    binning = plotting::GetUniformBinning(25, 0.15, 3);
   }
   else if (observable == "pip_theta")
   {
@@ -756,7 +756,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "AlphaT")
   {
     if (EBeam == 1.161)
-    binning = plotting::GetUniformBinning(25, 0, 180);
+    binning = plotting::GetUniformBinning(20, 0, 180);
     else if (EBeam == 2.261)
     binning = plotting::GetUniformBinning(25, 0, 180);
     else if (EBeam == 4.461)

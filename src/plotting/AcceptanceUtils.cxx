@@ -1436,7 +1436,8 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::v
   {
     ratio->Add(ratios[i]);
   }
-  ratio->Scale(1. / mc_files.size());
+  ratio->Scale(1. / rad_files.size());
+
   // ratio->Smooth(3);
   StandardFormat(ratio, title, kBlack, 1, x_observable, y_observable);
   ratio->GetXaxis()->SetTitle(GetAxisLabel(x_observable, 0).c_str());

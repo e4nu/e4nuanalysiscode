@@ -8,6 +8,7 @@
 #include <string>
 #include "TGaxis.h"
 #include "THStack.h"
+#include "TPaveText.h"
 
 using namespace e4nu;
 using namespace e4nu::plotting;
@@ -783,13 +784,13 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       else data_ratio->GetYaxis()->SetTitleOffset(0.53);//data_ratio->GetYaxis()->SetTitleOffset(0.33);
       data_ratio->SetMinimum(0);
       data_ratio->GetYaxis()->SetMaxDigits(5);
+      data_ratio->GetXaxis()->SetNdivisions(4,3,0);
       data_ratio->GetYaxis()->SetNdivisions(3,2,0);
-      data_ratio->GetYaxis()->SetNdivisions(6,2,0);
-      data_ratio->GetYaxis()->SetTitle("MC / Data ");
+      data_ratio->GetYaxis()->SetTitle("Ratio");
 
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
         mc_ratio[i]->Divide(data);
-        mc_ratio[i]->GetYaxis()->SetTitle("MC / Data ");
+        mc_ratio[i]->GetYaxis()->SetTitle("Ratio");
       }
 
       // Find correct range
@@ -888,11 +889,11 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       hs->Add(breakdown[4]);
       hs->Add(breakdown[5]);
 
-      TCanvas *c = new TCanvas("c_sector", "c_sector", 200, 10, 700, 500);
+      TCanvas *c = new TCanvas("c_sector", "c_sector", 200, 10, 500, 500);
       c->cd();
       c->SetBottomMargin(0.15);
       c->SetLeftMargin(0.15);
-      c->SetRightMargin(0.15);
+      c->SetRightMargin(0.25);
       // Setting z axis in log scale for easibility when plotting 2D distributions:
       if( log_scale ) gPad->SetLogz();
       gStyle->SetPalette(kLightTemperature);
@@ -1797,369 +1798,390 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
 
           topPad.push_back(new TPad("topPad", "Top Pad", 0, 0.35, 1, 1));
           topPad.back()->SetBottomMargin(0.03);
-          topPad.back()->SetLeftMargin(0.2);
+          topPad.back()->SetLeftMargin(0.25);
           topPad.back()->SetRightMargin(0.02);
+          topPad.back()->SetTopMargin(0.12);
           topPad.back()->Draw();
 
           bottomPad.push_back( new TPad("bottomPad", "Bottom Pad", 0, 0, 1, 0.35));
-          bottomPad.back()->SetTopMargin(0.03);
-          bottomPad.back()->SetBottomMargin(0.25);
-          bottomPad.back()->SetLeftMargin(0.2);
+          bottomPad.back()->SetTopMargin(0.001);
+          bottomPad.back()->SetBottomMargin(0.5);
+          bottomPad.back()->SetLeftMargin(0.25);
           bottomPad.back()->SetRightMargin(0.02);
           bottomPad.back()->Draw();
         }
 
-        void plotting::PlotProjectionWithRatio( const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& breakdown, const TH2D* data, const std::string& xobservable, const std::string& yobservable,
-          TPad* topPad, TPad* bottomPad, bool logScale, const std::string& axis, double y_cut_min, double y_cut_max )
-          {
-            if( y_cut_min > y_cut_max ) throw std::invalid_argument("Requested cuts are not valid.");
-            topPad->cd();
-            if (logScale) topPad->SetLogy();
+        void plotting::PlotProjectionWithRatio( const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& breakdown, const TH2D* data, const std::string& xobservable, const std::string& yobservable, TPad* topPad, TPad* bottomPad, bool logScale, const std::string& axis, double y_cut_min, double y_cut_max )
+        {
+          if( y_cut_min > y_cut_max ) throw std::invalid_argument("Requested cuts are not valid.");
+          topPad->cd();
+          if (logScale) topPad->SetLogy();
 
-            // Change min and max for limits if outside of range
-            double max_range = mcHists[0]->GetYaxis()->GetBinLowEdge(mcHists[0]->GetYaxis()->GetNbins())+ mcHists[0]->GetYaxis()->GetBinWidth(mcHists[0]->GetYaxis()->GetNbins());;
-            double min_range = mcHists[0]->GetYaxis()->GetBinLowEdge(1);
-            if( y_cut_min < min_range ) y_cut_min = min_range;
-            if( y_cut_max > max_range ) y_cut_max = max_range;
+          // Change min and max for limits if outside of range
+          double max_range = mcHists[0]->GetYaxis()->GetBinLowEdge(mcHists[0]->GetYaxis()->GetNbins())+ mcHists[0]->GetYaxis()->GetBinWidth(mcHists[0]->GetYaxis()->GetNbins());;
+          double min_range = mcHists[0]->GetYaxis()->GetBinLowEdge(1);
+          if( y_cut_min < min_range ) y_cut_min = min_range;
+          if( y_cut_max > max_range ) y_cut_max = max_range;
 
-            // Projection and formatting
-            std::vector<TH1D*> mcProjections;
-            auto breakdownStack = new THStack(("projection_components_" + axis).c_str(), "");
+          // Projection and formatting
+          std::vector<TH1D*> mcProjections, allProjections;
+          auto breakdownStack = new THStack(("projection_components_" + axis).c_str(), "");
 
-            // Store input for projection details
-            std::string projection_name = axis == "X" ? "_px_Range_"+std::to_string(y_cut_min)+"_"+std::to_string(y_cut_max) : "_py";
-            double first_bin = 0 ;
-            double last_bin = 999;
-            const double bin_max_cut_id = GetClosestBin( mcHists[0],y_cut_max, "Y" );
-            const double bin_min_cut_id = GetClosestBin( mcHists[0],y_cut_min, "Y" );
+          // Store input for projection details
+          std::string projection_name = axis == "X" ? "_px_Range_"+std::to_string(y_cut_min)+"_"+std::to_string(y_cut_max) : "_py";
+          double first_bin = 0 ;
+          double last_bin = 999;
+          const double bin_max_cut_id = GetClosestBin( mcHists[0],y_cut_max, "Y" );
+          const double bin_min_cut_id = GetClosestBin( mcHists[0],y_cut_min, "Y" );
 
-            // Compute slice for main predictions
-            for ( unsigned int i = 0 ; i < mcHists.size(); ++i ) {
-              last_bin = axis == "X" ? mcHists[i]->GetNbinsX() : mcHists[i]->GetNbinsY();
-              if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
-              if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
-              mcProjections.push_back(axis == "X" ? mcHists[i]->ProjectionX((mcHists[i]->GetName()+projection_name).c_str(),first_bin,last_bin) : mcHists[i]->ProjectionY((mcHists[i]->GetName()+projection_name).c_str(),first_bin,last_bin));
-              StandardFormat(mcProjections[i], "", kBlack, i+1, xobservable, logScale);
-            }
-
-            double total_min = 0 ;
-            if( logScale) total_min = 1E-4;
-            // Store maximum of all TH2D histograms to set the same range to all
-            double total_max = plotting::GetMaximum(mcProjections);
-
-            // Store breakdown for default prediction (first)
-            for (unsigned int i = 0 ; i < breakdown.size(); ++i ) {
-              last_bin = axis == "X" ? breakdown[i]->GetNbinsX() : breakdown[i]->GetNbinsY();
-              if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
-              if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
-              breakdownStack->Add(axis == "X" ? breakdown[i]->ProjectionX((breakdown[i]->GetName()+projection_name).c_str(),first_bin,last_bin) : breakdown[i]->ProjectionY((breakdown[i]->GetName()+projection_name).c_str(),first_bin,last_bin));
-            }
-
-            // Determine maximum y-axis range
-            mcProjections[0]->GetYaxis()->SetTitleOffset(1.4);
-            mcProjections[0]->GetXaxis()->SetLabelSize(0);
-            mcProjections[0]->SetMarkerSize(0);
-            std::ostringstream oss;
-            oss << std::fixed << std::setprecision(2) << y_cut_min << "<" << plotting::GetAxisLabel(yobservable, 0) << "<" << y_cut_max;
-            mcProjections[0]->SetTitle(oss.str().c_str());
-            mcProjections[0]->SetTitleSize(0.1);
-            mcProjections[0]->GetYaxis()->SetTitleOffset(1.2);
-            mcProjections[0]->Draw("hist err");
-            breakdownStack->Draw("hist err same");
-            for (size_t i = 0; i < mcProjections.size(); ++i) {
-              mcProjections[i]->GetYaxis()->SetRangeUser(total_min,total_max); // TO AUTOMATIZE!
-              mcProjections[i]->GetXaxis()->SetTitleSize(0.05);
-              mcProjections[i]->GetYaxis()->SetTitleSize(0.09);
-              mcProjections[i]->GetYaxis()->SetTitleOffset(1);
-              mcProjections[i]->SetMarkerSize(0);
-              mcProjections[i]->SetLineWidth(2);
-              mcProjections[i]->Draw("hist err same");
-            }
-
-            // Data projection
-            last_bin = axis == "X" ? data->GetNbinsX() : data->GetNbinsY();
+          // Compute slice for main predictions
+          for ( unsigned int i = 0 ; i < mcHists.size(); ++i ) {
+            last_bin = axis == "X" ? mcHists[i]->GetNbinsX() : mcHists[i]->GetNbinsY();
             if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
             if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
-            TH1D* dataProjection = axis == "X" ? data->ProjectionX((data->GetName()+projection_name).c_str(),first_bin,last_bin) : data->ProjectionY((data->GetName()+projection_name).c_str(),first_bin,last_bin);
-            StandardFormat(dataProjection, "", kBlack, 8, xobservable, logScale);
-            dataProjection->SetLineStyle(1);
-            dataProjection->SetMarkerSize(0.6);
-            dataProjection->SetLineWidth(1);
-            dataProjection->Draw("err same");
-
-            // Ratio calculation
-            bottomPad->cd();
-            if( logScale ) bottomPad->SetLogy();
-            TH1D* dataRatio = (TH1D*)dataProjection->Clone();
-            std::vector<TH1D*> mcRatios;
-
-            for (unsigned int i = 0 ; i < mcProjections.size(); ++i){
-              auto ratio = (TH1D*)mcProjections[i]->Clone();
-              ratio->Divide(dataProjection);
-              StandardFormat(ratio, "", kBlack, i + 1, xobservable, logScale);
-              ratio->SetMarkerSize(0);
-              mcRatios.push_back(ratio);
-            }
-
-            dataRatio->Divide(dataProjection);
-            StandardFormat(dataRatio, "", kBlack, 8, xobservable, logScale);
-            dataRatio->GetXaxis()->SetLabelSize(0.1);
-            dataRatio->GetXaxis()->SetTitleSize(0.1);
-            dataRatio->GetYaxis()->SetLabelSize(0.1);
-            dataRatio->GetYaxis()->SetTitleSize(0.1);
-            dataRatio->SetLineStyle(2);
-            dataRatio->SetMinimum(0);
-            dataRatio->GetYaxis()->SetMaxDigits(5);
-            dataRatio->GetYaxis()->SetTitleOffset(0.7);
-            dataRatio->GetYaxis()->SetTitle("Pred / Data ");
-
-            double maxRatio = GetMaximum(mcRatios)*(1-0.35);
-            double minRatio = GetMinimum(mcRatios)*(1-0.15);
-            dataRatio->GetYaxis()->SetRangeUser(minRatio, maxRatio);
-            dataRatio->SetLineWidth(1);
-            dataRatio->GetXaxis()->SetLabelSize(0.08);
-            dataRatio->GetYaxis()->SetTitleSize(0.1);
-            dataRatio->GetYaxis()->SetLabelSize(0.07);
-            dataRatio->GetYaxis()->SetTitleSize(0.1);
-            dataRatio->GetYaxis()->SetTitleOffset(0.77);
-            dataRatio->Draw("err");
-            for (const auto& ratio : mcRatios) {
-              ratio->SetLineWidth(2);
-              ratio->Draw("hist err same");
-            }
+            mcProjections.push_back(axis == "X" ? mcHists[i]->ProjectionX((mcHists[i]->GetName()+projection_name).c_str(),first_bin,last_bin) : mcHists[i]->ProjectionY((mcHists[i]->GetName()+projection_name).c_str(),first_bin,last_bin));
+            StandardFormat(mcProjections[i], "", kBlack, i+1, xobservable, logScale);
+            mcProjections[i]->GetYaxis()->SetTitleSize(0.10);
+            mcProjections[i]->GetYaxis()->SetLabelSize(0.12);
+            mcProjections[i]->GetYaxis()->SetTitleOffset(0.8);
+            mcProjections[i]->GetXaxis()->SetLabelSize(0);
+            mcProjections[i]->SetMarkerSize(0);
+            mcProjections[i]->SetLineWidth(1);
           }
 
-          void plotting::PlotProjection( const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& data, const std::string& xobservable, const std::string& yobservable, TCanvas* canvas, bool logScale, const std::string& axis, double y_cut_min, double y_cut_max )
+          // Store breakdown for default prediction (first)
+          for (unsigned int i = 0 ; i < breakdown.size(); ++i ) {
+            last_bin = axis == "X" ? breakdown[i]->GetNbinsX() : breakdown[i]->GetNbinsY();
+            if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
+            if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
+            breakdownStack->Add(axis == "X" ? breakdown[i]->ProjectionX((breakdown[i]->GetName()+projection_name).c_str(),first_bin,last_bin) : breakdown[i]->ProjectionY((breakdown[i]->GetName()+projection_name).c_str(),first_bin,last_bin));
+          }
+
+          // Data projection
+          last_bin = axis == "X" ? data->GetNbinsX() : data->GetNbinsY();
+          if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
+          if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
+          TH1D* dataProjection = axis == "X" ? data->ProjectionX((data->GetName()+projection_name).c_str(),first_bin,last_bin) : data->ProjectionY((data->GetName()+projection_name).c_str(),first_bin,last_bin);
+          StandardFormat(dataProjection, "", kBlack, 8, xobservable, logScale);
+          dataProjection->SetLineStyle(1);
+          dataProjection->SetMarkerSize(0.6);
+          dataProjection->SetLineWidth(1);
+
+          // Set Title
+          std::ostringstream oss;
+          oss << std::fixed << std::setprecision(2) << y_cut_min << "<" << plotting::GetAxisLabel(yobservable, 0) << "<" << y_cut_max;
+          gStyle->SetTextFont(132);
+          TPaveText* title = new TPaveText(0.36, 0.78, 0.86, 0.8, "NDC");
+          title->AddText(oss.str().c_str());
+          title->SetTextSize(0.1);
+          title->SetFillColor(0);
+          title->SetBorderSize(0);
+
+          // Find correct maximum
+          double total_min = 0 ;
+          if( logScale) total_min = 1E-4;
+          allProjections = mcProjections;
+          allProjections.push_back(dataProjection);
+          // Store maximum of all TH2D histograms to set the same range to all
+          double total_max = plotting::GetMaximum(allProjections);
+          if( logScale ) total_max *= (1+0.85);
+          else total_max *= (1+0.2);
+
+          // Draw
+          mcProjections[0]->Draw("hist err");
+          breakdownStack->Draw("hist err same");
+          for (size_t i = 0; i < mcProjections.size(); ++i) {
+            mcProjections[i]->GetYaxis()->SetRangeUser(total_min,total_max); // TO AUTOMATIZE!
+            mcProjections[i]->Draw("hist err same");
+          }
+          title->Draw();
+          dataProjection->Draw("err same");
+
+          // Ratio calculation
+          bottomPad->cd();
+          if( logScale ) bottomPad->SetLogy();
+          TH1D* dataRatio = (TH1D*)dataProjection->Clone();
+          std::vector<TH1D*> mcRatios;
+
+          for (unsigned int i = 0 ; i < mcProjections.size(); ++i){
+            auto ratio = (TH1D*)mcProjections[i]->Clone();
+            ratio->Divide(dataProjection);
+            StandardFormat(ratio, "", kBlack, i + 1, xobservable, logScale);
+            ratio->SetMarkerSize(0);
+            ratio->GetXaxis()->SetTitleSize(0.2);
+            ratio->GetYaxis()->SetTitleSize(0.2);
+            ratio->GetYaxis()->SetLabelSize(0.25);
+            mcRatios.push_back(ratio);
+          }
+
+          dataRatio->Divide(dataProjection);
+          StandardFormat(dataRatio, "", kBlack, 8, xobservable, logScale);
+          dataRatio->GetXaxis()->SetTitleSize(0.25);
+          dataRatio->GetXaxis()->SetLabelSize(0.22);
+          dataRatio->GetYaxis()->SetTitleSize(0.18);
+          dataRatio->GetYaxis()->SetLabelSize(0.2);
+          dataRatio->SetLineStyle(2);
+          dataRatio->SetMinimum(0);
+          dataRatio->GetYaxis()->SetMaxDigits(5);
+          dataRatio->GetYaxis()->SetTitleOffset(0.51);
+          dataRatio->GetXaxis()->SetTitleOffset(0.82);
+          dataRatio->SetLineWidth(1);
+          dataRatio->GetYaxis()->SetNdivisions(2,2,0);
+          dataRatio->GetYaxis()->SetMaxDigits(1);
+          dataRatio->GetYaxis()->SetTitle("Ratio");
+
+          double maxRatio = GetMaximum(mcRatios)*(1-0.35);
+          double minRatio = GetMinimum(mcRatios)*(1-0.15);
+          dataRatio->GetYaxis()->SetRangeUser(minRatio, maxRatio);
+
+          dataRatio->Draw("err");
+          for (const auto& ratio : mcRatios) {
+            ratio->SetLineWidth(1);
+            ratio->Draw("hist err same");
+          }
+        }
+
+        void plotting::PlotProjection( const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& data, const std::string& xobservable, const std::string& yobservable, TCanvas* canvas, bool logScale, const std::string& axis, double y_cut_min, double y_cut_max )
+        {
+          canvas->cd();
+          if( y_cut_min > y_cut_max ) throw std::invalid_argument("Requested cuts are not valid.");
+
+          if (logScale) gPad->SetLogy();
+
+          // Change min and max for limits if outside of range
+          double max_range = mcHists[0]->GetYaxis()->GetBinLowEdge(mcHists[0]->GetYaxis()->GetNbins())+ mcHists[0]->GetYaxis()->GetBinWidth(mcHists[0]->GetYaxis()->GetNbins());;
+          double min_range = mcHists[0]->GetYaxis()->GetBinLowEdge(1);
+          if( y_cut_min < min_range ) y_cut_min = min_range;
+          if( y_cut_max > max_range ) y_cut_max = max_range;
+
+          // Projection and formatting
+          std::vector<TH1D*> allProjections, mcProjections, dataProjections;
+          auto breakdownStack = new THStack(("projection_components_" + axis).c_str(), "");
+
+          // Store input for projection details
+          std::string projection_name = axis == "X" ? "_px_Range_"+std::to_string(y_cut_min)+"_"+std::to_string(y_cut_max) : "_py";
+          double first_bin = 0 ;
+          double last_bin = 999;
+          const double bin_max_cut_id = GetClosestBin( mcHists[0],y_cut_max, "Y" );
+          const double bin_min_cut_id = GetClosestBin( mcHists[0],y_cut_min, "Y" );
+          double integrated_bin_width = bin_max_cut_id - bin_min_cut_id;
+
+          // Compute slice for main predictions
+          for ( unsigned int i = 0 ; i < mcHists.size(); ++i ) {
+            last_bin = axis == "X" ? mcHists[i]->GetNbinsX() : mcHists[i]->GetNbinsY();
+            if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
+            if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
+            mcProjections.push_back(axis == "X" ? mcHists[i]->ProjectionX((mcHists[i]->GetName()+projection_name).c_str(),first_bin,last_bin) : mcHists[i]->ProjectionY((mcHists[i]->GetName()+projection_name).c_str(),first_bin,last_bin));
+            StandardFormat(mcProjections[i], "", kBlack, i+1, xobservable, logScale);
+            //mcProjections[i]->Scale(integrated_bin_width);
+            allProjections.push_back(mcProjections[i]);
+          }
+
+          for ( unsigned int i = 0 ; i < data.size(); ++i ) {
+            last_bin = axis == "X" ? data[i]->GetNbinsX() : data[i]->GetNbinsY();
+            if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
+            if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
+
+            dataProjections.push_back(axis == "X" ? data[i]->ProjectionX((data[i]->GetName()+projection_name).c_str(),first_bin,last_bin) : data[i]->ProjectionY((data[i]->GetName()+projection_name).c_str(),first_bin,last_bin));
+            StandardFormat(dataProjections[i], "", kBlack, 8, xobservable, logScale);
+            //dataProjections[i]->Scale(integrated_bin_width);
+            allProjections.push_back(dataProjections[i]);
+          }
+
+          double total_min = 0 ;
+          if( logScale) total_min = 1E-4;
+          // Store maximum of all TH2D histograms to set the same range to all
+          double total_max = plotting::GetMaximum(allProjections);
+
+          // Determine maximum y-axis range
+          mcProjections[0]->GetYaxis()->SetTitleOffset(1.4);
+          mcProjections[0]->GetXaxis()->SetLabelSize(0);
+          mcProjections[0]->SetMarkerSize(0);
+          std::ostringstream oss;
+          oss << std::fixed << std::setprecision(2) << y_cut_min << "<" << plotting::GetAxisLabel(yobservable, 0) << "<" << y_cut_max;
+          mcProjections[0]->SetTitle(oss.str().c_str());
+          mcProjections[0]->SetTitleSize(0.1);
+          mcProjections[0]->GetYaxis()->SetTitleOffset(1.2);
+          mcProjections[0]->Draw("hist err");
+          for (size_t i = 0; i < mcProjections.size(); ++i) {
+            mcProjections[i]->GetYaxis()->SetRangeUser(total_min,total_max); // TO AUTOMATIZE!
+            mcProjections[i]->GetXaxis()->SetTitleSize(0.05);
+            mcProjections[i]->GetYaxis()->SetTitleSize(0.09);
+            mcProjections[i]->GetYaxis()->SetTitleOffset(1);
+            mcProjections[i]->SetMarkerSize(0);
+            mcProjections[i]->SetLineWidth(2);
+            mcProjections[i]->Draw("hist err same");
+          }
+
+          for (size_t i = 0; i < dataProjections.size(); ++i) {
+            dataProjections[i]->Draw("hist err same");
+          }
+
+        }
+
+
+        void plotting::PlotProjectionsStack( const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& breakdown, const TH2D* data, const std::string& xobservable, const std::string& yobservable,
+          bool logScale, const std::string& axis, std::vector<double> y_cuts, const std::string& outputLocation, const std::string& outputName, bool store_root )
           {
-            canvas->cd();
-            if( y_cut_min > y_cut_max ) throw std::invalid_argument("Requested cuts are not valid.");
-
-            if (logScale) gPad->SetLogy();
-
-            // Change min and max for limits if outside of range
-            double max_range = mcHists[0]->GetYaxis()->GetBinLowEdge(mcHists[0]->GetYaxis()->GetNbins())+ mcHists[0]->GetYaxis()->GetBinWidth(mcHists[0]->GetYaxis()->GetNbins());;
-            double min_range = mcHists[0]->GetYaxis()->GetBinLowEdge(1);
-            if( y_cut_min < min_range ) y_cut_min = min_range;
-            if( y_cut_max > max_range ) y_cut_max = max_range;
+            if ( y_cuts.size() < 1 ) { throw std::invalid_argument("Provide at least two values for the cuts. Exiting function "); return ;}
+            TCanvas *c_projections = new TCanvas("c_projections", "c_projections", 200, 10, 700, 500);
+            c_projections->cd();
+            c_projections->SetTopMargin(0.2);
+            c_projections->SetBottomMargin(0.15);
+            c_projections->SetLeftMargin(0.2);
+            c_projections->SetRightMargin(0.02);
+            if( logScale ) gPad->SetLogy();
 
             // Projection and formatting
-            std::vector<TH1D*> allProjections, mcProjections, dataProjections;
-            auto breakdownStack = new THStack(("projection_components_" + axis).c_str(), "");
+            std::vector<TH1D*> mcProjections, dataProjections, allPredictions;
+            double LegXmin = 0.18, LegYmin = 0.8, YSpread = 0.2;
+            TLegend *legend = new TLegend(LegXmin, LegYmin, LegXmin + 0.8, LegYmin + YSpread);
+            legend->SetBorderSize(0);
+            legend->SetTextFont(132);
+            legend->SetTextSize(0.05);
+            legend->SetFillStyle(0);
+            legend->SetNColumns(2);
 
-            // Store input for projection details
-            std::string projection_name = axis == "X" ? "_px_Range_"+std::to_string(y_cut_min)+"_"+std::to_string(y_cut_max) : "_py";
-            double first_bin = 0 ;
-            double last_bin = 999;
-            const double bin_max_cut_id = GetClosestBin( mcHists[0],y_cut_max, "Y" );
-            const double bin_min_cut_id = GetClosestBin( mcHists[0],y_cut_min, "Y" );
+            for( unsigned int i = 0 ; i < y_cuts.size() - 1 ; ++i ){
+              // Store input for projection details
+              std::string projection_name = axis == "X" ? "_stack_px_Range_"+std::to_string(y_cuts[i])+"_"+std::to_string(y_cuts[i+1]) : "_py";
+              double first_bin = 0 ;
+              double last_bin = 999;
+              const double bin_max_cut_id = GetClosestBin( mcHists[0],y_cuts[i+1], "Y" );
+              const double bin_min_cut_id = GetClosestBin( mcHists[0],y_cuts[i], "Y" );
 
-            // Compute slice for main predictions
-            for ( unsigned int i = 0 ; i < mcHists.size(); ++i ) {
-              last_bin = axis == "X" ? mcHists[i]->GetNbinsX() : mcHists[i]->GetNbinsY();
-              if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
-              if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
-              mcProjections.push_back(axis == "X" ? mcHists[i]->ProjectionX((mcHists[i]->GetName()+projection_name).c_str(),first_bin,last_bin) : mcHists[i]->ProjectionY((mcHists[i]->GetName()+projection_name).c_str(),first_bin,last_bin));
-              StandardFormat(mcProjections[i], "", kBlack, i+1, xobservable, logScale);
-              allProjections.push_back(mcProjections[i]);
-            }
-
-            for ( unsigned int i = 0 ; i < data.size(); ++i ) {
-              last_bin = axis == "X" ? data[i]->GetNbinsX() : data[i]->GetNbinsY();
               if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
               if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
 
-              dataProjections.push_back(axis == "X" ? data[i]->ProjectionX((data[i]->GetName()+projection_name).c_str(),first_bin,last_bin) : data[i]->ProjectionY((data[i]->GetName()+projection_name).c_str(),first_bin,last_bin));
-              StandardFormat(dataProjections[i], "", kBlack, 8, xobservable, logScale);
-              allProjections.push_back(dataProjections[i]);
+              for ( unsigned int j = 0 ; j < 1 /* mcHists.size() */; ++j ) {
+                mcProjections.push_back(axis == "X" ? mcHists[j]->ProjectionX((mcHists[j]->GetName()+projection_name).c_str(),first_bin,last_bin) : mcHists[j]->ProjectionY((mcHists[j]->GetName()+projection_name).c_str(),first_bin,last_bin));
+                StandardFormat(mcProjections.back(), "", ColorBlindPalette(i), 1+j, xobservable, logScale);
+                mcProjections.back()->SetLineColorAlpha(ColorBlindPalette(i),0.8);
+              }
+              dataProjections.push_back(axis == "X" ? data->ProjectionX((data->GetName()+projection_name).c_str(),first_bin,last_bin) : data->ProjectionY((data->GetName()+projection_name).c_str(),first_bin,last_bin));
+              allPredictions.push_back(mcProjections[i]);
+              allPredictions.push_back(dataProjections[i]);
+
+              // Setting right format
+              StandardFormat(dataProjections[i], "", ColorBlindPalette(i), 8, xobservable, logScale);
+              std::ostringstream oss;
+              oss << std::fixed << std::setprecision(2) << y_cuts[i] << "<" << plotting::GetAxisLabel(yobservable, 0) << "<" << y_cuts[i+1];
+              legend->AddEntry(dataProjections[i], oss.str().c_str(), "l");
+              mcProjections[i]->SetMarkerSize(0);
+              dataProjections[i]->SetLineStyle(1);
+              dataProjections[i]->SetMarkerSize(0.6);
+              dataProjections[i]->SetLineWidth(1);
             }
 
             double total_min = 0 ;
             if( logScale) total_min = 1E-4;
             // Store maximum of all TH2D histograms to set the same range to all
-            double total_max = plotting::GetMaximum(allProjections);
-
-            // Determine maximum y-axis range
-            mcProjections[0]->GetYaxis()->SetTitleOffset(1.4);
-            mcProjections[0]->GetXaxis()->SetLabelSize(0);
-            mcProjections[0]->SetMarkerSize(0);
-            std::ostringstream oss;
-            oss << std::fixed << std::setprecision(2) << y_cut_min << "<" << plotting::GetAxisLabel(yobservable, 0) << "<" << y_cut_max;
-            mcProjections[0]->SetTitle(oss.str().c_str());
-            mcProjections[0]->SetTitleSize(0.1);
-            mcProjections[0]->GetYaxis()->SetTitleOffset(1.2);
+            double total_max = plotting::GetMaximum(allPredictions) * ( 1 + 0.2 );
             mcProjections[0]->Draw("hist err");
+
             for (size_t i = 0; i < mcProjections.size(); ++i) {
               mcProjections[i]->GetYaxis()->SetRangeUser(total_min,total_max); // TO AUTOMATIZE!
-              mcProjections[i]->GetXaxis()->SetTitleSize(0.05);
-              mcProjections[i]->GetYaxis()->SetTitleSize(0.09);
+              mcProjections[i]->GetXaxis()->SetTitleSize(0.08);
+              mcProjections[i]->GetYaxis()->SetTitleSize(0.08);
               mcProjections[i]->GetYaxis()->SetTitleOffset(1);
+              mcProjections[i]->GetXaxis()->SetTitleOffset(0.8);
               mcProjections[i]->SetMarkerSize(0);
               mcProjections[i]->SetLineWidth(2);
               mcProjections[i]->Draw("hist err same");
             }
 
             for (size_t i = 0; i < dataProjections.size(); ++i) {
-              dataProjections[i]->Draw("hist err same");
+              dataProjections[i]->Draw("err same");
             }
-
+            legend->Draw();
+            c_projections->SaveAs((outputLocation + "/TotalXSec/" + outputName + "_stack_X.pdf").c_str());
+            if( store_root ) c_projections->SaveAs((outputLocation + "/TotalXSec/" + outputName + "_stack_X.root").c_str());
           }
 
+          void plotting::PlotSlicesGeneralized(const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& breakdown, const TH2D* data, const std::string& xObservable, const std::string& yObservable, std::vector<double> & y_cuts, const std::string& title, const std::string& outputLocation, const std::string& outputName, bool store_root, bool logScale ){
 
-          void plotting::PlotProjectionsStack( const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& breakdown, const TH2D* data, const std::string& xobservable, const std::string& yobservable,
-            bool logScale, const std::string& axis, std::vector<double> y_cuts, const std::string& outputLocation, const std::string& outputName, bool store_root )
-            {
-              if ( y_cuts.size() < 1 ) { throw std::invalid_argument("Provide at least two values for the cuts. Exiting function "); return ;}
-              TCanvas *c_projections = new TCanvas("c_projections", "c_projections", 200, 10, 700, 500);
-              c_projections->cd();
-              c_projections->SetTopMargin(0.2);
-              c_projections->SetBottomMargin(0.15);
-              c_projections->SetLeftMargin(0.2);
-              c_projections->SetRightMargin(0.02);
-              if( logScale ) gPad->SetLogy();
+            // We want to slice the histogram on the Y axis - which is the alternative axis
+            // The input is the cuts - ignoring the histogram edges.
+            // The number of canvas will be y_cuts.size()+1
+            int v_slice = 1, h_slice = y_cuts.size() - 1 ;
+            if( y_cuts.size() > 4 ) {v_slice = 2; h_slice = 3; }
+            else if( y_cuts.size() > 8 ) {v_slice = 3; h_slice = 3; }
 
-              // Projection and formatting
-              std::vector<TH1D*> mcProjections, dataProjections, allPredictions;
-              double LegXmin = 0.18, LegYmin = 0.8, YSpread = 0.2;
-              TLegend *legend = new TLegend(LegXmin, LegYmin, LegXmin + 0.8, LegYmin + YSpread);
-              legend->SetBorderSize(0);
-              legend->SetTextFont(132);
-              legend->SetTextSize(0.05);
-              legend->SetFillStyle(0);
-              legend->SetNColumns(2);
+            // I can't set it flexible as otherwise I need to re-set the whole format.
+            // Leaving it to two columns for now.
+            v_slice = 2; h_slice = 3;
+            TCanvas *c_slices ;
+            if( y_cuts.size() > 4 ) c_slices = new TCanvas("c_slices", "c_slices", 200, 10, 700, 500);
+            else if( y_cuts.size() > 8 ) c_slices = new TCanvas("c_slices", "c_slices", 300, 10, 700, 500);
+            else c_slices = new TCanvas("c_slices", "c_slices", 100, 10, 700, 500);
 
-              for( unsigned int i = 0 ; i < y_cuts.size() - 1 ; ++i ){
-                // Store input for projection details
-                std::string projection_name = axis == "X" ? "_stack_px_Range_"+std::to_string(y_cuts[i])+"_"+std::to_string(y_cuts[i+1]) : "_py";
-                double first_bin = 0 ;
-                double last_bin = 999;
-                const double bin_max_cut_id = GetClosestBin( mcHists[0],y_cuts[i+1], "Y" );
-                const double bin_min_cut_id = GetClosestBin( mcHists[0],y_cuts[i], "Y" );
+            c_slices->cd();
+            TPad *pad_slice = new TPad("pad1", "", 0, 0, 1, 1);
+            pad_slice->Draw();
+            pad_slice->cd();
+            pad_slice->SetBottomMargin(0.2);
+            pad_slice->SetLeftMargin(0.2);
+            pad_slice->SetRightMargin(0.2);
+            pad_slice->Divide(h_slice, v_slice);
 
-                if( axis == "X" && last_bin > bin_max_cut_id ) last_bin = bin_max_cut_id ;
-                if( axis == "X" && first_bin < bin_min_cut_id ) first_bin = bin_min_cut_id ;
-
-                for ( unsigned int j = 0 ; j < 1 /* mcHists.size() */; ++j ) {
-                  mcProjections.push_back(axis == "X" ? mcHists[j]->ProjectionX((mcHists[j]->GetName()+projection_name).c_str(),first_bin,last_bin) : mcHists[j]->ProjectionY((mcHists[j]->GetName()+projection_name).c_str(),first_bin,last_bin));
-                  StandardFormat(mcProjections.back(), "", ColorBlindPalette(i), 1+j, xobservable, logScale);
-                  mcProjections.back()->SetLineColorAlpha(ColorBlindPalette(i),0.8);
-                }
-                dataProjections.push_back(axis == "X" ? data->ProjectionX((data->GetName()+projection_name).c_str(),first_bin,last_bin) : data->ProjectionY((data->GetName()+projection_name).c_str(),first_bin,last_bin));
-                allPredictions.push_back(mcProjections[i]);
-                allPredictions.push_back(dataProjections[i]);
-
-                // Setting right format
-                StandardFormat(dataProjections[i], "", ColorBlindPalette(i), 8, xobservable, logScale);
-                std::ostringstream oss;
-                oss << std::fixed << std::setprecision(2) << y_cuts[i] << "<" << plotting::GetAxisLabel(yobservable, 0) << "<" << y_cuts[i+1];
-                legend->AddEntry(dataProjections[i], oss.str().c_str(), "l");
-                mcProjections[i]->SetMarkerSize(0);
-                dataProjections[i]->SetLineStyle(1);
-                dataProjections[i]->SetMarkerSize(0.6);
-                dataProjections[i]->SetLineWidth(1);
-              }
-
-              double total_min = 0 ;
-              if( logScale) total_min = 1E-4;
-              // Store maximum of all TH2D histograms to set the same range to all
-              double total_max = plotting::GetMaximum(allPredictions) * ( 1 + 0.2 );
-              mcProjections[0]->Draw("hist err");
-
-              for (size_t i = 0; i < mcProjections.size(); ++i) {
-                mcProjections[i]->GetYaxis()->SetRangeUser(total_min,total_max); // TO AUTOMATIZE!
-                mcProjections[i]->GetXaxis()->SetTitleSize(0.08);
-                mcProjections[i]->GetYaxis()->SetTitleSize(0.08);
-                mcProjections[i]->GetYaxis()->SetTitleOffset(1);
-                mcProjections[i]->GetXaxis()->SetTitleOffset(0.8);
-                mcProjections[i]->SetMarkerSize(0);
-                mcProjections[i]->SetLineWidth(2);
-                mcProjections[i]->Draw("hist err same");
-              }
-
-              for (size_t i = 0; i < dataProjections.size(); ++i) {
-                dataProjections[i]->Draw("err same");
-              }
-              legend->Draw();
-              c_projections->SaveAs((outputLocation + "/TotalXSec/" + outputName + "_stack_X.pdf").c_str());
-              if( store_root ) c_projections->SaveAs((outputLocation + "/TotalXSec/" + outputName + "_stack_X.root").c_str());
+            std::vector<TPad *> pad_slices ;
+            std::vector<TPad *> top_pads, bottom_pads ;
+            for(unsigned int i = 0 ; i < y_cuts.size() - 1; ++i ){
+              pad_slices.push_back((TPad *)pad_slice->cd(i+1));
+              pad_slices[i]->cd();
+              CreateCanvasWithPads(pad_slices[i], top_pads, bottom_pads, "CanvasX");
+              PlotProjectionWithRatio(mcHists, breakdown, data, xObservable, yObservable, top_pads[i], bottom_pads[i], logScale, "X", y_cuts[i], y_cuts[i+1]);
             }
 
-            void plotting::PlotSlicesGeneralized(const std::vector<TH2D*>& mcHists, const std::vector<TH2D*>& breakdown, const TH2D* data, const std::string& xObservable, const std::string& yObservable, std::vector<double> & y_cuts, const std::string& title, const std::string& outputLocation, const std::string& outputName, bool store_root, bool logScale ){
-
-              // We want to slice the histogram on the Y axis - which is the alternative axis
-              // The input is the cuts - ignoring the histogram edges.
-              // The number of canvas will be y_cuts.size()+1
-              int v_slice = 1, h_slice = y_cuts.size() - 1 ;
-              if( y_cuts.size() > 4 ) {v_slice = 2; h_slice = 3; }
-              else if( y_cuts.size() > 8 ) {v_slice = 3; h_slice = 3; }
-
-              TCanvas *c_slices = new TCanvas("c_slices", "c_slices", 200, 10, 700, 500);
-              c_slices->cd();
-              TPad *pad_slice = new TPad("pad1", "", 0, 0, 1, 1);
-              pad_slice->Draw();
-              pad_slice->cd();
-              pad_slice->SetBottomMargin(0.15);
-              pad_slice->SetLeftMargin(0.15);
-              pad_slice->SetRightMargin(0.15);
-              pad_slice->Divide(h_slice, v_slice);
-
-              std::vector<TPad *> pad_slices ;
-              std::vector<TPad *> top_pads, bottom_pads ;
-              for(unsigned int i = 0 ; i < y_cuts.size() - 1; ++i ){
-                pad_slices.push_back((TPad *)pad_slice->cd(i+1));
-                pad_slices[i]->cd();
-                CreateCanvasWithPads(pad_slices[i], top_pads, bottom_pads, "CanvasX");
-                PlotProjectionWithRatio(mcHists, breakdown, data, xObservable, yObservable, top_pads[i], bottom_pads[i], logScale, "X", y_cuts[i], y_cuts[i+1]);
+            if (store_root) {
+              TFile rootFile((outputLocation + "/TotalXSec/" + outputName + ".root").c_str(), "recreate");
+              for (auto& proj : mcHists) {
+                proj->Write();
               }
-
-              if (store_root) {
-                TFile rootFile((outputLocation + "/TotalXSec/" + outputName + ".root").c_str(), "recreate");
-                for (auto& proj : mcHists) {
-                  proj->Write();
-                }
-                data->Write();
-                c_slices->Write();
-                rootFile.Close();
-              }
-
-              c_slices->SaveAs((outputLocation + "/TotalXSec/" + outputName + "_X.pdf").c_str());
-              c_slices->SaveAs((outputLocation + "/TotalXSec/" + outputName + "_X.root").c_str());
-              PlotProjectionsStack(mcHists, breakdown, data, xObservable, yObservable, logScale, "X", y_cuts, outputLocation, outputName, store_root );
+              data->Write();
+              c_slices->Write();
+              rootFile.Close();
             }
 
-            int plotting::GetClosestBin(TH2D* hist, double cut_value, std::string axis) {
-              // Check if the histogram is valid
-              if (!hist) {
-                throw std::invalid_argument("Histogram pointer is null.");
-              }
+            c_slices->SaveAs((outputLocation + "/TotalXSec/" + outputName + "_X.pdf").c_str());
+            c_slices->SaveAs((outputLocation + "/TotalXSec/" + outputName + "_X.root").c_str());
+            PlotProjectionsStack(mcHists, breakdown, data, xObservable, yObservable, logScale, "X", y_cuts, outputLocation, outputName, store_root );
+          }
 
-              // Determine the axis to iterate over
-              TAxis* target_axis = nullptr;
-              if (axis == "x" || axis == "X" ) {
-                target_axis = hist->GetXaxis();
-              } else if (axis == "y" || axis == "Y") {
-                target_axis = hist->GetYaxis();
-              } else {
-                throw std::invalid_argument("Invalid axis. Use 'x' or 'y'.");
-              }
-
-              // Find the bin closest to the cut value
-              int n_bins = target_axis->GetNbins();
-
-              if( cut_value > target_axis->GetBinCenter(n_bins) ) return n_bins;
-              if( cut_value < target_axis->GetBinCenter(1) ) {
-                return 0;
-              }
-              double min_diff = std::numeric_limits<double>::max(); // Initialize to a large value
-              int closest_bin = -1;
-
-              for (int bin = 1; bin <= n_bins; ++bin) { // Bins start at 1 in ROOT
-                double bin_center = target_axis->GetBinCenter(bin);
-                double diff = std::abs(bin_center - cut_value);
-                if (diff < min_diff) {
-                  min_diff = diff;
-                  closest_bin = bin;
-                }
-              }
-
-              return closest_bin; // Return the bin number
+          int plotting::GetClosestBin(TH2D* hist, double cut_value, std::string axis) {
+            // Check if the histogram is valid
+            if (!hist) {
+              throw std::invalid_argument("Histogram pointer is null.");
             }
+
+            // Determine the axis to iterate over
+            TAxis* target_axis = nullptr;
+            if (axis == "x" || axis == "X" ) {
+              target_axis = hist->GetXaxis();
+            } else if (axis == "y" || axis == "Y") {
+              target_axis = hist->GetYaxis();
+            } else {
+              throw std::invalid_argument("Invalid axis. Use 'x' or 'y'.");
+            }
+
+            // Find the bin closest to the cut value
+            int n_bins = target_axis->GetNbins();
+
+            if( cut_value > target_axis->GetBinCenter(n_bins) ) return n_bins;
+            if( cut_value < target_axis->GetBinCenter(1) ) {
+              return 0;
+            }
+            double min_diff = std::numeric_limits<double>::max(); // Initialize to a large value
+            int closest_bin = -1;
+
+            for (int bin = 1; bin <= n_bins; ++bin) { // Bins start at 1 in ROOT
+              double bin_center = target_axis->GetBinCenter(bin);
+              double diff = std::abs(bin_center - cut_value);
+              if (diff < min_diff) {
+                min_diff = diff;
+                closest_bin = bin;
+              }
+            }
+
+            return closest_bin; // Return the bin number
+          }

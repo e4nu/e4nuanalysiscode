@@ -825,15 +825,38 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       std::filesystem::create_directory(totalxsec_path);
 
       // Print out integral for debugging
-      double data_integral;
-      if (data)
-      data_integral = data->Integral("width");
-      double mc_integral = mc_hists[0]->Integral("width");
+      double data_integral = 0 ;
+      double error2_data = 0 ;
+      if (data) {
+        //data_integral = data->Integral("width");
+        // Compute the error
+        for (int i = 1; i <= data->GetNbinsX(); ++i) {
+          double content = data->GetBinContent(i);
+          double err = data->GetBinError(i);
+          double width = data->GetBinWidth(i);
+
+          data_integral += content * width;
+          error2_data   += err * err * width * width;
+        }
+      }
+      double mc_integral = 0 ;
+      double error2_mc = 0 ;
+      // Compute the error
+      for (int i = 1; i <= mc_hists[0]->GetNbinsX(); ++i) {
+        double content = mc_hists[0]->GetBinContent(i);
+        double err = mc_hists[0]->GetBinError(i);
+        double width = mc_hists[0]->GetBinWidth(i);
+
+        mc_integral += content * width;
+        error2_mc   += err * err * width * width;
+      }
+       //= mc_hists[0]->Integral("width");
+
       if (data)
       {
-        std::cout << " Total integrated cross section (data) " << data_integral << std::endl;
+        std::cout << " Total integrated cross section (data) " << data_integral << " #pm " << sqrt(error2_data) << std::endl;
       }
-      std::cout << " Total integrated cross section (mc) " << mc_integral << std::endl;
+      std::cout << " Total integrated cross section (mc) " << mc_integral << " #pm " << sqrt(error2_mc) << std::endl;
 
       c1->SaveAs((output_location + "/TotalXSec/" + output_name + ".pdf").c_str());
       delete c1;

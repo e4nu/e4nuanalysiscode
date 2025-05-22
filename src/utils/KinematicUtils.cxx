@@ -176,7 +176,7 @@ TLorentzVector utils::Missing4Momenta(const double EBeam, const TLorentzVector o
   TLorentzVector q = beam - out_electron;
 
   // Initial nucleon at rest
-  TLorentzVector in_nucleon(utils::GetParticleMass(0, 0, 0, conf::kPdgProton)-utils::GetBindingEnergy(tgt));
+  TLorentzVector in_nucleon(0, 0, 0, utils::GetParticleMass(conf::kPdgProton)-utils::GetBindingEnergy(tgt));
   TLorentzVector tot_hadron;
   for (auto it = hadrons.begin(); it != hadrons.end(); ++it)
   {

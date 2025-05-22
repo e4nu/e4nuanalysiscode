@@ -411,8 +411,8 @@ std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis)
   }
   else if (observable == "HadSystemMass")
   {
-    x_axis = "E_{had}[GeV]";
-    y_axis = "d#sigma/dE_{had} #left[#mub GeV^{-1}#right]";
+    x_axis = "M_{had}[GeV]";
+    y_axis = "d#sigma/dM_{had} #left[#mub GeV^{-1}#right]";
   }
   else if (observable == "MissingEnergy")
   {
@@ -534,8 +534,9 @@ std::vector<double> plotting::GetECalBinning(unsigned int nbins_tail, unsigned i
   std::vector<double> binning;
   double temp_min = min;
   double temp_max = max;
-  if (EBeam < max)
-  temp_max = EBeam * (1 - 0.05);
+  if (EBeam - min < max - EBeam ) temp_max = EBeam * (1 + 0.05);
+  else temp_max = EBeam * (1 - 0.05);
+
   double step = (temp_max - temp_min) / nbins_tail;
   for (unsigned int i = 0; i < nbins_tail + 1; ++i)
   {
@@ -773,12 +774,9 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   }
   else if (observable == "RecoEnergyTransfer")
   {
-    if (EBeam == 1.161)
-    binning = plotting::GetUniformBinning(25, 0.3, 0.8);
-    else if (EBeam == 2.261)
-    binning = plotting::GetUniformBinning(25, 0.5, 2);
-    else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(25, 0, 4);
+    if (EBeam == 1.161) binning = plotting::GetUniformBinning(25, 0., 0.8);
+    else if (EBeam == 2.261) binning = plotting::GetUniformBinning(25, 0., 2);
+    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(25, 0, 4);
   }
   else if (observable == "HadSystemMass")
   {
@@ -791,12 +789,9 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   }
   else if (observable == "MissingEnergy")
   {
-    if (EBeam == 1.161)
-    binning = plotting::GetECalBinning(25, 15, 0.3, 1.1, 0.9);
-    else if (EBeam == 2.261)
-    binning = plotting::GetECalBinning(25, 15, -0.7, 1.2, 0.9);
-    else if (EBeam == 4.461)
-    binning = plotting::GetECalBinning(25, 15, -2.5, 1.2, 0.9);
+    if (EBeam == 1.161) binning = plotting::GetECalBinning(20,60, -0.15, 1, 0.1);
+    else if (EBeam == 2.261) binning = plotting::GetECalBinning(20, 60, -0.15, 2, 0.1);
+    else if (EBeam == 4.461) binning = plotting::GetECalBinning(20, 60, -0.15, 3, 0.1);
   }
   else if (observable == "MissingTransMomentum")
   {
@@ -827,9 +822,9 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   }
   else if (observable == "MissingMomentum")
   {
-    if (EBeam == 1.161) binning = plotting::GetUniformBinning(30, 0, 1.5);
-    else if (EBeam == 2.261) binning = plotting::GetUniformBinning(30, 0, 2.2);
-    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(30, 0, 3.5);
+    if (EBeam == 1.161) binning = plotting::GetECalBinning(20,60, -0.15, 1.5, 0.15);
+    else if (EBeam == 2.261) binning = plotting::GetECalBinning(20, 60, -0.15, 2.2, 0.15);
+    else if (EBeam == 4.461) binning = plotting::GetECalBinning(20, 60, -0.15, 3.5, 0.15);
   }
   else if (observable == "InferedNucleonMom")
   {

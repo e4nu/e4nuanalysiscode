@@ -1866,7 +1866,8 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
             StandardFormat(mcProjections[i], "", kBlack, i+1, xobservable, logScale);
             mcProjections[i]->GetYaxis()->SetTitleSize(0.10);
             mcProjections[i]->GetYaxis()->SetLabelSize(0.12);
-            mcProjections[i]->GetYaxis()->SetTitleOffset(0.8);
+            if (logScale) mcProjections[i]->GetYaxis()->SetTitleOffset(1.15);
+            else mcProjections[i]->GetYaxis()->SetTitleOffset(1);
             mcProjections[i]->GetXaxis()->SetLabelSize(0);
             mcProjections[i]->SetMarkerSize(0);
             mcProjections[i]->SetLineWidth(1);
@@ -1907,7 +1908,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
           allProjections.push_back(dataProjection);
           // Store maximum of all TH2D histograms to set the same range to all
           double total_max = plotting::GetMaximum(allProjections);
-          if( logScale ) total_max *= (1+0.85);
+          if( logScale ) total_max *= (1+0.9);
           else total_max *= (1+0.2);
 
           // Draw
@@ -1946,8 +1947,8 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
           dataRatio->SetLineStyle(2);
           dataRatio->SetMinimum(0);
           dataRatio->GetYaxis()->SetMaxDigits(5);
-          dataRatio->GetYaxis()->SetTitleOffset(0.51);
-          dataRatio->GetXaxis()->SetTitleOffset(0.82);
+          if( logScale ) dataRatio->GetYaxis()->SetTitleOffset(0.64);
+          else dataRatio->GetYaxis()->SetTitleOffset(0.51);
           dataRatio->SetLineWidth(1);
           dataRatio->GetYaxis()->SetNdivisions(2,2,0);
           dataRatio->GetYaxis()->SetMaxDigits(1);
@@ -2030,13 +2031,16 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
             mcProjections[i]->GetYaxis()->SetRangeUser(total_min,total_max); // TO AUTOMATIZE!
             mcProjections[i]->GetXaxis()->SetTitleSize(0.05);
             mcProjections[i]->GetYaxis()->SetTitleSize(0.09);
-            mcProjections[i]->GetYaxis()->SetTitleOffset(1);
+            if( logScale ) mcProjections[i]->GetYaxis()->SetTitleOffset(1.15);
+            else mcProjections[i]->GetYaxis()->SetTitleOffset(1);
             mcProjections[i]->SetMarkerSize(0);
             mcProjections[i]->SetLineWidth(2);
             mcProjections[i]->Draw("hist err same");
           }
 
           for (size_t i = 0; i < dataProjections.size(); ++i) {
+            if( logScale ) dataProjections[i]->GetYaxis()->SetTitleOffset(0.64);
+            else dataProjections[i]->GetYaxis()->SetTitleOffset(0.61);
             dataProjections[i]->Draw("hist err same");
           }
 
@@ -2094,6 +2098,8 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
               dataProjections[i]->SetLineStyle(1);
               dataProjections[i]->SetMarkerSize(0.6);
               dataProjections[i]->SetLineWidth(1);
+              if( logScale ) dataProjections[i]->GetYaxis()->SetTitleOffset(0.64);
+              else dataProjections[i]->GetYaxis()->SetTitleOffset(0.61);
             }
 
             double total_min = 0 ;
@@ -2106,7 +2112,8 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
               mcProjections[i]->GetYaxis()->SetRangeUser(total_min,total_max); // TO AUTOMATIZE!
               mcProjections[i]->GetXaxis()->SetTitleSize(0.08);
               mcProjections[i]->GetYaxis()->SetTitleSize(0.08);
-              mcProjections[i]->GetYaxis()->SetTitleOffset(1);
+              if( logScale ) mcProjections[i]->GetYaxis()->SetTitleOffset(1.15);
+              else mcProjections[i]->GetYaxis()->SetTitleOffset(1);
               mcProjections[i]->GetXaxis()->SetTitleOffset(0.8);
               mcProjections[i]->SetMarkerSize(0);
               mcProjections[i]->SetLineWidth(2);

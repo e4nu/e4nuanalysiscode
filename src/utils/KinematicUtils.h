@@ -28,7 +28,7 @@ namespace e4nu
     double DeltaPhiT(const TVector3 p1, const TVector3 p2);
     double DeltaPhiT(const TLorentzVector out_electron, const std::map<int, std::vector<TLorentzVector>> hadrons);
     double HadSystemMass(const std::map<int, std::vector<TLorentzVector>> hadrons);
-    TLorentzVector Missing4Momenta(const double EBeam, const TLorentzVector out_electron, const std::map<int, std::vector<TLorentzVector>> hadrons);
+    TLorentzVector Missing4Momenta(const double EBeam, const TLorentzVector out_electron, const std::map<int, std::vector<TLorentzVector>> hadrons, const int tgt);
     double InferedNucleonMom(const double EBeam, const TLorentzVector out_electron, const std::map<int, std::vector<TLorentzVector>> hadrons, const int tgt);
     double Angle(const TVector3 p1, const TVector3 p2);
     double AngleBeamDir(TVector3 vector);

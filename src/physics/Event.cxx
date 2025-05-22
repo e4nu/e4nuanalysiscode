@@ -1,8 +1,8 @@
 // _______________________________________________
 /*
- * Event Interface base class
- *
- */
+* Event Interface base class
+*
+*/
 #include <iostream>
 #include "physics/Event.h"
 #include "conf/ParticleI.h"
@@ -147,20 +147,20 @@ double Event::GetObservable( const std::string observable ) {
   TLorentzVector p_max(0, 0, 0, 0);
   double max_mom = 0;
   for (unsigned int i = 0; i < hadron_map[conf::kPdgProton].size(); ++i)
+  {
+    if (hadron_map[conf::kPdgProton][i].P() > max_mom)
     {
-      if (hadron_map[conf::kPdgProton][i].P() > max_mom)
-	{
-	  max_mom = hadron_map[conf::kPdgProton][i].P();
-	  p_max = hadron_map[conf::kPdgProton][i];
-	}
+      max_mom = hadron_map[conf::kPdgProton][i].P();
+      p_max = hadron_map[conf::kPdgProton][i];
     }
+  }
 
   double HadronsAngle = 0;
   std::vector<TLorentzVector> particles;
   for (auto it = hadron_map.begin(); it != hadron_map.end(); ++it)
   {
     if ((it->second).size() != 1)
-      continue;
+    continue;
     for (unsigned int i = 0; i < (it->second).size(); ++i)
     {
       particles.push_back((it->second)[i]);
@@ -193,13 +193,13 @@ double Event::GetObservable( const std::string observable ) {
   TLorentzVector pip_max(0, 0, 0, 0);
   max_mom = 0;
   for (unsigned int i = 0; i < hadron_map[conf::kPdgPiP].size(); ++i)
+  {
+    if (hadron_map[conf::kPdgPiP][i].P() > max_mom)
     {
-      if (hadron_map[conf::kPdgPiP][i].P() > max_mom)
-	{
-	  max_mom = hadron_map[conf::kPdgPiP][i].P();
-	  pip_max = hadron_map[conf::kPdgPiP][i];
-	}
+      max_mom = hadron_map[conf::kPdgPiP][i].P();
+      pip_max = hadron_map[conf::kPdgPiP][i];
     }
+  }
 
   double pip_E = pip_max.E();
   double pip_mom = pip_max.P();
@@ -212,13 +212,13 @@ double Event::GetObservable( const std::string observable ) {
   TLorentzVector pim_max(0, 0, 0, 0);
   max_mom = 0;
   for (unsigned int i = 0; i < hadron_map[conf::kPdgPiM].size(); ++i)
+  {
+    if (hadron_map[conf::kPdgPiM][i].P() > max_mom)
     {
-      if (hadron_map[conf::kPdgPiM][i].P() > max_mom)
-	{
-	  max_mom = hadron_map[conf::kPdgPiM][i].P();
-	  pim_max = hadron_map[conf::kPdgPiM][i];
-	}
+      max_mom = hadron_map[conf::kPdgPiM][i].P();
+      pim_max = hadron_map[conf::kPdgPiM][i];
     }
+  }
 
 
   // Adler angles
@@ -239,29 +239,29 @@ double Event::GetObservable( const std::string observable ) {
   double pim_theta = pim_max.Theta() * TMath::RadToDeg();
   double pim_phi = pim_max.Phi() * TMath::RadToDeg();
 
-  double MissingEnergy = utils::Missing4Momenta(BeamE, out_mom, hadron_map).E();
-  double MissingMomentum = utils::Missing4Momenta(BeamE, out_mom, hadron_map).P();
-  double MissingAngle = utils::Missing4Momenta(BeamE, out_mom, hadron_map).Theta() * TMath::RadToDeg();
+  double MissingEnergy = utils::Missing4Momenta(BeamE, out_mom, hadron_map, TargetPdg).E();
+  double MissingMomentum = utils::Missing4Momenta(BeamE, out_mom, hadron_map, TargetPdg).P();
+  double MissingAngle = utils::Missing4Momenta(BeamE, out_mom, hadron_map, TargetPdg).Theta() * TMath::RadToDeg();
 
   TLorentzVector pi_mom(0, 0, 0, 0);
   max_mom = 0;
   for (unsigned int i = 0; i < hadron_map[conf::kPdgPiP].size(); ++i)
+  {
+    if (hadron_map[conf::kPdgPiP][i].P() > max_mom)
     {
-      if (hadron_map[conf::kPdgPiP][i].P() > max_mom)
-	{
-	  max_mom = hadron_map[conf::kPdgPiP][i].P();
-	  pi_mom = hadron_map[conf::kPdgPiP][i];
-	}
+      max_mom = hadron_map[conf::kPdgPiP][i].P();
+      pi_mom = hadron_map[conf::kPdgPiP][i];
     }
+  }
   max_mom = 0;
   for (unsigned int i = 0; i < hadron_map[conf::kPdgPiM].size(); ++i)
+  {
+    if (hadron_map[conf::kPdgPiM][i].P() > max_mom)
     {
-      if (hadron_map[conf::kPdgPiM][i].P() > max_mom)
-	{
-	  max_mom = hadron_map[conf::kPdgPiM][i].P();
-	  pi_mom = hadron_map[conf::kPdgPiM][i];
-	}
+      max_mom = hadron_map[conf::kPdgPiM][i].P();
+      pi_mom = hadron_map[conf::kPdgPiM][i];
     }
+  }
 
   double RecoEvPion = utils::GetRecoEvPionProduction(out_mom, pi_mom);
   double RecoWPion = utils::GetRecoWPionProduction(out_mom, pi_mom);

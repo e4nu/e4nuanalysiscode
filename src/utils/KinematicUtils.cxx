@@ -176,7 +176,7 @@ TLorentzVector utils::Missing4Momenta(const double EBeam, const TLorentzVector o
   TLorentzVector q = beam - out_electron;
 
   // Initial nucleon at rest
-  TLorentzVector in_nucleon(utils::GetParticleMass(conf::kPdgProton)-utils::GetBindingEnergy(tgt), 0, 0, 0);
+  TLorentzVector in_nucleon(utils::GetParticleMass(0, 0, 0, conf::kPdgProton)-utils::GetBindingEnergy(tgt));
   TLorentzVector tot_hadron;
   for (auto it = hadrons.begin(); it != hadrons.end(); ++it)
   {
@@ -187,7 +187,7 @@ TLorentzVector utils::Missing4Momenta(const double EBeam, const TLorentzVector o
     }
   }
 
-  return ( q - tot_hadron );
+  return ( tot_hadron - q );
 }
 
 double utils::InferedNucleonMom(const double EBeam, const TLorentzVector out_electron, const std::map<int, std::vector<TLorentzVector>> hadrons, const int tgt)

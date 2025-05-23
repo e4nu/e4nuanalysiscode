@@ -129,8 +129,8 @@ int main( int argc, char* argv[] ) {
     // MC Generators will have to smear their results to compare against data
     analysis -> SetApplyReso( true ) ;
     // !!!!!!!
-    analysis -> SetUseAllSectors( true ) ;
-    analysis -> EnableAllSectors( true ) ;
+    //analysis -> SetUseAllSectors( true ) ;
+    //analysis -> EnableAllSectors( true ) ;
     std::string OutputFile_true = analysis->GetOutputFile() + "_true" ;
     if( analysis -> IsRadiated() ) OutputFile_true += "_radcorr";
     analysis -> SetOutputFile( OutputFile_true ) ;

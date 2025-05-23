@@ -111,8 +111,8 @@ namespace e4nu {
     // Setters for file info
     void SetOutputFile( std::string file ) { kOutputFile = file ; }
     void SetInputFile( std::string file ) { kInputFile = file ; }
-    void SetXSecFile( std::string file ) { kXSecFile = file ; }
-
+    bool SetXSecFile( std::string file ) ;
+    
     // Others
     void PrintConfiguration(void) const ;
 
@@ -159,6 +159,9 @@ namespace e4nu {
     std::map<int,TFile*> kAcceptanceMap;
     std::map<int,TH3D*> kAccMap ;
     std::map<int,TH3D*> kGenMap ;
+
+    // XSec value, for MC only 
+    double kXSec = 0 ;
 
     // Topology
     std::map<int,unsigned int> kTopology_map ; // Pdg, multiplicity

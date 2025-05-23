@@ -80,7 +80,7 @@ int main( int argc, char* argv[] ) {
       analysis -> SetRadCorr( true ) ;
     }
     if( ExistArg("xsec-file",argc,argv) && !is_data ) {
-      analysis -> SetXSecFile( GetArg("xsec-file",argc,argv) ) ;
+      if ( !analysis -> SetXSecFile( GetArg("xsec-file",argc,argv) ) ) return false;
     }
     if( ExistArg("bkg-mult",argc,argv) && is_data ) {
       analysis -> SetMaxBkgMult( atoi(GetArg("bkg-mult",argc,argv).c_str()) ) ;
@@ -155,7 +155,7 @@ int main( int argc, char* argv[] ) {
     analysis -> SetDebugBkg(true) ;
     std::cout << " Computing Closure test..."<<std::endl;
   }
-
+  
   analysis -> PrintConfiguration() ;
   analysis -> Initialize() ;
 

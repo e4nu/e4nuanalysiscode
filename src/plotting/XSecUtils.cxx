@@ -421,7 +421,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     // Normalize to cross-section
     // INCLUSIVE NORMALIZATION
     DataNormalization /= solid_angle;
-    // DataNormalization*=1.7;
+
     NormalizeHist(hist_data, DataNormalization);
     NormalizeHist(hist_data_0, DataNormalization);
     NormalizeHist(hist_data_1, DataNormalization);

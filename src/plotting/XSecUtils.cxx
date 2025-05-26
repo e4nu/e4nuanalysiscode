@@ -9,6 +9,7 @@
 #include "TGaxis.h"
 #include "THStack.h"
 #include "TPaveText.h"
+#include "TMath.h"
 
 using namespace e4nu;
 using namespace e4nu::plotting;
@@ -297,6 +298,14 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     }
   }
 
+  // For inclusive measurements, we need to normalize by solid angle.
+  std::vector<double> etheta_range = plotting::GetEThetaRange( *trees[0] ) ;
+  double phi_range = plotting::GetEPhiRange( *trees[0] );
+  double solid_angle = 1 ;
+
+  // We normalize by the solid angle if the following is satisfied
+  if( phi_range < 360 && ( etheta_range[0] < 24 || etheta_range[1] < 45 ) ) solid_angle = 2 * TMath::Pi() * (TMath::Cos(etheta_range[0] * TMath::Pi() / 180 ) - TMath::Cos(etheta_range[1] * TMath::Pi() / 180 )) * (phi_range / 360.) ;
+
   // Store uncorrected data
   TH1D *hist_data_uncorr = nullptr, *hist_data_uncorr_0 = nullptr, *hist_data_uncorr_1 = nullptr, *hist_data_uncorr_2 = nullptr, *hist_data_uncorr_3 = nullptr, *hist_data_uncorr_4 = nullptr, *hist_data_uncorr_5 = nullptr;
   // Store corrected for acceptance but not for radiation
@@ -410,6 +419,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hist_data_correventrate_5, 1);
 
     // Normalize to cross-section
+    // INCLUSIVE NORMALIZATION
+    DataNormalization /= solid_angle;
+    // DataNormalization*=1.7;
     NormalizeHist(hist_data, DataNormalization);
     NormalizeHist(hist_data_0, DataNormalization);
     NormalizeHist(hist_data_1, DataNormalization);
@@ -479,6 +491,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     NormalizeHist(hists_true_submodel[id], mc_norm[id + 1]);
     StandardFormat(hists_true_submodel[id], title, kBlack, 2 + id, observable);
   }
+
+  // INCLUSIVE NORMALIZATION
+  mc_norm[0] /= solid_angle;
 
   NormalizeHist(hist_true, mc_norm[0]);
   NormalizeHist(hist_true_0, mc_norm[0]);
@@ -761,44 +776,48 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         mc_hists[i]->SetMarkerSize(0);
       }
 
-      if (data)
-      data->Draw("err same");
+      if (data) data->Draw("err same");
 
       // Plot Ratio
       sub_pad->cd();
-      TH1D * data_ratio = (TH1D*)data->Clone();
+      TH1D * data_ratio ;
+      if( data ) {
+        data_ratio = (TH1D*)data->Clone();
+        StandardFormat(data_ratio, title, kBlack, 8, observable, log_scale);
+        data_ratio->SetLineStyle(1);
+        data_ratio->Divide(data);
+        data_ratio->GetXaxis()->SetLabelSize(0.2);
+        data_ratio->GetXaxis()->SetTitleSize(0.2);
+        data_ratio->GetYaxis()->SetLabelSize(0.2);
+        data_ratio->GetYaxis()->SetTitleSize(0.17);
+        data_ratio->GetYaxis()->SetTitleOffset(0.33);
+        if( log_scale ) data_ratio->GetYaxis()->SetTitleOffset(0.53);
+        else data_ratio->GetYaxis()->SetTitleOffset(0.53);//data_ratio->GetYaxis()->SetTitleOffset(0.33);
+        data_ratio->SetMinimum(0);
+        data_ratio->GetYaxis()->SetMaxDigits(5);
+        data_ratio->GetXaxis()->SetNdivisions(4,3,0);
+        data_ratio->GetYaxis()->SetNdivisions(3,2,0);
+        data_ratio->GetYaxis()->SetTitle("Ratio");
+      }
+
       std::vector<TH1D*> mc_ratio ;
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
         mc_ratio.push_back((TH1D*)mc_hists[i]->Clone());
         StandardFormat(mc_ratio[i], title, kBlack, i+1, observable, log_scale);
       }
-      StandardFormat(data_ratio, title, kBlack, 8, observable, log_scale);
-      data_ratio->SetLineStyle(1);
-      data_ratio->Divide(data);
-      data_ratio->GetXaxis()->SetLabelSize(0.2);
-      data_ratio->GetXaxis()->SetTitleSize(0.2);
-      data_ratio->GetYaxis()->SetLabelSize(0.2);
-      data_ratio->GetYaxis()->SetTitleSize(0.17);
-      data_ratio->GetYaxis()->SetTitleOffset(0.33);
-      if( log_scale ) data_ratio->GetYaxis()->SetTitleOffset(0.53);
-      else data_ratio->GetYaxis()->SetTitleOffset(0.53);//data_ratio->GetYaxis()->SetTitleOffset(0.33);
-      data_ratio->SetMinimum(0);
-      data_ratio->GetYaxis()->SetMaxDigits(5);
-      data_ratio->GetXaxis()->SetNdivisions(4,3,0);
-      data_ratio->GetYaxis()->SetNdivisions(3,2,0);
-      data_ratio->GetYaxis()->SetTitle("Ratio");
 
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
-        mc_ratio[i]->Divide(data);
+        if( data ) mc_ratio[i]->Divide(data);
+        else mc_ratio[i]->Divide(mc_ratio[0]);
         mc_ratio[i]->GetYaxis()->SetTitle("Ratio");
       }
 
       // Find correct range
       double max_ratio = GetMaximum(mc_ratio)*(1-0.35);
       double min_ratio = GetMinimum(mc_ratio)*(1-0.15);
-      data_ratio->GetYaxis()->SetRangeUser(min_ratio,max_ratio);
+      if( data) data_ratio->GetYaxis()->SetRangeUser(min_ratio,max_ratio);
       if( log_scale ) sub_pad->SetLogy();
-      data_ratio->Draw("err");
+      if( data ) data_ratio->Draw("err");
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
         mc_ratio[i]->GetYaxis()->SetRangeUser(min_ratio,max_ratio);
         mc_ratio[i]->Draw("hist err same");
@@ -808,8 +827,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       if (store_root)
       {
         TFile root_file((output_location + "/TotalXSec/" + output_name + ".root").c_str(), "recreate");
-        if (data)
-        data->Write();
+        if (data) data->Write();
         for (unsigned int i = 0; i < mc_hists.size(); ++i)
         mc_hists[i]->Write();
         for (unsigned int i = 0; i < breakdown.size(); ++i)

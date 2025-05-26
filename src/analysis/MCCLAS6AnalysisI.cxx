@@ -76,45 +76,15 @@ Event *MCCLAS6AnalysisI::GetValidEvent(const unsigned int event_id)
     return nullptr;
   }
 
-  // Step 3 : smear particles momentum
-  if (ApplyReso())
-  {
-    this->SmearParticles(*event);
-  }
-
   // Step 5: Apply Acceptance Correction (Efficiency correction)
   // This takes into account the efficiency detection of each particle in theta and phi
   // We want to apply it at the end to correctly account for the acceptance in background substracted events
   this->ApplyAcceptanceCorrection(*event);
-  
+
   // Store analysis record after fiducial cut and acceptance correction (2):
-  event->StoreAnalysisRecord(kid_fid);
+  //  event->StoreAnalysisRecord(kid_fid);
 
   return event;
-}
-
-void MCCLAS6AnalysisI::SmearParticles(Event &event)
-{
-  double EBeam = GetConfiguredEBeam();
-  TLorentzVector out_mom = event.GetOutLepton4Mom();
-
-  utils::ApplyResolution(conf::kPdgElectron, out_mom, EBeam);
-  event.SetOutLeptonKinematics(out_mom);
-
-  // Apply for other particles
-  std::map<int, std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom();
-  for (std::map<int, std::vector<TLorentzVector>>::iterator it = part_map.begin(); it != part_map.end(); ++it)
-  {
-    std::vector<TLorentzVector> vtemp;
-    for (unsigned int i = 0; i < (it->second).size(); ++i)
-    {
-      TLorentzVector temp = (it->second)[i];
-      utils::ApplyResolution(it->first, temp, EBeam);
-      vtemp.push_back(temp);
-    }
-    part_map[it->first] = vtemp;
-  }
-  event.SetFinalParticlesKinematics(part_map);
 }
 
 unsigned int MCCLAS6AnalysisI::GetNEvents(void) const
@@ -128,6 +98,63 @@ void MCCLAS6AnalysisI::Initialize()
   fData = nullptr;
   
 }
+/*
+void MCCLAS6AnalysisI::SmearParticles( Event & event ) {
+  double EBeam = GetConfiguredEBeam() ; 
+  TLorentzVector out_mom = event.GetOutLepton4Mom() ; 
+
+  utils::ApplyResolution( conf::kPdgElectron, out_mom, EBeam ) ; 
+  event.SetOutLeptonKinematics( out_mom ) ; 
+  
+  // Apply for other particles
+  std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
+  for( std::map<int,std::vector<TLorentzVector>>::iterator it = part_map.begin() ; it != part_map.end() ; ++it ) {
+    std::vector<TLorentzVector> vtemp ; 
+    for( unsigned int i = 0 ; i < (it->second).size() ; ++i ) { 
+      TLorentzVector temp = (it->second)[i] ; 
+      utils::ApplyResolution( it->first, temp, EBeam ) ;
+      vtemp.push_back(temp) ; 
+    }
+    part_map[it->first] = vtemp ; 
+  }
+  event.SetFinalParticlesKinematics( part_map ) ; 
+  
+} 
+
+
+bool MCCLAS6AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) { 
+  // First, we apply it to the electron
+  // Apply fiducial cut to electron
+  Fiducial * fiducial = GetFiducialCut() ; 
+  if( ! fiducial || IsData() ) return true ; 
+
+  TLorentzVector out_mom = event.GetOutLepton4Mom() ;
+  if (! fiducial -> FiducialCut(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect(), IsData(), apply_fiducial ) ) return false ; 
+  
+  // Apply Fiducial cut for hadrons and photons
+  std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event.GetFinalParticlesUnCorr4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> contained_part_map, contained_part_map_uncorr ; 
+  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
+    std::vector<TLorentzVector> visible_part ; 
+    std::vector<TLorentzVector> visible_part_uncorr ; 
+    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
+      if( ! fiducial -> FiducialCut(it->first, GetConfiguredEBeam(), part_map[it->first][i].Vect(), IsData(), apply_fiducial ) ) continue ; 
+      visible_part.push_back( part_map[it->first][i] ) ; 
+      visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ; 
+    }
+    if( visible_part.size() == 0 ) continue ; 
+    contained_part_map[it->first] = visible_part ; 
+    contained_part_map_uncorr[it->first] = visible_part_uncorr ; 
+  }
+  
+  // Store changes in event after fiducial cut
+  event.SetFinalParticlesKinematics( contained_part_map ) ; 
+  event.SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ; 
+  
+  return true ; 
+}
+*/
 
 bool MCCLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_holder)
 {

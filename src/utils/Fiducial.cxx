@@ -647,6 +647,7 @@ Bool_t Fiducial::FiducialCutExtra( const int pdg, const double beam_en, TVector3
   else if ( pdg == conf::kPdgPiP ) extra *= PiplFiducialCutExtra( beam_en, momentum ) ;
   else if ( pdg == conf::kPdgPiM ) extra *= PimiFiducialCutExtra(beam_en, momentum) ;
   else if ( pdg == conf::kPdgPhoton ) extra *= Phot_fidExtra(momentum) ;    
+  
   if ( extra == false ) return false ; 
 			     
   return true ;

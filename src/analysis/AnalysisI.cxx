@@ -34,7 +34,7 @@ bool AnalysisI::Analyse( Event & event ) {
 
   TLorentzVector in_mom = event.GetInLepton4Mom() ;
   TLorentzVector out_mom = event.GetOutLepton4Mom() ;
-
+  
   // Step 1 : Apply generic cuts
   if ( (unsigned int) event.GetTargetPdg() != GetConfiguredTarget() ) {
     std::cout << "Target is " << event.GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
@@ -60,8 +60,8 @@ bool AnalysisI::Analyse( Event & event ) {
   }
 
   if( ApplyThetaSlice() ) {
-    if( out_mom.Theta() * 180./TMath::Pi() < conf::kMinEThetaSlice ) return false ;
-    if( out_mom.Theta() * 180./TMath::Pi() > conf::kMaxEThetaSlice ) return false ;
+    if( out_mom.Theta() * 180./TMath::Pi() < GetEThetaSliceMin() ) return false ;
+    if( out_mom.Theta() * 180./TMath::Pi() > GetEThetaSliceMax() ) return false ;
   }
 
   if( ApplyPhiOpeningAngle() ) {

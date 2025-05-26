@@ -107,10 +107,25 @@ ConfigureI::ConfigureI( const std::string input_file ) {
       else kApplyPhiOpeningAngle = false ; 
     } else if ( param[i] == "UsePhiThetaBand" ) {
       if( value[i] == "true" ) kUsePhiThetaBand = true ;
-      else kUsePhiThetaBand = false ; 
+      else kUsePhiThetaBand = false ;    
     } else if ( param[i] == "ApplyThetaSlice" ) {
       if ( value[i] == "true" ) kApplyThetaSlice = true ; 
       else kApplyThetaSlice = false ; 
+    } else if ( param[i] == "EThetaSliceRange" ) {
+      std::string etheta ; 
+      std::istringstream range( value[i] ) ;
+      std::vector<double> ethrange ;
+      while( getline( range, etheta, ',' ) ) { 
+	std::cout << " EThetaSlice --> " << etheta << std::endl;
+	ethrange.push_back(atof(etheta.c_str())) ; 
+      }
+      if( ethrange.size() != 2 ) {
+	std::cout << " ERROR: EThetaSliceRange requires two entries separated by comma" << std::endl;
+	kIsConfigured = false;
+      } else {
+	SetEThetaSliceMin( ethrange[0] ) ;
+	SetEThetaSliceMax( ethrange[1] ) ;
+      }
     } else if ( param[i] == "ApplyGoodSectorPhiSlice" ) { 
       if ( value[i] == "true" ) kApplyGoodSectorPhiSlice = true ; 
       else kApplyGoodSectorPhiSlice = false ;

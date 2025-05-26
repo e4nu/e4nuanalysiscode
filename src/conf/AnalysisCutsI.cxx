@@ -23,6 +23,7 @@ double conf::GetMinMomentumCut( const int particle_pdg, const double EBeam ) {
   } else if ( particle_pdg == kPdgPiP ) { 
     min_p = 0.2 ; 
   }
+
   return min_p ; 
 }
 

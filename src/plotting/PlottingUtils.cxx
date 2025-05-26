@@ -703,7 +703,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "RecoQELEnu")
   {
     if (EBeam == 1.161)
-    binning = plotting::GetUniformBinning(25, 0., 1.3);
+    binning = plotting::GetUniformBinning(20, 0., 0.8);
     else if (EBeam == 2.261)
     binning = plotting::GetUniformBinning(25, 0.3, EBeam + 0.2);
     else if (EBeam == 4.461)
@@ -1717,4 +1717,32 @@ double plotting::ComputeMissingEnergy( const double event_efl, const double even
   else if( slice == 3 && graph_oscillations_3 ) corrected_Emiss = graph_oscillations_3->Interpolate(event_efl,event_ehad) ; // pt > 0.6
 
   return corrected_Emiss ;
+}
+
+std::vector<double> plotting::GetEThetaRange( TTree & tree ) {
+  NEntries = tree.GetEntries();
+
+  plotting::SetAnalysisBranch( &tree ) ;
+  double etheta_min = 9999, etheta_max = 0 ;
+  for (int j = 0; j < NEntries; ++j)
+  {
+    tree.GetEntry(j);
+    if( etheta_min > GetObservable("pfl_theta") ) etheta_min = GetObservable("pfl_theta") ;
+    if( etheta_max < GetObservable("pfl_theta") ) etheta_max = GetObservable("pfl_theta") ;
+  }
+  return {etheta_min,etheta_max};
+}
+
+double plotting::GetEPhiRange( TTree & tree ) {
+  NEntries = tree.GetEntries();
+
+  plotting::SetAnalysisBranch( &tree ) ;
+  double ephi_min = 9999, ephi_max = 0 ;
+  for (int j = 0; j < NEntries; ++j)
+  {
+    tree.GetEntry(j);
+    if( ephi_min > GetObservable("pfl_phi") ) ephi_min = GetObservable("pfl_phi") ;
+    if( ephi_max < GetObservable("pfl_phi") ) ephi_max = GetObservable("pfl_phi") ;
+  }
+  return abs(ephi_max-ephi_min);
 }

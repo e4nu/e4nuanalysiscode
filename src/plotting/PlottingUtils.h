@@ -61,6 +61,8 @@ namespace e4nu {
     double GetMaximum( std::vector<TH1D*> predictions );
     double GetMaximum( std::vector<TH2D*> predictions );
     double GetMinimum( std::vector<TH1D*> predictions );
+    std::vector<double> GetEThetaRange( TTree & tree ) ;
+    double GetEPhiRange( TTree & tree ) ;
     bool PlotZoomIn(std::string analysis_id="default");
     void StandardFormat( TH1D * prediction, std::string title, int color, int style, std::string observable, bool is_log = false, double y_max = 0, std::string y_axis_label ="" );
     void StandardFormat( TH2D * prediction, std::string title, int color, int style, std::string observable_x, std::string observable_y, double z_max = 0, std::string z_axis_label ="");

@@ -20,6 +20,7 @@
 #include "conf/FiducialCutI.h"
 #include "utils/Fiducial.h"
 #include "conf/AccpetanceMapsI.h"
+#include "conf/AnalysisConstantsI.h"
 #include <TRandom3.h>
 
 namespace e4nu {
@@ -68,6 +69,10 @@ namespace e4nu {
     bool ApplyPhiOpeningAngle(void) const { return kApplyPhiOpeningAngle ; }
     bool UsePhiThetaBand(void) const { return kUsePhiThetaBand ; }
     bool ApplyThetaSlice(void) const { return kApplyThetaSlice ; }
+    double GetEThetaSliceMin(void) const { return kEThetaSliceMin ; }
+    double GetEThetaSliceMax(void) const { return kEThetaSliceMax ; }
+    void SetEThetaSliceMin( const double ethetamin ) { kEThetaSliceMin = ethetamin ; }
+    void SetEThetaSliceMax( const double ethetamax ) { kEThetaSliceMax = ethetamax ;}
     bool ApplyGoodSectorPhiSlice(void) const { return kApplyGoodSectorPhiSlice ; }
     bool GetOffSet(void) const { return koffset ; }
     bool ApplyQ2Cut(void) const{ return kQ2Cut ; }
@@ -148,6 +153,11 @@ namespace e4nu {
     bool kTrueSignal = false ; // It removes background events before any cuts are applied. This is used for acceptance calculations
     bool kIsRadiated = false ;
 
+    // Theta cuts if requested for inclusive measuremnts
+    double kEThetaSliceMin = conf::kMinEThetaSlice;
+    double kEThetaSliceMax = conf::kMaxEThetaSlice;
+
+    // Run information
     double kEBeam = 1.161 ;
     unsigned int kTargetPdg = 1000060120 ;
     unsigned int kNEvents = 0;

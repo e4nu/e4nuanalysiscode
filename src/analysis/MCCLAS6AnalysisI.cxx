@@ -76,45 +76,15 @@ Event *MCCLAS6AnalysisI::GetValidEvent(const unsigned int event_id)
     return nullptr;
   }
 
-  // Step 3 : smear particles momentum
-  if (ApplyReso())
-  {
-    this->SmearParticles(*event);
-  }
-
   // Step 5: Apply Acceptance Correction (Efficiency correction)
   // This takes into account the efficiency detection of each particle in theta and phi
   // We want to apply it at the end to correctly account for the acceptance in background substracted events
   this->ApplyAcceptanceCorrection(*event);
-  
+
   // Store analysis record after fiducial cut and acceptance correction (2):
-  event->StoreAnalysisRecord(kid_fid);
+  //  event->StoreAnalysisRecord(kid_fid);
 
   return event;
-}
-
-void MCCLAS6AnalysisI::SmearParticles(Event &event)
-{
-  double EBeam = GetConfiguredEBeam();
-  TLorentzVector out_mom = event.GetOutLepton4Mom();
-
-  utils::ApplyResolution(conf::kPdgElectron, out_mom, EBeam);
-  event.SetOutLeptonKinematics(out_mom);
-
-  // Apply for other particles
-  std::map<int, std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom();
-  for (std::map<int, std::vector<TLorentzVector>>::iterator it = part_map.begin(); it != part_map.end(); ++it)
-  {
-    std::vector<TLorentzVector> vtemp;
-    for (unsigned int i = 0; i < (it->second).size(); ++i)
-    {
-      TLorentzVector temp = (it->second)[i];
-      utils::ApplyResolution(it->first, temp, EBeam);
-      vtemp.push_back(temp);
-    }
-    part_map[it->first] = vtemp;
-  }
-  event.SetFinalParticlesKinematics(part_map);
 }
 
 unsigned int MCCLAS6AnalysisI::GetNEvents(void) const

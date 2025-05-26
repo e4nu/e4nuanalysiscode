@@ -32,6 +32,7 @@ using namespace e4nu::plotting;
 // --xsec-file) XSecFile (only for MC)                                 //
 // --bkg-mult) Maximum multiplicity used in bkg subtraction method     //
 // --phi-shift) Shift on phy applied to reduce fiducial volume         //
+// --ethetarange ) Set Range on Etheta for inclusive measurement       //
 /////////////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
@@ -154,6 +155,13 @@ int main( int argc, char* argv[] ) {
     analysis -> SetOutputFile( analysis->GetOutputFile() + "_closuretest"  ) ;
     analysis -> SetDebugBkg(true) ;
     std::cout << " Computing Closure test..."<<std::endl;
+  }
+
+  if( analysis->ApplyPhiOpeningAngle() ) {
+    // For inclusive measurements, we do not want to use all sectors
+    // Later we account for the correct solid angle in the normalization
+    analysis -> SetUseAllSectors( false ) ;
+    analysis -> EnableAllSectors( false ) ;
   }
   
   analysis -> PrintConfiguration() ;

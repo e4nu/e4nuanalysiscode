@@ -103,23 +103,26 @@ bool AnalysisI::Analyse( Event & event ) {
   // No Cuts are applied on those
   this->CookEvent( event ) ;
 
-  // Smear before appling mom cuts 
+  // (*) Step 4 : Smear before appling mom cuts 
   if( ApplyReso() && !IsData() ) {
     this -> SmearParticles( event ) ; 
   }
 
-  // Step 4 : Apply momentum cut (detector specific)
+  // Step 5 : Apply momentum cut (detector specific)
   if( ApplyMomCut() ) {
     this->ApplyMomentumCut( event ) ;
   }
 
-  // Apply angle cuts, theta for electron protons and pions
+  // Step 6 : Apply angle cuts, theta for electron protons and pions
   // these are applied to both data and MC
   if ( ! this->ApplyFiducialCutExtra( event ) ) {
     return false ;
   }
+
+  // Store analysis record after momentum cuts and general angle cuts:
+  event.StoreAnalysisRecord(kid_acuts);
   
-  // Step 5 : Remove true Bkg events if requested before applying fiducial cuts:
+  // Step 7 : Remove true Bkg events if requested before applying fiducial cuts:
   if (IsTrueSignal() && !IsData() )
     {
       std::map<int, unsigned int> Topology = GetTopology();
@@ -135,9 +138,7 @@ bool AnalysisI::Analyse( Event & event ) {
 	}
     }  
 
-  // Store analysis record after momentum cuts and general angle cuts:
-  event.StoreAnalysisRecord(kid_acuts);
-
+  // (*) Step 8 : apply fiducial if requested
   // The detector has gaps where the particles cannot be detected
   // We need to account for these with fiducial cuts
   // It also takes into account angle cuts for particles

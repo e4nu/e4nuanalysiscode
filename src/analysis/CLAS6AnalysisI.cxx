@@ -162,7 +162,8 @@ bool CLAS6AnalysisI::StoreTree(Event event)
   double TargetDensity = conf::GetTargetDensity(TargetPdg);
   double ConversionFactor = kConversionFactorCm2ToMicroBarn / kOverallUnitConversionFactor;
   double DataNormalization = kConversionFactorCm2ToMicroBarn * MassNumber / (IntegratedCharge * TargetLength * TargetDensity * kOverallUnitConversionFactor);
-
+  unsigned int RunNumber = event.GetEventRunNumber();
+  
   if( isFirstCall ){
     kAnalysisTree->Branch("MassNumber", &MassNumber, "MassNumber/I");
     kAnalysisTree->Branch("IntegratedCharge", &IntegratedCharge, "IntegratedCharge/D");
@@ -170,6 +171,7 @@ bool CLAS6AnalysisI::StoreTree(Event event)
     kAnalysisTree->Branch("TargetDensity", &TargetDensity, "TargetDensity/D");
     kAnalysisTree->Branch("ConversionFactor", &ConversionFactor, "ConversionFactor/D");
     kAnalysisTree->Branch("DataNormalization", &DataNormalization, "DataNormalization/D");
+    kAnalysisTree->Branch("RunNumber", &RunNumber, "RunNumber/I");
     isFirstCall = false;
   }
   // Store other branches which are generic to CLAS data also:

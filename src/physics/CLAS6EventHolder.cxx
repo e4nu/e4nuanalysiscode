@@ -35,6 +35,7 @@ bool CLAS6EventHolder::LoadBranch(void) {
   */
 
   fEventHolderChain->SetBranchAddress("iev", &iev, &b_iev);
+  fEventHolderChain->SetBranchAddress("RunNumber", &RunNumber, &b_RunNumber);
   fEventHolderChain->SetBranchAddress("tgt", &tgt, &b_tgt);
   fEventHolderChain->SetBranchAddress("Ev", &Ev, &b_Ev);
   fEventHolderChain->SetBranchAddress("pxv", &pxv, &b_pxv);
@@ -73,6 +74,7 @@ Event * CLAS6EventHolder::GetEvent(const unsigned int event_id) {
   fEventHolderChain -> GetEntry( event_id ) ; 
 
   event -> SetEventID( iev ) ;
+  event -> SetEventRunNumber( RunNumber ) ;
   event -> SetEventWeight( 1. ) ;
   event -> SetTargetPdg( tgt ) ; 
   event -> SetInLeptPdg( 11 ) ;

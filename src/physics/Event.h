@@ -20,6 +20,7 @@ namespace e4nu {
 
     bool IsMC(void) { return fIsMC ;}
     unsigned int GetEventID(void) const { return fEventID ; }
+    unsigned int GetEventRunNumber(void) const { return fEventRunNumber ; }
     int GetTargetPdg(void) const { return fTargetPdg ; }
     int GetInLeptPdg(void) const { return fInLeptPdg ; }
     int GetOutLeptPdg(void) const { return fOutLeptPdg ; }
@@ -33,6 +34,7 @@ namespace e4nu {
     TVector3 GetRecoq3(void) const ;
 
     void SetEventID( const unsigned int id ) { fEventID = id ; }
+    void SetEventRunNumber( const unsigned int run ) { fEventRunNumber = run ; }
     void SetTargetPdg( int target_pdg ) ;
     void SetInLeptPdg( const int pdg ) { fInLeptPdg = pdg ; }
     void SetOutLeptPdg( const int pdg ) { fOutLeptPdg = pdg ; }
@@ -170,6 +172,7 @@ namespace e4nu {
   private :
 
     unsigned int fEventID ;
+    unsigned int fEventRunNumber ;
     int fTargetPdg ;
     int fInLeptPdg ;
     int fOutLeptPdg ;

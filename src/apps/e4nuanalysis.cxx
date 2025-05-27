@@ -130,8 +130,10 @@ int main( int argc, char* argv[] ) {
     // MC Generators will have to smear their results to compare against data
     analysis -> SetApplyReso( true ) ;
     // !!!!!!!
-    analysis -> SetUseAllSectors( true ) ;
-    analysis -> EnableAllSectors( true ) ;
+    if( !analysis->ApplyPhiOpeningAngle() ) { 
+      analysis -> SetUseAllSectors( true ) ;
+      analysis -> EnableAllSectors( true ) ;
+    }
     std::string OutputFile_true = analysis->GetOutputFile() + "_true" ;
     if( analysis -> IsRadiated() ) OutputFile_true += "_radcorr";
     analysis -> SetOutputFile( OutputFile_true ) ;
@@ -155,13 +157,6 @@ int main( int argc, char* argv[] ) {
     analysis -> SetOutputFile( analysis->GetOutputFile() + "_closuretest"  ) ;
     analysis -> SetDebugBkg(true) ;
     std::cout << " Computing Closure test..."<<std::endl;
-  }
-
-  if( analysis->ApplyPhiOpeningAngle() ) {
-    // For inclusive measurements, we do not want to use all sectors
-    // Later we account for the correct solid angle in the normalization
-    analysis -> SetUseAllSectors( false ) ;
-    analysis -> EnableAllSectors( false ) ;
   }
   
   analysis -> PrintConfiguration() ;

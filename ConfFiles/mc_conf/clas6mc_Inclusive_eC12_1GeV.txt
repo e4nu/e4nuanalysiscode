@@ -1,7 +1,7 @@
 #Analysis Cuts
 DisableSector   1,2,3,4,5
-ApplyFiducial   false
-ApplyAccWeights false
+ApplyFiducial   true
+ApplyAccWeights true
 ApplyReso       false
 ApplyMomCut     true
 ApplyMottWeight false
@@ -19,7 +19,7 @@ offset			0
 #Run Configurables
 EBeam			1.161
 TargetPdg		1000060120
-NEvents			10000000
+NEvents			100000000
 FirstEvent		0
 
 #Topology definition

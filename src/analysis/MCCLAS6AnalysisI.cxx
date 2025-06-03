@@ -82,7 +82,7 @@ Event *MCCLAS6AnalysisI::GetValidEvent(const unsigned int event_id)
   this->ApplyAcceptanceCorrection(*event);
 
   // Store analysis record after fiducial cut and acceptance correction (2):
-  //  event->StoreAnalysisRecord(kid_fid);
+  event->StoreAnalysisRecord(kid_fid);
 
   return event;
 }

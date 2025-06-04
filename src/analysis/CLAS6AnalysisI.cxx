@@ -175,7 +175,7 @@ bool CLAS6AnalysisI::StoreTree(Event event)
   double BeamE = event.GetInLepton4Mom().E();
   int TargetPdg = event.GetTargetPdg();
   unsigned int MassNumber = utils::GetMassNumber(TargetPdg);
-  double IntegratedCharge = conf::GetIntegratedCharge(TargetPdg, BeamE);
+  double IntegratedCharge = GetTotalIntegratedCharge();
   double TargetLength = conf::GetTargetLength(TargetPdg);
   double TargetDensity = conf::GetTargetDensity(TargetPdg);
   double ConversionFactor = kConversionFactorCm2ToMicroBarn / kOverallUnitConversionFactor;

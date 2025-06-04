@@ -7,6 +7,9 @@
 #ifndef _TARGET_UTILS_H_
 #define _TARGET_UTILS_H_
 
+#include <iostream>
+#include <string>
+
 namespace e4nu { 
   namespace utils
     {
@@ -17,6 +20,7 @@ namespace e4nu {
       unsigned int GetTargetNProtons( const unsigned int target_pdg ); 
       unsigned int GetTargetNNeutrons( const unsigned int target_pdg );
       unsigned int GetMassNumber( const unsigned int target_pdg );
+      std::string GetTargetName( const unsigned int target_pdg );
     }
 }
 

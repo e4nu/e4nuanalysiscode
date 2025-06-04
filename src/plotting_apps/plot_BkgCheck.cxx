@@ -78,7 +78,7 @@ int main( int argc, char* argv[] ) {
 
   TH1D * h_diff_true = (TH1D*) h_tot_true->Clone();
 
-  for( unsigned int j = 0 ; j < h_diff_true -> GetNbinsX() +1; ++j ){
+  for( int j = 0 ; j < h_diff_true -> GetNbinsX() +1; ++j ){
     double err = pow(h_tot_true->GetBinContent(j)-h_tot_est->GetBinContent(j),2) ;
 
     // Substract stat error
@@ -153,7 +153,7 @@ int main( int argc, char* argv[] ) {
   // Method 1 :
   TH1D * h_method1 = (TH1D*)h_diff_true->Clone();
 
-  for( unsigned int j = 0 ; j < h_method1 -> GetNbinsX() +1 ; ++j ){
+  for( int j = 0 ; j < h_method1 -> GetNbinsX() +1 ; ++j ){
     double fraction_j = h_total_bkg->GetBinContent(j)/h_signal->GetBinContent(j);
     if(h_total_bkg->GetBinContent(j)<500) fraction_j=0;
     if(h_signal->GetBinContent(j)<500) fraction_j=0;
@@ -166,7 +166,7 @@ int main( int argc, char* argv[] ) {
   // Compute average
   double sum_weights =0, sum_err = 0;
   // Compute average error
-  for( unsigned int j = 0 ; j < h_diff_true -> GetNbinsX() +1 ; ++j ){
+  for( int j = 0 ; j < h_diff_true -> GetNbinsX() +1 ; ++j ){
     double err = pow(h_tot_true->GetBinContent(j)-h_tot_est->GetBinContent(j),2) ;
 
     // Substract stat error
@@ -186,7 +186,7 @@ int main( int argc, char* argv[] ) {
   std::cout << " Weighted error [%]:" << sum_err / sum_weights * 100 << std::endl;
 
   TH1D * h_method2 = (TH1D*)h_diff_true->Clone();
-  for( unsigned int j = 0 ; j < h_method1 -> GetNbinsX() + 1 ; ++j ){
+  for( int j = 0 ; j < h_method1 -> GetNbinsX() + 1 ; ++j ){
     double fraction_j = h_total_bkg->GetBinContent(j)/h_signal->GetBinContent(j);
     if(h_total_bkg->GetBinContent(j)<500) fraction_j=0;
     if(h_signal->GetBinContent(j)<500) fraction_j=0;

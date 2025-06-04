@@ -76,7 +76,7 @@ int main( int argc, char* argv[] ) {
       }
       if( input_files.size() == 0 ) return 0;
     } else {
-      for( int i = 0 ; i < input_files.size() ; ++i ) legend_list.push_back( "Model "+to_string(i));
+      for( long unsigned int i = 0 ; i < input_files.size() ; ++i ) legend_list.push_back( "Model "+to_string(i));
     }
 
     if( ExistArg("output-file",argc,argv)) {

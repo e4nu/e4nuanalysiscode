@@ -110,7 +110,7 @@ double CLAS6RunInfo::GetTotalIntegratedCharge(void) {
 bool CLAS6RunInfo::IsRunValid( const unsigned int run_id) {
   bool valid = kEnabledRun[run_id];
   if( !valid ) {
-    std::cout << " Trying to use " << run_id << " run. Target: " << kTarget[run_id] << " Beam: " << kBeam[run_id] << " GeV " << std::endl;
+    //std::cout << " Trying to use " << run_id << " run. Target: " << kTarget[run_id] << " Beam: " << kBeam[run_id] << " GeV " << std::endl;
   }
   return valid;
 }

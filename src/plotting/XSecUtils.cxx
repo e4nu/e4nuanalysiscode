@@ -270,6 +270,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
       if (hists[id_hist])
       {
+        //if( id_hist == 1 /* data */ && GetObservable("RunNumber") != 18288 ) continue ;
         hists[id_hist]->Fill(content, w);
         hists[id_hist]->SetLineWidth(3);
       }
@@ -304,7 +305,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   double solid_angle = 1 ;
 
   // We normalize by the solid angle if the following is satisfied
-  if( phi_range < 360 && ( etheta_range[0] < 24 || etheta_range[1] < 45 ) ) solid_angle = 2 * TMath::Pi() * (TMath::Cos(etheta_range[0] * TMath::Pi() / 180 ) - TMath::Cos(etheta_range[1] * TMath::Pi() / 180 )) * (phi_range / 360.) ;
+  //if( phi_range < 360 && ( etheta_range[0] < 24 || etheta_range[1] < 45 ) )  solid_angle = 2 * TMath::Pi() * (TMath::Cos(etheta_range[0] * TMath::Pi() / 180 ) - TMath::Cos(etheta_range[1] * TMath::Pi() / 180 )) * (phi_range / 360.) ;
 
   // Store uncorrected data
   TH1D *hist_data_uncorr = nullptr, *hist_data_uncorr_0 = nullptr, *hist_data_uncorr_1 = nullptr, *hist_data_uncorr_2 = nullptr, *hist_data_uncorr_3 = nullptr, *hist_data_uncorr_4 = nullptr, *hist_data_uncorr_5 = nullptr;

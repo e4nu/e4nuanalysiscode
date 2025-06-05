@@ -49,14 +49,17 @@ TH1D * systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
 		// We are storing the error in a histogram (hist_w_error). the content is the error itself to add to the stat uncertanty from hist.
     double stat_error = hist.GetBinError(i);
     double syst_error = hist_w_error.GetBinContent(i)/100;
-		
+
 		// The error calculation assumes that it is a multiplicative factor
 		// The error is added as a relative
-		double newerror = TMath::Sqrt( TMath::Power(stat_error,2.) + TMath::Power(syst_error*hist.GetBinContent(i),2.));
+		double newerror = TMath::Power(stat_error,2.) + TMath::Power(syst_error*hist.GetBinContent(i),2.);
+    if( newerror > 0 ) newerror = TMath::Sqrt(newerror);
+    else newerror = 0;
+    
 		if( hist.GetBinContent(i) > 0 ) hist.SetBinError(i,newerror);
     else hist.SetBinError(i,0); // remove odd bins
 
-    hist_syst->SetBinContent(i,hist_w_error.GetBinError(i)/hist_w_error.GetBinContent(i)*100); // Store sector to sector uncertainty
+    hist_syst->SetBinContent(i,hist_w_error.GetBinError(i)/hist_w_error.GetBinContent(i)*100); // Store per-bin uncertainty
   }
   return hist_syst;
 }

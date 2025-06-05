@@ -820,7 +820,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (EBeam == 2.261)
     binning = plotting::GetUniformBinning(25, 0, 180);
     else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(25, 15, 180);
+    binning = plotting::GetUniformBinning(25, 0, 180);
   }
   else if (observable == "MissingMomentum")
   {

@@ -17,7 +17,7 @@ ApplyGoodSectorPhiSlice	false
 offset			0
 
 #Run Configurables
-EBeam			2.261
+EBeam			4.461
 TargetPdg		1000060120
 NEvents			100000000
 FirstEvent		0
@@ -41,7 +41,7 @@ ObservableList RecoEnergyTransfer
 #NormalizeHists false
 DebugBkg false
 
-InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/FinalSPSPiAnalysis/Rarita/Carbon/2GeV/
-XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/FinalSPSPiAnalysis/GEM21_11a_Rarita_Q2_04_CTest.gst.root
-OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_Inclusive_G18_10a_Dipole_LFG_Q2_04_2GeV_eCarbon_NoRadTEST
+InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/FinalSPSPiAnalysis/Rarita/Carbon/4GeV/
+XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/FinalSPSPiAnalysis/GEM21_11a_Rarita_Q2_08_CTest.gst.root
+OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_Inclusive_G18_10a_Dipole_LFG_Q2_08_4GeV_eCarbon_NoRadTEST
 

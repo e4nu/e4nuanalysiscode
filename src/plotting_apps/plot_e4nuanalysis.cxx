@@ -230,11 +230,13 @@ int main( int argc, char* argv[] ) {
     string acceptance_file_1D = Compute1DAcceptance( root_files, observables_x[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
 
     // compute 2D acceptance if requested
-    string acceptance_file_2D = "";
+    string acceptance_file_2D = "", acceptance_file_slices = "";
     if( observables_y.size() > 0 ){
       // For now it only works for one single alternative observable
       std::cout << " Computing 2D acceptance: "<<std::endl;
       acceptance_file_2D = Compute2DAcceptance( root_files, observables_x[i], observables_y[0], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
+      acceptance_file_slices = Compute2DAccCorrSlice(root_files, observables_x[i], observables_y[i], y_cuts, title, mc_location, output_location, output_name, cuts, analysis_id, store_root );
+
     }
 
     string radcorr_file = "";
@@ -242,30 +244,31 @@ int main( int argc, char* argv[] ) {
     if( nofsi_file != "" ) { root_files.push_back(nofsi_file); names.push_back("No FSI");}
 
     // compute 2D rad corr if requested
-    string radcorr_file_2D = "";
+    string radcorr_file_2D = "", radcorr_file_slices = "";
     if( observables_y.size() > 0 && rad_files.size() != 0 ){
       // For now it only works for one single alternative observable
       std::cout << " Computing 2D rad corr: "<<std::endl;
       radcorr_file_2D = Compute2DRadCorr( root_files, root_rad_files, observables_x[i], observables_y[i], title, mc_location, output_location, output_name, cuts, analysis_id, store_root ) ;
+      radcorr_file_slices = Compute2DRadCorrSlice(root_files, root_rad_files, observables_x[i], observables_y[i], y_cuts, title, mc_location, output_location, output_name, cuts, analysis_id, store_root );
+
     }
 
-    Plot1DXSec( root_files, data_file, acceptance_file_1D, radcorr_file, observables_x[i], title, data_name, names, mc_location, data_location,
-      output_location, output_name, plot_data, systematic_map, bkg_syst, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
+    Plot1DXSec( root_files, data_file, acceptance_file_1D, radcorr_file, observables_x[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data, systematic_map, bkg_syst, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
 
-      if( observables_y.size() > 0 ){
-        Plot2DXSec( root_files, data_file, acceptance_file_2D, radcorr_file_2D, observables_x[i], observables_y[i], y_cuts, title, data_name, names, mc_location, data_location,
-          output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
-        }
-      }
-
-      return 0 ;
+    if( observables_y.size() > 0 ){
+      Plot2DXSec( root_files, data_file, acceptance_file_2D, radcorr_file_2D, observables_x[i], observables_y[i], y_cuts, title, data_name, names, mc_location, data_location, output_location, output_name, plot_data, systematic_map, cuts, analysis_id, store_root, log_scale, mott_scale ) ;
+      Plot2DSlicesXSec(root_files, data_file, acceptance_file_slices, radcorr_file_slices, observables_x[i], observables_y[i], y_cuts, title, data_name, names, mc_location, data_location, output_location, output_name, plot_data, systematic_map, bkg_syst, cuts, analysis_id, store_root, log_scale, mott_scale);
     }
+  }
 
-    void PrintFormat(string s){
-      if( s!="") cout << " Missing " << s << endl;
-      cout << "RequiredArguments:\n";
-      cout << " plote4nuanalysis --mc_location <mc_location> \n --data_location <data_location> \n --output_location <output_loc> \n --output_name <outputname> \n ";
-      cout << "--input_mc_files <file1,file2,...,fileN> \n --input_data_file <data> --observable_list <obs1,obs2,...,obsM> " << endl;
-      cout << " optional arguments are : \n --model_names <name1,name2,...,nameN> \n --title <title> \n --data_name <data> \n --systematics \n";
-      cout << " --add-systematics name,value:name2,value2:...:nameK,valueK \n --nofsi_file <rootfile>" << endl;
-    }
+  return 0 ;
+}
+
+void PrintFormat(string s){
+  if( s!="") cout << " Missing " << s << endl;
+  cout << "RequiredArguments:\n";
+  cout << " plote4nuanalysis --mc_location <mc_location> \n --data_location <data_location> \n --output_location <output_loc> \n --output_name <outputname> \n ";
+  cout << "--input_mc_files <file1,file2,...,fileN> \n --input_data_file <data> --observable_list <obs1,obs2,...,obsM> " << endl;
+  cout << " optional arguments are : \n --model_names <name1,name2,...,nameN> \n --title <title> \n --data_name <data> \n --systematics \n";
+  cout << " --add-systematics name,value:name2,value2:...:nameK,valueK \n --nofsi_file <rootfile>" << endl;
+}

@@ -774,8 +774,8 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   else if (observable == "RecoEnergyTransfer")
   {
     if (EBeam == 1.161) binning = plotting::GetUniformBinning(15, 0., 0.8);
-    else if (EBeam == 2.261) binning = plotting::GetUniformBinning(20, 0.5, 1.8);
-    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(20, 2, 3.3);
+    else if (EBeam == 2.261) binning = plotting::GetUniformBinning(30, 0., 1.8);
+    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(30, 0., 3.3);
   }
   else if (observable == "HadSystemMass")
   {

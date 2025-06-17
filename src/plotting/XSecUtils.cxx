@@ -305,7 +305,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   double solid_angle = 1 ;
 
   // We normalize by the solid angle if the following is satisfied
-  //if( phi_range < 360 && ( etheta_range[0] < 24 || etheta_range[1] < 45 ) )  solid_angle = 2 * TMath::Pi() * (TMath::Cos(etheta_range[0] * TMath::Pi() / 180 ) - TMath::Cos(etheta_range[1] * TMath::Pi() / 180 )) * (phi_range / 360.) ;
+  //  if( phi_range < 360 && ( etheta_range[0] < 24 || etheta_range[1] < 45 ) )  solid_angle = 2 * TMath::Pi() * (TMath::Cos(etheta_range[0] * TMath::Pi() / 180 ) - TMath::Cos(etheta_range[1] * TMath::Pi() / 180 )) * (phi_range / 360.) ;
 
   // Store uncorrected data
   TH1D *hist_data_uncorr = nullptr, *hist_data_uncorr_0 = nullptr, *hist_data_uncorr_1 = nullptr, *hist_data_uncorr_2 = nullptr, *hist_data_uncorr_3 = nullptr, *hist_data_uncorr_4 = nullptr, *hist_data_uncorr_5 = nullptr;
@@ -462,13 +462,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       systematics::AddSystematic(*hist_data_correventrate_wsyst, it->second, it->first);
     }
 
-    // Hard coding some well known systematics
-    systematics::AddSystematic(*hist_data, 3, "Normalization");
-    systematics::AddSystematic(*hist_data, 1, "AnglDependence");
-
-    systematics::AddSystematic(*hist_data_correventrate_wsyst, 3, "Normalization");
-    systematics::AddSystematic(*hist_data_correventrate_wsyst, 1, "AnglDependence");
-
     // Add Bkg uncertanty
     TFile * f_bkg_uncertanty = new TFile(bkg_syst.c_str(),"READ");
     if( f_bkg_uncertanty ) {
@@ -478,8 +471,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
       if( !h_bkg_err ) {
         std::cout << " WARNING! Background syst. histogram is empty. Ignored..." << std::endl;
       } else {
-        // systematics::AddSystematic( *hist_data, *h_bkg_err ) ;
-        // systematics::AddSystematic( *hist_data_correventrate_wsyst, *h_bkg_err ) ;
+        systematics::AddSystematic( *hist_data, *h_bkg_err ) ;
+        systematics::AddSystematic( *hist_data_correventrate_wsyst, *h_bkg_err ) ;
       }
     }
   } // end if data
@@ -685,23 +678,12 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       TCanvas *c1 = new TCanvas("c1", "Canvas with Two Pads", 600, 600);
 
       // Create the upper pad, taking the top half of the canvas
-      TPad *pad1 = new TPad("pad1", "Top Pad", 0, 0.35, 1, 1);
-      pad1->SetBottomMargin(0.025); // Minimize gap between pads
-      if( log_scale ) pad1->SetLeftMargin(0.2);
-      else pad1->SetLeftMargin(0.2);//pad1->SetLeftMargin(0.15);
+      TPad *pad1 = new TPad("pad1", "Top Pad", 0, 0, 1, 1);
+      pad1->SetBottomMargin(0.2); // Minimize gap between pads
+      pad1->SetLeftMargin(0.27);
+      pad1->SetRightMargin(0.01);
       pad1->Draw();
-
-      // Create the lower pad, taking the bottom half of the canvas
-      TPad *sub_pad = new TPad("sub_pad", "Bottom Pad", 0, 0, 1, 0.35);
-      sub_pad->SetTopMargin(0.05); // Minimize gap between pads
-      sub_pad->SetBottomMargin(0.5); // Leave space for the x-axis labels
-      sub_pad->SetBottomMargin(0.45);
-      if( log_scale ) sub_pad->SetLeftMargin(0.2);//sub_pad->SetLeftMargin(0.15);;
-      else sub_pad->SetLeftMargin(0.2);
-      sub_pad->Draw();
-
       if( log_scale ) pad1->SetLogy();
-
       // Fill xsec canvas
       pad1->cd();
 
@@ -733,12 +715,12 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         StandardFormat(breakdown[4], title, ColorBlindPalette(6), 1, observable, log_scale);
         StandardFormat(breakdown[5], title, ColorBlindPalette(3), 1, observable, log_scale);
 
-        breakdown[0]->SetFillColorAlpha(ColorBlindPalette(0),0.6);
-        breakdown[1]->SetFillColorAlpha(ColorBlindPalette(1),0.6);
-        breakdown[2]->SetFillColorAlpha(ColorBlindPalette(9),0.6);
-        breakdown[3]->SetFillColorAlpha(ColorBlindPalette(2),0.6);
-        breakdown[4]->SetFillColorAlpha(ColorBlindPalette(6),0.6);
-        breakdown[5]->SetFillColorAlpha(ColorBlindPalette(3),0.6);
+        breakdown[0]->SetFillColorAlpha(ColorBlindPalette(0),0.5);
+        breakdown[1]->SetFillColorAlpha(ColorBlindPalette(1),0.5);
+        breakdown[2]->SetFillColorAlpha(ColorBlindPalette(9),0.5);
+        breakdown[3]->SetFillColorAlpha(ColorBlindPalette(2),0.5);
+        breakdown[4]->SetFillColorAlpha(ColorBlindPalette(6),0.5);
+        breakdown[5]->SetFillColorAlpha(ColorBlindPalette(3),0.5);
 
       }
 
@@ -752,12 +734,16 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       }
       // StandardFormat(mc_hists[0], title, kBlack, 1, observable, log_scale);
       // Remove top plot label
-      mc_hists[0]->GetXaxis()->SetLabelSize(0.);
-      mc_hists[0]->GetXaxis()->SetTitleSize(0.);
-      if( log_scale ) mc_hists[0]->GetYaxis()->SetTitleOffset(0.9);
+      if( log_scale ) mc_hists[0]->GetYaxis()->SetTitleOffset(1.3);
       else mc_hists[0]->GetYaxis()->SetTitleOffset(0.9);//mc_hists[0]->GetYaxis()->SetTitleOffset(0.6);
       mc_hists[0]->SetMarkerSize(0);
+      //max_hist=10; // Used for stagged plots for publication.
       mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
+
+      // mc_hists[0]->GetYaxis()->SetTitleSize(0);
+      // mc_hists[0]->GetYaxis()->SetLabelSize(0);
+      // mc_hists[0]->GetXaxis()->SetTitleSize(0);
+      // mc_hists[0]->GetXaxis()->SetLabelSize(0);
 
       // Fill tstack Plot
       auto hs = new THStack("hs","");
@@ -775,6 +761,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         mc_hists[i]->SetMarkerSize(0);
       }
 
+      data->SetMarkerSize(1.5);
       if (data) data->Draw("err same");
 
       // print
@@ -785,51 +772,6 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         title_slice->SetFillColor(0);
         title_slice->SetBorderSize(0);
         title_slice->Draw();
-      }
-      // Plot Ratio
-      sub_pad->cd();
-      TH1D * data_ratio ;
-      if( data ) {
-        data_ratio = (TH1D*)data->Clone();
-        StandardFormat(data_ratio, title, kBlack, 8, observable, log_scale);
-        data_ratio->SetLineStyle(1);
-        data_ratio->Divide(data);
-        data_ratio->GetXaxis()->SetLabelSize(0.2);
-        data_ratio->GetXaxis()->SetTitleSize(0.2);
-        data_ratio->GetYaxis()->SetLabelSize(0.2);
-        data_ratio->GetYaxis()->SetTitleSize(0.17);
-        data_ratio->GetYaxis()->SetTitleOffset(0.33);
-        if( log_scale ) data_ratio->GetYaxis()->SetTitleOffset(0.53);
-        else data_ratio->GetYaxis()->SetTitleOffset(0.53);//data_ratio->GetYaxis()->SetTitleOffset(0.33);
-        data_ratio->SetMinimum(0);
-        data_ratio->GetYaxis()->SetMaxDigits(5);
-        data_ratio->GetXaxis()->SetNdivisions(4,3,0);
-        data_ratio->GetYaxis()->SetNdivisions(3,2,0);
-        data_ratio->GetYaxis()->SetTitle("Ratio");
-      }
-
-      std::vector<TH1D*> mc_ratio ;
-      for (unsigned int i = 0; i < mc_hists.size(); ++i){
-        mc_ratio.push_back((TH1D*)mc_hists[i]->Clone());
-        StandardFormat(mc_ratio[i], title, kBlack, i+1, observable, log_scale);
-      }
-
-      for (unsigned int i = 0; i < mc_hists.size(); ++i){
-        if( data ) mc_ratio[i]->Divide(data);
-        else mc_ratio[i]->Divide(mc_ratio[0]);
-        mc_ratio[i]->GetYaxis()->SetTitle("Ratio");
-      }
-
-      // Find correct range
-      double max_ratio = GetMaximum(mc_ratio)*(1-0.35);
-      double min_ratio = GetMinimum(mc_ratio)*(1-0.15);
-      if( data) data_ratio->GetYaxis()->SetRangeUser(min_ratio,max_ratio);
-      if( log_scale ) sub_pad->SetLogy();
-      if( data ) data_ratio->Draw("err");
-
-      for (unsigned int i = 0; i < mc_hists.size(); ++i){
-        mc_ratio[i]->GetYaxis()->SetRangeUser(min_ratio,max_ratio);
-        mc_ratio[i]->Draw("hist err same");
       }
 
       std::string output_name = output_file_name + "_dxsec_d" + observable ;
@@ -1776,13 +1718,6 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
             systematics::AddSystematic(*hist_data_correventrate_wsyst, it->second, it->first);
           }
 
-          // Hard coding some well known systematics
-          // systematics::AddSystematic(*hist_data, 3, "Normalization");
-          // systematics::AddSystematic(*hist_data, 1, "AnglDependence");
-          //
-          // systematics::AddSystematic(*hist_data_correventrate_wsyst, 3, "Normalization");
-          // systematics::AddSystematic(*hist_data_correventrate_wsyst, 1, "AnglDependence");
-
           // // Add Bkg uncertanty !! Still not available for 2D
           // TFile * f_bkg_uncertanty = new TFile("/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/e4nuanalysiscode/bakground_debug_ECal_syst.root","READ");
           // if( !f_bkg_uncertanty ) {
@@ -1928,18 +1863,6 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
             ? radcorr->ProjectionX(proj_name.c_str(), first_bin, last_bin)
             : radcorr->ProjectionY(proj_name.c_str(), first_bin, last_bin);
           }
-
-          // Correct by acceptance and radiation
-          //CorrectData(dataProjection, accProjection);
-          //if( radcorr ) CorrectData(dataProjection, radProjection);
-          // Also normalizing here the raw data.
-          // Corrected for acceptance and radd corr after projecting
-          // NormalizeHist(dataProjection, DataNormalization);
-
-          // Add systematics
-          systematics::AddSystematic(*dataProjection, 3, "Normalization");
-          systematics::AddSystematic(*dataProjection, 1, "AnglDependence");
-          systematics::AddSystematic(*dataProjection, 1, "MaxMultiplicity");
 
           // Set right format
           StandardFormat(dataProjection, "", kBlack, 8, xobservable, logScale);
@@ -2525,10 +2448,6 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
                 std::cout << " Adding " << it->second << " % systematic on " << it->first << std::endl;
                 systematics::AddSystematic(*hist_data, it->second, it->first);
               }
-
-              // Hard coding some well known systematics
-              systematics::AddSystematic(*hist_data, 3, "Normalization");
-              systematics::AddSystematic(*hist_data, 1, "AnglDependence");
 
               // Using the 1D one for all slices for now
               TFile * f_bkg_uncertanty = new TFile(bkg_syst.c_str(),"READ");

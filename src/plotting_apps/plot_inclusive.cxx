@@ -14,6 +14,10 @@
 int main( int argc, char* argv[] ) {
 
   // Paths to ROOT files
+  // const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_Inclusive_1GeV_with_breakdown_dxsec_dRecoEnergyTransfer.root";
+  // const char *file_fit = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/e4nuanalysiscode/data/InclusiveBodekChristy_C_1GeV.csv";
+  // const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_Inclusive_2GeV_with_breakdown_dxsec_dRecoEnergyTransfer.root";
+  // const char *file_fit = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/e4nuanalysiscode/data/InclusiveBodekChristy_C_2GeV_29.5deg.csv";
   const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//TotalXSec/clas6analysis_Inclusive_4GeV_with_breakdown_dxsec_dRecoEnergyTransfer.root";
   const char *file_fit = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/e4nuanalysiscode/data/InclusiveBodekChristy_C_4GeV.csv";
 
@@ -59,12 +63,12 @@ int main( int argc, char* argv[] ) {
   }
 
   h_data->SetLineColor(kBlack);
-  h_genie->SetLineColor(kBlack);
+  h_genie->SetLineColor(kBlue);
   h_data->SetMarkerColor(kBlack);
   g->SetLineColor(kRed);
 
   // Visual comparison
-  TCanvas* canvas = new TCanvas("canvas", "Histogram Comparison", 800, 600);
+  TCanvas* canvas = new TCanvas("canvas", "Histogram Comparison", 600, 600);
   gStyle->SetOptStat(0);
 
   // Adjust Y-axis range to fit both histograms

@@ -76,11 +76,6 @@ Event *MCCLAS6AnalysisI::GetValidEvent(const unsigned int event_id)
     return nullptr;
   }
 
-  // (*) Step 4 : Smear before appling mom cuts 
-  if( ApplyReso() && !IsData() ) {
-    this -> SmearParticles( *event ) ; 
-  }
-  
   // Step 5: Apply Acceptance Correction (Efficiency correction)
   // This takes into account the efficiency detection of each particle in theta and phi
   // We want to apply it at the end to correctly account for the acceptance in background substracted events
@@ -102,31 +97,6 @@ void MCCLAS6AnalysisI::Initialize()
   if (IsData()) return;
   fData = nullptr;
   
-}
-
-
-void MCCLAS6AnalysisI::SmearParticles(Event &event)
-{
-  double EBeam = GetConfiguredEBeam();
-  TLorentzVector out_mom = event.GetOutLepton4Mom();
-
-  utils::ApplyResolution(conf::kPdgElectron, out_mom, EBeam);
-  event.SetOutLeptonKinematics(out_mom);
-
-  // Apply for other particles
-  std::map<int, std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom();
-  for (std::map<int, std::vector<TLorentzVector>>::iterator it = part_map.begin(); it != part_map.end(); ++it)
-    {
-      std::vector<TLorentzVector> vtemp;
-      for (unsigned int i = 0; i < (it->second).size(); ++i)
-	{
-	  TLorentzVector temp = (it->second)[i];
-	  utils::ApplyResolution(it->first, temp, EBeam);
-	  vtemp.push_back(temp);
-	}
-      part_map[it->first] = vtemp;
-    }
-  event.SetFinalParticlesKinematics(part_map);
 }
 
 bool MCCLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_holder)

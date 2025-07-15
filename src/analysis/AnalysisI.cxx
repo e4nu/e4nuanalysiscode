@@ -103,6 +103,10 @@ bool AnalysisI::Analyse( Event & event ) {
   // No Cuts are applied on those
   this->CookEvent( event ) ;
 
+  if( ApplyReso() && !IsData() ) {
+    this -> SmearParticles( event ) ; 
+  }
+
   // Step 5 : Apply momentum cut (detector specific)
   if( ApplyMomCut() ) {
     this->ApplyMomentumCut( event ) ;
@@ -144,6 +148,30 @@ bool AnalysisI::Analyse( Event & event ) {
   return true ;
 }
 
+
+void AnalysisI::SmearParticles(Event & event)
+{
+  double EBeam = GetConfiguredEBeam();
+  TLorentzVector out_mom = event.GetOutLepton4Mom();
+
+  utils::ApplyResolution(conf::kPdgElectron, out_mom, EBeam);
+  event.SetOutLeptonKinematics(out_mom);
+
+  // Apply for other particles
+  std::map<int, std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom();
+  for (std::map<int, std::vector<TLorentzVector>>::iterator it = part_map.begin(); it != part_map.end(); ++it)
+    {
+      std::vector<TLorentzVector> vtemp;
+      for (unsigned int i = 0; i < (it->second).size(); ++i)
+	{
+	  TLorentzVector temp = (it->second)[i];
+	  utils::ApplyResolution(it->first, temp, EBeam);
+	  vtemp.push_back(temp);
+	}
+      part_map[it->first] = vtemp;
+    }
+  event.SetFinalParticlesKinematics(part_map);
+}
 
 void AnalysisI::ApplyMomentumCut( Event & event ) {
 

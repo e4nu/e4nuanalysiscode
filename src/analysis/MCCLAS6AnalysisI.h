@@ -30,7 +30,6 @@ namespace e4nu {
     bool LoadData(void);
     unsigned int GetNEvents( void ) const ;
     Event * GetValidEvent( const unsigned int event_id ) ;
-    void SmearParticles( Event & event ) ;
     bool Finalise( std::map<int,std::vector<e4nu::Event>> & event_holder ) ;
     bool StoreTree(Event event);
 

@@ -30,6 +30,7 @@ namespace e4nu {
   protected :
     void CookEvent( Event & event ) ;
     void PlotBkgInformation( const Event event ) ;
+    void SmearParticles( Event & event ) ;
     void ApplyMomentumCut( Event & event ) ;
     bool ApplyFiducialCutExtra( Event & event ) ;
     bool ApplyFiducialCut( Event & event, bool apply_fiducial ) ;

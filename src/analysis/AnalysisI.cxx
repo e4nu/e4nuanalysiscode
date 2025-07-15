@@ -96,17 +96,12 @@ bool AnalysisI::Analyse( Event & event ) {
 
   // Store analysis record before momentum cuts (0) :
   event.StoreAnalysisRecord(kid_bcuts);
-  
+
   // Step 3: Cook event
   // Remove particles not specified in topology maps
   // These are ignored in the analysis
   // No Cuts are applied on those
   this->CookEvent( event ) ;
-
-  // (*) Step 4 : Smear before appling mom cuts 
-  if( ApplyReso() && !IsData() ) {
-    this -> SmearParticles( event ) ; 
-  }
 
   // Step 5 : Apply momentum cut (detector specific)
   if( ApplyMomCut() ) {
@@ -400,30 +395,6 @@ bool AnalysisI::ApplyFiducialCutExtra( Event & event ) {
   event.SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ;
 
   return true ;
-}
-
-void AnalysisI::SmearParticles(Event &event)
-{
-  double EBeam = GetConfiguredEBeam();
-  TLorentzVector out_mom = event.GetOutLepton4Mom();
-
-  utils::ApplyResolution(conf::kPdgElectron, out_mom, EBeam);
-  event.SetOutLeptonKinematics(out_mom);
-
-  // Apply for other particles
-  std::map<int, std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom();
-  for (std::map<int, std::vector<TLorentzVector>>::iterator it = part_map.begin(); it != part_map.end(); ++it)
-    {
-      std::vector<TLorentzVector> vtemp;
-      for (unsigned int i = 0; i < (it->second).size(); ++i)
-	{
-	  TLorentzVector temp = (it->second)[i];
-	  utils::ApplyResolution(it->first, temp, EBeam);
-	  vtemp.push_back(temp);
-	}
-      part_map[it->first] = vtemp;
-    }
-  event.SetFinalParticlesKinematics(part_map);
 }
 
 bool AnalysisI::StoreTree(Event event)

@@ -145,7 +145,7 @@ int main( int argc, char* argv[] ) {
     analysis -> SetApplyReso( true ) ;
     analysis -> SetSubtractBkg( false ) ;
     std::string OutputFile_reco = analysis->GetOutputFile() + "_truereco" ;
-    if( analysis -> IsRadiated() ) OutputFile_reco += "_radiated";
+    if( analysis -> IsRadiated() ) OutputFile_reco += "_radcorr";
     analysis -> SetOutputFile( OutputFile_reco ) ;
     std::cout << " Computing true reconstructed analysis distributions for acceptance correction..."<<std::endl;
   } else if ( compute_closuretest ) {

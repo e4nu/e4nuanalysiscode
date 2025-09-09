@@ -9,6 +9,7 @@ ApplyOutEMomCut true
 ApplyQ2Cut      true
 ApplyWCut       false
 SubtractBkg     true
+EThetaSliceRange 28,31
 
 ApplyPhiOpeningAngle    true
 UsePhiThetaBand         false

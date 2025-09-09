@@ -72,6 +72,7 @@ namespace e4nu {
     // Functions for oscillation study
     void GetMissingEnergyGraph( const std::string mc_file, const bool diff_Ebeam = false );
     double ComputeMissingEnergy( const double event_efl, const double event_ehad, const unsigned int slice = 0 );
+    int GetClosestBin( TH2D * hist, double cut_value, std::string axis );
   }
 }
 

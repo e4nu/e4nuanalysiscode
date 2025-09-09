@@ -11,6 +11,7 @@
 #include "conf/ParticleI.h"
 #include "conf/TargetI.h"
 #include "utils/ParticleUtils.h"
+#include "utils/TargetUtils.h"
 #include "utils/DetectorUtils.h"
 #include "conf/FiducialCutI.h"
 #include "conf/AccpetanceMapsI.h"
@@ -18,6 +19,7 @@
 #include "conf/AnalysisConstantsI.h"
 #include "conf/CLAS6ConstantsI.h"
 #include "conf/ConstantsI.h"
+#include "conf/CLAS6RunRequirements.h"
 
 using namespace e4nu;
 
@@ -72,6 +74,16 @@ Event *CLAS6AnalysisI::GetValidEvent(const unsigned int event_id)
     return nullptr;
   }
 
+  // check run is valid. This is used to manually remove runs if needed 
+  if ( ! IsRunValid( event->GetEventRunNumber() ) ) { 
+    delete event;
+    return nullptr;
+  }
+  
+  // Double checking we have the run in the root file (as it is easy to miss one by eye...)
+  SetIsRunInFile( event->GetEventRunNumber() ) ; 
+
+
   // No further code is needed
   // Fiducial cuts are already taken care of
   // No Need to apply them again
@@ -87,6 +99,12 @@ unsigned int CLAS6AnalysisI::GetNEvents(void) const
 void CLAS6AnalysisI::Initialize()
 {
   fData = nullptr;
+
+  // Remove runs which do  not have the right beam energy or target
+  RetrieveAllRuns( GetConfiguredEBeam(), utils::GetTargetName(GetConfiguredTarget()) ) ; 
+  // Remove additional runs due to issues in the run
+  NeglectRuns( conf::GetInvalidRuns( GetConfiguredEBeam(), utils::GetTargetName(GetConfiguredTarget()) ) ) ;  
+
 }
 
 bool CLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_holder)
@@ -118,11 +136,11 @@ bool CLAS6AnalysisI::Finalise(std::map<int, std::vector<e4nu::Event>> &event_hol
 
   // Normalize
   unsigned int tgt_pdg = GetConfiguredTarget();
-  double EBeam = GetConfiguredEBeam();
-
   // Get constants
   unsigned int MassNumber = utils::GetMassNumber(tgt_pdg);
-  double IntegratedCharge = conf::GetIntegratedCharge(tgt_pdg, EBeam);
+  // Now we compute directly from the table; It was computed incorrectly in old method !! conf::GetIntegratedCharge(tgt_pdg, EBeam);
+  double IntegratedCharge = GetTotalIntegratedCharge(); 
+  std::cout << " Total integrated charge " << IntegratedCharge << std::endl;
   double TargetLength = conf::GetTargetLength(tgt_pdg);
   double TargetDensity = conf::GetTargetDensity(tgt_pdg);
 
@@ -157,7 +175,7 @@ bool CLAS6AnalysisI::StoreTree(Event event)
   double BeamE = event.GetInLepton4Mom().E();
   int TargetPdg = event.GetTargetPdg();
   unsigned int MassNumber = utils::GetMassNumber(TargetPdg);
-  double IntegratedCharge = conf::GetIntegratedCharge(TargetPdg, BeamE);
+  double IntegratedCharge = GetTotalIntegratedCharge();
   double TargetLength = conf::GetTargetLength(TargetPdg);
   double TargetDensity = conf::GetTargetDensity(TargetPdg);
   double ConversionFactor = kConversionFactorCm2ToMicroBarn / kOverallUnitConversionFactor;

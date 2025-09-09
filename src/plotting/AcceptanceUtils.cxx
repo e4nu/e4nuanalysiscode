@@ -1178,16 +1178,16 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
 
   for (unsigned int i = 0; i < rad_files.size(); ++i)
   {
-    files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_true.root").c_str(), "ROOT"));
-    files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
+    files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_truereco.root").c_str(), "ROOT"));
+    files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_truereco_radcorr.root").c_str(), "ROOT"));
     if (!files_mctrueacc[i])
     {
-      std::cout << "ERROR: the " << mc_files[i] << "_true.root  does not exist." << std::endl;
+      std::cout << "ERROR: the " << mc_files[i] << "_truereco.root  does not exist." << std::endl;
       return "";
     }
     if (!files_mcradcorr[i])
     {
-      std::cout << "ERROR: the " << mc_files[i] << "_true_radcorr.root does not exist." << std::endl;
+      std::cout << "ERROR: the " << mc_files[i] << "_truereco_radcorr.root does not exist." << std::endl;
       return "";
     }
     trees_mctrueacc.push_back((TTree *)files_mctrueacc[i]->Get("MCCLAS6Tree"));
@@ -1203,7 +1203,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
     binning = plotting::GetBinning(observable, BeamE, analysis_id);
 
     hists_radcorr.push_back(new TH1D(("Rad Corr MC ACC Model " + std::to_string(i)).c_str(), "", binning.size() - 1, &binning[0]));
-    hists_true.push_back(new TH1D(("True MC ACC Model " + std::to_string(i)).c_str(), "", binning.size() - 1, &binning[0]));
+    hists_true.push_back(new TH1D(("True Reco MC ACC Model " + std::to_string(i)).c_str(), "", binning.size() - 1, &binning[0]));
 
     hists_radcorr[i]->Sumw2();
     hists_true[i]->Sumw2();
@@ -1336,16 +1336,16 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::v
 
   for (unsigned int i = 0; i < rad_files.size(); ++i)
   {
-    files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_true.root").c_str(), "ROOT"));
-    files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
+    files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_truereco.root").c_str(), "ROOT"));
+    files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_truereco_radcorr.root").c_str(), "ROOT"));
     if (!files_mctrueacc[i])
     {
-      std::cout << "ERROR: the " << mc_files[i] << "_true.root  does not exist." << std::endl;
+      std::cout << "ERROR: the " << mc_files[i] << "_truereco.root  does not exist." << std::endl;
       return "";
     }
     if (!files_mcradcorr[i])
     {
-      std::cout << "ERROR: the " << mc_files[i] << "_true_radcorr.root does not exist." << std::endl;
+      std::cout << "ERROR: the " << mc_files[i] << "_truereco_radcorr.root does not exist." << std::endl;
       return "";
     }
     trees_mctrueacc.push_back((TTree *)files_mctrueacc[i]->Get("MCCLAS6Tree"));

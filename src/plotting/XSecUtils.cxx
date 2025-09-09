@@ -1,5 +1,6 @@
 #include "plotting/XSecUtils.h"
 #include "plotting/Systematics.h"
+#include "conf/ParticleI.h"
 #include "TLegend.h"
 #include <iomanip>
 #include <filesystem>
@@ -421,7 +422,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
     // Normalize to cross-section
     // INCLUSIVE NORMALIZATION
-    DataNormalization /= solid_angle;
+    // DataNormalization /= solid_angle;
 
     NormalizeHist(hist_data, DataNormalization);
     NormalizeHist(hist_data_0, DataNormalization);
@@ -485,7 +486,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   // INCLUSIVE NORMALIZATION
-  mc_norm[0] /= solid_angle;
+  // mc_norm[0] /= solid_angle;
 
   NormalizeHist(hist_true, mc_norm[0]);
   NormalizeHist(hist_true_0, mc_norm[0]);
@@ -680,8 +681,8 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       // Create the upper pad, taking the top half of the canvas
       TPad *pad1 = new TPad("pad1", "Top Pad", 0, 0, 1, 1);
       pad1->SetBottomMargin(0.2); // Minimize gap between pads
-      pad1->SetLeftMargin(0.27);
-      pad1->SetRightMargin(0.01);
+      pad1->SetLeftMargin(0.25);
+      pad1->SetRightMargin(0.05);
       pad1->Draw();
       if( log_scale ) pad1->SetLogy();
       // Fill xsec canvas
@@ -727,23 +728,29 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       std::vector<TH1D*> all_hists = mc_hists;
       if (data) all_hists.push_back(data);
       double max_hist = plotting::GetMaximum(all_hists);
-      double min_hist = 0 ;
-      if( log_scale ) min_hist = 1E-4 ;
+      double min_hist = 0;
+      if( log_scale ) min_hist = 1.3E-4 ;
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
         StandardFormat(mc_hists[i], title, kBlack, i+1, observable, log_scale);
+        //if( i == 1 ) StandardFormat(mc_hists[i], title, kBlue, 1, observable, log_scale);
       }
       // StandardFormat(mc_hists[0], title, kBlack, 1, observable, log_scale);
       // Remove top plot label
-      if( log_scale ) mc_hists[0]->GetYaxis()->SetTitleOffset(1.3);
-      else mc_hists[0]->GetYaxis()->SetTitleOffset(0.9);//mc_hists[0]->GetYaxis()->SetTitleOffset(0.6);
+      mc_hists[0]->GetYaxis()->SetTitleOffset(1.4);
       mc_hists[0]->SetMarkerSize(0);
-      //max_hist=10; // Used for stagged plots for publication.
-      mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
 
-      // mc_hists[0]->GetYaxis()->SetTitleSize(0);
-      // mc_hists[0]->GetYaxis()->SetLabelSize(0);
-      // mc_hists[0]->GetXaxis()->SetTitleSize(0);
-      // mc_hists[0]->GetXaxis()->SetLabelSize(0);
+      // Possibly scaling to keep same axis
+      double scaling = 1;//1E3;
+      for (unsigned int i = 0; i < mc_hists.size(); ++i) {
+        mc_hists[i]->Scale(scaling);
+      }
+      breakdown[0]->Scale(scaling);
+      breakdown[1]->Scale(scaling);
+      breakdown[2]->Scale(scaling);
+      breakdown[3]->Scale(scaling);
+      breakdown[4]->Scale(scaling);
+      breakdown[5]->Scale(scaling);
+      if (data) data->Scale(scaling);
 
       // Fill tstack Plot
       auto hs = new THStack("hs","");
@@ -754,6 +761,12 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       hs->Add(breakdown[4]);
       hs->Add(breakdown[5]);
 
+      //max_hist=1E4; // Used for stagged plots for publication.
+      //max_hist*=1E3;
+      //if( log_scale ) min_hist *= 1E3;
+
+      mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
+      mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
       mc_hists[0]->Draw("hist err ");
       hs->Draw("hist err same");
       for (unsigned int i = 0; i < mc_hists.size(); ++i) {
@@ -794,7 +807,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       std::filesystem::create_directory(totalxsec_path);
 
       // Print out integral for debugging
-      double data_integral = 0 ;
+      double data_integral = 0, data_tail = 0, data_peak = 0 ;
       double error2_data = 0 ;
       if (data) {
         //data_integral = data->Integral("width");
@@ -803,21 +816,30 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
           double content = data->GetBinContent(i);
           double err = data->GetBinError(i);
           double width = data->GetBinWidth(i);
-
+          double center = data->GetBinCenter(i);
           data_integral += content * width;
           error2_data   += err * err * width * width;
+          if( observable == "ECal"){
+            if( center < 2.257*(1-0.05)) data_tail += content * width;
+            else data_peak += content * width;
+          }
         }
       }
-      double mc_integral = 0 ;
+
+      double mc_integral = 0, mc_tail = 0, mc_peak = 0 ;
       double error2_mc = 0 ;
       // Compute the error
       for (int i = 1; i <= mc_hists[0]->GetNbinsX(); ++i) {
         double content = mc_hists[0]->GetBinContent(i);
         double err = mc_hists[0]->GetBinError(i);
         double width = mc_hists[0]->GetBinWidth(i);
-
+        double center = data->GetBinCenter(i);
         mc_integral += content * width;
         error2_mc   += err * err * width * width;
+        if( observable == "ECal"){
+          if( center < 2.257*(1-0.05) ) mc_tail += content * width;
+          else mc_peak += content * width;
+        }
       }
 
       if (data)
@@ -825,6 +847,14 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         std::cout << " Total integrated cross section (data) " << data_integral << " #pm " << sqrt(error2_data) << std::endl;
       }
       std::cout << " Total integrated cross section (mc) " << mc_integral << " #pm " << sqrt(error2_mc) << std::endl;
+
+      if( observable == "ECal"){
+        if( data ){
+          std::cout << " Tail % (data)" << data_tail/data_integral *100 << " Peak % (data)" << data_peak/data_integral*100 << " R= " << data_tail/data_peak<<std::endl;
+        }
+
+        std::cout << " Tail % (mc)" << mc_tail/mc_integral *100 << " Peak % (data)" << mc_peak/mc_integral*100 << " R= " << mc_tail/mc_peak<<std::endl;
+      }
 
       c1->SaveAs((output_location + "/TotalXSec/" + output_name + ".pdf").c_str());
       delete c1;
@@ -905,13 +935,13 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       c_sector->cd();
       c_sector->SetBottomMargin(0.15);
       c_sector->SetLeftMargin(0.15);
-      c_sector->SetRightMargin(0.15);
+      c_sector->SetRightMargin(0.25);
 
       if( log_scale ) gPad->SetLogz();
       gStyle->SetPalette(kLightTemperature);
       mc_hists[0]->SetTitle("Prediction");
       mc_hists[0]->Draw("COLZ");
-
+      gStyle->SetPalette(kLightTemperature);
       output_name = output_file_name + "_dxsec_d" + x_observable + "_vs_" + y_observable +"_mc";
       if (store_root)
       {

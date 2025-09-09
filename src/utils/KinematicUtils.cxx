@@ -19,11 +19,9 @@ double utils::GetECal(const double Ef, const std::map<int, std::vector<TLorentzV
     // Calculate ECal for visible particles
     for (unsigned int i = 0; i < (it->second).size(); ++i)
     {
-      if (it->first == 11)
-        continue;
+      if (it->first == 11) continue;
       ECal += (it->second)[i].E(); // Add Kinetic energy of hadrons
-      if (it->first == conf::kPdgProton)
-        ECal += utils::GetBindingEnergy(tgt) - utils::GetParticleMass(it->first); // Correct for proton binding energy
+      if (it->first == conf::kPdgProton) ECal += utils::GetBindingEnergy(tgt) - utils::GetParticleMass(it->first); // Correct for proton binding energy
     }
   }
 

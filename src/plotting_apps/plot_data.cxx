@@ -1,5 +1,5 @@
 // __________________________________________________________________________
-/* This app is used to plot the estimated vs true background obtained from  */
+/* This app is used to plot data histograms                                 */
 /* The output root file computed with bkg debug mode ("DebugBkg true")      */
 /* An example of how to run the analysis with this mode is available in     */
 /* ConfFiles/example_configuration.txt                                      */
@@ -47,6 +47,7 @@ int main( int argc, char* argv[] ) {
   std::string observable = "ECal";
   std::string analysis_key = "1p1pim";
   double EBeam = 1 ;
+  bool add_ratio = false;
   if( argc > 1 ) { // configure rest of analysis
     if( ExistArg("input-files",argc,argv)) {
       string input = GetArg("input-files",argc,argv);
@@ -85,6 +86,10 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("beam-energy",argc,argv)) {
       energy = stof(GetArg("beam-energy",argc,argv));
     }
+    if( ExistArg("plot-ratio",argc,argv)) {
+      add_ratio = true ;
+      // The ratio is ploted with respect of the last entry in the input list.
+    }
 
     if( energy > 0  && energy < 1.5 ) EBeam = 1.161 ;
     else if( energy >1.5 && energy < 3 ) EBeam = 2.261 ;
@@ -96,11 +101,27 @@ int main( int argc, char* argv[] ) {
 
   TCanvas * c  = new TCanvas("","",800,800);
   c->SetFillColor(0);
-  TPad *pad1 = new TPad("pad1","",0,0,1,1);
-  pad1->Draw();
-  pad1->cd();
-  pad1->SetBottomMargin(0.15);
-  pad1->SetLeftMargin(0.15);
+  TPad *pad1, *pad2 ;
+  if (add_ratio) {
+    pad1 = new TPad("pad1","",0,0.4,1,1);
+    pad2 = new TPad("pad2","",0,0,1,0.4);
+    pad1->Draw();
+    pad1->cd();
+    pad1->SetBottomMargin(0.015);
+    pad1->SetLeftMargin(0.2);
+    pad2->SetLeftMargin(0.2);
+    pad1->SetRightMargin(0.01);
+    pad2->SetRightMargin(0.01);
+    pad2->SetBottomMargin(0.15);
+  } else {
+    pad1 = new TPad("pad1","",0,0,1,1);
+    pad2 = new TPad("pad2","",0,0,1,1);
+    pad1->Draw();
+    pad1->cd();
+    pad1->SetBottomMargin(0.15);
+    pad1->SetLeftMargin(0.15);
+    pad2->SetLeftMargin(0.15);
+  }
 
   auto legend = new TLegend(0.2,0.65,0.55,0.85);
   legend->SetBorderSize(0);
@@ -159,6 +180,9 @@ int main( int argc, char* argv[] ) {
     hists[i] -> SetLineStyle(1);
     hists[i] -> SetMarkerStyle(8);
     hists[i] -> GetYaxis() -> TAxis::SetMaxDigits(3);
+    hists[i] -> SetStats(0);
+    hists[i] -> GetYaxis() -> SetTitleOffset(0.9);
+    hists[i] -> SetMarkerSize(1.6);
     plotting::NormalizeHist(hists[i], 1 );
     if( i == 0 ) hists[i] -> Draw("err");
     else hists[i] -> Draw("err same");
@@ -170,6 +194,36 @@ int main( int argc, char* argv[] ) {
   hists[0] -> Draw("err same");
   if ( legend_list.size() == input_files.size()) legend->Draw();
 
+  if( add_ratio ) {
+
+    c->cd();
+    pad2->Draw();
+    pad2->cd();
+    pad2->SetBottomMargin(0.25);
+    pad2->SetLeftMargin(0.1);
+    pad2->SetTopMargin(0.05);
+    std::vector<TH1D*> ratios;
+    for(unsigned int i = 0 ; i < hists.size() ; ++i ){
+      ratios.push_back((TH1D*)hists[i]->Clone());
+      ratios[i]->Scale(-1.);
+      ratios[i]->Add(hists.back());
+      ratios[i]->Divide(hists.back());
+      ratios[i]->Scale(100);
+      ratios[i]->SetStats(0);
+      plotting::StandardFormat( ratios[i], "", color_list[i], 1, observable, false, ymax, "Rel. Diff [%]");
+      ratios[i]->SetMarkerStyle(8);
+      ratios[i]->SetMarkerSize(1.6);
+      ratios[i]->Scale(-1.);
+      ratios[i]->GetYaxis()->SetRangeUser(-100,100);
+      ratios[i]->GetXaxis()->SetTitleOffset(0.9);
+      ratios[i]->GetXaxis()->SetTitleSize(0.2);
+      ratios[i]->GetYaxis()->SetTitleSize(0.13);
+      ratios[i]->GetXaxis()->SetLabelSize(0.2);
+      ratios[i]->GetYaxis()->SetLabelSize(0.2);
+      if( i == 0 ) ratios[i] -> Draw("err");
+      else ratios[i] -> Draw("err same");
+    }
+  }
   std::string output_name = output_file+"_Nevents_"+observable ;
 
   c->SaveAs((output_file+".root").c_str());

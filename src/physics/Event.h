@@ -72,7 +72,7 @@ namespace e4nu {
     unsigned int GetRecoNEM(void) { return fFinalParticles[conf::kPdgPhoton].size() ; }
     
     // Analysed event properties
-    double GetTotalWeight(void) const { return fWeight * fAccWght * fMottXSecWght ; }
+    double GetTotalWeight(void) const { return fWeight * fAccWght ; }
     double GetEventWeight(void) const { return fWeight ; }
     void SetEventWeight( double wght ) { fWeight = wght ; }
     void SetMottXSecWeight(void) ; 

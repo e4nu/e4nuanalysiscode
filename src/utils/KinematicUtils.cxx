@@ -19,11 +19,9 @@ double utils::GetECal(const double Ef, const std::map<int, std::vector<TLorentzV
     // Calculate ECal for visible particles
     for (unsigned int i = 0; i < (it->second).size(); ++i)
     {
-      if (it->first == 11)
-        continue;
+      if (it->first == 11) continue;
       ECal += (it->second)[i].E(); // Add Kinetic energy of hadrons
-      if (it->first == conf::kPdgProton)
-        ECal += utils::GetBindingEnergy(tgt) - utils::GetParticleMass(it->first); // Correct for proton binding energy
+      if (it->first == conf::kPdgProton) ECal += utils::GetBindingEnergy(tgt) - utils::GetParticleMass(it->first); // Correct for proton binding energy
     }
   }
 
@@ -169,12 +167,25 @@ double utils::HadSystemMass(const std::map<int, std::vector<TLorentzVector>> had
   return tot_hadron.Mag();
 }
 
-TLorentzVector utils::Missing4Momenta(const double EBeam, const TLorentzVector out_electron, const std::map<int, std::vector<TLorentzVector>> hadrons)
+TLorentzVector utils::Missing4Momenta(const double EBeam, const TLorentzVector out_electron, const std::map<int, std::vector<TLorentzVector>> hadrons, const int tgt)
 {
+  // k^mu - k'^mu = p_p^mu + p_pi^mu + p_miss^{mu} - (Mp-Be, 0)
   TLorentzVector beam(0, 0, EBeam, EBeam);
-  TLorentzVector tot_hadron = utils::TotHadron(hadrons);
   TLorentzVector q = beam - out_electron;
-  return (tot_hadron - q);
+
+  // Initial nucleon at rest
+  TLorentzVector in_nucleon(0, 0, 0, utils::GetParticleMass(conf::kPdgProton)-utils::GetBindingEnergy(tgt));
+  TLorentzVector tot_hadron;
+  for (auto it = hadrons.begin(); it != hadrons.end(); ++it)
+  {
+    for (unsigned int i = 0; i < (it->second).size(); ++i)
+    {
+      if( it->first == conf::kPdgProton ) tot_hadron += (it->second)[i] - in_nucleon ;
+      else tot_hadron += (it->second)[i];
+    }
+  }
+
+  return ( q - tot_hadron );
 }
 
 double utils::InferedNucleonMom(const double EBeam, const TLorentzVector out_electron, const std::map<int, std::vector<TLorentzVector>> hadrons, const int tgt)

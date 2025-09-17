@@ -18,18 +18,22 @@ offset			0
 #Run Configurables
 EBeam			4.461
 TargetPdg		1000060120
-NEvents			1000000000
+NEvents			50000000
 FirstEvent		0
 
 #Topology definition
 IsData			false
 IsCLAS6Analysis		true
-Toplogy 		11:1,2212:1,211:1,-221:0,22:0
-MaxBackgroundMultiplicity 4
-NRotations 1000
+Toplogy 		11:1,2212:1,211:1,-211:0,22:0
+MaxBackgroundMultiplicity 5
+NRotations 5000
+
+#histogram definition
+ObservableList RecoW,ECal,pip_mom,proton_mom,pip_theta,proton_theta,RecoQ2,pfl,pfl_theta,HadAlphaT,HadDeltaPT,HadDeltaPTy,HadDeltaPTx,HadDeltaPhiT,InferedNucleonMom,HadronsAngle,MissingMomentum,MissingAngle,MissingEnergy,HadSystemMass
+NormalizeHists false
 
 #Acceptance correction
-#The following parameters will modify the configuration 
+#The following parameters will modify the configuration
 #TrueAccCorr: by using only true signal events, it provides with the analysed events after momentum cuts. All Sectors are used
 #trueRecoAccCorr: by using only true signal events, it provodes with analysed reconstructed events after momentum, fiducial, acceptance, smearing effects. Sectors 2 and 4 are not used.
 ComputeTrueAccCorr true

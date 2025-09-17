@@ -1,8 +1,8 @@
 // _______________________________________________
 /*
- * Event Interface base class
- * 
- */
+* Event Interface base class
+*
+*/
 #include <iostream>
 #include "physics/Event.h"
 #include "conf/ParticleI.h"
@@ -10,9 +10,9 @@
 #include "utils/ParticleUtils.h"
 #include "utils/KinematicUtils.h"
 
-using namespace e4nu ; 
+using namespace e4nu ;
 
-Event::Event() { 
+Event::Event() {
   this->Initialize() ;
 }
 
@@ -21,74 +21,74 @@ Event::~Event() {
 }
 
 void Event::SetOutLeptonKinematics( const double E, const double px, const double py, const double pz ) {
-  fOutLepton.SetPxPyPzE( px, py, pz, E ) ; 
-  return ; 
+  fOutLepton.SetPxPyPzE( px, py, pz, E ) ;
+  return ;
 }
 
 void Event::SetInLeptonKinematics( const double E, const double px, const double py, const double pz ) {
-  fInLepton.SetPxPyPzE( px, py, pz, E ) ; 
-  return ; 
-} 
+  fInLepton.SetPxPyPzE( px, py, pz, E ) ;
+  return ;
+}
 
 void Event::SetFinalParticle( const int pdg, const double E, const double px, const double py, const double pz ) {
   TLorentzVector mom;
-  mom.SetPxPyPzE( px, py, pz, E ) ; 
+  mom.SetPxPyPzE( px, py, pz, E ) ;
   if( fFinalParticles.find(pdg) == fFinalParticles.end() ) {
     std::vector<TLorentzVector> vct ;
-    vct.push_back(mom); 
-    fFinalParticles.insert( std::pair<int,std::vector<TLorentzVector>>(pdg, vct) ) ; 
+    vct.push_back(mom);
+    fFinalParticles.insert( std::pair<int,std::vector<TLorentzVector>>(pdg, vct) ) ;
   } else {
-    fFinalParticles[pdg].push_back( mom ) ; 
+    fFinalParticles[pdg].push_back( mom ) ;
   }
 }
 
 void Event::SetOutUnCorrLeptonKinematics( const double E, const double px, const double py, const double pz ) {
-  fOutLeptonUnCorr.SetPxPyPzE( px, py, pz, E ) ; 
-  return ; 
+  fOutLeptonUnCorr.SetPxPyPzE( px, py, pz, E ) ;
+  return ;
 }
 
 void Event::SetInUnCorrLeptonKinematics( const double E, const double px, const double py, const double pz ) {
-  fInLeptonUnCorr.SetPxPyPzE( px, py, pz, E ) ; 
-  return ; 
-} 
+  fInLeptonUnCorr.SetPxPyPzE( px, py, pz, E ) ;
+  return ;
+}
 
 void Event::SetFinalParticleUnCorr( const int pdg, const double E, const double px, const double py, const double pz ) {
   TLorentzVector mom;
-  mom.SetPxPyPzE( px, py, pz, E ) ; 
+  mom.SetPxPyPzE( px, py, pz, E ) ;
   if( fFinalParticlesUnCorr.find(pdg) == fFinalParticlesUnCorr.end() ) {
     std::vector<TLorentzVector> vct ;
-    vct.push_back(mom); 
-    fFinalParticlesUnCorr.insert( std::pair<int,std::vector<TLorentzVector>>(pdg, vct) ) ; 
+    vct.push_back(mom);
+    fFinalParticlesUnCorr.insert( std::pair<int,std::vector<TLorentzVector>>(pdg, vct) ) ;
   } else {
-    fFinalParticlesUnCorr[pdg].push_back( mom ) ; 
+    fFinalParticlesUnCorr[pdg].push_back( mom ) ;
   }
 }
 
 void Event::StoreAnalysisRecord( unsigned int analysis_step ) {
-  double weight = this->GetTotalWeight() ; 
-  std::map<int,std::vector<TLorentzVector>> part_map = this->GetFinalParticles4Mom() ; 
-  std::vector<int> pdg_list ; 
-  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) { 
-    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) pdg_list.push_back( it->first ) ; 
+  double weight = this->GetTotalWeight() ;
+  std::map<int,std::vector<TLorentzVector>> part_map = this->GetFinalParticles4Mom() ;
+  std::vector<int> pdg_list ;
+  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
+    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) pdg_list.push_back( it->first ) ;
   }
-  std::pair<std::vector<int>,double> pair ( pdg_list, weight ) ; 
-  fAnalysisRecord[analysis_step] = pair ; 
-  return ; 
+  std::pair<std::vector<int>,double> pair ( pdg_list, weight ) ;
+  fAnalysisRecord[analysis_step] = pair ;
+  return ;
 }
 
 unsigned int Event::GetEventMultiplicity( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) const {
   // return number of charged particles in event
-  unsigned int multiplicity = 0 ; 
+  unsigned int multiplicity = 0 ;
   for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
-    multiplicity += std::abs( utils::GetParticleCharge( it->first ) ); 
+    multiplicity += std::abs( utils::GetParticleCharge( it->first ) );
   }
-  return multiplicity ; 
+  return multiplicity ;
 }
 
 unsigned int Event::GetNSignalParticles( std::map<int,std::vector<TLorentzVector>> hadronic_system, const std::map<int,unsigned int> topology ) const {
-  unsigned int N_signal = 0 ; 
+  unsigned int N_signal = 0 ;
   for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
-    if( it->first == conf::kPdgElectron ) continue ; 
+    if( it->first == conf::kPdgElectron ) continue ;
     if( topology.find(it->first) != topology.end() ) {
       N_signal += hadronic_system[it->first].size() ;
     }
@@ -99,11 +99,11 @@ unsigned int Event::GetNSignalParticles( std::map<int,std::vector<TLorentzVector
 
 int Event::GetEventTotalVisibleCharge( const std::map<int,std::vector<TLorentzVector>> hadronic_system ) const {
   // return number of charged particles in event
-  unsigned int charge = 0 ; 
+  unsigned int charge = 0 ;
   for( auto it = hadronic_system.begin() ; it != hadronic_system.end() ; ++it ) {
-    charge += utils::GetParticleCharge( it->first ) ; 
+    charge += utils::GetParticleCharge( it->first ) ;
   }
-  return charge ; 
+  return charge ;
 }
 
 double Event::GetObservable( const std::string observable ) {
@@ -147,20 +147,20 @@ double Event::GetObservable( const std::string observable ) {
   TLorentzVector p_max(0, 0, 0, 0);
   double max_mom = 0;
   for (unsigned int i = 0; i < hadron_map[conf::kPdgProton].size(); ++i)
+  {
+    if (hadron_map[conf::kPdgProton][i].P() > max_mom)
     {
-      if (hadron_map[conf::kPdgProton][i].P() > max_mom)
-	{
-	  max_mom = hadron_map[conf::kPdgProton][i].P();
-	  p_max = hadron_map[conf::kPdgProton][i];
-	}
+      max_mom = hadron_map[conf::kPdgProton][i].P();
+      p_max = hadron_map[conf::kPdgProton][i];
     }
+  }
 
   double HadronsAngle = 0;
   std::vector<TLorentzVector> particles;
   for (auto it = hadron_map.begin(); it != hadron_map.end(); ++it)
   {
     if ((it->second).size() != 1)
-      continue;
+    continue;
     for (unsigned int i = 0; i < (it->second).size(); ++i)
     {
       particles.push_back((it->second)[i]);
@@ -193,13 +193,13 @@ double Event::GetObservable( const std::string observable ) {
   TLorentzVector pip_max(0, 0, 0, 0);
   max_mom = 0;
   for (unsigned int i = 0; i < hadron_map[conf::kPdgPiP].size(); ++i)
+  {
+    if (hadron_map[conf::kPdgPiP][i].P() > max_mom)
     {
-      if (hadron_map[conf::kPdgPiP][i].P() > max_mom)
-	{
-	  max_mom = hadron_map[conf::kPdgPiP][i].P();
-	  pip_max = hadron_map[conf::kPdgPiP][i];
-	}
+      max_mom = hadron_map[conf::kPdgPiP][i].P();
+      pip_max = hadron_map[conf::kPdgPiP][i];
     }
+  }
 
   double pip_E = pip_max.E();
   double pip_mom = pip_max.P();
@@ -212,14 +212,14 @@ double Event::GetObservable( const std::string observable ) {
   TLorentzVector pim_max(0, 0, 0, 0);
   max_mom = 0;
   for (unsigned int i = 0; i < hadron_map[conf::kPdgPiM].size(); ++i)
+  {
+    if (hadron_map[conf::kPdgPiM][i].P() > max_mom)
     {
-      if (hadron_map[conf::kPdgPiM][i].P() > max_mom)
-	{
-	  max_mom = hadron_map[conf::kPdgPiM][i].P();
-	  pim_max = hadron_map[conf::kPdgPiM][i];
-	}
+      max_mom = hadron_map[conf::kPdgPiM][i].P();
+      pim_max = hadron_map[conf::kPdgPiM][i];
     }
-  
+  }
+
 
   // Adler angles
   double AdlerAngleThetaP = utils::GetAdlerAngleTheta(BeamE, out_mom, hadron_map, conf::kPdgProton) * TMath::RadToDeg();
@@ -239,34 +239,41 @@ double Event::GetObservable( const std::string observable ) {
   double pim_theta = pim_max.Theta() * TMath::RadToDeg();
   double pim_phi = pim_max.Phi() * TMath::RadToDeg();
 
-  double MissingEnergy = utils::Missing4Momenta(BeamE, out_mom, hadron_map).E();
-  double MissingMomentum = utils::Missing4Momenta(BeamE, out_mom, hadron_map).P();
-  double MissingAngle = utils::Missing4Momenta(BeamE, out_mom, hadron_map).Theta() * TMath::RadToDeg();
+  double MissingEnergy = utils::Missing4Momenta(BeamE, out_mom, hadron_map, TargetPdg).E();
+  double MissingMomentum = utils::Missing4Momenta(BeamE, out_mom, hadron_map, TargetPdg).P();
+  double MissingAngle = utils::Missing4Momenta(BeamE, out_mom, hadron_map, TargetPdg).Theta() * TMath::RadToDeg();
 
   TLorentzVector pi_mom(0, 0, 0, 0);
   max_mom = 0;
   for (unsigned int i = 0; i < hadron_map[conf::kPdgPiP].size(); ++i)
+  {
+    if (hadron_map[conf::kPdgPiP][i].P() > max_mom)
     {
-      if (hadron_map[conf::kPdgPiP][i].P() > max_mom)
-	{
-	  max_mom = hadron_map[conf::kPdgPiP][i].P();
-	  pi_mom = hadron_map[conf::kPdgPiP][i];
-	}
+      max_mom = hadron_map[conf::kPdgPiP][i].P();
+      pi_mom = hadron_map[conf::kPdgPiP][i];
     }
+  }
   max_mom = 0;
   for (unsigned int i = 0; i < hadron_map[conf::kPdgPiM].size(); ++i)
+  {
+    if (hadron_map[conf::kPdgPiM][i].P() > max_mom)
     {
-      if (hadron_map[conf::kPdgPiM][i].P() > max_mom)
-	{
-	  max_mom = hadron_map[conf::kPdgPiM][i].P();
-	  pi_mom = hadron_map[conf::kPdgPiM][i];
-	}
+      max_mom = hadron_map[conf::kPdgPiM][i].P();
+      pi_mom = hadron_map[conf::kPdgPiM][i];
     }
- 
+  }
+
   double RecoEvPion = utils::GetRecoEvPionProduction(out_mom, pi_mom);
   double RecoWPion = utils::GetRecoWPionProduction(out_mom, pi_mom);
   double ElectronPT = utils::GetPT(out_mom.Vect()).Mag();
   double PionPT = utils::GetPT(pi_mom.Vect()).Mag();
+
+  int TrueNProtons = GetTrueNProtons();
+  int TrueNNeutrons = GetTrueNNeutrons();
+  int TrueNPiP = GetTrueNPiP();
+  int TrueNPiM = GetTrueNPiM();
+  int TrueNPi0 = GetTrueNPi0();
+  int TrueNCh = GetTrueNCh();
 
   if( observable == "Efl" ) return Efl ;
   else if ( observable == "pfl" ) return pfl ;
@@ -297,7 +304,7 @@ double Event::GetObservable( const std::string observable ) {
   else if ( observable == "proton_E") return proton_E;
   else if ( observable == "proton_mom") return proton_mom;
   else if ( observable == "proton_momx") return proton_momx;
-  else if ( observable == "proton_momy") return proton_momy; 
+  else if ( observable == "proton_momy") return proton_momy;
   else if ( observable == "proton_momz") return proton_momz;
   else if ( observable == "proton_theta") return proton_theta;
   else if ( observable == "proton_phi") return proton_phi;
@@ -328,31 +335,37 @@ double Event::GetObservable( const std::string observable ) {
   else if ( observable == "HadDeltaPTy") return HadDeltaPTy;
   else if ( observable == "HadDeltaPhiT") return HadDeltaPhiT;
   else if ( observable == "InferedNucleonMom") return InferedNucleonMom;
+  else if ( observable == "TrueNProtons") return TrueNProtons;
+  else if ( observable == "TrueNNeutrons") return TrueNNeutrons;
+  else if ( observable == "TrueNPiP") return TrueNPiP;
+  else if ( observable == "TrueNPiM") return TrueNPiM;
+  else if ( observable == "TrueNPi0") return TrueNPi0;
+  else if ( observable == "TrueNCh") return TrueNCh;
 
   std::cout << observable << " is NOT defined " << std::endl;
-  return 0 ; 
+  return 0 ;
 }
 
-void Event::SetTargetPdg( int target_pdg ) { 
-  if( target_pdg == 2212 ) target_pdg = 1000010010 ;  
-  fTargetPdg = target_pdg ; 
-} 
+void Event::SetTargetPdg( int target_pdg ) {
+  if( target_pdg == 2212 ) target_pdg = 1000010010 ;
+  fTargetPdg = target_pdg ;
+}
 
-void Event::SetMottXSecWeight(void) { 
+void Event::SetMottXSecWeight(void) {
   // Set Mott XSec
   double reco_Q2 = utils::GetRecoQ2( this->GetOutLepton4Mom(), this->GetInLepton4Mom().E() ) ;
-  fMottXSecWght = std::pow( reco_Q2, 2 ) ; 
+  fMottXSecWght = std::pow( reco_Q2, 2 ) ;
 }
 
-TVector3 Event::GetRecoq3() const { 
-  return utils::GetRecoq3( fOutLepton, fInLepton.E() ) ; 
+TVector3 Event::GetRecoq3() const {
+  return utils::GetRecoq3( fOutLepton, fInLepton.E() ) ;
 }
 
 // Radiative correction utils
 void Event::SetInCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) {
   fInCorrLepton.SetPxPyPzE( px, py, pz, energy ) ;
   return ;
-} 
+}
 void Event::SetOutCorrLeptonKinematics( const double energy, const double px, const double py, const double pz ) {
   fOutCorrLepton.SetPxPyPzE( px, py, pz, energy ) ;
   return ;
@@ -360,45 +373,45 @@ void Event::SetOutCorrLeptonKinematics( const double energy, const double px, co
 
 //
 
-void Event::Initialize() { 
-  fFinalParticles.clear() ; 
-  fFinalParticlesUnCorr.clear() ; 
-  fIsMC = false ; 
-  fEventID = 0 ; 
-  fWeight = 0 ; 
-  fEventID = 0 ; 
-  fTargetPdg = 0 ; 
-  fInLeptPdg = 11 ; 
-  fOutLeptPdg = 11 ; 
-  fNP = 0 ; 
-  fNN = 0 ; 
-  fNPiP = 0 ; 
-  fNPiM = 0 ; 
-  fNPi0 = 0 ; 
-  fNKM = 0 ; 
-  fNKP = 0 ; 
-  fNK0 = 0 ; 
-  fNEM = 0 ; 
+void Event::Initialize() {
+  fFinalParticles.clear() ;
+  fFinalParticlesUnCorr.clear() ;
+  fIsMC = false ;
+  fEventID = 0 ;
+  fWeight = 0 ;
+  fEventID = 0 ;
+  fTargetPdg = 0 ;
+  fInLeptPdg = 11 ;
+  fOutLeptPdg = 11 ;
+  fNP = 0 ;
+  fNN = 0 ;
+  fNPiP = 0 ;
+  fNPiM = 0 ;
+  fNPi0 = 0 ;
+  fNKM = 0 ;
+  fNKP = 0 ;
+  fNK0 = 0 ;
+  fNEM = 0 ;
   fNOther = 0 ;
 
-  fIsMC = true ; 
-  fIsEM = false ; 
-  fIsCC = false ; 
-  fIsNC = false ; 
+  fIsMC = true ;
+  fIsEM = false ;
+  fIsCC = false ;
+  fIsNC = false ;
   fIsQEL = false ;
-  fIsRES = false ; 
-  fIsMEC = false ; 
+  fIsRES = false ;
+  fIsMEC = false ;
   fIsDIS = false ;
-  
-  fTrueQ2s = 0 ; 
-  fTrueWs = 0 ; 
-  fTruexs = 0 ; 
-  fTrueys = 0 ; 
-  fTrueQ2 = 0 ; 
-  fTrueW = 0 ; 
-  fTruex = 0 ; 
-  fTruey = 0 ; 
-  fresid = -1000; 
+
+  fTrueQ2s = 0 ;
+  fTrueWs = 0 ;
+  fTruexs = 0 ;
+  fTrueys = 0 ;
+  fTrueQ2 = 0 ;
+  fTrueW = 0 ;
+  fTruex = 0 ;
+  fTruey = 0 ;
+  fresid = -1000;
 
   fInLepton.SetPxPyPzE( 0,0,0,0 ) ;
   fOutLepton.SetPxPyPzE( 0,0,0,0 ) ;
@@ -406,13 +419,13 @@ void Event::Initialize() {
   fOutCorrLepton.SetPxPyPzE( 0,0,0,0 ) ;
   fInLeptonUnCorr.SetPxPyPzE( 0,0,0,0 ) ;
   fOutLeptonUnCorr.SetPxPyPzE( 0,0,0,0 ) ;
-  
+
   fAnalysisRecord.clear();
 }
 
-void Event::Clear() { 
+void Event::Clear() {
 
-  fFinalParticles.clear() ; 
-  fFinalParticlesUnCorr.clear() ; 
+  fFinalParticles.clear() ;
+  fFinalParticlesUnCorr.clear() ;
   fAnalysisRecord.clear();
 }

@@ -35,6 +35,7 @@ namespace e4nu {
 
     // Members for root file
     Int_t iev = 0 ;
+    Int_t RunNumber = 0 ;
     Int_t tgt = 0 ;
     Double_t Ev = 0 ;
     Double_t pxv = 0 ;
@@ -60,7 +61,8 @@ namespace e4nu {
     Double_t vtxz = 0 ;
     Double_t vtxt = 0 ;
 
-    TBranch * b_iev = nullptr ;   
+    TBranch * b_iev = nullptr ;
+    TBranch * b_RunNumber = nullptr ;   
     TBranch * b_tgt = nullptr ;   
     TBranch * b_Ev = nullptr ;   
     TBranch * b_pxv = nullptr ;   

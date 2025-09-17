@@ -14,6 +14,11 @@
 #include "utils/KinematicUtils.h"
 #include "utils/DetectorUtils.h"
 #include "utils/Utils.h"
+#include "conf/ConstantsI.h"
+#include "utils/ParticleUtils.h"
+#include "conf/ParticleI.h"
+#include "conf/TargetI.h"
+#include "conf/ConstantsI.h"
 
 using namespace e4nu;
 
@@ -29,15 +34,8 @@ bool AnalysisI::Analyse( Event & event ) {
 
   TLorentzVector in_mom = event.GetInLepton4Mom() ;
   TLorentzVector out_mom = event.GetOutLepton4Mom() ;
-
+  
   // Step 1 : Apply generic cuts
-  // Check run is correct
-  double EBeam = GetConfiguredEBeam() ;
-  if ( in_mom.E() != EBeam ) {
-    std::cout << " Electron energy is " << in_mom.E() << " instead of " << EBeam << "GeV. Configuration failed. Exit" << std::endl;
-    exit(11);
-  }
-
   if ( (unsigned int) event.GetTargetPdg() != GetConfiguredTarget() ) {
     std::cout << "Target is " << event.GetTargetPdg() << " instead of " << GetConfiguredTarget() << ". Configuration failed. Exit" << std::endl;
     exit(11);
@@ -48,22 +46,26 @@ bool AnalysisI::Analyse( Event & event ) {
   if ( wght < 0 || wght > 10 || wght == 0 ) {
     return false ;
   }
+  
+  if( ApplyReso() && !IsData() ) {
+    this -> SmearParticles( event ) ; 
+  }
 
   if( kElectronFit && out_mom.Theta() * 180 / TMath::Pi() < GetElectronMinTheta( out_mom ) ) return false ;
 
   // GENIE coordinate system flipped with respect to CLAS
   if( !IsData() ) out_mom.SetPhi( out_mom.Phi() + TMath::Pi() );
 
-  if( !utils::IsValidSector( out_mom.Phi(), EBeam, UseAllSectors() ) ) return false ;
+  if( !utils::IsValidSector( out_mom.Phi(), kEBeam, UseAllSectors() ) ) return false ;
   if( !utils::IsValidSector( out_mom.Phi(), EnabledSectors() ) ) return false ;
 
   if( ApplyOutElectronCut() ){
-    if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, EBeam ) ) return false ;
+    if( out_mom.P() < conf::GetMinMomentumCut( conf::kPdgElectron, kEBeam ) ) return false ;
   }
 
   if( ApplyThetaSlice() ) {
-    if( out_mom.Theta() * 180./TMath::Pi() < conf::kMinEThetaSlice ) return false ;
-    if( out_mom.Theta() * 180./TMath::Pi() > conf::kMaxEThetaSlice ) return false ;
+    if( out_mom.Theta() * 180./TMath::Pi() < GetEThetaSliceMin() ) return false ;
+    if( out_mom.Theta() * 180./TMath::Pi() > GetEThetaSliceMax() ) return false ;
   }
 
   if( ApplyPhiOpeningAngle() ) {
@@ -74,23 +76,23 @@ bool AnalysisI::Analyse( Event & event ) {
     if ( ! conf::GoodSectorPhiSlice( out_mom.Phi() ) ) return false ;
   }
 
-  double reco_Q2 = utils::GetRecoQ2( out_mom, EBeam ) ;
-  double W_var = utils::GetRecoW( out_mom, EBeam ) ;
+  double reco_Q2 = utils::GetRecoQ2( out_mom, kEBeam ) ;
+  double W_var = utils::GetRecoW( out_mom, kEBeam ) ;
 
   if( ApplyQ2Cut() ) {
     double MaxQ2 = 0 ;
-    if( conf::GetQ2Cut( MaxQ2, EBeam ) ) {
+    if( conf::GetQ2Cut( MaxQ2, kEBeam ) ) {
       if( reco_Q2 < MaxQ2 ) return false ;
     }
   }
 
   if( ApplyWCut() ) {
     double MinW = 0 ;
-    if( conf::GetWCut( MinW, EBeam ) ) {
+    if( conf::GetWCut( MinW, kEBeam ) ) {
       if( W_var > MinW ) return false ;
     }
   }
-
+  
   // Apply Mott Scaling to correct for different coupling
   if ( ApplyMottScaling() ) {
     event.SetMottXSecWeight() ;
@@ -105,28 +107,74 @@ bool AnalysisI::Analyse( Event & event ) {
   // No Cuts are applied on those
   this->CookEvent( event ) ;
 
-  // Step 4 : Apply momentum cut (detector specific)
+  // Step 5 : Apply momentum cut (detector specific)
   if( ApplyMomCut() ) {
     this->ApplyMomentumCut( event ) ;
   }
 
-  // Store analysis record after momentum cuts:
-  event.StoreAnalysisRecord(kid_acuts);
+  // Step 6 : Apply angle cuts, theta for electron protons and pions
+  // these are applied to both data and MC
+  if ( ! this->ApplyFiducialCutExtra( event ) ) {
+    return false ;
+  }
 
-  // Step 5: Apply fiducials
+  // Store analysis record after momentum cuts and general angle cuts:
+  event.StoreAnalysisRecord(kid_acuts);
+  
+  // Step 7 : Remove true Bkg events if requested before applying fiducial cuts:
+  if (IsTrueSignal() && !IsData() )
+    {
+      std::map<int, unsigned int> Topology = GetTopology();
+      std::map<int, std::vector<TLorentzVector>> hadrons = event.GetFinalParticles4Mom();
+      for (auto it = Topology.begin(); it != Topology.end(); ++it)
+	{
+	  if (it->first == conf::kPdgElectron)
+	    continue;
+	  if (hadrons[it->first].size() != it->second)
+	    {
+	      return false;
+	    }
+	}
+    }  
+
+  // (*) Step 8 : apply fiducial if requested
   // The detector has gaps where the particles cannot be detected
   // We need to account for these with fiducial cuts
   // It also takes into account angle cuts for particles
   if ( ! this->ApplyFiducialCut( event, ApplyFiducial() ) ) {
-    return false ;
+    return false;
   }
 
   return true ;
 }
 
 
+void AnalysisI::SmearParticles(Event & event)
+{
+  double EBeam = GetConfiguredEBeam();
+  TLorentzVector out_mom = event.GetOutLepton4Mom();
+
+  utils::ApplyResolution(conf::kPdgElectron, out_mom, EBeam);
+  event.SetOutLeptonKinematics(out_mom);
+
+  // Apply for other particles
+  std::map<int, std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom();
+  for (std::map<int, std::vector<TLorentzVector>>::iterator it = part_map.begin(); it != part_map.end(); ++it)
+    {
+      std::vector<TLorentzVector> vtemp;
+      for (unsigned int i = 0; i < (it->second).size(); ++i)
+	{
+	  TLorentzVector temp = (it->second)[i];
+	  utils::ApplyResolution(it->first, temp, EBeam);
+	  vtemp.push_back(temp);
+	}
+      part_map[it->first] = vtemp;
+    }
+  event.SetFinalParticlesKinematics(part_map);
+}
+
 void AnalysisI::ApplyMomentumCut( Event & event ) {
-  
+
   std::map<int,std::vector<TLorentzVector>> unsmeared_part_map = event.GetFinalParticlesUnCorr4Mom() ;
   TLorentzVector out_mom = event.GetOutLepton4Mom() ;
   // Remove particles below threshold
@@ -138,7 +186,7 @@ void AnalysisI::ApplyMomentumCut( Event & event ) {
 
       // Apply photon cuts for MC and data
       if( it->first == conf::kPdgPhoton ) {
-	if( ! conf::ApplyPhotRadCut( out_mom, unsmeared_part_map[it->first][i] ) ) continue ;
+        if( ! conf::ApplyPhotRadCut( out_mom, unsmeared_part_map[it->first][i] ) ) continue ;
       }
       above_th_particles.push_back( unsmeared_part_map[it->first][i] ) ;
     }
@@ -156,7 +204,7 @@ void AnalysisI::CookEvent( Event & event ) {
   // No Cuts are applied on those
   TLorentzVector out_mom = event.GetOutLepton4Mom() ;
   std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticlesUnCorr4Mom() ;
-  //  if( part_map.find(conf::kPdgPi0) != part_map.end() ) std::cout << "NOTICE: Pi0 present in generation file. They should be decayed" <<std::endl;
+  if( part_map.find(conf::kPdgPi0) != part_map.end() ) std::cout << "NOTICE: Pi0 present in generation file. They should be decayed" <<std::endl;
   std::map<int,unsigned int> Topology = GetTopology();
   std::map<int,std::vector<TLorentzVector>> cooked_part_map ;
   for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
@@ -173,7 +221,6 @@ void AnalysisI::CookEvent( Event & event ) {
 }
 
 void AnalysisI::PlotBkgInformation( Event event ) {
-
   if( ! GetDebugBkg() ) return ;
 
   // Store plots for Background debugging
@@ -190,7 +237,7 @@ void AnalysisI::PlotBkgInformation( Event event ) {
   const std::pair<std::vector<int>,double> record_afiducials = AnalysisRecord[kid_fid] ; // After fiducials
   const std::pair<std::vector<int>,double> record_acccorr = AnalysisRecord[kid_acc] ; // Acc Correction
 
-  for ( unsigned obs_id = 0 ; obs_id < tags.size() ; ++obs_id ) { 
+  for ( unsigned obs_id = 0 ; obs_id < tags.size() ; ++obs_id ) {
     if( !kHistograms[tags[obs_id]][kid_totestbkg] || !kHistograms[tags[obs_id]][kid_signal] || !kHistograms[tags[obs_id]][kid_tottruebkg]
 	|| !kHistograms[tags[obs_id]][kid_2p0pitruebkg] || !kHistograms[tags[obs_id]][kid_1p1pitruebkg] || !kHistograms[tags[obs_id]][kid_2p1pitruebkg] || !kHistograms[tags[obs_id]][kid_1p2pitruebkg]
 	|| !kHistograms[tags[obs_id]][kid_2p0piestbkg] || !kHistograms[tags[obs_id]][kid_1p1piestbkg] || !kHistograms[tags[obs_id]][kid_2p1piestbkg] || !kHistograms[tags[obs_id]][kid_1p2piestbkg] ) return ;
@@ -216,9 +263,9 @@ void AnalysisI::PlotBkgInformation( Event event ) {
 	// First, we need to get the correct mother pdg list.
 	std::vector<int> pdgs ;
 	if( (record_afiducials.first).size() == original_mult ) pdgs = record_afiducials.first ; // It comes directly from background event
-	else if( (AnalysisRecord[original_mult+1+kid_bkgcorr].first).size() == original_mult ) pdgs= AnalysisRecord[original_mult+1+kid_bkgcorr].first ; 
+	else if( (AnalysisRecord[original_mult+1+kid_bkgcorr].first).size() == original_mult ) pdgs= AnalysisRecord[original_mult+1+kid_bkgcorr].first ;
 	// It comes from original_mult + 1 event
-	// If none of the two cases above, the bkg event comes directly from a higher multiplicity event ... discard. 
+	// If none of the two cases above, the bkg event comes directly from a higher multiplicity event ... discard.
 	// Only considering direct contributions or corrections
 
 	// Count number of protons and pions
@@ -342,6 +389,368 @@ bool AnalysisI::ApplyFiducialCut( Event & event, bool apply_fiducial ) {
   event.SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ;
 
   return true ;
+}
+
+bool AnalysisI::ApplyFiducialCutExtra( Event & event ) {
+  // First, we apply it to the electron
+  // Apply fiducial cut to electron
+  Fiducial * fiducial = GetFiducialCut() ;
+  if( ! fiducial ) return true ;
+
+  // apply theta cuts
+  TLorentzVector out_mom = event.GetOutLepton4Mom() ;
+  if (! fiducial -> FiducialCutExtra(conf::kPdgElectron, GetConfiguredEBeam(), out_mom.Vect(), IsData() ) ) return false ;
+
+  // Apply Fiducial cut for hadrons and photons
+  std::map<int,std::vector<TLorentzVector>> part_map = event.GetFinalParticles4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> part_map_uncorr = event.GetFinalParticlesUnCorr4Mom() ;
+  std::map<int,std::vector<TLorentzVector>> contained_part_map, contained_part_map_uncorr ;
+  for( auto it = part_map.begin() ; it != part_map.end() ; ++it ) {
+    std::vector<TLorentzVector> visible_part ;
+    std::vector<TLorentzVector> visible_part_uncorr ;
+    for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
+      if( ! fiducial -> FiducialCutExtra(it->first, GetConfiguredEBeam(), part_map[it->first][i].Vect(), IsData() ) ) continue ;
+      visible_part.push_back( part_map[it->first][i] ) ;
+      visible_part_uncorr.push_back( part_map_uncorr[it->first][i] ) ;
+    }
+    if( visible_part.size() == 0 ) continue ;
+    contained_part_map[it->first] = visible_part ;
+    contained_part_map_uncorr[it->first] = visible_part_uncorr ;
+  }
+
+  // Store changes in event after fiducial cut
+  event.SetFinalParticlesKinematics( contained_part_map ) ;
+  event.SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ;
+
+  return true ;
+}
+
+bool AnalysisI::StoreTree(Event event)
+{
+  static bool isFirstCall = true;
+  unsigned int InitialNEvents = GetNEventsToRun();
+  double ConversionFactor = conf::kConversionFactorCm2ToMicroBarn * TMath::Power(10., -38.);
+  int ID = event.GetEventID();
+  double BeamE = event.GetInLepton4Mom().E();
+  int TargetPdg = event.GetTargetPdg();
+  int InLeptonPdg = event.GetInLeptPdg();
+  int OutLeptonPdg = event.GetOutLeptPdg();
+  double TotWeight = event.GetTotalWeight();
+  double EventWght = event.GetEventWeight();
+
+  unsigned int RecoNProtons = event.GetRecoNProtons();
+  unsigned int RecoNNeutrons = event.GetRecoNNeutrons();
+  unsigned int RecoNPiP = event.GetRecoNPiP();
+  unsigned int RecoNPiM = event.GetRecoNPiM();
+  unsigned int RecoNPi0 = event.GetRecoNPi0();
+  unsigned int RecoNKP = event.GetRecoNKP();
+  unsigned int RecoNKM = event.GetRecoNKM();
+  unsigned int RecoNK0 = event.GetRecoNK0();
+  unsigned int RecoNEM = event.GetRecoNEM();
+
+  // Angle rotated if is MC, otherwise not rotated.
+  TLorentzVector out_mom = event.GetOutLepton4Mom();
+  double Efl = out_mom.E();
+  double pfl = out_mom.P();
+  double pflx = out_mom.Px();
+  double pfly = out_mom.Py();
+  double pflz = out_mom.Pz();
+  double pfl_theta = out_mom.Theta() * TMath::RadToDeg();
+  unsigned int ElectronSector = utils::GetSector(out_mom.Phi());
+  double pfl_phi = out_mom.Phi() * TMath::RadToDeg();
+  double pfl_T = utils::GetPT(out_mom.Vect()).Mag();
+
+  double RecoQELEnu = utils::GetQELRecoEnu(out_mom, TargetPdg);
+  double RecoEnergyTransfer = utils::GetEnergyTransfer(out_mom, BeamE);
+  double Recoq3 = utils::GetRecoq3(out_mom, BeamE).Mag();
+  double RecoQ2 = utils::GetRecoQ2(out_mom, BeamE);
+  double RecoXBJK = utils::GetRecoXBJK(out_mom, BeamE);
+  double RecoW = utils::GetRecoW(out_mom, BeamE);
+
+  double MottXSecScale = event.GetMottXSecWeight();
+
+  std::map<int, unsigned int> topology = GetTopology();
+  static bool topology_has_protons = false;
+  if (topology.count(conf::kPdgProton) != 0)
+    {
+      if (topology[conf::kPdgProton] != 0)
+	topology_has_protons = true;
+    }
+  static bool topology_has_pip = false;
+  if (topology.count(conf::kPdgPiP) != 0)
+    {
+      if (topology[conf::kPdgPiP] != 0)
+	topology_has_pip = true;
+    }
+
+  static bool topology_has_pim = false;
+  if (topology.count(conf::kPdgPiM) != 0)
+    {
+      if (topology[conf::kPdgPiM] != 0)
+	topology_has_pim = true;
+    }
+
+  unsigned int TopMult = GetNTopologyParticles();
+
+  // flip hadrons phi
+  std::map<int, std::vector<TLorentzVector>> hadron_map = event.GetFinalParticles4Mom();
+  TLorentzVector p_max(0, 0, 0, 0);
+  if (topology_has_protons)
+    {
+      double max_mom = 0;
+      for (unsigned int i = 0; i < hadron_map[conf::kPdgProton].size(); ++i)
+	{
+	  if (hadron_map[conf::kPdgProton][i].P() > max_mom)
+	    {
+	      max_mom = hadron_map[conf::kPdgProton][i].P();
+	      p_max = hadron_map[conf::kPdgProton][i];
+	    }
+	}
+    }
+
+  double HadronsAngle = 0;
+  std::vector<TLorentzVector> particles;
+  for (auto it = hadron_map.begin(); it != hadron_map.end(); ++it)
+    {
+      if ((it->second).size() != 1)
+	continue;
+      for (unsigned int i = 0; i < (it->second).size(); ++i)
+	{
+	  particles.push_back((it->second)[i]);
+	}
+    }
+  if (particles.size() == 2)
+    {
+      HadronsAngle = utils::Angle(particles[0].Vect(), particles[1].Vect()) * TMath::RadToDeg();
+    }
+
+  double proton_E = p_max.E();
+  double proton_mom = p_max.P();
+  double proton_momx = p_max.Px();
+  double proton_momy = p_max.Py();
+  double proton_momz = p_max.Pz();
+  double proton_theta = p_max.Theta() * TMath::RadToDeg();
+  double proton_phi = p_max.Phi() * TMath::RadToDeg();
+  double ECal = utils::GetECal(out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg);
+  double DiffECal = utils::GetECal(out_mom.E(), event.GetFinalParticles4Mom(), TargetPdg) - BeamE;
+  double AlphaT = utils::DeltaAlphaT(out_mom.Vect(), p_max.Vect());
+  double DeltaPT = utils::DeltaPT(out_mom.Vect(), p_max.Vect()).Mag();
+  double DeltaPhiT = utils::DeltaPhiT(out_mom.Vect(), p_max.Vect());
+  double HadAlphaT = utils::DeltaAlphaT(out_mom, hadron_map);
+  double HadDeltaPT = utils::DeltaPT(out_mom, hadron_map).Mag();
+  double HadDeltaPTx = utils::DeltaPTx(out_mom, hadron_map);
+  double HadDeltaPTy = utils::DeltaPTy(out_mom, hadron_map);
+  double HadDeltaPhiT = utils::DeltaPhiT(out_mom, hadron_map);
+  double InferedNucleonMom = utils::InferedNucleonMom(BeamE, out_mom, hadron_map, TargetPdg);
+
+  TLorentzVector pip_max(0, 0, 0, 0);
+  if (topology_has_pip)
+    {
+      double max_mom = 0;
+      for (unsigned int i = 0; i < hadron_map[conf::kPdgPiP].size(); ++i)
+	{
+	  if (hadron_map[conf::kPdgPiP][i].P() > max_mom)
+	    {
+	      max_mom = hadron_map[conf::kPdgPiP][i].P();
+	      pip_max = hadron_map[conf::kPdgPiP][i];
+	    }
+	}
+    }
+
+  double pip_E = pip_max.E();
+  double pip_mom = pip_max.P();
+  double pip_momx = pip_max.Px();
+  double pip_momy = pip_max.Py();
+  double pip_momz = pip_max.Pz();
+  double pip_theta = pip_max.Theta() * TMath::RadToDeg();
+  double pip_phi = pip_max.Phi() * TMath::RadToDeg();
+
+  TLorentzVector pim_max(0, 0, 0, 0);
+  if (topology_has_pim)
+    {
+      double max_mom = 0;
+      for (unsigned int i = 0; i < hadron_map[conf::kPdgPiM].size(); ++i)
+	{
+	  if (hadron_map[conf::kPdgPiM][i].P() > max_mom)
+	    {
+	      max_mom = hadron_map[conf::kPdgPiM][i].P();
+	      pim_max = hadron_map[conf::kPdgPiM][i];
+	    }
+	}
+    }
+
+  // Adler angles
+  double AdlerAngleThetaP = utils::GetAdlerAngleTheta(BeamE, out_mom, hadron_map, conf::kPdgProton) * TMath::RadToDeg();
+  double AdlerAnglePhiP = utils::GetAdlerAnglePhi(BeamE, out_mom, hadron_map, conf::kPdgProton) * TMath::RadToDeg();
+  double AdlerAngleThetaPi = utils::GetAdlerAngleTheta(BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg();
+  double AdlerAnglePhiPi = utils::GetAdlerAnglePhi(BeamE, out_mom, hadron_map, abs(conf::kPdgPiM)) * TMath::RadToDeg();
+
+  // Angle between q and had system
+  double Angleqvshad = utils::Angle(utils::GetRecoq3(out_mom, BeamE), utils::TotHadron(hadron_map).Vect()) * TMath::RadToDeg();
+
+  double HadSystemMass = utils::HadSystemMass(hadron_map);
+  double pim_E = pim_max.E();
+  double pim_mom = pim_max.P();
+  double pim_momx = pim_max.Px();
+  double pim_momy = pim_max.Py();
+  double pim_momz = pim_max.Pz();
+  double pim_theta = pim_max.Theta() * TMath::RadToDeg();
+  double pim_phi = pim_max.Phi() * TMath::RadToDeg();
+
+  double MissingEnergy = utils::Missing4Momenta(BeamE, out_mom, hadron_map, TargetPdg).E();
+  double MissingMomentum = utils::Missing4Momenta(BeamE, out_mom, hadron_map, TargetPdg).P();
+  double MissingAngle = utils::Missing4Momenta(BeamE, out_mom, hadron_map, TargetPdg).Theta() * TMath::RadToDeg();
+  double MissingTransMomentum = utils::GetPT(utils::Missing4Momenta(BeamE, out_mom, hadron_map, TargetPdg).Vect()).Mag();
+
+  TLorentzVector pi_mom(0, 0, 0, 0);
+  if (topology_has_pip)
+    {
+      double max_mom = 0;
+      for (unsigned int i = 0; i < hadron_map[conf::kPdgPiP].size(); ++i)
+	{
+	  if (hadron_map[conf::kPdgPiP][i].P() > max_mom)
+	    {
+	      max_mom = hadron_map[conf::kPdgPiP][i].P();
+	      pi_mom = hadron_map[conf::kPdgPiP][i];
+	    }
+	}
+    }
+  else if (topology_has_pim)
+    {
+      double max_mom = 0;
+      for (unsigned int i = 0; i < hadron_map[conf::kPdgPiM].size(); ++i)
+	{
+	  if (hadron_map[conf::kPdgPiM][i].P() > max_mom)
+	    {
+	      max_mom = hadron_map[conf::kPdgPiM][i].P();
+	      pi_mom = hadron_map[conf::kPdgPiM][i];
+	    }
+	}
+    }
+
+  double RecoEvPion = utils::GetRecoEvPionProduction(out_mom, pi_mom);
+  double RecoWPion = utils::GetRecoWPionProduction(out_mom, pi_mom);
+  double ElectronPT = utils::GetPT(out_mom.Vect()).Mag();
+  double PionPT = utils::GetPT(pi_mom.Vect()).Mag();
+
+  bool IsBkg = event.IsBkg();
+
+  // Store name of files used
+  const char *InputROOTFile = kInputFile.c_str();
+  const char *OutputROOTFile = kOutputFile.c_str();
+
+  if (isFirstCall == true)
+    {
+      kAnalysisTree->Branch("InputROOTFile", &InputROOTFile, "InputROOTFile/C");
+      kAnalysisTree->Branch("OutputROOTFile", &OutputROOTFile, "OutputROOTFile/C");
+      kAnalysisTree->Branch("InitialNEvents", &InitialNEvents, "InitialNEvents/I");
+      kAnalysisTree->Branch("ConversionFactor", &ConversionFactor, "ConversionFactor/D");
+      kAnalysisTree->Branch("ID", &ID, "ID/I");
+      kAnalysisTree->Branch("TargetPdg", &TargetPdg, "TargetPdg/I");
+      kAnalysisTree->Branch("InLeptonPdg", &InLeptonPdg, "InLeptonPdg/I");
+      kAnalysisTree->Branch("OutLeptonPdg", &OutLeptonPdg, "OutLeptonPdg/I");
+      kAnalysisTree->Branch("BeamE", &BeamE, "BeamE/D");
+      kAnalysisTree->Branch("TotWeight", &TotWeight, "TotWeight/D");
+      kAnalysisTree->Branch("EventWght", &EventWght, "EventWght/D");
+      kAnalysisTree->Branch("MottXSecScale", &MottXSecScale, "MottXSecScale/D");
+      kAnalysisTree->Branch("IsBkg", &IsBkg, "IsBkg/O");
+      kAnalysisTree->Branch("RecoNProtons", &RecoNProtons, "RecoNProtons/I");
+      kAnalysisTree->Branch("RecoNNeutrons", &RecoNNeutrons, "RecoNNeutrons/I");
+      kAnalysisTree->Branch("RecoNPiP", &RecoNPiP, "RecoNPiP/I");
+      kAnalysisTree->Branch("RecoNPiM", &RecoNPiM, "RecoNPiM/I");
+      kAnalysisTree->Branch("RecoNPi0", &RecoNPi0, "RecoNPi0/I");
+      kAnalysisTree->Branch("RecoNKP", &RecoNKP, "RecoNKP/I");
+      kAnalysisTree->Branch("RecoNKM", &RecoNKM, "RecoNKM/I");
+      kAnalysisTree->Branch("RecoNK0", &RecoNK0, "RecoNK0/I");
+      kAnalysisTree->Branch("RecoNEM", &RecoNEM, "RecoNEM/I");
+      kAnalysisTree->Branch("TopMult", &TopMult, "TopMult/I");
+      kAnalysisTree->Branch("Efl", &Efl, "Efl/D");
+      kAnalysisTree->Branch("pfl", &pfl, "pfl/D");
+      kAnalysisTree->Branch("pflx", &pflx, "pflx/D");
+      kAnalysisTree->Branch("pfly", &pfly, "pfly/D");
+      kAnalysisTree->Branch("pflz", &pflz, "pflz/D");
+      kAnalysisTree->Branch("pfl_theta", &pfl_theta, "pfl_theta/D");
+      kAnalysisTree->Branch("pfl_phi", &pfl_phi, "pfl_phi/D");
+      kAnalysisTree->Branch("pfl_T", &pfl_T, "pfl_T/D");
+      kAnalysisTree->Branch("RecoQELEnu", &RecoQELEnu, "RecoQELEnu/D");
+      kAnalysisTree->Branch("RecoEnergyTransfer", &RecoEnergyTransfer, "RecoEnergyTransfer/D");
+      kAnalysisTree->Branch("Recoq3", &Recoq3, "Recoq3/D");
+      kAnalysisTree->Branch("RecoQ2", &RecoQ2, "RecoQ2/D");
+      kAnalysisTree->Branch("RecoW", &RecoW, "RecoW/D");
+      kAnalysisTree->Branch("RecoXBJK", &RecoXBJK, "RecoXBJK/D");
+      kAnalysisTree->Branch("HadSystemMass", &HadSystemMass, "HadSystemMass/D");
+      kAnalysisTree->Branch("ElectronSector", &ElectronSector, "ElectronSector/I");
+      kAnalysisTree->Branch("MissingEnergy", &MissingEnergy, "MissingEnergy/D");
+      kAnalysisTree->Branch("MissingMomentum", &MissingMomentum, "MissingMomentum/D");
+      kAnalysisTree->Branch("MissingTransMomentum", &MissingTransMomentum, "MissingTransMomentum/D");
+      kAnalysisTree->Branch("MissingAngle", &MissingAngle, "MissingAngle/D");
+      kAnalysisTree->Branch("ECal", &ECal, "ECal/D");
+      kAnalysisTree->Branch("DiffECal", &DiffECal, "DiffECal/D");
+      kAnalysisTree->Branch("HadronsAngle", &HadronsAngle, "HadronsAngle/D");
+      kAnalysisTree->Branch("Angleqvshad", &Angleqvshad, "Angleqvshad/D");
+      kAnalysisTree->Branch("RecoEvPion", &RecoEvPion, "RecoEvPion/D");
+      kAnalysisTree->Branch("RecoWPion", &RecoWPion, "RecoWPion/D");
+      kAnalysisTree->Branch("ElectronPT", &ElectronPT, "ElectronPT/D");
+      kAnalysisTree->Branch("PionPT", &PionPT, "PionPT/D");
+
+      if (topology_has_protons)
+	{
+	  kAnalysisTree->Branch("proton_E", &proton_E, "proton_E/D");
+	  kAnalysisTree->Branch("proton_mom", &proton_mom, "proton_mom/D");
+	  kAnalysisTree->Branch("proton_momx", &proton_momx, "proton_momx/D");
+	  kAnalysisTree->Branch("proton_momy", &proton_momy, "proton_momy/D");
+	  kAnalysisTree->Branch("proton_momz", &proton_momz, "proton_momz/D");
+	  kAnalysisTree->Branch("proton_theta", &proton_theta, "proton_theta/D");
+	  kAnalysisTree->Branch("proton_phi", &proton_phi, "proton_phi/D");
+	  kAnalysisTree->Branch("AlphaT", &AlphaT, "AlphaT/D");
+	  kAnalysisTree->Branch("DeltaPT", &DeltaPT, "DeltaPT/D");
+	  kAnalysisTree->Branch("DeltaPhiT", &DeltaPhiT, "DeltaPhiT/D");
+	  kAnalysisTree->Branch("AdlerAngleThetaP", &AdlerAngleThetaP, "AdlerAngleThetaP/D");
+	  kAnalysisTree->Branch("AdlerAnglePhiP", &AdlerAnglePhiP, "AdlerAnglePhiP/D");
+	}
+
+      if (topology_has_pip)
+	{
+	  kAnalysisTree->Branch("pip_E", &pip_E, "pip_E/D");
+	  kAnalysisTree->Branch("pip_mom", &pip_mom, "pip_mom/D");
+	  kAnalysisTree->Branch("pip_momx", &pip_momx, "pip_momx/D");
+	  kAnalysisTree->Branch("pip_momy", &pip_momy, "pip_momy/D");
+	  kAnalysisTree->Branch("pip_momz", &pip_momz, "pip_momz/D");
+	  kAnalysisTree->Branch("pip_theta", &pip_theta, "pip_theta/D");
+	  kAnalysisTree->Branch("pip_phi", &pip_phi, "pip_phi/D");
+	}
+
+      if (topology_has_pim)
+	{
+	  kAnalysisTree->Branch("pim_E", &pim_E, "pim_E/D");
+	  kAnalysisTree->Branch("pim_mom", &pim_mom, "pim_mom/D");
+	  kAnalysisTree->Branch("pim_momx", &pim_momx, "pim_momx/D");
+	  kAnalysisTree->Branch("pim_momy", &pim_momy, "pim_momy/D");
+	  kAnalysisTree->Branch("pim_momz", &pim_momz, "pim_momz/D");
+	  kAnalysisTree->Branch("pim_theta", &pim_theta, "pim_theta/D");
+	  kAnalysisTree->Branch("pim_phi", &pim_phi, "pim_phi/D");
+	}
+
+      if (topology_has_pip || topology_has_pim)
+	{
+	  kAnalysisTree->Branch("AdlerAngleThetaPi", &AdlerAngleThetaPi, "AdlerAngleThetaPi/D");
+	  kAnalysisTree->Branch("AdlerAnglePhiPi", &AdlerAnglePhiPi, "AdlerAnglePhiPi/D");
+	}
+
+      kAnalysisTree->Branch("HadAlphaT", &HadAlphaT, "HadAlphaT/D");
+      kAnalysisTree->Branch("HadDeltaPT", &HadDeltaPT, "HadDeltaPT/D");
+      kAnalysisTree->Branch("HadDeltaPTx", &HadDeltaPTx, "HadDeltaPTx/D");
+      kAnalysisTree->Branch("HadDeltaPTy", &HadDeltaPTy, "HadDeltaPTy/D");
+      kAnalysisTree->Branch("HadDeltaPhiT", &HadDeltaPhiT, "HadDeltaPhiT/D");
+      kAnalysisTree->Branch("InferedNucleonMom", &InferedNucleonMom, "InferedNucleonMom/D");
+
+      isFirstCall = false;
+    }
+
+  // Fill
+  kAnalysisTree->Fill();
+
+  return true;
 }
 
 bool AnalysisI::Finalise(void) {

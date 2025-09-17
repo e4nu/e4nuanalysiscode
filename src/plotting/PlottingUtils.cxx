@@ -1389,7 +1389,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       else if (EBeam == 4.461)
         binning = plotting::GetUniformBinning(15, 0, 1);
     }
-    if (observable == "AngleElvsHad")
+    else if (observable == "AngleElvsHad")
     {
       if (EBeam == 1.161)
         binning = plotting::GetUniformBinning(15, 0, 180);
@@ -1457,7 +1457,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       else if (EBeam == 4.461)
         binning = plotting::GetUniformBinning(30, 2, 6);
     }
-    if (observable == "AngleElvsHad")
+    else if (observable == "AngleElvsHad")
     {
       if (EBeam == 1.161)
         binning = plotting::GetUniformBinning(15, 0, 180);

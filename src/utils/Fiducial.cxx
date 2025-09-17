@@ -632,9 +632,7 @@ Bool_t Fiducial::GetEPhiLimits(double beam_en, Float_t momentum, Float_t theta, 
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, TVector3 momentum, const bool is_data, 
-			      const bool apply_fiducial ) {
-  
+Bool_t Fiducial::FiducialCutExtra( const int pdg, const double beam_en, TVector3 momentum, const bool is_data ){
   if( !is_data ) {
     // Electron fiducial cut, return kTRUE if pass or kFALSE if not
     momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ;
@@ -649,16 +647,33 @@ Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, TVector3 mome
   else if ( pdg == conf::kPdgPiP ) extra *= PiplFiducialCutExtra( beam_en, momentum ) ;
   else if ( pdg == conf::kPdgPiM ) extra *= PimiFiducialCutExtra(beam_en, momentum) ;
   else if ( pdg == conf::kPdgPhoton ) extra *= Phot_fidExtra(momentum) ;    
+  
   if ( extra == false ) return false ; 
 			     
-  // Apply cuts to include real detector fiducial
-  if ( apply_fiducial ) { 
-    if ( pdg == conf::kPdgElectron ) return EFiducialCut( beam_en, momentum ) ; 
-    else if ( pdg == conf::kPdgProton ) return PFiducialCut( beam_en, momentum ) ; 
-    else if ( pdg == conf::kPdgPiP ) return Pi_phot_fid_united( beam_en, momentum, 1 ) ; 
-    else if ( pdg == conf::kPdgPiM ) return Pi_phot_fid_united (beam_en, momentum, -1 ) ; 
-    else if ( pdg == conf::kPdgPhoton ) return Pi_phot_fid_united( beam_en, momentum, 0 ) ; 
+  return true ;
+}
+
+  // --------------------------------------------------------------------------------------------------------------------------------------------------------
+  
+Bool_t Fiducial::FiducialCut( const int pdg, const double beam_en, TVector3 momentum, const bool is_data, 
+			      const bool apply_fiducial ) {
+  
+  if( !is_data ) {
+    // Electron fiducial cut, return kTRUE if pass or kFALSE if not
+    momentum.SetPhi( momentum.Phi() + TMath::Pi() ) ;
   }
+
+  if( !FiducialCutExtra( pdg, beam_en, momentum, is_data ) ) return false;
+			     
+  if( !apply_fiducial ) return true ; 
+  
+  // Apply cuts to include real detector fiducial
+  if ( pdg == conf::kPdgElectron ) return EFiducialCut( beam_en, momentum ) ; 
+  else if ( pdg == conf::kPdgProton ) return PFiducialCut( beam_en, momentum ) ; 
+  else if ( pdg == conf::kPdgPiP ) return Pi_phot_fid_united( beam_en, momentum, 1 ) ; 
+  else if ( pdg == conf::kPdgPiM ) return Pi_phot_fid_united (beam_en, momentum, -1 ) ; 
+  else if ( pdg == conf::kPdgPhoton ) return Pi_phot_fid_united( beam_en, momentum, 0 ) ; 
+  
   return true ; 
 }
 
@@ -2431,16 +2446,11 @@ Bool_t Fiducial::PiplFiducialCut(double beam_en, TVector3 momentum, Float_t *phi
 
 Bool_t Fiducial::PFiducialCutExtra(double beam_en, TVector3 momentum) {
 
-  bool status = true;
-
   double theta = momentum.Theta() * TMath::RadToDeg() ;
 
-  if (theta < conf::kMinThetaProton) { status = false; }
-
-  // There is a gap in proton theta at 1 GeV which we cannot correct well for
-  // we apply an additional cut to remove those protons
-  if (theta > 35 && theta < 45 && beam_en < 2 ) status = false ; 
-  return status;
+  if (theta < conf::kMinThetaProton) return false;
+  if (theta >= conf::kMaxThetaHadrons ) return false; 
+  return true ;
 
 }
 
@@ -2448,44 +2458,34 @@ Bool_t Fiducial::PFiducialCutExtra(double beam_en, TVector3 momentum) {
 
 Bool_t Fiducial::PiplFiducialCutExtra(double beam_en, TVector3 momentum) {
 
-  bool status = true;
-
   double theta = momentum.Theta() * TMath::RadToDeg() ;
 
-  if (theta < conf::kMinThetaPiPlus) { status = false; }
-
-  return status;
-
+  if (theta < conf::kMinThetaPiPlus) return false;
+  if (theta >= conf::kMaxThetaHadrons ) return false;
+  return true;
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 
 Bool_t Fiducial::Phot_fidExtra(TVector3 momentum) {
 
-  bool status = true;
-
   double theta = momentum.Theta() * TMath::RadToDeg() ;
-
-  if (theta < conf::kMinThetaGamma) { status = false; }
-
-  return status;
+  
+  if (theta < conf::kMinThetaGamma) return false;
+  if (theta >= conf::kMaxThetaHadrons ) return false;
+  return true;
 
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 
 Bool_t Fiducial::PimiFiducialCutExtra(double beam_en, TVector3 momentum) {
-
-  bool status = true;
-
   double theta = momentum.Theta() * TMath::RadToDeg() ;
   double mom = momentum.Mag();
   double theta_min = myPiMinusFit->Eval(mom);
-
-  if (theta < theta_min) { status = false; }
-
-  return status;
-
+  if (theta < theta_min) return false;
+  if (theta >= conf::kMaxThetaHadrons ) return false;
+  return true;
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------------

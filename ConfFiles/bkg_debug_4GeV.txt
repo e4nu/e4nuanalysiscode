@@ -18,7 +18,7 @@ offset			0
 #Run Configurables
 EBeam			4.461
 TargetPdg		1000060120
-NEvents			1000000000
+NEvents			10000000
 FirstEvent		0
 
 #Topology definition
@@ -29,7 +29,7 @@ MaxBackgroundMultiplicity 5
 NRotations 5000
 
 #histogram definition
-ObservableList RecoW,ECal,pim_mom,proton_mom
+ObservableList RecoW,ECal,pim_mom,proton_mom,TrueNCh,TrueNProtons,TrueNPiM,TrueNPiP
 AnalysisKey 1p1pim
 NormalizeHists false
 DebugBkg true
@@ -41,6 +41,6 @@ DebugBkg true
 ComputeTrueAccCorr false
 ComputeTrueRecoAccCorr false
 
-InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/G18_10a_Dipole_LFG_Q2_08_4GeV_eCarbon.gst.root
-XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/G18_10a_Dipole_Q2_08_eCarbon.root
-OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/e4nuanalysis_1p1pim_G18_10a_Dipole_LFG_Q2_08_4GeV_eCarbon_NoRad_bkg
+InputFile  /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Generation/FinalSPSPiAnalysis/Rarita/Carbon/4GeV/
+XSecFile   /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024Splines/FinalSPSPiAnalysis/GEM21_11a_Rarita_Q2_08_C.gst.root
+OutputFile /pnfs/genie/persistent/users/jtenavid/e4nu_files/GENIE_Files/2024AnalisedFiles/testbkg_4GeV

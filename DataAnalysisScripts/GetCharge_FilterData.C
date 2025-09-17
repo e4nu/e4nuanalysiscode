@@ -534,7 +534,7 @@ void GetCharge_FilterData::Loop()
 //	TString FileName = Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/GetCharge_genie_filtered_data_e2a_ep_%s_%s_neutrino6_united4_radphot_test_100M.root",ftarget.c_str(),fbeam_en.c_str());
 
 	// e4v workshop files
-	TString FileName = Form("/w/hallb-scifs17exp/clas/claseg2/apapadop/e4vWorkshop_%s_%s.root",ftarget.c_str(),fbeam_en.c_str());
+	TString FileName = Form("/u/home/jtena/data_perrun/e4vdata_%s_%s.root",ftarget.c_str(),fbeam_en.c_str());
 
 	std::cout << "File " << FileName << " to be  created" << std::endl;
 

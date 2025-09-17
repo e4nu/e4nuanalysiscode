@@ -1,5 +1,5 @@
 // __________________________________________________________________________
-/* This app is used to plot the estimated vs true background obtained from  */
+/* This app is used to plot data histograms                                 */
 /* The output root file computed with bkg debug mode ("DebugBkg true")      */
 /* An example of how to run the analysis with this mode is available in     */
 /* ConfFiles/example_configuration.txt                                      */
@@ -8,7 +8,6 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include "utils/RadiativeCorrUtils.h"
 #include "plotting/PlottingUtils.h"
 #include "conf/ConstantsI.h"
 #include "conf/ParticleI.h"
@@ -21,7 +20,6 @@
 
 using namespace std;
 using namespace e4nu;
-using namespace e4nu::utils;
 using namespace e4nu::conf;
 using namespace e4nu::plotting;
 /////////////////////////////////////////////////////////////////
@@ -32,6 +30,7 @@ using namespace e4nu::plotting;
 // * legend-list : tags for the legend                         //
 // * analysis-key: i.e. 1p1pim                                 //
 // * sector : default all                                      //
+// * beam-energy : energy                                      //
 /////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {
@@ -46,19 +45,19 @@ int main( int argc, char* argv[] ) {
   std::vector<string> input_files, legend_list ;
   std::string output_file = "histogram_data";
   std::string observable = "ECal";
-  int sector = -9999 ; // all
   std::string analysis_key = "1p1pim";
   double EBeam = 1 ;
+  bool add_ratio = false;
   if( argc > 1 ) { // configure rest of analysis
     if( ExistArg("input-files",argc,argv)) {
       string input = GetArg("input-files",argc,argv);
       stringstream ss(input);
       while( ss.good() )
-	{
-	  string substr;
-	  getline( ss, substr, ',' );
-	  input_files.push_back( substr );
-	}
+      {
+        string substr;
+        getline( ss, substr, ',' );
+        input_files.push_back( substr );
+      }
       if( input_files.size() == 0 ) return 0;
     } else { return 0 ;}
 
@@ -66,11 +65,11 @@ int main( int argc, char* argv[] ) {
       string input = GetArg("legend-list",argc,argv);
       stringstream ss(input);
       while( ss.good() )
-	{
-	  string substr;
-	  getline( ss, substr, ',' );
-	  legend_list.push_back( substr );
-	}
+      {
+        string substr;
+        getline( ss, substr, ',' );
+        legend_list.push_back( substr );
+      }
       if( input_files.size() == 0 ) return 0;
     }
 
@@ -80,9 +79,16 @@ int main( int argc, char* argv[] ) {
     if( ExistArg("observable",argc,argv)) {
       observable = GetArg("observable",argc,argv);
     }
+    if( ExistArg("analysis-key",argc,argv)) {
+      analysis_key = GetArg("analysis-key",argc,argv);
+    }
     double energy = 0 ;
     if( ExistArg("beam-energy",argc,argv)) {
-       energy = stof(GetArg("beam-energy",argc,argv));
+      energy = stof(GetArg("beam-energy",argc,argv));
+    }
+    if( ExistArg("plot-ratio",argc,argv)) {
+      add_ratio = true ;
+      // The ratio is ploted with respect of the last entry in the input list.
     }
 
     if( energy > 0  && energy < 1.5 ) EBeam = 1.161 ;
@@ -95,11 +101,27 @@ int main( int argc, char* argv[] ) {
 
   TCanvas * c  = new TCanvas("","",800,800);
   c->SetFillColor(0);
-  TPad *pad1 = new TPad("pad1","",0,0,1,1);
-  pad1->Draw();
-  pad1->cd();
-  pad1->SetBottomMargin(0.15);
-  pad1->SetLeftMargin(0.15);
+  TPad *pad1, *pad2 ;
+  if (add_ratio) {
+    pad1 = new TPad("pad1","",0,0.4,1,1);
+    pad2 = new TPad("pad2","",0,0,1,0.4);
+    pad1->Draw();
+    pad1->cd();
+    pad1->SetBottomMargin(0.015);
+    pad1->SetLeftMargin(0.2);
+    pad2->SetLeftMargin(0.2);
+    pad1->SetRightMargin(0.01);
+    pad2->SetRightMargin(0.01);
+    pad2->SetBottomMargin(0.15);
+  } else {
+    pad1 = new TPad("pad1","",0,0,1,1);
+    pad2 = new TPad("pad2","",0,0,1,1);
+    pad1->Draw();
+    pad1->cd();
+    pad1->SetBottomMargin(0.15);
+    pad1->SetLeftMargin(0.15);
+    pad2->SetLeftMargin(0.15);
+  }
 
   auto legend = new TLegend(0.2,0.65,0.55,0.85);
   legend->SetBorderSize(0);
@@ -127,115 +149,17 @@ int main( int argc, char* argv[] ) {
   }
 
   // OBSERVABLE DEFINITION:
-  double TotWeight ;
-  double ECal,Recoq3,RecoW;
-  double pfl,pfl_theta,pfl_phi;
-  double proton_mom,proton_phi,proton_theta;
-  double pim_mom,pim_theta,pim_phi;
-  double pip_mom,pip_theta,pip_phi;
-  double HadAlphaT, HadDeltaPT, HadDeltaPTx, HadDeltaPTy, HadDeltaPhiT ;
-  double AlphaT, DeltaPT, DeltaPhiT ;
-  double RecoXBJK, RecoEnergyTransfer, RecoQ2, HadSystemMass, RecoQELEnu ;
-  double MissingEnergy, MissingAngle, MissingMomentum ;
-  double InferedNucleonMom, RecoEvPion, RecoWPion ;
-  double HadronsAngle,Angleqvshad ;
-  double AdlerAngleThetaP, AdlerAnglePhiP, AdlerAngleThetaPi, AdlerAnglePhiPi ;
-  long NEntries ;
-  bool IsBkg ;
-  int ElectronSector ;
-
   for ( unsigned int i = 0 ; i < in_trees.size() ; ++i ){
     NEntries = in_trees[i] -> GetEntries() ;
     if( !in_trees[i] ) continue ;
-    in_trees[i] -> SetBranchAddress("TotWeight",&TotWeight);
-    in_trees[i] -> SetBranchAddress("IsBkg",&IsBkg);
-    in_trees[i] -> SetBranchAddress("ECal",&ECal);
-    in_trees[i] -> SetBranchAddress("pfl_theta",&pfl_theta);
-    in_trees[i] -> SetBranchAddress("pfl_phi",&pfl_phi);
-    in_trees[i] -> SetBranchAddress("pfl",&pfl);
-    in_trees[i] -> SetBranchAddress("proton_mom",&proton_mom);
-    in_trees[i] -> SetBranchAddress("proton_theta",&proton_theta);
-    in_trees[i] -> SetBranchAddress("proton_phi",&proton_phi);
-    in_trees[i] -> SetBranchAddress("pim_mom",&pim_mom);
-    in_trees[i] -> SetBranchAddress("pim_theta",&pim_theta);
-    in_trees[i] -> SetBranchAddress("pim_phi",&pim_phi);
-    in_trees[i] -> SetBranchAddress("pip_mom",&pip_mom);
-    in_trees[i] -> SetBranchAddress("pip_theta",&pip_theta);
-    in_trees[i] -> SetBranchAddress("pip_phi",&pip_phi);
-    in_trees[i] -> SetBranchAddress("RecoW",&RecoW);
-    in_trees[i] -> SetBranchAddress("Recoq3",&Recoq3);
-    in_trees[i] -> SetBranchAddress("RecoQELEnu",&RecoQELEnu);
-    in_trees[i] -> SetBranchAddress("RecoXBJK",&RecoXBJK);
-    in_trees[i] -> SetBranchAddress("RecoQ2",&RecoQ2);
-    in_trees[i] -> SetBranchAddress("RecoEnergyTransfer",&RecoEnergyTransfer);
-    in_trees[i] -> SetBranchAddress("AlphaT",&AlphaT);
-    in_trees[i] -> SetBranchAddress("HadAlphaT",&HadAlphaT);
-    in_trees[i] -> SetBranchAddress("DeltaPT",&DeltaPT);
-    in_trees[i] -> SetBranchAddress("HadDeltaPT",&HadDeltaPT);
-    in_trees[i] -> SetBranchAddress("HadDeltaPTx",&HadDeltaPTx);
-    in_trees[i] -> SetBranchAddress("HadDeltaPTy",&HadDeltaPTy);
-    in_trees[i] -> SetBranchAddress("DeltaPhiT",&DeltaPhiT);
-    in_trees[i] -> SetBranchAddress("HadDeltaPhiT",&HadDeltaPhiT);
-    in_trees[i] -> SetBranchAddress("ElectronSector",&ElectronSector);
-    in_trees[i] -> SetBranchAddress("HadSystemMass", &HadSystemMass);
-    in_trees[i] -> SetBranchAddress("MissingEnergy", &MissingEnergy);
-    in_trees[i] -> SetBranchAddress("MissingAngle", &MissingAngle);
-    in_trees[i] -> SetBranchAddress("MissingMomentum", &MissingMomentum);
-    in_trees[i] -> SetBranchAddress("InferedNucleonMom", &InferedNucleonMom);
-    in_trees[i] -> SetBranchAddress("HadronsAngle", &HadronsAngle);
-    in_trees[i] -> SetBranchAddress("AdlerAngleThetaP", &AdlerAngleThetaP);
-    in_trees[i] -> SetBranchAddress("AdlerAnglePhiP", &AdlerAnglePhiP);
-    in_trees[i] -> SetBranchAddress("AdlerAngleThetaPi", &AdlerAngleThetaPi);
-    in_trees[i] -> SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
-    in_trees[i] -> SetBranchAddress("Angleqvshad",&Angleqvshad);
-    in_trees[i] -> SetBranchAddress("RecoEvPion",&RecoEvPion);
-    in_trees[i] -> SetBranchAddress("RecoWPion",&RecoWPion);
+    plotting::SetAnalysisBranch( in_trees[i] ) ;
 
     for( int j = 0 ; j < NEntries ; ++j ) {
       in_trees[i]->GetEntry(j) ;
-      double content = 0 ;
-      double w = TotWeight ;
-      if( observable == "ECal") content = ECal ;
-      else if ( observable == "pfl") content = pfl ;
-      else if ( observable == "pfl_theta") content = pfl_theta ;
-      else if ( observable == "pfl_phi") content = pfl_phi ;
-      else if ( observable == "proton_mom") content = proton_mom ;
-      else if ( observable == "proton_theta") content = proton_theta ;
-      else if ( observable == "proton_phi") content = proton_phi ;
-      else if ( observable == "pim_mom") content = pim_mom ;
-      else if ( observable == "pim_theta") content = pim_theta ;
-      else if ( observable == "pim_phi") content = pim_phi ;
-      else if ( observable == "pip_mom") content = pip_mom ;
-      else if ( observable == "pip_theta") content = pip_theta ;
-      else if ( observable == "pip_phi") content = pip_phi ;
-      else if ( observable == "RecoW") content = RecoW ;
-      else if ( observable == "Recoq3") content = Recoq3 ;
-      else if ( observable == "RecoQELEnu") content = RecoQELEnu ;
-      else if ( observable == "RecoXBJK") content = RecoXBJK ;
-      else if ( observable == "RecoQ2") content = RecoQ2 ;
-      else if ( observable == "RecoEnergyTransfer") content = RecoEnergyTransfer ;
-      else if ( observable == "AlphaT") content = AlphaT ;
-      else if ( observable == "HadAlphaT") content = HadAlphaT ;
-      else if ( observable == "DeltaPT") content = DeltaPT ;
-      else if ( observable == "HadDeltaPT") content = HadDeltaPT ;
-      else if ( observable == "HadDeltaPTx") content = HadDeltaPTx ;
-      else if ( observable == "HadDeltaPTy") content = HadDeltaPTy ;
-      else if ( observable == "DeltaPhiT") content = DeltaPhiT ;
-      else if ( observable == "HadDeltaPhiT") content = HadDeltaPhiT ;
-      else if ( observable == "HadSystemMass") content = HadSystemMass ;
-      else if ( observable == "MissingEnergy") content = MissingEnergy ;
-      else if ( observable == "MissingEnergy") content = MissingEnergy ;
-      else if ( observable == "MissingAngle") content = MissingAngle ;
-      else if ( observable == "MissingMomentum") content = MissingMomentum ;
-      else if ( observable == "InferedNucleonMom") content = InferedNucleonMom ;
-      else if ( observable == "HadronsAngle") content = HadronsAngle ;
-      else if ( observable == "AdlerAngleThetaP") content = AdlerAngleThetaP ;
-      else if ( observable == "AdlerAnglePhiP") content = AdlerAnglePhiP ;
-      else if ( observable == "AdlerAngleThetaPi") content = AdlerAngleThetaPi ;
-      else if ( observable == "AdlerAnglePhiPi") content = AdlerAnglePhiPi ;
-      else if ( observable == "Angleqvshad") content = Angleqvshad ;
-      else if ( observable == "RecoEvPion") content = RecoEvPion ;
-      else if ( observable == "RecoWPion") content = RecoWPion;
+      double content = GetObservable(observable);
+      double w = EventWght * AccWght ;
+      //if( scale_mott )
+      //w *= MottXSecScale;
       hists[i]->Fill(content,w);
     }
   }
@@ -243,7 +167,7 @@ int main( int argc, char* argv[] ) {
   double ymax = 0 ;
   for( unsigned int i = 0 ; i < input_files.size(); ++i ){
     double max = 0 ;
-    for( unsigned int k = 0 ; k < hists[i]->GetNbinsX() ; ++k ) {
+    for( int k = 0 ; k < hists[i]->GetNbinsX() ; ++k ) {
       if ( hists[i]->GetBinContent(k) > max ) max = hists[i]->GetBinContent(k) ;
     }
     if( max > ymax ) ymax = max;
@@ -256,6 +180,9 @@ int main( int argc, char* argv[] ) {
     hists[i] -> SetLineStyle(1);
     hists[i] -> SetMarkerStyle(8);
     hists[i] -> GetYaxis() -> TAxis::SetMaxDigits(3);
+    hists[i] -> SetStats(0);
+    hists[i] -> GetYaxis() -> SetTitleOffset(0.9);
+    hists[i] -> SetMarkerSize(1.6);
     plotting::NormalizeHist(hists[i], 1 );
     if( i == 0 ) hists[i] -> Draw("err");
     else hists[i] -> Draw("err same");
@@ -267,6 +194,36 @@ int main( int argc, char* argv[] ) {
   hists[0] -> Draw("err same");
   if ( legend_list.size() == input_files.size()) legend->Draw();
 
+  if( add_ratio ) {
+
+    c->cd();
+    pad2->Draw();
+    pad2->cd();
+    pad2->SetBottomMargin(0.25);
+    pad2->SetLeftMargin(0.1);
+    pad2->SetTopMargin(0.05);
+    std::vector<TH1D*> ratios;
+    for(unsigned int i = 0 ; i < hists.size() ; ++i ){
+      ratios.push_back((TH1D*)hists[i]->Clone());
+      ratios[i]->Scale(-1.);
+      ratios[i]->Add(hists.back());
+      ratios[i]->Divide(hists.back());
+      ratios[i]->Scale(100);
+      ratios[i]->SetStats(0);
+      plotting::StandardFormat( ratios[i], "", color_list[i], 1, observable, false, ymax, "Rel. Diff [%]");
+      ratios[i]->SetMarkerStyle(8);
+      ratios[i]->SetMarkerSize(1.6);
+      ratios[i]->Scale(-1.);
+      ratios[i]->GetYaxis()->SetRangeUser(-100,100);
+      ratios[i]->GetXaxis()->SetTitleOffset(0.9);
+      ratios[i]->GetXaxis()->SetTitleSize(0.2);
+      ratios[i]->GetYaxis()->SetTitleSize(0.13);
+      ratios[i]->GetXaxis()->SetLabelSize(0.2);
+      ratios[i]->GetYaxis()->SetLabelSize(0.2);
+      if( i == 0 ) ratios[i] -> Draw("err");
+      else ratios[i] -> Draw("err same");
+    }
+  }
   std::string output_name = output_file+"_Nevents_"+observable ;
 
   c->SaveAs((output_file+".root").c_str());

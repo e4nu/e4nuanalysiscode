@@ -35,14 +35,9 @@ namespace e4nu {
 
   private :
 
-    void SmearParticles( Event & event ) ;
     Event * GetEvent( const unsigned int event_id ) ;
-
     MCEventHolder * fData = nullptr ;
-
-    // XSec value
-    double kXSec = 0 ;
-
+    
     void Initialize(void) ;
     void Clear(void);
 

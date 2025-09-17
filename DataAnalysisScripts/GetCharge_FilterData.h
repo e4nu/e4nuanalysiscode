@@ -350,7 +350,7 @@ GetCharge_FilterData::GetCharge_FilterData(std::string a_target,std::string a_be
       TChain * chain = new TChain("ch","GetCharge_FilterData");
 //      chain->Add(Form("/work/clas/clase2/Mariana/data/e2a_%s_%s_v1/*.root/h10", ftarget.c_str(), fbeam_en.c_str()));
       if (ftarget == "4He") { chain->Add(Form("/lustre19/expphy/cache/clas/e2a/production/pass2/v1/%s/%s_full/HROOT/*.root/h10", fbeam_en.c_str(), ftarget.c_str())); }
-      else { chain->Add(Form("/lustre19/expphy/cache/clas/e2a/production/pass2/v1/%s/%s/HROOT/*.root/h10", fbeam_en.c_str(), ftarget.c_str())); }
+      else { chain->Add("/lustre24/expphy/cache/clas/e2a/production/pass2/v1/1161/C12/HROOT/*.root/h10"); }
 
 /*
       //12C @ 1.1 GeV & 1500 high torus current

@@ -2,12 +2,23 @@
 /*
  * Julia Tena Vidal jtenavidal \at tauex.tau.ac.il 
  */
-#include <iostream>
+
 #include "utils/TargetUtils.h"
 #include "conf/ParticleI.h"
 #include "conf/TargetI.h"
 
 using namespace e4nu ; 
+
+std::string utils::GetTargetName( const unsigned int target_pdg ) { 
+  std::string name =""; 
+  if( target_pdg == conf::kPdgHe3 ) name = "3He_full";
+  else if ( target_pdg == conf::kPdgHe4 ) name = "4He_full";
+  else if ( target_pdg == conf::kPdgC12 ) name = "C12";
+  else if ( target_pdg == conf::kPdgFe56 ) name = "56Fe";
+  //  else if ( target_pdg == conf::kPdgCH2 ) name = "CH2";
+
+  return name ; 
+}
 
 double utils::GetECalOffset( const unsigned int target_pdg ) {
   double ECalOffset = 0 ; 

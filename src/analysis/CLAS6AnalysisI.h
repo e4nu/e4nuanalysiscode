@@ -8,12 +8,13 @@
 
 #include <iostream>
 #include "analysis/AnalysisI.h"
+#include "analysis/CLAS6RunInfo.h"
 #include "physics/CLAS6EventHolder.h"
 
 using namespace e4nu::conf ; 
 
 namespace e4nu {
-  class CLAS6AnalysisI : virtual public AnalysisI {
+  class CLAS6AnalysisI : virtual public AnalysisI, public CLAS6RunInfo {
   public : 
     CLAS6AnalysisI(); 
 

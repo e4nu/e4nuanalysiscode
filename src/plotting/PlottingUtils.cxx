@@ -143,7 +143,7 @@ void plotting::SetAnalysisBranch(TTree *tree)
   if (tree->GetBranch("AdlerAnglePhiPi"))
     tree->SetBranchAddress("AdlerAnglePhiPi", &AdlerAnglePhiPi);
   if (tree->GetBranch("Angleqvshad"))
-    tree->SetBranchAddress("Angleqvshad", &AngleElvsHad);
+    tree->SetBranchAddress("Angleqvshad", &Angleqvshad);
   if (tree->GetBranch("AngleElvsHad"))
     tree->SetBranchAddress("AngleElvsHad", &AngleElvsHad);
   if (tree->GetBranch("RecoEvPion"))
@@ -1058,6 +1058,15 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (EBeam == 4.461)
       binning = plotting::GetUniformBinning(15, 0, 60);
   }
+  else if (observable == "AngleElvsHad")
+  {
+    if (EBeam == 1.161)
+      binning = plotting::GetUniformBinning(15, 0, 180);
+    else if (EBeam == 2.261)
+      binning = plotting::GetUniformBinning(15, 0, 180);
+    else if (EBeam == 4.461)
+      binning = plotting::GetUniformBinning(15, 0, 180);
+  }
   else if (observable == "HadDeltaPT" || observable == "DeltaPT")
   {
     if (EBeam == 1.161)
@@ -1380,23 +1389,14 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
       else if (EBeam == 4.461)
         binning = plotting::GetUniformBinning(15, 0, 1);
     }
-    else if (observable == "Angleqvshad")
-    {
-      if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(15, 0, 120);
-      else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(15, 0, 120);
-      else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(15, 0, 60);
-    }
     if (observable == "AngleElvsHad")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(0, 20, 180);
+        binning = plotting::GetUniformBinning(15, 0, 180);
       else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(0, 20, 180);
+        binning = plotting::GetUniformBinning(15, 0, 180);
       else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(0, 20, 180);
+        binning = plotting::GetUniformBinning(15, 0, 180);
     }
     else if (observable == "HadDeltaPT" || observable == "DeltaPT")
     {
@@ -1460,11 +1460,11 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     if (observable == "AngleElvsHad")
     {
       if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(0, 20, 180);
+        binning = plotting::GetUniformBinning(15, 0, 180);
       else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(0, 20, 180);
+        binning = plotting::GetUniformBinning(15, 0, 180);
       else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(0, 20, 180);
+        binning = plotting::GetUniformBinning(15, 0, 180);
     }
   }
 

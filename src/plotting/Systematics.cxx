@@ -23,13 +23,17 @@ void systematics::AddSystematic( TH1D & hist, const double rel_error, const std:
   }
 }
 
-void systematics::AddSystematic( TH2D & hist, const double rel_error, const std::string name ) {
-  double NBins = hist.GetNbinsX();
-  for (int i = 1; i <= NBins; i++) {
-    double error = hist.GetBinError(i);
-    double content = hist.GetBinContent(i);
-    double newerror = TMath::Sqrt( TMath::Power(error,2.) + TMath::Power(rel_error*content/100.,2.));
-    hist.SetBinError(i,newerror);
+void systematics::AddSystematic( TH2D & hist, const double rel_error, const std::string name )  {
+  int nBinsX = hist.GetNbinsX();
+  int nBinsY = hist.GetNbinsY();
+
+  for (int i = 1; i <= nBinsX; ++i) {
+    for (int j = 1; j <= nBinsY; ++j) {
+      double error = hist.GetBinError(i, j);
+      double content = hist.GetBinContent(i, j);
+      double newerror = TMath::Sqrt(TMath::Power(error, 2.) + TMath::Power(rel_error * content / 100., 2.));
+      hist.SetBinError(i, j, newerror);
+    }
   }
 }
 
@@ -49,38 +53,54 @@ TH1D * systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
 		// We are storing the error in a histogram (hist_w_error). the content is the error itself to add to the stat uncertanty from hist.
     double stat_error = hist.GetBinError(i);
     double syst_error = hist_w_error.GetBinContent(i)/100;
-		
+
 		// The error calculation assumes that it is a multiplicative factor
 		// The error is added as a relative
-		double newerror = TMath::Sqrt( TMath::Power(stat_error,2.) + TMath::Power(syst_error*hist.GetBinContent(i),2.));
+		double newerror = TMath::Power(stat_error,2.) + TMath::Power(syst_error*hist.GetBinContent(i),2.);
+    if( newerror > 0 ) newerror = TMath::Sqrt(newerror);
+    else newerror = 0;
+
 		if( hist.GetBinContent(i) > 0 ) hist.SetBinError(i,newerror);
     else hist.SetBinError(i,0); // remove odd bins
 
-    hist_syst->SetBinContent(i,hist_w_error.GetBinError(i)/hist_w_error.GetBinContent(i)*100); // Store sector to sector uncertainty
+    if( hist_w_error.GetBinContent(i)!=0) hist_syst->SetBinContent(i,hist_w_error.GetBinError(i)/hist_w_error.GetBinContent(i)*100); // Store per-bin uncertainty
   }
   return hist_syst;
 }
 
 
-TH2D * systematics::AddSystematic( TH2D & hist, const TH2D & hist_w_error ) {
+TH2D * systematics::AddSystematic(TH2D & hist, const TH2D & hist_w_error) {
   TH2D * hist_syst = (TH2D*)hist_w_error.Clone();
   hist_syst->Reset();
   hist_syst->SetName("h_syst");
-  hist_syst->GetYaxis()->SetTitle("#sigma/#hat{x} [%]");
+  hist_syst->GetZaxis()->SetTitle("#sigma/#hat{x} [%]");
 
-  double NBins = hist.GetNbinsX();
-  for (int i = 1; i <= NBins; i++) {
-    double stat_error = hist.GetBinError(i);
-    double syst_error = hist_w_error.GetBinError(i);
+  int nBinsX = hist.GetNbinsX();
+  int nBinsY = hist.GetNbinsY();
 
-		// The error calculation assumes that it is a multiplicative factor
-		// The error is added as a relative
-		double newerror = TMath::Sqrt( TMath::Power(stat_error,2.) + TMath::Power(syst_error*hist.GetBinContent(i)/hist_w_error.GetBinContent(i),2.));
-		if( hist.GetBinContent(i) > 0 ) hist.SetBinError(i,newerror);
-    else hist.SetBinError(i,0); // remove odd bins
+  for (int i = 1; i <= nBinsX; ++i) {
+    for (int j = 1; j <= nBinsY; ++j) {
+      double stat_error = hist.GetBinError(i, j);
+      double syst_error = hist_w_error.GetBinError(i, j);
+      double content = hist.GetBinContent(i, j);
+      double content_w_error = hist_w_error.GetBinContent(i, j);
 
-    hist_syst->SetBinContent(i,hist_w_error.GetBinError(i)/hist_w_error.GetBinContent(i)*100); // Store sector to sector uncertainty
+      double newerror = 0;
+      if (content_w_error != 0) {
+        newerror = TMath::Sqrt(TMath::Power(stat_error, 2.) +
+                               TMath::Power(syst_error * content / content_w_error, 2.));
+      }
+
+      if (content > 0) hist.SetBinError(i, j, newerror);
+      else hist.SetBinError(i, j, 0); // remove odd bins
+
+      if (content_w_error != 0)
+        hist_syst->SetBinContent(i, j, syst_error / content_w_error * 100); // Relative uncertainty in %
+      else
+        hist_syst->SetBinContent(i, j, 0);
+    }
   }
+
   return hist_syst;
 }
 

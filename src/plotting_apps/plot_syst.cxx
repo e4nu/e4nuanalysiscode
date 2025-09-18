@@ -45,7 +45,6 @@ int main( int argc, char* argv[] ) {
   std::vector<string> input_files, legend_list ;
   std::string output_file = "histogram_syst";
   std::string observable = "ECal";
-  int sector = -9999 ; // all
   std::string analysis_key = "1p1pim";
   double EBeam = 1 ;
   if( argc > 1 ) { // configure rest of analysis
@@ -135,7 +134,7 @@ int main( int argc, char* argv[] ) {
 
     for( int j = 0 ; j < NEntries ; ++j ) {
       in_trees[i]->GetEntry(j) ;
-      double content = content = GetObservable(observable);
+      double content = GetObservable(observable);
       double w = EventWght * AccWght ;
       //if( scale_mott ) w *= MottXSecScale;
       hists[i]->Fill(content,w);

@@ -1,7 +1,7 @@
-/** 
- * \info These parameters are configurable 
- * the default values are set here
- **/
+/**
+* \info These parameters are configurable
+* the default values are set here
+**/
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -17,21 +17,21 @@
 #include "utils/DetectorUtils.h"
 #include "utils/Utils.h"
 
-using namespace e4nu; 
+using namespace e4nu;
 
 ConfigureI::ConfigureI( ) {
   this->Initialize();
 }
 
-ConfigureI::ConfigureI( const double EBeam, const unsigned int TargetPdg ) { 
-  kEBeam = EBeam ; 
+ConfigureI::ConfigureI( const double EBeam, const unsigned int TargetPdg ) {
+  kEBeam = EBeam ;
   kTargetPdg = TargetPdg ;
   kIsDataLoaded = false ;
-  kIsConfigured = true ; 
+  kIsConfigured = true ;
 
   this->Initialize();
 }
-    
+
 ConfigureI::~ConfigureI() {
   for ( auto it = kAcceptanceMap.begin(); it != kAcceptanceMap.end(); it++){
     delete it->second ;
@@ -49,7 +49,7 @@ ConfigureI::~ConfigureI() {
   kAccMap.clear();
   kGenMap.clear();
 
-  kTopology_map.clear() ; 
+  kTopology_map.clear() ;
   kObservables.clear();
   if( kFiducialCut ) delete kFiducialCut ;
 }
@@ -57,178 +57,178 @@ ConfigureI::~ConfigureI() {
 ConfigureI::ConfigureI( const std::string input_file ) {
   std::cout << " Configuring analysis from " << input_file << " ..." << std::endl;
   std::ifstream file (input_file.c_str()) ;
-      
-  std::vector<std::string> param, value ; 
-  std::string parameter_name, line, parameter_value ; 
-  if( file.is_open() ) { 
+
+  std::vector<std::string> param, value ;
+  std::string parameter_name, line, parameter_value ;
+  if( file.is_open() ) {
     while ( getline (file,line) ) {
       if(line.find("#", 0) != std::string::npos ) continue;
       if(line == "" ) continue;
-      std::istringstream line_as_stream( line ) ; 
-      line_as_stream >> parameter_name >> parameter_value ; 
-      param.push_back(parameter_name) ; 
-      value.push_back(parameter_value) ; 
+      std::istringstream line_as_stream( line ) ;
+      line_as_stream >> parameter_name >> parameter_value ;
+      param.push_back(parameter_name) ;
+      value.push_back(parameter_value) ;
     }
   }
-      
+
   for ( unsigned int i = 0 ; i < param.size(); ++i ) {
     if ( param[i] == "UseAllSectors" ) {
-      if( value[i] == "true" ) kUseAllSectors = true ; 
-      else kUseAllSectors = false ; 
-    } else if ( param[i] == "DisableSector" ) { 
+      if( value[i] == "true" ) kUseAllSectors = true ;
+      else kUseAllSectors = false ;
+    } else if ( param[i] == "DisableSector" ) {
       std::istringstream iss(value[i]);
-      std::string token ; 
+      std::string token ;
       while (std::getline(iss, token, ',')) {
         unsigned int sector = stoi(token);
-        kEnabledSectors[sector] = false ; 
+        kEnabledSectors[sector] = false ;
       }
     } else if ( param[i] == "ApplyFiducial" ){
-      if( value[i] == "false" ) kApplyFiducial = false ; 
+      if( value[i] == "false" ) kApplyFiducial = false ;
       else {
-	kApplyFiducial = true ; 
+        kApplyFiducial = true ;
       }
     } else if ( param[i] == "ApplyAccWeights" ){
-      if ( value[i] == "false" ) kApplyAccWeights = false ; 
-      else kApplyAccWeights = true ; 
+      if ( value[i] == "false" ) kApplyAccWeights = false ;
+      else kApplyAccWeights = true ;
     } else if ( param[i] == "ApplyCorrWeights" ){
-      if ( value[i] == "false" ) kApplyCorrWeights = false ; 
-      else kApplyCorrWeights = true ; 
+      if ( value[i] == "false" ) kApplyCorrWeights = false ;
+      else kApplyCorrWeights = true ;
     } else if ( param[i] == "ApplyMottWeight" ){
-      if ( value[i] == "false" ) kApplyMottWeight = false ; 
-      else kApplyMottWeight = true ; 
+      if ( value[i] == "false" ) kApplyMottWeight = false ;
+      else kApplyMottWeight = true ;
     } else if ( param[i] == "ApplyReso" ) {
       if ( value[i] == "false" ) kApplyReso = false ;
-      else kApplyReso = true ; 
+      else kApplyReso = true ;
     } else if ( param[i] == "ApplyMomCut" ) {
       if ( value[i] == "false" ) kApplyMomCut = false ;
-      else kApplyMomCut = true ; 
+      else kApplyMomCut = true ;
     } else if ( param[i] == "ApplyPhiOpeningAngle" ) {
-      if( value[i] == "true" ) kApplyPhiOpeningAngle = true ; 
-      else kApplyPhiOpeningAngle = false ; 
+      if( value[i] == "true" ) kApplyPhiOpeningAngle = true ;
+      else kApplyPhiOpeningAngle = false ;
     } else if ( param[i] == "UsePhiThetaBand" ) {
       if( value[i] == "true" ) kUsePhiThetaBand = true ;
-      else kUsePhiThetaBand = false ;    
+      else kUsePhiThetaBand = false ;
     } else if ( param[i] == "ApplyThetaSlice" ) {
-      if ( value[i] == "true" ) kApplyThetaSlice = true ; 
-      else kApplyThetaSlice = false ; 
+      if ( value[i] == "true" ) kApplyThetaSlice = true ;
+      else kApplyThetaSlice = false ;
     } else if ( param[i] == "EThetaSliceRange" ) {
-      std::string etheta ; 
+      std::string etheta ;
       std::istringstream range( value[i] ) ;
       std::vector<double> ethrange ;
-      while( getline( range, etheta, ',' ) ) { 
-	std::cout << " EThetaSlice --> " << etheta << std::endl;
-	ethrange.push_back(atof(etheta.c_str())) ; 
+      while( getline( range, etheta, ',' ) ) {
+        std::cout << " EThetaSlice --> " << etheta << std::endl;
+        ethrange.push_back(atof(etheta.c_str())) ;
       }
       if( ethrange.size() != 2 ) {
-	std::cout << " ERROR: EThetaSliceRange requires two entries separated by comma" << std::endl;
-	kIsConfigured = false;
+        std::cout << " ERROR: EThetaSliceRange requires two entries separated by comma" << std::endl;
+        kIsConfigured = false;
       } else {
-	SetEThetaSliceMin( ethrange[0] ) ;
-	SetEThetaSliceMax( ethrange[1] ) ;
+        SetEThetaSliceMin( ethrange[0] ) ;
+        SetEThetaSliceMax( ethrange[1] ) ;
       }
-    } else if ( param[i] == "ApplyGoodSectorPhiSlice" ) { 
-      if ( value[i] == "true" ) kApplyGoodSectorPhiSlice = true ; 
+    } else if ( param[i] == "ApplyGoodSectorPhiSlice" ) {
+      if ( value[i] == "true" ) kApplyGoodSectorPhiSlice = true ;
       else kApplyGoodSectorPhiSlice = false ;
     } else if ( param[i] == "IsData" ) {
-      if( value[i] == "true" ) kIsData = true ; 
-      else kIsData = false ; 
-    } else if ( param[i] == "IsCLAS6Analysis") { 
-      if( value[i] == "true" ) { kIsCLAS6Analysis = true ; kIsCLAS12Analysis = false ;} 
-      else kIsCLAS6Analysis = false ; 
-    } else if ( param[i] == "IsCLAS12Analysis") { 
-      if( value[i] == "true" ) { kIsCLAS12Analysis = true ; kIsCLAS6Analysis = false; } 
-      else kIsCLAS12Analysis = false ; 
-    } else if ( param[i] == "IsRadiated" ) { 
+      if( value[i] == "true" ) kIsData = true ;
+      else kIsData = false ;
+    } else if ( param[i] == "IsCLAS6Analysis") {
+      if( value[i] == "true" ) { kIsCLAS6Analysis = true ; kIsCLAS12Analysis = false ;}
+      else kIsCLAS6Analysis = false ;
+    } else if ( param[i] == "IsCLAS12Analysis") {
+      if( value[i] == "true" ) { kIsCLAS12Analysis = true ; kIsCLAS6Analysis = false; }
+      else kIsCLAS12Analysis = false ;
+    } else if ( param[i] == "IsRadiated" ) {
       if( value[i] == "true" ) { kIsRadiated = true ; }
-      else kIsRadiated = false ; 
-    } else if( param[i] == "ApplyQ2Cut" ) { 
-      if( value[i] == "true" ) kQ2Cut = true ; 
-      else kQ2Cut = false ; 
-    } else if( param[i] == "ApplyWCut" ) { 
-      if( value[i] == "true" ) kWCut = true ; 
-      else kWCut = false ; 	
+      else kIsRadiated = false ;
+    } else if( param[i] == "ApplyQ2Cut" ) {
+      if( value[i] == "true" ) kQ2Cut = true ;
+      else kQ2Cut = false ;
+    } else if( param[i] == "ApplyWCut" ) {
+      if( value[i] == "true" ) kWCut = true ;
+      else kWCut = false ;
     } else if ( param[i] == "ApplyOutEMomCut" ) {
-      if( value[i] == "true" ) kOutEMomCut = true ; 
-      else kOutEMomCut = false ; 
-    } else if( param[i] == "IsElectronData" ) { 
-      if( value[i] == "true" ) kIsElectron = true ; 
-      else kIsElectron = false ; 
-    } else if ( param[i] == "AnalysisTypeID" ) { 
-      kAnalysisTypeID = std::stoi(value[i]) ; 
-    } else if ( param[i] == "offset" ) koffset = std::stod( value[i] ) ; 
+      if( value[i] == "true" ) kOutEMomCut = true ;
+      else kOutEMomCut = false ;
+    } else if( param[i] == "IsElectronData" ) {
+      if( value[i] == "true" ) kIsElectron = true ;
+      else kIsElectron = false ;
+    } else if ( param[i] == "AnalysisTypeID" ) {
+      kAnalysisTypeID = std::stoi(value[i]) ;
+    } else if ( param[i] == "offset" ) koffset = std::stod( value[i] ) ;
     else if ( param[i] == "NoFSI") {
-      if( value[i] == "true" ) kNoFSI = true ; 
-      else kNoFSI = false ; 
-    } else if ( param[i] == "EBeam" ) kEBeam = std::stod( value[i] ) ; 
-    else if ( param[i] == "TargetPdg" ) kTargetPdg = (unsigned int) std::stoi( value[i] ) ; 
+      if( value[i] == "true" ) kNoFSI = true ;
+      else kNoFSI = false ;
+    } else if ( param[i] == "EBeam" ) kEBeam = std::stod( value[i] ) ;
+    else if ( param[i] == "TargetPdg" ) kTargetPdg = (unsigned int) std::stoi( value[i] ) ;
     else if ( param[i] == "NEvents" ) kNEvents = (unsigned int) std::stoi( value[i] ) ;
     else if ( param[i] == "FirstEvent" ) kFirstEvent = (unsigned int) std::stoi( value[i] ) ;
     else if ( param[i] == "Toplogy") {
       std::string element, m_element ;
       std::istringstream particle_list( value[i] ) ;
       while( getline( particle_list, element, ',' ) ) {
-	std::istringstream part_list_mult ( element ) ;
-	std::vector<std::string> temp ; 
-	while ( getline( part_list_mult, m_element, ':' ) ) {
-	  temp.push_back( m_element ) ; 
-	}
-	if( temp.size() == 2 ) {
-	  std::pair<int, unsigned int> pair ( std::stoi( temp[0]), (unsigned int) std::stoi( temp[1] ) ) ; // Pdg, multiplicity
-	  kTopology_map.insert( pair ) ;
-	}
+        std::istringstream part_list_mult ( element ) ;
+        std::vector<std::string> temp ;
+        while ( getline( part_list_mult, m_element, ':' ) ) {
+          temp.push_back( m_element ) ;
+        }
+        if( temp.size() == 2 ) {
+          std::pair<int, unsigned int> pair ( std::stoi( temp[0]), (unsigned int) std::stoi( temp[1] ) ) ; // Pdg, multiplicity
+          kTopology_map.insert( pair ) ;
+        }
       }
-    } else if ( param[i] == "TrueSignal" ) { 
-      if ( value[i] == "true" ) kTrueSignal = true ; 
-      else kTrueSignal = false ; 
-    } else if ( param[i] == "SubtractBkg" ) { 
-      if( value[i] == "true" ) kSubtractBkg = true ; 
-      else kSubtractBkg = false ; 
+    } else if ( param[i] == "TrueSignal" ) {
+      if ( value[i] == "true" ) kTrueSignal = true ;
+      else kTrueSignal = false ;
+    } else if ( param[i] == "SubtractBkg" ) {
+      if( value[i] == "true" ) kSubtractBkg = true ;
+      else kSubtractBkg = false ;
     } else if ( param[i] == "MaxBackgroundMultiplicity" ) { kMaxBkgMult = (unsigned int) std::stoi( value[i] ) ;
     } else if ( param[i] == "NRotations" ) { kNRotations = (unsigned int) std::stoi( value[i] ) ;
     } else if ( param[i] == "AnalysisKey" ) { kAnalysisKey = value[i] ;
     } else if ( param[i] == "ObservableList" ) {
-      std::string obs ; 
-      std::istringstream obs_list( value[i] ) ; 
-      while( getline( obs_list, obs, ',' ) ) { 
-	kObservables.push_back(obs) ; 
+      std::string obs ;
+      std::istringstream obs_list( value[i] ) ;
+      while( getline( obs_list, obs, ',' ) ) {
+        kObservables.push_back(obs) ;
       }
     } else if ( param[i] == "NormalizeHists" ) {
-      if ( value[i] == "true" ) kNormalize = true ; 
-      else kNormalize = false ; 
+      if ( value[i] == "true" ) kNormalize = true ;
+      else kNormalize = false ;
       if( kNormalize && ! kApplyCorrWeights ) {
-	std::cout << " WARNING: You are trying to Normalize the cross section without correction weights. Aborting..." << std::endl;
-	kIsConfigured = false ; 
-	break ;
-      } 
-    } else if ( param[i] == "ComputeTrueAccCorr" ) { 
+        std::cout << " WARNING: You are trying to Normalize the cross section without correction weights. Aborting..." << std::endl;
+        kIsConfigured = false ;
+        break ;
+      }
+    } else if ( param[i] == "ComputeTrueAccCorr" ) {
       if( value[i] == "true" ) { kComputeTrueAccCorr = true ; }
-      else kComputeTrueAccCorr = false ; 
-    } else if ( param[i] == "ComputeTrueRecoAccCorr" ) { 
+      else kComputeTrueAccCorr = false ;
+    } else if ( param[i] == "ComputeTrueRecoAccCorr" ) {
       if( value[i] == "true" ) { kComputeTrueRecoAccCorr = true ; }
-      else kComputeTrueRecoAccCorr = false ; 
+      else kComputeTrueRecoAccCorr = false ;
     } else if ( param[i] == "DebugBkg") {
       if( value[i] == "false" ) {
-	kDebugBkg = false ; 
-      } else { kDebugBkg = true ; }  
+        kDebugBkg = false ;
+      } else { kDebugBkg = true ; }
     } else if ( param[i] == "OutputFile" ) {
       kOutputFile = value[i] ;
     } else if ( param[i] == "InputFile" ) {
       kInputFile = value[i] ;
     } else if ( param[i] == "XSecFile" ) {
       kXSecFile = value[i] ;
-    } else if ( param[i] == "SystFidAngleShift" ) { 
+    } else if ( param[i] == "SystFidAngleShift" ) {
       fFidAngleShift = stod(value[i]) ;
     }
   }
 
   if( kInputFile == "" ) {
     std::cout << " ERROR : Input file not specified " << std::endl;
-    kIsConfigured = false ; 
+    kIsConfigured = false ;
   } else { std::cout << " Input file: " << kInputFile << std::endl;}
 
   if( kOutputFile == "" ) {
     std::cout << " ERROR : Output file not specified " << std::endl;
-    kIsConfigured = false ; 
+    kIsConfigured = false ;
   }
 
   if( kIsRadiated ) std::cout << " Using MC file with radiative effects " << std::endl;
@@ -237,23 +237,23 @@ ConfigureI::ConfigureI( const std::string input_file ) {
     std::cout << " ERROR : CLAS12 analysis not available yet..."<<std::endl;
     kIsConfigured = false ;
   }
-    
+
   this->Initialize();
 }
 
 void ConfigureI::Initialize(void){
-  gRandom = new TRandom3() ; 
+  gRandom = new TRandom3() ;
   gRandom->SetSeed(10);
 
   if( !kIsConfigured ) std::cout << " CONFIGURATION FAILED..." << std::endl;
-  if( !IsData() ) kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCCLAS6Tree","GENIE CLAS6 Tree") ) ; 
-  else kAnalysisTree = std::unique_ptr<TTree>( new TTree("CLAS6Tree","CLAS6 Tree") ) ; 
+  if( !IsData() ) kAnalysisTree = std::unique_ptr<TTree>( new TTree("MCCLAS6Tree","GENIE CLAS6 Tree") ) ;
+  else kAnalysisTree = std::unique_ptr<TTree>( new TTree("CLAS6Tree","CLAS6 Tree") ) ;
 
-  if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ; 
-  
+  if( ApplyFiducial() &&  kIsConfigured ) kIsConfigured = InitializeFiducial() ;
+
   // Initialize acceptance map histograms from file
   if( ApplyAccWeights() || kIsData ) {
-    double EBeam = GetConfiguredEBeam() ; 
+    double EBeam = GetConfiguredEBeam() ;
     unsigned int Target = GetConfiguredTarget() ;
     kAcceptanceMap = conf::GetAcceptanceFileMap2( Target, EBeam ) ;
 
@@ -273,16 +273,16 @@ void ConfigureI::Initialize(void){
     }
   }
 }
-      
-void ConfigureI::PrintConfiguration(void) const { 
+
+void ConfigureI::PrintConfiguration(void) const {
   std::cout << "*********************************************************************" << std::endl;
   std::cout << "*                         E4NU ANALYSIS CONF                       **" << std::endl;
   std::cout << "*********************************************************************" << std::endl;
   if( !UseAllSectors() ) std::cout << " UseAllSectors: " << UseAllSectors() << std::endl;
-  else { 
+  else {
     std::cout << "Enabled Sectors: " << std::endl;
-    for( unsigned int i = 0 ; i < kEnabledSectors.size() ; ++i ) { 
-      std::cout << "Sector " << i << " : " << kEnabledSectors[i] << std::endl; 
+    for( unsigned int i = 0 ; i < kEnabledSectors.size() ; ++i ) {
+      std::cout << "Sector " << i << " : " << kEnabledSectors[i] << std::endl;
     }
   }
   std::cout << "ApplyOutMomCut: " <<kOutEMomCut << std::endl;
@@ -303,7 +303,7 @@ void ConfigureI::PrintConfiguration(void) const {
   if ( kIsData ) std::cout << "\nIsData" << std::endl;
   else {
     std::cout << "Is MC Data " << std::endl;
-    if ( kNoFSI ) std::cout << " No FSI " << std::endl ; 
+    if ( kNoFSI ) std::cout << " No FSI " << std::endl ;
   }
   if( kIsCLAS6Analysis ) std::cout << " Analysing CLAS6 "<<std::endl;
   if( kIsCLAS12Analysis ) std::cout << " Analysing CLAS12 "<<std::endl;
@@ -311,7 +311,7 @@ void ConfigureI::PrintConfiguration(void) const {
   else std::cout << " Neutrino scattering \n" <<std::endl;
   std::cout << " Analysis Type ID: " << GetAnalysisTypeID() << std::endl;
   std::cout << "Topology: " << std::endl;
-  for ( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) { 
+  for ( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) {
     std::cout << "    " << utils::PdgToString(it->first) << ", multiplicity " << it->second << std::endl;
   }
 
@@ -339,28 +339,28 @@ void ConfigureI::PrintConfiguration(void) const {
 unsigned int ConfigureI::GetNTopologyParticles(void) {
   unsigned int N_signal = 0 ;
   for( auto it = kTopology_map.begin() ; it != kTopology_map.end() ; ++it ) {
-    if( it->first == conf::kPdgElectron ) continue ; 
-    N_signal += it->second ; 
+    if( it->first == conf::kPdgElectron ) continue ;
+    N_signal += it->second ;
   }
   return N_signal ;
 }
 
 
 bool ConfigureI::InitializeFiducial(void) {
-  double EBeam = GetConfiguredEBeam() ; 
+  double EBeam = GetConfiguredEBeam() ;
   unsigned int Target = GetConfiguredTarget() ;
-  
+
   // Initialize fiducial for this run
-  kFiducialCut = new Fiducial() ; 
-  kFiducialCut -> InitPiMinusFit( EBeam ) ; 
-  kFiducialCut -> InitEClimits(); 
+  kFiducialCut = new Fiducial() ;
+  kFiducialCut -> InitPiMinusFit( EBeam ) ;
+  kFiducialCut -> InitEClimits();
   kFiducialCut -> up_lim1_ec -> Eval(60) ;
   kFiducialCut -> SetConstants( conf::GetTorusCurrent( EBeam ), Target , EBeam ) ;
 
   kFiducialCut -> SetFiducialCutParameters( EBeam ) ;
-  if( !kFiducialCut ) return false ; 
+  if( !kFiducialCut ) return false ;
 
-  return true ; 
+  return true ;
 }
 
 
@@ -381,60 +381,60 @@ void ConfigureI::ApplyAcceptanceCorrection( Event & event, bool invert ) {
       if ( part_map.find(it->first) == part_map.end()) continue ;
       if ( it->first == conf::kPdgElectron ) continue ;
       else {
-	for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
-	  if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
-	}
+        for( unsigned int i = 0 ; i < part_map[it->first].size() ; ++i ) {
+          if( kAccMap[it->first] && kGenMap[it->first] ) acc_wght *= utils::GetAcceptanceMapWeight( *kAccMap[it->first], *kGenMap[it->first], part_map[it->first][i] ) ;
+        }
       }
     }
-    double initial_accwght = event.GetAccWght(); 
-    if( invert && acc_wght != 0 ) acc_wght = 1. / acc_wght ; 
-    acc_wght *= initial_accwght ; 
+    double initial_accwght = event.GetAccWght();
+    if( invert && acc_wght != 0 ) acc_wght = 1. / acc_wght ;
+    acc_wght *= initial_accwght ;
     event.SetAccWght(acc_wght);
   }
   return ;
 }
 
-bool ConfigureI::SetXSecFile( std::string file ) { 
-  kXSecFile = file ; 
-  
+bool ConfigureI::SetXSecFile( std::string file ) {
+  kXSecFile = file ;
+
   // Get xsec from cross section spline
   std::string target_tag = "";
   if (GetConfiguredTarget() == conf::kPdgC12)
-    target_tag = "e-_C12";
+  target_tag = "e-_C12";
   if (GetConfiguredTarget() == conf::kPdgHe3)
-    target_tag = "e-_He3";
+  target_tag = "e-_He3";
   if (GetConfiguredTarget() == conf::kPdgHe4)
-    target_tag = "e-_He4";
+  target_tag = "e-_He4";
   if (GetConfiguredTarget() == conf::kPdgFe56)
-      target_tag = "e-_Fe56";
+  target_tag = "e-_Fe56";
   if (GetConfiguredTarget() == conf::kPdgO16)
-    target_tag = "e-_O16";
+  target_tag = "e-_O16";
 
   std::cout << "XSec File: " <<  GetXSecFile()<< std::endl;
   std::unique_ptr<TFile> xsec_file = std::unique_ptr<TFile>(new TFile((GetXSecFile()).c_str(), "READ"));
   if (!xsec_file)
-    {
-      std::cout << " ERROR: Xsec file does not exist: " << GetXSecFile() << std::endl;
-      return false ;
-    }
+  {
+    std::cout << " ERROR: Xsec file does not exist: " << GetXSecFile() << std::endl;
+    return false ;
+  }
 
   TDirectoryFile *xsec_dir = (TDirectoryFile *)xsec_file->Get(target_tag.c_str());
   if (!xsec_dir)
-    {
-      std::cout << " ERROR: Xsec dir does not exist: " << target_tag << std::endl;
-      return false;
-    }
+  {
+    std::cout << " ERROR: Xsec dir does not exist: " << target_tag << std::endl;
+    return false;
+  }
 
   TGraph *gxsec = (TGraph *)xsec_dir->Get("tot_em");
   if (!gxsec)
-    {
-      std::cout << " ERROR: Cannot create graph for " << "tot_em" << std::endl;
-      return false ;
-    }
+  {
+    std::cout << " ERROR: Cannot create graph for " << "tot_em" << std::endl;
+    return false ;
+  }
 
   kXSec = gxsec->Eval(GetConfiguredEBeam());
   std::cout << " Total XSec (" << GetConfiguredEBeam() << ") = " << kXSec << std::endl;
   xsec_file->Close();
-  return true ; 
+  return true ;
 
 }

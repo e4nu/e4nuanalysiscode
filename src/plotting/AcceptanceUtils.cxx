@@ -6,10 +6,7 @@
 using namespace e4nu;
 using namespace e4nu::plotting;
 
-std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std::string observable, std::string title,
-                                        std::string input_MC_location, std::string output_location, std::string output_file_name,
-                                        std::map<std::string,std::vector<double>> cuts,
-                                        std::string analysis_id, bool store_root )
+std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std::string observable, std::string title, std::string input_MC_location, std::string output_location, std::string output_file_name, std::map<std::string,std::vector<double>> cuts, std::string analysis_id, bool store_root )
 {
 
   // Define trees
@@ -19,8 +16,8 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   // Define Hists
   // The _# correspond to histograms for each sector
   std::vector<TH1D *> hists_recoacc, hists_trueacc, hists_recoacc_0, hists_trueacc_0, hists_recoacc_1, hists_trueacc_1,
-      hists_recoacc_2, hists_trueacc_2, hists_recoacc_3, hists_trueacc_3,
-      hists_recoacc_4, hists_trueacc_4, hists_recoacc_5, hists_trueacc_5;
+  hists_recoacc_2, hists_trueacc_2, hists_recoacc_3, hists_trueacc_3,
+  hists_recoacc_4, hists_trueacc_4, hists_recoacc_5, hists_trueacc_5;
   std::vector<std::vector<TH1D *>> hists_recoacc_slices, hists_trueacc_slices;
   std::vector<TTree *> trees;
   std::vector<TH1D *> hists, ratios, ratios_0, ratios_1, ratios_2, ratios_3, ratios_4, ratios_5;
@@ -111,7 +108,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
         // Weight is the total weight devided by the number of entries.
         // This ensures that we get the same results even if we run less radiated events.
         double w = TotWeight / (double) InitialNEvents;
-	      content = GetObservable(observable);
+        content = GetObservable(observable);
 
         // Check if passes cuts
         bool do_fill =true ;
@@ -213,7 +210,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth->Smooth(1);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 1; i < ratio->GetNbinsX() + 1; ++i)
+  for (int i = 1; i < ratio->GetNbinsX() + 1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -236,7 +233,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
 
     // Adding all errors together
-    ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+    ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2 ));
   }
   StandardFormat(ratio, title, kBlack, 1, observable);
   ratio->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
@@ -254,7 +251,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_0->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 1; i < ratio_0->GetNbinsX()+1; ++i)
+  for (int i = 1; i < ratio_0->GetNbinsX()+1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -264,9 +261,9 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     for (unsigned int j = 0; j < mc_files.size(); ++j)
     {
       if (ratios_0[j]->GetBinContent(i) > bin_cont_max)
-        bin_cont_max = ratios_0[j]->GetBinContent(i);
+      bin_cont_max = ratios_0[j]->GetBinContent(i);
       if (ratios_0[j]->GetBinContent(i) < bin_cont_min)
-        bin_cont_min = ratios_0[j]->GetBinContent(i);
+      bin_cont_min = ratios_0[j]->GetBinContent(i);
     }
     error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
     ratio_0->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
@@ -286,7 +283,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_1->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 1; i < ratio_1->GetNbinsX()+1; ++i)
+  for (int i = 1; i < ratio_1->GetNbinsX()+1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -296,9 +293,9 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     for (unsigned int j = 0; j < mc_files.size(); ++j)
     {
       if (ratios_1[j]->GetBinContent(i) > bin_cont_max)
-        bin_cont_max = ratios_1[j]->GetBinContent(i);
+      bin_cont_max = ratios_1[j]->GetBinContent(i);
       if (ratios_1[j]->GetBinContent(i) < bin_cont_min)
-        bin_cont_min = ratios_1[j]->GetBinContent(i);
+      bin_cont_min = ratios_1[j]->GetBinContent(i);
     }
     error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
     ratio_1->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
@@ -318,7 +315,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_2->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 1; i < ratio_2->GetNbinsX()+1; ++i)
+  for (int i = 1; i < ratio_2->GetNbinsX()+1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -328,9 +325,9 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     for (unsigned int j = 0; j < mc_files.size(); ++j)
     {
       if (ratios_2[j]->GetBinContent(i) > bin_cont_max)
-        bin_cont_max = ratios_2[j]->GetBinContent(i);
+      bin_cont_max = ratios_2[j]->GetBinContent(i);
       if (ratios_2[j]->GetBinContent(i) < bin_cont_min)
-        bin_cont_min = ratios_2[j]->GetBinContent(i);
+      bin_cont_min = ratios_2[j]->GetBinContent(i);
     }
     error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12. ;
     ratio_2->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
@@ -350,7 +347,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_3->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 1; i < ratio_3->GetNbinsX()+1; ++i)
+  for (int i = 1; i < ratio_3->GetNbinsX()+1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -360,9 +357,9 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     for (unsigned int j = 0; j < mc_files.size(); ++j)
     {
       if (ratios_3[j]->GetBinContent(i) > bin_cont_max)
-        bin_cont_max = ratios_3[j]->GetBinContent(i);
+      bin_cont_max = ratios_3[j]->GetBinContent(i);
       if (ratios_3[j]->GetBinContent(i) < bin_cont_min)
-        bin_cont_min = ratios_3[j]->GetBinContent(i);
+      bin_cont_min = ratios_3[j]->GetBinContent(i);
     }
     error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
     ratio_3->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
@@ -382,7 +379,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   ratio_aSmooth_4->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 1; i < ratio_4->GetNbinsX()+1; ++i)
+  for (int i = 1; i < ratio_4->GetNbinsX()+1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -392,9 +389,9 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     for (unsigned int j = 0; j < mc_files.size(); ++j)
     {
       if (ratios_4[j]->GetBinContent(i) > bin_cont_max)
-        bin_cont_max = ratios_4[j]->GetBinContent(i);
+      bin_cont_max = ratios_4[j]->GetBinContent(i);
       if (ratios_4[j]->GetBinContent(i) < bin_cont_min)
-        bin_cont_min = ratios_4[j]->GetBinContent(i);
+      bin_cont_min = ratios_4[j]->GetBinContent(i);
     }
     error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
     ratio_4->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
@@ -413,7 +410,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   TH1D *ratio_aSmooth_5 = (TH1D *)ratio_5->Clone();
   ratio_aSmooth_5->Smooth(3);
   // Compute Acceptance error from model variation
-  for (unsigned int i = 1; i < ratio_5->GetNbinsX()+1; ++i)
+  for (int i = 1; i < ratio_5->GetNbinsX()+1; ++i)
   {
     double bin_cont_max = 0;
     double bin_cont_min = 999;
@@ -423,9 +420,9 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     for (unsigned int j = 0; j < mc_files.size(); ++j)
     {
       if (ratios_5[j]->GetBinContent(i) > bin_cont_max)
-        bin_cont_max = ratios_5[j]->GetBinContent(i);
+      bin_cont_max = ratios_5[j]->GetBinContent(i);
       if (ratios_5[j]->GetBinContent(i) < bin_cont_min)
-        bin_cont_min = ratios_5[j]->GetBinContent(i);
+      bin_cont_min = ratios_5[j]->GetBinContent(i);
     }
     error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
     ratio_5->SetBinError(i, sqrt(error_stat_2 + error_model_2 + error_smoothing_2));
@@ -460,7 +457,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
 
   std::filesystem::path acceptance_path{(output_location + "/AcceptanceFiles").c_str()};
   if (!std::filesystem::exists(acceptance_path))
-    std::filesystem::create_directory(acceptance_path);
+  std::filesystem::create_directory(acceptance_path);
 
   TFile outputFile((output_location + acc_file + ".root").c_str(), "RECREATE");
 
@@ -508,7 +505,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   // teff->Draw("AP");
 
   if (store_root)
-    c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.root").c_str());
+  c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.root").c_str());
   c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.pdf").c_str());
   delete c_1;
 
@@ -595,7 +592,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   }
 
   if (store_root)
-    c_sector_2->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_persector.root").c_str());
+  c_sector_2->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_persector.root").c_str());
   c_sector_2->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_persector.pdf").c_str());
   delete c_sector_2;
 
@@ -609,10 +606,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
 }
 
 
-std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std::string x_observable, std::string y_observable, std::string title,
-                                        std::string input_MC_location, std::string output_location, std::string output_file_name,
-                                        std::map<std::string,std::vector<double>> cuts,
-                                        std::string analysis_id, bool store_root )
+std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std::string x_observable, std::string y_observable, std::string title, std::string input_MC_location, std::string output_location, std::string output_file_name, std::map<std::string,std::vector<double>> cuts, std::string analysis_id, bool store_root )
 {
 
   // Define trees
@@ -622,8 +616,8 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   // Define Hists
   // The _# correspond to histograms for each sector
   std::vector<TH2D *> hists_recoacc, hists_trueacc, hists_recoacc_0, hists_trueacc_0, hists_recoacc_1, hists_trueacc_1,
-      hists_recoacc_2, hists_trueacc_2, hists_recoacc_3, hists_trueacc_3,
-      hists_recoacc_4, hists_trueacc_4, hists_recoacc_5, hists_trueacc_5;
+  hists_recoacc_2, hists_trueacc_2, hists_recoacc_3, hists_trueacc_3,
+  hists_recoacc_4, hists_trueacc_4, hists_recoacc_5, hists_trueacc_5;
   std::vector<std::vector<TH2D *>> hists_recoacc_slices, hists_trueacc_slices;
   std::vector<TTree *> trees;
   std::vector<TH2D *> hists, ratios, ratios_0, ratios_1, ratios_2, ratios_3, ratios_4, ratios_5;
@@ -816,21 +810,21 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   // Compute Acceptance error from model variation
   for (int i = 1; i <= ratio->GetNbinsX(); ++i) {
     for (int j = 1; j <= ratio->GetNbinsY(); ++j) {
-        double bin_cont_max = 0;
-        double bin_cont_min = 999;
-        double error_smoothing_2 = pow(ratio->GetBinContent(i, j) - ratio_aSmooth->GetBinContent(i, j), 2) / 12.;
-        double error_stat_2 = pow(ratio->GetBinError(i, j), 2);
-        double error_model_2 = 0;
+      double bin_cont_max = 0;
+      double bin_cont_min = 999;
+      double error_smoothing_2 = pow(ratio->GetBinContent(i, j) - ratio_aSmooth->GetBinContent(i, j), 2) / 12.;
+      double error_stat_2 = pow(ratio->GetBinError(i, j), 2);
+      double error_model_2 = 0;
 
-        for (unsigned int k = 0; k < mc_files.size(); ++k) {
-            if (ratios[k]->GetBinContent(i, j) > bin_cont_max)
-                bin_cont_max = ratios[k]->GetBinContent(i, j);
-            if (ratios[k]->GetBinContent(i, j) < bin_cont_min)
-                bin_cont_min = ratios[k]->GetBinContent(i, j);
-        }
+      for (unsigned int k = 0; k < mc_files.size(); ++k) {
+        if (ratios[k]->GetBinContent(i, j) > bin_cont_max)
+        bin_cont_max = ratios[k]->GetBinContent(i, j);
+        if (ratios[k]->GetBinContent(i, j) < bin_cont_min)
+        bin_cont_min = ratios[k]->GetBinContent(i, j);
+      }
 
-        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-        ratio->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+      error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+      ratio->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
   }
   // StandardFormat(ratio, title, kBlack, 1, observable);
@@ -851,21 +845,21 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   // Compute Acceptance error from model variation
   for (int i = 1; i <= ratio_0->GetNbinsX(); ++i) {
     for (int j = 1; j <= ratio_0->GetNbinsY(); ++j) {
-        double bin_cont_max = 0;
-        double bin_cont_min = 999;
-        double error_smoothing_2 = pow(ratio_0->GetBinContent(i, j) - ratio_aSmooth_0->GetBinContent(i, j), 2) / 12.;
-        double error_stat_2 = pow(ratio_0->GetBinError(i, j), 2);
-        double error_model_2 = 0;
+      double bin_cont_max = 0;
+      double bin_cont_min = 999;
+      double error_smoothing_2 = pow(ratio_0->GetBinContent(i, j) - ratio_aSmooth_0->GetBinContent(i, j), 2) / 12.;
+      double error_stat_2 = pow(ratio_0->GetBinError(i, j), 2);
+      double error_model_2 = 0;
 
-        for (unsigned int k = 0; k < mc_files.size(); ++k) {
-            if (ratios_0[k]->GetBinContent(i, j) > bin_cont_max)
-                bin_cont_max = ratios_0[k]->GetBinContent(i, j);
-            if (ratios_0[k]->GetBinContent(i, j) < bin_cont_min)
-                bin_cont_min = ratios_0[k]->GetBinContent(i, j);
-        }
+      for (unsigned int k = 0; k < mc_files.size(); ++k) {
+        if (ratios_0[k]->GetBinContent(i, j) > bin_cont_max)
+        bin_cont_max = ratios_0[k]->GetBinContent(i, j);
+        if (ratios_0[k]->GetBinContent(i, j) < bin_cont_min)
+        bin_cont_min = ratios_0[k]->GetBinContent(i, j);
+      }
 
-        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-        ratio_0->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+      error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+      ratio_0->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
   }
   StandardFormat(ratio_0, title, kOrange + 1, 1, x_observable, y_observable);
@@ -886,21 +880,21 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   // Compute Acceptance error from model variation
   for (int i = 1; i <= ratio_1->GetNbinsX(); ++i) {
     for (int j = 1; j <= ratio_1->GetNbinsY(); ++j) {
-        double bin_cont_max = 0;
-        double bin_cont_min = 999;
-        double error_smoothing_2 = pow(ratio_1->GetBinContent(i, j) - ratio_aSmooth_1->GetBinContent(i, j), 2) / 12.;
-        double error_stat_2 = pow(ratio_1->GetBinError(i, j), 2);
-        double error_model_2 = 0;
+      double bin_cont_max = 0;
+      double bin_cont_min = 999;
+      double error_smoothing_2 = pow(ratio_1->GetBinContent(i, j) - ratio_aSmooth_1->GetBinContent(i, j), 2) / 12.;
+      double error_stat_2 = pow(ratio_1->GetBinError(i, j), 2);
+      double error_model_2 = 0;
 
-        for (unsigned int k = 0; k < mc_files.size(); ++k) {
-            if (ratios_1[k]->GetBinContent(i, j) > bin_cont_max)
-                bin_cont_max = ratios_1[k]->GetBinContent(i, j);
-            if (ratios_1[k]->GetBinContent(i, j) < bin_cont_min)
-                bin_cont_min = ratios_1[k]->GetBinContent(i, j);
-        }
+      for (unsigned int k = 0; k < mc_files.size(); ++k) {
+        if (ratios_1[k]->GetBinContent(i, j) > bin_cont_max)
+        bin_cont_max = ratios_1[k]->GetBinContent(i, j);
+        if (ratios_1[k]->GetBinContent(i, j) < bin_cont_min)
+        bin_cont_min = ratios_1[k]->GetBinContent(i, j);
+      }
 
-        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-        ratio_1->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+      error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+      ratio_1->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
   }
   StandardFormat(ratio_1, title, kPink + 4, 1, x_observable, y_observable);
@@ -921,21 +915,21 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   // Compute Acceptance error from model variation
   for (int i = 1; i <= ratio_2->GetNbinsX(); ++i) {
     for (int j = 1; j <= ratio_2->GetNbinsY(); ++j) {
-        double bin_cont_max = 0;
-        double bin_cont_min = 999;
-        double error_smoothing_2 = pow(ratio_2->GetBinContent(i, j) - ratio_aSmooth_2->GetBinContent(i, j), 2) / 12.;
-        double error_stat_2 = pow(ratio_2->GetBinError(i, j), 2);
-        double error_model_2 = 0;
+      double bin_cont_max = 0;
+      double bin_cont_min = 999;
+      double error_smoothing_2 = pow(ratio_2->GetBinContent(i, j) - ratio_aSmooth_2->GetBinContent(i, j), 2) / 12.;
+      double error_stat_2 = pow(ratio_2->GetBinError(i, j), 2);
+      double error_model_2 = 0;
 
-        for (unsigned int k = 0; k < mc_files.size(); ++k) {
-            if (ratios_2[k]->GetBinContent(i, j) > bin_cont_max)
-                bin_cont_max = ratios_2[k]->GetBinContent(i, j);
-            if (ratios_2[k]->GetBinContent(i, j) < bin_cont_min)
-                bin_cont_min = ratios_2[k]->GetBinContent(i, j);
-        }
+      for (unsigned int k = 0; k < mc_files.size(); ++k) {
+        if (ratios_2[k]->GetBinContent(i, j) > bin_cont_max)
+        bin_cont_max = ratios_2[k]->GetBinContent(i, j);
+        if (ratios_2[k]->GetBinContent(i, j) < bin_cont_min)
+        bin_cont_min = ratios_2[k]->GetBinContent(i, j);
+      }
 
-        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-        ratio_2->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+      error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+      ratio_2->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
   }
   StandardFormat(ratio_2, title, kViolet + 5, 1, x_observable, y_observable);
@@ -956,21 +950,21 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   // Compute Acceptance error from model variation
   for (int i = 1; i <= ratio_3->GetNbinsX(); ++i) {
     for (int j = 1; j <= ratio_3->GetNbinsY(); ++j) {
-        double bin_cont_max = 0;
-        double bin_cont_min = 999;
-        double error_smoothing_2 = pow(ratio_3->GetBinContent(i, j) - ratio_aSmooth_3->GetBinContent(i, j), 2) / 12.;
-        double error_stat_2 = pow(ratio_3->GetBinError(i, j), 2);
-        double error_model_2 = 0;
+      double bin_cont_max = 0;
+      double bin_cont_min = 999;
+      double error_smoothing_2 = pow(ratio_3->GetBinContent(i, j) - ratio_aSmooth_3->GetBinContent(i, j), 2) / 12.;
+      double error_stat_2 = pow(ratio_3->GetBinError(i, j), 2);
+      double error_model_2 = 0;
 
-        for (unsigned int k = 0; k < mc_files.size(); ++k) {
-            if (ratios_3[k]->GetBinContent(i, j) > bin_cont_max)
-                bin_cont_max = ratios_3[k]->GetBinContent(i, j);
-            if (ratios_3[k]->GetBinContent(i, j) < bin_cont_min)
-                bin_cont_min = ratios_3[k]->GetBinContent(i, j);
-        }
+      for (unsigned int k = 0; k < mc_files.size(); ++k) {
+        if (ratios_3[k]->GetBinContent(i, j) > bin_cont_max)
+        bin_cont_max = ratios_3[k]->GetBinContent(i, j);
+        if (ratios_3[k]->GetBinContent(i, j) < bin_cont_min)
+        bin_cont_min = ratios_3[k]->GetBinContent(i, j);
+      }
 
-        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-        ratio_3->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+      error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+      ratio_3->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
   }
   StandardFormat(ratio_3, title, kAzure - 5, 1, x_observable, y_observable);
@@ -991,21 +985,21 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   // Compute Acceptance error from model variation
   for (int i = 1; i <= ratio_4->GetNbinsX(); ++i) {
     for (int j = 1; j <= ratio_4->GetNbinsY(); ++j) {
-        double bin_cont_max = 0;
-        double bin_cont_min = 999;
-        double error_smoothing_2 = pow(ratio_4->GetBinContent(i, j) - ratio_aSmooth_4->GetBinContent(i, j), 2) / 12.;
-        double error_stat_2 = pow(ratio_4->GetBinError(i, j), 2);
-        double error_model_2 = 0;
+      double bin_cont_max = 0;
+      double bin_cont_min = 999;
+      double error_smoothing_2 = pow(ratio_4->GetBinContent(i, j) - ratio_aSmooth_4->GetBinContent(i, j), 2) / 12.;
+      double error_stat_2 = pow(ratio_4->GetBinError(i, j), 2);
+      double error_model_2 = 0;
 
-        for (unsigned int k = 0; k < mc_files.size(); ++k) {
-            if (ratios_4[k]->GetBinContent(i, j) > bin_cont_max)
-                bin_cont_max = ratios_4[k]->GetBinContent(i, j);
-            if (ratios_4[k]->GetBinContent(i, j) < bin_cont_min)
-                bin_cont_min = ratios_4[k]->GetBinContent(i, j);
-        }
+      for (unsigned int k = 0; k < mc_files.size(); ++k) {
+        if (ratios_4[k]->GetBinContent(i, j) > bin_cont_max)
+        bin_cont_max = ratios_4[k]->GetBinContent(i, j);
+        if (ratios_4[k]->GetBinContent(i, j) < bin_cont_min)
+        bin_cont_min = ratios_4[k]->GetBinContent(i, j);
+      }
 
-        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-        ratio_4->SetBinError(i, j, 1E30); // sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+      error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+      ratio_4->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
   }
   StandardFormat(ratio_4, title, kTeal - 7, 1, x_observable,y_observable);
@@ -1025,21 +1019,21 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   // Compute Acceptance error from model variation
   for (int i = 1; i <= ratio_5->GetNbinsX(); ++i) {
     for (int j = 1; j <= ratio_5->GetNbinsY(); ++j) {
-        double bin_cont_max = 0;
-        double bin_cont_min = 999;
-        double error_smoothing_2 = pow(ratio_5->GetBinContent(i, j) - ratio_aSmooth_5->GetBinContent(i, j), 2) / 12.;
-        double error_stat_2 = pow(ratio_0->GetBinError(i, j), 2);
-        double error_model_2 = 0;
+      double bin_cont_max = 0;
+      double bin_cont_min = 999;
+      double error_smoothing_2 = pow(ratio_5->GetBinContent(i, j) - ratio_aSmooth_5->GetBinContent(i, j), 2) / 12.;
+      double error_stat_2 = pow(ratio_0->GetBinError(i, j), 2);
+      double error_model_2 = 0;
 
-        for (unsigned int k = 0; k < mc_files.size(); ++k) {
-            if (ratios_5[k]->GetBinContent(i, j) > bin_cont_max)
-                bin_cont_max = ratios_5[k]->GetBinContent(i, j);
-            if (ratios_5[k]->GetBinContent(i, j) < bin_cont_min)
-                bin_cont_min = ratios_5[k]->GetBinContent(i, j);
-        }
+      for (unsigned int k = 0; k < mc_files.size(); ++k) {
+        if (ratios_5[k]->GetBinContent(i, j) > bin_cont_max)
+        bin_cont_max = ratios_5[k]->GetBinContent(i, j);
+        if (ratios_5[k]->GetBinContent(i, j) < bin_cont_min)
+        bin_cont_min = ratios_5[k]->GetBinContent(i, j);
+      }
 
-        error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-        ratio_5->SetBinError(i, j, 1E30); // sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+      error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+      ratio_5->SetBinError(i, j, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
     }
   }
   StandardFormat(ratio_5, title, kGreen - 3, 1, x_observable,y_observable);
@@ -1051,7 +1045,7 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
 
   std::filesystem::path acceptance_path{(output_location + "/AcceptanceFiles").c_str()};
   if (!std::filesystem::exists(acceptance_path))
-    std::filesystem::create_directory(acceptance_path);
+  std::filesystem::create_directory(acceptance_path);
 
   TFile outputFile((output_location + acc_file + ".root").c_str(), "RECREATE");
 
@@ -1092,7 +1086,7 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   }
 
   if (store_root)
-    c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.root").c_str());
+  c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.root").c_str());
   c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.pdf").c_str());
   delete c_1;
 
@@ -1155,7 +1149,7 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   ratio_5->Draw("COLZ");
 
   if (store_root)
-    c_sector_2->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_2D_persector.root").c_str());
+  c_sector_2->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_2D_persector.root").c_str());
   c_sector_2->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_2D_persector.pdf").c_str());
   delete c_sector_2;
 
@@ -1168,11 +1162,7 @@ std::string plotting::Compute2DAcceptance(std::vector<std::string> mc_files, std
   return acc_file;
 }
 
-std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::vector<std::string> rad_files,
-                                       std::string observable, std::string title,
-                                       std::string input_MC_location, std::string output_location, std::string output_file_name,
-                                       std::map<std::string,std::vector<double>> cuts,
-                                       std::string analysis_id, bool store_root )
+std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::vector<std::string> rad_files, std::string observable, std::string title, std::string input_MC_location, std::string output_location, std::string output_file_name, std::map<std::string,std::vector<double>> cuts, std::string analysis_id, bool store_root )
 {
 
   // Define trees
@@ -1188,16 +1178,16 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
 
   for (unsigned int i = 0; i < rad_files.size(); ++i)
   {
-    files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_true.root").c_str(), "ROOT"));
-    files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
+    files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_truereco.root").c_str(), "ROOT"));
+    files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_truereco_radcorr.root").c_str(), "ROOT"));
     if (!files_mctrueacc[i])
     {
-      std::cout << "ERROR: the " << mc_files[i] << "_true.root  does not exist." << std::endl;
+      std::cout << "ERROR: the " << mc_files[i] << "_truereco.root  does not exist." << std::endl;
       return "";
     }
     if (!files_mcradcorr[i])
     {
-      std::cout << "ERROR: the " << mc_files[i] << "_true_radcorr.root does not exist." << std::endl;
+      std::cout << "ERROR: the " << mc_files[i] << "_truereco_radcorr.root does not exist." << std::endl;
       return "";
     }
     trees_mctrueacc.push_back((TTree *)files_mctrueacc[i]->Get("MCCLAS6Tree"));
@@ -1213,7 +1203,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
     binning = plotting::GetBinning(observable, BeamE, analysis_id);
 
     hists_radcorr.push_back(new TH1D(("Rad Corr MC ACC Model " + std::to_string(i)).c_str(), "", binning.size() - 1, &binning[0]));
-    hists_true.push_back(new TH1D(("True MC ACC Model " + std::to_string(i)).c_str(), "", binning.size() - 1, &binning[0]));
+    hists_true.push_back(new TH1D(("True Reco MC ACC Model " + std::to_string(i)).c_str(), "", binning.size() - 1, &binning[0]));
 
     hists_radcorr[i]->Sumw2();
     hists_true[i]->Sumw2();
@@ -1231,7 +1221,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
         // This ensures that we get the same results even if we run less radiated events.
         double w = TotWeight / (double) InitialNEvents ;
 
-	      content = GetObservable(observable);
+        content = GetObservable(observable);
         // Check if passes cuts
         bool do_fill =true ;
         for (auto it = cuts.begin(); it != cuts.end(); it++)
@@ -1247,7 +1237,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
 
         // Fill the per Sector  histogram
         if (j == 0)
-          hists_true[i]->Fill(content, w);
+        hists_true[i]->Fill(content, w);
         else if (j == 1) {
           hists_radcorr[i]->Fill(content, w);
         }
@@ -1284,14 +1274,10 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
   ratio_aSmooth->Smooth(3);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 1; i < ratio->GetNbinsX()+1; ++i)
+  for (int i = 1; i < ratio->GetNbinsX()+1; ++i)
   {
-    double bin_cont_max = 0;
-    double bin_cont_min = 999;
     double error_smoothing_2 = pow(ratio->GetBinContent(i) - ratio_aSmooth->GetBinContent(i), 2) / 12.;
     double error_stat_2 = pow(ratio->GetBinError(i), 2);
-    double error_model_2 = 0;
-    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
     ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2));
   }
 
@@ -1300,7 +1286,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
 
   std::filesystem::path acceptance_path{(output_location + "/AcceptanceFiles").c_str()};
   if (!std::filesystem::exists(acceptance_path))
-    std::filesystem::create_directory(acceptance_path);
+  std::filesystem::create_directory(acceptance_path);
 
   TFile outputFile((output_location + acc_file + ".root").c_str(), "RECREATE");
 
@@ -1326,7 +1312,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
   // teff->Draw("AP");
 
   if (store_root)
-    c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.root").c_str());
+  c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.root").c_str());
   c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.pdf").c_str());
 
   delete c_1;
@@ -1334,11 +1320,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
 }
 
 
-std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::vector<std::string> rad_files,
-                                        std::string x_observable, std::string y_observable, std::string title,
-                                        std::string input_MC_location, std::string output_location, std::string output_file_name,
-                                        std::map<std::string,std::vector<double>> cuts,
-                                        std::string analysis_id, bool store_root )
+std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::vector<std::string> rad_files, std::string x_observable, std::string y_observable, std::string title,  std::string input_MC_location, std::string output_location, std::string output_file_name, std::map<std::string,std::vector<double>> cuts, std::string analysis_id, bool store_root )
 {
 
   // Define trees
@@ -1354,16 +1336,16 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::v
 
   for (unsigned int i = 0; i < rad_files.size(); ++i)
   {
-    files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_true.root").c_str(), "ROOT"));
-    files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
+    files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_truereco.root").c_str(), "ROOT"));
+    files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_truereco_radcorr.root").c_str(), "ROOT"));
     if (!files_mctrueacc[i])
     {
-      std::cout << "ERROR: the " << mc_files[i] << "_true.root  does not exist." << std::endl;
+      std::cout << "ERROR: the " << mc_files[i] << "_truereco.root  does not exist." << std::endl;
       return "";
     }
     if (!files_mcradcorr[i])
     {
-      std::cout << "ERROR: the " << mc_files[i] << "_true_radcorr.root does not exist." << std::endl;
+      std::cout << "ERROR: the " << mc_files[i] << "_truereco_radcorr.root does not exist." << std::endl;
       return "";
     }
     trees_mctrueacc.push_back((TTree *)files_mctrueacc[i]->Get("MCCLAS6Tree"));
@@ -1399,24 +1381,24 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::v
         // This ensures that we get the same results even if we run less radiated events.
         double w = TotWeight / (double) InitialNEvents;
 
-         // Check if passes cuts
-         bool do_fill =true ;
-         for (auto it = cuts.begin(); it != cuts.end(); it++)
-         {
-           double min = it->second[0] ;
-           double max = it->second[1] ;
-           if( GetObservable(it->first) < min || GetObservable(it->first) > max ) {
-             do_fill = false;
-             continue;
-           }
-         }
-         if( !do_fill ) continue ;
+        // Check if passes cuts
+        bool do_fill =true ;
+        for (auto it = cuts.begin(); it != cuts.end(); it++)
+        {
+          double min = it->second[0] ;
+          double max = it->second[1] ;
+          if( GetObservable(it->first) < min || GetObservable(it->first) > max ) {
+            do_fill = false;
+            continue;
+          }
+        }
+        if( !do_fill ) continue ;
 
         // Fill the per Sector  histogram
         if (j == 0)
-          hists_true[i]->Fill(content_x, content_y, w);
+        hists_true[i]->Fill(content_x, content_y, w);
         else if (j == 1)
-          hists_radcorr[i]->Fill(content_x, content_y, w);
+        hists_radcorr[i]->Fill(content_x, content_y, w);
       }
     }
 
@@ -1444,7 +1426,7 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::v
   ratio->GetYaxis()->SetTitle(GetAxisLabel(y_observable, 0).c_str());
   ratio->GetZaxis()->SetTitle("Radiation Correction");
 
-  // For pion production should be around 10%
+  // For pion production should be around 5%
   systematics::AddSystematic(*ratio, 5, "Radiative");
 
   //We also add smoothing Correction
@@ -1452,14 +1434,10 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::v
   ratio_aSmooth->Smooth(1);
 
   // Compute Acceptance error from model variation
-  for (unsigned int i = 1; i < ratio->GetNbinsX()+1; ++i)
+  for (int i = 1; i < ratio->GetNbinsX()+1; ++i)
   {
-    double bin_cont_max = 0;
-    double bin_cont_min = 999;
     double error_smoothing_2 = pow(ratio->GetBinContent(i) - ratio_aSmooth->GetBinContent(i), 2) / 12.;
     double error_stat_2 = pow(ratio->GetBinError(i), 2);
-    double error_model_2 = 0;
-    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
     ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2));
   }
 
@@ -1468,7 +1446,7 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::v
 
   std::filesystem::path acceptance_path{(output_location + "/AcceptanceFiles").c_str()};
   if (!std::filesystem::exists(acceptance_path))
-    std::filesystem::create_directory(acceptance_path);
+  std::filesystem::create_directory(acceptance_path);
 
   TFile outputFile((output_location + acc_file + ".root").c_str(), "RECREATE");
 
@@ -1487,8 +1465,286 @@ std::string plotting::Compute2DRadCorr(std::vector<std::string> mc_files, std::v
   ratio->Draw("COLZ");
 
   if (store_root)
-    c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.root").c_str());
+  c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.root").c_str());
   c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.pdf").c_str());
+  delete c_1;
+  return acc_file;
+}
+
+
+std::string plotting::Compute2DAccCorrSlice(std::vector<std::string> mc_files, std::string x_observable, std::string y_observable, std::vector<double> y_cuts, std::string title, std::string input_MC_location, std::string output_location, std::string output_file_name, std::map<std::string,std::vector<double>> alt_cuts, std::string analysis_id, bool store_root )
+{
+  std::string output_name = output_file_name + "_acceptance_correction_slices_" + x_observable + "_vs_" + y_observable;
+  std::string acc_file = "/AcceptanceFiles/" + output_name;
+  TCanvas *c_1 = new TCanvas("c_1", "c_1", 200, 10, 700, 500);
+
+  std::filesystem::path acceptance_path{(output_location + "/AcceptanceFiles").c_str()};
+  if (!std::filesystem::exists(acceptance_path))
+  std::filesystem::create_directory(acceptance_path);
+
+  // Define trees
+  std::vector<TFile *> files_mctrueacc, files_mcrecocorr;
+  std::vector<TTree *> trees_mctrueacc, trees_mcrecocorr;
+
+  // Define Hists
+  // The _# correspond to histograms for each sector
+  TH1D* ratios_model;
+  std::vector<TH1D*> ratios_slice; // averaged ratio per slice in case there is more than one model
+  TH1D *  hists_true, * hists_truereco;
+  std::vector<double> binning_x, binning_y;
+
+  // Get energy from tree to define range
+  double BeamE;
+
+  for( int s = 0 ; s < y_cuts.size()-1 ; ++s ) { // compute slices
+    // Validate Cuts
+    double y_cut_min = y_cuts[s] ;
+    double y_cut_max = y_cuts[s+1];
+    if( y_cut_min > y_cut_max ) throw std::invalid_argument("Requested cuts are not valid.");
+
+    for (unsigned int i = 0; i < mc_files.size(); ++i) { // compute for each model
+      files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_true.root").c_str(), "ROOT"));
+      files_mcrecocorr.push_back(new TFile((input_MC_location + mc_files[i] + "_truereco.root").c_str(), "ROOT"));
+      if (!files_mctrueacc[i]){
+        std::cout << "ERROR: the " << mc_files[i] << "_true.root  does not exist." << std::endl;
+        return "";
+      }
+      if (!files_mcrecocorr[i]){
+        std::cout << "ERROR: the " << mc_files[i] << "_truereco.root does not exist." << std::endl;
+        return "";
+      }
+      trees_mctrueacc.push_back((TTree *)files_mctrueacc[i]->Get("MCCLAS6Tree"));
+      trees_mcrecocorr.push_back((TTree *)files_mcrecocorr[i]->Get("MCCLAS6Tree"));
+      if (!trees_mctrueacc[i] || !trees_mcrecocorr[i]){
+        std::cout << "ERROR: the threes do not exist." << std::endl;
+        return "";
+      }
+
+      trees_mctrueacc[0]->SetBranchAddress("BeamE", &BeamE);
+      trees_mctrueacc[0]->GetEntry(0);
+      binning_x = plotting::GetBinning(x_observable, BeamE, analysis_id);
+      // Check edges binning
+      binning_y = plotting::GetBinning(y_observable, BeamE, analysis_id);
+      double max_range = binning_y[binning_y.size()-1];
+      double min_range = binning_y[0];
+
+      if( y_cut_min < min_range ) y_cut_min = min_range;
+      //if( y_cut_max > max_range ) y_cut_max = max_range;
+      if( y_cut_max == y_cut_min ) continue ;
+      std::cout << " Slice " << s << ": " << y_cut_min << " < " << y_observable << " < "<< y_cut_max<< std::endl;
+
+      hists_truereco = new TH1D(("TrueReco Corr MC ACC Model " + std::to_string(i)).c_str(), "", binning_x.size() - 1, &binning_x[0]);
+      hists_true = new TH1D(("True MC ACC Model " + std::to_string(i)).c_str(), "", binning_x.size() - 1, &binning_x[0]);
+
+      std::vector<TTree *> trees = {trees_mctrueacc[i], trees_mcrecocorr[i]};
+
+      // Loop over all slices
+      for (unsigned int j = 0; j < trees.size(); ++j) {
+        plotting::SetAnalysisBranch( trees[j] ) ;
+        for (int k = 0; k < NEntries; ++k)
+        {
+          trees[j]->GetEntry(k);
+
+
+          bool do_fill =true ;
+          double content_x = GetObservable(x_observable);
+          double content_y = GetObservable(y_observable);
+
+          if( content_y < y_cut_min || content_y > y_cut_max ) do_fill = false ; // apply y slicing
+
+          // Weight is the total weight devided by the number of entries.
+          double w = TotWeight / (double) InitialNEvents;
+
+          for (auto it = alt_cuts.begin(); it != alt_cuts.end(); it++)
+          {
+            double min = it->second[0] ;
+            double max = it->second[1] ;
+            if( GetObservable(it->first) < min || GetObservable(it->first) > max ) {
+              do_fill = false;
+              continue;
+            }
+          }
+          if( !do_fill ) continue ;
+
+          // Fill the per Sector  histogram
+          if (j == 0) hists_true->Fill(content_x, w);
+          else if (j == 1) hists_truereco->Fill(content_x, w);
+        }
+      }
+      std::string projection_name = "_px_Range_"+std::to_string(y_cuts[s])+"_"+std::to_string(y_cuts[s+1]) ;
+      ratios_model = (TH1D*)hists_true->Clone();
+      ratios_model->Divide(hists_truereco); // Compute Acc. Corr
+      ratios_model->SetName("AccCorrSlice_Models");
+      ratios_model->GetYaxis()->SetTitle("Acceptance correction");
+
+      if( i == 0 ) ratios_slice.push_back((TH1D*)ratios_model->Clone());
+      else ratios_slice[s]->Add(ratios_model);
+    }
+
+    ratios_slice[s]->Scale(1./mc_files.size()); // Compute average per slice
+    ratios_slice[s]->SetName(("AccCorrSlice_" +std::to_string(s)).c_str());
+
+    //We also add smoothing Correction
+    TH1D *ratio_aSmooth = (TH1D *)ratios_slice[s]->Clone();
+    ratio_aSmooth->Smooth(1);
+
+    // Compute Acceptance error from model variation
+    for (int bin = 1; bin < ratios_slice[s]->GetNbinsX()+1; ++bin)
+    {
+      double error_smoothing_2 = pow(ratios_slice[s]->GetBinContent(bin) - ratio_aSmooth->GetBinContent(bin), 2) / 12.;
+      double error_stat_2 = pow(ratios_slice[s]->GetBinError(bin), 2);
+      ratios_slice[s]->SetBinError(bin, sqrt(error_stat_2 + error_smoothing_2));
+    }
+  }
+
+  TFile outputFile((output_location + acc_file + ".root").c_str(), "RECREATE");
+  // Store total contribution (averaged)
+  for(unsigned int s = 0 ; s < ratios_slice.size(); ++s) ratios_slice[s]->Write();
+  std::cout << " Projected acceptance stored in : "<<(output_location + acc_file + ".root")<<std::endl;
+
+  if (store_root)
+  c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_slice.root").c_str());
+  c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_slice.pdf").c_str());
+  delete c_1;
+  return acc_file;
+}
+
+std::string plotting::Compute2DRadCorrSlice(std::vector<std::string> mc_files, std::vector<std::string> rad_files, std::string x_observable, std::string y_observable, std::vector<double> y_cuts, std::string title, std::string input_MC_location, std::string output_location, std::string output_file_name, std::map<std::string,std::vector<double>> alt_cuts, std::string analysis_id, bool store_root )
+{
+  std::string output_name = output_file_name + "_acceptance_correction_rad_slices_" + x_observable + "_vs_" + y_observable;
+  std::string acc_file = "/AcceptanceFiles/" + output_name;
+  TCanvas *c_1 = new TCanvas("c_1", "c_1", 200, 10, 700, 500);
+
+  std::filesystem::path acceptance_path{(output_location + "/AcceptanceFiles").c_str()};
+  if (!std::filesystem::exists(acceptance_path))
+  std::filesystem::create_directory(acceptance_path);
+
+  // Define trees
+  std::vector<TFile *> files_mctrueacc, files_mcradcorr;
+  std::vector<TTree *> trees_mctrueacc, trees_mcradcorr;
+
+  // Define Hists
+  // The _# correspond to histograms for each sector
+  TH1D* ratios_model;
+  std::vector<TH1D*> ratios_slice; // averaged ratio per slice in case there is more than one model
+  TH1D*  hists_true, *hists_radcorr;
+  std::vector<double> binning_x, binning_y;
+
+  // Get energy from tree to define range
+  double BeamE;
+
+  for( int s = 0 ; s < y_cuts.size()-1 ; ++s ) { // compute slices
+    // Validate Cuts
+    double y_cut_min = y_cuts[s] ;
+    double y_cut_max = y_cuts[s+1];
+    if( y_cut_min > y_cut_max ) throw std::invalid_argument("Requested cuts are not valid.");
+
+    for (unsigned int i = 0; i < rad_files.size(); ++i) { // compute for each model
+      files_mctrueacc.push_back(new TFile((input_MC_location + mc_files[i] + "_true.root").c_str(), "ROOT"));
+      files_mcradcorr.push_back(new TFile((input_MC_location + rad_files[i] + "_true_radcorr.root").c_str(), "ROOT"));
+      if (!files_mctrueacc[i]){
+        std::cout << "ERROR: the " << mc_files[i] << "_true.root  does not exist." << std::endl;
+        return "";
+      }
+      if (!files_mcradcorr[i]){
+        std::cout << "ERROR: the " << mc_files[i] << "_true_radcorr.root does not exist." << std::endl;
+        return "";
+      }
+      trees_mctrueacc.push_back((TTree *)files_mctrueacc[i]->Get("MCCLAS6Tree"));
+      trees_mcradcorr.push_back((TTree *)files_mcradcorr[i]->Get("MCCLAS6Tree"));
+      if (!trees_mctrueacc[i] || !trees_mcradcorr[i]){
+        std::cout << "ERROR: the threes do not exist." << std::endl;
+        return "";
+      }
+
+      trees_mctrueacc[0]->SetBranchAddress("BeamE", &BeamE);
+      trees_mctrueacc[0]->GetEntry(0);
+      binning_x = plotting::GetBinning(x_observable, BeamE, analysis_id);
+      // Check edges binning
+      binning_y = plotting::GetBinning(y_observable, BeamE, analysis_id);
+      double max_range = binning_y[binning_y.size()-1];
+      double min_range = binning_y[0];
+
+      if( y_cut_min < min_range ) y_cut_min = min_range;
+      //if( y_cut_max > max_range ) y_cut_max = max_range;
+      if( y_cut_max == y_cut_min ) continue ;
+      std::cout << " Slice " << s << ": " << y_cut_min << " < " << y_observable << " < "<< y_cut_max<< std::endl;
+
+      hists_radcorr= new TH1D("Rad Corr MC ACC Model", "", binning_x.size() - 1, &binning_x[0]);
+      hists_true= new TH1D("True MC ACC Model", "", binning_x.size() - 1, &binning_x[0]);
+
+      std::vector<TTree *> trees = {trees_mctrueacc[i], trees_mcradcorr[i]};
+
+      // Loop over all slices
+      for (unsigned int j = 0; j < trees.size(); ++j) {
+        plotting::SetAnalysisBranch( trees[j] ) ;
+        for (int k = 0; k < NEntries; ++k)
+        {
+          trees[j]->GetEntry(k);
+
+          bool do_fill =true ;
+          double content_x = GetObservable(x_observable);
+          double content_y = GetObservable(y_observable);
+
+          if( content_y < y_cut_min || content_y > y_cut_max ) do_fill = false ; // apply y slicing
+
+          // Weight is the total weight devided by the number of entries.
+          // This ensures that we get the same results even if we run less radiated events.
+          double w = TotWeight / (double) InitialNEvents;
+
+          for (auto it = alt_cuts.begin(); it != alt_cuts.end(); it++)
+          {
+            double min = it->second[0] ;
+            double max = it->second[1] ;
+            if( GetObservable(it->first) < min || GetObservable(it->first) > max ) {
+              do_fill = false;
+              continue;
+            }
+          }
+          if( !do_fill ) continue ;
+
+          // Fill the per Sector  histogram
+          if (j == 0)
+          hists_true->Fill(content_x, w);
+          else if (j == 1)
+          hists_radcorr->Fill(content_x, w);
+        }
+      }
+      std::string projection_name = "_px_Range_"+std::to_string(y_cuts[s])+"_"+std::to_string(y_cuts[s+1]) ;
+      ratios_model= (TH1D*)hists_true->Clone();
+      ratios_model->Divide(hists_radcorr); // Compute Rad. Corr
+      ratios_model->SetName(("RadCorrSlice_" +std::to_string(s) +"_Model_" +std::to_string(i)).c_str());
+      ratios_model->GetYaxis()->SetTitle("Radiation correction");
+      if( i == 0 ) ratios_slice.push_back((TH1D*)ratios_model->Clone());
+      else ratios_slice[s]->Add(ratios_model);
+    }
+    ratios_slice[s]->Scale(1./rad_files.size()); // Compute average per slice
+    ratios_slice[s]->SetName(("RadCorrSlice_" +std::to_string(s)).c_str());
+
+    // For pion production should be around 5%
+    systematics::AddSystematic(*ratios_slice[s], 5, "Radiative");
+
+    //We also add smoothing Correction
+    TH1D *ratio_aSmooth = (TH1D *)ratios_slice[s]->Clone();
+    ratio_aSmooth->Smooth(1);
+
+    // Compute Acceptance error from model variation
+    for (int bin = 1; bin < ratios_slice[s]->GetNbinsX()+1; ++bin)
+    {
+      double error_smoothing_2 = pow(ratios_slice[s]->GetBinContent(bin) - ratio_aSmooth->GetBinContent(bin), 2) / 12.;
+      double error_stat_2 = pow(ratios_slice[s]->GetBinError(bin), 2);
+      ratios_slice[s]->SetBinError(bin, sqrt(error_stat_2 + error_smoothing_2));
+    }
+  }
+
+  TFile outputFile((output_location + acc_file + ".root").c_str(), "RECREATE");
+  // Store total contribution (averaged)
+  for(unsigned int s = 0 ; s < ratios_slice.size(); ++s) ratios_slice[s]->Write();
+  std::cout << " Projected acceptance stored in : "<<(output_location + acc_file + ".root")<<std::endl;
+
+  if (store_root)
+  c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_slice.root").c_str());
+  c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_slice.pdf").c_str());
   delete c_1;
   return acc_file;
 }

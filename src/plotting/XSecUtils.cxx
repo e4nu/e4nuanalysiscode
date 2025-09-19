@@ -450,10 +450,10 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     TH1D *hist_syst_sector = systematics::SectorVariationError(*hist_data, {hist_data_0, hist_data_1, hist_data_2, hist_data_3, hist_data_4, hist_data_5});
     // systematics::SectorVariationError(*hist_data_correventrate_wsyst, {hist_data_0, hist_data_1, hist_data_2, hist_data_3, hist_data_4, hist_data_5});
 
-    // TCanvas *csect = new TCanvas("csect", "csect", 800, 600);
-    // hist_syst_sector->Draw("hist");
-    // csect->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_persector_" + observable + ".root").c_str());
-    // delete csect;
+    TCanvas *csect = new TCanvas("csect", "csect", 800, 600);
+    hist_syst_sector->Draw("hist");
+    csect->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_persector_" + observable + ".root").c_str());
+    delete csect;
 
     // adding systematics from systematic map. Relative systematic added to all bins
     for (auto it = systematic_map.begin(); it != systematic_map.end(); ++it)
@@ -521,6 +521,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   if (plot_data)
   {
     plotting::PlotEventRate(hist_data_uncorr, observable, title, data_name, input_data_location, output_location, output_file_name + "_raw_event_rate", analysis_id, store_root);
+    plotting::PlotEventRatePerSector(data_per_sector_uncorr, observable, title, data_name, input_data_location, output_location, output_file_name + "_raw_event_rate_corracc", analysis_id, store_root);
 
     plotting::PlotEventRate(hist_data_correventrate, observable, title, data_name, input_data_location, output_location, output_file_name + "_corr_event_rate", analysis_id, store_root);
     plotting::PlotEventRatePerSector(data_per_sector_correventrate, observable, title, data_name, input_data_location, output_location, output_file_name + "_event_rate_corracc", analysis_id, store_root);
@@ -1100,14 +1101,98 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       delete c_sector;
 
       TCanvas *c_sector_stacked = new TCanvas("c_sector_stacked", "c_sector_stacked", 200, 10, 700, 500);
+      c_sector_stacked->cd();
+      TPad *pad12 = new TPad("pad1","",0,0.3,1,1);
+      TPad *pad22 = new TPad("pad2","",0,0.,1,0.3);
+      pad12->Draw();
+      pad12->cd();
+      pad12->SetTopMargin(0.01);
+      pad12->SetBottomMargin(0.05);
+      pad12->SetLeftMargin(0.15);
+      pad12->SetRightMargin(0.01);
       for (unsigned int i = 0; i < 6; ++i)
       {
         if (data_per_sector.size() != 0 && data_per_sector[i])
         {
           data_per_sector[i]->SetMarkerSize(0.7);
+          data_per_sector[i]->SetLineStyle(1);
+          data_per_sector[i]->GetXaxis()->SetLabelSize(0.);
+          data_per_sector[i]->GetXaxis()->SetTitleSize(0.);
+          data_per_sector[i]->SetTitle("");
+          data_per_sector[i]->GetYaxis()->SetTitleOffset(0.7);
           if( i == 0 ) data_per_sector[i]->Draw(" err ");
           else data_per_sector[i]->Draw(" same err ");
         }
+      }
+      auto legend_stacked = new TLegend(0.15,0.6,0.35,0.9);
+      legend_stacked->AddEntry(data_per_sector[0], "Sector 1");
+      legend_stacked->AddEntry(data_per_sector[1], "Sector 2");
+      legend_stacked->AddEntry(data_per_sector[2], "Sector 3");
+      legend_stacked->AddEntry(data_per_sector[3], "Sector 4");
+      legend_stacked->AddEntry(data_per_sector[4], "Sector 5");
+      legend_stacked->AddEntry(data_per_sector[5], "Sector 6");
+      legend_stacked->Draw();
+
+      c_sector_stacked->cd();
+      pad22->Draw();
+      pad22->cd();
+      pad22->SetTopMargin(0.01);
+      pad22->SetBottomMargin(0.35);
+      pad22->SetLeftMargin(0.15);
+      pad22->SetRightMargin(0.01);
+
+      // Create a error hist for each sector :
+      std::vector<TH1D*> hists_syst_sector;
+      for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
+        hists_syst_sector.push_back((TH1D*)data_per_sector[i]->Clone());
+        hists_syst_sector[i]->Reset();
+        hists_syst_sector[i]->SetName("h_syst_sectors");
+        hists_syst_sector[i]->SetTitle("");
+        hists_syst_sector[i]->GetYaxis()->SetTitle("#sigma_{Sector}/#hat{x}[%]");
+        hists_syst_sector[i]->SetMarkerStyle(8);
+        hists_syst_sector[i]->SetLineStyle(1);
+        hists_syst_sector[i]->GetXaxis()->SetLabelSize(0.22);
+        hists_syst_sector[i]->GetYaxis()->SetLabelSize(0.22);
+        hists_syst_sector[i]->GetXaxis()->SetTitleSize(0.22);
+        hists_syst_sector[i]->GetYaxis()->SetTitleSize(0.16);
+        hists_syst_sector[i]->GetXaxis()->SetTitleOffset(0.81);
+        hists_syst_sector[i]->GetYaxis()->SetTitleOffset(0.37);
+      }
+
+      // Loop over bins
+      for( unsigned j = 1 ; j < data_per_sector[0]->GetNbinsX() +1; ++j ){
+        double mean_bin = 0 ;
+        double weight = 0 ;
+        double sectors = 0;
+        // Loop over sectors to compute the mean variance per sector in each bin
+        for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
+          // We have to be careful with empty sectors:
+          if( data_per_sector[i]->GetBinContent(j) != 0 ){
+    			  if( data_per_sector[i]->GetBinError(j) != 0 ) {
+    					mean_bin += data_per_sector[i]->GetBinContent(j)/pow(data_per_sector[i]->GetBinError(j),2);
+    			  	weight += 1./pow(data_per_sector[i]->GetBinError(j),2) ;
+    			  }
+    				sectors+= 1 ;
+          }
+        }
+
+        // Compute weighted average:
+        if( weight != 0 ) mean_bin /= weight ;
+
+        // Compute RMS:
+        for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
+          double error_2_bin =  pow( data_per_sector[i]->GetBinContent(j) - mean_bin, 2) ;
+  				if( data_per_sector[i]->GetBinError(j) > 0 ) error_2_bin -= pow(data_per_sector[i]->GetBinError(j),2);
+          if( sectors > 1 ) error_2_bin /= sectors - 1 ;
+          if( error_2_bin < 0 ) error_2_bin = 0 ;
+          if( mean_bin> 0 ) hists_syst_sector[i]->SetBinContent(j,sqrt(error_2_bin)/mean_bin*100);
+          else hists_syst_sector[i]->SetBinContent(j,0);
+        }
+      } // end loop over bins
+
+      for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
+        if( i == 0 ) hists_syst_sector[i] ->Draw("err");
+        else hists_syst_sector[i] ->Draw("err same");
       }
 
       output_name = output_file_name + "_dataonly_stack_eventrate_" + observable + "_persector";

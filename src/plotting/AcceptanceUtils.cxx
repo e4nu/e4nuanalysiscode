@@ -136,7 +136,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     ratios.push_back((TH1D *)hists_trueacc[i]->Clone());
     ratios[i]->Divide(hists_recoacc[i]);
     ratios[i]->SetName(("Acceptance_model_" + std::to_string(i)).c_str());
-    StandardFormat(ratios[i], title, kBlack + i + 1, 2 + i, observable);
+    StandardFormat(ratios[i], title, ColorBlindPalette(i), 1, observable);
     ratios[i]->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
     ratios[i]->GetYaxis()->SetTitle("Acceptance correction");
 
@@ -228,6 +228,8 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   syst_err->GetXaxis()->SetTitleOffset(0.67);
   syst_err->GetXaxis()->SetLabelSize(0.14);
   syst_err->GetXaxis()->SetTitleSize(0.19);
+
+  // Save stat uncertainty
   for( unsigned int i = 1 ; i < stat_err->GetNbinsX() + 1; ++i){
     if( ratio->GetBinContent(i) != 0 ) stat_err->SetBinContent(i,ratio->GetBinError(i)/ratio->GetBinContent(i)*100);
     else stat_err->SetBinContent(i,0);

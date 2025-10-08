@@ -437,14 +437,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     // 2 - Sector Sector Variation
     // 3 - Relative uncertanties from configuration
 
-    // Adding Acceptance correction systematics from model dependence
-    // TH1D *hist_syst_acc = systematics::AddSystematic(*hist_data, *h_acceptance);
-    //
-    // TCanvas *cacc = new TCanvas("cacc", "cacc", 800, 600);
-    // hist_syst_acc->Draw("hist");
-    // cacc->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_accmodel_" + observable + ".root").c_str());
-    // delete cacc;
-
     // Add sector variation ERROR. Store relative error in histogram
     // We use the bkg substracted, eff corrected distributions for the calculation
     TH1D *hist_syst_sector = systematics::SectorVariationError(*hist_data, {hist_data_0, hist_data_1, hist_data_2, hist_data_3, hist_data_4, hist_data_5});
@@ -897,8 +889,9 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       double min_hist = 0;
       min_hist = 1.3E-4 ;
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
-        if( i == 0 ) StandardFormat(mc_hists[i], title, kBlack, 1, observable, log_scale);
-        else StandardFormat(mc_hists[i], title, ColorBlindPalette(i), 1, observable, log_scale);
+        //if( i == 0 ) StandardFormat(mc_hists[i], title, kBlack, 1, observable, log_scale);
+        //else 
+        StandardFormat(mc_hists[i], title, ColorBlindPalette(i), 1, observable, log_scale);
         mc_hists[i]->SetLineWidth(3);
         //if( i == 1 ) StandardFormat(mc_hists[i], title, kBlue, 1, observable, log_scale);
       }
@@ -926,7 +919,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         mc_hists[i]->Draw("hist err same");
         mc_hists[i]->SetMarkerSize(0);
       }
-
+      mc_hists[0]->Draw("hist err same ");
 
       if (data) {
         data->SetMarkerSize(1.5);

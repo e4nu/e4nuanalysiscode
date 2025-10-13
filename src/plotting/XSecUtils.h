@@ -44,6 +44,11 @@ namespace e4nu {
 			std::string output_file_name, std::map<string,double> systematic_map, bool show_breakdown = true,
 			std::string analysis_id = "default", bool store_root = false, bool log_scale = false, std::string slice_title = "") ;
 
+    void PlotTotalXSec( std::vector<TH1D*> mc_hists, TH1D * data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model,
+      std::string input_MC_location, std::string input_data_location, std::string output_location,
+      std::string output_file_name, std::map<string,double> systematic_map, bool show_breakdown = true,
+      std::string analysis_id = "default", bool store_root = false, bool log_scale = false, std::string slice_title = "") ;
+
     void PlotTotal2DXSec( std::vector<TH2D*> mc_hists, std::vector<TH2D*> breakdown, TH2D * data,
   		std::string x_observable, std::string y_observable, std::vector<double> & y_cuts, std::string title, std::string data_name,
       std::vector<std::string> model, std::string input_MC_location,

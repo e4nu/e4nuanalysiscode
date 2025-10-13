@@ -437,23 +437,15 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     // 2 - Sector Sector Variation
     // 3 - Relative uncertanties from configuration
 
-    // Adding Acceptance correction systematics from model dependence
-    // TH1D *hist_syst_acc = systematics::AddSystematic(*hist_data, *h_acceptance);
-    //
-    // TCanvas *cacc = new TCanvas("cacc", "cacc", 800, 600);
-    // hist_syst_acc->Draw("hist");
-    // cacc->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_accmodel_" + observable + ".root").c_str());
-    // delete cacc;
-
     // Add sector variation ERROR. Store relative error in histogram
     // We use the bkg substracted, eff corrected distributions for the calculation
     TH1D *hist_syst_sector = systematics::SectorVariationError(*hist_data, {hist_data_0, hist_data_1, hist_data_2, hist_data_3, hist_data_4, hist_data_5});
     // systematics::SectorVariationError(*hist_data_correventrate_wsyst, {hist_data_0, hist_data_1, hist_data_2, hist_data_3, hist_data_4, hist_data_5});
 
-    // TCanvas *csect = new TCanvas("csect", "csect", 800, 600);
-    // hist_syst_sector->Draw("hist");
-    // csect->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_persector_" + observable + ".root").c_str());
-    // delete csect;
+    TCanvas *csect = new TCanvas("csect", "csect", 800, 600);
+    hist_syst_sector->Draw("hist");
+    csect->SaveAs((output_location + "/XSecPerSector/" + output_file_name + "_syst_persector_" + observable + ".root").c_str());
+    delete csect;
 
     // adding systematics from systematic map. Relative systematic added to all bins
     for (auto it = systematic_map.begin(); it != systematic_map.end(); ++it)
@@ -521,6 +513,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   if (plot_data)
   {
     plotting::PlotEventRate(hist_data_uncorr, observable, title, data_name, input_data_location, output_location, output_file_name + "_raw_event_rate", analysis_id, store_root);
+    plotting::PlotEventRatePerSector(data_per_sector_uncorr, observable, title, data_name, input_data_location, output_location, output_file_name + "_raw_event_rate_corracc", analysis_id, store_root);
 
     plotting::PlotEventRate(hist_data_correventrate, observable, title, data_name, input_data_location, output_location, output_file_name + "_corr_event_rate", analysis_id, store_root);
     plotting::PlotEventRatePerSector(data_per_sector_correventrate, observable, title, data_name, input_data_location, output_location, output_file_name + "_event_rate_corracc", analysis_id, store_root);
@@ -539,7 +532,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   plotting::PlotTotalXSec(mc_hists_xsec, breakdown_xsec, hist_data, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_with_breakdown", systematic_map, true, analysis_id, store_root, log_scale);
 
-  plotting::PlotTotalXSec(mc_hists_xsec, breakdown_xsec, hist_data, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_no_breakdown", systematic_map, false, analysis_id, store_root, log_scale);
+  plotting::PlotTotalXSec(mc_hists_xsec, hist_data, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_no_breakdown", systematic_map, false, analysis_id, store_root, log_scale);
 
   plotting::PlotPerSector(mc_per_sector, data_per_sector, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name, systematic_map, analysis_id, store_root);
 
@@ -691,8 +684,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       // Set correct plotting style
       // Find absolute y max
       std::vector<TH1D *> temp_check = {mc_hists[0]};
-      if (data)
-      temp_check.push_back(data);
+      if (data) temp_check.push_back(data);
 
       for (unsigned int id = 1; id < mc_hists.size(); ++id)
       {
@@ -732,7 +724,6 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       if( log_scale ) min_hist = 1.3E-4 ;
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
         StandardFormat(mc_hists[i], title, kBlack, i+1, observable, log_scale);
-        //if( i == 1 ) StandardFormat(mc_hists[i], title, kBlue, 1, observable, log_scale);
       }
       // StandardFormat(mc_hists[0], title, kBlack, 1, observable, log_scale);
       // Remove top plot label
@@ -774,8 +765,10 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         mc_hists[i]->SetMarkerSize(0);
       }
 
-      data->SetMarkerSize(1.5);
-      if (data) data->Draw("err same");
+      if (data) {
+        data->SetMarkerSize(1.5);
+        data->Draw("err same");
+      }
 
       // print
       if( slice_title != "" ){
@@ -801,7 +794,6 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       // Return to the canvas for further customization if needed
       c1->cd();
 
-
       std::filesystem::path totalxsec_path{(output_location + "/TotalXSec/").c_str()};
       if (!std::filesystem::exists(totalxsec_path))
       std::filesystem::create_directory(totalxsec_path);
@@ -810,7 +802,6 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       double data_integral = 0, data_tail = 0, data_peak = 0 ;
       double error2_data = 0 ;
       if (data) {
-        //data_integral = data->Integral("width");
         // Compute the error
         for (int i = 1; i <= data->GetNbinsX(); ++i) {
           double content = data->GetBinContent(i);
@@ -833,7 +824,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         double content = mc_hists[0]->GetBinContent(i);
         double err = mc_hists[0]->GetBinError(i);
         double width = mc_hists[0]->GetBinWidth(i);
-        double center = data->GetBinCenter(i);
+        double center = mc_hists[0]->GetBinCenter(i);
         mc_integral += content * width;
         error2_mc   += err * err * width * width;
         if( observable == "ECal"){
@@ -842,8 +833,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         }
       }
 
-      if (data)
-      {
+      if (data) {
         std::cout << " Total integrated cross section (data) " << data_integral << " #pm " << sqrt(error2_data) << std::endl;
       }
       std::cout << " Total integrated cross section (mc) " << mc_integral << " #pm " << sqrt(error2_mc) << std::endl;
@@ -861,6 +851,111 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
 
     }
 
+    void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, TH1D *data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model, std::string input_MC_location, std::string input_data_location, std::string output_location, std::string output_file_name, std::map<string, double> systematic_map, bool show_breakdown, std::string analysis_id, bool store_root, bool log_scale, std::string slice_title)
+    {
+      TCanvas *c1 = new TCanvas("c1", "Canvas with Two Pads", 600, 600);
+
+      // Create the upper pad, taking the top half of the canvas
+      TPad *pad1 = new TPad("pad1", "Top Pad", 0, 0, 1, 1);
+      pad1->SetBottomMargin(0.2); // Minimize gap between pads
+      pad1->SetLeftMargin(0.25);
+      pad1->SetRightMargin(0.05);
+      pad1->Draw();
+      if( log_scale ) pad1->SetLogy();
+      // Fill xsec canvas
+      pad1->cd();
+
+      // Set correct plotting style
+      // Find absolute y max
+      std::vector<TH1D *> temp_check = {mc_hists[0]};
+      if (data) temp_check.push_back(data);
+
+      for (unsigned int id = 1; id < mc_hists.size(); ++id)
+      {
+        temp_check.push_back(mc_hists[id]);
+      }
+
+      // Format plots
+      if (data)
+      {
+        StandardFormat(data, title, kBlack, 8, observable, log_scale);
+        data->SetLineStyle(1);
+        data->SetMarkerSize(1.8);
+      }
+
+      std::vector<TH1D*> all_hists = mc_hists;
+      if (data) all_hists.push_back(data);
+      double max_hist = plotting::GetMaximum(all_hists);
+      double min_hist = 0;
+      min_hist = 1.3E-4 ;
+      for (unsigned int i = 0; i < mc_hists.size(); ++i){
+        if( i == 0 ) StandardFormat(mc_hists[i], title, kBlack, 1, observable, log_scale);
+        //else 
+        StandardFormat(mc_hists[i], title, ColorBlindPalette(i), 1, observable, log_scale);
+        mc_hists[i]->SetLineWidth(3);
+      }
+      // StandardFormat(mc_hists[0], title, kBlack, 1, observable, log_scale);
+      // Remove top plot label
+      mc_hists[0]->GetYaxis()->SetTitleOffset(1.4);
+      mc_hists[0]->SetMarkerSize(0);
+
+      // Possibly scaling to keep same axis
+      double scaling = 1;//1E3;
+      for (unsigned int i = 0; i < mc_hists.size(); ++i) {
+        mc_hists[i]->Scale(scaling);
+      }
+
+      if (data) data->Scale(scaling);
+
+      //max_hist=1E4; // Used for stagged plots for publication.
+      //max_hist*=1E3;
+      //if( log_scale ) min_hist *= 1E3;
+
+      mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
+      mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
+      mc_hists[0]->Draw("hist err ");
+      for (unsigned int i = 0; i < mc_hists.size(); ++i) {
+        mc_hists[i]->Draw("hist err same");
+        mc_hists[i]->SetMarkerSize(0);
+      }
+      mc_hists[0]->Draw("hist err same ");
+
+      if (data) {
+        data->SetMarkerSize(1.5);
+        data->Draw("err same");
+      }
+
+      // print
+      if( slice_title != "" ){
+        TPaveText* title_slice = new TPaveText(0.36, 0.94, 0.76, 0.96, "NDC");
+        title_slice->AddText(slice_title.c_str());
+        title_slice->SetTextSize(0.08);
+        title_slice->SetFillColor(0);
+        title_slice->SetBorderSize(0);
+        title_slice->Draw();
+      }
+
+      std::string output_name = output_file_name + "_dxsec_d" + observable ;
+      if (store_root)
+      {
+        TFile root_file((output_location + "/TotalXSec/" + output_name + ".root").c_str(), "recreate");
+        if (data) data->Write();
+        for (unsigned int i = 0; i < mc_hists.size(); ++i)
+        mc_hists[i]->Write();
+        c1->Write();
+      }
+      // Return to the canvas for further customization if needed
+      c1->cd();
+
+
+      std::filesystem::path totalxsec_path{(output_location + "/TotalXSec/").c_str()};
+      if (!std::filesystem::exists(totalxsec_path))
+      std::filesystem::create_directory(totalxsec_path);
+
+      c1->SaveAs((output_location + "/TotalXSec/" + output_name + ".pdf").c_str());
+      delete c1;
+
+    }
 
     void plotting::PlotTotal2DXSec(std::vector<TH2D *> mc_hists, std::vector<TH2D *> breakdown, TH2D *data, std::string x_observable, std::string y_observable, std::vector<double> & y_cuts, std::string title, std::string data_name, std::vector<std::string> model, std::string input_MC_location, std::string input_data_location, std::string output_location, std::string output_file_name, std::map<string, double> systematic_map, bool show_breakdown, std::string analysis_id, bool store_root, bool log_scale) {
       // Set correct plotting style
@@ -1100,14 +1195,98 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       delete c_sector;
 
       TCanvas *c_sector_stacked = new TCanvas("c_sector_stacked", "c_sector_stacked", 200, 10, 700, 500);
+      c_sector_stacked->cd();
+      TPad *pad12 = new TPad("pad1","",0,0.3,1,1);
+      TPad *pad22 = new TPad("pad2","",0,0.,1,0.3);
+      pad12->Draw();
+      pad12->cd();
+      pad12->SetTopMargin(0.01);
+      pad12->SetBottomMargin(0.05);
+      pad12->SetLeftMargin(0.15);
+      pad12->SetRightMargin(0.01);
       for (unsigned int i = 0; i < 6; ++i)
       {
         if (data_per_sector.size() != 0 && data_per_sector[i])
         {
           data_per_sector[i]->SetMarkerSize(0.7);
+          data_per_sector[i]->SetLineStyle(1);
+          data_per_sector[i]->GetXaxis()->SetLabelSize(0.);
+          data_per_sector[i]->GetXaxis()->SetTitleSize(0.);
+          data_per_sector[i]->SetTitle("");
+          data_per_sector[i]->GetYaxis()->SetTitleOffset(0.7);
           if( i == 0 ) data_per_sector[i]->Draw(" err ");
           else data_per_sector[i]->Draw(" same err ");
         }
+      }
+      auto legend_stacked = new TLegend(0.15,0.6,0.35,0.9);
+      legend_stacked->AddEntry(data_per_sector[0], "Sector 1");
+      legend_stacked->AddEntry(data_per_sector[1], "Sector 2");
+      legend_stacked->AddEntry(data_per_sector[2], "Sector 3");
+      legend_stacked->AddEntry(data_per_sector[3], "Sector 4");
+      legend_stacked->AddEntry(data_per_sector[4], "Sector 5");
+      legend_stacked->AddEntry(data_per_sector[5], "Sector 6");
+      legend_stacked->Draw();
+
+      c_sector_stacked->cd();
+      pad22->Draw();
+      pad22->cd();
+      pad22->SetTopMargin(0.01);
+      pad22->SetBottomMargin(0.35);
+      pad22->SetLeftMargin(0.15);
+      pad22->SetRightMargin(0.01);
+
+      // Create a error hist for each sector :
+      std::vector<TH1D*> hists_syst_sector;
+      for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
+        hists_syst_sector.push_back((TH1D*)data_per_sector[i]->Clone());
+        hists_syst_sector[i]->Reset();
+        hists_syst_sector[i]->SetName("h_syst_sectors");
+        hists_syst_sector[i]->SetTitle("");
+        hists_syst_sector[i]->GetYaxis()->SetTitle("#sigma_{Sector}/#hat{x}[%]");
+        hists_syst_sector[i]->SetMarkerStyle(8);
+        hists_syst_sector[i]->SetLineStyle(1);
+        hists_syst_sector[i]->GetXaxis()->SetLabelSize(0.22);
+        hists_syst_sector[i]->GetYaxis()->SetLabelSize(0.22);
+        hists_syst_sector[i]->GetXaxis()->SetTitleSize(0.22);
+        hists_syst_sector[i]->GetYaxis()->SetTitleSize(0.16);
+        hists_syst_sector[i]->GetXaxis()->SetTitleOffset(0.81);
+        hists_syst_sector[i]->GetYaxis()->SetTitleOffset(0.37);
+      }
+
+      // Loop over bins
+      for( unsigned j = 1 ; j < data_per_sector[0]->GetNbinsX() +1; ++j ){
+        double mean_bin = 0 ;
+        double weight = 0 ;
+        double sectors = 0;
+        // Loop over sectors to compute the mean variance per sector in each bin
+        for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
+          // We have to be careful with empty sectors:
+          if( data_per_sector[i]->GetBinContent(j) != 0 ){
+    			  if( data_per_sector[i]->GetBinError(j) != 0 ) {
+    					mean_bin += data_per_sector[i]->GetBinContent(j)/pow(data_per_sector[i]->GetBinError(j),2);
+    			  	weight += 1./pow(data_per_sector[i]->GetBinError(j),2) ;
+    			  }
+    				sectors+= 1 ;
+          }
+        }
+
+        // Compute weighted average:
+        if( weight != 0 ) mean_bin /= weight ;
+
+        // Compute RMS:
+        for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
+          double error_2_bin =  pow( data_per_sector[i]->GetBinContent(j) - mean_bin, 2) ;
+  				if( data_per_sector[i]->GetBinError(j) > 0 ) error_2_bin -= pow(data_per_sector[i]->GetBinError(j),2);
+          if( sectors > 1 ) error_2_bin /= sectors - 1 ;
+          if( error_2_bin < 0 ) error_2_bin = 0 ;
+          if( mean_bin> 0 ) hists_syst_sector[i]->SetBinContent(j,sqrt(error_2_bin)/mean_bin*100);
+          else hists_syst_sector[i]->SetBinContent(j,0);
+        }
+      } // end loop over bins
+
+      for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
+        if( i == 0 ) hists_syst_sector[i] ->Draw("err");
+        else hists_syst_sector[i] ->Draw("err same");
       }
 
       output_name = output_file_name + "_dataonly_stack_eventrate_" + observable + "_persector";

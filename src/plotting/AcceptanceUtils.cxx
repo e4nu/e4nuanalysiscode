@@ -20,7 +20,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   hists_recoacc_4, hists_trueacc_4, hists_recoacc_5, hists_trueacc_5;
   std::vector<std::vector<TH1D *>> hists_recoacc_slices, hists_trueacc_slices;
   std::vector<TTree *> trees;
-  std::vector<TH1D *> hists, ratios, ratios_0, ratios_1, ratios_2, ratios_3, ratios_4, ratios_5;
+  std::vector<TH1D *> hists, ratios, ratios_0, ratios_1, ratios_2, ratios_3, ratios_4, ratios_5 ;
   std::vector<std::vector<TH1D *>> ratios_slices;
   std::vector<double> binning;
   // Get energy from tree to define range
@@ -132,10 +132,11 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
       }
     }
 
+    // Create acceptances:
     ratios.push_back((TH1D *)hists_trueacc[i]->Clone());
     ratios[i]->Divide(hists_recoacc[i]);
     ratios[i]->SetName(("Acceptance_model_" + std::to_string(i)).c_str());
-    StandardFormat(ratios[i], title, kBlack + i + 1, 2 + i, observable);
+    StandardFormat(ratios[i], title, ColorBlindPalette(i), 2 + i, observable);
     ratios[i]->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
     ratios[i]->GetYaxis()->SetTitle("Acceptance correction");
 
@@ -205,6 +206,35 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   }
   ratio->Scale(1. / mc_files.size());
 
+  // Create hist for stat err and syst error storage
+  TH1D *stat_err = (TH1D *)ratios[0]->Clone();
+  TH1D *syst_err = (TH1D *)ratios[0]->Clone();
+  stat_err->Reset();
+  stat_err->SetName("Stat_Err");
+  syst_err->Reset();
+  syst_err->SetName("Syst_Err");
+  StandardFormat(stat_err, title, kBlack,1, observable);
+  stat_err->GetYaxis()->SetTitle("#sigma_{acc.stat}/#alpha_{acc}[%]");
+  stat_err->GetYaxis()->SetLabelSize(0.2);
+  stat_err->GetXaxis()->SetLabelSize(0.);
+  stat_err->GetYaxis()->SetTitleSize(0.18);
+  stat_err->GetXaxis()->SetTitleSize(0.);
+  stat_err->GetYaxis()->SetTitleOffset(0.24);
+  StandardFormat(syst_err, title, kBlack, 1, observable);
+  syst_err->GetYaxis()->SetTitle("#sigma_{acc.syst}/#alpha_{acc}[%]");
+  syst_err->GetYaxis()->SetLabelSize(0.13);
+  syst_err->GetYaxis()->SetTitleSize(0.13);
+  syst_err->GetYaxis()->SetTitleOffset(0.3);
+  syst_err->GetXaxis()->SetTitleOffset(0.67);
+  syst_err->GetXaxis()->SetLabelSize(0.14);
+  syst_err->GetXaxis()->SetTitleSize(0.19);
+
+  // Save stat uncertainty
+  for( unsigned int i = 1 ; i < stat_err->GetNbinsX() + 1; ++i){
+    if( ratio->GetBinContent(i) != 0 ) stat_err->SetBinContent(i,ratio->GetBinError(i)/ratio->GetBinContent(i)*100);
+    else stat_err->SetBinContent(i,0);
+  }
+
   // We want to store the ratio before smoothing to account for this as an error
   TH1D *ratio_aSmooth = (TH1D *)ratio->Clone();
   ratio_aSmooth->Smooth(1);
@@ -234,6 +264,9 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
 
     // Adding all errors together
     ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2 ));
+    if( ratio->GetBinContent(i) != 0 ) syst_err->SetBinContent(i, sqrt(error_smoothing_2 + error_model_2 )/ratio->GetBinContent(i)*100);
+    else syst_err->SetBinContent(i,0);
+
   }
   StandardFormat(ratio, title, kBlack, 1, observable);
   ratio->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
@@ -461,12 +494,25 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
 
   TFile outputFile((output_location + acc_file + ".root").c_str(), "RECREATE");
 
-  TCanvas *c_1 = new TCanvas("c_1", "c_1", 200, 10, 700, 500);
-  TPad *pad1 = new TPad("pad1", "", 0, 0, 1, 1);
+  TCanvas *c_1 = new TCanvas("c_1", "c_1", 200, 10, 700, 700);
+  TPad *pad1 = new TPad("pad1", "", 0, 0.5, 1, 1);
+  TPad *pad1b = new TPad("pad1b", "", 0, 0.3, 1, 0.48);
+  TPad *pad1c = new TPad("pad1c", "", 0, 0., 1, 0.28);
+  gStyle->SetOptStat(0);
   pad1->Draw();
   pad1->cd();
-  pad1->SetBottomMargin(0.15);
-  pad1->SetLeftMargin(0.15);
+  pad1->SetBottomMargin(0.03);
+  pad1->SetTopMargin(0.05);
+  pad1->SetLeftMargin(0.1);
+  pad1->SetRightMargin(0.05);
+  pad1b->SetTopMargin(0.05);
+  pad1b->SetBottomMargin(0.05);
+  pad1b->SetLeftMargin(0.1);
+  pad1b->SetRightMargin(0.05);
+  pad1c->SetBottomMargin(0.3);
+  pad1c->SetLeftMargin(0.1);
+  pad1c->SetTopMargin(0.05);
+  pad1c->SetRightMargin(0.05);
 
   // Store total contribution (averaged)
   ratio->Write();
@@ -494,6 +540,12 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   }
 
   // Plot it
+  ratio->GetXaxis()->SetLabelSize(0.);
+  ratio->GetXaxis()->SetTitleSize(0.);
+  ratio->GetYaxis()->SetTitle("#alpha_{acc}");
+  ratio->GetYaxis()->SetTitleSize(0.14);
+  ratio->GetYaxis()->SetTitleOffset(0.33);
+
   ratio->Draw("hist err P");
   ratio->SetMarkerStyle(8);
   for (unsigned int i = 0; i < mc_files.size(); ++i)
@@ -502,7 +554,24 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     ratios[i]->Write();
   }
   ratio->Draw("hist err P same");
-  // teff->Draw("AP");
+
+  // Draw stat uncertanties
+  c_1->cd();
+  pad1b->Draw();
+  pad1b->cd();
+  stat_err->SetLineWidth(2);
+  stat_err->SetLineColor(ColorBlindPalette(4));
+  stat_err->GetYaxis()->SetRangeUser(0.01,plotting::GetMaximum({stat_err}));
+  stat_err->Draw("hist");
+
+  // Draw syst uncertainties
+  c_1->cd();
+  pad1c->Draw();
+  pad1c->cd();
+  syst_err->SetLineWidth(2);
+  syst_err->SetLineColor(ColorBlindPalette(5));
+  syst_err->GetYaxis()->SetRangeUser(0.01,plotting::GetMaximum({syst_err}));
+  syst_err->Draw("hist");
 
   if (store_root)
   c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.root").c_str());

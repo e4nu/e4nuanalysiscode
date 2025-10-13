@@ -473,7 +473,7 @@ std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis)
   else if (observable == "RecoW")
   {
     x_axis = "W [GeV]";
-    y_axis = "d#sigma/dW #left[nb GeV^{-1}#right#right]";
+    y_axis = "d#sigma/dW #left[#mub GeV^{-1}#right#right]";
   }
   else if (observable == "RecoQELEnu")
   {
@@ -781,12 +781,9 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   }
   else if (observable == "proton_theta")
   {
-    if (EBeam == 1.161)
-      binning = plotting::GetUniformBinning(10, 5, 140);
-    else if (EBeam == 2.261)
-      binning = plotting::GetUniformBinning(15, 5, 140);
-    else if (EBeam == 4.461)
-      binning = plotting::GetUniformBinning(15, 5, 140);
+    if (EBeam == 1.161) binning = plotting::GetUniformBinning(10, 20, 80);
+    else if (EBeam == 2.261) binning = plotting::GetUniformBinning(15, 20, 80);
+    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(15, 20, 80);
   }
   else if (observable == "proton_phi")
   {
@@ -1144,12 +1141,27 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     }
     else if (observable == "HadAlphaT")
     {
-      if (EBeam == 1.161)
-        binning = plotting::GetUniformBinning(10, 0, 180);
-      else if (EBeam == 2.261)
-        binning = plotting::GetUniformBinning(15, 0, 180);
-      else if (EBeam == 4.461)
-        binning = plotting::GetUniformBinning(15, 0, 180);
+      if (EBeam == 1.161) binning = plotting::GetUniformBinning(15, 0, 80);
+      else if (EBeam == 2.261) binning = plotting::GetUniformBinning(20, 0, 80);
+      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(20, 0, 80);
+    }
+    else if (observable == "HadDeltaPT" || observable == "DeltaPT")
+    {
+      if (EBeam == 1.161) binning = plotting::GetUniformBinning(15, 0.0001, 0.999);
+      else if (EBeam == 2.261) binning = plotting::GetUniformBinning(15, 0.0001, 0.999);
+      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(15, 0.001, 0.999);
+    }
+    else if (observable == "HadDeltaPhiT" || observable == "DeltaPhiT")
+    {
+      if (EBeam == 1.161) binning = plotting::GetUniformBinning(15, 0, 80);
+      else if (EBeam == 2.261) binning = plotting::GetUniformBinning(15, 0, 80);
+      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(15, 0, 80);
+    }
+    else if (observable == "HadAlphaT")
+    {
+      if (EBeam == 1.161) binning = plotting::GetUniformBinning(10, 0, 180);
+      else if (EBeam == 2.261) binning = plotting::GetUniformBinning(15, 0, 180);
+      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(15, 0, 180);
     }
     else if (observable == "HadSystemMass")
     {
@@ -1645,7 +1657,7 @@ void plotting::StandardFormat(TH1D *prediction, std::string title, int color, in
   prediction->GetXaxis()->SetTitleOffset(1.1);
   prediction->GetXaxis()->SetLabelSize(0.1);
   prediction->GetXaxis()->SetTitleSize(0.08);
-  prediction->GetXaxis()->SetNdivisions(3, 2, 0);
+  prediction->GetXaxis()->SetNdivisions(5,3,0);
   prediction->GetXaxis()->SetLabelFont(FontStyle);
   prediction->GetXaxis()->SetTitleFont(FontStyle);
 

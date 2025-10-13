@@ -7,8 +7,8 @@
 int main( int argc, char* argv[] ) {
 
   // Paths to ROOT files
-  const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//EventRate/clas6analysis_1p1pip_4GeV_Shift_3.000000deg_corr_event_rate_Nevents_ECal.root";
-  const char* filedefPath = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots//EventRate/clas6analysis_1p1pip_4GeV_corr_event_rate_Nevents_ECal.root";
+  const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pim_4GeV_corr_event_rate_Nevents_ECal.root";
+  const char* filedefPath = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pim_4GeV_3DegShift_corr_event_rate_Nevents_ECal.root";
 
   // Open the ROOT files
   TFile* file1 = TFile::Open(file1Path);

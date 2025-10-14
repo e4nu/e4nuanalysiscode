@@ -889,11 +889,10 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       double min_hist = 0;
       min_hist = 1.3E-4 ;
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
-        //if( i == 0 ) StandardFormat(mc_hists[i], title, kBlack, 1, observable, log_scale);
+        if( i == 0 ) StandardFormat(mc_hists[i], title, kBlack, 1, observable, log_scale);
         //else 
         StandardFormat(mc_hists[i], title, ColorBlindPalette(i), 1, observable, log_scale);
         mc_hists[i]->SetLineWidth(3);
-        //if( i == 1 ) StandardFormat(mc_hists[i], title, kBlue, 1, observable, log_scale);
       }
       // StandardFormat(mc_hists[0], title, kBlack, 1, observable, log_scale);
       // Remove top plot label

@@ -136,7 +136,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
     ratios.push_back((TH1D *)hists_trueacc[i]->Clone());
     ratios[i]->Divide(hists_recoacc[i]);
     ratios[i]->SetName(("Acceptance_model_" + std::to_string(i)).c_str());
-    StandardFormat(ratios[i], title, ColorBlindPalette(i), 1, observable);
+    StandardFormat(ratios[i], title, ColorBlindPalette(i), 2 + i, observable);
     ratios[i]->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
     ratios[i]->GetYaxis()->SetTitle("Acceptance correction");
 
@@ -559,16 +559,18 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   c_1->cd();
   pad1b->Draw();
   pad1b->cd();
-  stat_err->SetLineWidth(3);
-  stat_err->SetLineColor(kPink);
+  stat_err->SetLineWidth(2);
+  stat_err->SetLineColor(ColorBlindPalette(4));
+  stat_err->GetYaxis()->SetRangeUser(0.01,plotting::GetMaximum({stat_err}));
   stat_err->Draw("hist");
 
   // Draw syst uncertainties
   c_1->cd();
   pad1c->Draw();
   pad1c->cd();
-  syst_err->SetLineWidth(3);
-  syst_err->SetLineColor(kViolet);
+  syst_err->SetLineWidth(2);
+  syst_err->SetLineColor(ColorBlindPalette(5));
+  syst_err->GetYaxis()->SetRangeUser(0.01,plotting::GetMaximum({syst_err}));
   syst_err->Draw("hist");
 
   if (store_root)

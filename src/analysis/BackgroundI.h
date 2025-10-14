@@ -34,210 +34,6 @@ namespace e4nu {
     // These template class guarantees the same substraction method for data and MC
     // Definition must be in header file to avoid linking issuess
     template <class T>
-      bool BackgroundSubstraction( std::map<int,std::vector<T>> & event_holder ) {
-      bool apply_fiducial = ApplyFiducial();
-
-      if( !GetSubtractBkg() ) return true ;
-      Fiducial * fiducial = GetFiducialCut() ;
-
-      unsigned int max_mult = GetMaxBkgMult(); // Max multiplicity specified in conf file
-      unsigned int min_mult = GetMinBkgMult(); // Signal multiplicity
-      std::map<int,unsigned int> Topology = GetTopology();
-      unsigned int m = max_mult ;
-
-      while ( m > min_mult ) {
-        if( event_holder.find(m) != event_holder.end() ) {
-	  std::cout<< " Substracting background events with with multiplicity " << m << ". The total number of bkg events is: " << event_holder[m].size() <<std::endl;
-
-          for( unsigned int event_id = 0 ; event_id < event_holder[m].size() ; ++event_id ) {
-	    if( event_id == 0 || event_id % 1000 == 0 ) utils::PrintProgressBar( event_id, event_holder[m].size() ) ;
-            // Add counter for same multiplicity
-            double N_all = 0 ;
-	    std::map<std::map<std::vector<int>,std::vector<int>>, double> probability_count ; // size of pdg_vector is multiplicity
-            // probability_counts is the number of events with that specific topology and id list
-
-            // We want to correct for the acceptance so we have a "perfectly detected" event independent of the acceptance
-            ApplyAcceptanceCorrection( event_holder[m][event_id], true ) ;
-	        
-            // Start rotations
-	    unsigned int rotations = GetNRotations();
-	    unsigned int n_times_rotated = 0;
-	    while ( N_all < rotations * 0.1 && n_times_rotated < 4 ) { // Avoid large errors when detecting a low-probability event 
-	      ++n_times_rotated;
-	      for ( unsigned int rot_id = 0 ; rot_id < rotations ; ++rot_id ) {
-		// Set rotation around q3 vector
-		TVector3 VectorRecoQ = event_holder[m][event_id].GetRecoq3() ;
-		
-		// Rotate all Hadrons
-		std::map<int,std::vector<TLorentzVector>> rot_particles = event_holder[m][event_id].GetFinalParticles4Mom() ;
-		std::map<int,std::vector<TLorentzVector>> rot_particles_uncorr = event_holder[m][event_id].GetFinalParticlesUnCorr4Mom() ;
-		bool is_contained_extra = false ; // This is to avoid correcting for particles with theta < theta_cut.
-		unsigned int n_tries = 0 ;
-		double rotation_angle = 0;
-		while( !is_contained_extra ) {
-		  // Before final rotation, check that rotated particles are contained in the signal-definition theta cuts
-		  // We do not aim to correct for them. Instead, we skip those events and look for events that do pass the theta cuts
-		  // Lataer we focus on computing the probability of the events to not pass the detector fiducials
-
-		  // If the event always falls outside, we will skip it. Try it for n_times then give up. Tends to be less than 10 tries. 
-		  ++n_tries ; 
-		  if( n_tries > 100 ) break;
-		  
-		  rotation_angle = gRandom->Uniform(0,2*TMath::Pi());
-		  bool all_contained_extra = true;
-		  for( auto it = rot_particles.begin() ; it != rot_particles.end() ; ++it ) {
-		    if( !all_contained_extra ) break ; // Don't try to rotate. Particle falls in extra fiducial cut
-		    int part_pdg = it->first ;
-		    if( Topology.find( part_pdg ) == Topology.end() ) continue ; // Skip particles which are not in signal definition
-		    
-		    for ( unsigned int part_id = 0 ; part_id < (it->second).size() ; ++part_id ) {
-		      TVector3 part_vect = (it->second)[part_id].Vect() ;
-		      part_vect.Rotate(rotation_angle,VectorRecoQ);
-		      // Check which particles are in fiducial
-		      all_contained_extra *= fiducial->FiducialCutExtra( part_pdg, GetConfiguredEBeam(), part_vect, IsData());
-		      if( !all_contained_extra ) { 
-			is_contained_extra = false;
-			break ;
-		      }
-		    }
-		  }
-		  if ( all_contained_extra ) is_contained_extra = true ; 
-		} // While loop to determine contained extra rotation
-		
-		// Rotate them and compute contributions to signal 
-		rot_particles = event_holder[m][event_id].GetFinalParticles4Mom() ;
-		rot_particles_uncorr = event_holder[m][event_id].GetFinalParticlesUnCorr4Mom() ;
-		unsigned int rot_event_mult = 0 ; // rotated event multiplicity
-		std::vector<int> part_pdg_list, part_id_list ;
-		for( auto it = rot_particles.begin() ; it != rot_particles.end() ; ++it ) {
-		  if( !is_contained_extra ) break ; // Don't try to rotate. Particle falls in extra fiducial cut
-		  int part_pdg = it->first ;
-		  if( Topology.find( part_pdg ) == Topology.end() ) continue ; // Skip particles which are not in signal definition
-		
-		  for ( unsigned int part_id = 0 ; part_id < (it->second).size() ; ++part_id ) {
-		    TVector3 part_vect = (it->second)[part_id].Vect() ;
-		    part_vect.Rotate(rotation_angle,VectorRecoQ);
-		    // Check which particles are in fiducial
-		    is_contained_extra *= fiducial->FiducialCutExtra( part_pdg, GetConfiguredEBeam(), part_vect, IsData());
-		    if( !is_contained_extra ) { 
-		      continue ;
-		    }
-		    
-		    bool is_particle_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData(), apply_fiducial ) ;
-		    
-		    TLorentzVector part_shift = (it->second)[part_id] ;
-		    if( fFidAngleShift != 0 ) {
-		      part_shift.SetPhi( (it->second)[part_id].Phi() + fFidAngleShift * TMath::Pi() / 180. ) ;
-		      is_particle_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
-		      part_shift.SetPhi( (it->second)[part_id].Phi() - fFidAngleShift * TMath::Pi() / 180. ) ;
-		      is_particle_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
-		    }
-		    
-		    // Calculate rotated event multiplicity
-		    if( is_particle_contained ) {
-		      ++rot_event_mult ;
-		      part_pdg_list.push_back( part_pdg ) ;
-		      part_id_list.push_back( part_id ) ;
-		    }
-		  } // end loop over a specific pdg
-		} // end pdg key loop
-		
-		// If multiplicity < minimum multiplicity, remove
-		if( rot_event_mult < min_mult ) {
-		  continue ;
-		}
-		
-		// Check if particle multiplicity is above signal particle multiplicity
-		bool is_signal_bkg = true ;
-		for( auto it = Topology.begin(); it!=Topology.end();++it){
-		  if( it->first == conf::kPdgElectron ) continue ;
-		  if( it->second == 0 ) continue ; // If min mult is 0, continue
-		  unsigned int count_p = 0 ;
-		  for( unsigned int idp = 0 ; idp < part_pdg_list.size() ; ++idp ){
-		    if( part_pdg_list[idp] == it->first ) ++count_p ;
-		  }
-		  if( count_p < Topology[it->first] ) {
-		    is_signal_bkg =false ;
-		    break;
-		  }
-		}
-		
-		if( ! is_signal_bkg ) {
-		  continue ;
-		}
-		
-		// If multiplicity is the same as the original event multiplicity,
-		if( rot_event_mult == m ) {
-		  ++N_all ;
-		  continue ;
-		}
-		
-		// For other case, store combination of particles which contribute
-		// And add entry in corresponding map
-		std::map<std::vector<int>,std::vector<int>> new_topology ;
-		new_topology[part_pdg_list] = part_id_list ;
-		probability_count[new_topology] += 1 ;
-		
-	      }// Close rotation loop
-	    }// Close while loop. Needed to minimize error from rare events
-	    
-            // Skip if denominator is 0
-            if( N_all == 0 ) continue ;
-
-            // Store event particles with correct weight and multiplicty
-            for( auto it = probability_count.begin() ; it != probability_count.end() ; ++it ) {
-              for( auto it_key = it->first.begin() ; it_key != it->first.end() ; ++it_key ) {
-                T temp_event = event_holder[m][event_id] ;
-                double event_wgt = temp_event.GetEventWeight() ;
-		std::map<int,std::vector<TLorentzVector>> particles = temp_event.GetFinalParticles4Mom() ;
-		std::map<int,std::vector<TLorentzVector>> particles_uncorr = temp_event.GetFinalParticlesUnCorr4Mom() ;
-
-		std::map<int,std::vector<TLorentzVector>> temp_corr_mom ;
-		std::map<int,std::vector<TLorentzVector>> temp_uncorr_mom ;
-                int new_multiplicity = 0 ;
-                for( unsigned int k = 0 ; k < (it_key->first).size() ; ++k ) {
-                  int particle_pdg = (it_key->first)[k] ;
-                  int particle_id = (it_key->second)[k] ;
-
-                  temp_corr_mom[particle_pdg].push_back( particles[particle_pdg][particle_id] ) ;
-                  temp_uncorr_mom[particle_pdg].push_back( particles_uncorr[particle_pdg][particle_id] ) ;
-                  ++new_multiplicity ;
-                }
-
-                temp_event.SetFinalParticlesKinematics( temp_corr_mom ) ;
-                temp_event.SetFinalParticlesUnCorrKinematics( temp_uncorr_mom ) ;
-
-                double probability = - (it->second) * event_wgt / N_all ;
-                temp_event.SetEventWeight( probability ) ;
-
-                // Store analysis record after background substraction (4) :
-                temp_event.StoreAnalysisRecord(kid_bkgcorr+m); // Id is the bkg id (4) + original multiplicity.
-                // For m = signal_multiplicity, id = 3+signal_mult
-
-                // Account for acceptance
-                ApplyAcceptanceCorrection( temp_event ) ;
-
-                // Add in map
-                if ( event_holder.find(new_multiplicity) != event_holder.end() ) {
-                  event_holder[new_multiplicity].push_back( temp_event ) ;
-                } else {
-		  std::vector<T> temp = { temp_event } ;
-                  event_holder[new_multiplicity] = temp ;
-                }
-              }
-            }
-          } // Close event loop
-        }
-        --m;
-      }
-
-      return true ;
-    }
-    /*
-    // Definition of Background mehtod
-    // These template class guarantees the same substraction method for data and MC
-    // Definition must be in header file to avoid linking issuess
-    template <class T>
     bool BackgroundSubstraction( std::map<int,std::vector<T>> & event_holder ) {
       bool apply_fiducial = ApplyFiducial();
 
@@ -254,105 +50,136 @@ namespace e4nu {
           std::cout<< " Substracting background events with with multiplicity " << m << ". The total number of bkg events is: " << event_holder[m].size() <<std::endl;
 
           for( unsigned int event_id = 0 ; event_id < event_holder[m].size() ; ++event_id ) {
-	    if( event_id == 0 || event_id % 1000 == 0 ) utils::PrintProgressBar( event_id, event_holder[m].size() ) ;
+            if( event_id == 0 || event_id % 1000 == 0 ) utils::PrintProgressBar( event_id, event_holder[m].size() ) ;
             // Add counter for same multiplicity
             double N_all = 0 ;
             std::map<std::map<std::vector<int>,std::vector<int>>, double> probability_count ; // size of pdg_vector is multiplicity
             // probability_counts is the number of events with that specific topology and id list
 
             // We want to correct for the acceptance so we have a "perfectly detected" event independent of the acceptance
-            //ApplyAcceptanceCorrection( event_holder[m][event_id], true ) ;
-	    
+            ApplyAcceptanceCorrection( event_holder[m][event_id], true ) ;
+
             // Start rotations
-            for ( unsigned int rot_id = 0 ; rot_id < GetNRotations() ; ++rot_id ) {
-              // Set rotation around q3 vector
-	      bool is_contained_extra = false ; // This is to avoid correcting for particles with theta < theta_cut.
-	      TVector3 VectorRecoQ = event_holder[m][event_id].GetRecoq3() ;
+            unsigned int rotations = GetNRotations();
+            unsigned int n_times_rotated = 0;
+            while ( N_all < rotations * 0.1 && n_times_rotated < 4 ) { // Avoid large errors when detecting a low-probability event
+              ++n_times_rotated;
+              for ( unsigned int rot_id = 0 ; rot_id < rotations ; ++rot_id ) {
+                // Set rotation around q3 vector
+                TVector3 VectorRecoQ = event_holder[m][event_id].GetRecoq3() ;
 
-	      // Rotate all Hadrons
-	      std::map<int,std::vector<TLorentzVector>> rot_particles = event_holder[m][event_id].GetFinalParticles4Mom() ;
-	      std::map<int,std::vector<TLorentzVector>> rot_particles_uncorr = event_holder[m][event_id].GetFinalParticlesUnCorr4Mom() ;
-	      unsigned int rot_event_mult = 0 ; // rotated event multiplicity
-	      std::vector<int> part_pdg_list, part_id_list ;
+                // Rotate all Hadrons
+                std::map<int,std::vector<TLorentzVector>> rot_particles = event_holder[m][event_id].GetFinalParticles4Mom() ;
+                std::map<int,std::vector<TLorentzVector>> rot_particles_uncorr = event_holder[m][event_id].GetFinalParticlesUnCorr4Mom() ;
+                bool is_contained_extra = false ; // This is to avoid correcting for particles with theta < theta_cut.
+                unsigned int n_tries = 0 ;
+                double rotation_angle = 0;
+                while( !is_contained_extra ) {
+                  // Before final rotation, check that rotated particles are contained in the signal-definition theta cuts
+                  // We do not aim to correct for them. Instead, we skip those events and look for events that do pass the theta cuts
+                  // Lataer we focus on computing the probability of the events to not pass the detector fiducials
 
-	      //while ( !is_contained_extra ) {
-		// If it is not contained, it tries again
-		double rotation_angle = gRandom->Uniform(0,2*TMath::Pi());
-		
-		bool is_fully_contained_extra = true; 
-		for( auto it = rot_particles.begin() ; it != rot_particles.end() ; ++it ) {
-		  if( !is_fully_contained_extra ) continue ; // Don't try to rotate. Particle falls in extra fiducial cut
-		  int part_pdg = it->first ;
-		  if( Topology.find( part_pdg ) == Topology.end() ) continue ; // Skip particles which are not in signal definition
-		  
-		  for ( unsigned int part_id = 0 ; part_id < (it->second).size() ; ++part_id ) {
-		    TVector3 part_vect = (it->second)[part_id].Vect() ;
-		    part_vect.Rotate(rotation_angle,VectorRecoQ);
-		    // Check which particles are in fiducial
-		    if( !fiducial->FiducialCutExtra( part_pdg, GetConfiguredEBeam(), part_vect, IsData()) ) { 
-		      is_fully_contained_extra = false; 
-		      continue ;
-		    }
-		  
-		    bool is_particle_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData(), apply_fiducial ) ;
+                  // If the event always falls outside, we will skip it. Try it for n_times then give up. Tends to be less than 10 tries.
+                  ++n_tries ;
+                  if( n_tries > 100 ) break;
 
-		    TLorentzVector part_shift = (it->second)[part_id] ;
-		    if( fFidAngleShift != 0 ) {
-		      part_shift.SetPhi( (it->second)[part_id].Phi() + fFidAngleShift * TMath::Pi() / 180. ) ;
-		      is_particle_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
-		      part_shift.SetPhi( (it->second)[part_id].Phi() - fFidAngleShift * TMath::Pi() / 180. ) ;
-		      is_particle_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
-		    }
-		    
-		    // Calculate rotated event multiplicity
-		    if( is_particle_contained ) {
-		      ++rot_event_mult ;
-		      part_pdg_list.push_back( part_pdg ) ;
-		      part_id_list.push_back( part_id ) ;
-		    }
-		  } // end loop over a specific pdg
-		} // end pdg key loop
+                  rotation_angle = gRandom->Uniform(0,2*TMath::Pi());
+                  bool all_contained_extra = true;
+                  for( auto it = rot_particles.begin() ; it != rot_particles.end() ; ++it ) {
+                    if( !all_contained_extra ) break ; // Don't try to rotate. Particle falls in extra fiducial cut
+                    int part_pdg = it->first ;
+                    if( Topology.find( part_pdg ) == Topology.end() ) continue ; // Skip particles which are not in signal definition
 
-		is_contained_extra = is_fully_contained_extra; 
-		//} // end while loop. Event is fully contained 
-	      
-	      // If multiplicity < minimum multiplicity, remove
-	      if( rot_event_mult < min_mult ) {
-		continue ;
-	      }
-		
-	      // Check if particle multiplicity is above signal particle multiplicity
-	      bool is_signal_bkg = true ;
-	      for( auto it = Topology.begin(); it!=Topology.end();++it){
-		if( it->first == conf::kPdgElectron ) continue ;
-		if( it->second == 0 ) continue ; // If min mult is 0, continue
-		unsigned int count_p = 0 ;
-		for( unsigned int idp = 0 ; idp < part_pdg_list.size() ; ++idp ){
-		  if( part_pdg_list[idp] == it->first ) ++count_p ;
-		}
-		if( count_p < Topology[it->first] ) {
-		  is_signal_bkg =false ;
-		  break;
-		}
-	      }
-	      
-	      if( ! is_signal_bkg ) {
-		continue ;
-	      }
-	      
-	      // If multiplicity is the same as the original event multiplicity,
-	      if( rot_event_mult == m ) {
-		++N_all ;
-                continue ;
-	      }
-	      
-	      // For other case, store combination of particles which contribute
-		// And add entry in corresponding map
-		std::map<std::vector<int>,std::vector<int>> new_topology ;
-		new_topology[part_pdg_list] = part_id_list ;
-		probability_count[new_topology] += 1 ;
-		
-            }// Close rotation loop
+                    for ( unsigned int part_id = 0 ; part_id < (it->second).size() ; ++part_id ) {
+                      TVector3 part_vect = (it->second)[part_id].Vect() ;
+                      part_vect.Rotate(rotation_angle,VectorRecoQ);
+                      // Check which particles are in fiducial
+                      all_contained_extra *= fiducial->FiducialCutExtra( part_pdg, GetConfiguredEBeam(), part_vect, IsData());
+                      if( !all_contained_extra ) {
+                        is_contained_extra = false;
+                        break ;
+                      }
+                    }
+                  }
+                  if ( all_contained_extra ) is_contained_extra = true ;
+                } // While loop to determine contained extra rotation
+
+                // Rotate them and compute contributions to signal
+                rot_particles = event_holder[m][event_id].GetFinalParticles4Mom() ;
+                rot_particles_uncorr = event_holder[m][event_id].GetFinalParticlesUnCorr4Mom() ;
+                unsigned int rot_event_mult = 0 ; // rotated event multiplicity
+                std::vector<int> part_pdg_list, part_id_list ;
+                for( auto it = rot_particles.begin() ; it != rot_particles.end() ; ++it ) {
+                  if( !is_contained_extra ) break ; // Don't try to rotate. Particle falls in extra fiducial cut
+                  int part_pdg = it->first ;
+                  if( Topology.find( part_pdg ) == Topology.end() ) continue ; // Skip particles which are not in signal definition
+
+                  for ( unsigned int part_id = 0 ; part_id < (it->second).size() ; ++part_id ) {
+                    TVector3 part_vect = (it->second)[part_id].Vect() ;
+                    part_vect.Rotate(rotation_angle,VectorRecoQ);
+                    // Check which particles are in fiducial
+                    is_contained_extra *= fiducial->FiducialCutExtra( part_pdg, GetConfiguredEBeam(), part_vect, IsData());
+                    if( !is_contained_extra ) {
+                      continue ;
+                    }
+
+                    bool is_particle_contained = fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_vect, IsData(), apply_fiducial ) ;
+
+                    TLorentzVector part_shift = (it->second)[part_id] ;
+                    if( fFidAngleShift != 0 ) {
+                      part_shift.SetPhi( (it->second)[part_id].Phi() + fFidAngleShift * TMath::Pi() / 180. ) ;
+                      is_particle_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
+                      part_shift.SetPhi( (it->second)[part_id].Phi() - fFidAngleShift * TMath::Pi() / 180. ) ;
+                      is_particle_contained *= fiducial->FiducialCut( part_pdg, GetConfiguredEBeam(), part_shift.Vect(), IsData(), apply_fiducial ) ;
+                    }
+
+                    // Calculate rotated event multiplicity
+                    if( is_particle_contained ) {
+                      ++rot_event_mult ;
+                      part_pdg_list.push_back( part_pdg ) ;
+                      part_id_list.push_back( part_id ) ;
+                    }
+                  } // end loop over a specific pdg
+                } // end pdg key loop
+
+                // If multiplicity < minimum multiplicity, remove
+                if( rot_event_mult < min_mult ) {
+                  continue ;
+                }
+
+                // Check if particle multiplicity is above signal particle multiplicity
+                bool is_signal_bkg = true ;
+                for( auto it = Topology.begin(); it!=Topology.end();++it){
+                  if( it->first == conf::kPdgElectron ) continue ;
+                  if( it->second == 0 ) continue ; // If min mult is 0, continue
+                  unsigned int count_p = 0 ;
+                  for( unsigned int idp = 0 ; idp < part_pdg_list.size() ; ++idp ){
+                    if( part_pdg_list[idp] == it->first ) ++count_p ;
+                  }
+                  if( count_p < Topology[it->first] ) {
+                    is_signal_bkg =false ;
+                    break;
+                  }
+                }
+
+                if( ! is_signal_bkg ) {
+                  continue ;
+                }
+
+                // If multiplicity is the same as the original event multiplicity,
+                if( rot_event_mult == m ) {
+                  ++N_all ;
+                  continue ;
+                }
+
+                // For other case, store combination of particles which contribute
+                // And add entry in corresponding map
+                std::map<std::vector<int>,std::vector<int>> new_topology ;
+                new_topology[part_pdg_list] = part_id_list ;
+                probability_count[new_topology] += 1 ;
+
+              }// Close rotation loop
+            }// Close while loop. Needed to minimize error from rare events
 
             // Skip if denominator is 0
             if( N_all == 0 ) continue ;
@@ -388,7 +215,7 @@ namespace e4nu {
                 // For m = signal_multiplicity, id = 3+signal_mult
 
                 // Account for acceptance
-                //ApplyAcceptanceCorrection( temp_event ) ;
+                ApplyAcceptanceCorrection( temp_event ) ;
 
                 // Add in map
                 if ( event_holder.find(new_multiplicity) != event_holder.end() ) {
@@ -406,7 +233,7 @@ namespace e4nu {
 
       return true ;
     }
-    */
+
     template <class T>
     bool HadronsAcceptanceCorrection( std::map<int,std::vector<T>> & event_holder ) {
 

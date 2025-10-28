@@ -1212,35 +1212,39 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       double max_value_1 = -1, max_value_2 = -1, max_value_3 = -1;
       int max_sector_1 = -1, max_sector_2 = -1, max_sector_3 = -1;
 
-      for (unsigned bin = 1; bin <= data_per_sector[0]->GetNbinsX(); ++bin) {
-          for (unsigned int i = 0; i < data_per_sector.size(); ++i) {
-              data_per_sector[i]->SetLineStyle(1);
-              double val = data_per_sector[i]->GetBinContent(bin);
-
-              // Skip sectors already selected
-              if (i == max_sector_1 || i == max_sector_2 || i == max_sector_3) continue;
-
-              if (val > max_value_1) {
-                  // shift down the current maxima
-                  max_value_3 = max_value_2;
-                  max_sector_3 = max_sector_2;
-
-                  max_value_2 = max_value_1;
-                  max_sector_2 = max_sector_1;
-
-                  max_value_1 = val;
-                  max_sector_1 = i;
-              } else if (val > max_value_2 ) {
-                  max_value_3 = max_value_2;
-                  max_sector_3 = max_sector_2;
-
-                  max_value_2 = val;
-                  max_sector_2 = i;
-              } else if (val > max_value_3 && val < max_value_1 && val < max_value_2 && i != max_sector_1 && i != max_sector_2 ) {
-                  max_value_3 = val;
-                  max_sector_3 = i;
-              }
+      // === find sector with overall maximum bin content ===
+      for (unsigned int i = 0; i < data_per_sector.size(); ++i) {
+        for (unsigned bin = 1; bin <= data_per_sector[i]->GetNbinsX(); ++bin) {
+          double val = data_per_sector[i]->GetBinContent(bin);
+          if (val > max_value_1) {
+            max_value_1 = val;
+            max_sector_1 = i;
           }
+        }
+      }
+
+      // === find sector with second maximum (excluding the first one) ===
+      for (unsigned int i = 0; i < data_per_sector.size(); ++i) {
+        if (i == max_sector_1) continue; // skip first max sector
+        for (unsigned bin = 1; bin <= data_per_sector[i]->GetNbinsX(); ++bin) {
+          double val = data_per_sector[i]->GetBinContent(bin);
+          if (val > max_value_2) {
+            max_value_2 = val;
+            max_sector_2 = i;
+          }
+        }
+      }
+
+      // === find sector with third maximum (excluding first and second) ===
+      for (unsigned int i = 0; i < data_per_sector.size(); ++i) {
+        if (i == max_sector_1 || i == max_sector_2) continue;
+        for (unsigned bin = 1; bin <= data_per_sector[i]->GetNbinsX(); ++bin) {
+          double val = data_per_sector[i]->GetBinContent(bin);
+          if (val > max_value_3) {
+            max_value_3 = val;
+            max_sector_3 = i;
+          }
+        }
       }
 
       // Compute the average of the three sectos with highest yield:
@@ -1270,31 +1274,31 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       // Compute deviation from average in terms of standard deviation:
       for (unsigned bin = 1; bin <= data_per_sector[0]->GetNbinsX(); ++bin) {
 
-          double avg = average_yields->GetBinContent(bin);
-          double sigma_avg = average_yields->GetBinError(bin); // from your previous weighted-average step
+        double avg = average_yields->GetBinContent(bin);
+        double sigma_avg = average_yields->GetBinError(bin); // from your previous weighted-average step
 
-          for (unsigned int i = 0; i < data_per_sector.size(); ++i) {
-              if( data_per_sector[i]->GetMaximum() < max_value_3 / 100 ) {
-                // check if empty
-                hists_syst_sector[i]->SetLineStyle(2);
-                data_per_sector[i]  ->SetLineStyle(2);
-                hists_syst_sector[i]->SetBinContent(bin, 0);
-                continue ;
-              }
-
-              double val = data_per_sector[i]->GetBinContent(bin);
-              double sigma = data_per_sector[i]->GetBinError(bin);
-              double diff_sigma = 0.0;
-
-              // Compute difference in number of standard deviations
-              if (sigma_avg > 0) {
-                  diff_sigma = fabs(val - avg) / sqrt( pow(sigma_avg,2) + pow(sigma,2) );
-                  diff_sigma = (val - avg) / sqrt( pow(sigma_avg,2) + pow(sigma,2) );
-              }
-
-              // Store result (e.g. in same hists_syst_sector vector)
-              hists_syst_sector[i]->SetBinContent(bin, diff_sigma);
+        for (unsigned int i = 0; i < data_per_sector.size(); ++i) {
+          if( data_per_sector[i]->GetMaximum() < max_value_3 / 100 ) {
+            // check if empty
+            hists_syst_sector[i]->SetLineStyle(2);
+            data_per_sector[i]  ->SetLineStyle(2);
+            hists_syst_sector[i]->SetBinContent(bin, 0);
+            continue ;
           }
+
+          double val = data_per_sector[i]->GetBinContent(bin);
+          double sigma = data_per_sector[i]->GetBinError(bin);
+          double diff_sigma = 0.0;
+
+          // Compute difference in number of standard deviations
+          if (sigma_avg > 0) {
+            diff_sigma = fabs(val - avg) / sqrt( pow(sigma_avg,2) + pow(sigma,2) );
+            diff_sigma = (val - avg) / sqrt( pow(sigma_avg,2) + pow(sigma,2) );
+          }
+
+          // Store result (e.g. in same hists_syst_sector vector)
+          hists_syst_sector[i]->SetBinContent(bin, diff_sigma);
+        }
       }
 
       // Compute average standard deviation per sector:
@@ -1310,6 +1314,9 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         if( average_sdev_sector < -3 ) {
           data_per_sector[i]->SetLineStyle(2);
           hists_syst_sector[i]->SetLineStyle(2);
+        } else {
+          data_per_sector[i]->SetLineStyle(1);
+          hists_syst_sector[i]->SetLineStyle(1);
         }
       }
 
@@ -1331,7 +1338,9 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
           data_per_sector[i]->GetXaxis()->SetLabelSize(0.);
           data_per_sector[i]->GetXaxis()->SetTitleSize(0.);
           data_per_sector[i]->SetTitle("");
-          data_per_sector[i]->GetYaxis()->SetTitleOffset(0.7);
+          data_per_sector[i]->GetYaxis()->SetTitle("Acc. Corr. Counts/Bin Width");
+          data_per_sector[i]->GetYaxis()->SetTitleSize(0.8);
+          data_per_sector[i]->GetYaxis()->SetTitleOffset(0.8);
           if( i == max_sector_1 ||  i == max_sector_2 || i == max_sector_3 ) {
             data_per_sector[i]->SetMarkerStyle(29);
             data_per_sector[i]->SetMarkerSize(1.5);

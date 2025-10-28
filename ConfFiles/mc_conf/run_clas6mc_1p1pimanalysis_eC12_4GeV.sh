@@ -22,7 +22,7 @@ declare -a XSecFiles=(
     "GEM21_11a_Rarita_Q2_08_C.gst.root"
     "GEM21_11a_Rarita_Q2_08_C.gst.root"
     "GEM21_11a_Dipole_Q2_08_C.gst.root"
-    "GEM21_11a_Rarita_Q2_08_C.gst.root"
+    "GEM21_11d_Rarita_Q2_08_C.gst.root"
 )
 
 ## Radiated input

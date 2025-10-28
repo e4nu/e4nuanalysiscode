@@ -31,6 +31,7 @@ using namespace e4nu::plotting;
 // * analysis-key: i.e. 1p1pim                                 //
 // * sector : default all                                      //
 // * beam-energy : energy                                      //
+// * plot-ratio                                                //
 /////////////////////////////////////////////////////////////////
 
 int main( int argc, char* argv[] ) {

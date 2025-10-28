@@ -717,21 +717,8 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
 
       }
 
-      std::vector<TH1D*> all_hists = mc_hists;
-      if (data) all_hists.push_back(data);
-      double max_hist = plotting::GetMaximum(all_hists);
-      double min_hist = 0;
-      if( log_scale ) min_hist = 1.3E-4 ;
-      for (unsigned int i = 0; i < mc_hists.size(); ++i){
-        StandardFormat(mc_hists[i], title, kBlack, i+1, observable, log_scale);
-      }
-      // StandardFormat(mc_hists[0], title, kBlack, 1, observable, log_scale);
-      // Remove top plot label
-      mc_hists[0]->GetYaxis()->SetTitleOffset(1.4);
-      mc_hists[0]->SetMarkerSize(0);
-
       // Possibly scaling to keep same axis
-      double scaling = 1;//1E3;
+      double scaling = 1;//0.5*1E3;
       for (unsigned int i = 0; i < mc_hists.size(); ++i) {
         mc_hists[i]->Scale(scaling);
       }
@@ -743,6 +730,19 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       breakdown[5]->Scale(scaling);
       if (data) data->Scale(scaling);
 
+      std::vector<TH1D*> all_hists = mc_hists;
+      if (data) all_hists.push_back(data);
+      double max_hist = plotting::GetMaximum(all_hists);
+
+      double min_hist = 1.3E-4 ;
+      for (unsigned int i = 0; i < mc_hists.size(); ++i){
+        StandardFormat(mc_hists[i], title, kBlack, i+1, observable, log_scale);
+      }
+      // StandardFormat(mc_hists[0], title, kBlack, 1, observable, log_scale);
+      // Remove top plot label
+      mc_hists[0]->GetYaxis()->SetTitleOffset(1.4);
+      mc_hists[0]->SetMarkerSize(0);
+
       // Fill tstack Plot
       auto hs = new THStack("hs","");
       hs->Add(breakdown[0]);
@@ -751,10 +751,6 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       hs->Add(breakdown[3]);
       hs->Add(breakdown[4]);
       hs->Add(breakdown[5]);
-
-      //max_hist=1E4; // Used for stagged plots for publication.
-      //max_hist*=1E3;
-      //if( log_scale ) min_hist *= 1E3;
 
       mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
       mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
@@ -890,8 +886,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       min_hist = 1.3E-4 ;
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
         if( i == 0 ) StandardFormat(mc_hists[i], title, kBlack, 1, observable, log_scale);
-        //else 
-        StandardFormat(mc_hists[i], title, ColorBlindPalette(i), 1, observable, log_scale);
+        else StandardFormat(mc_hists[i], title, ColorBlindPalette(i), 1, observable, log_scale);
         mc_hists[i]->SetLineWidth(3);
       }
       // StandardFormat(mc_hists[0], title, kBlack, 1, observable, log_scale);
@@ -1194,6 +1189,130 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       c_sector->SaveAs((output_location + "/XSecPerSector/" + output_name + ".pdf").c_str());
       delete c_sector;
 
+      // Create a error hist for each sector :
+      std::vector<TH1D*> hists_syst_sector;
+      for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
+        hists_syst_sector.push_back((TH1D*)data_per_sector[i]->Clone());
+        hists_syst_sector[i]->Reset();
+        hists_syst_sector[i]->SetName("h_syst_sectors");
+        hists_syst_sector[i]->SetTitle("");
+        hists_syst_sector[i]->GetYaxis()->SetTitle("z^{ik}");//"#sigma_{Sector}/#hat{x}[%]");
+        hists_syst_sector[i]->SetMarkerStyle(8);
+        hists_syst_sector[i]->SetLineStyle(1);
+        hists_syst_sector[i]->GetXaxis()->SetLabelSize(0.22);
+        hists_syst_sector[i]->GetYaxis()->SetLabelSize(0.22);
+        hists_syst_sector[i]->GetXaxis()->SetTitleSize(0.22);
+        hists_syst_sector[i]->GetYaxis()->SetTitleSize(0.16);
+        hists_syst_sector[i]->GetXaxis()->SetTitleOffset(0.81);
+        hists_syst_sector[i]->GetYaxis()->SetTitleOffset(0.37);
+      }
+
+      // We compute the difference of each sector to the average of the three sectors with larger acc. corr. yield.
+      // First find the three sectors with highest Acc. Corrected rate:
+      double max_value_1 = -1, max_value_2 = -1, max_value_3 = -1;
+      int max_sector_1 = -1, max_sector_2 = -1, max_sector_3 = -1;
+
+      for (unsigned bin = 1; bin <= data_per_sector[0]->GetNbinsX(); ++bin) {
+          for (unsigned int i = 0; i < data_per_sector.size(); ++i) {
+              data_per_sector[i]->SetLineStyle(1);
+              double val = data_per_sector[i]->GetBinContent(bin);
+
+              // Skip sectors already selected
+              if (i == max_sector_1 || i == max_sector_2 || i == max_sector_3) continue;
+
+              if (val > max_value_1) {
+                  // shift down the current maxima
+                  max_value_3 = max_value_2;
+                  max_sector_3 = max_sector_2;
+
+                  max_value_2 = max_value_1;
+                  max_sector_2 = max_sector_1;
+
+                  max_value_1 = val;
+                  max_sector_1 = i;
+              } else if (val > max_value_2 ) {
+                  max_value_3 = max_value_2;
+                  max_sector_3 = max_sector_2;
+
+                  max_value_2 = val;
+                  max_sector_2 = i;
+              } else if (val > max_value_3 && val < max_value_1 && val < max_value_2 && i != max_sector_1 && i != max_sector_2 ) {
+                  max_value_3 = val;
+                  max_sector_3 = i;
+              }
+          }
+      }
+
+      // Compute the average of the three sectos with highest yield:
+      TH1D * average_yields = (TH1D*) hists_syst_sector[0]->Clone();
+      for( unsigned bin = 1 ; bin < average_yields->GetNbinsX() +1; ++bin ){
+        double y1 = data_per_sector[max_sector_1]->GetBinContent(bin);
+        double y2 = data_per_sector[max_sector_2]->GetBinContent(bin);
+        double y3 = data_per_sector[max_sector_3]->GetBinContent(bin);
+
+        // For the uncertainty :
+        double err1 = data_per_sector[max_sector_1]->GetBinError(bin);
+        double err2 = data_per_sector[max_sector_2]->GetBinError(bin);
+        double err3 = data_per_sector[max_sector_3]->GetBinError(bin);
+
+        // Compute the weighted mean and its uncertainty
+        double w1 = 1.0 / (err1 * err1);
+        double w2 = 1.0 / (err2 * err2);
+        double w3 = 1.0 / (err3 * err3);
+
+        double average_yield_bin = (w1 * y1 + w2 * y2 + w3 * y3) / (w1 + w2 + w3);
+        double weighted_error = sqrt(1.0 / (w1 + w2 + w3));
+
+        average_yields->SetBinContent(bin,average_yield_bin);
+        average_yields->SetBinError(bin,weighted_error);
+      }
+
+      // Compute deviation from average in terms of standard deviation:
+      for (unsigned bin = 1; bin <= data_per_sector[0]->GetNbinsX(); ++bin) {
+
+          double avg = average_yields->GetBinContent(bin);
+          double sigma_avg = average_yields->GetBinError(bin); // from your previous weighted-average step
+
+          for (unsigned int i = 0; i < data_per_sector.size(); ++i) {
+              if( data_per_sector[i]->GetMaximum() < max_value_3 / 100 ) {
+                // check if empty
+                hists_syst_sector[i]->SetLineStyle(2);
+                data_per_sector[i]  ->SetLineStyle(2);
+                hists_syst_sector[i]->SetBinContent(bin, 0);
+                continue ;
+              }
+
+              double val = data_per_sector[i]->GetBinContent(bin);
+              double sigma = data_per_sector[i]->GetBinError(bin);
+              double diff_sigma = 0.0;
+
+              // Compute difference in number of standard deviations
+              if (sigma_avg > 0) {
+                  diff_sigma = fabs(val - avg) / sqrt( pow(sigma_avg,2) + pow(sigma,2) );
+                  diff_sigma = (val - avg) / sqrt( pow(sigma_avg,2) + pow(sigma,2) );
+              }
+
+              // Store result (e.g. in same hists_syst_sector vector)
+              hists_syst_sector[i]->SetBinContent(bin, diff_sigma);
+          }
+      }
+
+      // Compute average standard deviation per sector:
+      for (unsigned int i = 0; i < hists_syst_sector.size(); ++i) {
+        double average_sdev_sector = 0;
+        double sumw_sector = 0;
+        for (unsigned bin = 1; bin <= hists_syst_sector[i]->GetNbinsX(); ++bin) {
+          average_sdev_sector += hists_syst_sector[i]->GetBinContent(bin) * hists_syst_sector[i]->GetBinWidth(bin);
+          sumw_sector += hists_syst_sector[i]->GetBinWidth(bin);
+        }
+        average_sdev_sector /= sumw_sector ;
+
+        if( average_sdev_sector < -3 ) {
+          data_per_sector[i]->SetLineStyle(2);
+          hists_syst_sector[i]->SetLineStyle(2);
+        }
+      }
+
       TCanvas *c_sector_stacked = new TCanvas("c_sector_stacked", "c_sector_stacked", 200, 10, 700, 500);
       c_sector_stacked->cd();
       TPad *pad12 = new TPad("pad1","",0,0.3,1,1);
@@ -1209,11 +1328,14 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         if (data_per_sector.size() != 0 && data_per_sector[i])
         {
           data_per_sector[i]->SetMarkerSize(0.7);
-          data_per_sector[i]->SetLineStyle(1);
           data_per_sector[i]->GetXaxis()->SetLabelSize(0.);
           data_per_sector[i]->GetXaxis()->SetTitleSize(0.);
           data_per_sector[i]->SetTitle("");
           data_per_sector[i]->GetYaxis()->SetTitleOffset(0.7);
+          if( i == max_sector_1 ||  i == max_sector_2 || i == max_sector_3 ) {
+            data_per_sector[i]->SetMarkerStyle(29);
+            data_per_sector[i]->SetMarkerSize(1.5);
+          }
           if( i == 0 ) data_per_sector[i]->Draw(" err ");
           else data_per_sector[i]->Draw(" same err ");
         }
@@ -1235,61 +1357,13 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       pad22->SetLeftMargin(0.15);
       pad22->SetRightMargin(0.01);
 
-      // Create a error hist for each sector :
-      std::vector<TH1D*> hists_syst_sector;
       for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
-        hists_syst_sector.push_back((TH1D*)data_per_sector[i]->Clone());
-        hists_syst_sector[i]->Reset();
-        hists_syst_sector[i]->SetName("h_syst_sectors");
-        hists_syst_sector[i]->SetTitle("");
-        hists_syst_sector[i]->GetYaxis()->SetTitle("#sigma_{Sector}/#hat{x}[%]");
-        hists_syst_sector[i]->SetMarkerStyle(8);
-        hists_syst_sector[i]->SetLineStyle(1);
-        hists_syst_sector[i]->GetXaxis()->SetLabelSize(0.22);
-        hists_syst_sector[i]->GetYaxis()->SetLabelSize(0.22);
-        hists_syst_sector[i]->GetXaxis()->SetTitleSize(0.22);
-        hists_syst_sector[i]->GetYaxis()->SetTitleSize(0.16);
-        hists_syst_sector[i]->GetXaxis()->SetTitleOffset(0.81);
-        hists_syst_sector[i]->GetYaxis()->SetTitleOffset(0.37);
-      }
-
-      // Loop over bins
-      for( unsigned j = 1 ; j < data_per_sector[0]->GetNbinsX() +1; ++j ){
-        double mean_bin = 0 ;
-        double weight = 0 ;
-        double sectors = 0;
-        // Loop over sectors to compute the mean variance per sector in each bin
-        for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
-          // We have to be careful with empty sectors:
-          if( data_per_sector[i]->GetBinContent(j) != 0 ){
-    			  if( data_per_sector[i]->GetBinError(j) != 0 ) {
-    					mean_bin += data_per_sector[i]->GetBinContent(j)/pow(data_per_sector[i]->GetBinError(j),2);
-    			  	weight += 1./pow(data_per_sector[i]->GetBinError(j),2) ;
-    			  }
-    				sectors+= 1 ;
-          }
-        }
-
-        // Compute weighted average:
-        if( weight != 0 ) mean_bin /= weight ;
-
-        // Compute RMS:
-        for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
-          double error_2_bin =  pow( data_per_sector[i]->GetBinContent(j) - mean_bin, 2) ;
-  				if( data_per_sector[i]->GetBinError(j) > 0 ) error_2_bin -= pow(data_per_sector[i]->GetBinError(j),2);
-          if( sectors > 1 ) error_2_bin /= sectors - 1 ;
-          if( error_2_bin < 0 ) error_2_bin = 0 ;
-          if( mean_bin> 0 ) hists_syst_sector[i]->SetBinContent(j,sqrt(error_2_bin)/mean_bin*100);
-          else hists_syst_sector[i]->SetBinContent(j,0);
-        }
-      } // end loop over bins
-
-      for( unsigned int i = 0 ; i < data_per_sector.size() ; ++i ){
+        hists_syst_sector[i]->GetYaxis()->SetRangeUser(-10,20);
         if( i == 0 ) hists_syst_sector[i] ->Draw("err");
         else hists_syst_sector[i] ->Draw("err same");
       }
 
-      output_name = output_file_name + "_dataonly_stack_eventrate_" + observable + "_persector";
+      output_name = "test";//output_file_name + "_dataonly_stack_eventrate_" + observable + "_persector";
       xsecpersector_path = (output_location + "/XSecPerSector/").c_str();
       if (!std::filesystem::exists(xsecpersector_path))
       std::filesystem::create_directory(xsecpersector_path);

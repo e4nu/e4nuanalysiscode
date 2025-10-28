@@ -561,7 +561,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   pad1b->cd();
   stat_err->SetLineWidth(2);
   stat_err->SetLineColor(ColorBlindPalette(4));
-  stat_err->GetYaxis()->SetRangeUser(0.01,plotting::GetMaximum({stat_err}));
+  stat_err->GetYaxis()->SetRangeUser(0.01,5);
   stat_err->Draw("hist");
 
   // Draw syst uncertainties
@@ -571,6 +571,7 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   syst_err->SetLineWidth(2);
   syst_err->SetLineColor(ColorBlindPalette(5));
   syst_err->GetYaxis()->SetRangeUser(0.01,plotting::GetMaximum({syst_err}));
+  syst_err->GetYaxis()->SetRangeUser(0.01,10);
   syst_err->Draw("hist");
 
   if (store_root)
@@ -1347,7 +1348,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
   {
     double error_smoothing_2 = pow(ratio->GetBinContent(i) - ratio_aSmooth->GetBinContent(i), 2) / 12.;
     double error_stat_2 = pow(ratio->GetBinError(i), 2);
-    ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2));
+    //ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2));
   }
 
   std::string output_name = output_file_name + "_acceptance_correction_rad_" + observable;

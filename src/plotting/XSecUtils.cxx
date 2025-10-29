@@ -15,7 +15,7 @@
 using namespace e4nu;
 using namespace e4nu::plotting;
 
-void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_name, std::string acceptance_file_name, std::string radcorr_file, std::string observable, std::string title, std::string data_name, std::vector<std::string> model, std::string input_MC_location, std::string input_data_location, std::string output_location, std::string output_file_name, bool plot_data, std::map<string, double> systematic_map, string bkg_syst, std::map<std::string,std::vector<double>> cuts, std::string analysis_id, bool store_root, bool log_scale, bool scale_mott, string units, double scaling ) {
+void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string data_file_name, std::string acceptance_file_name, std::string radcorr_file, std::string observable, std::string title, std::string data_name, std::vector<std::string> model, std::string input_MC_location, std::string input_data_location, std::string output_location, std::string output_file_name, bool plot_data, std::map<string, double> systematic_map, string bkg_syst, std::map<std::string,std::vector<double>> cuts, std::string analysis_id, bool store_root, bool log_scale, bool scale_mott, string units, double scaling, double max_y ) {
 
   TPad *pad1 = new TPad("pad1", "", 0, 0, 1, 1);
   pad1->Draw();
@@ -540,9 +540,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   }
 
-  plotting::PlotTotalXSec(mc_hists_xsec, breakdown_xsec, hist_data, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_with_breakdown", systematic_map, true, analysis_id, units, store_root, log_scale);
+  plotting::PlotTotalXSec(mc_hists_xsec, breakdown_xsec, hist_data, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_with_breakdown", systematic_map, true, analysis_id, units, max_y, store_root, log_scale );
 
-  plotting::PlotTotalXSec(mc_hists_xsec, hist_data, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_no_breakdown", systematic_map, false, analysis_id, units, store_root, log_scale);
+  plotting::PlotTotalXSec(mc_hists_xsec, hist_data, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_no_breakdown", systematic_map, false, analysis_id, units, max_y, store_root, log_scale );
 
   plotting::PlotPerSector(mc_per_sector, data_per_sector, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name, systematic_map, analysis_id, units, store_root);
 
@@ -677,7 +677,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       delete c1;
     }
 
-    void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, std::vector<TH1D *> breakdown, TH1D *data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model, std::string input_MC_location, std::string input_data_location, std::string output_location, std::string output_file_name, std::map<string, double> systematic_map, bool show_breakdown, std::string analysis_id, std::string units, bool store_root, bool log_scale, std::string slice_title)
+    void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, std::vector<TH1D *> breakdown, TH1D *data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model, std::string input_MC_location, std::string input_data_location, std::string output_location, std::string output_file_name, std::map<string, double> systematic_map, bool show_breakdown, std::string analysis_id, std::string units, double max_y, bool store_root, bool log_scale, std::string slice_title )
     {
       TCanvas *c1 = new TCanvas("c1", "Canvas with Two Pads", 600, 600);
 
@@ -727,19 +727,6 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
 
       }
 
-      // Possibly scaling to keep same axis
-      double scaling = 1;//0.5*1E3;
-      for (unsigned int i = 0; i < mc_hists.size(); ++i) {
-        mc_hists[i]->Scale(scaling);
-      }
-      breakdown[0]->Scale(scaling);
-      breakdown[1]->Scale(scaling);
-      breakdown[2]->Scale(scaling);
-      breakdown[3]->Scale(scaling);
-      breakdown[4]->Scale(scaling);
-      breakdown[5]->Scale(scaling);
-      if (data) data->Scale(scaling);
-
       std::vector<TH1D*> all_hists = mc_hists;
       if (data) all_hists.push_back(data);
       double max_hist = plotting::GetMaximum(all_hists);
@@ -762,6 +749,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       hs->Add(breakdown[4]);
       hs->Add(breakdown[5]);
 
+      if( max_y > 0 ) max_hist = max_y ;
       mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
       mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
       mc_hists[0]->Draw("hist err ");
@@ -857,7 +845,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
 
     }
 
-    void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, TH1D *data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model, std::string input_MC_location, std::string input_data_location, std::string output_location, std::string output_file_name, std::map<string, double> systematic_map, bool show_breakdown, std::string analysis_id, std::string units, bool store_root, bool log_scale, std::string slice_title)
+    void plotting::PlotTotalXSec(std::vector<TH1D *> mc_hists, TH1D *data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model, std::string input_MC_location, std::string input_data_location, std::string output_location, std::string output_file_name, std::map<string, double> systematic_map, bool show_breakdown, std::string analysis_id, std::string units, double max_y, bool store_root, bool log_scale, std::string slice_title )
     {
       TCanvas *c1 = new TCanvas("c1", "Canvas with Two Pads", 600, 600);
 
@@ -2787,7 +2775,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         if( y_cut_max > max_range ) oss << std::fixed << std::setprecision(2) << plotting::GetAxisLabel(y_observable, 0) << " > " << y_cut_min ;
         else oss << std::fixed << std::setprecision(2) << y_cut_min << "<" << plotting::GetAxisLabel(y_observable, 0) << "<" << y_cut_max;
 
-        plotting::PlotTotalXSec(mc_hists_xsec, breakdown, hist_data, x_observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_Slice_" + std::to_string(s), systematic_map, true, analysis_id, units, store_root, log_scale, oss.str());
+        plotting::PlotTotalXSec(mc_hists_xsec, breakdown, hist_data, x_observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_Slice_" + std::to_string(s), systematic_map, true, analysis_id, units, -1, store_root, log_scale, oss.str() );
 
       }// slices loop
     }

@@ -17,7 +17,7 @@ namespace e4nu {
 		    std::string input_MC_location, std::string input_data_location, std::string output_location,
 		    std::string output_file_name, bool plot_data, std::map<string,double> systematic_map, string bkg_syst,
         std::map<std::string,std::vector<double>> cuts,
-		    std::string analysis_id = "default", bool store_root = false, bool log_scale = false, bool scale_mott = false, string units = "mb", double scaling = 1 ) ;
+		    std::string analysis_id = "default", bool store_root = false, bool log_scale = false, bool scale_mott = false, string units = "mb", double scaling = 1, double max_y = -1 ) ;
 
     void Plot2DXSec(std::vector<std::string> MC_files_name, std::string data_file_name,
         std::string acceptance_file_name, std::string radcorr_file, std::string x_observable, std::string y_observable,
@@ -42,12 +42,12 @@ namespace e4nu {
 			std::string observable, std::string title, std::string data_name, std::vector<std::string> model,
 			std::string input_MC_location, std::string input_data_location, std::string output_location,
 			std::string output_file_name, std::map<string,double> systematic_map, bool show_breakdown = true,
-			std::string analysis_id = "default", std::string units = "mb", bool store_root = false, bool log_scale = false, std::string slice_title = "") ;
+			std::string analysis_id = "default", std::string units = "mb", double max_y = -1, bool store_root = false, bool log_scale = false, std::string slice_title = "") ;
 
     void PlotTotalXSec( std::vector<TH1D*> mc_hists, TH1D * data, std::string observable, std::string title, std::string data_name, std::vector<std::string> model,
       std::string input_MC_location, std::string input_data_location, std::string output_location,
       std::string output_file_name, std::map<string,double> systematic_map, bool show_breakdown = true,
-      std::string analysis_id = "default", std::string units = "mb", bool store_root = false, bool log_scale = false, std::string slice_title = "") ;
+      std::string analysis_id = "default", std::string units = "mb", double max_y = -1, bool store_root = false, bool log_scale = false, std::string slice_title = "") ;
 
     void PlotTotal2DXSec( std::vector<TH2D*> mc_hists, std::vector<TH2D*> breakdown, TH2D * data,
   		std::string x_observable, std::string y_observable, std::vector<double> & y_cuts, std::string title, std::string data_name,

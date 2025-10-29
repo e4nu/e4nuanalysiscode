@@ -42,6 +42,7 @@ using namespace e4nu::plotting;
 // 21) mott-scalet: scale by mott (Q4)                         //
 // 22) units : mb or nb                                        //
 // 23) scale : scaling factor to multiply data and MC          //
+// 24) max-y : maximum for y axis                              //
 /////////////////////////////////////////////////////////////////
 
 string mc_location="", data_location="", output_location ="", output_name ="", analysis_id="default";
@@ -54,6 +55,7 @@ bool plot_data = true ;
 bool store_root = false ;
 bool log_scale = false ;
 bool mott_scale = false ;
+double max_y = -1 ;
 double scaling = 1;
 std::string units = "mb";
 void PrintFormat(string s);
@@ -229,6 +231,10 @@ int main( int argc, char* argv[] ) {
       scaling = stod(GetArg("scaling",argc,argv)) ;
     }
 
+    if( ExistArg("max-y",argc,argv)) {
+      max_y = stod(GetArg("max-y",argc,argv)) ;
+    }
+
   }
 
   // Fill 2D Graph for oscillation study:
@@ -266,7 +272,7 @@ int main( int argc, char* argv[] ) {
 
     }
 
-    Plot1DXSec( root_files, data_file, acceptance_file_1D, radcorr_file, observables_x[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data, systematic_map, bkg_syst, cuts, analysis_id, store_root, log_scale, mott_scale, units, scaling ) ;
+    Plot1DXSec( root_files, data_file, acceptance_file_1D, radcorr_file, observables_x[i], title, data_name, names, mc_location, data_location, output_location, output_name, plot_data, systematic_map, bkg_syst, cuts, analysis_id, store_root, log_scale, mott_scale, units, scaling, max_y ) ;
 
     if( observables_y.size() > 0 ){
       Plot2DXSec( root_files, data_file, acceptance_file_2D, radcorr_file_2D, observables_x[i], observables_y[i], y_cuts, title, data_name, names, mc_location, data_location, output_location, output_name, plot_data, systematic_map, cuts, analysis_id, units, store_root, log_scale, mott_scale, scaling ) ;

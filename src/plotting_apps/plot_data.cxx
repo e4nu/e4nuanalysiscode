@@ -177,7 +177,7 @@ int main( int argc, char* argv[] ) {
 
   // Normalise for bin size
   for( unsigned int i = 0 ; i < input_files.size(); ++i ){
-    plotting::StandardFormat( hists[i], "", color_list[i], 1, observable, false, ymax, "Counts/Bin Width");
+    plotting::StandardFormat( hists[i], "", color_list[i], 1, observable, "counts", false, ymax, "Counts/Bin Width");
     hists[i] -> SetLineStyle(1);
     hists[i] -> SetMarkerStyle(8);
     hists[i] -> GetYaxis() -> TAxis::SetMaxDigits(3);
@@ -211,7 +211,7 @@ int main( int argc, char* argv[] ) {
       ratios[i]->Divide(hists.back());
       ratios[i]->Scale(100);
       ratios[i]->SetStats(0);
-      plotting::StandardFormat( ratios[i], "", color_list[i], 1, observable, false, ymax, "Rel. Diff [%]");
+      plotting::StandardFormat( ratios[i], "", color_list[i], 1, observable, "%", false, ymax, "Rel. Diff [%]");
       ratios[i]->SetMarkerStyle(8);
       ratios[i]->SetMarkerSize(1.6);
       ratios[i]->Scale(-1.);

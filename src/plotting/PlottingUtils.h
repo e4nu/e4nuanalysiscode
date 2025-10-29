@@ -49,7 +49,7 @@ namespace e4nu {
     void NormalizeHist( TH2D * h, double normalization_factor );
     void CorrectData(TH1D* h, TH1D* acc);
     void CorrectData(TH2D* h, TH2D* acc);
-    std::string GetAxisLabel( std::string observable, unsigned int id_axis );
+    std::string GetAxisLabel( std::string observable, unsigned int id_axis, std::string units = "mb" );
     std::string GetAxisLabel(std::string observable_x, std::string observable_y, unsigned int id_axis);
     std::vector<double> GetUniformBinning( unsigned int nbins, double min, double max);
     std::vector<double> GetECalBinning( unsigned int nbins_tail, unsigned int nbins_peak, double min, double max, double EBeam);
@@ -64,7 +64,7 @@ namespace e4nu {
     std::vector<double> GetEThetaRange( TTree & tree ) ;
     double GetEPhiRange( TTree & tree ) ;
     bool PlotZoomIn(std::string analysis_id="default");
-    void StandardFormat( TH1D * prediction, std::string title, int color, int style, std::string observable, bool is_log = false, double y_max = 0, std::string y_axis_label ="" );
+    void StandardFormat( TH1D * prediction, std::string title, int color, int style, std::string observable, std::string units = "mb", bool is_log = false, double y_max = 0, std::string y_axis_label ="" );
     void StandardFormat( TH2D * prediction, std::string title, int color, int style, std::string observable_x, std::string observable_y, double z_max = 0, std::string z_axis_label ="");
     std::vector<std::string> SplitString(std::string s, char d=',' ) ;
     std::string GetArg(std::string op, int argc, char ** argv );

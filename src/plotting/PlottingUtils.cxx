@@ -268,243 +268,245 @@ void plotting::CorrectData(TH2D *h, TH2D *acc)
   }
 }
 
-std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis)
+std::string plotting::GetAxisLabel(std::string observable, unsigned int id_axis, std::string units)
 {
-  std::string x_axis, y_axis;
+  std::string x_axis, y_axis, unit = "#mub";
+  if ( units == "nb" ) unit = "nb";
+
   if (observable == "ECal")
   {
     x_axis = "E_{Cal} [GeV]";
-    y_axis = "d#sigma/dE_{Cal} #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/dE_{Cal} #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "Efl")
   {
     x_axis = "E_{e'} [GeV]";
-    y_axis = "d#sigma/dE_{e'} #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/dE_{e'} #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "pfl_theta")
   {
     x_axis = "#theta_{e'} [deg]";
-    y_axis = "d#sigma/d#theta_{e'} #left[#mub deg^{-1}#right]";
+    y_axis = "d#sigma/d#theta_{e'} #left["+unit+" deg^{-1}#right]";
   }
   else if (observable == "pfl_phi")
   {
     x_axis = "#phi_{e'} [deg]";
-    y_axis = "d#sigma/d#phi_{e'} #left[#mub deg^{-1}#right]";
+    y_axis = "d#sigma/d#phi_{e'} #left["+unit+" deg^{-1}#right]";
   }
   else if (observable == "pfl")
   {
     x_axis = "p_{e'} [GeV/c]";
-    y_axis = "d#sigma/dp_{e'} #left[#mub #left(GeV/c#right)^{-1}#right]";
+    y_axis = "d#sigma/dp_{e'} #left["+unit+" #left(GeV/c#right)^{-1}#right]";
   }
   else if (observable == "pfl_T")
   {
     x_axis = "p_{e'}^{T} [GeV/c]";
-    y_axis = "d#sigma/dp_{e'}^{T} #left[#mub #left(GeV/c#right)^{-1}#right]";
+    y_axis = "d#sigma/dp_{e'}^{T} #left["+unit+" #left(GeV/c#right)^{-1}#right]";
   }
   else if (observable == "proton_mom")
   {
     x_axis = "p_{p} [GeV/c]";
-    y_axis = "d#sigma/dp_{p} #left[#mub #left(GeV/c#right)^{-1}#right]";
+    y_axis = "d#sigma/dp_{p} #left["+unit+" #left(GeV/c#right)^{-1}#right]";
   }
   else if (observable == "proton_theta")
   {
     x_axis = "#theta_{p} [deg]";
-    y_axis = "d#sigma/d#theta_{p} #left[#mub deg^{-1}#right]";
+    y_axis = "d#sigma/d#theta_{p} #left["+unit+" deg^{-1}#right]";
   }
   else if (observable == "proton_phi")
   {
     x_axis = "E_{Cal} [GeV]";
-    y_axis = "d#sigma/dE_{Cal} #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/dE_{Cal} #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "pim_mom")
   {
     x_axis = "p_{#pi^{-}} [GeV/c]";
-    y_axis = "d#sigma/dp_{#pi^{-}} #left[#mub #left(GeV/c#right)^{-1}#right]";
+    y_axis = "d#sigma/dp_{#pi^{-}} #left["+unit+" #left(GeV/c#right)^{-1}#right]";
   }
   else if (observable == "pim_theta")
   {
     x_axis = "#theta_{#pi^{-}} [deg]";
-    y_axis = "d#sigma/d#theta_{#pi^{-}} #left[#mub deg^{-1}#right]";
+    y_axis = "d#sigma/d#theta_{#pi^{-}} #left["+unit+" deg^{-1}#right]";
   }
   else if (observable == "pip_mom")
   {
     x_axis = "p_{#pi^{+}} [GeV/c]";
-    y_axis = "d#sigma/dp_{#pi^{+}} #left[#mub #left(GeV/c#right)^{-1}#right]";
+    y_axis = "d#sigma/dp_{#pi^{+}} #left["+unit+" #left(GeV/c#right)^{-1}#right]";
   }
   else if (observable == "pip_theta")
   {
     x_axis = "#theta_{#pi^{+}} [deg]";
-    y_axis = "d#sigma/d#theta_{#pi^{+}} #left[#mub deg^{-1}#right]";
+    y_axis = "d#sigma/d#theta_{#pi^{+}} #left["+unit+" deg^{-1}#right]";
   }
   else if (observable == "RecoW")
   {
     x_axis = "W [GeV]";
-    y_axis = "d#sigma/dW #left[#mub GeV^{-1}#right#right]";
+    y_axis = "d#sigma/dW #left["+unit+" GeV^{-1}#right#right]";
   }
   else if (observable == "RecoQELEnu")
   {
     x_axis = "E^{QE} [GeV]";
-    y_axis = "d#sigma/dE^{QE} #left[#mub GeV^{-1}#right#right]";
+    y_axis = "d#sigma/dE^{QE} #left["+unit+" GeV^{-1}#right#right]";
   }
   else if (observable == "RecoXBJK")
   {
     x_axis = "x_{BJK} [GeV]";
-    y_axis = "d#sigma/dx_{BJK} #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/dx_{BJK} #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "RecoQ2")
   {
     x_axis = "Q^{2} [GeV^{2}]";
-    y_axis = "d#sigma/dQ^{2} #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/dQ^{2} #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "Recoq3")
   {
     x_axis = "q_{3} [GeV]";
-    y_axis = "d#sigma/dq_{3} #left[#mub #left(GeV/c#right)^{-1}#right]";
+    y_axis = "d#sigma/dq_{3} #left["+unit+" #left(GeV/c#right)^{-1}#right]";
   }
   else if (observable == "DeltaPT")
   {
     x_axis = "#deltap_{T} [GeV]";
-    y_axis = "d#sigma/d#deltap_{T} #left[#mub #left(GeV/c#right)^{-1}#right]";
+    y_axis = "d#sigma/d#deltap_{T} #left["+unit+" #left(GeV/c#right)^{-1}#right]";
   }
   else if (observable == "HadDeltaPT")
   {
     x_axis = "#deltap_{T} [GeV]";
-    y_axis = "d#sigma/d#deltap_{T} #left[#mub #left(GeV/c#right)^{-1}#right]";
+    y_axis = "d#sigma/d#deltap_{T} #left["+unit+" #left(GeV/c#right)^{-1}#right]";
   }
   else if (observable == "HadDeltaPTx")
   {
     x_axis = "#deltap_{Tx} [GeV]";
-    y_axis = "d#sigma/d#deltap_{Tx} #left[#mub #left(GeV/c#right)^{-1}#right]";
+    y_axis = "d#sigma/d#deltap_{Tx} #left["+unit+" #left(GeV/c#right)^{-1}#right]";
   }
   else if (observable == "HadDeltaPTy")
   {
     x_axis = "#deltap_{Ty} [GeV]";
-    y_axis = "d#sigma/d#deltap_{Ty} #left[#mub #left(GeV/c#right)^{-1}#right]";
+    y_axis = "d#sigma/d#deltap_{Ty} #left["+unit+" #left(GeV/c#right)^{-1}#right]";
   }
   else if (observable == "InferedNucleonMom")
   {
     x_axis = "p_{N,proxy} [GeV]";
-    y_axis = "d#sigma/dp_{N,proxy} #left[#mub #left(GeV/c#right)^{-1}#right]";
+    y_axis = "d#sigma/dp_{N,proxy} #left["+unit+" #left(GeV/c#right)^{-1}#right]";
   }
   else if (observable == "DeltaPhiT")
   {
     x_axis = "#delta#phi_{T} [deg]";
-    y_axis = "d#sigma/d#delta#phi_{T} #left[#mub deg^{-1}#right]";
+    y_axis = "d#sigma/d#delta#phi_{T} #left["+unit+" deg^{-1}#right]";
   }
   else if (observable == "HadDeltaPhiT")
   {
     x_axis = "#delta#phi_{T}^{had} [deg]";
-    y_axis = "d#sigma/d#delta#phi_{T}^{had} #left[#mub deg^{-1}#right]";
+    y_axis = "d#sigma/d#delta#phi_{T}^{had} #left["+unit+" deg^{-1}#right]";
   }
   else if (observable == "AlphaT")
   {
     x_axis = "#alpha_{T} [deg]";
-    y_axis = "d#sigma/d#alpha_{T} #left[#mub deg^{-1}#right]";
+    y_axis = "d#sigma/d#alpha_{T} #left["+unit+" deg^{-1}#right]";
   }
   else if (observable == "HadAlphaT")
   {
     x_axis = "#delta#alpha_{T} [deg]";
-    y_axis = "d#sigma/d#delta#alpha_{T} #left[#mub deg^{-1}#right]";
+    y_axis = "d#sigma/d#delta#alpha_{T} #left["+unit+" deg^{-1}#right]";
   }
   else if (observable == "RecoEnergyTransfer")
   {
     x_axis = "#omega [GeV]";
-    y_axis = "d#sigma/d#omega #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/d#omega #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "HadSystemMass")
   {
     x_axis = "M_{had}[GeV]";
-    y_axis = "d#sigma/dM_{had} #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/dM_{had} #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "MissingEnergy")
   {
     x_axis = "E_{miss}[GeV]";
-    y_axis = "d#sigma/dE_{miss} #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/dE_{miss} #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "MissingTransMomentum")
   {
     x_axis = "E_{miss}[GeV]";
-    y_axis = "d#sigma/dp_{miss}^{T} #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/dp_{miss}^{T} #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "CorrMissingEnergy")
   {
     x_axis = "E_{miss}^{corr}[GeV]";
-    y_axis = "d#sigma/dE_{miss}^{corr} #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/dE_{miss}^{corr} #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "CorrMissingEnergy1")
   {
     x_axis = "E_{miss}^{corr}[GeV]";
-    y_axis = "d#sigma/dE_{miss}^{corr} #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/dE_{miss}^{corr} #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "CorrMissingEnergy2")
   {
     x_axis = "E_{miss}^{corr}[GeV]";
-    y_axis = "d#sigma/dE_{miss}^{corr} #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/dE_{miss}^{corr} #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "CorrMissingEnergy3")
   {
     x_axis = "E_{miss}^{corr}[GeV]";
-    y_axis = "d#sigma/dE_{miss}^{corr} #left[#mub GeV^{-1}#right]";
+    y_axis = "d#sigma/dE_{miss}^{corr} #left["+unit+" GeV^{-1}#right]";
   }
   else if (observable == "MissingAngle")
   {
     x_axis = "#theta_{miss}[deg]";
-    y_axis = "d#sigma/d#theta_{miss} #left[#mub deg^{-1}#right]";
+    y_axis = "d#sigma/d#theta_{miss} #left["+unit+" deg^{-1}#right]";
   }
   else if (observable == "MissingMomentum")
   {
     x_axis = "p_{miss}[GeV/c]";
-    y_axis = "d#sigma/dp_{miss} #left[#mub (GeV/c)^{-1}#right]";
+    y_axis = "d#sigma/dp_{miss} #left["+unit+" (GeV/c)^{-1}#right]";
   }
   else if (observable == "HadronsAngle")
   {
     x_axis = "#theta_{had}[deg]";
-    y_axis = "d#sigma/d#theta_{had} #left[#mub (deg)^{-1}#right]";
+    y_axis = "d#sigma/d#theta_{had} #left["+unit+" (deg)^{-1}#right]";
   }
   else if (observable == "AdlerAngleThetaP")
   {
     x_axis = "#theta_{p}^{*}[deg]";
-    y_axis = "d#sigma/d#theta_{p}^{*} #left[#mub (deg)^{-1}#right]";
+    y_axis = "d#sigma/d#theta_{p}^{*} #left["+unit+" (deg)^{-1}#right]";
   }
   else if (observable == "AdlerAnglePhiP")
   {
     x_axis = "#phi_{p}^{*}[deg]";
-    y_axis = "d#sigma/d#phi_{p}^{*} #left[#mub (deg)^{-1}#right]";
+    y_axis = "d#sigma/d#phi_{p}^{*} #left["+unit+" (deg)^{-1}#right]";
   }
   else if (observable == "AdlerAngleThetaPi")
   {
     x_axis = "#theta_{#pi}^{*}[deg]";
-    y_axis = "d#sigma/d#theta_{#pi}^{*} #left[#mub (deg)^{-1}#right]";
+    y_axis = "d#sigma/d#theta_{#pi}^{*} #left["+unit+" (deg)^{-1}#right]";
   }
   else if (observable == "AdlerAnglePhiPi")
   {
     x_axis = "#phi_{#pi}^{*}[deg]";
-    y_axis = "d#sigma/d#phi_{#pi}^{*} #left[#mub (deg)^{-1}#right]";
+    y_axis = "d#sigma/d#phi_{#pi}^{*} #left["+unit+" (deg)^{-1}#right]";
   }
   else if (observable == "Angleqvshad")
   {
     x_axis = "#theta_{#vec{q}#dot#vec{p}_{had}}[deg]";
-    y_axis = "d#sigma/d#theta_{#vec{q}#dot#vec{p}_{had}} #left[#mub (deg)^{-1}#right]";
+    y_axis = "d#sigma/d#theta_{#vec{q}#dot#vec{p}_{had}} #left["+unit+" (deg)^{-1}#right]";
   }
   else if (observable == "RecoEvPion")
   {
     x_axis = "E_{rec} [GeV]";
-    y_axis = "d#sigma/dE_{rec} #left[#mub GeV^{-1}#right#right]";
+    y_axis = "d#sigma/dE_{rec} #left["+unit+" GeV^{-1}#right#right]";
   }
   else if (observable == "RecoWPion")
   {
     x_axis = "W_{rec} [GeV]";
-    y_axis = "d#sigma/dW_{rec} #left[#mub GeV^{-1}#right#right]";
+    y_axis = "d#sigma/dW_{rec} #left["+unit+" GeV^{-1}#right#right]";
   }
   else if (observable == "ElectronPT")
   {
     x_axis = "p_{e',T} [GeV]";
-    y_axis = "d#sigma/dp_{e'T} #left[#mub GeV^{-1}#right#right]";
+    y_axis = "d#sigma/dp_{e'T} #left["+unit+" GeV^{-1}#right#right]";
   }
   else if (observable == "PionPT")
   {
     x_axis = "p_{#pi,T} [GeV]";
-    y_axis = "d#sigma/dp_{#pi,T} #left[#mub GeV^{-1}#right#right]";
+    y_axis = "d#sigma/dp_{#pi,T} #left["+unit+" GeV^{-1}#right#right]";
   }
 
   if (id_axis == 0)
@@ -1394,7 +1396,7 @@ double plotting::GetMinimum(std::vector<TH1D *> predictions)
   return min * (1 - 0.12);
 }
 
-void plotting::StandardFormat(TH1D *prediction, std::string title, int color, int style, std::string observable, bool is_log, double y_max, std::string y_axis_label )
+void plotting::StandardFormat(TH1D *prediction, std::string title, int color, int style, std::string observable, std::string units, bool is_log, double y_max, std::string y_axis_label )
 {
   gStyle->SetFrameBorderMode(0);
   gStyle->SetCanvasBorderMode(0);
@@ -1422,10 +1424,10 @@ void plotting::StandardFormat(TH1D *prediction, std::string title, int color, in
 
   prediction->SetTitle(title.c_str());
   // prediction -> SetTitleFont(13);
-  prediction->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
+  prediction->GetXaxis()->SetTitle(GetAxisLabel(observable, 0, units).c_str());
 
   if (y_axis_label == "")
-  prediction->GetYaxis()->SetTitle(GetAxisLabel(observable, 1).c_str());
+  prediction->GetYaxis()->SetTitle(GetAxisLabel(observable, 1, units).c_str());
   else
   prediction->GetYaxis()->SetTitle(y_axis_label.c_str());
 
@@ -1532,7 +1534,7 @@ void plotting::StandardFormat(TH2D *prediction, std::string title, int color, in
   prediction->GetXaxis()->SetTitleFont(FontStyle);
 
   prediction->GetYaxis()->SetNdivisions(8);
-  prediction->GetYaxis()->SetTitleOffset(0.9);
+  prediction->GetYaxis()->SetTitleOffset(0.8);
   prediction->GetYaxis()->SetLabelSize(0.05);
   prediction->GetYaxis()->SetTitleSize(0.05);
   prediction->GetYaxis()->SetLabelFont(43);

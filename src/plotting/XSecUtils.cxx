@@ -50,8 +50,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   TFile *file_acceptance = new TFile((output_location + acceptance_file_name + ".root").c_str(), "READ");
   TFile *file_radcorr = nullptr;
-  if (radcorr_file != "")
-  file_radcorr = new TFile((output_location + radcorr_file + ".root").c_str(), "READ");
+  if (radcorr_file != "") file_radcorr = new TFile((output_location + radcorr_file + ".root").c_str(), "READ");
+
   if (!file_data && plot_data)
   {
     std::cout << "ERROR: the " << input_data_location << data_file_name << ".root does not exist." << std::endl;
@@ -202,8 +202,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   std::vector<TTree *> trees = {tree_true};
-  if (plot_data)
-  trees.push_back(tree_data);
+  if (plot_data) { trees.push_back(tree_data); }
 
   std::vector<TH1D *> hists = {hist_true, hist_data, hist_true_0, hist_data_0, hist_true_1, hist_data_1, hist_true_2, hist_data_2, hist_true_3, hist_data_3, hist_true_4, hist_data_4, hist_true_5, hist_data_5};
 
@@ -244,8 +243,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
         if( units == "nb" ) {
           // Default units are mb , convert accordingly
           MCNormalization *= 1E3 * scaling ;
-          mc_norm.push_back(MCNormalization);
         }
+        mc_norm.push_back(MCNormalization);
       }
       content = GetObservable(observable);
 
@@ -281,26 +280,17 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
         hists[id_hist]->SetLineWidth(3);
       }
 
-      if (i == 0)
-      {
-        if (QEL)
-        hist_true_QEL->Fill(content, w);
-        if (RES)
-        {
-          if (resid == 0)
-          hist_true_RES_Delta->Fill(content, w);
-          else
-          hist_true_RES->Fill(content, w);
+      if (i == 0){
+        if (QEL) hist_true_QEL->Fill(content, w);
+        if (RES) {
+          if (resid == 0) hist_true_RES_Delta->Fill(content, w);
+          else hist_true_RES->Fill(content, w);
         }
-        if (DIS)
-        {
-          if (RecoW < 1.7)
-          hist_true_SIS->Fill(content, w);
-          else
-          hist_true_DIS->Fill(content, w);
+        if (DIS) {
+          if (RecoW < 1.7) hist_true_SIS->Fill(content, w);
+          else hist_true_DIS->Fill(content, w);
         }
-        if (MEC)
-        hist_true_MEC->Fill(content, w);
+        if (MEC) hist_true_MEC->Fill(content, w);
       }
     }
   }
@@ -480,6 +470,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     }
   } // end if data
 
+  std::cout << mc_norm[0] << std::endl;
   // Normalize MC to cross-section
   for (unsigned int id = 0; id < hists_true_submodel.size(); ++id)
   {
@@ -513,6 +504,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     mc_hists_xsec.push_back(hists_true_submodel[id]);
   }
 
+  std::cout << " HHHHE*EF)EUF)(E)F(((((((((((((((((((())))))))))))))))))))";
   std::vector<TH1D> breakdown = {*hist_true_QEL, *hist_true_RES_Delta, *hist_true_RES, *hist_true_SIS, *hist_true_MEC, *hist_true_DIS};
   std::vector<TH1D *> breakdown_xsec = {hist_true_QEL, hist_true_RES_Delta, hist_true_RES, hist_true_SIS, hist_true_MEC, hist_true_DIS};
   std::vector<TH1D *> mc_per_sector = {hist_true_0, hist_true_1, hist_true_2, hist_true_3, hist_true_4, hist_true_5};

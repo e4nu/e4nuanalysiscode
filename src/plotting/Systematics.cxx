@@ -43,6 +43,11 @@ TH1D * systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
 	// hist_w_error: the content is the per-cent relative uncertanty to add.
 	// Binning must coincide.
 
+  if( hist.GetNbinsX() != hist_w_error.GetNbinsX() ) {
+    std::cout << " Wrong binning. Results don't match. Systematic not added" << std::endl;
+    return nullptr;
+  }
+
   TH1D * hist_syst = (TH1D*)hist_w_error.Clone();
   hist_syst->Reset();
   hist_syst->SetName("h_syst");
@@ -52,7 +57,7 @@ TH1D * systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
   for (int i = 1; i <= NBins; i++) {
 		// We are storing the error in a histogram (hist_w_error). the content is the error itself to add to the stat uncertanty from hist.
     double stat_error = hist.GetBinError(i);
-    double syst_error = hist_w_error.GetBinContent(i)/100;
+    double syst_error = hist_w_error.GetBinContent(i)/100.;
 
 		// The error calculation assumes that it is a multiplicative factor
 		// The error is added as a relative
@@ -65,6 +70,7 @@ TH1D * systematics::AddSystematic( TH1D & hist, const TH1D & hist_w_error ) {
 
     if( hist_w_error.GetBinContent(i)!=0) hist_syst->SetBinContent(i,hist_w_error.GetBinError(i)/hist_w_error.GetBinContent(i)*100); // Store per-bin uncertainty
   }
+
   return hist_syst;
 }
 

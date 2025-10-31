@@ -343,16 +343,25 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     // Notice this step already propagates the error from the acceptance to the corrected event rate
     // (Err_Corr_eventrate)^2 = (Err_Raw_EventRate)^2 * (Acc)^2 + (Raw_EventRate)^2 * (Err_Acc)^2
     CorrectData(hist_data, h_acceptance);
-    CorrectData(hist_data_0, h_acceptance);//h_acceptance_0);
-    CorrectData(hist_data_1, h_acceptance);//h_acceptance_1);
-    CorrectData(hist_data_2, h_acceptance);//h_acceptance_2);
-    CorrectData(hist_data_3, h_acceptance);//h_acceptance_3);
-    CorrectData(hist_data_4, h_acceptance);//h_acceptance_4);
-    CorrectData(hist_data_5, h_acceptance);//h_acceptance_5);
+    CorrectData(hist_data_0, h_acceptance);
+    CorrectData(hist_data_1, h_acceptance);
+    CorrectData(hist_data_2, h_acceptance);
+    CorrectData(hist_data_3, h_acceptance);
+    CorrectData(hist_data_4, h_acceptance);
+    CorrectData(hist_data_5, h_acceptance);
 
     hist_data_uncorrrad = (TH1D *)hist_data->Clone();
     hist_data_uncorrrad->SetName("Corrected for acceptance before rad corr data");
     NormalizeHist(hist_data_uncorrrad, 1);
+
+    // Add sector variation ERROR. Store relative error in histogram
+    // We use the bkg substracted, eff corrected distributions for the calculation
+    TH1D *hist_syst_sector = systematics::SectorVariationError(*hist_data, {hist_data_0, hist_data_1, hist_data_2, hist_data_3, hist_data_4, hist_data_5});
+
+    TCanvas *csect = new TCanvas("csect", "csect", 800, 600);
+    hist_syst_sector->Draw("hist");
+    csect->SaveAs((output_location + "/XSecPerSector/test.root").c_str());//+ output_file_name + "_syst_persector_" + observable + ".root").c_str());
+    delete csect;
 
     //Apply radiative correction
     if (h_radcorr)
@@ -397,6 +406,8 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     hist_data_correventrate_wsyst_5 = (TH1D *)hist_data_5->Clone();
     hist_data_correventrate_wsyst_5->SetName("Corrected Event Rate with Systematics Sector  5");
 
+    systematics::SectorVariationError(*hist_data_correventrate_wsyst, {hist_data_0, hist_data_1, hist_data_2, hist_data_3, hist_data_4, hist_data_5});
+
     // Normaize by bin width
     NormalizeHist(hist_data_correventrate_wsyst, 1);
     NormalizeHist(hist_data_correventrate_wsyst_0, 1);
@@ -434,18 +445,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
     // Add Systematics
     // 1 - Acceptance model dependence (already included)
-    // 2 - Sector Sector Variation
-    // 3 - Relative uncertanties from configuration
-
-    // Add sector variation ERROR. Store relative error in histogram
-    // We use the bkg substracted, eff corrected distributions for the calculation
-    TH1D *hist_syst_sector = systematics::SectorVariationError(*hist_data, {hist_data_0, hist_data_1, hist_data_2, hist_data_3, hist_data_4, hist_data_5});
-    systematics::SectorVariationError(*hist_data_correventrate_wsyst, {hist_data_0, hist_data_1, hist_data_2, hist_data_3, hist_data_4, hist_data_5});
-
-    TCanvas *csect = new TCanvas("csect", "csect", 800, 600);
-    hist_syst_sector->Draw("hist");
-    csect->SaveAs((output_location + "/XSecPerSector/"+ output_file_name + "_syst_persector_" + observable + ".root").c_str());
-    delete csect;
+    // 2 - Sector Sector Variation (already included)
+    // 3 - Radiative correction (already included)
+    // 4 - Relative uncertanties from configuration
 
     // adding systematics from systematic map. Relative systematic added to all bins
     for (auto it = systematic_map.begin(); it != systematic_map.end(); ++it)
@@ -504,7 +506,6 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
     mc_hists_xsec.push_back(hists_true_submodel[id]);
   }
 
-  std::cout << " HHHHE*EF)EUF)(E)F(((((((((((((((((((())))))))))))))))))))";
   std::vector<TH1D> breakdown = {*hist_true_QEL, *hist_true_RES_Delta, *hist_true_RES, *hist_true_SIS, *hist_true_MEC, *hist_true_DIS};
   std::vector<TH1D *> breakdown_xsec = {hist_true_QEL, hist_true_RES_Delta, hist_true_RES, hist_true_SIS, hist_true_MEC, hist_true_DIS};
   std::vector<TH1D *> mc_per_sector = {hist_true_0, hist_true_1, hist_true_2, hist_true_3, hist_true_4, hist_true_5};

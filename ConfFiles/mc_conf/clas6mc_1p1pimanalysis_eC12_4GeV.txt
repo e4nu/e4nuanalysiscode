@@ -1,5 +1,5 @@
 #Analysis Cuts
-DisableSector   4,5
+DisableSector   4
 ApplyFiducial   true
 ApplyAccWeights true
 ApplyReso	true

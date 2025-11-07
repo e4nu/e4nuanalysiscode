@@ -23,6 +23,16 @@ void systematics::AddSystematic( TH1D & hist, const double rel_error, const std:
   }
 }
 
+void systematics::AddRadSystematic( TH1D & hist, const double rel_error, const std::string name ) {
+  double NBins = hist.GetNbinsX();
+  for (int i = 1; i <= NBins; i++) {
+    double error = hist.GetBinError(i);
+    double content = hist.GetBinContent(i);
+    double newerror = TMath::Sqrt( TMath::Power(error,2.) + TMath::Power(rel_error*(content-1)/100.,2.));
+    hist.SetBinError(i,newerror);
+  }
+}
+
 void systematics::AddSystematic( TH2D & hist, const double rel_error, const std::string name )  {
   int nBinsX = hist.GetNbinsX();
   int nBinsY = hist.GetNbinsY();

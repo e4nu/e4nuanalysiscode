@@ -9,6 +9,7 @@ namespace e4nu {
     // No acceptance correction is used
     void AddSystematic( TH1D & hist, const double rel_error, const std::string name ) ;
     void AddSystematic( TH2D & hist, const double rel_error, const std::string name ) ;
+    void AddRadSystematic( TH1D & hist, const double rel_error, const std::string name );
     TH1D * AddSystematic( TH1D & hist, const TH1D & hist_w_error ) ;
     TH2D * AddSystematic( TH2D & hist, const TH2D & hist_w_error ) ;
     TH1D * SectorVariationError( TH1D & hist, const std::vector<TH1D*> h_per_sector ) ;

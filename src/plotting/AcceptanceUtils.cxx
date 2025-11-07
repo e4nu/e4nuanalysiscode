@@ -1340,7 +1340,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
   ratio->GetYaxis()->SetTitle("Radiation Correction");
 
   // For pion production should be around 10%
-  systematics::AddSystematic(*ratio, 10, "Radiative");
+  systematics::AddRadSystematic(*ratio, 10, "Radiative");
 
   std::string output_name = output_file_name + "_acceptance_correction_rad_" + observable;
   std::string acc_file = "/AcceptanceFiles/" + output_name;

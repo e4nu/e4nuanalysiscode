@@ -751,10 +751,14 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
       mc_hists[0]->Draw("hist err ");
       hs->Draw("hist err same");
-      for (unsigned int i = 0; i < mc_hists.size(); ++i) {
-        mc_hists[i]->Draw("hist err same");
-        mc_hists[i]->SetMarkerSize(0);
-      }
+      mc_hists[0]->Draw("hist err same");
+      // for (unsigned int i = 0; i < mc_hists.size(); ++i) {
+      //   mc_hists[i]->Draw("hist err same");
+      //   mc_hists[i]->SetMarkerSize(0);
+      // }
+      // Plot no FSI:
+      mc_hists.back()->SetMarkerSize(0);
+      mc_hists.back()->Draw("hist err same");
 
       if (data) {
         data->SetMarkerSize(1.5);

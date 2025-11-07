@@ -515,14 +515,17 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   // Plot Total, XSector, Legend
   if (plot_data)
   {
+    std::cout << " --> Plotting Raw Event rate (uncorrected) :" << std::endl;
     plotting::PlotEventRate(hist_data_uncorr, observable, title, data_name, input_data_location, output_location, output_file_name + "_raw_event_rate", analysis_id, store_root);
+    std::cout << " --> Plotting Raw Event rate (uncorrected) per sector :" << std::endl;
     plotting::PlotEventRatePerSector(data_per_sector_uncorr, observable, title, data_name, input_data_location, output_location, output_file_name + "_raw_event_rate_corracc", analysis_id, store_root);
-
+    std::cout << " --> Plotting Corrected Event rate :" << std::endl;
     plotting::PlotEventRate(hist_data_correventrate, observable, title, data_name, input_data_location, output_location, output_file_name + "_corr_event_rate", analysis_id, store_root);
+    std::cout << " --> Plotting Corrected Event rate per sector :" << std::endl;
     plotting::PlotEventRatePerSector(data_per_sector_correventrate, observable, title, data_name, input_data_location, output_location, output_file_name + "_event_rate_corracc", analysis_id, store_root);
-
+    std::cout << " --> Plotting Area Normalized Corr. Event rate (w. breakdown):" << std::endl;
     plotting::PlotComparisonDataNormalized(mc_hists, breakdown, hist_data_correventrate, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_normalized_to_data_with_breakdown", systematic_map, true, analysis_id, store_root);
-
+    std::cout << " --> Plotting Area Normalized Corr. Event rate (w.o. breakdown):" << std::endl;
     plotting::PlotComparisonDataNormalized(mc_hists, breakdown, hist_data_correventrate, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_normalized_to_data_no_breakdown", systematic_map, false, analysis_id, store_root);
 
     plotting::PlotComparisonDataNormalized(mc_hists, breakdown, hist_data_correventrate_wsyst, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_normalized_to_data_wsyst_no_breakdown", systematic_map, false, analysis_id, store_root);
@@ -533,8 +536,9 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
   }
 
+  std::cout << " --> Plotting Cross-section (w. breakdown) :" << std::endl;
   plotting::PlotTotalXSec(mc_hists_xsec, breakdown_xsec, hist_data, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_with_breakdown", systematic_map, true, analysis_id, units, max_y, store_root, log_scale );
-
+  std::cout << " --> Plotting Cross-section (w.o. breakdown) :" << std::endl;
   plotting::PlotTotalXSec(mc_hists_xsec, hist_data, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name + "_no_breakdown", systematic_map, false, analysis_id, units, max_y, store_root, log_scale );
 
   plotting::PlotPerSector(mc_per_sector, data_per_sector, observable, title, data_name, model, input_MC_location, input_data_location, output_location, output_file_name, systematic_map, analysis_id, units, store_root);
@@ -724,7 +728,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       if (data) all_hists.push_back(data);
       double max_hist = plotting::GetMaximum(all_hists);
 
-      double min_hist = 1.3E-4 ;
+      double min_hist = 0.12;
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
         StandardFormat(mc_hists[i], title, kBlack, i+1, observable, units, log_scale);
       }
@@ -755,6 +759,8 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       if (data) {
         data->SetMarkerSize(1.5);
         data->Draw("err same");
+        double int_error = 0;
+        std::cout << " Cross-section Integral " << data->IntegralAndError(1, data->GetNbinsX(), int_error, "width") << " +- "<< int_error << std::endl ;
       }
 
       // print
@@ -820,11 +826,6 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
         }
       }
 
-      if (data) {
-        std::cout << " Total integrated cross section (data) " << data_integral << " #pm " << sqrt(error2_data) << std::endl;
-      }
-      std::cout << " Total integrated cross section (mc) " << mc_integral << " #pm " << sqrt(error2_mc) << std::endl;
-
       if( observable == "ECal"){
         if( data ){
           std::cout << " Tail % (data)" << data_tail/data_integral *100 << " Peak % (data)" << data_peak/data_integral*100 << " R= " << data_tail/data_peak<<std::endl;
@@ -873,10 +874,11 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       std::vector<TH1D*> all_hists = mc_hists;
       if (data) all_hists.push_back(data);
       double max_hist = plotting::GetMaximum(all_hists);
-      double min_hist = 0;
-      min_hist = 1.3E-4 ;
+      if( max_y > 0 ) max_hist = max_y;
+      double min_hist = 0.12;
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
         if( i == 0 ) StandardFormat(mc_hists[i], title, kBlack, 1, observable, units, log_scale);
+        else if( i == mc_hists.size() - 1 ) StandardFormat(mc_hists[i], title, ColorBlindPalette(i), 2, observable, units, log_scale);
         else StandardFormat(mc_hists[i], title, ColorBlindPalette(i), 1, observable, units, log_scale);
         mc_hists[i]->SetLineWidth(3);
       }
@@ -886,21 +888,18 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       mc_hists[0]->SetMarkerSize(0);
 
       // Possibly scaling to keep same axis
-      double scaling = 1;//1E3;
+      double scaling = 1 ;
       for (unsigned int i = 0; i < mc_hists.size(); ++i) {
         mc_hists[i]->Scale(scaling);
       }
 
       if (data) data->Scale(scaling);
 
-      //max_hist=1E4; // Used for stagged plots for publication.
-      //max_hist*=1E3;
-      //if( log_scale ) min_hist *= 1E3;
-
       mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
       mc_hists[0]->GetYaxis()->SetRangeUser(min_hist, max_hist);
       mc_hists[0]->Draw("hist err ");
       for (unsigned int i = 0; i < mc_hists.size(); ++i) {
+        if ( i == 2 ) continue ; // skipping second model.
         mc_hists[i]->Draw("hist err same");
         mc_hists[i]->SetMarkerSize(0);
       }
@@ -1064,13 +1063,10 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       if (data)
       {
         data->Draw(" err ");
-      }
 
-      double data_integral;
-      if (data)
-      data_integral = data->Integral("width");
-      if (data)
-      std::cout << " Total integrated event rate (data) " << data_integral << std::endl;
+        double int_error = 0;
+        std::cout << " Data Integral: " << data->IntegralAndError(1, data->GetNbinsX(), int_error,"width") << " +- "<< int_error << std::endl ;
+      }
 
       std::string output_name = output_file_name + "_Nevents_" + observable;
 
@@ -2148,7 +2144,9 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
 
       // Find correct maximum
       double total_min = 0 ;
-      if( logScale) total_min = 1E-4;
+      if( logScale ) total_min = 1E-4;
+      if( units == "nb" ) total_min = 0.12 ;
+
       allProjections = mcProjections;
       allProjections.push_back(dataProjection);
       // Store maximum of all TH2D histograms to set the same range to all
@@ -2258,7 +2256,11 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       }
 
       double total_min = 0 ;
-      if( logScale) total_min = 1E-4;
+      if( logScale ) {
+        total_min = 1E-4;
+      }
+      if( units == "nb" ) total_min = 0.12 ;
+
       // Store maximum of all TH2D histograms to set the same range to all
       double total_max = plotting::GetMaximum(allProjections);
 
@@ -2347,7 +2349,11 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       }
 
       double total_min = 0 ;
-      if( logScale) total_min = 1E-4;
+      if( logScale) {
+        total_min = 1E-4;
+      }
+      if ( units == "nb" ) total_min = 0.12;
+
       // Store maximum of all TH2D histograms to set the same range to all
       double total_max = plotting::GetMaximum(allPredictions) * ( 1 + 0.2 );
       mcProjections[0]->Draw("hist err");

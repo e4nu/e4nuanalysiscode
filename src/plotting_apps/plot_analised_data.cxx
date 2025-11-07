@@ -7,9 +7,30 @@
 int main( int argc, char* argv[] ) {
 
   // Paths to ROOT files
-  const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pim_1GeV_corr_event_rate_Nevents_ECal.root";
-  const char* filedefPath = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pim_1GeV_3Deg_corr_event_rate_Nevents_ECal.root";
-  //"/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pim_2GeV_3DegShift_corr_event_rate_Nevents_ECal.root";
+  // 1p1pim 1 GeV
+  // const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pim_1GeV_shift1_corr_event_rate_Nevents_ECal.root";
+  // const char* filedefPath = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pim_1GeV_corr_event_rate_Nevents_ECal.root";
+
+  // 1p1pim 2 GeV
+  // const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pim_2GeV_Shift1_corr_event_rate_Nevents_ECal.root";
+  // const char* filedefPath = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pim_2GeV_corr_event_rate_Nevents_ECal.root";
+
+  // 1p1pim 4 GeV
+  const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pim_4GeV_Shift1_corr_event_rate_Nevents_ECal.root";
+  const char* filedefPath = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pim_4GeV_corr_event_rate_Nevents_ECal.root";
+
+  // 1p1pip 1 GeV
+  // const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pip_1GeV_shift1_corr_event_rate_Nevents_ECal.root";
+  // const char* filedefPath = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pip_1GeV_corr_event_rate_Nevents_ECal.root";
+
+  // // 1p1pip 2 GeV
+  // const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pip_2GeV_shift1_corr_event_rate_Nevents_ECal.root";
+  // const char* filedefPath = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pip_2GeV_corr_event_rate_Nevents_ECal.root";
+
+  // 1p1pip 4 GeV
+  // const char* file1Path = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pip_4GeV_Shift1_corr_event_rate_Nevents_ECal.root";
+  // const char* filedefPath = "/Users/juliatenavidal/Desktop/Postdoc/e4nu/FinalPionProductionAnalysis/plots_new//EventRate/clas6analysis_1p1pip_4GeV_corr_event_rate_Nevents_ECal.root";
+  //
 
   // Open the ROOT files
   TFile* file1 = TFile::Open(file1Path);
@@ -71,23 +92,59 @@ int main( int argc, char* argv[] ) {
   pad2->cd();
   TH1D* herr1 = (TH1D*)histdef->Clone();
 
-  // Compute difference
-  for (int i = 1; i <= histdef->GetNbinsX(); ++i) { // Loop from bin 1 to nBins (excluding underflow and overflow bins)
-    double binContentdef = histdef->GetBinContent(i);  // Get content of bin i
+  // // Compute difference
+  // for (int i = 1; i <= histdef->GetNbinsX(); ++i) { // Loop from bin 1 to nBins (excluding underflow and overflow bins)
+  //   double binContentdef = histdef->GetBinContent(i);  // Get content of bin i
+  //   double binErrordef = histdef->GetBinError(i);      // Get error of bin i
+  //
+  //   double binContent1 = hist1->GetBinContent(i);  // Get content of bin i
+  //   //double binError1 = hist1->GetBinError(i);      // Get error of bin i
+  //
+  //   double err2_1 = pow(binContentdef - binContent1, 2)/12 - pow(binErrordef, 2) ;//- pow(binError1, 2);
+  //   if (err2_1 < 0) err2_1 = 0;
+  //
+  //   double err_1 = sqrt(err2_1);
+  //   if (binContentdef != 0)
+  //   herr1->SetBinContent(i, err_1 / binContentdef * 100);
+  //   else
+  //   herr1->SetBinContent(i, 0);
+  // }
+
+  // Compute RMS per bin
+  double max_hist = histdef->GetMaximum();
+  for (int i = 1; i <= histdef->GetNbinsX(); ++i) {
+    double x1 = histdef->GetBinContent(i); // from default file
+    double x2 = hist1->GetBinContent(i);   // from shifted file
     double binErrordef = histdef->GetBinError(i);      // Get error of bin i
+    // Mean per bin
+    double xmean = 0.5 * (x1 + x2);
 
-    double binContent1 = hist1->GetBinContent(i);  // Get content of bin i
-    double binError1 = hist1->GetBinError(i);      // Get error of bin i
+    if( xmean < 0.2 * max_hist ) {
+      herr1->SetBinContent(i, 0);
+      continue ;
+    }
+    // RMS formula
+    double xRMS = ((x1 - xmean) * (x1 - xmean) + (x2 - xmean) * (x2 - xmean)) / 2.0 ;// - pow(binErrordef, 2)  ;
+    if( xRMS <= 0 ) xRMS = 0;
+    // Optionally, express as a relative RMS (%)
+    double value = (xmean != 0.0) ? (sqrt(xRMS) / xmean * 100.0) : 0.0;
 
-    double err2_1 = pow(binContentdef - binContent1, 2)/12 - pow(binErrordef, 2) - pow(binError1, 2);
-    if (err2_1 < 0) err2_1 = 0;
-
-    double err_1 = sqrt(err2_1);
-    if (binContentdef != 0)
-    herr1->SetBinContent(i, err_1 / binContentdef * 100);
-    else
-    herr1->SetBinContent(i, 0);
+    herr1->SetBinContent(i, value);
   }
+
+  // Compute average accross Bins
+  double sum = 0.0;
+  double count = 0;
+
+  for (int i = 1; i <= herr1->GetNbinsX(); ++i) {
+    double val = herr1->GetBinContent(i);
+    double width = herr1->GetBinWidth(i);
+    if (val > 0) { // Only include non-empty bins
+      sum += val * width;
+      count += width ;
+    }
+  }
+  std::cout << " average is " << sum / count << std::endl;
 
   herr1->SetLineColor(kOrange + 1);
   herr1->SetLineWidth(3);
@@ -99,7 +156,7 @@ int main( int argc, char* argv[] ) {
   herr1->GetYaxis()->SetTitleOffset(0.3);
   herr1->GetXaxis()->SetTitleOffset(1.);
   herr1->Draw("HIST");
-  herr1->GetYaxis()->SetTitle("#sigma_{fid}/Def[%]");
+  herr1->GetYaxis()->SetTitle("x_{RMS}/Def[%]");
 
   // Clean up
   canvas->SaveAs("comparison.pdf"); // Save the comparison plot

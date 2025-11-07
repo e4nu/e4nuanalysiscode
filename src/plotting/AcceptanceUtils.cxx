@@ -206,6 +206,9 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   }
   ratio->Scale(1. / mc_files.size());
 
+  double int_error = 0;
+  std::cout << " Acceptance Integral " << ratio->IntegralAndError(1, ratio->GetNbinsX(), int_error,"width") << " +- "<< int_error << std::endl ;
+
   // Create hist for stat err and syst error storage
   TH1D *stat_err = (TH1D *)ratios[0]->Clone();
   TH1D *syst_err = (TH1D *)ratios[0]->Clone();
@@ -1337,19 +1340,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
   ratio->GetYaxis()->SetTitle("Radiation Correction");
 
   // For pion production should be around 10%
-  systematics::AddSystematic(*ratio, 5, "Radiative");
-
-  //We also add smoothing Correction
-  TH1D *ratio_aSmooth = (TH1D *)ratio->Clone();
-  ratio_aSmooth->Smooth(3);
-
-  // Compute Acceptance error from model variation
-  for (int i = 1; i < ratio->GetNbinsX()+1; ++i)
-  {
-    double error_smoothing_2 = pow(ratio->GetBinContent(i) - ratio_aSmooth->GetBinContent(i), 2) / 12.;
-    double error_stat_2 = pow(ratio->GetBinError(i), 2);
-    //ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2));
-  }
+  systematics::AddSystematic(*ratio, 10, "Radiative");
 
   std::string output_name = output_file_name + "_acceptance_correction_rad_" + observable;
   std::string acc_file = "/AcceptanceFiles/" + output_name;

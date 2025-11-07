@@ -41,7 +41,7 @@ using namespace e4nu::plotting;
 // 20) log-scale : option to use log scale                     //
 // 21) mott-scalet: scale by mott (Q4)                         //
 // 22) units : mb or nb                                        //
-// 23) scale : scaling factor to multiply data and MC          //
+// 23) scaling : scaling factor to multiply data and MC          //
 // 24) max-y : maximum for y axis                              //
 /////////////////////////////////////////////////////////////////
 

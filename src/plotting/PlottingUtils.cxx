@@ -587,12 +587,9 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   }
   else if (observable == "pfl_theta")
   {
-    if (EBeam > 0 && EBeam < 2 )
-    binning = plotting::GetUniformBinning(15, 20, 50);
-    else if (EBeam > 2 && EBeam < 4)
-    binning = plotting::GetUniformBinning(15, 20, 50);
-    else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(15, 15, 50);
+    if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(10, 20, 50);
+    else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(10, 20, 50);
+    else if (EBeam < 5 && EBeam > 4) binning = plotting::GetUniformBinning(10, 15, 40);
   }
   else if (observable == "pfl_phi")
   {
@@ -605,12 +602,9 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   }
   else if (observable == "pfl")
   {
-    if (EBeam > 0 && EBeam < 2 )
-    binning = plotting::GetUniformBinning(15, 0.35, 0.9);
-    else if (EBeam > 2 && EBeam < 4)
-    binning = plotting::GetUniformBinning(15, 0.5, 1.9);
-    else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(15, 1.1, 3.8);
+    if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(10, 0.35, 0.9);
+    else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(10, 0.5, 1.9);
+    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(10, 1.1, 3.8);
   }
   else if (observable == "pfl_T")
   {
@@ -623,18 +617,18 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   }
   else if (observable == "proton_mom")
   {
-    if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(15, 0.2001, 1.0999);
-    else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(15, 0.2001, 1.9999);
-    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(15, 0.2001, 2.9999);
+    if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(10, 0.2001, 1.0999);
+    else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(10, 0.2001, 1.9999);
+    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(10, 0.2001, 2.9999);
   }
   else if (observable == "proton_theta")
   {
     if (EBeam > 0 && EBeam < 2 )
-    binning = plotting::GetUniformBinning(10, 20, 80);
+    binning = plotting::GetUniformBinning(10, 0.0001, 80.001);
     else if (EBeam > 2 && EBeam < 4)
-    binning = plotting::GetUniformBinning(15, 20, 80);
+    binning = plotting::GetUniformBinning(10, 0.0001, 80.001);
     else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(15, 20, 80);
+    binning = plotting::GetUniformBinning(10, 0.0001, 80.001);
   }
   else if (observable == "proton_phi")
   {
@@ -647,44 +641,35 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   }
   else if (observable == "pim_mom")
   {
-    if (EBeam > 0 && EBeam < 2 )
-    binning = plotting::GetUniformBinning(10, 0.1, 0.6);
-    else if (EBeam > 2 && EBeam < 4)
-    binning = plotting::GetUniformBinning(15, 0., 1.6);
-    else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(15, 0., 2);
+    if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(10, 0.101, 0.61);
+    else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(10, 0.01, 1.61);
+    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(10, 0.01, 2.01);
   }
   else if (observable == "pim_theta")
   {
-    if (EBeam > 0 && EBeam < 2 )
-    binning = plotting::GetUniformBinning(10, 5, 140);
-    else if (EBeam > 2 && EBeam < 4)
-    binning = plotting::GetUniformBinning(15, 5, 140);
-    else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(15, 5, 140);
+    if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(10, 5, 140);
+    else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(10, 5, 140);
+    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(10, 5, 140);
   }
   else if (observable == "pip_mom")
   {
     if (EBeam > 0 && EBeam < 2 )
-    binning = plotting::GetUniformBinning(15, 0.1, 3);
+    binning = plotting::GetUniformBinning(10, 0.1, 3);
     else if (EBeam > 2 && EBeam < 4)
-    binning = plotting::GetUniformBinning(15, 0.1, 3);
+    binning = plotting::GetUniformBinning(10, 0.1, 3);
     else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(15, 0.1, 3);
+    binning = plotting::GetUniformBinning(10, 0.1, 3);
   }
   else if (observable == "pip_theta")
   {
-    if (EBeam > 0 && EBeam < 2 )
-    binning = plotting::GetUniformBinning(15, 5, 180);
-    else if (EBeam > 2 && EBeam < 4)
-    binning = plotting::GetUniformBinning(15, 5, 180);
-    else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(15, 5, 180);
+    if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(10, 5, 140);
+    else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(10, 5, 140);
+    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(10, 5, 140);
   }
   else if (observable == "RecoW")
   {
     if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(15, 1, 1.49);
-    else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(20, 1, 1.9);
+    else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(15, 1, 1.9);
     else if (EBeam == 4.461) binning = plotting::GetUniformBinning(15, 1, 2.49);
   }
   else if (observable == "RecoXBJK")
@@ -725,12 +710,9 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   }
   else if (observable == "HadDeltaPT" || observable == "DeltaPT")
   {
-    if (EBeam > 0 && EBeam < 2 )
-    binning = plotting::GetUniformBinning(15, 0.0001, 0.999);
-    else if (EBeam > 2 && EBeam < 4)
-    binning = plotting::GetUniformBinning(15, 0.0001, 0.999);
-    else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(15, 0.0001, 0.999);
+    if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(13, 0.0001, 0.999);
+    else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(15, 0.0001, 0.999);
+    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(15, 0.0001, 1.4999);
   }
   else if (observable == "HadDeltaPTx")
   {
@@ -770,12 +752,9 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
   }
   else if (observable == "HadAlphaT")
   {
-    if (EBeam > 0 && EBeam < 2 )
-    binning = plotting::GetUniformBinning(10, 0, 180);
-    else if (EBeam > 2 && EBeam < 4)
-    binning = plotting::GetUniformBinning(15, 0, 180);
-    else if (EBeam == 4.461)
-    binning = plotting::GetUniformBinning(15, 0, 180);
+    if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(10, 0, 180);
+    else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(10, 0, 180);
+    else if (EBeam == 4.461) binning = plotting::GetUniformBinning(10, 0, 180);
   }
   else if (observable == "RecoEnergyTransfer")
   {
@@ -915,7 +894,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (observable == "RecoW")
     {
       if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(15, 1, 1.49);
-      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(20, 1, 1.9);
+      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(15, 1, 1.9);
       else if (EBeam == 4.461) binning = plotting::GetUniformBinning(15, 1, 2.49);
     }
     else if (observable == "AdlerAnglePhiPi")
@@ -983,41 +962,29 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     if (observable == "ECal")
     {
       if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetECalBinning(10, 10, 0.6, EBeam + 0.15, EBeam);
-      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetECalBinning(20, 10, 0.6, EBeam + 0.15, EBeam);
-      else if (EBeam == 4.461) binning = plotting::GetECalBinning(20, 10, 1.8, EBeam + 0.15, EBeam);
-    }
-    else if (observable == "pfl_theta")
-    {
-      if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(15, 20, 50);
-      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(20, 20, 50);
-      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(20, 15, 50);
-    }
-    else if (observable == "pfl")
-    {
-      if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(15, 0.35, 0.9);
-      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(20, 0.5, 1.9);
-      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(20, 1.1, 3.8);
+      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetECalBinning(12, 10, 0.6, EBeam + 0.15, EBeam);
+      else if (EBeam > 4 && EBeam < 5) binning = plotting::GetECalBinning(10, 10, 1.8, EBeam + 0.15, EBeam);
     }
     else if (observable == "proton_mom")
     {
       if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(10, 0.2001, 1.0999);
-      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(15, 0.2001, 1.9999);
-      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(15, 0.2001, 2.9999);
+      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(10, 0.2001, 1.9999);
+      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(10, 0.2001, 2.9999);
     }
     else if (observable == "proton_theta")
     {
       if (EBeam > 0 && EBeam < 2 )
-      binning = plotting::GetUniformBinning(15, 0, 80);
+      binning = plotting::GetUniformBinning(10, 0, 80);
       else if (EBeam > 2 && EBeam < 4)
-      binning = plotting::GetUniformBinning(20, 0, 80);
+      binning = plotting::GetUniformBinning(10, 0, 80);
       else if (EBeam == 4.461)
-      binning = plotting::GetUniformBinning(20, 0, 80);
+      binning = plotting::GetUniformBinning(10, 0, 80);
     }
     else if (observable == "HadDeltaPT" || observable == "DeltaPT")
     {
-      if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(15, 0.0001, 0.999);
+      if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(13, 0.0001, 0.999);
       else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(15, 0.0001, 0.999);
-      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(15, 0.001, 0.999);
+      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(10, 0.0001, 1.4999);
     }
     else if (observable == "HadDeltaPhiT" || observable == "DeltaPhiT")
     {
@@ -1028,8 +995,8 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (observable == "HadAlphaT")
     {
       if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(10, 0, 180);
-      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(15, 0, 180);
-      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(15, 0, 180);
+      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(10, 0, 180);
+      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(10, 0, 180);
     }
     else if (observable == "HadSystemMass")
     {
@@ -1051,18 +1018,15 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     }
     else if (observable == "pip_mom")
     {
-      if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(15, 0.1, 0.6);
-      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(20, 0.1, 1.2);
-      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(20, 0.1, 2.2);
+      if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(10, 0.101, 0.61);
+      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(10, 0.01, 1.61);
+      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(10, 0.01, 2.01);
     }
     else if (observable == "pip_theta")
     {
-      if (EBeam > 0 && EBeam < 2 )
-      binning = plotting::GetUniformBinning(15, 5, 130);
-      else if (EBeam > 2 && EBeam < 4)
-      binning = plotting::GetUniformBinning(20, 5, 130);
-      else if (EBeam == 4.461)
-      binning = plotting::GetUniformBinning(20, 5, 130);
+      if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(10, 5, 140);
+      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(10, 5, 140);
+      else if (EBeam == 4.461) binning = plotting::GetUniformBinning(10, 5, 140);
     }
     else if (observable == "MissingEnergy")
     {
@@ -1151,7 +1115,7 @@ std::vector<double> plotting::GetBinning(std::string observable, double EBeam, s
     else if (observable == "RecoW")
     {
       if (EBeam > 0 && EBeam < 2 ) binning = plotting::GetUniformBinning(15, 1, 1.49);
-      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(20, 1, 1.9);
+      else if (EBeam > 2 && EBeam < 4) binning = plotting::GetUniformBinning(15, 1, 1.9);
       else if (EBeam == 4.461) binning = plotting::GetUniformBinning(15, 1, 2.49);
     }
     else if (observable == "RecoQ2")

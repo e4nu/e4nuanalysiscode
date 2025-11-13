@@ -1377,6 +1377,7 @@ std::string plotting::Compute1DRadCorr(std::vector<std::string> mc_files, std::v
   c_1->SaveAs((output_location + "/AcceptanceFiles/" + output_name + "_total.pdf").c_str());
 
   delete c_1;
+  std::cout << " Radiative file stored in : " << acc_file << std::endl;
   return acc_file;
 }
 

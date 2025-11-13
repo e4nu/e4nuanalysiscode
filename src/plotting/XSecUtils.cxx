@@ -879,7 +879,7 @@ void plotting::PlotXsecDataTotal(TH1D *data, std::string observable, std::string
       if (data) all_hists.push_back(data);
       double max_hist = plotting::GetMaximum(all_hists);
       if( max_y > 0 ) max_hist = max_y;
-      double min_hist = 0.12;
+      double min_hist = 0.001;
       for (unsigned int i = 0; i < mc_hists.size(); ++i){
         if( i == 0 ) StandardFormat(mc_hists[i], title, kBlack, 1, observable, units, log_scale);
         else if( i == mc_hists.size() - 1 ) StandardFormat(mc_hists[i], title, ColorBlindPalette(i), 2, observable, units, log_scale);

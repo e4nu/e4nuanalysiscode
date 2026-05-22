@@ -33,7 +33,7 @@ PHYSICS_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(PHYSICS_SRCS))
 ANALYSIS_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(ANALYSIS_SRCS))
 APP_OBJS := $(patsubst $(SRCDIR)/%.cxx,$(OBJDIR)/%.o,$(APP_SRCS))
 
-all: e4nuanalysis plot_e4nuanalysis plot_bkg plot_histograms plot_data plot_syst plot_analised_data plot_inclusive plot_sector_data
+all: e4nuanalysis plot_e4nuanalysis plot_bkg plot_histograms plot_data plot_data_angle plot_syst plot_analised_data plot_inclusive plot_sector_data
 
 e4nuanalysis: $(SRCDIR)/apps/e4nuanalysis.cxx $(UTILS_OBJS) $(PLOTTING_OBJS) $(CONF_OBJS) $(PHYSICS_OBJS) $(ANALYSIS_OBJS) $(APP_OBJS)
 	@mkdir -p $(@D)
@@ -52,6 +52,10 @@ plot_histograms: $(SRCDIR)/plotting_apps/plot_histograms.cxx $(UTILS_OBJS) $(PLO
 	$(CXX) $(CXXFLAGS) $(ROOTLIBS) $(OBJDIR)/utils/*.o  $(OBJDIR)/plotting/*.o $(OBJDIR)/physics/*.o $(OBJDIR)/conf/*.o $(OBJDIR)/analysis/*.o $< -o $@
 
 plot_data: $(SRCDIR)/plotting_apps/plot_data.cxx $(UTILS_OBJS) $(PLOTTING_OBJS) $(CONF_OBJS) $(PHYSICS_OBJS) $(ANALYSIS_OBJS) $(APP_OBJS)
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) $(ROOTLIBS) $(OBJDIR)/utils/*.o  $(OBJDIR)/plotting/*.o $(OBJDIR)/physics/*.o $(OBJDIR)/conf/*.o $(OBJDIR)/analysis/*.o $< -o $@
+
+plot_data_angle: $(SRCDIR)/plotting_apps/plot_data_angle.cxx $(UTILS_OBJS) $(PLOTTING_OBJS) $(CONF_OBJS) $(PHYSICS_OBJS) $(ANALYSIS_OBJS) $(APP_OBJS)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(ROOTLIBS) $(OBJDIR)/utils/*.o  $(OBJDIR)/plotting/*.o $(OBJDIR)/physics/*.o $(OBJDIR)/conf/*.o $(OBJDIR)/analysis/*.o $< -o $@
 

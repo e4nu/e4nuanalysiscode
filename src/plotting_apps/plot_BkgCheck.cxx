@@ -219,11 +219,13 @@ int main( int argc, char* argv[] ) {
 
   // Compute fraction
   TH1D * h_fraction = (TH1D*)h_diff_true->Clone();
+  double integral_bkg = h_total_bkg->Integral();
+  double integral_signal = h_signal->Integral();
   for( int j = 0 ; j < h_fraction -> GetNbinsX() +1 ; ++j ){
     double fraction_j = 0;
     if( h_signal->GetBinContent(j) > 0 ) fraction_j = h_total_bkg->GetBinContent(j)/h_signal->GetBinContent(j);
-    if(h_total_bkg->GetBinContent(j)<500) fraction_j=0;
-    if(h_signal->GetBinContent(j)<500) fraction_j=0;
+    if(h_total_bkg->GetBinContent(j)<0.01*integral_bkg) fraction_j=0;
+    if(h_signal->GetBinContent(j)<0.05*integral_signal) fraction_j=0;
 
     h_fraction->SetBinContent(j,fraction_j);
     h_fraction->SetBinError(j,0);
@@ -277,8 +279,8 @@ int main( int argc, char* argv[] ) {
 
   for( int j = 0 ; j < h_method1 -> GetNbinsX() +1 ; ++j ){
     double fraction_j = h_total_bkg->GetBinContent(j)/h_signal->GetBinContent(j);
-    if(h_total_bkg->GetBinContent(j)<500) fraction_j=0;
-    if(h_signal->GetBinContent(j)<500) fraction_j=0;
+    if(h_total_bkg->GetBinContent(j)<0.01*integral_bkg) fraction_j=0;
+    if(h_signal->GetBinContent(j)<0.05*integral_signal) fraction_j=0;
 
     h_method1->SetBinContent(j,h_diff_true->GetBinContent(j)*fraction_j*100);
     h_method1->SetBinError(j,0);
@@ -309,8 +311,8 @@ int main( int argc, char* argv[] ) {
   TH1D * h_method2 = (TH1D*)h_diff_true->Clone();
   for( int j = 0 ; j < h_method1 -> GetNbinsX() + 1 ; ++j ){
     double fraction_j = h_total_bkg->GetBinContent(j)/h_signal->GetBinContent(j);
-    if(h_total_bkg->GetBinContent(j)<500) fraction_j=0;
-    if(h_signal->GetBinContent(j)<500) fraction_j=0;
+    if(h_total_bkg->GetBinContent(j)<0.01*integral_bkg) fraction_j=0;
+    if(h_signal->GetBinContent(j)<0.05*integral_signal) fraction_j=0;
     h_method2->SetBinContent(j,av_err*fraction_j*100);
     h_method2->SetBinError(j,0);
   }

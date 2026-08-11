@@ -173,7 +173,7 @@ TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> 
 
     // First loop: collect values
     double rel_err = sqrt(error_2)/mean_i*100.0;
-    if (mean_i != 0 && error_2 != 0) {
+    if (mean_i != 0) {
       rel_errors.push_back(rel_err);
     }
 
@@ -200,7 +200,7 @@ TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> 
   double average_rerror = 0.0, nbins_average =0;
   std::cout << " Median " << median << std::endl;
   for (double val : rel_errors) {
-    if (val < 2.0 * median) {  // outlier rejection
+    if (val < 5.0 * median) {  // outlier rejection
       average_rerror += val;
       nbins_average++;
     }

@@ -303,7 +303,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   // We normalize by the solid angle if the following is satisfied
   if( phi_range < 360 && ( etheta_range[0] < 24 || etheta_range[1] < 45 ) )  solid_angle = 2 * TMath::Pi() * (TMath::Cos(etheta_range[0] * TMath::Pi() / 180 ) - TMath::Cos(etheta_range[1] * TMath::Pi() / 180 )) * (phi_range / 360.) ;
   std::cout << " Solid angle " << solid_angle << std::endl;
-  
+
   // Store uncorrected data
   TH1D *hist_data_uncorr = nullptr, *hist_data_uncorr_0 = nullptr, *hist_data_uncorr_1 = nullptr, *hist_data_uncorr_2 = nullptr, *hist_data_uncorr_3 = nullptr, *hist_data_uncorr_4 = nullptr, *hist_data_uncorr_5 = nullptr;
   // Store corrected for acceptance but not for radiation
@@ -429,7 +429,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
 
     // Normalize to cross-section
     // INCLUSIVE NORMALIZATION
-    DataNormalization /= solid_angle;
+    //DataNormalization /= solid_angle;
 
     if( units == "nb" ) {
       // Default units are mb , convert accordingly
@@ -482,7 +482,7 @@ void plotting::Plot1DXSec(std::vector<std::string> MC_files_name, std::string da
   }
 
   // INCLUSIVE NORMALIZATION
-  mc_norm[0] /= solid_angle;
+  //mc_norm[0] /= solid_angle;
 
   NormalizeHist(hist_true, mc_norm[0]);
   NormalizeHist(hist_true_0, mc_norm[0]);

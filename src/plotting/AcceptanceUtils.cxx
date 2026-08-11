@@ -242,35 +242,50 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   TH1D *ratio_aSmooth = (TH1D *)ratio->Clone();
   ratio_aSmooth->Smooth(1);
 
-  // Compute Acceptance error from model variation
+  // Step 1: build the absolute systematic per bin (as before)
   for (int i = 1; i < ratio->GetNbinsX() + 1; ++i)
   {
-    double bin_cont_max = 0;
-    double bin_cont_min = 999;
-
-    double error_smoothing_2 = pow(ratio->GetBinContent(i) - ratio_aSmooth->GetBinContent(i), 2) / 2.;
-    double error_stat_2 = pow(ratio->GetBinError(i), 2);
-    double error_model_2 = 0;
-    for (unsigned int j = 0; j < mc_files.size(); ++j)
-    {
-      if (ratios[j]->GetBinContent(i) > bin_cont_max)
-      {
-        bin_cont_max = ratios[j]->GetBinContent(i);
-      }
-      if (ratios[j]->GetBinContent(i) < bin_cont_min)
-      {
-        bin_cont_min = ratios[j]->GetBinContent(i);
-      }
+    double bin_cont_max = 0, bin_cont_min = 999;
+    double error_smoothing_2 = pow(ratio->GetBinContent(i) - ratio_aSmooth->GetBinContent(i), 2) / 12.;
+    for (unsigned int j = 0; j < mc_files.size(); ++j) {
+      bin_cont_max = std::max(bin_cont_max, ratios[j]->GetBinContent(i));
+      bin_cont_min = std::min(bin_cont_min, ratios[j]->GetBinContent(i));
     }
-    // Compute the error assuming a uniform distribution
-    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+    double error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
 
-    // Adding all errors together
-    ratio->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2 ));
-    if( ratio->GetBinContent(i) != 0 ) syst_err->SetBinContent(i, sqrt(error_smoothing_2 + error_model_2 )/ratio->GetBinContent(i)*100);
-    else syst_err->SetBinContent(i,0);
-
+    if (ratio->GetBinContent(i) != 0)
+      syst_err->SetBinContent(i, sqrt(error_smoothing_2 + error_model_2));
+    else
+      syst_err->SetBinContent(i, 0);
   }
+
+  // Step 2: convert to relative (%) BEFORE doing the dip check / averaging
+  TH1* syst_err_rel = (TH1*)syst_err->Clone("syst_err_rel");
+  for (int i = 1; i < ratio->GetNbinsX() + 1; ++i) {
+    double c = ratio->GetBinContent(i);
+    syst_err_rel->SetBinContent(i, c != 0 ? syst_err->GetBinContent(i)/c : 0);
+  }
+
+  // Step 3: dip check + neighbour averaging on the RELATIVE array
+  TH1* syst_err_rel_orig = (TH1*)syst_err_rel->Clone("syst_err_rel_orig");
+  for (int i = 2; i < ratio->GetNbinsX(); ++i) {
+    double c_im1 = syst_err_rel_orig->GetBinContent(i-1);
+    double c_i   = syst_err_rel_orig->GetBinContent(i);
+    double c_ip1 = syst_err_rel_orig->GetBinContent(i+1);
+    if (c_i < c_im1 && c_i < c_ip1)
+      syst_err_rel->SetBinContent(i, 0.5*(c_im1 + c_ip1));
+  }
+
+  // Step 4: convert back to absolute for SetBinError, and to % for reporting
+  for (int i = 1; i < ratio->GetNbinsX() + 1; ++i) {
+    double error_stat_2 = pow(ratio->GetBinError(i), 2);
+    double c = ratio->GetBinContent(i);
+    double abs_syst = c != 0 ? syst_err_rel->GetBinContent(i) * c : 0;
+
+    ratio->SetBinError(i, c != 0 ? sqrt(error_stat_2 + pow(abs_syst,2)) : 0);
+    syst_err->SetBinContent(i, syst_err_rel->GetBinContent(i) * 100); // % for plotting
+  }
+
   StandardFormat(ratio, title, kBlack, 1, observable);
   ratio->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
   ratio->GetYaxis()->SetTitle("Acceptance correction");
@@ -414,24 +429,55 @@ std::string plotting::Compute1DAcceptance(std::vector<std::string> mc_files, std
   TH1D *ratio_aSmooth_4 = (TH1D *)ratio_4->Clone();
   ratio_aSmooth_4->Smooth(3);
 
-  // Compute Acceptance error from model variation
-  for (int i = 1; i < ratio_4->GetNbinsX()+1; ++i)
+  // // Compute Acceptance error from model variation
+  // for (int i = 1; i < ratio_4->GetNbinsX()+1; ++i)
+  // {
+  //   double bin_cont_max = 0;
+  //   double bin_cont_min = 999;
+  //   double error_smoothing_2 = pow(ratio_4->GetBinContent(i) - ratio_aSmooth_4->GetBinContent(i), 2) / 12.;
+  //   double error_stat_2 = pow(ratio_4->GetBinError(i), 2);
+  //   double error_model_2 = 0;
+  //   for (unsigned int j = 0; j < mc_files.size(); ++j)
+  //   {
+  //     if (ratios_4[j]->GetBinContent(i) > bin_cont_max)
+  //     bin_cont_max = ratios_4[j]->GetBinContent(i);
+  //     if (ratios_4[j]->GetBinContent(i) < bin_cont_min)
+  //     bin_cont_min = ratios_4[j]->GetBinContent(i);
+  //   }
+  //   error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
+  //   ratio_4->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+  // }
+
+  // Precompute smoothed versions of each model ratio, same method used for ratio_aSmooth_4
+std::vector<TH1*> ratios_aSmooth_4(mc_files.size());
+for (unsigned int j = 0; j < mc_files.size(); ++j) {
+  ratios_aSmooth_4[j] = (TH1*)ratios_4[j]->Clone(Form("ratios_aSmooth_4_%d", j));
+  ratios_aSmooth_4[j]->Smooth(); // or whatever smoothing you used for ratio_aSmooth_4
+}
+
+for (int i = 1; i < ratio_4->GetNbinsX()+1; ++i)
+{
+  double error_smoothing_2 = pow(ratio_4->GetBinContent(i) - ratio_aSmooth_4->GetBinContent(i), 2) / 12.;
+  double error_stat_2 = pow(ratio_4->GetBinError(i), 2);
+
+  double raw_max = 0, raw_min = 999;
+  double smooth_max = 0, smooth_min = 999;
+  for (unsigned int j = 0; j < mc_files.size(); ++j)
   {
-    double bin_cont_max = 0;
-    double bin_cont_min = 999;
-    double error_smoothing_2 = pow(ratio_4->GetBinContent(i) - ratio_aSmooth_4->GetBinContent(i), 2) / 12.;
-    double error_stat_2 = pow(ratio_4->GetBinError(i), 2);
-    double error_model_2 = 0;
-    for (unsigned int j = 0; j < mc_files.size(); ++j)
-    {
-      if (ratios_4[j]->GetBinContent(i) > bin_cont_max)
-      bin_cont_max = ratios_4[j]->GetBinContent(i);
-      if (ratios_4[j]->GetBinContent(i) < bin_cont_min)
-      bin_cont_min = ratios_4[j]->GetBinContent(i);
-    }
-    error_model_2 = pow(bin_cont_max - bin_cont_min, 2) / 12.;
-    ratio_4->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+    double raw = ratios_4[j]->GetBinContent(i);
+    double sm  = ratios_aSmooth_4[j]->GetBinContent(i);
+    if (raw > raw_max) raw_max = raw;
+    if (raw < raw_min) raw_min = raw;
+    if (sm  > smooth_max) smooth_max = sm;
+    if (sm  < smooth_min) smooth_min = sm;
   }
+  double error_model_2_raw    = pow(raw_max - raw_min, 2) / 12.;
+  double error_model_2_smooth = pow(smooth_max - smooth_min, 2) / 12.;
+  double error_model_2 = std::max(error_model_2_raw, error_model_2_smooth);
+
+  ratio_4->SetBinError(i, sqrt(error_stat_2 + error_smoothing_2 + error_model_2));
+}
+
   StandardFormat(ratio_4, title, kTeal - 7, 1, observable);
   ratio_4->GetXaxis()->SetTitle(GetAxisLabel(observable, 0).c_str());
   ratio_4->GetYaxis()->SetTitle("Acceptance correction e-Sector 4");

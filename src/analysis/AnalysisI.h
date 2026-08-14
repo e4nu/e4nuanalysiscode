@@ -34,6 +34,7 @@ namespace e4nu {
     void ApplyMomentumCut( Event & event ) ;
     bool ApplyFiducialCutExtra( Event & event ) ;
     bool ApplyFiducialCut( Event & event, bool apply_fiducial ) ;
+    bool PassesMinOpeningAngleCut(const std::map<int, std::vector<TLorentzVector>>& hadrons, double min_angle_deg );
     double GetElectronMinTheta( TLorentzVector emom ) ;
     bool StoreTree(Event event);
 

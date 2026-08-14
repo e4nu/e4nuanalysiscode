@@ -145,6 +145,11 @@ bool AnalysisI::Analyse( Event & event ) {
     return false;
   }
 
+  // (*) Step 9: Correlations become important for the acceptance correction
+  // when particles are nearby. We apply a 10deg cut to ensure hadrons are separate enough
+  std::map<int, std::vector<TLorentzVector>> final_hadrons = event.GetFinalParticles4Mom();
+  if( ! this->PassesMinOpeningAngleCut(final_hadrons, 10.0) ){return false ;} 
+
   return true ;
 }
 
@@ -423,6 +428,21 @@ bool AnalysisI::ApplyFiducialCutExtra( Event & event ) {
   event.SetFinalParticlesUnCorrKinematics( contained_part_map_uncorr ) ;
 
   return true ;
+}
+
+bool AnalysisI::PassesMinOpeningAngleCut(const std::map<int, std::vector<TLorentzVector>>& hadrons, double min_angle_deg )
+{
+  std::vector<TLorentzVector> particles;
+  for (const auto& pid_group : hadrons)
+    for (const auto& p4 : pid_group.second)
+      particles.push_back(p4);
+
+  for (size_t i = 0; i < particles.size(); ++i)
+    for (size_t j = i + 1; j < particles.size(); ++j)
+      if (particles[i].Vect().Angle(particles[j].Vect()) * TMath::RadToDeg() < min_angle_deg)
+        return false;
+
+  return true;
 }
 
 bool AnalysisI::StoreTree(Event event)

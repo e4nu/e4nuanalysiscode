@@ -132,8 +132,8 @@ TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> 
   hist_syst_sector->SetName("h_syst_sectors");
   hist_syst_sector->GetYaxis()->SetTitle("#sigma_{Sector}/#hat{x}[%]");
 
-  // Store all relative errors per bin
-  std::vector<double> rel_errors;
+  // Store all relative errors per bin, and the bin's cross section (content x width) as weight
+  std::vector<double> rel_errors, rel_weights;
   for( unsigned j = 1 ; j < hist.GetNbinsX() +1; ++j ){
 
     double mean_i = 0 ;
@@ -175,6 +175,7 @@ TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> 
     double rel_err = sqrt(error_2)/mean_i*100.0;
     if (mean_i != 0) {
       rel_errors.push_back(rel_err);
+      rel_weights.push_back(std::fabs(hist.GetBinContent(j)) * hist.GetXaxis()->GetBinWidth(j));
     }
 
     // Add statistical error from final histogram
@@ -185,28 +186,22 @@ TH1D * systematics::SectorVariationError( TH1D & hist, const std::vector<TH1D*> 
     //else hist.SetBinError(j,0);
   }
 
-  // Remove outliers with median
   if (rel_errors.empty()) {
     std::cerr << "No valid relative errors\n";
     return hist_syst_sector;
   }
 
-  std::sort(rel_errors.begin(), rel_errors.end());
-  double median;
-  size_t n = rel_errors.size();
-  if (n % 2 == 0) median = 0.5 * (rel_errors[n/2 - 1] + rel_errors[n/2]);
-  else median = rel_errors[n/2];
-
-  double average_rerror = 0.0, nbins_average =0;
-  std::cout << " Median " << median << std::endl;
-  for (double val : rel_errors) {
-    if (val < 5.0 * median) {  // outlier rejection
-      average_rerror += val;
-      nbins_average++;
-    }
+  // Average sector uncertainty: mean of the per-bin values weighted by the bin's cross section.
+  // Bins whose sector spread is compatible with statistics enter with 0. Weighting by the content
+  // keeps low-statistics tails from dominating, without an outlier cut (a median-based cut gives 0
+  // whenever more than half of the bins are compatible with statistics).
+  double sum_w = 0.0, sum_wr = 0.0;
+  for (size_t k = 0; k < rel_errors.size(); ++k) {
+    sum_w += rel_weights[k];
+    sum_wr += rel_weights[k] * rel_errors[k];
   }
-
-  if (nbins_average > 0) average_rerror /= nbins_average;
+  double average_rerror = sum_w > 0 ? sum_wr / sum_w : 0.0;
+  std::cout << " Sector-to-sector uncertainty (cross-section weighted mean) " << average_rerror << " %" << std::endl;
 
   // ---------------------------------------
   // Draw uncertainties and average line
